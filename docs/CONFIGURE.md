@@ -126,6 +126,7 @@ Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the file `rfi
 ~~~~
 $ cd /home/pi/RPi-Jukebox-RFID/scripts/
 $ cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
+$ chmod +x rfid_trigger_play.sh
 ~~~~
 
 # Jukebox manual
