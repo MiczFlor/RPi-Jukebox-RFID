@@ -12,9 +12,9 @@
 # VARIABLES TO CHANGE
 # adjust these variables to match your system and configuration
 
-# the absolute path to the folder whjch contains the playlist folders
-PATHDATA="/home/pi/Documents/musicbox"
-#PATHDATA="/home/micz/Documents/bitbucket/musicbox"
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # If you use cards to for example change audio level, mute or stop playing,
 # replace the following strings with the ID of the card. For example:
@@ -87,8 +87,8 @@ else
 
     # Expected folder structure:
     #
-    # $PATHDATA + /shared/audiofolders/ + $FOLDERNAME 
-    # Note: $FOLDERNAME is read from a file inside 'shortcuts'. 
+    # $PATHDATA + /shared/audiofolders/ + $FOLDERNAME
+    # Note: $FOLDERNAME is read from a file inside 'shortcuts'.
     #       See manual for details
     #
     # Example:
@@ -102,51 +102,51 @@ else
     #                                      /x-alphabetically.mp3
     #
     # $PATHDATA/shared/audiofolders/webradio/filewithURL.txt
-	
+
     # Add info into the log, making it easer to monitor cards
-    echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/shared/latestID.txt
-	
+    echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
+
 	# Look for human readable shortcut in folder 'shortcuts'
 	# check if CARDID has a text file by the same name - which would contain the human readable folder name
-	if [ -f $PATHDATA/shared/shortcuts/$CARDID ]
+	if [ -f $PATHDATA/../shared/shortcuts/$CARDID ]
 	then
 	    # Read human readable shortcut from file
-        FOLDERNAME=`cat $PATHDATA/shared/shortcuts/$CARDID`
+        FOLDERNAME=`cat $PATHDATA/../shared/shortcuts/$CARDID`
         # Add info into the log, making it easer to monitor cards
-	    echo "This ID has been used before." >> $PATHDATA/shared/latestID.txt
+	    echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
 	else
         # Human readable shortcut does not exists, so create one with the content $CARDID
         # this file can later be edited manually over the samba network
-        echo "$CARDID" > $PATHDATA/shared/shortcuts/$CARDID
+        echo "$CARDID" > $PATHDATA/../shared/shortcuts/$CARDID
         FOLDERNAME=$CARDID
         # Add info into the log, making it easer to monitor cards
-	    echo "This ID was used for the first time." >> $PATHDATA/shared/latestID.txt
+	    echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
     fi
     # Add info into the log, making it easer to monitor cards
-    echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/shared/latestID.txt
-	
+    echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
+
 	# if a folder $FOLDERNAME exists, play content
-    if [ -d $PATHDATA/shared/audiofolders/$FOLDERNAME ]
+    if [ -d $PATHDATA/../shared/audiofolders/$FOLDERNAME ]
     then
         # create an empty string for the playlist
         PLAYLIST=""
-        
+
         # loop through all the files found in the folder
-        for FILE in $PATHDATA/shared/audiofolders/$FOLDERNAME/*
+        for FILE in $PATHDATA/../shared/audiofolders/$FOLDERNAME/*
         do
             # add file path to playlist followed by line break
             PLAYLIST=$PLAYLIST$FILE$'\n'
         done
-        
+
         # write playlist to file using the same name as the folder with ending .m3u
         # wrap $PLAYLIST string in "" to keep line breaks
-        echo "$PLAYLIST" > $PATHDATA/playlists/$FOLDERNAME.m3u
-        
+        echo "$PLAYLIST" > $PATHDATA/../playlists/$FOLDERNAME.m3u
+
         # first kill any possible running vlc processn => stop playing audio
         pkill vlc
-        
+
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (cvlc $PATHDATA/playlists/$FOLDERNAME.m3u &)
+        (cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
     fi
 fi
