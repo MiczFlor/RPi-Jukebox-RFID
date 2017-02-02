@@ -12,10 +12,6 @@
 # VARIABLES TO CHANGE
 # adjust these variables to match your system and configuration
 
-# The absolute path to the folder whjch contains all the scripts.
-# Unless you are working with symlinks, leave the following line untouched.
-PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 # If you use cards to for example change audio level, mute or stop playing,
 # replace the following strings with the ID of the card. For example:
 # Using the card ID 1234567890 to set the audio to mute, change this line:
@@ -29,6 +25,10 @@ CMDDOWN="down"
 CMDHIGH="high"
 CMDLOW="low"
 CMDSTOP="stop"
+
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # NO CHANGES BENEATH THIS LINE
 
@@ -87,21 +87,21 @@ else
 
     # Expected folder structure:
     #
-    # $PATHDATA + /shared/audiofolders/ + $FOLDERNAME
+    # $PATHDATA + /../shared/audiofolders/ + $FOLDERNAME
     # Note: $FOLDERNAME is read from a file inside 'shortcuts'.
     #       See manual for details
     #
     # Example:
     #
-    # $PATHDATA/shared/audiofolders/list1/01track.mp3
-    #                                    /what-a-great-track.mp3
+    # $PATHDATA/../shared/audiofolders/list1/01track.mp3
+    #                                       /what-a-great-track.mp3
     #
-    # $PATHDATA/shared/audiofolders/list987/always-will.mp3
-    #                                      /be.mp3
-    #                                      /playing.mp3
-    #                                      /x-alphabetically.mp3
+    # $PATHDATA/../shared/audiofolders/list987/always-will.mp3
+    #                                         /be.mp3
+    #                                         /playing.mp3
+    #                                         /x-alphabetically.mp3
     #
-    # $PATHDATA/shared/audiofolders/webradio/filewithURL.txt
+    # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
 
     # Add info into the log, making it easer to monitor cards
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt

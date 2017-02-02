@@ -138,7 +138,7 @@ Now add the specific folder that we want to be exposed to the home network in th
 ~~~~
 [pi_jukebox]
    comment= Pi Jukebox
-   path=/home/pi/Documents/musicbox/shared
+   path=/home/pi/RPi-Jukebox-RFID/shared
    browseable=Yes
    writeable=Yes
    only guest=no
