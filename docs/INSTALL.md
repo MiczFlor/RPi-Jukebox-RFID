@@ -198,6 +198,7 @@ $ sudo pip install evdev
 The VLC media player not only plays almost everything (local files, web streams, playlists, folders), it also comes with a command line interface `CLVC` which we will be using to play media on the jukebox.
 
 Install *VLC*
+
 ~~~~
 sudo apt-get update
 sudo apt-get install vlc
@@ -206,9 +207,10 @@ sudo apt-get install vlc
 ## Install git
 
 [*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
+
 ~~~~
 $ sudo apt-get update
-$ sudo apt-get install vlc
+$ sudo apt-get install git
 ~~~~
 
 ## Install the jukebox code
