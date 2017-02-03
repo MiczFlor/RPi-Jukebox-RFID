@@ -1,3 +1,5 @@
+# Forked from Francisco Sahli's https://github.com/fsahli/music-cards/blob/master/Reader.py
+
 import string
 import csv
 import os.path

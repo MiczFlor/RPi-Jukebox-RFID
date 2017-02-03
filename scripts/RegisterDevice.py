@@ -1,3 +1,5 @@
+# Forked from Francisco Sahli's https://github.com/fsahli/music-cards/blob/master/config.py
+
 import os.path
 from evdev import InputDevice, list_devices
 
