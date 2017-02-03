@@ -59,7 +59,7 @@ then
 
 elif [ "$CARDID" == "$CMDUP" ]
 then
-    # amixer -D pulse sset Master 10%+
+    # amixer -D pulse sset Master 5%+
     amixer sset 'Master' 10%+
 
 elif [ "$CARDID" == "$CMDDOWN" ]

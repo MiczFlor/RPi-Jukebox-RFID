@@ -1,4 +1,8 @@
-# Identify and configure your RFID reader
+# Configure your RPi and jukebox
+
+This is the second step. Make sure to go through the [Installation](INSTALL-md) first.
+
+## Identify and configure your RFID reader
 
 The RFID reader is connected to your RPi via USB. As you plug it in, it should have made a 'beep'. And each time you swipe a keyring or card across the card reader, it should also make a 'beep'.
 
