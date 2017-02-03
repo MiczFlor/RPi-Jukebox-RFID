@@ -118,6 +118,17 @@ $ cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
 $ chmod +x rfid_trigger_play.sh
 ~~~~
 
+# Connecting the hardware
+
+Once the software is all in place, make sure the hardware is connected correctly.
+
+1. Connect a USB hub with the power supply. From this hub, connect the RPi to one plug and the USB powered speakers to another. Do not connect the speakers to the USB of the RPi, because the power coming from the RPi might not be enough to run the speakers.
+2. You need a number of USB plugs to connect the following and therefore possibly need a second USB hub to connect to the RPi USB:
+    * RFID card reader
+    * WiFi dongle (WLAN adapter)
+    * External soundcard (optional)
+3. Connect the speakers with the 3.5mm jack to the soundcard (either the built in one from the RPi or the external one attached to the RPi over USB).
+
 # Jukebox manual
 
 Now the installation and configuration are complete. Time to read the manual of the jukebox to add songs, web streams, register new cards and so on. Read the [`MANUAL.md`](MANUAL.md).
