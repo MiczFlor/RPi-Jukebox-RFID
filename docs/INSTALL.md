@@ -1,8 +1,10 @@
 # Installing the RFID Jukebox on your RPi
 
-This project has been tested on Raspberry Pi model 1 and 2. And there is no reason why it shouldn't work on the third generation.
+The installation is the first step to get your jukebox up and running. Once you have done this, proceed to the [configuration](CONFIGURE.md).
 
-To get it up and running, this is what you need to do.
+And Once you finished with the configuration, read the [Manual](MANUAL.md) to add audio files and RFID cards.
+
+This project has been tested on Raspberry Pi model 1 and 2. And there is no reason why it shouldn't work on the third generation.
 
 ## Install Raspbian on your RPi
 

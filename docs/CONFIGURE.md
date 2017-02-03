@@ -1,6 +1,8 @@
 # Configure your RPi and jukebox
 
-This is the second step. Make sure to go through the [Installation](INSTALL-md) first.
+This is the second step. Make sure to go through the [installation](INSTALL.md) first.
+
+Once you finished with the configuration, read the [manual](MANUAL.md) to add audio files and RFID cards.
 
 ## Identify and configure your RFID reader
 

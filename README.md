@@ -14,6 +14,8 @@ Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs
 
 Then walk through the configuration of the RPi here: [`CONFIGURE.md`](docs/CONFIGURE.md)
 
+Once everything is set up and configured, read the manual to register cards and add audio: [`MANUAL.md`](docs/MANUAL.md)
+
 ## Acknowledgments
 
 There are many, many, many inspiring suggestions and solutions on the web to bring together the idea of a jukebox with RFID cards. I want to mention a few of these that have inspired me.

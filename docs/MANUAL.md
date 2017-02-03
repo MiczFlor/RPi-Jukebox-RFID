@@ -1,6 +1,7 @@
 # Using the RFID jukebox
 
-Before you can run the jukebox, you need to have it installed and configured. Make sure to go through the [installation](INSTALL-md) and [configuration](CONFIGURE.md) first.
+Before you can run the jukebox, you need to have it installed and configured. 
+Make sure to go through the [installation](INSTALL.md) and [configuration](CONFIGURE.md) first.
 
 ## Connecting to the jukebox
 
