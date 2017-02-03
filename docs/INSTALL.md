@@ -147,6 +147,8 @@ Now add the specific folder that we want to be exposed to the home network in th
    public=no
 ~~~~
 
+**Note:** the `path` given in this example works (only) if you are installing the jukebox code in the directory `/home/pi/`.
+
 Finally, add the user `pi` to *Samba*. For simplicity and against better knowledge regarding security, I suggest to stick to the default user and password:
 
 ~~~~
@@ -201,7 +203,7 @@ sudo apt-get install vlc
 
 ## Install git
 
-[*git* is a version control system}(https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
+[*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
 ~~~~
 $ sudo apt-get update
 $ sudo apt-get install vlc
