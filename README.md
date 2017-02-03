@@ -1,5 +1,12 @@
 # RPi-Jukebox-RFID
-A jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed.
+A jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. What makes this jukebox easy to install and use:
+
+* Runs on all Raspberry Pi models (1, 2 and 3).
+* Just plug and play using USB, no soldering iron needed.
+* Once the jukebox is up and running, add music from any computer on your home network.
+* Register new RFID cards easily without having to connect to the RPi.
+* Play single or multiple files, even mix them with web streams.
+* Volume control is also done with RFID cards or key fobs.
 
 ## Installation
 

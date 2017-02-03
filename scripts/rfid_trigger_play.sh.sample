@@ -12,7 +12,7 @@
 # VARIABLES TO CHANGE
 # adjust these variables to match your system and configuration
 
-# If you use cards to for example change audio level, mute or stop playing,
+# If you use cards to change audio level, stop playing or shutdown the RPi,
 # replace the following strings with the ID of the card. For example:
 # Using the card ID 1234567890 to set the audio to mute, change this line:
 # CMDMUTE="mute"
@@ -25,6 +25,7 @@ CMDDOWN="down"
 CMDHIGH="high"
 CMDLOW="low"
 CMDSTOP="stop"
+CMDSHUTDOWN="halt"
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -78,7 +79,13 @@ then
 
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
+    # kill all running VLC media players
     pkill vlc
+
+elif [ "$CARDID" == "$CMDSHUTDOWN" ]
+then
+    # shutdown the RPi nicely
+    sudo halt
 
 else
     # We checked if the card was a special command, seems it wasn't.
