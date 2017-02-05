@@ -160,7 +160,7 @@ else
         echo "$PLAYLIST" > $PATHDATA/../playlists/$FOLDERNAME.m3u
 
         # first kill any possible running vlc processn => stop playing audio
-        pkill vlc
+        sudo pkill vlc
 
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
