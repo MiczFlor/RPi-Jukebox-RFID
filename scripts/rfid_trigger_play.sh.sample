@@ -20,10 +20,13 @@
 # CMDMUTE="1234567890"
 # Leave everything untouched where you do not use a card.
 CMDMUTE="mute"
-CMDUP="up"
-CMDDOWN="down"
-CMDHIGH="high"
-CMDLOW="low"
+CMDVOL30="30"
+CMDVOL50="50"
+CMDVOL75="75"
+CMDVOL85="85"
+CMDVOL90="90"
+CMDVOL95="95"
+CMDVOL100="100"
 CMDSTOP="stop"
 CMDSHUTDOWN="halt"
 
@@ -54,33 +57,40 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 if [ "$CARDID" == "$CMDMUTE" ]
 then
-    # amixer -D pulse sset Master 0%
-    amixer sset 'Master' 0%
+    amixer sset 'PCM' 0%
 
-elif [ "$CARDID" == "$CMDUP" ]
+elif [ "$CARDID" == "$CMDVOL30" ]
 then
-    # amixer -D pulse sset Master 5%+
-    amixer sset 'Master' 10%+
+    amixer sset 'PCM' 30%
 
-elif [ "$CARDID" == "$CMDDOWN" ]
+elif [ "$CARDID" == "$CMDVOL50" ]
 then
-    # amixer -D pulse sset Master 5%-
-    amixer sset 'Master' 10%-
+    amixer sset 'PCM' 50%
 
-elif [ "$CARDID" == "$CMDHIGH" ]
+elif [ "$CARDID" == "$CMDVOL75" ]
 then
-    # amixer -D pulse sset Master 97%
-    amixer sset 'Master' 97%
+    amixer sset 'PCM' 75%
 
-elif [ "$CARDID" == "$CMDLOW" ]
+elif [ "$CARDID" == "$CMDVOL85" ]
 then
-    # amixer -D pulse sset Master 60%
-    amixer sset 'Master' 60%
+    amixer sset 'PCM' 85%
+
+elif [ "$CARDID" == "$CMDVOL90" ]
+then
+    amixer sset 'PCM' 90%
+
+elif [ "$CARDID" == "$CMDVOL95" ]
+then
+    amixer sset 'PCM' 95%
+
+elif [ "$CARDID" == "$CMDVOL100" ]
+then
+    amixer sset 'PCM' 100%
 
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
     # kill all running VLC media players
-    pkill vlc
+    sudo pkill vlc
 
 elif [ "$CARDID" == "$CMDSHUTDOWN" ]
 then

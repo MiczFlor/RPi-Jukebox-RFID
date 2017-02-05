@@ -137,14 +137,9 @@ If you want to assign certain control commands with RFID cards, firstly register
 The commands which are available in the script are:
 
 * **CMDMUTE** - will mute the jukebox. The file(s) continue to play, but there will be no sound coming out.
-* **CMDUP** - increase the volume by 5%.
-* **CMDDOWN** - decrease the volume by 5%.
-* **CMDHIGH** - set the volume to 97%.
-* **CMDLOW** - set the volume to 60%.
+* **CMDVOL30** to **CMDVOL100** - sets the volume to the percentage passed on, being one of: 30%, 50%, 75%, 85%, 90%, 95%, 100%.
 * **CMDSTOP** - stop the media player (without changing the volume).
 * **CMDSHUTDOWN** - shutdown the jukebox. While you can switch off the RPi the hard way by unplugging it from the power source, in the long run using the proper shutdown method extends the life expectation of your jukebox. After the shutdown, you still should detach the power supply - if only to make sure the speakers don't drain power.
-
-A minimal, useful set of controls could be **CMDDOWN** and **CMDUP** to control the volume and **CMDSHUTDOWN** to shut down the jukebox gracefully. As an example, let's assign three IDs to these three functions. The imaginary cards have the IDs `0594672283`, `1594672283` and `2594672283`.
 
 Once you have logged in to the RPi over SSH or booted with monitor and keyboard attached, open the script in the nano editor:
 
@@ -156,10 +151,13 @@ Scroll down until you see the list of available commands:
 
 ~~~~
 CMDMUTE="mute"
-CMDUP="up"
-CMDDOWN="down"
-CMDHIGH="high"
-CMDLOW="low"
+CMDVOL30="30"
+CMDVOL50="50"
+CMDVOL75="75"
+CMDVOL85="85"
+CMDVOL90="90"
+CMDVOL95="95"
+CMDVOL100="100"
 CMDSTOP="stop"
 CMDSHUTDOWN="halt"
 ~~~~
@@ -167,15 +165,18 @@ CMDSHUTDOWN="halt"
 Change the values of the commands you want to assign, leave the other ones unchanged. In our example, the changed list might look like this:
 
 ~~~~
-CMDMUTE="mute"
-CMDUP="0594672283"
-CMDDOWN="1594672283"
-CMDHIGH="high"
-CMDLOW="low"
+CMDMUTE="0594672283"
+CMDVOL30="30"
+CMDVOL50="50"
+CMDVOL75="75"
+CMDVOL85="85"
+CMDVOL90="1594672283"
+CMDVOL95="95"
+CMDVOL100="100"
 CMDSTOP="stop"
 CMDSHUTDOWN="2594672283"
 ~~~~
 
 Save the changes and close the editor. The changes takes effect immediately.
 
-**Note:** if you (accidently) assign a command and an audio folder to a card, the jukebox will not play the audio. It will only execute the command.
+**Note:** if you (accidently) assign a command and an audio folder to the same card, the jukebox will not play the audio. It will only execute the command.
