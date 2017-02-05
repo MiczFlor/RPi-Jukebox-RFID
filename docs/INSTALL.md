@@ -193,6 +193,58 @@ Now the system is ready to load the important package for the python code we use
 $ sudo pip install evdev
 ~~~~
 
+## Running the web app
+
+There is a second way to control the RFID jukebox: through the browser. You can open a browser on your phone or computer and type in the static IP address that we assigned to the RPi earlier. As long as your phone or PC are connected to the same WiFi network that the RPi is connected to, you will see the web app in your browser.
+
+### Installing lighttpd and PHP
+
+~~~~
+$ sudo apt-get install lighttpd php5-common php5-cgi php5
+~~~~
+
+### Configuring lighttpd
+
+Open the configuration file:
+
+~~~~
+$ sudo nano /etc/lighttpd/lighttpd.conf
+~~~~
+
+Change the document root, meaning the folder where the webserver will look for things to display or do when somebody types in the static IP address. To point it to the Jukebox web app, change the line in the configuration to:
+
+~~~~
+server.document-root = "/home/pi/RPi-Jukebox-RFID/htdocs"
+~~~~
+
+The webserver is usually not very powerful when it comes to access to the system it is running on. From a security point of view, this is a very good concept: you don't want a website to potentially change parts of the operating system which should be locked away from any public access.
+
+We do need to give the webserver more access in order to run a web app that can start and stop processes on the RPi. To make this happen, we need to add the webserver to the list of users/groups allowed to run commands as superuser. To do so, open the list of sudo users in the nano editor:
+
+~~~~
+$ sudo nano /etc/sudoers
+~~~~
+
+And at the bottom of the file, add the following line:
+
+~~~~
+www-data ALL=(ALL) NOPASSWD: ALL
+~~~~
+
+The final step to make the RPi web app ready is to tell the webserver how to execute PHP. To enable the lighttpd server to execute php scripts, the fastcgi-php module must be enabled.
+
+~~~~
+$ sudo lighty-enable-mod fastcgi-php
+~~~~
+
+Now we can reload the webserver with the command:
+
+~~~~
+$ sudo service lighttpd force-reload
+~~~~
+
+Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.
+
 ## Install the media player VLC 
 
 The VLC media player not only plays almost everything (local files, web streams, playlists, folders), it also comes with a command line interface `CLVC` which we will be using to play media on the jukebox.
@@ -200,9 +252,18 @@ The VLC media player not only plays almost everything (local files, web streams,
 Install *VLC*
 
 ~~~~
-sudo apt-get update
 sudo apt-get install vlc
 ~~~~
+
+Ok, the next step is a severe hack. Quite a radical tweak: we will change the source code of the VLC binary file. We need to do this so that we can control the jukebox also over the web app. VLC was designed not to be run with the power of a superuser. In order to trigger VLC from the webserver, this is exactly what we are doing.
+
+Changing the binary code is only a one liner, replacing `geteuid` with `getppid`. If you are interested in the details what this does, you can [read more about the VLC hack here](https://www.blackmoreops.com/2015/11/02/fixing-vlc-is-not-supposed-to-be-run-as-root-sorry-error/).
+
+~~~~
+$ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
+~~~~
+
+**Note:** changing the binary of VLC to allow the program to be run by the webserver as a superuser is another little step in a long string of potential security problems. In short: the jukebox is a perfectly fine project to run for your personal pleasure. It's not fit to run on a public server.
 
 ## Install git
 
