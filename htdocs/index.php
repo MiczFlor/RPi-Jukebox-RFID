@@ -6,12 +6,9 @@
 * INSTALL.md instructions.
 *******************************************/
 $conf = array();
-$conf['base_url'] = "http://192.168.178.199/";
+$conf['base_url'] = "/";
 $conf['base_path'] = "/home/pi/RPi-Jukebox-RFID";
-/*
-$conf['base_url'] = "http://localhost/RPi-Jukebox-RFID/";
-$conf['base_path'] = "/home/micz/Documents/github/RPi-Jukebox-RFID";
-*/
+
 /* NO CHANGES BENEATH THIS LINE ***********/
 
 /*******************************************
