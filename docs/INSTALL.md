@@ -164,11 +164,11 @@ Type the following to add the new user:
 $ sudo smbpasswd -a pi
 ~~~~
 
-## Adding to python
+## Adding python libraries
 
 ### Installing evdev
 
-In order to read the IDs from the RFID cards, we need to dig deep into the operating system. We need to have an ear at the source of the RFID reader, so to speak. And in order to listen to these events using the programming language *python*, we need to [install the package *evdev*}(http://python-evdev.readthedocs.io/en/latest/install.html).
+In order to read the IDs from the RFID cards, we need to dig deep into the operating system. We need to have an ear at the source of the RFID reader, so to speak. And in order to listen to these events using the programming language *python*, we need to [install the package *evdev*. [Try the official installation procedure first](http://python-evdev.readthedocs.io/en/latest/install.html). If you run into problem, like I did, this might work:
 
 ~~~~
 $ sudo apt-get install python-dev python-pip gcc
