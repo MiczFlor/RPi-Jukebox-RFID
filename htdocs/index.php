@@ -127,6 +127,7 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
      <option value='30'>30%</option>
      <option value='50'>50%</option>
      <option value='75'>75%</option>
+     <option value='80'>80%</option>
      <option value='85'>85%</option>
      <option value='90'>90%</option>
      <option value='95'>95%</option>
