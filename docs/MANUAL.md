@@ -131,7 +131,7 @@ If you want to create such a mix, simply mix the content inside the audio folder
 
 You can control the jukebox with your mobile phone, smart TV or through a browser on a computer. On any device connected to the same WiFi home network as your jukebox, open the browser and type in the static IP address of your jukebox. If you do this on your phone, the web app should something look like this:
 
-![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](/home/micz/Documents/bitbucket/musicbox/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
 ### Change the volume level
 
