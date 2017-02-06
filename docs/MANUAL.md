@@ -5,13 +5,13 @@ Make sure to go through the [installation](INSTALL.md) and [configuration](CONFI
 
 In this manual you will learn:
 
-* How to connect to the jukebox from any computer to add and edit audio files.
-* How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.
-* How to add web streams to the playout files - and even mix web based and local files.
-* How to control the jukebox through the web app.
-* How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.
+* [How to connect to the jukebox from any computer to add and edit audio files.](#connect)
+* [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](#registercards)
+* [How to add web streams to the playout files](#webstreams) - [and even mix web based and local files.](#mixwebstreams)
+* [How to control the jukebox through the web app.](#webapp)
+* [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](#cardcontrol)
 
-## Connecting to the jukebox
+## <a name="connect"></a>Connecting to the jukebox
 
 You need to connect to the jukebox in order to manage audio files and register new RFID cards. There are two ways to connect to the jukebox.
 
@@ -42,7 +42,7 @@ Find out more about how to [connect over SSH from Windows, Mac, Linux or Android
 * If you chose **File** > **Connect to server...**, type `smb://` followed by the IP address of your jukebox. In my case this would be: `smb://192.168.178.199`
 * In both cases, you will be exposed to the login screen eventually.
 
-## Registering a new RFID card or key fob
+## <a name="registercards"></a>Registering a new RFID card or key fob
 
 Everything about the jukebox is controlled with RFID cards or key fobs. Therefore, registering a card is the first thing you need to do. Registering a card means: finding out the unique ID of the card. Once you know the ID, you can either add content (music, web streams) or assign a function - like *increase volume*.
 
@@ -94,7 +94,7 @@ That's it. If you swipe the card across the jukebox, it will play all the files 
 
 **Note:** files are played in alphabetical order. If you want to change the order, rename the files accordingly.
 
-### Playing a web stream
+### <a name="webstream"></a>Playing a web stream
 
 An audio stream from the web can mean two things:
 
@@ -118,7 +118,7 @@ That's it. Now, if you swipe with the card, the jukebox will open the matching f
 
 **Troubleshooting:** if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
 
-### Mixing audio files and web streams
+### <a name="mixwebstreams"></a>Mixing audio files and web streams
 
 As described above, the media player will (attempt to) play any content it finds in a folder in alphabetical order. I decided to work with the *VLC* media player because it is very robust and really tries to play anything it can. This means it also mixes audio files and web streams.
 
@@ -126,8 +126,7 @@ If you want to create such a mix, simply mix the content inside the audio folder
 
 **Note:** if you add a URL from a live web station to the playlist, the jukebox will never get to play the files after this URL - because the live radio never stops.
 
-
-## The Jukebox Web App
+## <a name="webapp"></a>The Jukebox Web App
 
 You can control the jukebox with your mobile phone, smart TV or through a browser on a computer. On any device connected to the same WiFi home network as your jukebox, open the browser and type in the static IP address of your jukebox. If you do this on your phone, the web app should something look like this:
 
@@ -159,7 +158,7 @@ Click on *Shutdown jukebox* to shutdown the RPi gracefully. While it is perfectl
 
 If you use the *Shutdown jukebox* option, unplug the RPi power supply after the machine has shut down to save energy.
 
-## Jukebox controls using RFID cards
+## <a name="cardcontrol"></a>Jukebox controls using RFID cards
 
 This requires you to connect to the jukebox over SSH, because it requires to edit a script on the machine. Find out more about how to [connect over SSH from Windows, Mac, Linux or Android on the official RPi page](https://www.raspberrypi.org/documentation/remote-access/ssh/).
 
