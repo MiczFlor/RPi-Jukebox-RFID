@@ -6,8 +6,8 @@
 * INSTALL.md instructions.
 *******************************************/
 $conf = array();
-$conf['base_url'] = "/";
-$conf['base_path'] = "/home/pi/RPi-Jukebox-RFID";
+$conf['base_url'] = "/"; // if root => "/", generally: try to end with trailing slash
+$conf['base_path'] = "/home/pi/RPi-Jukebox-RFID"; // absolute path to folder
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 
@@ -119,10 +119,10 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
   print $volume;
   ?>
   <div class="well">
-      <h4>Volume</h4>
+      <h4>Select Volume</h4>
 
 <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
-Select volume: <select name='volume'>
+  <select name='volume'>
      <option value='0'>Mute (0%)</option>
      <option value='30'>30%</option>
      <option value='50'>50%</option>
@@ -131,7 +131,7 @@ Select volume: <select name='volume'>
      <option value='90'>90%</option>
      <option value='95'>95%</option>
      <option value='100'>100%</option>
-     </select>
+  </select>
 <input type='submit' name='submit' value='Set volume'/>
 </form>
 
@@ -233,6 +233,25 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             <script src=\"".$url_absolute."_assets/bootstrap-3/js/html5shiv3.7.2.min.js\"></script>
             <script src=\"".$url_absolute."_assets/bootstrap-3/js/respond1.4.2.min.js\"></script>
         <![endif]-->
+        
+        <link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"".$url_absolute."_assets/icons/apple-icon-57x57.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"".$url_absolute."_assets/icons/apple-icon-60x60.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\"".$url_absolute."_assets/icons/apple-icon-72x72.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"76x76\" href=\"".$url_absolute."_assets/icons/apple-icon-76x76.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"114x114\" href=\"".$url_absolute."_assets/icons/apple-icon-114x114.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"120x120\" href=\"".$url_absolute."_assets/icons/apple-icon-120x120.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"144x144\" href=\"".$url_absolute."_assets/icons/apple-icon-144x144.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"152x152\" href=\"".$url_absolute."_assets/icons/apple-icon-152x152.png\">
+        <link rel=\"apple-touch-icon\" sizes=\"180x180\" href=\"".$url_absolute."_assets/icons/apple-icon-180x180.png\">
+        <link rel=\"icon\" type=\"image/png\" sizes=\"192x192\"  href=\"".$url_absolute."_assets/icons/android-icon-192x192.png\">
+        <link rel=\"icon\" type=\"image/png\" sizes=\"32x32\" href=\"".$url_absolute."_assets/icons/favicon-32x32.png\">
+        <link rel=\"icon\" type=\"image/png\" sizes=\"96x96\" href=\"".$url_absolute."_assets/icons/favicon-96x96.png\">
+        <link rel=\"icon\" type=\"image/png\" sizes=\"16x16\" href=\"".$url_absolute."_assets/icons/favicon-16x16.png\">
+        <link rel=\"manifest\" href=\"".$url_absolute."_assets/icons/manifest.json\">
+        <meta name=\"msapplication-TileColor\" content=\"#ffffff\">
+        <meta name=\"msapplication-TileImage\" content=\"".$url_absolute."_assets/icons/ms-icon-144x144.png\">
+        <meta name=\"theme-color\" content=\"#ffffff\">
+
     </head>\n";
 }
 
