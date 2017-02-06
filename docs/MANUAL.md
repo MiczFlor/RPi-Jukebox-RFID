@@ -94,7 +94,7 @@ That's it. If you swipe the card across the jukebox, it will play all the files 
 
 **Note:** files are played in alphabetical order. If you want to change the order, rename the files accordingly.
 
-### <a name="webstream"></a>Playing a web stream
+### <a name="webstreams"></a>Playing a web stream
 
 An audio stream from the web can mean two things:
 
