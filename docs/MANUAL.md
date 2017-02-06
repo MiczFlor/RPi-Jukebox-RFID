@@ -1,7 +1,15 @@
-# Using the RFID jukebox
+# Jukebox Manual
 
 Before you can run the jukebox, you need to have it installed and configured. 
 Make sure to go through the [installation](INSTALL.md) and [configuration](CONFIGURE.md) first.
+
+In this manual you will learn:
+
+* How to connect to the jukebox from any computer to add and edit audio files.
+* How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.
+* How to add web streams to the playout files - and even mix web based and local files.
+* How to control the jukebox through the web app.
+* How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.
 
 ## Connecting to the jukebox
 
@@ -117,6 +125,39 @@ As described above, the media player will (attempt to) play any content it finds
 If you want to create such a mix, simply mix the content inside the audio folder. The jukebox will play all content in alphabetical order. Keep this in mind if you plan the order of the playlist.
 
 **Note:** if you add a URL from a live web station to the playlist, the jukebox will never get to play the files after this URL - because the live radio never stops.
+
+
+## The Jukebox Web App
+
+You can control the jukebox with your mobile phone, smart TV or through a browser on a computer. On any device connected to the same WiFi home network as your jukebox, open the browser and type in the static IP address of your jukebox. If you do this on your phone, the web app should something look like this:
+
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](/home/micz/Documents/bitbucket/musicbox/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+
+### Change the volume level
+
+At the top of the page, you can select the volume level in a pulldown menu. Hit *Set volume* and the volume on your jukebox will be changed. This change will remain active even after a reboot.
+
+### Play and list audio files
+
+All the folders and containing audio files are listed in the web app. In case there are more folders on the jukebox than RFID cards in use, you can also play the audio files which have no corresponding RFID card using the web app.
+
+Scroll to the folder you want to play and hit the *Play* icon left of the folder name. This will start the playout on the jukebox.
+
+If you want to see the files contained inside an audio folder, click on the folder name. This will list the content beneath the folder name. A second click on the folder name will hide the list of files again.
+
+### Stop playout
+
+At the top of the page you can see the *Stop Player* icon. If you are using a mobile device, this option might be hidden within the navigation, in which case, click the hamburger icon to see the *Stop Player* option.
+
+Click on the *Stop Player* icon to stop the playout on the jukebox.
+
+### Shutdown the jukebox gracefully
+
+At the top of the page, on the right side, you can see the option *Shutdown jukebox*. If you are using a mobile device, this option might be hidden within the navigation, in which case, click the hamburger icon to see the *Shutdown jukebox* option.
+
+Click on *Shutdown jukebox* to shutdown the RPi gracefully. While it is perfectly save to shutdown the RPi the hard way by unplugging the power supply, it is being rumoured that a graceful shutdown extends the life expectancy of the SD card in your RPi. I have no clue if that is true and scientifically proven.
+
+If you use the *Shutdown jukebox* option, unplug the RPi power supply after the machine has shut down to save energy.
 
 ## Jukebox controls using RFID cards
 
