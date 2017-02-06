@@ -7,7 +7,7 @@ A jukebox for the Raspberry Pi, playing local audio files, playlists or even web
 * Register new RFID cards easily without having to connect to the RPi.
 * Play single or multiple files, even mix them with web streams.
 * Volume control is also done with RFID cards or key fobs.
-* Bonus: control the jukebox from your phone or computer via a web app. Type in the static IP in the browser.
+* **Bonus:** control the jukebox from your phone or computer via a web app.
 
 ![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
