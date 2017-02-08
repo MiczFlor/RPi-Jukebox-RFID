@@ -4,7 +4,7 @@ A jukebox for the Raspberry Pi, playing local audio files, playlists or even web
 <center>
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=dcL45iK-WnU
 " target="_blank"><img src="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/YouTube-prototype-screenshot.png" 
-alt="Prototype of the RFID jukebox" width="853" height="478" border="1" /></a>
+alt="Prototype of the RFID jukebox" width="427" height="239" border="1" /></a>
 </center>
 
 What makes this jukebox easy to install and use:
