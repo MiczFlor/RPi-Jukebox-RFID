@@ -102,7 +102,14 @@ $ crontab -e
 
 The first time you fire up this command, the system will ask you which editor to use.
 
-Once you started `crontab`, add the above line (starting with `@reboot`) to the bottom of the document. 
+Once you started `crontab`, add the two lines at the bottom of the document:
+
+```
+@reboot mpg123 /home/pi/RPi-Jukebox-RFID/misc/startupsound.mp3
+@reboot python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
+```
+
+**Note:** The first line plays a startup sound, using the command line player mpg123. The sound used here is being shipped with Ubuntu and can be found at `/usr/share/sounds/ubuntu/notifications/Mallet.ogg`.
 
 Save and close the file by typing `Ctrl & X` then `y` then hit the `Enter` key.
 

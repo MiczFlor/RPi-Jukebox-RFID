@@ -265,6 +265,14 @@ $ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 **Note:** changing the binary of VLC to allow the program to be run by the webserver as a superuser is another little step in a long string of potential security problems. In short: the jukebox is a perfectly fine project to run for your personal pleasure. It's not fit to run on a public server.
 
+## Install mpg123
+
+While we are using *VLC* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE.md`](CONFIGURE.md). To install this tiny but reliable player, type:
+
+```
+$ sudo apt-get install mpg123
+```
+
 ## Install git
 
 [*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
