@@ -103,7 +103,7 @@ sudo nano /etc/dhcpcd.conf
 In my case, I added the following lines to assign the static IP. You need to adjust this to your network needs:
 
 ~~~~
-interface eth0
+interface wlan0
 static ip_address=192.168.178.199/24
 static routers=192.168.178.1
 static domain_name_servers=192.168.178.1
