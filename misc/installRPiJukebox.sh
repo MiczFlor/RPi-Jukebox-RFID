@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Don't run as sudo. Simply type ./installRPiJukebox.sh
+
+# NOTE TO SELF
+# the IDs I use in the player shell script for special commands:
+# CMDMUTE="mute"
+# CMDVOL30="30"
+# CMDVOL50="50"
+# CMDVOL75="75"
+# CMDVOL80="80"
+# CMDVOL85="85"
+# CMDVOL90="90"
+# CMDVOL95="95"
+# CMDVOL100="100"
+# CMDSTOP="0007882996"
+# CMDSHUTDOWN="halt"
+
+# Install packages
+sudo apt-get update
+sudo apt-get install samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 vlc mpg123 git
+sudo pip install evdev
+
+# Get github code
+cd /home/pi/
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+
+# Patch VLC
+sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
+
+# DHCP configuration settings
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.sample /etc/dhcpcd.conf
+
+# Samba configuration settings
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.sample /etc/samba/smb.conf
+
+# Web server configuration settings
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.sample /etc/lighttpd/lighttpd.conf
+
+# SUDO users (adding web server here)
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.sample /etc/sudoers
+
+# crontab file for user pi
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/crontab-pi.sample /var/spool/cron/crontabs/pi
+
+# device name for barcode reader
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+
+# copy shell script for player
+cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+
+# Starting web server
+sudo lighty-enable-mod fastcgi-php
+sudo service lighttpd force-reload
+
+############################
+# Manual intervention needed
+############################
+
+# samba user
+# you must use password 'raspberry' because this is expected in the smb.conf file
+sudo smbpasswd -a pi
+
