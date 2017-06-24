@@ -1,5 +1,10 @@
 #!/bin/bash
-
+#
+# see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
+#
+# this script installs my personal settings on a fresh RPi install
+# before running the script, the RPi needs to be set up, see INSTALL.md on github
+# download the install script only to home dir and run
 # Don't run as sudo. Simply type ./installRPiJukebox.sh
 
 # NOTE TO SELF
@@ -28,6 +33,13 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # Patch VLC
 sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
+#####################################
+# COPY CONFIG PRESETS TO LIVE FOLDERS
+#####################################
+
+# first, make all scripts 'root' user and group
+sudo chown root:root /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/*
+
 # DHCP configuration settings
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.sample /etc/dhcpcd.conf
 
@@ -52,6 +64,10 @@ cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Ju
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
 sudo service lighttpd force-reload
+
+# start DHCP
+sudo service dhcpcd start
+sudo systemctl enable dhcpcd
 
 ############################
 # Manual intervention needed
