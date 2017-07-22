@@ -61,6 +61,10 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 
 # copy shell script for player
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+# copying the script with my configs
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
