@@ -53,10 +53,11 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.sample /etc/l
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.sample /etc/sudoers
 
 # crontab file for user pi
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/crontab-pi.sample /var/spool/cron/crontabs/pi
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample /var/spool/cron/crontabs/pi
 
 # device name for barcode reader
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 
 # copy shell script for player
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
@@ -68,6 +69,17 @@ sudo service lighttpd force-reload
 # start DHCP
 sudo service dhcpcd start
 sudo systemctl enable dhcpcd
+
+# creating the shortcuts for my machine
+cd
+cd RPi-Jukebox-RFID/misc/
+mkdir temp
+cp shortcuts.tar temp/
+cd temp
+tar -xf shortcuts.tar
+rm shortcuts.tar
+rm placeholder
+mv * ../../shared/shortcuts/
 
 ############################
 # Manual intervention needed
