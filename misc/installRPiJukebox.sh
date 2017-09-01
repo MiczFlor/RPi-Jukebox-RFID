@@ -75,8 +75,7 @@ sudo service dhcpcd start
 sudo systemctl enable dhcpcd
 
 # creating the shortcuts for my machine
-cd
-cd RPi-Jukebox-RFID/misc/
+cd /home/pi/RPi-Jukebox-RFID/misc/
 mkdir temp
 cp shortcuts.tar temp/
 cd temp
