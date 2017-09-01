@@ -19,7 +19,7 @@
 # CMDVOL95="95"
 # CMDVOL100="100"
 # CMDSTOP="0007882996"
-# CMDSHUTDOWN="halt"
+# CMDSHUTDOWN="0007901304"
 
 # Install packages
 sudo apt-get update
@@ -53,6 +53,10 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.sample /etc/l
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.sample /etc/sudoers
 
 # crontab file for user pi
+# this one should be user pi
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample
+# for debugging (which I had to on a RPi 3)  see:
+# https://rahulmahale.wordpress.com/2014/09/03/solved-running-cron-job-at-reboot-on-raspberry-pi-in-debianwheezy-and-raspbian/
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample /var/spool/cron/crontabs/pi
 
 # device name for barcode reader
