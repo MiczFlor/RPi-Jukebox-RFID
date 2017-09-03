@@ -245,7 +245,7 @@ $ sudo service lighttpd force-reload
 
 Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.
 
-## Install the media player VLC 
+## Install the media player VLC
 
 The VLC media player not only plays almost everything (local files, web streams, playlists, folders), it also comes with a command line interface `CLVC` which we will be using to play media on the jukebox.
 
@@ -288,6 +288,12 @@ $ sudo apt-get install git
 $ cd /home/pi/
 $ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 ~~~~
+
+## Using a USB soundcard
+
+In order to use an external USB soundcard instead of the inbuilt audio out, you might need to update your system and tweak a couple of config files, depending on your card. The most comprehensive explanation on why and how, you can find at [adafruit](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/instructions). 
+
+Using the Jessie distribution, you might be lucky and there is a quick fix setting the [~/.asoundrc](https://raspberrypi.stackexchange.com/questions/39928/unable-to-set-default-input-and-output-audio-device-on-raspberry-jessie) file.
 
 ## Reboot your Raspberry Pi
 

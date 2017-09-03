@@ -38,8 +38,8 @@ Device Descriptor:
   idVendor           0x13ba PCPlay
   idProduct          0x0018 Barcode PCP-BCG4209
   bcdDevice          0.01
-  iManufacturer      0 
-  iProduct           1 Barcode Reader 
+  iManufacturer      0
+  iProduct           1 Barcode Reader
 ...
   MaxPower           400mA
 ...
