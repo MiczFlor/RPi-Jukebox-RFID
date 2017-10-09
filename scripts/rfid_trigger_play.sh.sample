@@ -22,14 +22,22 @@
 CMDMUTE="mute"
 CMDVOL30="30"
 CMDVOL50="50"
-CMDVOL75="75"
+CMDVOL75="0007883662"
 CMDVOL80="80"
-CMDVOL85="85"
+CMDVOL85="0007864559"
 CMDVOL90="90"
-CMDVOL95="95"
+CMDVOL95="0008861159"
 CMDVOL100="100"
-CMDSTOP="stop"
-CMDSHUTDOWN="halt"
+CMDSTOP="0007882996"
+CMDSHUTDOWN="0007901304"
+# The following commands control VLC playout
+# next and prev play the preivous or next track in the playlist (== folder)
+CMDNEXT="0007879988"
+CMDPREV="0007912015"
+# pause VLC playout
+CMDPAUSE="pausePlayer"
+# resume VLC playout (makes only sense in combination with pause)
+CMDPLAY="playStartAfterPause"
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -59,7 +67,6 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 if [ "$CARDID" == "$CMDMUTE" ]
 then
     amixer sset 'PCM' 0%
-
 elif [ "$CARDID" == "$CMDVOL30" ]
 then
     amixer sset 'PCM' 30%
@@ -92,12 +99,26 @@ elif [ "$CARDID" == "$CMDSTOP" ]
 then
     # kill all running VLC media players
     sudo pkill vlc
-
 elif [ "$CARDID" == "$CMDSHUTDOWN" ]
 then
     # shutdown the RPi nicely
     sudo halt
-
+elif [ "$CARDID" == "$CMDNEXT" ]
+then
+    # play next track in playlist (==folder)
+    echo "next" | nc.openbsd -w 1 localhost 4212
+elif [ "$CARDID" == "$CMDPREV" ]
+then
+    # play previous track in playlist (==folder)
+    echo "prev" | nc.openbsd -w 1 localhost 4212
+elif [ "$CARDID" == "$CMDPAUSE" ]
+then
+    # pause current track
+    echo "pause" | nc.openbsd -w 1 localhost 4212
+elif [ "$CARDID" == "$CMDNEXT" ]
+then
+    # play / resume current track
+    echo "play" | nc.openbsd -w 1 localhost 4212
 else
     # We checked if the card was a special command, seems it wasn't.
     # Now we expect it to be a trigger for one or more audio file(s).
@@ -165,6 +186,9 @@ else
 
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+        #(cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+        (cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+
+
     fi
 fi
