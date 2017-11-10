@@ -79,6 +79,8 @@ This is why you can assign *human readable* names for card IDs. This is how you 
 4. Open the file of the same name as the card ID with a text editor.
 5. Change the content of that file to `birds`
 
+IMPORTANT: the folder names must not contain whitespaces. Instead of 'great song' use something like 'great_song'.
+
 Now you have told the jukebox that every time the card with the ID `0594672283` is swiped across, play what's in the folder `birds`. Let's continue and make that folder and the audio files inside.
 
 ### Creating a new audio playlist for a new card

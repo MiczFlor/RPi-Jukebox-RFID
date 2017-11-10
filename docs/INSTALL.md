@@ -12,7 +12,7 @@ This project has been tested on Raspberry Pi model 1 and 2. And there is no reas
 
 There are a number of operating systems to chose from on the [official RPi download page](https://www.raspberrypi.org/downloads/) on [www.raspberrypi.org](http://www.raspberrypi.org). We want to work with is the official distribution *Raspbian*. The easiest way to install *Raspbian* to your RPi is using the *NOOBS* distribution, which you can find on the download page linked above.
 
-On the *NOOBS* download page, there are two flavours of the operating system. Download the version *offline and network install*.
+IMPORTANT: you need to use the jessie distribution which you can download here: [NOOBS Jessie 2016](http://downloads.raspberrypi.org/NOOBS/images/NOOBS-2016-10-05/NOOBS_v2_0_0.zip).
 
 After you downloaded the `zip` file, all you need to do is `unzip` the archive, format a SD-card in `FAT32` and move the unzipped files to the SD-card. For more details, see the [official NOOBS installation page](https://www.raspberrypi.org/learning/software-guide/quickstart/).
 
