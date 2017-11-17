@@ -8,6 +8,7 @@
 $conf               = array();
 $conf['base_url']   = "/"; // if root => "/", generally: try to end with trailing slash
 $conf['base_path']  = "/home/pi/RPi-Jukebox-RFID"; // absolute path to folder
+$conf['base_path']  = "/home/micz/Documents/github/RPi-Jukebox-RFID"; // absolute path to folder
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 
@@ -39,9 +40,11 @@ if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
     $urlparams['reboot'] = trim($_GET['reboot']);
 }
 
+/*
 print "<pre>"; print_r($urlparams); print "</pre>"; //???
 print "<pre>"; print_r($_SERVER); print "</pre>"; //???
 print "<pre><a href='".$conf['url_abs']."'>".$conf['url_abs']."</a></pre>"; //???
+*/
 
 /*******************************************
 * ACTIONS
@@ -168,8 +171,17 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
   <h2>Available audio</h2>
 <?php
 
-// read the subfolders of shared/audiofolders
+// read the shortcuts used
+$shortcutstemp = array_filter(glob($conf['base_path'].'/shared/shortcuts/*'), 'is_file');
+$shortcuts = array(); // the array with pairs of ID => foldername
+// read files' content into array
+foreach ($shortcutstemp as $shortcuttemp) {
+    $shortcuts[basename($shortcuttemp)] = trim(file_get_contents($shortcuttemp));
+}
+//print "<pre>"; print_r($shortcutstemp); print "</pre>"; //???
+//print "<pre>"; print_r($shortcuts); print "</pre>"; //???
 
+// read the subfolders of shared/audiofolders
 $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
 //print "<pre>"; print_r($audiofolders); print "</pre>"; // ???
 // counter for ID of each folder
@@ -190,17 +202,27 @@ foreach($audiofolders as $audiofolder) {
         }
     }
     $accordion .= "</ul>";
+    
+    // get all IDs that match this folder
+    $ids = ""; // print later
+    $audiofolderbasename = trim(basename($audiofolder));
+    if(in_array($audiofolderbasename, $shortcuts)) {
+        print "YES";
+        foreach ($shortcuts as $key => $value) {
+            if($value == $audiofolderbasename) {
+                $ids .= $key.", ";
+            }
+        }
+        $ids = rtrim($ids, ", "); // get rid of trailing slash
+    }
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
-        <div class='well'>";
-        // check if the file is playing => show 'stop'
-        if($urlparams['play'] == $audiofolder) {
-            print "
-            <a href='?stop=true' class='btn btn-danger'><i class='fa fa-stop'></i> Stop</a>";
-        } else {
-            print "
+        <div class='well'>
             <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+        if($ids != "") {
+            print "
+            (ID: ".$ids.")";
         }
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info'>Folder:
