@@ -207,7 +207,6 @@ foreach($audiofolders as $audiofolder) {
     $ids = ""; // print later
     $audiofolderbasename = trim(basename($audiofolder));
     if(in_array($audiofolderbasename, $shortcuts)) {
-        print "YES";
         foreach ($shortcuts as $key => $value) {
             if($value == $audiofolderbasename) {
                 $ids .= $key.", ";
@@ -220,6 +219,7 @@ foreach($audiofolders as $audiofolder) {
         print "
         <div class='well'>
             <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+        // print ID if any found
         if($ids != "") {
             print "
             (ID: ".$ids.")";
