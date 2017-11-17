@@ -5,11 +5,13 @@
 * No changes required if you stuck to the
 * INSTALL.md instructions.
 *******************************************/
-$conf = array();
-$conf['base_url'] = "/"; // if root => "/", generally: try to end with trailing slash
-$conf['base_path'] = "/home/pi/RPi-Jukebox-RFID"; // absolute path to folder
+$conf               = array();
+$conf['base_url']   = "/"; // if root => "/", generally: try to end with trailing slash
+$conf['base_path']  = "/home/pi/RPi-Jukebox-RFID"; // absolute path to folder
 
 /* NO CHANGES BENEATH THIS LINE ***********/
+
+$conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
 /*******************************************
 * URLPARAMETERS
@@ -33,7 +35,13 @@ if(isset($_GET['shutdown']) && trim($_GET['shutdown']) != "") {
     $urlparams['shutdown'] = trim($_GET['shutdown']);
 }
 
-//print "<pre>"; print_r($urlparams); print "</pre>"; //???
+if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
+    $urlparams['reboot'] = trim($_GET['reboot']);
+}
+
+print "<pre>"; print_r($urlparams); print "</pre>"; //???
+print "<pre>"; print_r($_SERVER); print "</pre>"; //???
+print "<pre><a href='".$conf['url_abs']."'>".$conf['url_abs']."</a></pre>"; //???
 
 /*******************************************
 * ACTIONS
@@ -42,6 +50,19 @@ if(isset($_GET['shutdown']) && trim($_GET['shutdown']) != "") {
 // change volume
 if(isset($urlparams['volume'])) {
     exec("/usr/bin/sudo amixer sset 'PCM' ".$urlparams['volume']."%");
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
+}
+
+// reboot the jukebox
+if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
+    // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
+    $exec = "/usr/bin/reboot";
+    exec($exec);
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
 }
 
 // shutdown the jukebox
@@ -49,6 +70,9 @@ if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
     $exec = "/usr/bin/sudo halt";
     exec($exec);
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
 }
 
 // stop playing
@@ -56,6 +80,9 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
     $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null &";
     exec($exec);
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
 }
 
 // play folder with VLC
@@ -69,6 +96,9 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir($urlparams['p
     // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
     $exec = "/usr/bin/sudo /usr/bin/cvlc -I rc --rc-host localhost:4212 ".$urlparams['play']." > /dev/null 2>/dev/null &";
     exec($exec);
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
 }
 
 /*******************************************
@@ -106,6 +136,7 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
         <li><a href='?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown jukebox</a></li>
+        <li><a href='?restart=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot jukebox</a></li>
       </ul>
 <!-- / sub menu -->
     </div><!-- /.navbar-collapse -->
