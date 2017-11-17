@@ -41,34 +41,50 @@ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 sudo chown root:root /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/*
 
 # DHCP configuration settings
+# -rw-rw-r-- 1 root netdev 1371 Nov 17 21:02 /etc/dhcpcd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.sample /etc/dhcpcd.conf
+sudo chown root:netdev /etc/dhcpcd.conf
+sudo chmod 664 /etc/dhcpcd.conf
 
 # Samba configuration settings
+# -rw-r--r-- 1 root root 9416 Nov 17 21:04 /etc/samba/smb.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.sample /etc/samba/smb.conf
+sudo chown root:root /etc/samba/smb.conf
+sudo chmod 644 /etc/samba/smb.conf
 
 # Web server configuration settings
+# -rw-r--r-- 1 root root 1063 Nov 17 21:07 /etc/lighttpd/lighttpd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.sample /etc/lighttpd/lighttpd.conf
+sudo chown root:root /etc/lighttpd/lighttpd.conf
+sudo chmod 644 /etc/lighttpd/lighttpd.conf
 
 # SUDO users (adding web server here)
+# -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.sample /etc/sudoers
+sudo chown root:root /etc/sudoers
+sudo chmod 440 /etc/sudoers
 
 # crontab file for user pi
-# this one should be user pi
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample
+# -rw------- 1 pi crontab 1227 Nov 17 21:24 /var/spool/cron/crontabs/pi
 # for debugging (which I had to on a RPi 3)  see:
 # https://rahulmahale.wordpress.com/2014/09/03/solved-running-cron-job-at-reboot-on-raspberry-pi-in-debianwheezy-and-raspbian/
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample /var/spool/cron/crontabs/pi
+sudo chown pi:crontab /var/spool/cron/crontabs/pi
+sudo chmod 600 /var/spool/cron/crontabs/pi
 
 # device name for barcode reader
+# -rw-r--r-- 1 pi pi 20 Nov 17 21:22 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 
 # copy shell script for player
+# -rwxr-xr-x 1 pi pi 6253 Nov 17 21:24 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 # copying the script with my configs
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
-sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+sudo chmod 755 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php

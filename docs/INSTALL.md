@@ -57,6 +57,8 @@ $ sudo raspi-config
 ~~~~
 Select `Interface Options` and then `SSH Enable/Disable remote command line...` to enable the remote access.
 
+You should also change your password at this stage in `raspi-config`. The default password after a fresh install is `raspberry`. 
+
 Find out more about how to [connect over SSH from Windows, Mac, Linux or Android on the official RPi page](https://www.raspberrypi.org/documentation/remote-access/ssh/).
 
 ### Autologin after boot
