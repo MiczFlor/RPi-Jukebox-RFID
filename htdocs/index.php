@@ -8,7 +8,6 @@
 $conf               = array();
 $conf['base_url']   = "/"; // if root => "/", generally: try to end with trailing slash
 $conf['base_path']  = "/home/pi/RPi-Jukebox-RFID"; // absolute path to folder
-$conf['base_path']  = "/home/micz/Documents/github/RPi-Jukebox-RFID"; // absolute path to folder
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 
@@ -139,7 +138,7 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
         <li><a href='?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown jukebox</a></li>
-        <li><a href='?restart=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot jukebox</a></li>
+        <li><a href='?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot jukebox</a></li>
       </ul>
 <!-- / sub menu -->
     </div><!-- /.navbar-collapse -->
