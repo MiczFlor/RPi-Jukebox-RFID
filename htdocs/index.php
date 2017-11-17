@@ -60,7 +60,7 @@ if(isset($urlparams['volume'])) {
 // reboot the jukebox
 if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/reboot";
+    $exec = "/usr/bin/sudo reboot";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
@@ -218,11 +218,6 @@ foreach($audiofolders as $audiofolder) {
         print "
         <div class='well'>
             <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
-        // print ID if any found
-        if($ids != "") {
-            print "
-            (ID: ".$ids.")";
-        }
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info'>Folder:
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
@@ -231,6 +226,13 @@ foreach($audiofolders as $audiofolder) {
             <div id='folder".$idcounter."' class='collapse'>
             ".$accordion."
             </div>
+        ";
+        // print ID if any found
+        if($ids != "") {
+            print "
+            <br/>Card ID: ".$ids;
+        }
+        print "
         </div>
         ";
     }
