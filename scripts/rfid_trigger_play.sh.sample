@@ -19,25 +19,25 @@
 # to the following:
 # CMDMUTE="1234567890"
 # Leave everything untouched where you do not use a card.
-CMDMUTE="mute"
-CMDVOL30="30"
-CMDVOL50="50"
-CMDVOL75="0007883662"
-CMDVOL80="80"
-CMDVOL85="0007864559"
-CMDVOL90="90"
-CMDVOL95="0008861159"
-CMDVOL100="100"
-CMDSTOP="0007882996"
-CMDSHUTDOWN="0007901304"
+CMDMUTE="%CMDMUTE%"
+CMDVOL30="%CMDVOL30%"
+CMDVOL50="%CMDVOL50%"
+CMDVOL75="%CMDVOL75%"
+CMDVOL80="%CMDVOL80%"
+CMDVOL85="%CMDVOL85%"
+CMDVOL90="%CMDVOL90%"
+CMDVOL95="%CMDVOL95%"
+CMDVOL100="%CMDVOL100%"
+CMDSTOP="%CMDSTOP%"
+CMDSHUTDOWN="%CMDSHUTDOWN%"
 # The following commands control VLC playout
 # next and prev play the preivous or next track in the playlist (== folder)
-CMDNEXT="0007879988"
-CMDPREV="0007912015"
+CMDNEXT="%CMDNEXT%"
+CMDPREV="%CMDPREV%"
 # pause VLC playout
-CMDPAUSE="pausePlayer"
+CMDPAUSE="%CMDPAUSE%"
 # resume VLC playout (makes only sense in combination with pause)
-CMDPLAY="playStartAfterPause"
+CMDPLAY="%CMDPLAY%"
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
