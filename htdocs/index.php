@@ -23,6 +23,10 @@ if(isset($_GET['play']) && trim($_GET['play']) != "") {
     $urlparams['play'] = trim($_GET['play']);
 }
 
+if(isset($_GET['player']) && trim($_GET['player']) != "") {
+    $urlparams['player'] = trim($_GET['player']);
+}
+
 if(isset($_GET['stop']) && trim($_GET['stop']) != "") {
     $urlparams['stop'] = trim($_GET['stop']);
 }
@@ -102,6 +106,41 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir($urlparams['p
     header("Location: ".$conf['url_abs']);
     exit; 
 }
+// control player through web interface
+if(isset($urlparams['player'])) {
+    if($urlparams['player'] == "next") {
+        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
+        $exec = "/usr/bin/sudo echo 'next' | nc.openbsd -w 1 localhost 4212";
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+    if($urlparams['player'] == "prev") {
+        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
+        $exec = "/usr/bin/sudo echo 'prev' | nc.openbsd -w 1 localhost 4212";
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+    if($urlparams['player'] == "play") {
+        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
+        $exec = "/usr/bin/sudo echo 'play' | nc.openbsd -w 1 localhost 4212";
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+    if($urlparams['player'] == "pause") {
+        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
+        $exec = "/usr/bin/sudo echo 'pause' | nc.openbsd -w 1 localhost 4212";
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
 
 /*******************************************
 * START HTML
@@ -144,6 +183,19 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
+
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="btn-group" role="group" aria-label="player">
+          <a href='?player=prev' class='btn btn-default'><i class='fa  fa-step-backward'></i></a>
+          <a href='?player=pause' class='btn btn-default'><i class='fa  fa-pause'></i></a>
+          <a href='?player=play' class='btn btn-default'><i class='fa fa-play'></i></a>
+          <a href='?player=next' class='btn btn-default'><i class='fa  fa-step-forward'></i></a>
+         </div>
+       <p>&nbsp;</p>
+       </div>
+    </div>
 
     <div class="row">
       <div class="col-lg-12">
