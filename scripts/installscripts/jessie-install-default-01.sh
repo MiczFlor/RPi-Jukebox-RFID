@@ -5,21 +5,10 @@
 # this script installs my personal settings on a fresh RPi install
 # before running the script, the RPi needs to be set up, see INSTALL.md on github
 # download the install script only to home dir and run
-# Don't run as sudo. Simply type ./installRPiJukebox.sh
+# Don't run as sudo. Simply type ./jessie-install-default-01.sh
 
-# NOTE TO SELF
-# the IDs I use in the player shell script for special commands:
-# CMDMUTE="mute"
-# CMDVOL30="30"
-# CMDVOL50="50"
-# CMDVOL75="75"
-# CMDVOL80="80"
-# CMDVOL85="85"
-# CMDVOL90="90"
-# CMDVOL95="95"
-# CMDVOL100="100"
-# CMDSTOP="0007882996"
-# CMDSHUTDOWN="0007901304"
+# If you want to make this work with your wifi network, change the following files before you run this script:
+# dhcpcd.conf.jessie-default.sample
 
 # Install packages
 sudo apt-get update
@@ -37,30 +26,27 @@ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 # COPY CONFIG PRESETS TO LIVE FOLDERS
 #####################################
 
-# first, make all scripts 'root' user and group
-sudo chown root:root /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/*
-
 # DHCP configuration settings
 # -rw-rw-r-- 1 root netdev 1371 Nov 17 21:02 /etc/dhcpcd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.sample /etc/dhcpcd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.jessie-default.sample /etc/dhcpcd.conf
 sudo chown root:netdev /etc/dhcpcd.conf
 sudo chmod 664 /etc/dhcpcd.conf
 
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Nov 17 21:04 /etc/samba/smb.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.sample /etc/samba/smb.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.jessie-default.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 
 # Web server configuration settings
 # -rw-r--r-- 1 root root 1063 Nov 17 21:07 /etc/lighttpd/lighttpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.sample /etc/lighttpd/lighttpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.jessie-default.sample /etc/lighttpd/lighttpd.conf
 sudo chown root:root /etc/lighttpd/lighttpd.conf
 sudo chmod 644 /etc/lighttpd/lighttpd.conf
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.sample /etc/sudoers
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.jessie-default.sample /etc/sudoers
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
@@ -68,7 +54,7 @@ sudo chmod 440 /etc/sudoers
 # -rw------- 1 pi crontab 1227 Nov 17 21:24 /var/spool/cron/crontabs/pi
 # for debugging (which I had to on a RPi 3)  see:
 # https://rahulmahale.wordpress.com/2014/09/03/solved-running-cron-job-at-reboot-on-raspberry-pi-in-debianwheezy-and-raspbian/
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.sample /var/spool/cron/crontabs/pi
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.jessie-default.sample /var/spool/cron/crontabs/pi
 sudo chown pi:crontab /var/spool/cron/crontabs/pi
 sudo chmod 600 /var/spool/cron/crontabs/pi
 
@@ -81,10 +67,10 @@ sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 # copy shell script for player
 # -rwxr-xr-x 1 pi pi 6253 Nov 17 21:24 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
-# copying the script with my configs
-cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chmod 755 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+# The new way of making the bash daemon is using the helperscripts 
+# creating the shortcuts and script from a CSV file.
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
@@ -93,16 +79,6 @@ sudo service lighttpd force-reload
 # start DHCP
 sudo service dhcpcd start
 sudo systemctl enable dhcpcd
-
-# creating the shortcuts for my machine
-cd /home/pi/RPi-Jukebox-RFID/misc/
-mkdir temp
-cp shortcuts.tar temp/
-cd temp
-tar -xf shortcuts.tar
-rm shortcuts.tar
-rm placeholder
-mv * ../../shared/shortcuts/
 
 ############################
 # Manual intervention needed

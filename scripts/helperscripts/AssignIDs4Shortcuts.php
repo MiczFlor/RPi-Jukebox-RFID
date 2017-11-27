@@ -1,6 +1,30 @@
 #!/usr/bin/php
-
 <?php
+
+/*
+* This script is called from the command line.
+* It reads a CSV file and creates shortcuts for audiofolders from the file.
+* It also creates a modified version of the file rfid_trigger_play.sh which controls the playout.
+* As a source it uses rfid_trigger_play.sh.sample
+*
+* The CSV file needs to start with the line
+id,value
+* These will be the keys in the associated array created from the CSV file.
+* The following lines might look like this:
+0008861159,%CMDVOL95%
+0007882996,%CMDSTOP%
+0007901304,%CMDSHUTDOWN%
+0008021289,%CMDNEXT%
+0007910974,%CMDPREV%
+0005088037,gruen-gruen-gruen
+0005119578,o-du-lieber-augustin
+0007831755,ein-maennlein-im-walde
+* Here you can see the top five values will be used for the bash script and
+* replace the placeholders in the script with the matching RFIDs to change the
+* volume, stop playout, shutdown RPi, skip to next or previous track in a playlist.
+* The three pairs at the bottom will create shortcuts from the RFID to an audio folder
+* with the name of the second value.
+*/
 
 /*
 * Variables - that should not need changing if you do the custom install
