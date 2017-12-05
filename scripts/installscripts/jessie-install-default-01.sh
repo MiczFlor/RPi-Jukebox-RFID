@@ -71,6 +71,7 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chmod 755 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 # The new way of making the bash daemon is using the helperscripts 
 # creating the shortcuts and script from a CSV file.
+# see scripts/helperscripts/AssignIDs4Shortcuts.php
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
@@ -85,6 +86,7 @@ sudo systemctl enable dhcpcd
 ############################
 
 # samba user
-# you must use password 'raspberry' because this is expected in the smb.conf file
+# you must use password 'raspberry' because this is 
+# expected in the smb.conf file
 sudo smbpasswd -a pi
 

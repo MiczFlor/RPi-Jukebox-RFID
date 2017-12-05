@@ -75,6 +75,8 @@ Select `Boot options` and then `Desktop / CLI`. The option you want to pick is `
 
 ### Set a static IP address for your RPi
 
+**Note:** There are two ways to connect to your RPi Jukebox. In this document, the RPi will be part of your WiFi home network. Alternatively, you can [set up your RPi as a wireless access point](WLAN-ACCESS-POINT.md).
+
 To be able to log into your RPi over SSH from any machine in the network, you need to give your machine a static IP address.
 
 Check if the DHCP client daemon (DHCPCD) is active.
