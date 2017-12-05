@@ -2,13 +2,13 @@
 # Access Jukebox without Router
 
 It is possible to connect to the jukebox directly, without having your
-laptop and the jukebox connect to the same wifi network. Configuring the
-Raspberry Pi to be a wifi access point.
+laptop and the jukebox connect to the same WiFi network. Configuring the
+Raspberry Pi to be a WiFi access point.
 
-I tested this only with the Raspberry Pi 3, which has a wifi card onboard.
+I tested this only with the Raspberry Pi 3, which has a WiFi card onboard.
 If you successfully did the same with another Raspberry Pi version, please
 share your knowledge, I will weave it into the documenation. The reason I
-say this is because creating a wifi access point requires a wifi card that
+say this is because creating a WiFi access point requires a WiFi card that
 supports this mode. RPi3 does.
 
 Install two packages we need later. Later meaning: when we might not have Internet anymore. Because the wlan0
@@ -54,8 +54,8 @@ Append the line:
 denyinterfaces wlan0
 ```
 Now we reboot and afterwards you should be connected to your RPi directly, not via ssh.
-Because if your RPi relied on a wifi connection to the Internet, this will be cut off.
-Remember: we need the wlan0 interface to hook up other devices to a wifi network the
+Because if your RPi relied on a WiFi connection to the Internet, this will be cut off.
+Remember: we need the wlan0 interface to hook up other devices to a WiFi network the
 RPi is creating.
 
 Let's check if all interfaces are up and running. We only really need the wlan0
@@ -164,7 +164,7 @@ wlan0: AP-ENABLED
 ```
 If yes, you can also try to hook
 up a device with the network already.
-See if you can find `jukebox` as a wifi network.
+See if you can find `jukebox` as a WiFi network.
 
 If that works, all is well. Stop the `hostapd` daemon with `Ctrl&C`.
 
@@ -188,7 +188,7 @@ Check if the daemon is up and running:
 ```
 sudo systemctl status hostapd
 ```
-This concludes what we need to connect to the jukebox directly via wifi.
+This concludes what we need to connect to the jukebox directly via WiFi.
 
 If you plan to connect the `eth0` via a cable with the Internet, you need to learn about firewall configurations. Google how to do this (I hope to replace this last paragraph with a nicer explanation and a link later, when I find the time. Apologies.)
 
