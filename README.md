@@ -15,7 +15,14 @@ What makes this jukebox easy to install and use:
 * Register new RFID cards easily without having to connect to the RPi.
 * Play single or multiple files, even mix them with web streams.
 * Volume control is also done with RFID cards or key fobs.
+* Connect to your jukebox via your wifi network or run the jukebox like an access point and connect directly without a router.
 * **Bonus:** control the jukebox from your phone or computer via a web app.
+
+The web app runs on any device and is mobile optimised. It provides:
+* An audio player to pause, resume, stop and skip to previous and next track.
+* Control and change the volume level.
+* Full list of all available audio and trigger to play it from the browser.
+* Shutdown or reboot the RPi gracefully.
 
 ![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
