@@ -8,7 +8,7 @@ Once you finished with the configuration, read the [manual](MANUAL.md) to add au
 
 The RFID reader is connected to your RPi via USB. As you plug it in, it should have made a 'beep'. And each time you swipe a keyring or card across the card reader, it should also make a 'beep'.
 
-**Troubleshooting:** There is the odd chance that your reader is broken. How odd, I can not say. The first time I started playing around with this project on two different RPi machines (generation 1 and 2), when I ordered a second RFID reader it turned out to be broken. I doubt there is a 50/50 chance, I was just very unlucky. 
+**Troubleshooting:** When you buy the RFID reader and the chips, make sure that they match. There are different standards. It happened to me that the reader made the *beep* as if it reads the card - but it didn't.
 
 Let's see if your reader is probably connected and recognised by your RPi. Check the following:
 

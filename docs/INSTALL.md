@@ -30,6 +30,10 @@ After the boot process has finished, you can select the operating system we want
 
 Now you have installed and operating system and even a windows manager (called Pixel on Raspbian). Start up your RPi and it will bring you straight to the home screen. Notice that you are not required to log in.
 
+### Firmware update improves audio out?
+
+If you want to update the RPI firmware, this is the right point to do so. This manual was written for the default firmware. Read more about how to update and why you might want to give it a try in a separate [Firmware Update document](FIRMWARE_UPDATE.md).
+
 ### Configure your keyboard
 
 In the dropdown menu at the top of the home screen, select:
@@ -42,6 +46,8 @@ Now select the tab *Keyboard* and then click *Keyboard Layout...* at the bottom 
 
 At the top right of the home screen, in the top bar, you find an icon for *Wireless & Wired Network Settings*. Clicking on this icon will bring up a list of available WiFi networks. Select the one you want to connect with and set the password.
 
+**Note**: Follow this link if you have [trouble with a USB Wifi card](https://www.raspberrypi.org/forums/viewtopic.php?t=44044).
+
 **Disable WiFi power management**
 
 Make sure the WiFi power management is disabled to avoid dropouts. [Follow these instructions](https://gist.github.com/mkb/40bf48bc401ffa0cc4d3#file-gistfile1-md).
@@ -53,7 +59,7 @@ SSH will allow you to log into the RPi from any machine in the network. This is 
 Open a terminal to star the RPi configuration tool.
 
 ~~~~
-$ sudo raspi-config
+sudo raspi-config
 ~~~~
 Select `Interface Options` and then `SSH Enable/Disable remote command line...` to enable the remote access.
 
