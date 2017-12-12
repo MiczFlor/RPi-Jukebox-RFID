@@ -1,7 +1,9 @@
+#!/usr/bin/python3
 from gpiozero import Button
 from signal import pause
 from subprocess import check_call
 
+# 2017-12-12
 # This script was copied from the following RPi forum post:
 # https://forum-raspberrypi.de/forum/thread/13144-projekt-jukebox4kids-jukebox-fuer-kinder/?postID=312257#post312257
 # I have not yet had the time to test is, so I placed it in the misc folder.
