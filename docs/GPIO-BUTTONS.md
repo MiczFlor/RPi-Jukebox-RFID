@@ -56,6 +56,15 @@ Buttons, pin numbers and functionality connect as such:
 | 13 | 27 | Previous track |
 | 37 | 26 | Play/Pause |
 
+### Circuit example(s) for the button wiring
+
+You will be using push buttons, which are essentially the same as arcade buttons, meaning: when you press them down, they are ON, when you let go, the are OFF. So skipping a track is tapping a button once, changing the volume, each tap changes it a bit.
+
+There are a number of different ways to connect a button. The easiest one is well explained on O'Reilly's RPi site:
+
+* [Connecting a Push Switch, O'Reilly](http://razzpisampler.oreilly.com/ch07.html)
+* Watch the [Connecting a Push Switch with Raspberry Pi video on YouTube](https://youtu.be/3TDJ4FmtGgk)
+
 ## Install GPIO software
 
 We need to run [GPIO Zero](https://gpiozero.readthedocs.io/en/stable/), a simple interface to GPIO devices with Raspberry Pi. GPIO Zero is installed by default in Raspbian Jessie. To install see the [installing](https://gpiozero.readthedocs.io/en/stable/installing.html) chapter on their site. Better safe than sorry, so lets install the packages on our machine:
@@ -64,7 +73,7 @@ We need to run [GPIO Zero](https://gpiozero.readthedocs.io/en/stable/), a simple
 $ sudo apt-get install python3-gpiozero python-gpiozero
 ~~~
 
-**Note**: No harm done to install both, python3 and python2. This needs trimming later on. 
+**Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
 Make a copy of the python script into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 

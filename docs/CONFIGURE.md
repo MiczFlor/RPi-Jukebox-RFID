@@ -136,6 +136,10 @@ Once the software is all in place, make sure the hardware is connected correctly
     * External soundcard (optional)
 3. Connect the speakers with the 3.5mm jack to the soundcard (either the built in one from the RPi or the external one attached to the RPi over USB).
 
+# Push buttons (GPIO) for volume control and the like
+
+Adding control buttons for volume, skipping tracks, pause, play, read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
+
 # Jukebox manual
 
 Now the installation and configuration are complete. Time to read the manual of the jukebox to add songs, web streams, register new cards and so on. Read the [`MANUAL.md`](MANUAL.md).
