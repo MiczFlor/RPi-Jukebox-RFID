@@ -224,3 +224,48 @@ CMDSHUTDOWN="2594672283"
 Save the changes and close the editor. The changes takes effect immediately.
 
 **Note:** if you (accidently) assign a command and an audio folder to the same card, the jukebox will not play the audio. It will only execute the command.
+
+# <a name="faq"></a>Troubleshooting / FAQ
+
+## <a name="changewifisettings"></a>I am moving, how do I get the jukebox into my new WiFi network?
+
+You will need to open the jukebox and connect it to a monitor. The next question would be: do you need the graphical interface or are you good to go with the command line in the terminal window? 
+
+If you need the command line only, disconnect the RFID reader but leave the WiFi in the USB. If you need keyboard and mouse for the GUI, you need a USB hub to connect keyboard and mouse to, then unplug the RFID reader and plug the hub in. (Note: if you have a RPi3 or higher, you are not limied to two USB slots and don't have that trouble :)
+
+If you want to do this in the GUI, type
+~~~
+$ startx
+~~~
+And you are good to go.
+
+If you want to do it in the command line, here you can read more about the [WiFi configuration in the terminal on a Raspberry Pi](https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md).
+
+What you need to do, in a nutshell: open the file with your WiFi SSID and password.
+
+~~~
+$ sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+~~~
+Edit the content to fit your SSID and password here:
+~~~
+network={
+    ssid="testing"
+    psk="testingPassword"
+}
+~~~
+Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+The second thing: give your jukebox an IP address that is free in your WiFi to use. Change the IPv4 configuration inside the file `/etc/dhcpcd.conf`.
+~~~~
+$ sudo nano /etc/dhcpcd.conf
+~~~~
+In my case, I added the following lines to assign the static IP. You need to adjust this to your network needs:
+
+~~~~
+interface wlan0
+static ip_address=192.168.178.199/24
+static routers=192.168.178.1
+static domain_name_servers=192.168.178.1
+~~~~
+Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+

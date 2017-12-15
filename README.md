@@ -46,6 +46,10 @@ In [`MANUAL.md`](docs/MANUAL.md) you will learn:
 * [How to control the jukebox through the web app.](docs/MANUAL.md#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](docs/MANUAL.md#cardcontrol)
 
+## Troubleshooting
+
+* [I am moving, how do I get the jukebox into my new WiFi network?](docs/MANUAL.md#changewifisettings)
+
 ## Acknowledgments
 
 There are many, many, many inspiring suggestions and solutions on the web to bring together the idea of a jukebox with RFID cards. I want to mention a few of these that have inspired me.

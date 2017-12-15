@@ -108,7 +108,7 @@ You can see that the IP address is 192.168.178.82. We want to assign a static ad
 
 Change the IPv4 configuration inside the file `/etc/dhcpcd.conf`.
 ~~~~
-sudo nano /etc/dhcpcd.conf
+$ sudo nano /etc/dhcpcd.conf
 ~~~~
 In my case, I added the following lines to assign the static IP. You need to adjust this to your network needs:
 

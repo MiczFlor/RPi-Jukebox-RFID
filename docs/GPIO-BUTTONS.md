@@ -1,6 +1,10 @@
 
 # Control Jukebox with buttons / GPIO
 
+(Other docs: [Installation](INSTALL.md) |
+[Configuration](CONFIGURE.md) |
+[Jukebox manual](MANUAL.md))
+
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
 Before we start:
