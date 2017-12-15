@@ -50,7 +50,7 @@ You will be running wires from the RPi board to another board where the buttons 
 
 On the above image you can also see the pin numbering, in this case containing both: the RPi board numbering on the RPi3 and the Broadcom (BCM) pin numbering used for the code.
 
-Buttons, pin numbers and functionality connect as such:
+The script for the GPIO buttons we are using have been provided by Andreas aka [hailogugo](https://github.com/hailogugo). He also sent the picture above and has a working version of the GPIO button solution. Pin numbers and functionality in this example connect as such:
 
 | Board | GPIO (BCM) | Function |
 | --- | --- | --- |
@@ -79,7 +79,7 @@ $ sudo apt-get install python3-gpiozero python-gpiozero
 
 **Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
-Make a copy of the python script into the scripts folder. This way you are free to make changes to the script without changing your github repo.
+Make a copy of the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 
 ~~~
 $ cp /home/pi/RPi-Jukebox-RFID/misc/GPIO-button-sample.py /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
@@ -91,7 +91,7 @@ And change the copy to be executable
 $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
-**Note**: we will look into this script later.
+**Note**: we will look into the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) later.
 
 To have this started automatically at boot, we need to add one line to the following file. Type:
 
