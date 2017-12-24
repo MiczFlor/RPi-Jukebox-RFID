@@ -3,7 +3,7 @@ A jukebox for the Raspberry Pi, playing local audio files, playlists or even web
 
 <center>
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=dcL45iK-WnU
-" target="_blank"><img src="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/YouTube-prototype-screenshot.png" 
+" target="_blank"><img src="docs/img/YouTube-prototype-screenshot.png" 
 alt="Prototype of the RFID jukebox" width="427" height="239" border="1" /></a>
 </center>
 
@@ -18,13 +18,24 @@ What makes this jukebox easy to install and use:
 * Connect to your jukebox via your wifi network or run the jukebox like an access point and connect directly without a router.
 * **Bonus:** control the jukebox from your phone or computer via a web app.
 
-![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
 The web app runs on any device and is mobile optimised. It provides:
+
 * An audio player to pause, resume, stop and skip to previous and next track.
 * Control and change the volume level.
 * Full list of all available audio and trigger to play it from the browser.
 * Shutdown or reboot the RPi gracefully.
+
+## Jukebox Gallery
+
+![Caption](docs/img/gallery/Steph-20171215_w300-01.jpg "Caption")
+![Caption](docs/img/gallery/hailogugo-20171222-w300-01.jpg "Caption")
+![Caption](docs/img/gallery/Elsa-20171210_w300-01.jpg "Caption")
+![Caption](docs/img/gallery/UlliH-20171210_w300-01.jpg "Caption")
+
+**See more innovation, upcycling and creativity in the [Jukebox Gallery](docs/GALLERY.md)**
+
 
 ## Installation
 
