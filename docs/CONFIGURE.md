@@ -138,7 +138,7 @@ Once the software is all in place, make sure the hardware is connected correctly
 
 # Push buttons (GPIO) for volume control and the like
 
-Adding control buttons for volume, skipping tracks, pause, play, read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
+Adding control buttons for volume, skipping tracks, pause, play, read the [GPIO buttons installation guide](GPIO-BUTTONS.md).
 
 # Jukebox manual
 
