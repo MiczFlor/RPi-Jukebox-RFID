@@ -20,6 +20,9 @@ $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // U
 
 print "\nVariable \$conf['url_abs'] = ".$conf['url_abs']."\n";
 
+print "\n\$conf array:\n";
+print_r($conf); print "\n";
+
 if(file_exists("func.php")) {
     include("func.php");
     print "\nFile 'func.php' found and included.\n";
@@ -41,6 +44,12 @@ if(file_exists("page_home.php")) {
     print "\nFile 'page_home.php' not found.\n";
 }
 
+if(file_exists($conf['base_path']."/shared/shortcuts/")) {
+    print "\nFolder '".$conf['base_path']."/shared/shortcuts/' found.\n";
+} else {
+    print "\nFolder '".$conf['base_path']."/shared/shortcuts/' not found.\n";
+}
+
 // read the shortcuts used
 $shortcutstemp = array_filter(glob($conf['base_path'].'/shared/shortcuts/*'), 'is_file');
 $shortcuts = array(); // the array with pairs of ID => foldername
@@ -52,6 +61,13 @@ print "\nShortcuts temporary file:\n";
 print_r($shortcutstemp); print "\n";
 print "\nShortcuts resolved file:\n";
 print_r($shortcuts); print "\n";
+
+
+if(file_exists($conf['base_path']."/shared/audiofolders/")) {
+    print "\nFolder '".$conf['base_path']."/shared/audiofolders/' found.\n";
+} else {
+    print "\nFolder '".$conf['base_path']."/shared/audiofolders/' not found.\n";
+}
 
 // read the subfolders of shared/audiofolders
 $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
