@@ -35,6 +35,12 @@ if (function_exists('html_bootstrap3_createHeader')) {
 
 print "\nCalling 'html_bootstrap3_createHeader(\"en\",\"RPi Jukebox\",".$conf['base_url'].");'\n";
 
+if(file_exists("page_home.php")) {
+    print "\nFile 'page_home.php' found.\n";
+} else {
+    print "\nFile 'page_home.php' not found.\n";
+}
+
 // read the shortcuts used
 $shortcutstemp = array_filter(glob($conf['base_path'].'/shared/shortcuts/*'), 'is_file');
 $shortcuts = array(); // the array with pairs of ID => foldername
