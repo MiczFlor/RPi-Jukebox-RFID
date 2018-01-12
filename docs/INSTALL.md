@@ -252,6 +252,11 @@ Now we can reload the webserver with the command:
 ~~~~
 $ sudo service lighttpd force-reload
 ~~~~
+One last touch: make sure the shared folder is accessible by the web server:
+~~~~
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
+~~~~
 
 Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.
 
