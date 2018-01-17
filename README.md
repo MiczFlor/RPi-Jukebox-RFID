@@ -30,9 +30,9 @@ The web app runs on any device and is mobile optimised. It provides:
 ## Jukebox Gallery
 
 
-|  |  |   |
-| --- | --- | --- |
-| ![Caption](docs/img/gallery/hailogugo-20171222-w300-01.jpg "Caption") | ![Caption](docs/img/gallery/Steph-20171215_w300-01.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_w300-01.jpg "Caption") | 
+|  |  |   |   |   |   |
+| --- | --- | --- | --- | --- | --- |
+| ![Caption](docs/img/gallery/Steph-20171215_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Elsa-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/hailogugo-20171222-h90-01.jpg "Caption") | 
 
 **See more innovation, upcycling and creativity in the [Jukebox Gallery](docs/GALLERY.md)**
 
