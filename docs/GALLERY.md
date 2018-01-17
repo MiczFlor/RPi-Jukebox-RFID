@@ -8,6 +8,8 @@ Because everybody is an individual - and so are their jukeboxes - I started this
 | The first *Alpha* version of the RFID Jukebox. Red marks the RFID reader. (Feb 2017) | The big wooden box provides a solid sound. Note the *skip lion* used to skip to next and previous tracks. (Aug 2017) |
 | ![Caption](img/gallery/Steph-20171215_w800-01.jpg "Caption") | ![Caption](img/gallery/Geliras-20171228-Jukebox-01-w800.jpg "Caption") |
 | A re-issued tissue box. Steph's neat design solution. (Dec 2017) | To grasp *all* the stuff [Geliras](https://github.com/Geliras)' fire engine can do, [watch the video](https://youtu.be/DbpXD0Y3a-Q). (Dec 2017) |
+| ![Caption](img/gallery/tullm-jan2018_w800-01.jpg "Caption") | ![Caption](img/gallery/tullm-jan2018_w800-02.jpg "Caption") |
+| [tullm](https://github.com/tullm)'s suitcase jukebox is travel ready.  | It also runs the Mopidy Mopidy music server for files on my NAS and Spotify. (Jan 2018) |
 | ![Caption](img/gallery/KingKahn-20180101-Jukebox-01-w800.jpg "Caption") | ![Caption](img/gallery/Jens-Braeuer-Jan-2018-w800-01.jpg "Caption") |
 | [KingKahn123](https://github.com/KingKahn123) featuring the gpio buttons. (Dec 2017) | Jens Braeuer's design on eye level with TRON (Jan 2018) |
 | ![Caption](img/gallery/hailogugo-20171222-w800-01.jpg "Caption") | ![Caption](img/gallery/UlliH-20171210_w800-01.jpg "Caption") |
