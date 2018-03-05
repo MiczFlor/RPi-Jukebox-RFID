@@ -56,7 +56,7 @@ esac
 done
 
 # If you want to see the CARDID printed, uncomment the following line
-# echo CARDID = $CARDID
+echo CARDID = $CARDID
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
