@@ -102,7 +102,7 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir($urlparams['p
 
     // pipe playlist into VLC
     // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
-    $exec = "/usr/bin/sudo /usr/bin/cvlc -I rc --rc-host localhost:4212 ".$urlparams['play']." > /dev/null 2>/dev/null &";
+    $exec = "/usr/bin/sudo /usr/bin/cvlc --no-video -I rc --rc-host localhost:4212 ".$urlparams['play']." > /dev/null 2>/dev/null &";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
