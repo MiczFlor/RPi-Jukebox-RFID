@@ -210,7 +210,7 @@ There is a second way to control the RFID jukebox: through the browser. You can 
 ### Installing lighttpd and PHP
 
 ~~~~
-$ sudo apt-get install lighttpd php5-common php5-cgi php5
+$ sudo apt-get install lighttpd php-common php-cgi php
 ~~~~
 
 ### Configuring lighttpd
