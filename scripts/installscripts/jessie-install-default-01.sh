@@ -12,7 +12,7 @@
 
 # Install packages
 sudo apt-get update
-sudo apt-get install samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 vlc mpg123 git
+sudo apt-get install samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php-common php-cgi php vlc mpg123 git
 sudo pip install evdev
 
 # Get github code
