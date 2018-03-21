@@ -34,10 +34,8 @@ CMDSHUTDOWN="%CMDSHUTDOWN%"
 # next and prev play the preivous or next track in the playlist (== folder)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
-# pause VLC playout
+# pause VLC playout. Running this command again will unpause
 CMDPAUSE="%CMDPAUSE%"
-# resume VLC playout (makes only sense in combination with pause)
-CMDPLAY="%CMDPLAY%"
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -115,10 +113,6 @@ elif [ "$CARDID" == "$CMDPAUSE" ]
 then
     # pause current track
     echo "pause" | nc.openbsd -w 1 localhost 4212
-elif [ "$CARDID" == "$CMDNEXT" ]
-then
-    # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
 else
     # We checked if the card was a special command, seems it wasn't.
     # Now we expect it to be a trigger for one or more audio file(s).
