@@ -86,7 +86,7 @@ if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
 // stop playing
 if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null &";
+    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
@@ -97,7 +97,7 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir($urlparams['play'])) {
     // kill vlc if running
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null &";
+    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
     exec($exec);
 
     // pipe playlist into VLC
