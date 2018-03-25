@@ -188,7 +188,7 @@ else
 			LASTTRACK=`sed -n 1p $PATHDATA/../playlists/$FOLDERNAME.track | cut -c 9-`
 			
 			# Get the playlist index of where the song is. This is usually 1 for a normal playlist and something else for shuffled
-			TEMPINDEX=`grep -n "$LASTTRACK" $PATHDATA/../playlists/$FOLDERNAME.m3u | cut -d : -f 1`
+			TEMPINDEX=`grep -Fn "$LASTTRACK" $PATHDATA/../playlists/$FOLDERNAME.m3u | cut -d : -f 1`
 
 			# Playlists are offset by 4, means: The first entry has index 5. Because, logic.
 			TRACKINDEX=`expr $TEMPINDEX + 4`
@@ -231,6 +231,5 @@ else
 			(cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
 			(bash $PATHDATA/../scripts/track_playstate.sh $FOLDERNAME &)
 		fi
-		
 	fi
 fi
