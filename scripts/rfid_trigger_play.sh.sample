@@ -32,12 +32,12 @@ CMDSTOP="%CMDSTOP%"
 CMDSHUTDOWN="%CMDSHUTDOWN%"
 # The following commands control VLC playout
 # next and prev play the preivous or next track in the playlist (== folder)
-CMDNEXT="05951697"
-CMDPREV="05951653"
+CMDNEXT="%CMDNEXT%"
+CMDPREV="%CMDPREV%"
 # pause VLC playout
-CMDPAUSE="05914833"
+CMDPAUSE="%CMDPAUSE%"
 # resume VLC playout (makes only sense in combination with pause)
-CMDPLAY="05951586"
+CMDPLAY="%CMDPLAY%"
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -113,7 +113,7 @@ then
     echo "prev" | nc.openbsd -w 1 localhost 4212
 elif [ "$CARDID" == "$CMDPAUSE" ]
 then
-    # pause and resume current track
+    # pause current track
     echo "pause" | nc.openbsd -w 1 localhost 4212
 else
     # We checked if the card was a special command, seems it wasn't.
