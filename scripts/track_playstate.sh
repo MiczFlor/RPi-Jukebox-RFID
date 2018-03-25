@@ -17,9 +17,8 @@ while pgrep vlc >/dev/null; do
 	# Get last entry in the currenttrack from file to remove it from the playlist if its done playing
 	PREVIOUSTRACK=`sed -n 1p $CURRENTTRACKFILE | cut -c 9-`
 	
-	# send status request to host, find the file name in the output and cut the last blank from the output.
-	# If you find a better regex to not have that trailing space, go for it.
-	CURRENTTRACK=`echo status | nc.openbsd -w 1 localhost 4212 | grep -Po 'new input: file://\K[^)]+' | rev | cut -c 2- | rev`
+	# send status request to host and cut it out.
+	CURRENTTRACK=`echo status | nc.openbsd -w 1 localhost 4212 | sed -n 3p | cut -c 23- | rev | cut -c 4- | rev`
 
 	# Same for time: send time request to host and cut it so only the actual time is left
 	CURRENTTIME=`echo get_time | nc.openbsd -w 1 localhost 4212 | sed -n 3p | cut -c 3-`
@@ -38,7 +37,7 @@ while pgrep vlc >/dev/null; do
 	
 	if [ "$CURRENTTRACK" != "$PREVIOUSTRACK" ]
 	then
-		TODELETE=`grep -n "$PREVIOUSTRACK" $CURRENTPLAYLIST | cut -c 1`d
+		TODELETE=`grep -Fn "$PREVIOUSTRACK" $CURRENTPLAYLIST | cut -c 1`d
 		`sudo sed -i $TODELETE $CURRENTPLAYLIST`
 	fi
 		
