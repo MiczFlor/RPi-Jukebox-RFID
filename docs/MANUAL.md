@@ -279,3 +279,38 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
+
+
+## daemon_rfid_reader.py only works via SSH not by RFID cards
+`daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.
+
+Solution: Delay running the script by 60 secs.
+~~~
+@reboot sleep 60 && mpg123 /home/pi/RPi-Jukebox-RFID/misc/startupsound.mp3
+@reboot sleep 60 && python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
+~~~
+
+## Script is closed unexpectedly
+
+In some cases it might occur that the `daemon_rfid_reader.py` script is colsed by the system unexpectedly. In this case you can add another script to check regularly if the script is still running and if not, restart it. Created the following shell script named `chk_daemon_rfid_reader.sh` in the folder `/home/pi/RPi-Jukebox-RFID/scripts/`
+
+~~~
+# check rfid_reader_daemon
+ps -ef | grep -v grep | grep python2
+# if not found - equals to 1, start it
+if [ $? -eq 1 ]
+then
+python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
+else
+echo "eq 0 - rfid_reader_daemon found - do nothing"
+~~~
+
+Make the file executable:
+~~~
+chmod +x /home/pi/RPi-Jukebox-RFID/scripts/chk_daemon_rfid_reader.sh
+~~~
+
+Run this script every minute by adding the following line via crontab:
+~~~
+* * * * * /home/pi/RPi-Jukebox-RFID/scripts/chk_daemon_rfid_reader.sh &
+~~~
