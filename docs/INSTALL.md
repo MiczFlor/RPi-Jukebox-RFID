@@ -129,6 +129,22 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
+## Install git (to pull the code from github)
+
+[*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
+
+~~~~
+$ sudo apt-get update
+$ sudo apt-get install git
+~~~~
+
+## Install the jukebox code
+
+~~~~
+$ cd /home/pi/
+$ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+~~~~
+
 ## Install samba to share folders over your home network
 
 To make the jukebox easy to administer, it is important that you can add new songs and register new RFID cards over your home network. This can be done from any machine. The way to integrate your RPi into your home network is using *Samba*, the standard [Windows interoperability suite for Linux and Unix](https://www.samba.org/).
@@ -296,22 +312,6 @@ While we are using *VLC* for all the media to be played on the jukebox, we are u
 ```
 $ sudo apt-get install mpg123
 ```
-
-## Install git
-
-[*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
-
-~~~~
-$ sudo apt-get update
-$ sudo apt-get install git
-~~~~
-
-## Install the jukebox code
-
-~~~~
-$ cd /home/pi/
-$ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-~~~~
 
 ## Using a USB soundcard
 
