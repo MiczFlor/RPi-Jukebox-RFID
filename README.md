@@ -9,7 +9,7 @@ alt="Prototype of the RFID jukebox" width="427" height="239" border="1" /></a>
 
 What makes this jukebox easy to install and use:
 
-* Runs on all Raspberry Pi models (1, 2 and 3).
+* Runs on all Raspberry Pi models (1, 2 and 3) and [Raspberry Zero](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/15).
 * Just plug and play using USB, no soldering iron needed.
 * Once the jukebox is up and running, add music from any computer on your home network.
 * Register new RFID cards easily without having to connect to the RPi.
