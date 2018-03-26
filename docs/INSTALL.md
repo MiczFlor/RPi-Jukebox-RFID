@@ -26,6 +26,15 @@ Before you boot your RPi for the first time, make sure that you have all the ext
 
 After the boot process has finished, you can select the operating system we want to work with: *Raspbian*. Select the checkbox and then hit **Install** above the selection.
 
+### Installing on Ubuntu Mate for Raspberry Pi
+
+Here are some pointers to get the software running on Ubuntu Mate for Raspberry Pi instead of Raspbian. 
+
+* PHP has to be installed with `sudo apt install php php-cgi` instead of the command given in the docs. This will install PHP7, which seems to work flawlessly.
+* As on Mate the username is set during the install, it's usually differet from the common pi user on Raspbian. I hence had to change $conf['base_path'] in `./htdocs/config.php` to match the home folder.
+* To get auto login for the new Mate user working does not work over raspi-config as recommended in the docs. As a workaround, autostart the demon via `/etc/crontab` instead, which works (almost) the same way.
+* Last but not least, run the demon with sudo to have sound. 
+
 ## Configure your RPi
 
 Now you have installed and operating system and even a windows manager (called Pixel on Raspbian). Start up your RPi and it will bring you straight to the home screen. Notice that you are not required to log in.
