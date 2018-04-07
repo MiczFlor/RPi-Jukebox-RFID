@@ -1,5 +1,13 @@
 #!/usr/bin/python
 # Currently only work in python 2.7 - .send works with str here
+
+# Related to page: https://forum-raspberrypi.de/forum/thread/13144-projekt-jukebox4kids-jukebox-fuer-kinder/?postID=312257#post312257
+
+# Depends on libs:
+# nclib    - https://nclib.readthedocs.io/en/latest/  - pip install nclib
+# gpiozero -
+# KY040    - git link to my repo 
+
 from gpiozero import Button
 from gpiozero import LED
 from subprocess import check_call
@@ -11,11 +19,9 @@ import nclib
 import errno
 from socket import error as socket_error
 
+# Added as submodle in GIT
 from KY040 import KY040
 
-# Pages https://forum-raspberrypi.de/forum/thread/13144-projekt-jukebox4kids-jukebox-fuer-kinder/?postID=312257#post312257
-# needs: https://nclib.readthedocs.io/en/latest/
-# pip install nclib
 
 # setup Basic logging to file
 logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%I:%M:%S', level=logging.DEBUG, filename='./buttons.log', filemode='w')
@@ -33,8 +39,11 @@ DEFAULT_SHUTDOWN_TIME_S = 5 * 60
 def nc_send(command):
     global nc
     try:
-        # do something
-        nc.send(command + '\n')
+		if nc != None:
+			# do something
+			nc.send(command + '\n')
+		else:
+			logging.info('Command %s not executed, as VLC connection not established.' %(command))
     except socket_error as e:
         # A socket error
         print (e)
