@@ -8,6 +8,10 @@
 # ./rfid_trigger_play.sh -c=1234567890
 # or
 # ./rfid_trigger_play.sh --cardid=1234567890
+# 
+# Optionally, you can give a direct track number
+# ./rfid_trigger_play.sh -c=1234567890 -df=3
+# This will play the third track from that folder
 
 # VARIABLES TO CHANGE
 # adjust these variables to match your system and configuration
@@ -52,6 +56,9 @@ case $i in
     -c=*|--cardid=*)
     CARDID="${i#*=}"
     ;;
+    -df=*)
+    DIRECTFILE="${i#*=}"
+    ;;	
 esac
 done
 
@@ -113,12 +120,8 @@ then
     echo "prev" | nc.openbsd -w 1 localhost 4212
 elif [ "$CARDID" == "$CMDPAUSE" ]
 then
-    # pause current track
+    # pause and resume current track
     echo "pause" | nc.openbsd -w 1 localhost 4212
-elif [ "$CARDID" == "$CMDNEXT" ]
-then
-    # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
 else
     # We checked if the card was a special command, seems it wasn't.
     # Now we expect it to be a trigger for one or more audio file(s).
@@ -142,9 +145,11 @@ else
     #
     # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
 
-    # Add info into the log, making it easer to monitor cards
-    echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
-
+    # Get last CardID from the file (decision to continue or restart playlist)
+	PLAYEDLAST=`grep -Po 'Card ID \K[^ ]+' $PATHDATA/../shared/latestID.txt`
+	
+	# Add info into the log, making it easer to monitor cards
+    echo "Card ID $CARDID was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
 	# Look for human readable shortcut in folder 'shortcuts'
 	# check if CARDID has a text file by the same name - which would contain the human readable folder name
 	if [ -f $PATHDATA/../shared/shortcuts/$CARDID ]
@@ -167,28 +172,79 @@ else
 	# if a folder $FOLDERNAME exists, play content
     if [ -d $PATHDATA/../shared/audiofolders/$FOLDERNAME ]
     then
-        # create an empty string for the playlist
-        PLAYLIST=""
+		# Get modification dates of the file and folder
+		# The comparedate gets the last modified time of the log file to see if the card was used in the last 10 seconds
+		# This will reset the playlist only when the card is used twice in 10 seconds. Using stat to get the same format easily
+		FILEDATE=`stat -c %Y $PATHDATA/../playlists/$FOLDERNAME.m3u`
+		FOLDERDATE=`stat -c %Y $PATHDATA/../shared/audiofolders/$FOLDERNAME`
+		COMPAREDATE=`stat -c %Y $PATHDATA/../shared/latestID.txt`
+		LASTRUNTIME=`stat -c %Y $PATHDATA/../playlists/$FOLDERNAME.track`
+		TIMESINCELASTRUN=`expr $COMPAREDATE - $LASTRUNTIME`
+		
+		# first kill any possible running vlc processn => stop playing audio
+		# Also kill the playstate tracker if its running
+		(sudo ps -ef | grep vlc | awk '{print $2}' | xargs kill -9)	
+		(sudo ps -ef | grep track_playstate.sh | awk '{print $2}' | xargs kill -9)	
+		sleep 0.5s
+		# Check if the folder wasnt updated and if the folder was played last
+		# Positive test will resume the folder at the last played time
+		if [ $PLAYEDLAST != $CARDID ] && [ $FILEDATE -gt $FOLDERDATE ] && [ $TIMESINCELASTRUN > 5 ] && [ $DIRECTFILE == "" ]
+		then
+			# Get last played track and elapsed time from file.
+			LASTPLAYTIME=`sed -n 2p $PATHDATA/../playlists/$FOLDERNAME.track | cut -c 8-`
+			LASTTRACK=`sed -n 1p $PATHDATA/../playlists/$FOLDERNAME.track | cut -c 9-`
+			
+			# Get the playlist index of where the song is. This is usually 1 for a normal playlist and something else for shuffled
+			TEMPINDEX=`grep -Fn "$LASTTRACK" $PATHDATA/../playlists/$FOLDERNAME.m3u | cut -d : -f 1`
 
-        # loop through all the files found in the folder
-        for FILE in $PATHDATA/../shared/audiofolders/$FOLDERNAME/*
-        do
-            # add file path to playlist followed by line break
-            PLAYLIST=$PLAYLIST$FILE$'\n'
-        done
+			# Playlists are offset by 4, means: The first entry has index 5. Because, logic.
+			TRACKINDEX=`expr $TEMPINDEX + 4`
+			
+			# now start the command line version of vlc loading the playlist
+			# start as a background process (command &) - otherwise the input only works once the playlist finished
+			#(cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+			(cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
 
-        # write playlist to file using the same name as the folder with ending .m3u
-        # wrap $PLAYLIST string in "" to keep line breaks
-        echo "$PLAYLIST" > $PATHDATA/../playlists/$FOLDERNAME.m3u
+			# Sleep to let the service start
+			sleep 0.5s
+			# Jump to last track and playtime
+			(echo goto $TRACKINDEX | nc.openbsd -w 1 localhost 4212)
+			(echo seek $LASTPLAYTIME | nc.openbsd -w 1 localhost 4212)
+			(bash $PATHDATA/../scripts/track_playstate.sh $FOLDERNAME &)
+		else
+			# Negative test means that the same folder is played twice within the last 5 seconds (this will reset progress)
+			# This is also triggered if the folder was changed (eg. new files have been added) or if the folder is new
+			# Remove a previous track state
+			(sudo rm $PATHDATA/../playlists/$FOLDERNAME.track)
+			
+			# create an empty string for the playlist
+			PLAYLIST=""
+			# loop through all the files found in the folder
+			for FILE in $PATHDATA/../shared/audiofolders/$FOLDERNAME/*
+			do
+				# add file path to playlist followed by line break
+				PLAYLIST=$PLAYLIST$FILE$'\n'
+			done
 
-        # first kill any possible running vlc processn => stop playing audio
-        sudo pkill vlc
+			# write playlist to file using the same name as the folder with ending .m3u
+			# wrap $PLAYLIST string in "" to keep line breaks
+			echo "$PLAYLIST" > $PATHDATA/../playlists/$FOLDERNAME.m3u
 
-        # now start the command line version of vlc loading the playlist
-        # start as a background process (command &) - otherwise the input only works once the playlist finished
-        #(cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
-        (cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+			# now start the command line version of vlc loading the playlist
+			# start as a background process (command &) - otherwise the input only works once the playlist finished
+			#(cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
 
-
-    fi
+			(cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
+			
+			# If a track was chosen by parameter, start it here
+			if [ $DIRECTFILE != "" ]
+			then		
+				TRACKINDEX=`expr $DIRECTFILE + 4`
+				sleep 0.5s
+				(echo goto $TRACKINDEX | nc.openbsd -w 1 localhost 4212)
+			fi
+			
+			(bash $PATHDATA/../scripts/track_playstate.sh $FOLDERNAME &)
+		fi
+	fi
 fi

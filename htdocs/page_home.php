@@ -50,7 +50,19 @@
     <div class="row">
       <div class="col-lg-6">
               <h4>Volume</h4>
-        
+
+			    Current Volume: 
+				<?php 
+				$currentvolume=trim(shell_exec("/usr/bin/sudo amixer get PCM |grep % |awk '{print $4}'|sed 's/[^0-9]//g'"));
+				print "
+				<div class='progress'>
+					<div div class='progress-bar' role='progressbar' aria-valuenow='".$currentvolume."' aria-valuemin='0' aria-valuemax='100' style='width:".$currentvolume."%'>
+					".$currentvolume."%
+					</div>
+				</div>
+				";
+				?>
+
                 <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <select name='volume'>
                      <option value='0'>Mute (0%)</option>
@@ -64,7 +76,7 @@
                      <option value='100'>100%</option>
                   </select>
                 <input type='submit' name='submit' value='Set volume'/>
-                </form>
+				</form>   
                 
         </div>
         <div class="col-lg-6">
@@ -103,17 +115,10 @@ foreach($audiofolders as $audiofolder) {
     
     // increase ID counter
     $idcounter++;
-    
-    // get list of content for each folder
-    $files = scandir($audiofolder); 
-    $accordion = "<h4>Contains the following file(s):</h4><ul>";
-    foreach($files as $file) {
-        if(is_file($audiofolder."/".$file)){
-            $accordion .= "\n<li>".$file."</li>";
-        }
-    }
-    $accordion .= "</ul>";
-    
+	
+	// set/reset trackcounter
+	$trackcounter = 0;
+	
     // get all IDs that match this folder
     $ids = ""; // print later
     $audiofolderbasename = trim(basename($audiofolder));
@@ -125,11 +130,23 @@ foreach($audiofolders as $audiofolder) {
         }
         $ids = rtrim($ids, ", "); // get rid of trailing slash
     }
+    
+    // get list of content for each folder
+    $files = scandir($audiofolder); 
+    $accordion = "<h4>Contains the following file(s):</h4><ul>";
+    foreach($files as $file) {
+        if(is_file($audiofolder."/".$file)){
+			$trackcounter++;
+            $accordion .= "\n<li><a href='?play=".$ids."&directfile=".$trackcounter."' > ".$file."</a></li>";
+        }
+    }
+    $accordion .= "</ul>";
+    
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
         <div class='well'>
-            <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+            <a href='?play=".$ids."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info'>Folder:
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
