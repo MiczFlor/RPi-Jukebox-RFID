@@ -129,7 +129,7 @@ foreach($audiofolders as $audiofolder) {
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
         <div class='well'>
-            <a href='?play=".$ids."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+            <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info'>Folder:
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
