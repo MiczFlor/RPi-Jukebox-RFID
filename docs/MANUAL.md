@@ -11,7 +11,7 @@ In this manual you will learn:
 * [How to control the jukebox through the web app.](#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](#cardcontrol)
 
-## <a name="connect"></a>Connecting to the jukebox
+## <a name="connect"></a>Connecting to the jukebox to add files
 
 You need to connect to the jukebox in order to manage audio files and register new RFID cards. There are two ways to connect to the jukebox.
 
@@ -83,7 +83,7 @@ IMPORTANT: the folder names must not contain whitespaces. Instead of 'great song
 
 Now you have told the jukebox that every time the card with the ID `0594672283` is swiped across, play what's in the folder `birds`. Let's continue and make that folder and the audio files inside.
 
-### Creating a new audio playlist for a new card
+### Adding new audio files and create a playlist for a new card
 
 Following the previous step, we now have a card that triggers the jukebox to seek the folder `birds` and play the contents of that folder as an audio playlist. This is how you create the folder and fill it with content:
 
@@ -95,6 +95,16 @@ Following the previous step, we now have a card that triggers the jukebox to see
 That's it. If you swipe the card across the jukebox, it will play all the files in the folder `birds`.
 
 **Note:** files are played in alphabetical order. If you want to change the order, rename the files accordingly.
+
+### Playing audio files from a USB stick
+
+If you have your audio files on an external USB stick, you need to point the folder `audiofolders` to the external USB device. The USB-stick is automatically mounted to `/media/usb0`.
+
+You can do this by creating a symbolic link to the USB stick with the following command:
+
+~~~
+ln -s /media/usb0/* /home/pi/RPi-Jukebox-RFID/shared/audiofolders/
+~~~
 
 ### <a name="webstreams"></a>Playing a web stream
 
@@ -269,3 +279,38 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
+
+
+## daemon_rfid_reader.py only works via SSH not by RFID cards
+`daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.
+
+Solution: Delay running the script by 60 secs.
+~~~
+@reboot sleep 60 && mpg123 /home/pi/RPi-Jukebox-RFID/misc/startupsound.mp3
+@reboot sleep 60 && python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
+~~~
+
+## Script is closed unexpectedly
+
+In some cases it might occur that the `daemon_rfid_reader.py` script is colsed by the system unexpectedly. In this case you can add another script to check regularly if the script is still running and if not, restart it. Created the following shell script named `chk_daemon_rfid_reader.sh` in the folder `/home/pi/RPi-Jukebox-RFID/scripts/`
+
+~~~
+# check rfid_reader_daemon
+ps -ef | grep -v grep | grep python2
+# if not found - equals to 1, start it
+if [ $? -eq 1 ]
+then
+python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
+else
+echo "eq 0 - rfid_reader_daemon found - do nothing"
+~~~
+
+Make the file executable:
+~~~
+chmod +x /home/pi/RPi-Jukebox-RFID/scripts/chk_daemon_rfid_reader.sh
+~~~
+
+Run this script every minute by adding the following line via crontab:
+~~~
+* * * * * /home/pi/RPi-Jukebox-RFID/scripts/chk_daemon_rfid_reader.sh &
+~~~
