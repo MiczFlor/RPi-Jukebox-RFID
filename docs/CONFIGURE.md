@@ -126,8 +126,7 @@ Now, when you reboot, the jukebox will automatically start and wait for input in
 First copy the service config files to the correct directory:
 
 ```
-cd /etc/systemd/system
-cp /home/pi/RPi-Jukebox-RFID/misc/*.service .
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/*.service /etc/systemd/system/
 ```
 
 If you installed your jukebox to /home/pi/Rpi-jukebox-RFID you can leave the
@@ -137,16 +136,34 @@ text files.
 Now systemd has to be notified that there are new service files:
 
 ```
-systemctl daemon-reload
+sudo systemctl daemon-reload
 ```
 
 The last step is to enable the service files:
 
 ```
-systemctl enable rfid-reader
-systemctl enable startup-sound
+sudo systemctl enable rfid-reader
+sudo systemctl enable startup-sound
 ```
 
+The newly installed servic can be started either by rebooting the jukebox or
+with ```sudo systemctl start rfid-reader```.
+
+To see if the reader process is running use the command ```sudo systemctl
+status rfid-reader``` to produce an output like this:
+
+```
+pi@Jukebox:~ $ systemctl status rfid-reader
+● rfid-reader.service - RFID-Reader Service
+   Loaded: loaded (/etc/systemd/system/rfid-reader.service; enabled; vendor pres
+   Active: active (running) since Fri 2018-04-13 07:34:53 UTC; 5h 47min ago
+ Main PID: 393 (python2)
+   CGroup: /system.slice/rfid-reader.service
+           └─393 /usr/bin/python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_
+
+Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
+```
+  
 
 ## Copy the media player script
 
