@@ -3,7 +3,6 @@ Description=Startup Sound
 After=network.target iptables.service firewalld.service rfid-reader.service
 
 [Service]
-Restart=always
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
 ExecStart=/usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/misc/startupsound.mp3
 
