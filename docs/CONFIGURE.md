@@ -146,7 +146,7 @@ sudo systemctl enable rfid-reader
 sudo systemctl enable startup-sound
 ```
 
-The newly installed servic can be started either by rebooting the jukebox or
+The newly installed service can be started either by rebooting the jukebox or
 with ```sudo systemctl start rfid-reader```.
 
 To see if the reader process is running use the command ```sudo systemctl
