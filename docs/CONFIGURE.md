@@ -84,6 +84,12 @@ Now your jukebox knows which device to listen to when you are swiping your cards
 
 ## Auto-start the jukebox
 
+Note: If you use a recent Raspbian installation you system will most likely
+use systemd for the system start. If it does it is preferrable to use
+systemd to start the components since systemd will also take care of
+restarting the script in case they die. See below for the procedure to do
+so.
+
 This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards.
 
 To start the jukebox daemon, we are taking advantage of another daemon which is installed on most Unix systems: *Cron*. We are using cron in a very basic way by telling it: "every time the computer has booted up, run the following script". 
@@ -114,6 +120,33 @@ Once you started `crontab`, add the two lines at the bottom of the document:
 Save and close the file by typing `Ctrl & X` then `y` then hit the `Enter` key.
 
 Now, when you reboot, the jukebox will automatically start and wait for input in the background.
+
+## Auto-start the jukebox by systemd 
+
+First copy the service config files to the correct directory:
+
+```
+cd /etc/systemd/system
+cp /home/pi/RPi-Jukebox-RFID/misc/*.service .
+```
+
+If you installed your jukebox to /home/pi/Rpi-jukebox-RFID you can leave the
+files as they are, otherwise you need to change the path in the *.service
+text files.
+
+Now systemd has to be notified that there are new service files:
+
+```
+systemctl daemon-reload
+```
+
+The last step is to enable the service files:
+
+```
+systemctl enable rfid-reader
+systemctl enable startup-sound
+```
+
 
 ## Copy the media player script
 
