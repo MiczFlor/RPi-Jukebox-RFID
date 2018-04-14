@@ -28,6 +28,8 @@ CMDVOL85="%CMDVOL85%"
 CMDVOL90="%CMDVOL90%"
 CMDVOL95="%CMDVOL95%"
 CMDVOL100="%CMDVOL100%"
+CMDVOLUP="%CMDVOLUP%"
+CMDVOLDOWN="%CMDVOLDOWN%"
 CMDSTOP="%CMDSTOP%"
 CMDSHUTDOWN="%CMDSHUTDOWN%"
 # The following commands control VLC playout
@@ -94,6 +96,14 @@ then
 elif [ "$CARDID" == "$CMDVOL100" ]
 then
     amixer sset 'PCM' 100%
+
+elif [ "$CARDID" == "$CMDVOLUP" ]
+then
+    amixer sset 'PCM' 500+
+
+elif [ "$CARDID" == "$CMDVOLDOWN" ]
+then
+    amixer sset 'PCM' 500-
 
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
