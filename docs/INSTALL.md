@@ -152,7 +152,7 @@ To make the jukebox easy to administer, it is important that you can add new son
 Open a terminal and install the required packages with this line:
 
 ~~~~
-$ sudo apt-get install samba samba-common-bin 
+$ sudo apt-get install apt-transport-https samba samba-common-bin 
 ~~~~
 
 First, let's edit the *Samba* configuration file and define the workgroup the RPi should be part of.
@@ -225,7 +225,7 @@ $ sudo apt-get install linux-headers-4.4
 Now the system is ready to load the important package for the python code we use: *evdev*. 
 
 ~~~~
-$ sudo pip install evdev
+$ sudo pip install "evdev == 0.7.0"
 ~~~~
 
 ## Running the web app
@@ -234,8 +234,10 @@ There is a second way to control the RFID jukebox: through the browser. You can 
 
 ### Installing lighttpd and PHP
 
+This installation routine was written for RPi Jessie which comes with PHP version 5.
+
 ~~~~
-$ sudo apt-get install lighttpd php-common php-cgi php
+$ sudo apt-get install lighttpd php5-common php5-cgi php5
 ~~~~
 
 ### Configuring lighttpd
@@ -266,6 +268,13 @@ And at the bottom of the file, add the following line:
 www-data ALL=(ALL) NOPASSWD: ALL
 ~~~~
 
+Make sure the shared folder is accessible by the web server:
+
+~~~~
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
+~~~~
+
 The final step to make the RPi web app ready is to tell the webserver how to execute PHP. To enable the lighttpd server to execute php scripts, the fastcgi-php module must be enabled.
 
 ~~~~
@@ -276,11 +285,6 @@ Now we can reload the webserver with the command:
 
 ~~~~
 $ sudo service lighttpd force-reload
-~~~~
-One last touch: make sure the shared folder is accessible by the web server:
-~~~~
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 ~~~~
 
 Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.

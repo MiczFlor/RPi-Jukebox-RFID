@@ -123,7 +123,8 @@ Now, when you reboot, the jukebox will automatically start and wait for input in
 
 ## Auto-start the jukebox by systemd 
 
-First copy the service config files to the correct directory:
+If you chose to use the `crontab` option to launch the card reader daemon scripts, you can ignore this part.
+If you want to use the `systemd` way, first copy the service config files to the correct directory:
 
 ```
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/*.service /etc/systemd/system/

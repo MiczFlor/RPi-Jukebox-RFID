@@ -12,8 +12,8 @@
 
 # Install packages
 sudo apt-get update
-sudo apt-get install samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php-common php-cgi php vlc mpg123 git
-sudo pip install evdev
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 vlc mpg123 git
+sudo pip install "evdev == 0.7.0"
 
 # Get github code
 cd /home/pi/
@@ -74,6 +74,10 @@ sudo chmod 755 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 # The new way of making the bash daemon is using the helperscripts 
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
+
+# make sure the shared folder is accessible by the web server
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
