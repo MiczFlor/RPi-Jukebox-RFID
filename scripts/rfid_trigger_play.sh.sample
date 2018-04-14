@@ -165,30 +165,17 @@ else
     echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
 
 	# if a folder $FOLDERNAME exists, play content
-    if [ -d $PATHDATA/../shared/audiofolders/$FOLDERNAME ]
+    if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
     then
-        # create an empty string for the playlist
-        PLAYLIST=""
-
-        # loop through all the files found in the folder
-        for FILE in $PATHDATA/../shared/audiofolders/$FOLDERNAME/*
-        do
-            # add file path to playlist followed by line break
-            PLAYLIST=$PLAYLIST$FILE$'\n'
-        done
-
         # write playlist to file using the same name as the folder with ending .m3u
         # wrap $PLAYLIST string in "" to keep line breaks
-        echo "$PLAYLIST" > $PATHDATA/../playlists/$FOLDERNAME.m3u
+        find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" type -f > "$PATHDATA/../playlists/$FOLDERNAME.m3u"
 
         # first kill any possible running vlc processn => stop playing audio
         sudo pkill vlc
 
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        #(cvlc $PATHDATA/../playlists/$FOLDERNAME.m3u &)
-        (cvlc -I rc --rc-host localhost:4212 $PATHDATA/../playlists/$FOLDERNAME.m3u &)
-
-
+        (cvlc -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
     fi
 fi

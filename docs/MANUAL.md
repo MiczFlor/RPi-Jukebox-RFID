@@ -1,6 +1,6 @@
 # Jukebox Manual
 
-Before you can run the jukebox, you need to have it installed and configured. 
+Before you can run the jukebox, you need to have it installed and configured.
 Make sure to go through the [installation](INSTALL.md) and [configuration](CONFIGURE.md) first.
 
 In this manual you will learn:
@@ -61,11 +61,11 @@ This ID has been used before.
 The shortcut points to audiofolder 'stop'.
 ~~~~
 
-The first line lists the ID of the card: `0594672283`. 
+The first line lists the ID of the card: `0594672283`.
 
 The second line tells us that the card has been used before. Note that every time you swipe a card, the file `latestID.txt` is being created. Therefore it is very likely this file notes a card has been used before.
 
-The third line is giving us information about a *human readable* shortcut given to this ID. In this case, there is a folder named `stop` - which can contain audio files or text files with links to web streams. 
+The third line is giving us information about a *human readable* shortcut given to this ID. In this case, there is a folder named `stop` - which can contain audio files or text files with links to web streams.
 
 ### Making a 'human readable' shortcut for a card
 
@@ -78,8 +78,6 @@ This is why you can assign *human readable* names for card IDs. This is how you 
 3. Navigate to the folder `shortcuts` in your windows manager.
 4. Open the file of the same name as the card ID with a text editor.
 5. Change the content of that file to `birds`
-
-IMPORTANT: the folder names must not contain whitespaces. Instead of 'great song' use something like 'great_song'.
 
 Now you have told the jukebox that every time the card with the ID `0594672283` is swiped across, play what's in the folder `birds`. Let's continue and make that folder and the audio files inside.
 
@@ -239,7 +237,7 @@ Save the changes and close the editor. The changes takes effect immediately.
 
 ## <a name="changewifisettings"></a>I am moving, how do I get the jukebox into my new WiFi network?
 
-You will need to open the jukebox and connect it to a monitor. The next question would be: do you need the graphical interface or are you good to go with the command line in the terminal window? 
+You will need to open the jukebox and connect it to a monitor. The next question would be: do you need the graphical interface or are you good to go with the command line in the terminal window?
 
 If you need the command line only, disconnect the RFID reader but leave the WiFi in the USB. If you need keyboard and mouse for the GUI, you need a USB hub to connect keyboard and mouse to, then unplug the RFID reader and plug the hub in. (Note: if you have a RPi3 or higher, you are not limied to two USB slots and don't have that trouble :)
 
