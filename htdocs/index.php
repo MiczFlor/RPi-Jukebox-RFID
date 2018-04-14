@@ -25,6 +25,10 @@ if(isset($_GET['play']) && trim($_GET['play']) != "") {
     $urlparams['play'] = trim($_GET['play']);
 }
 
+if(isset($_GET['directfile']) && trim($_GET['directfile']) != "") {
+    $urlparams['directfile'] = trim($_GET['directfile']);
+}
+
 if(isset($_GET['player']) && trim($_GET['player']) != "") {
     $urlparams['player'] = trim($_GET['player']);
 }
@@ -93,16 +97,10 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     exit; 
 }
 
-// play folder with VLC
-if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir($urlparams['play'])) {
-    // kill vlc if running
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
-    exec($exec);
-
-    // pipe playlist into VLC
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
-    $exec = "/usr/bin/sudo /usr/bin/cvlc --no-video -I rc --rc-host localhost:4212 ".$urlparams['play']." > /dev/null 2>/dev/null &";
+// play folder. This triggers the same play script that a card would.
+if(isset($urlparams['play']) && $urlparams['play'] != "") {
+	
+	$exec = "/usr/bin/sudo ".$conf['base_path']."/scripts/rfid_trigger_play.sh -c=".$urlparams['play']." -df=".$urlparams['directfile']." > /dev/null 2>/dev/null &";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
