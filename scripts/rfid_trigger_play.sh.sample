@@ -68,43 +68,34 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 if [ "$CARDID" == "$CMDMUTE" ]
 then
-    amixer sset 'PCM' 0%
+    $PATHDATA/volume_set.sh 0
 elif [ "$CARDID" == "$CMDVOL30" ]
 then
-    amixer sset 'PCM' 30%
-
+    $PATHDATA/volume_set.sh 30
 elif [ "$CARDID" == "$CMDVOL50" ]
 then
-    amixer sset 'PCM' 50%
-
+    $PATHDATA/volume_set.sh 50
 elif [ "$CARDID" == "$CMDVOL75" ]
 then
-    amixer sset 'PCM' 75%
-
+    $PATHDATA/volume_set.sh 75
 elif [ "$CARDID" == "$CMDVOL85" ]
 then
-    amixer sset 'PCM' 85%
-
+    $PATHDATA/volume_set.sh 85
 elif [ "$CARDID" == "$CMDVOL90" ]
 then
-    amixer sset 'PCM' 90%
-
+    $PATHDATA/volume_set.sh 90
 elif [ "$CARDID" == "$CMDVOL95" ]
 then
-    amixer sset 'PCM' 95%
-
+    $PATHDATA/volume_set.sh 95
 elif [ "$CARDID" == "$CMDVOL100" ]
 then
-    amixer sset 'PCM' 100%
-
+    $PATHDATA/volume_set.sh 100
 elif [ "$CARDID" == "$CMDVOLUP" ]
 then
-    amixer sset 'PCM' 500+
-
+    $PATHDATA/volume_up.sh
 elif [ "$CARDID" == "$CMDVOLDOWN" ]
 then
-    amixer sset 'PCM' 500-
-
+    $PATHDATA/volume_down.sh
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
     # kill all running VLC media players

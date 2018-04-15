@@ -57,10 +57,10 @@ print "<pre><a href='".$conf['url_abs']."'>".$conf['url_abs']."</a></pre>"; //??
 
 // change volume
 if(isset($urlparams['volume'])) {
-    exec("/usr/bin/sudo amixer sset 'PCM' ".$urlparams['volume']."%");
+    exec(getcwd()."../scripts/volume_set.sh ".$urlparams['volume']);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // reboot the jukebox
@@ -70,7 +70,7 @@ if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // shutdown the jukebox
@@ -80,7 +80,7 @@ if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // stop playing
@@ -90,7 +90,7 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // play folder with VLC
@@ -106,7 +106,7 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($ur
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 // control player through web interface
 if(isset($urlparams['player'])) {
@@ -116,7 +116,7 @@ if(isset($urlparams['player'])) {
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "prev") {
         // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
@@ -124,7 +124,7 @@ if(isset($urlparams['player'])) {
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "play") {
         // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
@@ -132,7 +132,7 @@ if(isset($urlparams['player'])) {
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "pause") {
         // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
@@ -140,7 +140,7 @@ if(isset($urlparams['player'])) {
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
 }
 
