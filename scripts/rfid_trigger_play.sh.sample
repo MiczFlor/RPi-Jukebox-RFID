@@ -168,15 +168,11 @@ else
 	# if a folder $FOLDERNAME exists, play content
     if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
     then
-        # write playlist to file using the same name as the folder with ending .m3u
-        # wrap $PLAYLIST string in "" to keep line breaks
-	find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PATHDATA/../playlists/$FOLDERNAME.m3u"
-
         # first kill any possible running vlc processn => stop playing audio
-        sudo pkill vlc
+        $PATHDATA/stop.sh
 
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (cvlc -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        $PATHDATA/play.sh "$FOLDERNAME" &
     fi
 fi

@@ -3,7 +3,7 @@
 <body>
 
   <div class="container">
-      
+
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -23,7 +23,7 @@
       <ul class="nav navbar-nav">
         <li><a href='index.php' class='mainMenu'><i class='fa fa-refresh'></i> Reload page</a></li>
       </ul>
-      
+
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
         <li><a href='?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown jukebox</a></li>
@@ -50,7 +50,7 @@
     <div class="row">
       <div class="col-lg-6">
               <h4>Volume</h4>
-        
+
                 <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <select name='volume'>
                      <option value='0'>Mute (0%)</option>
@@ -65,7 +65,7 @@
                   </select>
                 <input type='submit' name='submit' value='Set volume'/>
                 </form>
-                
+
         </div>
         <div class="col-lg-6">
               <h4>Manage Files and Chips</h4>
@@ -78,7 +78,7 @@
 
     <div class="row">
       <div class="col-lg-12">
-        
+
   <h2>Available audio</h2>
 <?php
 
@@ -100,12 +100,12 @@ $idcounter = 0;
 
 // go through all folders
 foreach($audiofolders as $audiofolder) {
-    
+
     // increase ID counter
     $idcounter++;
-    
+
     // get list of content for each folder
-    $files = scandir($audiofolder); 
+    $files = scandir($audiofolder);
     $accordion = "<h4>Contains the following file(s):</h4><ul>";
     foreach($files as $file) {
         if(is_file($audiofolder."/".$file)){
@@ -113,7 +113,7 @@ foreach($audiofolders as $audiofolder) {
         }
     }
     $accordion .= "</ul>";
-    
+
     // get all IDs that match this folder
     $ids = ""; // print later
     $audiofolderbasename = trim(basename($audiofolder));
@@ -129,7 +129,7 @@ foreach($audiofolders as $audiofolder) {
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
         <div class='well'>
-            <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+            <a href='?play=".$audiofolderbasename."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info'>Folder:
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."

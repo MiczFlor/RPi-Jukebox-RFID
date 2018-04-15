@@ -94,21 +94,17 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     exit;
 }
 
-// play folder with VLC
-if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
-    // kill vlc if running
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
+// play folder
+if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(getcwd()."/../shared/audiofolders/".urldecode($urlparams['play']))) {
+    $exec = $scripts."stop.sh";
     exec($exec);
 
-    // pipe playlist into VLC
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
-    $exec = "/usr/bin/sudo /usr/bin/cvlc --no-video -I rc --rc-host localhost:4212 '".urldecode($urlparams['play'])."' > /dev/null 2>/dev/null &";
+    $exec = $scripts."play.sh '".urldecode($urlparams['play'])."'";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit;
-}
+}u
 // control player through web interface
 if(isset($urlparams['player'])) {
     if($urlparams['player'] == "next") {
