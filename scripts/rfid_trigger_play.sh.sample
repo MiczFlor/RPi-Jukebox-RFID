@@ -103,7 +103,7 @@ then
 elif [ "$CARDID" == "$CMDSHUTDOWN" ]
 then
     # shutdown the RPi nicely
-    sudo halt
+    $PATHDATA/shutdown.sh
 elif [ "$CARDID" == "$CMDNEXT" ]
 then
     # play next track in playlist (==folder)

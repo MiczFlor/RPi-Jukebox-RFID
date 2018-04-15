@@ -18,6 +18,7 @@ include("func.php");
 /*******************************************
 * URLPARAMETERS
 *******************************************/
+$scripts = getcwd().'../scripts/';
 
 $urlparams = array();
 
@@ -57,7 +58,7 @@ print "<pre><a href='".$conf['url_abs']."'>".$conf['url_abs']."</a></pre>"; //??
 
 // change volume
 if(isset($urlparams['volume'])) {
-    exec(getcwd()."../scripts/volume_set.sh ".$urlparams['volume']);
+    exec($scripts."volume_set.sh ".$urlparams['volume']);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit;
@@ -66,7 +67,7 @@ if(isset($urlparams['volume'])) {
 // reboot the jukebox
 if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo reboot";
+    $exec = $scripts."reboot.sh";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
@@ -76,7 +77,7 @@ if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
 // shutdown the jukebox
 if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo halt";
+    $exec = $scripts."shutdown.sh";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
