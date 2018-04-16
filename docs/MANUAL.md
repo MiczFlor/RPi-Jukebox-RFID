@@ -314,3 +314,8 @@ Run this script every minute by adding the following line via crontab:
 ~~~
 * * * * * /home/pi/RPi-Jukebox-RFID/scripts/chk_daemon_rfid_reader.sh &
 ~~~
+
+## The RFID Reader doesn't seem to work
+
+There could be many reasons why the RFID Reader is not working reliably or behaves strangely. This could be due to a weak power supply or an insuficient power bank. Worth trying out before you try anything else.
+
