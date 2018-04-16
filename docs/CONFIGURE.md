@@ -166,7 +166,7 @@ Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
 ```
   
 
-## Copy the media player script
+## Copy the media player and daemon script
 
 Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the files `rfid_trigger_play.sh.sample` and `playout_controls.sh.sample`. You need to make a copy of these files, because you might edit these files at a later stage.
 
