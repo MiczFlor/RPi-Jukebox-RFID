@@ -2,36 +2,37 @@
 from gpiozero import Button
 from signal import pause
 from subprocess import check_call
-
+from os import path
 # 2017-12-12
 # This script was copied from the following RPi forum post:
 # https://forum-raspberrypi.de/forum/thread/13144-projekt-jukebox4kids-jukebox-fuer-kinder/?postID=312257#post312257
 # I have not yet had the time to test is, so I placed it in the misc folder.
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
+script_path = path.dirname(path.realpath(__file__))
 
 def def_shutdown():
-    check_call(['sudo', 'poweroff'])
+    check_call("{}/shutdown.sh".format(script_path))
 
 def def_volU():
-    check_call("amixer sset PCM 1.5db+", shell=True)
+    check_call("{}/volume_up.sh".format(script_path))
 
 def def_volD():
-    check_call("amixer sset PCM 1.5db-", shell=True)
+    check_call("{}/volume_down.sh".format(script_path))
 
 def def_vol0():
-    check_call("amixer sset PCM 0db", shell=True)
+    check_call("{}/volume_set.sh 0".format(script_path))
 
 def def_next():
-    check_call("echo 'next' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("{}/next.sh".format(script_path))
 
 def def_prev():
-    check_call("echo 'prev' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("{}/prev.sh".format(script_path))
 
 def def_halt():
-    check_call("echo 'pause' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("{}/pause.sh".format(script_path))
 
 shut = Button(3, hold_time=2)
-vol0 = Button(13)    
+vol0 = Button(13)
 volU = Button(16,pull_up=True)
 volD = Button(19,pull_up=True)
 next = Button(26)
