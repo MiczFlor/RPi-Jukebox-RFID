@@ -18,6 +18,7 @@ include("func.php");
 /*******************************************
 * URLPARAMETERS
 *******************************************/
+$scripts = getcwd().'../scripts/';
 
 $urlparams = array();
 
@@ -57,30 +58,30 @@ print "<pre><a href='".$conf['url_abs']."'>".$conf['url_abs']."</a></pre>"; //??
 
 // change volume
 if(isset($urlparams['volume'])) {
-    exec("/usr/bin/sudo amixer sset 'PCM' ".$urlparams['volume']."%");
+    exec($scripts."volume_set.sh ".$urlparams['volume']);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // reboot the jukebox
 if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo reboot";
+    $exec = $scripts."reboot.sh";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // shutdown the jukebox
 if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
     // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo halt";
+    $exec = $scripts."shutdown.sh";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
 // stop playing
@@ -90,57 +91,49 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
+    exit;
 }
 
-// play folder with VLC
-if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
-    // kill vlc if running
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
+// play folder
+if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(getcwd()."/../shared/audiofolders/".urldecode($urlparams['play']))) {
+    $exec = $scripts."stop.sh";
     exec($exec);
 
-    // pipe playlist into VLC
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
-    $exec = "/usr/bin/sudo /usr/bin/cvlc --no-video -I rc --rc-host localhost:4212 '".urldecode($urlparams['play'])."' > /dev/null 2>/dev/null &";
+    $exec = $scripts."play.sh '".urldecode($urlparams['play'])."'";
     exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
-    exit; 
-}
+    exit;
+}u
 // control player through web interface
 if(isset($urlparams['player'])) {
     if($urlparams['player'] == "next") {
-        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-        $exec = "/usr/bin/sudo echo 'next' | nc.openbsd -w 1 localhost 4212";
+        $exec = $scripts."next.sh";
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "prev") {
-        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-        $exec = "/usr/bin/sudo echo 'prev' | nc.openbsd -w 1 localhost 4212";
+        $exec = $scripts."prev.sh";
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "play") {
-        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-        $exec = "/usr/bin/sudo echo 'play' | nc.openbsd -w 1 localhost 4212";
+        $exec = $scripts."play.sh";
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
     if($urlparams['player'] == "pause") {
-        // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-        $exec = "/usr/bin/sudo echo 'pause' | nc.openbsd -w 1 localhost 4212";
+        $exec = $scripts."pause.sh";
         exec($exec);
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
-        exit; 
+        exit;
     }
 }
 
