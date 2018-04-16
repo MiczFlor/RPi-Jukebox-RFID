@@ -41,7 +41,7 @@ The web app runs on any device and is mobile optimised. It provides:
 
 ## Installation
 
-Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs` folder.
+Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh))
 
 Then walk through the configuration of the RPi here: [`CONFIGURE.md`](docs/CONFIGURE.md)
 

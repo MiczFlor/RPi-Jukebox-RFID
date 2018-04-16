@@ -17,7 +17,9 @@ The installation is the first step to get your jukebox up and running. Once you 
 
 And Once you finished with the configuration, read the [manual](MANUAL.md) to add audio files and RFID cards.
 
-This project has been tested on Raspberry Pi model 1 and 2. And there is no reason why it shouldn't work on the third generation.
+This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
+
+**Quick install script:** after you installed Raspbian and are online with your RPi, you might want to proceed to the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh). Having said this, if you are new to your Raspberry, you will learn more going through this step by step.
 
 ## Install Raspbian on your RPi
 
