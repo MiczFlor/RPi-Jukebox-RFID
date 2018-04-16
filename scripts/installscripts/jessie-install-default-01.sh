@@ -67,10 +67,15 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 
 # copy shell script for player
-# -rwxr-xr-x 1 pi pi 6253 Nov 17 21:24 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
-sudo chmod 755 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+
+# copy bash script for player controls
+cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
+sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
+
 # The new way of making the bash daemon is using the helperscripts 
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php

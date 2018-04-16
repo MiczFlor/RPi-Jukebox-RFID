@@ -37,11 +37,16 @@
       <div class="col-lg-12">
 
         <div class="btn-group" role="group" aria-label="player">
-          <a href='?player=prev' class='btn btn-default'><i class='fa  fa-step-backward'></i></a>
-          <a href='?player=pause' class='btn btn-default'><i class='fa  fa-pause'></i></a>
-          <a href='?player=play' class='btn btn-default'><i class='fa fa-play'></i></a>
-          <a href='?stop=true' class='btn btn-default'><i class='fa fa-stop'></i></a>
-          <a href='?player=next' class='btn btn-default'><i class='fa  fa-step-forward'></i></a>
+          <a href='?player=prev' class='btn btn-default btn-success'><i class='fa  fa-step-backward'></i></a>
+          <a href='?player=pause' class='btn btn-default btn-success'><i class='fa  fa-pause'></i></a>
+          <a href='?player=play' class='btn btn-default btn-success'><i class='fa fa-play'></i></a>
+          <a href='?player=replay' class='btn btn-default btn-success'><i class='fa fa-refresh'></i></a>
+          <a href='?stop=true' class='btn btn-default btn-success'><i class='fa fa-stop'></i></a>
+          <a href='?player=next' class='btn btn-default btn-success'><i class='fa  fa-step-forward'></i></a>
+         </div>&nbsp;
+        <div class="btn-group" role="group" aria-label="volume">
+                <a href='?volumedown=true' class='btn btn-default btn-primary'><i class='fa  fa-volume-down'></i></a>
+                <a href='?volumeup=true' class='btn btn-default btn-primary'><i class='fa  fa-volume-up'></i></a>
          </div>
        <p>&nbsp;</p>
        </div>
@@ -64,7 +69,7 @@
                      <option value='100'>100%</option>
                   </select>
                 <input type='submit' name='submit' value='Set volume'/>
-                </form>
+                </form>          
                 
         </div>
         <div class="col-lg-6">
@@ -94,7 +99,8 @@ foreach ($shortcutstemp as $shortcuttemp) {
 
 // read the subfolders of shared/audiofolders
 $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
-//print "<pre>"; print_r($audiofolders); print "</pre>"; // ???
+usort($audiofolders, 'strcasecmp');
+
 // counter for ID of each folder
 $idcounter = 0;
 

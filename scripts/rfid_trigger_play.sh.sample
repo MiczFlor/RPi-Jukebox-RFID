@@ -32,6 +32,7 @@ CMDVOLUP="%CMDVOLUP%"
 CMDVOLDOWN="%CMDVOLDOWN%"
 CMDSTOP="%CMDSTOP%"
 CMDSHUTDOWN="%CMDSHUTDOWN%"
+CMDREBOOT="%CMDREBOOT%"
 # The following commands control VLC playout
 # next and prev play the preivous or next track in the playlist (== folder)
 CMDNEXT="%CMDNEXT%"
@@ -68,67 +69,96 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 if [ "$CARDID" == "$CMDMUTE" ]
 then
-    amixer sset 'PCM' 0%
+    # amixer sset 'PCM' 0%
+    $PATHDATA/playout_controls.sh -c=mute
+    
 elif [ "$CARDID" == "$CMDVOL30" ]
 then
-    amixer sset 'PCM' 30%
+    # amixer sset 'PCM' 30%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=30
 
 elif [ "$CARDID" == "$CMDVOL50" ]
 then
-    amixer sset 'PCM' 50%
+    # amixer sset 'PCM' 50%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=50
 
 elif [ "$CARDID" == "$CMDVOL75" ]
 then
-    amixer sset 'PCM' 75%
+    # amixer sset 'PCM' 75%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=75
 
 elif [ "$CARDID" == "$CMDVOL85" ]
 then
-    amixer sset 'PCM' 85%
+    # amixer sset 'PCM' 85%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=85
 
 elif [ "$CARDID" == "$CMDVOL90" ]
 then
-    amixer sset 'PCM' 90%
+    # amixer sset 'PCM' 90%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=90
 
 elif [ "$CARDID" == "$CMDVOL95" ]
 then
-    amixer sset 'PCM' 95%
+    # amixer sset 'PCM' 95%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=95
 
 elif [ "$CARDID" == "$CMDVOL100" ]
 then
-    amixer sset 'PCM' 100%
+    # amixer sset 'PCM' 100%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=100
 
 elif [ "$CARDID" == "$CMDVOLUP" ]
 then
-    amixer sset 'PCM' 500+
+    # amixer sset 'PCM' 500+
+    $PATHDATA/playout_controls.sh -c=volumeup   
 
 elif [ "$CARDID" == "$CMDVOLDOWN" ]
 then
-    amixer sset 'PCM' 500-
+    # amixer sset 'PCM' 500-
+    $PATHDATA/playout_controls.sh -c=volumedown
 
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
     # kill all running VLC media players
-    sudo pkill vlc
+    # sudo pkill vlc
+    $PATHDATA/playout_controls.sh -c=playerstop
+
 elif [ "$CARDID" == "$CMDSHUTDOWN" ]
 then
     # shutdown the RPi nicely
-    sudo halt
+    # sudo halt
+    $PATHDATA/playout_controls.sh -c=shutdown
+    
+elif [ "$CARDID" == "$CMDREBOOT" ]
+then
+    # shutdown the RPi nicely
+    # sudo reboot
+    $PATHDATA/playout_controls.sh -c=reboot
+    
 elif [ "$CARDID" == "$CMDNEXT" ]
 then
     # play next track in playlist (==folder)
-    echo "next" | nc.openbsd -w 1 localhost 4212
+    # echo "next" | nc.openbsd -w 1 localhost 4212
+    $PATHDATA/playout_controls.sh -c=playernext
+    
 elif [ "$CARDID" == "$CMDPREV" ]
 then
     # play previous track in playlist (==folder)
-    echo "prev" | nc.openbsd -w 1 localhost 4212
+    # echo "prev" | nc.openbsd -w 1 localhost 4212
+    $PATHDATA/playout_controls.sh -c=playerprev
+    
 elif [ "$CARDID" == "$CMDPAUSE" ]
 then
     # pause current track
-    echo "pause" | nc.openbsd -w 1 localhost 4212
-elif [ "$CARDID" == "$CMDNEXT" ]
+    # echo "pause" | nc.openbsd -w 1 localhost 4212
+    $PATHDATA/playout_controls.sh -c=playerpause
+    
+elif [ "$CARDID" == "$CMDPLAY" ]
 then
     # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
+    # echo "play" | nc.openbsd -w 1 localhost 4212
+    $PATHDATA/playout_controls.sh -c=playerplay
+    
 else
     # We checked if the card was a special command, seems it wasn't.
     # Now we expect it to be a trigger for one or more audio file(s).
@@ -159,17 +189,17 @@ else
 	# check if CARDID has a text file by the same name - which would contain the human readable folder name
 	if [ -f $PATHDATA/../shared/shortcuts/$CARDID ]
 	then
-	    # Read human readable shortcut from file
+        # Read human readable shortcut from file
         FOLDERNAME=`cat $PATHDATA/../shared/shortcuts/$CARDID`
         # Add info into the log, making it easer to monitor cards
-	    echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
+        echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
 	else
         # Human readable shortcut does not exists, so create one with the content $CARDID
         # this file can later be edited manually over the samba network
         echo "$CARDID" > $PATHDATA/../shared/shortcuts/$CARDID
         FOLDERNAME=$CARDID
         # Add info into the log, making it easer to monitor cards
-	    echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
+        echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
     fi
     # Add info into the log, making it easer to monitor cards
     echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
@@ -179,13 +209,18 @@ else
     then
         # write playlist to file using the same name as the folder with ending .m3u
         # wrap $PLAYLIST string in "" to keep line breaks
-	find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PATHDATA/../playlists/$FOLDERNAME.m3u"
+        find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PATHDATA/../playlists/$FOLDERNAME.m3u"
 
-        # first kill any possible running vlc processn => stop playing audio
+        # first kill any possible running vlc process => stop playing audio
         sudo pkill vlc
 
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (cvlc -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        (cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        
+        # NOTE TO SELF: can we get rid off writing a playlist if we play the folder as we do in the index.php?
+        # Currently problem with whitespaces in folder name.
+        # Also, keep in mind the use of stream URLs or YouTube in text files
+        # (cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../shared/audiofolders/$FOLDERNAME" > /dev/null 2>/dev/null &)
     fi
 fi
