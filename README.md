@@ -41,13 +41,13 @@ The web app runs on any device and is mobile optimised. It provides:
 
 ## Installation
 
-Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh))
-
-Then walk through the configuration of the RPi here: [`CONFIGURE.md`](docs/CONFIGURE.md)
-
-Once everything is set up and configured, read the manual to register cards and add audio: [`MANUAL.md`](docs/MANUAL.md)
+* Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh))
+* Then walk through the configuration of the RPi here: [`CONFIGURE.md`](docs/CONFIGURE.md)
+* Once everything is set up and configured, read the manual to register cards and add audio: [`MANUAL.md`](docs/MANUAL.md)
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
+
+*A German version for the installation ... hier ist eine etwas überholte [deutsche Version der Installationsdoku für Jessie](http://docplayer.org/68280452-Anleitung-jukebox-kinder-https-github-com-miczflor-rpi-jukebox-rfid-mit-buttons-und-hifiberry-miniamp.html) von [hailogugo](https://forum-raspberrypi.de/user/51824-hailogugo/)* 
 
 ## Manual
 
