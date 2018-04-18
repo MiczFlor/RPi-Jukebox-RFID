@@ -81,6 +81,8 @@ This is why you can assign *human readable* names for card IDs. This is how you 
 
 Now you have told the jukebox that every time the card with the ID `0594672283` is swiped across, play what's in the folder `birds`. Let's continue and make that folder and the audio files inside.
 
+**Important:** Make sure your editor does not add a line break at the end of the shortcuts file. It must only contain the folder name.
+
 ### Adding new audio files and create a playlist for a new card
 
 Following the previous step, we now have a card that triggers the jukebox to seek the folder `birds` and play the contents of that folder as an audio playlist. This is how you create the folder and fill it with content:
@@ -318,4 +320,10 @@ Run this script every minute by adding the following line via crontab:
 ## The RFID Reader doesn't seem to work
 
 There could be many reasons why the RFID Reader is not working reliably or behaves strangely. This could be due to a weak power supply or an insuficient power bank. Worth trying out before you try anything else.
+
+## Everything seems to work, but I hear nothing when swiping a card
+
+If the RFID reader works, and also the ID cards are listed in the `latestID.txt` and the WebApp plays audio correctly, but the cards don't start the audio playout, this is what could be the issue:
+
+* Make sure your editor does not add a line break at the end of the shortcuts files you are editing. It must only contain the folder name you want to trigger.
 
