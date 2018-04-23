@@ -327,3 +327,47 @@ If the RFID reader works, and also the ID cards are listed in the `latestID.txt`
 
 * Make sure your editor does not add a line break at the end of the shortcuts files you are editing. It must only contain the folder name you want to trigger.
 
+## Need two cards / IDs to do the same thing
+
+In this example, you will create two cards to do the same thing: set the volume level to 95%.
+After you installed the box and it works, to be safe, make a backup of the daemon script:
+~~~
+cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup
+~~~
+If you make a mistake, you can revert your changes with this command:
+~~~
+cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+~~~
+Then open the script in a text editor. At the top of the script you need to add new variables for the master keychain. As an example, let's say the volume setting for 95% is on both chains. Currently there is only one:
+~~~
+CMDVOL95="%CMDVOL95%"
+~~~
+You will add another:
+~~~
+CMDVOL95="%CMDVOL95%"
+CMDMASTERVOL95="%CMDMASTERVOL95%"
+~~~
+Once you filled in your IDs, it will look something like this:
+~~~
+CMDVOL95="123456789"
+CMDMASTERVOL95="987654321"
+~~~
+Now you also duplicate the section in the script below and do the same thing for both cards. Now it says:
+~~~
+elif [ "$CARDID" == "$CMDVOL95" ]
+then
+    # amixer sset 'PCM' 95%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=95
+~~~
+Once you made the changes, it will say this:
+~~~
+elif [ "$CARDID" == "$CMDVOL95" ]
+then
+    # amixer sset 'PCM' 95%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=95
+
+elif [ "$CARDID" == "$CMDMASTERVOL95" ]
+then
+    # amixer sset 'PCM' 95%
+    $PATHDATA/playout_controls.sh -c=setvolume -v=95
+~~~
