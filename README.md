@@ -59,6 +59,16 @@ In [`MANUAL.md`](docs/MANUAL.md) you will learn:
 * [How to control the jukebox through the web app.](docs/MANUAL.md#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](docs/MANUAL.md#cardcontrol)
 
+## Contributing improvements
+
+The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on your jukebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
+## Reporting bugs
+
+If you find something that doesn't work. And you tried and tried again, but it still doesn't work, please report your issue in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues). Make sure to include information about the system and hardware you are using, like: 
+
+*Raspberry ZERO, OS Jessie, Card reader lists as (insert here) when running scripts/RegisterDevice.py, installed jukebox version 0.9.3 (or: using latest master branch).*
+
 ## Troubleshooting
 
 There is a growing section of [troubleshooting](docs/MANUAL.md#faq) including:
