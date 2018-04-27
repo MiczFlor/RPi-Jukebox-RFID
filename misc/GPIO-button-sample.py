@@ -10,25 +10,25 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
-    check_call(['sudo', 'poweroff'])
+    check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
-    check_call("amixer sset PCM 1.5db+", shell=True)
+    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
 
 def def_volD():
-    check_call("amixer sset PCM 1.5db-", shell=True)
+    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
 
 def def_vol0():
-    check_call("amixer sset PCM 0db", shell=True)
+    check_call("./scripts/playout_controls.sh -c=mute", shell=True)
 
 def def_next():
-    check_call("echo 'next' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
 
 def def_prev():
-    check_call("echo 'prev' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
 def def_halt():
-    check_call("echo 'pause' | nc.openbsd -w 1 localhost 4212", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 shut = Button(3, hold_time=2)
 vol0 = Button(13)    

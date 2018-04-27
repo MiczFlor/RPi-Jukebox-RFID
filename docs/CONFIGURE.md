@@ -145,6 +145,7 @@ The last step is to enable the service files:
 ```
 sudo systemctl enable rfid-reader
 sudo systemctl enable startup-sound
+sudo systemctl enable gpio-buttons (optional)
 ```
 
 The newly installed service can be started either by rebooting the jukebox or
