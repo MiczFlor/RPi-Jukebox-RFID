@@ -1,6 +1,8 @@
-# Configure your RPi and jukebox
+# Configure your Phoniebox on RPi Stretch
 
-This is the second step. Make sure to go through the [installation](INSTALL.md) first.
+*Written for an tested on Raspbian GNU/Linux 9.4 (stretch) Kernel version: 4.14*
+
+This is the second step. Make sure to go through the [installation](INSTALL-stretch.md) first.
 
 Once you finished with the configuration, read the [manual](MANUAL.md) to add audio files and RFID cards.
 
@@ -17,46 +19,15 @@ Let's see if your reader is probably connected and recognised by your RPi. Check
 
 If you can answer both with yes, you can be 90% sure all is working well. Just to be 100% sure, here are a few command to type on the command line which should list your reader.
 
-~~~~
-$ ls -la /dev/input/by-id/
-~~~~
+~~~
+ls -la /dev/input/by-id/
+~~~
 
 In my case, this will list the Barcode Reader and show that the system can interact with the device under `event0`:
 
-~~~~
-lrwxrwxrwx 1 root root   9 Feb  1 18:58 usb-13ba_Barcode_Reader-event-kbd -> ../event0
-~~~~
-
-If you want all the details about your USB device, you can use the command `sudo lsusb`, short for 'list USB devices'. Scroll through the output to find the *Barcode Reader*. This long description can be helpful if you need specific information about available drivers. In my case, for example, we learn that the product ID of the device is `PCP-BCG4209`. Below I am listing an excerpt from the complete list of information.
-
-~~~~
-$ sudo lsusb -v
-
-Bus 001 Device 004: ID 13ba:0018 PCPlay Barcode PCP-BCG4209
-Device Descriptor:
-...
-  idVendor           0x13ba PCPlay
-  idProduct          0x0018 Barcode PCP-BCG4209
-  bcdDevice          0.01
-  iManufacturer      0
-  iProduct           1 Barcode Reader
-...
-  MaxPower           400mA
-...
-  bInterfaceClass    3 Human Interface Device
-...
-  bInterfaceProtocol 1 Keyboard
-...
-  Device Status:     0x0000
-  (Bus Powered)
-~~~~
-
-What we learn from this detailed list:
-
-1. The device is a 'Human Interface Device' and acts like a 'Keyboard', which is exactly how the RFID reader operates: it registers as a USB keyboard and when you swipe a card, it will 'print' the card ID, followed by a return key, as if you typed it into the keyboard.
-2. It can use up to 400mA in power consumption. (This information is not trivial. In one forum I found a post where the user could only run this USB device by using a USB hub with a special power supply. The RPi did not provide enough power over the USB.)
-3. The vendor is called *PCPlay*.
-4. The product is called *Barcode Reader*.
+~~~
+lrwxrwxrwx 1 root root   9 Apr 30 09:55 usb-Sycreader_USB_Reader_08FF20150112-event-kbd -> ../event1
+~~~
 
 ## Register your USB device for the jukebox
 
@@ -64,75 +35,43 @@ Now we know a lot about the RFID reader attached to our RPi. In order to use it 
 
 To register your device, go to the directory containing all the scripts and run the file `RegisterDevice.py`.
 
-~~~~
-$ cd /home/pi/RPi-Jukebox-RFID/scripts/
-$ python2 RegisterDevice.py
-Choose the reader from list
-0 Barcode Reader 
-~~~~
+~~~
+cd /home/pi/RPi-Jukebox-RFID/scripts/
+python2 RegisterDevice.py
+~~~
 
-This will bring up a list of one or more devices. Spot the device you are using as a RFID reader, type the number (in this case *0*) and hit *Enter*.
+This will bring up a list of one or more devices. Spot the device you are using as a RFID reader, type the number (in this case *2*) and hit *Enter*.
+~~~
+Choose the reader from list
+0 Chicony USB Keyboard
+1 Chicony USB Keyboard
+2 Sycreader USB Reader
+3 Logitech USB-PS/2 Optical Mouse 
+~~~
 
 You can check if your device was registered properly by taking a look inside the file that was just generated, called `deviceName.txt`.
 
 ~~~~
-$ cat deviceName.txt
-Barcode Reader
+cat deviceName.txt
 ~~~~
 
 Now your jukebox knows which device to listen to when you are swiping your cards or keyrings.
 
 ## Auto-start the jukebox
 
-Note: If you use a recent Raspbian installation you system will most likely
-use systemd for the system start. If it does it is preferrable to use
-systemd to start the components since systemd will also take care of
-restarting the script in case they die. See below for the procedure to do
-so.
-
 This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards.
 
-To start the jukebox daemon, we are taking advantage of another daemon which is installed on most Unix systems: *Cron*. We are using cron in a very basic way by telling it: "every time the computer has booted up, run the following script". 
-
-In cron language, this translates to:
-
-~~~~
-@reboot python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
-~~~~
-
-Add this line to your *crontab*, a table of scheduled jobs. To edit this cron table for the user pi on your RPi, type:
-
-~~~~
-$ crontab -e
-~~~~
-
-The first time you fire up this command, the system will ask you which editor to use.
-
-Once you started `crontab`, add the two lines at the bottom of the document:
-
-```
-@reboot mpg123 /home/pi/RPi-Jukebox-RFID/misc/startupsound.mp3
-@reboot python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py &
-```
-
-**Note:** The first line plays a startup sound, using the command line player mpg123. The sound used here is being shipped with Ubuntu and can be found at `/usr/share/sounds/ubuntu/notifications/Mallet.ogg`.
-
-Save and close the file by typing `Ctrl & X` then `y` then hit the `Enter` key.
-
-Now, when you reboot, the jukebox will automatically start and wait for input in the background.
-
-## Auto-start the jukebox by systemd 
+The Raspbian OS 9 (stretch) uses systemd to start the components. Systemd will also take care of restarting the script in case they die. See below for the procedure to do
+so.
 
 If you chose to use the `crontab` option to launch the card reader daemon scripts, you can ignore this part.
 If you want to use the `systemd` way, first copy the service config files to the correct directory:
 
 ```
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/*.service /etc/systemd/system/
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
 ```
-
-If you installed your jukebox to /home/pi/Rpi-jukebox-RFID you can leave the
-files as they are, otherwise you need to change the path in the *.service
-text files.
 
 Now systemd has to be notified that there are new service files:
 
@@ -149,11 +88,14 @@ sudo systemctl enable gpio-buttons (optional)
 ```
 
 The newly installed service can be started either by rebooting the jukebox or
-with ```sudo systemctl start rfid-reader```.
+with:
+```sudo systemctl start rfid-reader```
 
-To see if the reader process is running use the command ```sudo systemctl
-status rfid-reader``` to produce an output like this:
-
+To see if the reader process is running use the following command:
+```
+sudo systemctl status rfid-reader
+```
+This should produce an output like this:
 ```
 pi@Jukebox:~ $ systemctl status rfid-reader
 ● rfid-reader.service - RFID-Reader Service
@@ -165,7 +107,6 @@ pi@Jukebox:~ $ systemctl status rfid-reader
 
 Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
 ```
-  
 
 ## Copy the media player and daemon script
 

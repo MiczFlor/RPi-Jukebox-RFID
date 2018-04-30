@@ -1,7 +1,7 @@
-# RPi-Jukebox-RFID
-A jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
+# Phoniebox: the RPi-Jukebox-RFID
+A contactless jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
-* **Important update information from version < 0.9.3** Please see [`INSTALL.md`](docs/INSTALL.md) for details (2018-04-16)
+* **If you updated your codebase from version < 0.9.3** please see [`INSTALL-stretch.md`](docs/INSTALL.md) for details (2018-04-16)
 
 ---
 
@@ -41,8 +41,8 @@ The web app runs on any device and is mobile optimised. It provides:
 
 ## Installation
 
-* Follow the instructions in the [`INSTALL.md`](docs/INSTALL.md) file in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh))
-* Then walk through the configuration of the RPi here: [`CONFIGURE.md`](docs/CONFIGURE.md)
+* Installation instructions for Raspbian [Jessie](docs/INSTALL-jessie.md) and [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh)) or [install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh)).
+* Then walk through the configuraton for [Jessie](docs/CONFIGURE-jessie.md) or [Stretch](docs/CONFIGURE-stretch.md).
 * Once everything is set up and configured, read the manual to register cards and add audio: [`MANUAL.md`](docs/MANUAL.md)
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).

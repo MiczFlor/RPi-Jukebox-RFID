@@ -3,7 +3,6 @@ server.modules = (
 	"mod_alias",
 	"mod_compress",
  	"mod_redirect",
-#       "mod_rewrite",
 )
 
 server.document-root        = "/home/pi/RPi-Jukebox-RFID/htdocs"

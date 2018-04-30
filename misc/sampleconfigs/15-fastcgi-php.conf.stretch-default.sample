@@ -1,0 +1,11 @@
+# -*- depends: fastcgi -*-
+# /usr/share/doc/lighttpd/fastcgi.txt.gz
+# http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs:ConfigurationOptions#mod_fastcgi-fastcgi
+
+## Start an FastCGI server for php (needs the php5-cgi package)
+fastcgi.server += ( ".php" =>
+        ((
+                "socket" => "/var/run/php/php7.0-fpm.sock",
+                "broken-scriptfilename" => "enable"
+        ))
+)

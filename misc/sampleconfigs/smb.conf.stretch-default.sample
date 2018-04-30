@@ -30,7 +30,7 @@
 
 # Windows Internet Name Serving Support Section:
 # WINS Support - Tells the NMBD component of Samba to enable its WINS Server
-   wins support = yes
+#   wins support = no
 
 # WINS Server - Tells the NMBD components of Samba to be a WINS Client
 # Note: Samba can be either a WINS Server, or a WINS Client, but NOT both
@@ -261,4 +261,3 @@
    create mask=0777
    directory mask=0777
    public=no
-
