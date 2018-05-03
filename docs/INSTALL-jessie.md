@@ -285,11 +285,13 @@ And at the bottom of the file, add the following line:
 www-data ALL=(ALL) NOPASSWD: ALL
 ~~~~
 
-Make sure the shared folder is accessible by the web server:
+Make sure the `shared` and `htdocs` folders are accessible by the web server:
 
 ~~~~
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 ~~~~
 
 The final step to make the RPi web app ready is to tell the webserver how to execute PHP. To enable the lighttpd server to execute php scripts, the fastcgi-php module must be enabled.

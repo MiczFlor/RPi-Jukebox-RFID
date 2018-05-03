@@ -84,6 +84,10 @@ sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 
+# make sure the htdocs folder can be changed by the web server
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
+
 # Starting web server
 sudo lighty-enable-mod fastcgi-php
 sudo service lighttpd force-reload

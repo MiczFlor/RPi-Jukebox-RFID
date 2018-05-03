@@ -267,10 +267,12 @@ server.document-root = "/home/pi/RPi-Jukebox-RFID/htdocs"
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
-And make the htdocs folder available to the web server. Type in the terminal:
+And make the `htdocs` and `shared` folders are available to the web server. Type in the terminal:
 ~~~~
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 ~~~~
 
 The webserver is usually not very powerful when it comes to access to the system it is running on. From a security point of view, this is a very good concept: you don't want a website to potentially change parts of the operating system which should be locked away from any public access.
@@ -287,13 +289,6 @@ And at the bottom of the file, add the following line:
 www-data ALL=(ALL) NOPASSWD: ALL
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
-
-Make sure the shared folder is accessible by the web server:
-
-~~~~
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
-~~~~
 
 The final step to make the RPi web app ready is to tell the webserver how to execute PHP. To enable the lighttpd server to execute php scripts, the fastcgi-php module must be enabled. Type:
 ~~~

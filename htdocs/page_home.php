@@ -35,7 +35,14 @@
 </nav>
     <div class="row">
       <div class="col-lg-12">
-
+<?php
+/*
+* Do we need to voice a warning here?
+*/
+if(isset($warning)) {
+    print '<div class="alert alert-warning">'.$warning.'</div>';
+}
+?>
         <div class="btn-group" role="group" aria-label="player">
           <a href='?player=prev' class='btn btn-default btn-success'><i class='fa  fa-step-backward'></i></a>
           <a href='?player=pause' class='btn btn-default btn-success'><i class='fa  fa-pause'></i></a>

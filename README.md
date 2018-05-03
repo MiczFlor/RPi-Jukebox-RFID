@@ -1,6 +1,8 @@
 # Phoniebox: the RPi-Jukebox-RFID
 A contactless jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
+*Important update news*
+* **`config.php` removed in repo** To fix a flaw of the initial commit, I removed the `config.php` file from the `htdocs` directory. It will be created automatically from `config.php.sample`. If you encounter problems after `git pull`, download [`config.php.sample`](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/htdocs/config.php.sample) adjust and copy to `config.php`. (2018-05-03)
 * **If you updated your codebase from version < 0.9.3** please see [`INSTALL-stretch.md`](docs/INSTALL.md) for details (2018-04-16)
 
 ---
