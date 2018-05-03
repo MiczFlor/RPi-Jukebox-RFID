@@ -80,6 +80,9 @@ sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
+# create config file for web app from sample
+sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
+
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
