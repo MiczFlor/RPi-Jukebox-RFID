@@ -193,15 +193,12 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
 
 // play folder with VLC
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
-    // kill vlc if running
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to kill VLC
-    $exec = "/usr/bin/sudo pkill vlc > /dev/null 2>/dev/null";
+
+    // pass folder to playout script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',basename($urlparams['play']));//basename($urlparams['play']);
     exec($exec);
 
-    // pipe playlist into VLC
-    // NOTE: this is being done as sudo, because the webserver does not have the rights to start VLC
-    $exec = "/usr/bin/sudo /usr/bin/cvlc --no-video -I rc --rc-host localhost:4212 '".urldecode($urlparams['play'])."' > /dev/null 2>/dev/null &";
-    exec($exec);
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit; 

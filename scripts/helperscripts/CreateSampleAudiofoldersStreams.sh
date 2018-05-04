@@ -11,7 +11,7 @@
 # * http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml (content)
 
 mkdir ../../shared/audiofolders/ZZZ-Podcast-DLF-Kinderhoerspiele
-echo "http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml" > ../../shared/audiofolders/ZZZ-Podcast-DLF-Kinderhoerspiele2/podcast.txt
+echo "http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml" > ../../shared/audiofolders/ZZZ-Podcast-DLF-Kinderhoerspiele/podcast.txt
 
 # ZZZ-Podcast-Kakadu (dir)
 # * podcast.txt (file)
@@ -33,5 +33,21 @@ echo "http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3" > ../..
 
 mkdir ../../shared/audiofolders/ZZZ-YouTube-Phoniebox
 echo "https://youtu.be/7GI0VdPehQI" > ../../shared/audiofolders/ZZZ-YouTube-Phoniebox/youtube.txt
+
+# ZZZ-MP3-StartUpSound (dir)
+# * startupsound.mp3 (file)
+
+mkdir ../../shared/audiofolders/ZZZ-MP3-StartUpSound
+cp ../../misc/startupsound.mp3 ../../shared/audiofolders/ZZZ-MP3-StartUpSound/
+
+# ZZZ MP3 Whitespace StartUpSound (dir)
+# * startupsound.mp3 (file)
+
+mkdir ../../shared/audiofolders/ZZZ\ MP3\ Whitespace\ StartUpSound
+cp ../../misc/startupsound.mp3 ../../shared/audiofolders/ZZZ\ MP3\ Whitespace\ StartUpSound/
+
+
+
+
 
 

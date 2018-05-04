@@ -238,18 +238,18 @@ if [ "$FOLDERNAME" ]; then
     then
         # write playlist to file using the same name as the folder with ending .m3u
         # wrap $PLAYLIST string in "" to keep line breaks
-        find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PATHDATA/../playlists/$FOLDERNAME.m3u"
+        find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "/tmp/$FOLDERNAME.m3u"
     
         # first kill any possible running vlc process => stop playing audio
         sudo pkill vlc
     
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        cvlc --no-video -I rc --rc-host localhost:4212 "/tmp/$FOLDERNAME.m3u" &
         
         # NOTE TO SELF: can we get rid off writing a playlist if we play the folder as we do in the index.php?
         # Currently problem with whitespaces in folder name.
         # Also, keep in mind the use of stream URLs or YouTube in text files
-        # (cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../shared/audiofolders/$FOLDERNAME" > /dev/null 2>/dev/null &)
+        # cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../shared/audiofolders/$FOLDERNAME" > /dev/null 2>/dev/null &
     fi
 fi
