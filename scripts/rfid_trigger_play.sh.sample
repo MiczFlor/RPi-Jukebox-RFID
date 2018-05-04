@@ -228,24 +228,32 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 if [ "$FOLDERNAME" ]; then
-
-    # Read content file names of folder into string
-    # DATEI=$(ls $PATHDATA/../shared/audiofolders/$FOLDERNAME)
-    # echo $DATEI
     
     # if a folder $FOLDERNAME exists, play content
     if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
     then
-        # write playlist to file using the same name as the folder with ending .m3u
-        # wrap $PLAYLIST string in "" to keep line breaks
-        find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "/tmp/$FOLDERNAME.m3u"
-    
+        # Check if we have something special to do
+
+        # Podcast?
+        # Read content file names of folder into string
+        SPECIALFORMAT=$(ls $PATHDATA/../shared/audiofolders/$FOLDERNAME | grep podcast.txt)
+        if [ "$SPECIALFORMAT" == "podcast.txt" ]; then
+            # Podcast!
+            # ... to be done ...
+            echo $SPECIALFORMAT
+        else
+            # Nothing special to do, folder with audio files
+            # write playlist to file using the same name as the folder with ending .m3u
+            # wrap $PLAYLIST string in "" to keep line breaks
+            find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "/tmp/$FOLDERNAME.m3u"
+            VLCPLAYS="/tmp/$FOLDERNAME.m3u"
+        fi
         # first kill any possible running vlc process => stop playing audio
         sudo pkill vlc
     
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        cvlc --no-video -I rc --rc-host localhost:4212 "/tmp/$FOLDERNAME.m3u" &
+        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$VLCPLAYS" &
         
         # NOTE TO SELF: can we get rid off writing a playlist if we play the folder as we do in the index.php?
         # Currently problem with whitespaces in folder name.

@@ -55,7 +55,7 @@ In [`MANUAL.md`](docs/MANUAL.md) you will learn:
 
 * [How to connect to the jukebox from any computer to add and edit audio files.](docs/MANUAL.md#connect)
 * [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](docs/MANUAL.md#registercards)
-* [How to add web streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
+* [How to add web radios, YouTube and other streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
 * [How to control the jukebox through the web app.](docs/MANUAL.md#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](docs/MANUAL.md#cardcontrol)
 
