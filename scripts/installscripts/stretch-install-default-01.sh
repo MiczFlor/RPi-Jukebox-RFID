@@ -20,7 +20,10 @@ cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
 # Patch VLC
-sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
+if [ -f /usr/bin/vlc ];
+then
+   sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
+fi
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
