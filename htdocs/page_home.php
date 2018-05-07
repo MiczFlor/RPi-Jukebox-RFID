@@ -1,39 +1,13 @@
 <?php
 ?>
 <body>
-
   <div class="container">
       
+<?php
+include("inc.navigation.php");
+?>
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="index.php">Jukebox</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li><a href='index.php' class='mainMenu'><i class='fa fa-refresh'></i> Reload page</a></li>
-      </ul>
-      
-<!-- sub menu -->
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href='?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown jukebox</a></li>
-        <li><a href='?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot jukebox</a></li>
-      </ul>
-<!-- / sub menu -->
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
-    <div class="row">
+    <div class="row playerControls">
       <div class="col-lg-12">
 <?php
 /*
@@ -42,20 +16,11 @@
 if(isset($warning)) {
     print '<div class="alert alert-warning">'.$warning.'</div>';
 }
+
+include("inc.controlPlayer.php");
+
+include("inc.controlVolumeUpDown.php");
 ?>
-        <div class="btn-group" role="group" aria-label="player">
-          <a href='?player=prev' class='btn btn-default btn-success'><i class='fa  fa-step-backward'></i></a>
-          <a href='?player=pause' class='btn btn-default btn-success'><i class='fa  fa-pause'></i></a>
-          <a href='?player=play' class='btn btn-default btn-success'><i class='fa fa-play'></i></a>
-          <a href='?player=replay' class='btn btn-default btn-success'><i class='fa fa-refresh'></i></a>
-          <a href='?stop=true' class='btn btn-default btn-success'><i class='fa fa-stop'></i></a>
-          <a href='?player=next' class='btn btn-default btn-success'><i class='fa  fa-step-forward'></i></a>
-         </div>&nbsp;
-        <div class="btn-group" role="group" aria-label="volume">
-                <a href='?volumedown=true' class='btn btn-default btn-primary'><i class='fa  fa-volume-down'></i></a>
-                <a href='?volumeup=true' class='btn btn-default btn-primary'><i class='fa  fa-volume-up'></i></a>
-         </div>
-       <p>&nbsp;</p>
        </div>
     </div>
 
