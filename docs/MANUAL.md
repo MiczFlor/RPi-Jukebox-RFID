@@ -7,7 +7,7 @@ In this manual you will learn:
 
 * [How to connect to the jukebox from any computer to add and edit audio files.](#connect)
 * [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](#registercards)
-* [How to add web radios, YouTube and other web streams to the playout files](#webstreams) - [and even mix web based and local files.](#mixwebstreams)
+* [How to add web streams to the playout files](#webstreams) - [and even mix web based and local files.](#mixwebstreams)
 * [How to control the jukebox through the web app.](#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](#cardcontrol)
 
@@ -106,12 +106,12 @@ You can do this by creating a symbolic link to the USB stick with the following 
 ln -s /media/usb0/* /home/pi/RPi-Jukebox-RFID/shared/audiofolders/
 ~~~
 
-### <a name="webstreams"></a>Playing web radio, YouTube or other web streams
+### <a name="webstreams"></a>Playing a web stream
 
 An audio stream from the web can mean two things:
 
-1. A live stream that plays endlessly.
-2. A clip or file on the web that has a URL (e.g. a YouTube clip).
+1. A live web radio station that plays endlessly.
+2. A static file on the web that has a URL.
 
 These two are actually very different and will result in different behaviour of the jukebox. A live web stream never stops. This means that it will continue to play until you shut down the machine or start something else by swiping a different card across the jukebox.
 
@@ -119,26 +119,16 @@ A static file on the web is more or less the same as a local file. The jukebox w
 
 This is how you add a web stream to a specific card:
 
-Firstly, you need to get the URL from the file or stream.
-
-* **YouTube**: go to the clip on YouTube, select *share* and copy the link (it should start with something like `https://youtu.be`
-* **Static files**: these will point straight to the file and will look something like this: `http://www(...)/filename.mp3`
-* **Web radio streams**: often, radio stations list their URL to the stream. In some cases, they link to a file ending with e.g. `m3u` or `.pls`. This would be a playlist which in turn will contain the stream URL. Save the file, open it with a text editor and use the last URL inside (sometimes the first URLs play jingles).
-
-Now you are ready to add the stream to your Phoniebox.
-
 1. Register the card, create a shortcut and the matching folder as described above.
 2. Navigate to the folder you just created.
-3. Create a text file ending with `.txt`. For YouTube use `youtube.txt` other streams use `livestreamtxt` (because I am working on podcasts and `podcast.txt` will be processed differently, same goes for `spotify.txt` at a later stage). 
+3. Create a text file ending with `.txt`, for example: `livewebradio.txt`.
 4. Open the text file and copy the URL of the live stream (or static file) into the file.
 
 That's it. Now, if you swipe with the card, the jukebox will open the matching folder, open the text file and send the content to the *VLC* media player.
 
 **Note:** you can find a number of radio stations at the [Community Radio Browser](http://www.radio-browser.info). When you find a station you like, click on the *Save* icon which will download a file `radio.pls`. You can open this file with a text editor and within the file find the URL of the live web radio stream.
 
-**Troubleshooting:** 
-* if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
-* if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
+**Troubleshooting:** if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
 
 ### <a name="mixwebstreams"></a>Mixing audio files and web streams
 
@@ -337,14 +327,7 @@ If the RFID reader works, and also the ID cards are listed in the `latestID.txt`
 
 * Make sure your editor does not add a line break at the end of the shortcuts files you are editing. It must only contain the folder name you want to trigger.
 
-## YouTube plays but breaks off or stutters
-This is a buffering issue. YouTube sends a lot of stuff and the Phoniebox only wants the audio. Still, it has to take it all in. You can increase the buffering inside the file `scripts/rfid_trigger_play.sh`. Near the end of the file you find this line:
-~~~
-cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$VLCPLAYS" &
-~~~
-Try to increase the value for `network-caching`. The value is the length of buffered content in milliseconds that VLC will save locally before starting to play the stream. It does not affect local files, but is also affects web radios / streams, which are streaming faster and the buffering set here is usually not noticed.
-
-## I would like to use two cards / IDs to do the same thing
+## Need two cards / IDs to do the same thing
 
 In this example, you will create two cards to do the same thing: set the volume level to 95%.
 After you installed the box and it works, to be safe, make a backup of the daemon script:

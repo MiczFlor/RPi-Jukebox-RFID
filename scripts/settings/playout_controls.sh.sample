@@ -76,10 +76,10 @@ then
 elif [ $COMMAND == "playerstop" ]
 then
     # kill all running VLC media players
-    sudo pkill vlc
+    sudo pkill mpv
 
 # for controlling VLC over rc, see:  
-# https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
+# https://n0tablog.wordpress.com/2009/02/09/controlling-mpv-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
 
 elif [ $COMMAND == "playernext" ]
 then

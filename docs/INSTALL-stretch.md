@@ -267,6 +267,12 @@ server.document-root = "/home/pi/RPi-Jukebox-RFID/htdocs"
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
+And make the htdocs folder available to the web server. Type in the terminal:
+~~~~
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
+~~~~
+
 The webserver is usually not very powerful when it comes to access to the system it is running on. From a security point of view, this is a very good concept: you don't want a website to potentially change parts of the operating system which should be locked away from any public access.
 
 We do need to give the webserver more access in order to run a web app that can start and stop processes on the RPi. To make this happen, we need to add the webserver to the list of users/groups allowed to run commands as superuser. To do so, open the list of sudo users in the nano editor:
@@ -281,6 +287,13 @@ And at the bottom of the file, add the following line:
 www-data ALL=(ALL) NOPASSWD: ALL
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+Make sure the shared folder is accessible by the web server:
+
+~~~~
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
+~~~~
 
 The final step to make the RPi web app ready is to tell the webserver how to execute PHP. To enable the lighttpd server to execute php scripts, the fastcgi-php module must be enabled. Type:
 ~~~
@@ -314,25 +327,6 @@ Now load the new configs into the web server by typing:
 ~~~
 sudo service lighttpd force-reload
 ~~~
-
-### Make a copy of the web app config file
-
-There is a sample config file in the `htdocs` folder which you need to copy to `config.php`.
-This assures that you can make changes to `config.php` which will not be affected by updates
-in the upstream repository.
-
-~~~~
-sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
-~~~~
-
-Make sure the `shared` and `htdocs` folders are accessible by the web server:
-
-~~~~
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
-~~~~
 
 Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the web server more power over the system by adding it to the list of `sudo` users.
 

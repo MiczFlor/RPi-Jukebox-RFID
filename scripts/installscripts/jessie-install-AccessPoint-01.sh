@@ -26,11 +26,7 @@ cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
 # Patch VLC
-if [ -f /usr/bin/vlc ];
-then
-   sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
-fi
-
+sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 #####################################
 # COPY CONFIG PRESETS TO LIVE FOLDERS

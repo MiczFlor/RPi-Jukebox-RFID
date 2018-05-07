@@ -22,11 +22,12 @@
 # volumeup
 # volumedown
 # playerstop
+# playerquit
 # playernext
 # playerprev
-# playerpause
-# playerplay
+# playerpause 
 # playerreplay
+# restartlist
 
 # SET VARIABLES
 # Here you can tweak the commands a little
@@ -59,52 +60,47 @@ then
 
 elif [ $COMMAND == "mute" ]
 then
-    amixer sset \'$DEVICE\' 0%
+    echo '{"command": ["cycle", "mute"]} ' | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "setvolume" ]
 then
-    amixer sset \'$DEVICE\' $VALUE%
+    echo "set volume $VALUE" | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "volumeup" ]
 then
-    amixer sset \'$DEVICE\' 500+
+    echo "add volume +10" | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "volumedown" ]
 then
-    amixer sset \'$DEVICE\' 500-
+    echo "add volume -10" | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "playerstop" ]
 then
-    # kill all running VLC media players
-    sudo pkill mpv
+    echo quit-watch-later | socat - /tmp/mpvsocket
 
-# for controlling VLC over rc, see:  
-# https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
+elif [ $COMMAND == "playerquit" ]
+then
+    echo quit | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "playernext" ]
 then
-    # play next track in playlist (==folder)
-    echo "next" | nc.openbsd -w 1 localhost 4212
+    echo playlist_next | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "playerprev" ]
 then
-    # play previous track in playlist (==folder)
-    echo "prev" | nc.openbsd -w 1 localhost 4212
+    echo playlist_prev | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "playerpause" ]
 then
-    # pause current track
-    echo "pause" | nc.openbsd -w 1 localhost 4212
-
-elif [ $COMMAND == "playerplay" ]
-then
-    # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
+    echo '{ "command": ["cycle", "pause"] }' | socat - /tmp/mpvsocket
 
 elif [ $COMMAND == "playerreplay" ]
 then
     # start the playing track from beginning
-    echo "seek 0" | nc.openbsd -w 1 localhost 4212
+    echo "seek 0 absolute-percent" | socat - /tmp/mpvsocket
+elif [ $COMMAND == "restartlist" ]
+then
+    echo "set playlist-pos 0" | socat - /tmp/mpvsocket
 
 else
     echo Unknown COMMAND $COMMAND VALUE $VALUE

@@ -98,7 +98,7 @@ sudo systemctl status rfid-reader
 This should produce an output like this:
 ```
 pi@Jukebox:~ $ systemctl status rfid-reader
- * rfid-reader.service - RFID-Reader Service
+● rfid-reader.service - RFID-Reader Service
    Loaded: loaded (/etc/systemd/system/rfid-reader.service; enabled; vendor pres
    Active: active (running) since Fri 2018-04-13 07:34:53 UTC; 5h 47min ago
  Main PID: 393 (python2)

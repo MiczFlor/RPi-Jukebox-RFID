@@ -20,11 +20,7 @@ cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
 # Patch VLC
-if [ -f /usr/bin/vlc ];
-then
-   sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
-fi
-
+sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 #####################################
 # COPY CONFIG PRESETS TO LIVE FOLDERS
@@ -84,16 +80,9 @@ sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
-# create config file for web app from sample
-sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
-
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
-
-# make sure the htdocs folder can be changed by the web server
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 
 # Starting web server
 sudo lighty-enable-mod fastcgi-php

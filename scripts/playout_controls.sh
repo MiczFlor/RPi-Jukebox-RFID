@@ -1,1 +1,1 @@
-configuration/VLC_playout_controls.conf
+settings/MPV_playout_controls.sh

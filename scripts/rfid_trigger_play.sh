@@ -9,44 +9,12 @@
 # or
 # ./rfid_trigger_play.sh --cardid=1234567890
 
-# VARIABLES TO CHANGE
-# adjust these variables to match your system and configuration
-
-# If you use cards to change audio level, stop playing or shutdown the RPi,
-# replace the following strings with the ID of the card. For example:
-# Using the card ID 1234567890 to set the audio to mute, change this line:
-# CMDMUTE="mute"
-# to the following:
-# CMDMUTE="1234567890"
-# Leave everything untouched where you do not use a card.
-CMDMUTE="%CMDMUTE%"
-CMDVOL30="%CMDVOL30%"
-CMDVOL50="%CMDVOL50%"
-CMDVOL75="%CMDVOL75%"
-CMDVOL80="%CMDVOL80%"
-CMDVOL85="%CMDVOL85%"
-CMDVOL90="%CMDVOL90%"
-CMDVOL95="%CMDVOL95%"
-CMDVOL100="%CMDVOL100%"
-CMDVOLUP="%CMDVOLUP%"
-CMDVOLDOWN="%CMDVOLDOWN%"
-CMDSTOP="%CMDSTOP%"
-CMDSHUTDOWN="%CMDSHUTDOWN%"
-CMDREBOOT="%CMDREBOOT%"
-# The following commands control MPV playout
-# next and prev play the preivous or next track in the playlist (== folder)
-CMDNEXT="%CMDNEXT%"
-CMDPREV="%CMDPREV%"
-# pause MPV playout
-CMDPAUSE="%CMDPAUSE%"
-# resume MPV playout (makes only sense in combination with pause)
-CMDPLAY="%CMDPLAY%"
-
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # NO CHANGES BENEATH THIS LINE
+. $PATHDATA/settings/rfid_trigger_play.conf
 
 # Get args from command line (see Usage above)
 for i in "$@"
@@ -69,95 +37,79 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 if [ "$CARDID" == "$CMDMUTE" ]
 then
-    # amixer sset 'PCM' 0%
     $PATHDATA/playout_controls.sh -c=mute
     
 elif [ "$CARDID" == "$CMDVOL30" ]
 then
-    # amixer sset 'PCM' 30%
     $PATHDATA/playout_controls.sh -c=setvolume -v=30
 
 elif [ "$CARDID" == "$CMDVOL50" ]
 then
-    # amixer sset 'PCM' 50%
     $PATHDATA/playout_controls.sh -c=setvolume -v=50
 
 elif [ "$CARDID" == "$CMDVOL75" ]
 then
-    # amixer sset 'PCM' 75%
     $PATHDATA/playout_controls.sh -c=setvolume -v=75
 
 elif [ "$CARDID" == "$CMDVOL85" ]
 then
-    # amixer sset 'PCM' 85%
     $PATHDATA/playout_controls.sh -c=setvolume -v=85
 
 elif [ "$CARDID" == "$CMDVOL90" ]
 then
-    # amixer sset 'PCM' 90%
     $PATHDATA/playout_controls.sh -c=setvolume -v=90
 
 elif [ "$CARDID" == "$CMDVOL95" ]
 then
-    # amixer sset 'PCM' 95%
     $PATHDATA/playout_controls.sh -c=setvolume -v=95
 
 elif [ "$CARDID" == "$CMDVOL100" ]
 then
-    # amixer sset 'PCM' 100%
     $PATHDATA/playout_controls.sh -c=setvolume -v=100
 
 elif [ "$CARDID" == "$CMDVOLUP" ]
 then
-    # amixer sset 'PCM' 500+
     $PATHDATA/playout_controls.sh -c=volumeup   
 
 elif [ "$CARDID" == "$CMDVOLDOWN" ]
 then
-    # amixer sset 'PCM' 500-
     $PATHDATA/playout_controls.sh -c=volumedown
+
+elif [ "$CARDID" == "$CMDQUIT" ]
+then
+    $PATHDATA/playout_controls.sh -c=playerquit
 
 elif [ "$CARDID" == "$CMDSTOP" ]
 then
-    # kill all running MPV media players
-    # sudo pkill mpv
     $PATHDATA/playout_controls.sh -c=playerstop
 
 elif [ "$CARDID" == "$CMDSHUTDOWN" ]
 then
-    # shutdown the RPi nicely
-    # sudo halt
     $PATHDATA/playout_controls.sh -c=shutdown
     
 elif [ "$CARDID" == "$CMDREBOOT" ]
 then
-    # shutdown the RPi nicely
-    # sudo reboot
     $PATHDATA/playout_controls.sh -c=reboot
     
 elif [ "$CARDID" == "$CMDNEXT" ]
 then
-    # play next track in playlist (==folder)
-    # echo "next" | nc.openbsd -w 1 localhost 4212
     $PATHDATA/playout_controls.sh -c=playernext
     
 elif [ "$CARDID" == "$CMDPREV" ]
 then
-    # play previous track in playlist (==folder)
-    # echo "prev" | nc.openbsd -w 1 localhost 4212
     $PATHDATA/playout_controls.sh -c=playerprev
+
+elif [ "$CARDID" == "$CMDTRACKREPLAY" ]
+then
+    $PATHDATA/playout_controls.sh -c=playerreplay
+
+elif [ "$CARDID" == "$CMDLISTREPLAY" ]
+then
+    $PATHDATA/playout_controls.sh -c=restartlist
     
 elif [ "$CARDID" == "$CMDPAUSE" ]
 then
-    # pause current track
-    # echo "pause" | nc.openbsd -w 1 localhost 4212
     $PATHDATA/playout_controls.sh -c=playerpause
-    
-elif [ "$CARDID" == "$CMDPLAY" ]
-then
-    # play / resume current track
-    # echo "play" | nc.openbsd -w 1 localhost 4212
-    $PATHDATA/playout_controls.sh -c=playerplay
     
 else
     # We checked if the card was a special command, seems it wasn't.
@@ -216,7 +168,8 @@ else
 
         # now start the command line version of mpv loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        (mpv --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        #(mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --save-position-on-quit --write-filename-in-watch-later-config "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
+        (mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --write-filename-in-watch-later-config "$PATHDATA/../playlists/$FOLDERNAME.m3u" &)
         
         # NOTE TO SELF: can we get rid off writing a playlist if we play the folder as we do in the index.php?
         # Currently problem with whitespaces in folder name.
