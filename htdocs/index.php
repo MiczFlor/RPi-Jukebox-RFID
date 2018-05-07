@@ -3,7 +3,7 @@
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
-* INSTALL.md instructions.
+* INSTALL-stretch.md instructions.
 * If you want to change the paths, edit config.php
 ***************************************************/
 
