@@ -366,6 +366,6 @@ sudo reboot
 
 # Configure the jukebox
 
-Continue with the configuration in the file [`CONFIGURE-stretch.md`](CONFIGURE.md).
+Continue with the configuration in the file [`CONFIGURE-stretch.md`](CONFIGURE-stretch.md).
 
 

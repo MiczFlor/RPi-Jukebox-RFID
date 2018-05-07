@@ -3,7 +3,7 @@
 # see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
 #
 # this script installs my personal settings on a fresh RPi install
-# before running the script, the RPi needs to be set up, see INSTALL.md on github
+# before running the script, the RPi needs to be set up, see INSTALL-stretch.md on github
 # download the install script only to home dir and run
 # Don't run as sudo. Simply type ./stretch-install-default-01.sh
 
@@ -74,7 +74,7 @@ sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 
 # device name for barcode reader
 # Note: this will vary from reader to reader. If you run this install script, 
-# read 'Register your USB device for the jukebox' in docs/CONFIGURE.md to do this step manually
+# read 'Register your USB device for the jukebox' in docs/CONFIGURE-stretch.md to do this step manually
 # -rw-r--r-- 1 pi pi 20 Nov 17 21:22 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.stretch-default.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt

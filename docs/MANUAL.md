@@ -1,7 +1,7 @@
 # Jukebox Manual
 
 Before you can run the jukebox, you need to have it installed and configured.
-Make sure to go through the [installation](INSTALL.md) and [configuration](CONFIGURE.md) first.
+Make sure to go through the [installation](INSTALL-stretch.md) and [configuration](CONFIGURE-stretch.md) first.
 
 In this manual you will learn:
 
@@ -291,7 +291,7 @@ Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
 ## amixer command requires different device name, not PCM
 
-There is a script which allows you to specify the shorthand for the audio device, which is by default `PCM`. The file in question is [playout_controls.sh](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/playout_controls.sh.sample). See more in [the configuration manual](CONFIGURE.md) under *Copy the media player and daemon script*.
+There is a script which allows you to specify the shorthand for the audio device, which is by default `PCM`. The file in question is [playout_controls.sh](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/playout_controls.sh.sample). See more in [the configuration manual](CONFIGURE-stretch.md) under *Copy the media player and daemon script*.
 
 ## daemon_rfid_reader.py only works via SSH not by RFID cards
 `daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.

@@ -341,7 +341,7 @@ $ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 ## Install mpg123
 
-While we are using *VLC* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE.md`](CONFIGURE.md). To install this tiny but reliable player, type:
+While we are using *VLC* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md). To install this tiny but reliable player, type:
 
 ```
 $ sudo apt-get install mpg123
@@ -363,4 +363,4 @@ sudo reboot
 
 # Configure the jukebox
 
-Continue with the configuration in the file [`CONFIGURE-jessie.md`](CONFIGURE.md).
+Continue with the configuration in the file [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md).

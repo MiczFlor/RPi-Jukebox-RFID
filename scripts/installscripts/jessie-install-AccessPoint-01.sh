@@ -5,7 +5,7 @@
 # this script installs default settings from the github repo to run
 # the RPi jukebox like an Access Point to connect over wifi without
 # a router.
-# before running the script, the RPi needs to be set up, see INSTALL.md on github
+# before running the script, the RPi needs to be set up, see INSTALL-jessie.md on github
 # download the install script only to home dir and run
 # Don't run as sudo. Simply type ./jessie-install-AccessPoint-01.sh
 
@@ -90,7 +90,7 @@ sudo chmod 600 /var/spool/cron/crontabs/pi
 
 # device name for barcode reader
 # Note: this will vary from reader to reader. If you run this install script, 
-# read 'Register your USB device for the jukebox' in docs/CONFIGURE.md to do this step manually
+# read 'Register your USB device for the jukebox' in docs/CONFIGURE-jessie.md to do this step manually
 # -rw-r--r-- 1 pi pi 20 Nov 17 21:22 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
