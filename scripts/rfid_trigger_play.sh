@@ -14,7 +14,7 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # NO CHANGES BENEATH THIS LINE
-. $PATHDATA/settings/rfid_trigger_play.conf
+. $PATHDATA/../settings/rfid_trigger_play.conf
 
 # Get args from command line (see Usage above)
 for i in "$@"

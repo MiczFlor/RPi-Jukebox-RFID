@@ -1,1 +1,1 @@
-settings/MPV_playout_controls.sh
+../settings/MPV_playout_controls.sh
