@@ -2,6 +2,8 @@
 A contactless jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
 *Important update news*
+
+* **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
 * **`config.php` removed in repo** To fix a flaw of the initial commit, I removed the `config.php` file from the `htdocs` directory. It will be created automatically from `config.php.sample`. If you encounter problems after `git pull`, download [`config.php.sample`](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/htdocs/config.php.sample) adjust and copy to `config.php`. (2018-05-03)
 * **If you updated your codebase from version < 0.9.3** please see [`INSTALL-stretch.md`](docs/INSTALL-stretch.md) for details (2018-04-16)
 
@@ -56,6 +58,7 @@ In [`MANUAL.md`](docs/MANUAL.md) you will learn:
 * [How to connect to the jukebox from any computer to add and edit audio files.](docs/MANUAL.md#connect)
 * [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](docs/MANUAL.md#registercards)
 * [How to add web radios, YouTube and other streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
+* [Adding Podcasts the your Phoniebox](docs/MANUAL.md#podcasts)
 * [How to control the jukebox through the web app.](docs/MANUAL.md#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](docs/MANUAL.md#cardcontrol)
 

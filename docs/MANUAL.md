@@ -106,12 +106,18 @@ You can do this by creating a symbolic link to the USB stick with the following 
 ln -s /media/usb0/* /home/pi/RPi-Jukebox-RFID/shared/audiofolders/
 ~~~
 
-### <a name="webstreams"></a>Playing web radio, YouTube or other web streams
+### <a name="webstreams"></a>Adding web radio, YouTube and other online streams
+
+In short:
+
+* Create a folder inside `shared/audiofolders/`
+* Add a textfile inside the new folder containing the URL of the stream (see below for naming conventions)
+* Assign the new folder to a card ID (see above)
 
 An audio stream from the web can mean two things:
 
 1. A live stream that plays endlessly.
-2. A clip or file on the web that has a URL (e.g. a YouTube clip).
+2. A clip or file on the web that has a URL (web radio, YouTube clip, ...).
 
 These two are actually very different and will result in different behaviour of the jukebox. A live web stream never stops. This means that it will continue to play until you shut down the machine or start something else by swiping a different card across the jukebox.
 
@@ -134,7 +140,7 @@ Now you are ready to add the stream to your Phoniebox.
 
 That's it. Now, if you swipe with the card, the jukebox will open the matching folder, open the text file and send the content to the *VLC* media player.
 
-**Note:** you can find a number of radio stations at the [Community Radio Browser](http://www.radio-browser.info). When you find a station you like, click on the *Save* icon which will download a file `radio.pls`. You can open this file with a text editor and within the file find the URL of the live web radio stream.
+**Good to know:** you can find a number of radio stations at the [Community Radio Browser](http://www.radio-browser.info). When you find a station you like, click on the *Save* icon which will download a file `radio.pls`. You can open this file with a text editor and within the file find the URL of the live web radio stream.
 
 **Troubleshooting:** 
 * if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
@@ -147,6 +153,24 @@ As described above, the media player will (attempt to) play any content it finds
 If you want to create such a mix, simply mix the content inside the audio folder. The jukebox will play all content in alphabetical order. Keep this in mind if you plan the order of the playlist.
 
 **Note:** if you add a URL from a live web station to the playlist, the jukebox will never get to play the files after this URL - because the live radio never stops.
+
+### <a name="podcasts"></a>Adding podcasts
+
+The podcast feature allows you to play a podcast on your Phoniebox. The latest episode will be played automaticall. Using the previous and next option on the web app, with RFID cards or GPIO buttons, you can skip to other episodes as you would in any other playlist. The number of episodes the Phoniebox will play depends on the number of episodes listed in the podcast.
+
+In short:
+
+* Create a folder inside `shared/audiofolders/`
+* Add a textfile named `podcast.txt` inside the new folder containing the podcast URL 
+* Assign the new folder to a card ID (see above)
+
+**Good to know:** A podcast is an RSS-feed containing a list of items featuring the special `enclosure` tag. This special tag has the `url` attribute pointing to an audio file on the web. The file ending for a podcast is often `.rss` or `.xml`. 
+
+**Troubleshooting:** 
+* if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
+* if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
+
+
 
 ## <a name="webapp"></a>The Jukebox Web App
 
