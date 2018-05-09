@@ -67,7 +67,7 @@ then
 
 elif [ $COMMAND == "setvolume" ]
 then
-    amixer sset \'$DEVICE\' $VALUE%
+    amixer sset \'$DEVICE\' $VALUE% ; [ -e $VOLFILE ] && rm -f $VOLFILE
 
 elif [ $COMMAND == "volumeup" ]
 then
