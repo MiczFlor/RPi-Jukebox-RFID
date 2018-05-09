@@ -232,32 +232,36 @@ if [ "$FOLDERNAME" ]; then
     # if a folder $FOLDERNAME exists, play content
     if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
     then
-        # Check if we have something special to do
+        # set path to playlist
+        PLAYLISTPATH="/tmp/$FOLDERNAME.m3u"
 
-        # Podcast?
+        # Check if we have something special to do
         # Read content file names of folder into string
-        SPECIALFORMAT=$(ls $PATHDATA/../shared/audiofolders/$FOLDERNAME | grep podcast.txt)
-        if [ "$SPECIALFORMAT" == "podcast.txt" ]; then
-            # Podcast!
-            # ... to be done ...
-            echo $SPECIALFORMAT
-        else
-            # Nothing special to do, folder with audio files
-            # write playlist to file using the same name as the folder with ending .m3u
-            # wrap $PLAYLIST string in "" to keep line breaks
-            find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "/tmp/$FOLDERNAME.m3u"
-            VLCPLAYS="/tmp/$FOLDERNAME.m3u"
-        fi
+        SPECIALFORMAT=$(ls "$PATHDATA/../shared/audiofolders/$FOLDERNAME" | grep .txt)
+        # the following switch can be extended with other 'special' formats which require
+        # more complex action than just piping the folder content into a playlist
+        case $SPECIALFORMAT in
+            "podcast.txt")
+                # Podcast
+                PODCASTURL=`cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/podcast.txt"`
+                # parse podcast XML in sloppy but efficient way and write URLs to playlist
+                wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)" .*/\1/p' > "$PLAYLISTPATH"
+                # uncomment the following line to see playlist content in terminal
+                # cat "$PLAYLISTPATH"
+                ;;
+            *)
+                # Nothing special to do, folder with audio files
+                # write playlist to file using the same name as the folder with ending .m3u
+                # wrap $PLAYLIST string in "" to keep line breaks
+                find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
+                ;;
+        esac
+
         # first kill any possible running vlc process => stop playing audio
         sudo pkill vlc
     
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$VLCPLAYS" &
-        
-        # NOTE TO SELF: can we get rid off writing a playlist if we play the folder as we do in the index.php?
-        # Currently problem with whitespaces in folder name.
-        # Also, keep in mind the use of stream URLs or YouTube in text files
-        # cvlc --no-video -I rc --rc-host localhost:4212 "$PATHDATA/../shared/audiofolders/$FOLDERNAME" > /dev/null 2>/dev/null &
+        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$PLAYLISTPATH" &  
     fi
 fi
