@@ -36,7 +36,7 @@ DEVICE=PCM
 
 
 VOLSTEP=5
-VOLFILE=~/volume
+VOLFILE=/var/tmp/volume
 
 #############################################################
 
