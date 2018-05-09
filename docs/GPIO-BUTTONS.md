@@ -91,17 +91,6 @@ And change the copy to be executable
 $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
-**Note**: we will look into the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) later.
+**Note**: work in progress: the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) will be explained when I get to it.
 
-To have this started automatically at boot, we need to add one line to the following file. Type:
-
-~~~
-$ sudo nano /etc/rc.local
-~~~
-
-And add this line (the '&' is important to run this in the background):
-
-~~~
-/home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py &
-~~~
-
+To have this started automatically at boot. Please read the section on [autostarting the scripts](CONFIGURE-stretch.md#systemdautostart) in the configuration documentation [CONFIGURE-stretch.md](CONFIGURE-stretch.md#systemdautostart).

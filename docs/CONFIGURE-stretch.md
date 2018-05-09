@@ -57,15 +57,13 @@ cat deviceName.txt
 
 Now your jukebox knows which device to listen to when you are swiping your cards or keyrings.
 
-## Auto-start the jukebox
+## <a name="systemdautostart"></a>Auto-start the jukebox
 
-This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards.
+This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.
 
-The Raspbian OS 9 (stretch) uses systemd to start the components. Systemd will also take care of restarting the script in case they die. See below for the procedure to do
-so.
+**Systemd will launch the required services after booting AND take care of restarting the script in case they die**. 
 
-If you chose to use the `crontab` option to launch the card reader daemon scripts, you can ignore this part.
-If you want to use the `systemd` way, first copy the service config files to the correct directory:
+First copy the service config files to the correct directory:
 
 ```
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
