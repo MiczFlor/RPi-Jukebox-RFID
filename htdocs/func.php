@@ -58,6 +58,10 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .controlPlayer {
             margin-right: 1em;
         }
+        .btnFolder, .folderContent {
+            max-width: 100%;
+            overflow: hidden;
+        }
         </style>
         
     </head>\n";
