@@ -34,6 +34,10 @@
 # amixer default sound device (e.g. PCM, MASTER)
 DEVICE=PCM
 
+
+VOLSTEP=5
+VOLFILE=/var/tmp/volume
+
 #############################################################
 
 # Get args from command line (see Usage above)
@@ -59,19 +63,19 @@ then
 
 elif [ $COMMAND == "mute" ]
 then
-    amixer sset \'$DEVICE\' 0%
+	[ ! -e $VOLFILE ] && (amixer sget \'$DEVICE\' | egrep -o '[[:space:]][0-9]+[[:space:]]' | tail -n1> $VOLFILE && amixer sset \'$DEVICE\' 0%) || (amixer sset \'$DEVICE\' `<$VOLFILE` && rm -f $VOLFILE)
 
 elif [ $COMMAND == "setvolume" ]
 then
-    amixer sset \'$DEVICE\' $VALUE%
+    amixer sset \'$DEVICE\' $VALUE% ; [ -e $VOLFILE ] && rm -f $VOLFILE
 
 elif [ $COMMAND == "volumeup" ]
 then
-    amixer sset \'$DEVICE\' 500+
+    [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
 elif [ $COMMAND == "volumedown" ]
 then
-    amixer sset \'$DEVICE\' 500-
+	[ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
 elif [ $COMMAND == "playerstop" ]
 then
