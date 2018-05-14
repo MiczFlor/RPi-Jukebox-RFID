@@ -74,8 +74,12 @@ $conf['shared_abs'] = realpath(getcwd().'/../shared/');
 /*******************************************
 * URLPARAMETERS
 *******************************************/
-if(isset($_POST['cardID']) && $_POST['cardID'] != "") { // && file_exists('../shared/shortcuts/'.$_POST['cardID'])) {
-    $post['cardID'] = $_POST['cardID'];
+if(isset($_GET['cardID']) && $_GET['cardID'] != "") { // && file_exists('../shared/shortcuts/'.$_POST['cardID'])) {
+    $post['cardID'] = $_GET['cardID'];
+} else {
+    if(isset($_POST['cardID']) && $_POST['cardID'] != "") { // && file_exists('../shared/shortcuts/'.$_POST['cardID'])) {
+        $post['cardID'] = $_POST['cardID'];
+    }
 }
 if(isset($_POST['streamURL']) && $_POST['streamURL'] != "") {
     $post['streamURL'] = $_POST['streamURL'];
@@ -210,7 +214,7 @@ include("inc.navigation.php");
 
     <div class="row playerControls">
       <div class="col-lg-12">
-        <h1>Add new card ID</h1>
+        <h1>Edit or add card</h1>
 <?php
 /*
 * Do we need to voice a warning here?
@@ -253,9 +257,10 @@ if($debug == "true") {
 * Doing this so I can reuse the form in other places to edit or register cards.
 */
 $fdata = array(
-    "streamURL_ajax" => "true",
-    "streamURL_label" => "Latest Card ID",
-    "streamURL_help" => "This will automatically update as you swipe a RFID card.",
+    "streamURL_ajax" => "false",
+    "streamURL_label" => "Card ID",
+    "streamURL_placeholder" => "e.g. '1234567890'",
+    "streamURL_help" => "The ID is usually printed on the card or fob. Alternatively, swipe and check 'LatestID.txt' in folder 'shared'.",
 );
 $fpost = $post;
 include("inc.formCardEdit.php");
