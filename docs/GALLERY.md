@@ -12,6 +12,8 @@ Because everybody is an individual - and so are their jukeboxes - I started this
 | [tullm](https://github.com/tullm)'s suitcase jukebox is travel ready.  | It also runs the Mopidy music server for files for playing files on the NAS and from Spotify. (Jan 2018) |
 | ![Caption](img/gallery/KingKahn-20180101-Jukebox-01-w800.jpg "Caption") | ![Caption](img/gallery/Jens-Braeuer-Jan-2018-w800-01.jpg "Caption") |
 | [KingKahn123](https://github.com/KingKahn123) featuring the gpio buttons. (Dec 2017) | Jens Braeuer's design on eye level with TRON (Jan 2018) |
+| ![Caption](img/gallery/800x600-bgraeb-WoodenBox02-20180516.jpg "Caption") | ![Caption](img/gallery/800x600-bgraeb-WoodenBox01-20180516.jpg "Caption") |
+| [bgraeb](https://github.com/bgraeb)'s neat wooden box. (May 2018) | Slick on the outside and stylish on the inside. |
 | ![Caption](img/gallery/hailogugo-20171222-w800-01.jpg "Caption") | ![Caption](img/gallery/UlliH-20171210_w800-01.jpg "Caption") |
 | The mobile jukebox by [hailogugo](https://github.com/hailogugo) who also provided the first GPIO py script. (Dec 2017) | Ulli Hallerbach's cat won't feature buttons - how could it? (Nov 2017) |
 | ![Caption](img/gallery/Markus-20171218_w800-01.jpg "Caption") | ![Caption](img/gallery/Markus-20171218_w800-02.jpg "Caption") |
