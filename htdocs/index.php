@@ -93,6 +93,10 @@ if(isset($_POST['volume']) && trim($_POST['volume']) != "") {
     $urlparams['volume'] = trim($_POST['volume']);
 }
 
+if(isset($_GET['mute']) && trim($_GET['mute']) == "true") {
+    $urlparams['mute'] = trim($_GET['mute']);
+}
+
 if(isset($_GET['volumeup']) && trim($_GET['volumeup']) == "true") {
     $urlparams['volumeup'] = trim($_GET['volumeup']);
 }
@@ -116,6 +120,19 @@ if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
 // change volume
 if(isset($urlparams['volume'])) {
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=".$urlparams['volume'];
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
+
+// volume mute (toggle)
+if(isset($urlparams['mute'])) {
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
