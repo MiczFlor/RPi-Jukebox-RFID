@@ -64,10 +64,10 @@ VOLSTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 
-echo $DEVICE
-echo $VOLSTEP
-echo $VOLFILE
-echo `cat $VOLFILE`
+#echo $DEVICE
+#echo $VOLSTEP
+#echo $VOLFILE
+#echo `cat $VOLFILE`
 
 #############################################################
 
