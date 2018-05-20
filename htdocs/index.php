@@ -303,9 +303,9 @@ include("inc.volumeSelect.php");
         <div class="col-lg-6">
               <h4>Manage Files and Chips</h4>
               <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#myModal">
-                <i class='fa  fa-info'></i> Chip ID
-                </button>
+                <a href="cardRegisterNew.php" class="btn btn-primary btn">
+                <i class='fa  fa-plus-circle'></i> Register new card ID
+                </a>
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
 
@@ -354,10 +354,10 @@ foreach($audiofolders as $audiofolder) {
     if(in_array($audiofolderbasename, $shortcuts)) {
         foreach ($shortcuts as $key => $value) {
             if($value == $audiofolderbasename) {
-                $ids .= $key.", ";
+                $ids .= " <a href='cardEdit.php?cardID=$key'>".$key." <i class='fa fa-wrench'></i></a> | ";
             }
         }
-        $ids = rtrim($ids, ", "); // get rid of trailing slash
+        $ids = rtrim($ids, "| "); // get rid of trailing slash
     }
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {

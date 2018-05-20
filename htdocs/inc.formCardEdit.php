@@ -18,6 +18,14 @@ if($fdata['streamURL_ajax'] == "true") {
     }
     print "\" id=\"cardID\" name=\"cardID\" placeholder=\"".$fdata['streamURL_placeholder']."\" class=\"form-control input-md\" type=\"text\">";
 }
+
+// read the shortcuts available
+$shortcutstemp = array_filter(glob($conf['base_path'].'/shared/shortcuts/*'), 'is_file');
+$shortcuts = array(); // the array with pairs of ID => foldername
+// read files' content into array
+foreach ($shortcutstemp as $shortcuttemp) {
+    $shortcuts[basename($shortcuttemp)] = trim(file_get_contents($shortcuttemp));
+}
 ?>
           
           <span class="help-block"><?php print $fdata['streamURL_help']; ?></span>  
@@ -34,25 +42,33 @@ if($fdata['streamURL_ajax'] == "true") {
           <label class="col-md-4 control-label" for="audiofolder">a) Link card to audio folder</label>
           <div class="col-md-6">
             <select id="audiofolder" name="audiofolder" class="form-control">
-              <option value="false">Select a folder</option>
+              <option value="false">None (pulldown to select a folder)</option>
 <?php
-        // read the subfolders of shared/audiofolders
-        $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
-        usort($audiofolders, 'strcasecmp');
-        
-        // counter for ID of each folder
-        $idcounter = 0;
-        
-        // go through all folders
-        foreach($audiofolders as $audiofolder) {
-            
-            print "              <option value='".basename($audiofolder)."'";
-            if(basename($audiofolder) == $fpost['audiofolder']) {
-                print " selected=selected";
-            }
-            print ">".basename($audiofolder)."</option>\n";
-           
-        }
+// read the subfolders of shared/audiofolders
+$audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
+usort($audiofolders, 'strcasecmp');
+
+// check if we can preselect an audiofolder if NOT a foldername was posted
+if(! isset($fpost['audiofolder'])) {
+    if(array_key_exists($fpost['cardID'], $shortcuts)) {
+        print "got one!!!";    
+        $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
+    }
+}
+    
+// counter for ID of each folder
+$idcounter = 0;
+
+// go through all folders
+foreach($audiofolders as $audiofolder) {
+    
+    print "              <option value='".basename($audiofolder)."'";
+    if(basename($audiofolder) == $fpost['audiofolder']) {
+        print " selected=selected";
+    }
+    print ">".basename($audiofolder)."</option>\n";
+   
+}
 ?>
             </select>
           </div>

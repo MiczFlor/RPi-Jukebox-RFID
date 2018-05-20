@@ -148,37 +148,7 @@ if($post['submit'] == "submit") {
             /*
             * Stream URL to be created
             */
-            // create folder $post['streamFolderName']
-            $exec = "mkdir ".$conf['shared_abs']."/audiofolders/".$post['streamFolderName'];
-            exec($exec);
-            print "<p>".$exec."</p>";//???
-            // figure out $filestream depending on $post['streamType']
-            switch($post['streamType']) {
-                case "podcast":
-                    $filestream = "podcast.txt";
-                    break;
-                case "youtube":
-                    $filestream = "youtube.txt";
-                    break;
-                case "livestream":
-                    $filestream = "livestream.txt";
-                    break;
-                default:
-                    $filestream = "url.txt";
-            }
-            $filestream = $conf['shared_abs']."/audiofolders/".$post['streamFolderName']."/".$filestream;
-            // write $post['streamURL'] to $filestream
-            $exec = "echo '".$post['streamURL']."' > ".$filestream;
-            exec($exec);
-            //print "<p>".$exec."</p>";//???
-            // make this file accessible by user pi as well as webserver            
-            $exec = "chmod -R 777 ".$conf['shared_abs']."/audiofolders/".$post['streamFolderName'];
-            exec($exec);
-            //print "<p>".$exec."</p>";//???
-            // write $post['streamFolderName'] to cardID file in shortcuts
-            $exec = "rm ".$fileshortcuts."; echo '".$post['streamFolderName']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
-            exec($exec);
-            //print "<p>".$exec."</p>";//???
+            include('inc.processAddNewStream.php');
             // success message
             $messageSuccess = "<p>Stream inside folder '".$post['streamFolderName']."' is now linked to card ID '".$post['cardID']."'</p>";
         } else {
@@ -220,10 +190,10 @@ include("inc.navigation.php");
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = "The 'Latest Card ID' value in the form is updated on the fly as you swipe a RFID card.<br/>(Requires Javascript in the browser to be enabled.)";
+    $messageAction = "The card IDs used in this system are listed on the <a href='index.php' class='mainMenu'><i class='fa fa-home'></i> home page</a>.";
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
-    print '<div class="alert alert-success">'.$messageSuccess.'<p>Swipe another card, if you want to register more cards.</p></div>';
+    print '<div class="alert alert-success">'.$messageSuccess.'<p>Type another card ID pick one from the list on the <a href="index.php" class="mainMenu"><i class="fa fa-home"></i> home page</a>.</p></div>';
     unset($post);
 } else {
     if(isset($warning)) {
@@ -260,7 +230,7 @@ $fdata = array(
     "streamURL_ajax" => "false",
     "streamURL_label" => "Card ID",
     "streamURL_placeholder" => "e.g. '1234567890'",
-    "streamURL_help" => "The ID is usually printed on the card or fob. Alternatively, swipe and check 'LatestID.txt' in folder 'shared'.",
+    "streamURL_help" => "The ID is usually printed on the card or fob. A list of used IDs can be found on the home page.",
 );
 $fpost = $post;
 include("inc.formCardEdit.php");
