@@ -44,7 +44,32 @@ Find out more about how to [connect over SSH from Windows, Mac, Linux or Android
 
 ## <a name="registercards"></a>Registering a new RFID card or key fob
 
-Everything about the jukebox is controlled with RFID cards or key fobs. Therefore, registering a card is the first thing you need to do. Registering a card means: finding out the unique ID of the card. Once you know the ID, you can either add content (music, web streams) or assign a function - like *increase volume*.
+Registering a card means: linking the card ID to an action (like: volume up) or a folder (containing audio files or a link to a podcast or live stream). Then, when swiping the card, the audio folder is being played or the action performed. 
+
+### Registering cards using the web app
+
+The easiest way to add and edit cards is done using the web app. Let's start with an empty Phoniebox. This assumes that you might already have audio files on the jukebox. How that's done you can see below.
+
+#### Link a new card to a folder or stream
+* Go to the web app (i.e. open the jukebox's IP address in the browser of a connected device/PC).
+* Near the top of the page you will find a button saying "Register new card ID". Click it. 
+
+![Add new card ID form](img/Phoniebox-RegisterNew_Button.png "Add new card ID form")
+
+* This will bring up a form looking like this:
+![Add new card ID form](img/Phoniebox-Manual-AddNewCardID-shadow.png "Add new card ID form")
+The card ID will be updated as you swipe a new card over the Phoniebox. Do not try to edit the card ID manually, it will revert to the last swiped ID.
+* Either select an audio folder in the drop down menu near the top OR
+* Add the URL of a webradio, YouTube page, podcast, live stream, select the type of stream and give this new stream a name.
+* Press 'submit' and you are set.
+
+### Edit card through web app
+
+On the home page you will find a link in the list of audio folders to the card that is registered to this folder. Click the card ID with the wrench next to it, so come to the edit form.
+
+![Add new card ID form](img/Phoniebox_Manual_HomeEditCardLink.png "Add new card ID form")
+
+### Registering cards manually (through samba without the web app)
 
 This is how you figure out the ID of a RFID card:
 
@@ -169,8 +194,6 @@ In short:
 **Troubleshooting:** 
 * if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
 * if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
-
-
 
 ## <a name="webapp"></a>The Jukebox Web App
 
