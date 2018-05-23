@@ -98,7 +98,7 @@ chmod +x playout_controls.sh
 
 ## <a name="systemdautostart"></a>Auto-start the jukebox
 
-This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.
+This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS Jessie uses systemd to start the components.
 
 **Systemd will launch the required services after booting AND take care of restarting the script in case they die**. 
 
