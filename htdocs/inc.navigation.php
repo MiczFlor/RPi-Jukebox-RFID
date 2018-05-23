@@ -20,8 +20,8 @@
       
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href='?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown</a></li>
-        <li><a href='?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot</a></li>
+        <li><a href='index.php?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown</a></li>
+        <li><a href='index.php?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot</a></li>
       </ul>
 <!-- / sub menu -->
     </div><!-- /.navbar-collapse -->
