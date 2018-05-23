@@ -57,6 +57,18 @@ cat deviceName.txt
 
 Now your jukebox knows which device to listen to when you are swiping your cards or keyrings.
 
+## Copy the media player and daemon script
+
+Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the files `rfid_trigger_play.sh.sample` and `playout_controls.sh.sample`. You need to make a copy of these files, because you might edit these files at a later stage.
+
+~~~~
+cd /home/pi/RPi-Jukebox-RFID/scripts/
+cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
+cp playout_controls.sh.sample playout_controls.sh
+chmod +x rfid_trigger_play.sh
+chmod +x playout_controls.sh
+~~~~
+
 ## <a name="systemdautostart"></a>Auto-start the jukebox
 
 This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.
@@ -105,18 +117,6 @@ pi@Jukebox:~ $ systemctl status rfid-reader
 
 Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
 ```
-
-## Copy the media player and daemon script
-
-Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the files `rfid_trigger_play.sh.sample` and `playout_controls.sh.sample`. You need to make a copy of these files, because you might edit these files at a later stage.
-
-~~~~
-cd /home/pi/RPi-Jukebox-RFID/scripts/
-cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
-cp playout_controls.sh.sample playout_controls.sh
-chmod +x rfid_trigger_play.sh
-chmod +x playout_controls.sh
-~~~~
 
 # Connecting the hardware
 
