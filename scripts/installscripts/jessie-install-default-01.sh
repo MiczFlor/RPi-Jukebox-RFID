@@ -50,13 +50,15 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.jessie-default.samp
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
+# the following is on its way out, uncommenting for now until somebody complains
+# this startup on boot is replaced by systemd towards the end of this script
 # crontab file for user pi
 # -rw------- 1 pi crontab 1227 Nov 17 21:24 /var/spool/cron/crontabs/pi
 # for debugging (which I had to on a RPi 3)  see:
 # https://rahulmahale.wordpress.com/2014/09/03/solved-running-cron-job-at-reboot-on-raspberry-pi-in-debianwheezy-and-raspbian/
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.jessie-default.sample /var/spool/cron/crontabs/pi
-sudo chown pi:crontab /var/spool/cron/crontabs/pi
-sudo chmod 600 /var/spool/cron/crontabs/pi
+#sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.jessie-default.sample /var/spool/cron/crontabs/pi
+#sudo chown pi:crontab /var/spool/cron/crontabs/pi
+#sudo chmod 600 /var/spool/cron/crontabs/pi
 
 # device name for barcode reader
 # Note: this will vary from reader to reader. If you run this install script, 
@@ -98,6 +100,18 @@ sudo service lighttpd force-reload
 # start DHCP
 sudo service dhcpcd start
 sudo systemctl enable dhcpcd
+
+# services to launch after boot using systmed
+# -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
+sudo chown root:root /etc/systemd/system/rfid-reader.service
+sudo chown root:root /etc/systemd/system/startup-sound.service
+sudo chown root:root /etc/systemd/system/gpio-buttons.service
+sudo chmod 644 /etc/systemd/system/rfid-reader.service
+sudo chmod 644 /etc/systemd/system/startup-sound.service
+sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 
 ############################
 # Manual intervention needed

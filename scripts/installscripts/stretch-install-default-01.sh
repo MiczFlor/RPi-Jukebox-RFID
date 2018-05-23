@@ -60,18 +60,6 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.jessie-default.samp
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
-# services to launch after boot
-# -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chown root:root /etc/systemd/system/startup-sound.service
-sudo chown root:root /etc/systemd/system/gpio-buttons.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/startup-sound.service
-sudo chmod 644 /etc/systemd/system/gpio-buttons.service
-
 # device name for barcode reader
 # Note: this will vary from reader to reader. If you run this install script, 
 # read 'Register your USB device for the jukebox' in docs/CONFIGURE-stretch.md to do this step manually
@@ -113,6 +101,18 @@ sudo service lighttpd force-reload
 # start DHCP
 sudo service dhcpcd start
 sudo systemctl enable dhcpcd
+
+# services to launch after boot using systmed
+# -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
+sudo chown root:root /etc/systemd/system/rfid-reader.service
+sudo chown root:root /etc/systemd/system/startup-sound.service
+sudo chown root:root /etc/systemd/system/gpio-buttons.service
+sudo chmod 644 /etc/systemd/system/rfid-reader.service
+sudo chmod 644 /etc/systemd/system/startup-sound.service
+sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 
 ############################
 # Manual intervention needed
