@@ -1,1 +1,1 @@
-../settings/MPV_playout_controls.sh
+../settings/MPG123_playout_controls.sh
