@@ -334,6 +334,14 @@ While we are using *VLC* for all the media to be played on the jukebox, we are u
 $ sudo apt-get install mpg123
 ```
 
+## Install tmux
+
+To use mpg123 as a media player, we use tmux to connect to the player. To install the terminal multiplexer type:
+
+```
+$ sudo apt-get install tmux
+```
+
 ## Using a USB soundcard
 
 In order to use an external USB soundcard instead of the inbuilt audio out, you might need to update your system and tweak a couple of config files, depending on your card. The most comprehensive explanation on why and how, you can find at [adafruit](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/instructions). 

@@ -344,6 +344,22 @@ $ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 **Note:** changing the binary of VLC to allow the program to be run by the webserver as a superuser is another little step in a long string of potential security problems. In short: the jukebox is a perfectly fine project to run for your personal pleasure. It's not fit to run on a public server.
 
+## Install mpg123
+
+While we are using *VLC* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE.md`](CONFIGURE.md). To install this tiny but reliable player, type:
+
+```
+$ sudo apt-get install mpg123
+```
+
+## Install tmux
+
+To use mpg123 as a media player, we use tmux to connect to the player. To install the terminal multiplexer type:
+
+```
+$ sudo apt-get install tmux
+```
+
 ## Using a USB soundcard
 
 In order to use an external USB soundcard instead of the inbuilt audio out, you might need to update your system and tweak a couple of config files, depending on your card. The most comprehensive explanation on why and how, you can find at [adafruit](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/instructions). 
