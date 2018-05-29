@@ -171,15 +171,23 @@ Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
 
 ## Copy the media player and daemon script
 
-Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the files `rfid_trigger_play.sh.sample` and `playout_controls.sh.sample`. You need to make a copy of these files, because you might edit these files at a later stage.
+Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the file `rfid_trigger_play.sh.sample` . You need to make a copy of these files, because you might edit these files at a later stage.
 
 ~~~~
 cd /home/pi/RPi-Jukebox-RFID/scripts/
 cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
-cp playout_controls.sh.sample playout_controls.sh
 chmod +x rfid_trigger_play.sh
 chmod +x playout_controls.sh
 ~~~~
+
+## Link playout_controls to the scipt directory
+
+Inside the `/home/pi/RPi-Jukebox-RFID/scipts/` you find the files `VLC_playout_controls.sh`, `MPG123_playout_controls.sh`, `MPV_playout_controls.sh` and `rfid_trigger_play.conf`
+Choose the one for the Player you like and create the link to the script directory.
+
+~~~~~
+ln -s /home/pi/RPi-Jukebox-RFID/settings/MPG123_playout_controls.sh /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
+~~~~~
 
 # Connecting the hardware
 
