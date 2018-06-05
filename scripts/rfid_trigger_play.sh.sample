@@ -262,6 +262,9 @@ if [ "$FOLDERNAME" ]; then
     
         # now start the command line version of vlc loading the playlist
         # start as a background process (command &) - otherwise the input only works once the playlist finished
-        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$PLAYLISTPATH" &  
+        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$PLAYLISTPATH" &>/dev/null &
+
+        # wait for starting vlc to give play feedback to website
+        sleep 3
     fi
 fi
