@@ -145,7 +145,7 @@ The following lines will install all the required packages:
 
 ~~~
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm vlc mpg123 git
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm vlc mpg123 at git
 sudo pip install "evdev == 0.7.0"
 ~~~
 

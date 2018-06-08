@@ -92,7 +92,7 @@ then
 elif [ "$COMMAND" == "shutdownafter" ]
 then
     # shutdown pi after $VALUE minutes
-    echo "sudo halt" | at now + $[VALUE*60] minute
+    echo "sudo halt" | at now + $VALUE minute
 
 elif [ "$COMMAND" == "reboot" ]
 then
@@ -169,7 +169,7 @@ then
 elif [ "$COMMAND" == "playerstopafter" ]
 then
     # stop player after $VALUE minutes
-    echo "sudo pkill vlc" | at now + $[VALUE*60] minute
+    echo "sudo pkill vlc" | at now + $VALUE minute
 
 # for controlling VLC over rc, see:  
 # https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/

@@ -347,6 +347,16 @@ While we are using *VLC* for all the media to be played on the jukebox, we are u
 $ sudo apt-get install mpg123
 ```
 
+## Install at (for timer functionality)
+
+The `at` command allows to run commands at a certain time in the 
+future. This is used to have the timer function to shutdown or stop
+player after x minutes.
+
+~~~~
+$ sudo apt-get install at
+~~~~
+
 ## Using a USB soundcard
 
 In order to use an external USB soundcard instead of the inbuilt audio out, you might need to update your system and tweak a couple of config files, depending on your card. The most comprehensive explanation on why and how, you can find at [adafruit](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/instructions). 
