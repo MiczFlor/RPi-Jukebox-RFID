@@ -18,6 +18,7 @@
 # VALID COMMANDS:
 # shutdown
 # reboot
+# mute
 # setvolume
 # volumeup
 # volumedown
@@ -29,10 +30,44 @@
 # playerreplay
 
 # SET VARIABLES
-# Here you can tweak the commands a little
+# The variables can be changed in the ../settings dir.
+# Relevant files are:
+# * ../settings/Audio_Volume_Level
+# * ../settings/Audio_Volume_Change_Step
+# * ../settings/Audio_iFace_Name
 
-# amixer default sound device (e.g. PCM, MASTER)
-DEVICE=PCM
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+####################################
+# amixer iface name (e.g. PCM, Speaker, Master)
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
+    echo "PCM" > $PATHDATA/../settings/Audio_iFace_Name
+fi
+# 2. then|or read value from file
+DEVICE=`cat $PATHDATA/../settings/Audio_iFace_Name`
+
+##############################################
+# steps by which to change the audio output (vol up and down)
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_Volume_Change_Step ]; then
+    echo "3" > $PATHDATA/../settings/Audio_Volume_Change_Step
+fi
+# 2. then|or read value from file
+VOLSTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
+
+#################################
+# path to file storing the current volume level
+# this file does not need to exist
+# it will be created or deleted by this script
+VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
+
+#echo $DEVICE
+#echo $VOLSTEP
+#echo $VOLFILE
+#echo `cat $VOLFILE`
 
 #############################################################
 
@@ -59,7 +94,20 @@ then
 
 elif [ $COMMAND == "mute" ]
 then
-    amixer sset \'$DEVICE\' 0%
+    if [ ! -f $VOLFILE ]; then
+        # $VOLFILE does NOT exist == audio on
+        # read volume in percent and write to $VOLFILE
+        amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])' > $VOLFILE
+        # set volume to 0%
+        amixer sset \'$DEVICE\' 0%
+    else
+        # $VOLFILE DOES exist == audio off
+        # read volume level from $VOLFILE and sset as percent
+        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # delete $VOLFILE
+        rm -f $VOLFILE
+    fi
+    # alternative pull request: [ ! -e $VOLFILE ] && (amixer sget \'$DEVICE\' | egrep -o '[[:space:]][0-9]+[[:space:]]' | tail -n1> $VOLFILE && amixer sset \'$DEVICE\' 0%) || (amixer sset \'$DEVICE\' `<$VOLFILE` && rm -f $VOLFILE)
 
 elif [ $COMMAND == "setvolume" ]
 then
@@ -67,11 +115,45 @@ then
 
 elif [ $COMMAND == "volumeup" ]
 then
-    amixer sset \'$DEVICE\' 500+
+    if [ ! -f $VOLFILE ]; then
+        # $VOLFILE does NOT exist == audio on
+        # read volume in percent
+        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])'`
+        echo $VOLPERCENT
+        # increase by $VOLSTEP
+        VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
+        echo $VOLPERCENT
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VOLPERCENT%
+    else
+        # $VOLFILE DOES exist == audio off
+        # read volume level from $VOLFILE and sset as percent
+        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # delete $VOLFILE
+        rm -f $VOLFILE
+    fi
+    # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
 elif [ $COMMAND == "volumedown" ]
-then
-    amixer sset \'$DEVICE\' 500-
+    then
+    if [ ! -f $VOLFILE ]; then
+        # $VOLFILE does NOT exist == audio on
+        # read volume in percent
+        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])'`
+        echo $VOLPERCENT
+        # increase by $VOLSTEP
+        VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}` 
+        echo $VOLPERCENT
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VOLPERCENT%
+    else
+        # $VOLFILE DOES exist == audio off
+        # read volume level from $VOLFILE and sset as percent
+        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # delete $VOLFILE
+        rm -f $VOLFILE
+    fi
+    # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
 elif [ $COMMAND == "playerstop" ]
 then
