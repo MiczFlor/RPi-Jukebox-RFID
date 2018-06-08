@@ -15,45 +15,29 @@
 # or
 # ./rfid_trigger_play.sh --dir=foldername
 
-# VARIABLES TO CHANGE
-# adjust these variables to match your system and configuration
+# ADD / EDIT RFID CARDS TO CONTROL THE PHONIEBOX
+# All controls are assigned to RFID cards in this 
+# file:
+# settings/rfid_trigger_play.conf
+# Please consult this file for more information.
+# Do NOT edit anything in this file.
 
-# If you use cards to change audio level, stop playing or shutdown the RPi,
-# replace the following strings with the ID of the card. For example:
-# Using the card ID 1234567890 to set the audio to mute, change this line:
-# CMDMUTE="mute"
-# to the following:
-# CMDMUTE="1234567890"
-# Leave everything untouched where you do not use a card.
-CMDMUTE="%CMDMUTE%"
-CMDVOL30="%CMDVOL30%"
-CMDVOL50="%CMDVOL50%"
-CMDVOL75="%CMDVOL75%"
-CMDVOL80="%CMDVOL80%"
-CMDVOL85="%CMDVOL85%"
-CMDVOL90="%CMDVOL90%"
-CMDVOL95="%CMDVOL95%"
-CMDVOL100="%CMDVOL100%"
-CMDVOLUP="%CMDVOLUP%"
-CMDVOLDOWN="%CMDVOLDOWN%"
-CMDSTOP="%CMDSTOP%"
-CMDSHUTDOWN="%CMDSHUTDOWN%"
-CMDREBOOT="%CMDREBOOT%"
-# The following commands control VLC playout
-# next and prev play the preivous or next track in the playlist (== folder)
-CMDNEXT="%CMDNEXT%"
-CMDPREV="%CMDPREV%"
-# pause VLC playout
-CMDPAUSE="%CMDPAUSE%"
-# resume VLC playout (makes only sense in combination with pause)
-CMDPLAY="%CMDPLAY%"
+#############################################################
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-##############################
-# NO CHANGES BENEATH THIS LINE
+# create the configuration file from sample - if it does not exist
+if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
+    cp $PATHDATA/../settings/rfid_trigger_play.conf.sample $PATHDATA/../settings/rfid_trigger_play.conf
+    # change the read/write so that later this might also be editable through the web app
+    sudo chown -R pi:www-data $PATHDATA/../settings/rfid_trigger_play.conf
+    sudo chmod -R 775 $PATHDATA/../settings/rfid_trigger_play.conf
+fi
+
+# Read configuration file
+. $PATHDATA/../settings/rfid_trigger_play.conf
 
 # Get args from command line (see Usage above)
 for i in "$@"

@@ -11,7 +11,27 @@ Some elements of the installation depend on the OS (like 'Jessie' vs. 'Stretch')
 
 As of version 0.9.4 there is a file `settings/version` containing the version number.
 For future reference, I will try to break down the upgrade patches / scripts from number
-to number. The first entry will upgrade *everything before 0.9.4*.
+to number. 
+
+# Upgrade from 0.9.4 to 0.9.5
+* Configuration of RFID card control in extra file `settings/rfid_trigger_play.conf`
+* Playout control config now uses `settings` folder to store iFace value (e.g. PCM) and percentage of relative volume change
+* both bash scripts `scripts/rfid_trigger_play.sh` and `scripts/playout_controls.sh` are not created from `.sample` versions anymore, because the config has been moved to external files.
+
+~~~
+# make backups of the current scripts
+cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup.0.9.4
+cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.backup.0.9.4
+cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php /home/pi/RPi-Jukebox-RFID/htdocs/config.php.backup.0.9.4
+# update with git
+git checkout master
+git pull
+# copy config file for RFID chips from sample to "live"
+# you need to manually edit the created files and add the values from the backup version of `scripts/rfid_trigger_play.sh`
+cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+~~~
 
 # Upgrade to 0.9.4
 * The following script refers to the OS version 'Stretch' in some places but this should also work for 'Jessie'.
@@ -21,6 +41,9 @@ to number. The first entry will upgrade *everything before 0.9.4*.
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup.0.9.3
 cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.backup.0.9.3
 cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php /home/pi/RPi-Jukebox-RFID/htdocs/config.php.backup.0.9.3
+# update with git
+git checkout master
+git pull
 # copy shell script for player
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh

@@ -50,16 +50,6 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.jessie-default.samp
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
-# the following is on its way out, uncommenting for now until somebody complains
-# this startup on boot is replaced by systemd towards the end of this script
-# crontab file for user pi
-# -rw------- 1 pi crontab 1227 Nov 17 21:24 /var/spool/cron/crontabs/pi
-# for debugging (which I had to on a RPi 3)  see:
-# https://rahulmahale.wordpress.com/2014/09/03/solved-running-cron-job-at-reboot-on-raspberry-pi-in-debianwheezy-and-raspbian/
-#sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.jessie-default.sample /var/spool/cron/crontabs/pi
-#sudo chown pi:crontab /var/spool/cron/crontabs/pi
-#sudo chmod 600 /var/spool/cron/crontabs/pi
-
 # device name for barcode reader
 # Note: this will vary from reader to reader. If you run this install script, 
 # read 'Register your USB device for the jukebox' in docs/CONFIGURE-jessie.md to do this step manually
@@ -69,14 +59,13 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 
 # copy shell script for player
-cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
-sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 
-# copy bash script for player controls
-cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
-sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
+# make sure bash scripts have the right settings
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 
 # The new way of making the bash daemon is using the helperscripts 
 # creating the shortcuts and script from a CSV file.
