@@ -91,7 +91,7 @@ then
 
 elif [ "$COMMAND" == "shutdownafter" ]
 then
-    # shutdown pi after $VALUE minutes
+    # shutdown pi after $VALUE minutes 
     echo "sudo halt" | at now + $VALUE minute
 
 elif [ "$COMMAND" == "reboot" ]
