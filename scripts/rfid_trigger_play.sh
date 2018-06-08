@@ -108,12 +108,12 @@ if [ "$CARDID" ]; then
     
     elif [ "$CARDID" == "$CMDVOLUP" ]
     then
-        # amixer sset 'PCM' 500+
+        # increase volume by x% set in Audio_Volume_Change_Step
         $PATHDATA/playout_controls.sh -c=volumeup   
     
     elif [ "$CARDID" == "$CMDVOLDOWN" ]
     then
-        # amixer sset 'PCM' 500-
+        # decrease volume by x% set in Audio_Volume_Change_Step
         $PATHDATA/playout_controls.sh -c=volumedown
     
     elif [ "$CARDID" == "$CMDSTOP" ]
@@ -157,6 +157,46 @@ if [ "$CARDID" ]; then
         # play / resume current track
         # echo "play" | nc.openbsd -w 1 localhost 4212
         $PATHDATA/playout_controls.sh -c=playerplay
+        
+    elif [ "$CARDID" == "$STOPAFTER5" ]
+    then
+        # stop player after -v minutes
+        $PATHDATA/playout_controls.sh -c=playerstopafter -v=5
+        
+    elif [ "$CARDID" == "$STOPAFTER15" ]
+    then
+        # stop player after -v minutes
+        $PATHDATA/playout_controls.sh -c=playerstopafter -v=15
+        
+    elif [ "$CARDID" == "$STOPAFTER30" ]
+    then
+        # stop player after -v minutes
+        $PATHDATA/playout_controls.sh -c=playerstopafter -v=30
+        
+    elif [ "$CARDID" == "$STOPAFTER60" ]
+    then
+        # stop player after -v minutes
+        $PATHDATA/playout_controls.sh -c=playerstopafter -v=60
+        
+    elif [ "$CARDID" == "$SHUTDOWNAFTER5" ]
+    then
+        # shutdown after -v minutes
+        $PATHDATA/playout_controls.sh -c=shutdownafter -v=5
+        
+    elif [ "$CARDID" == "$SHUTDOWNAFTER15" ]
+    then
+        # shutdown after -v minutes
+        $PATHDATA/playout_controls.sh -c=shutdownafter -v=15
+        
+    elif [ "$CARDID" == "$SHUTDOWNAFTER30" ]
+    then
+        # shutdown after -v minutes
+        $PATHDATA/playout_controls.sh -c=shutdownafter -v=30
+        
+    elif [ "$CARDID" == "$SHUTDOWNAFTER60" ]
+    then
+        # shutdown after -v minutes
+        $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
         
     else
         # We checked if the card was a special command, seems it wasn't.

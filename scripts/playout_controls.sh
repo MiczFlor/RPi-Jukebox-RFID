@@ -17,12 +17,14 @@
 #
 # VALID COMMANDS:
 # shutdown
+# shutdownafter
 # reboot
 # mute
 # setvolume
 # volumeup
 # volumedown
 # playerstop
+# playerstopafter
 # playernext
 # playerprev
 # playerpause
@@ -32,7 +34,6 @@
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
 # Relevant files are:
-# * ../settings/Audio_Volume_Level
 # * ../settings/Audio_Volume_Change_Step
 # * ../settings/Audio_iFace_Name
 
@@ -87,6 +88,11 @@ done
 if [ "$COMMAND" == "shutdown" ]
 then
     sudo halt
+
+elif [ "$COMMAND" == "shutdownafter" ]
+then
+    # shutdown pi after $VALUE minutes
+    echo "sudo halt" | at now + $[VALUE*60] minute
 
 elif [ "$COMMAND" == "reboot" ]
 then
@@ -159,6 +165,11 @@ elif [ "$COMMAND" == "playerstop" ]
 then
     # kill all running VLC media players
     sudo pkill vlc
+
+elif [ "$COMMAND" == "playerstopafter" ]
+then
+    # stop player after $VALUE minutes
+    echo "sudo pkill vlc" | at now + $[VALUE*60] minute
 
 # for controlling VLC over rc, see:  
 # https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/

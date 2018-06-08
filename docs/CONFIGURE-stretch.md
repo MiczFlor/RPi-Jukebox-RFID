@@ -72,6 +72,15 @@ sudo chown pi:pi rfid_trigger_play.conf
 sudo chmod 665 rfid_trigger_play.conf
 ~~~~
 
+Creating files for the `settings` folder which contain the short name
+of the amixer iface used and the percentage the volume in- or 
+decreases when using the `volumeup` and `volumedown`  function.
+
+~~~
+echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
+echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
+~~~
+
 ## <a name="systemdautostart"></a>Auto-start the jukebox
 
 This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.

@@ -63,6 +63,10 @@ cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 
+# creating files containing editable values for configuration
+echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
+echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
+
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
