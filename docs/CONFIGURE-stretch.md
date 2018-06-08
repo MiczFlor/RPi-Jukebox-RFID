@@ -57,16 +57,19 @@ cat deviceName.txt
 
 Now your jukebox knows which device to listen to when you are swiping your cards or keyrings.
 
-## Copy the media player and daemon script
+## Copy the RFID chip configuration file
 
-Inside the directory `/home/pi/RPi-Jukebox-RFID/scripts/` you find the files `rfid_trigger_play.sh.sample` and `playout_controls.sh.sample`. You need to make a copy of these files, because you might edit these files at a later stage.
+Inside the directory `/home/pi/RPi-Jukebox-RFID/settings/` you find the file `rfid_trigger_play.conf.sample` You need to make a copy of this files, to avoid overwriting changes if the content might change in the git repo.
+
+Inside this `conf` file, you can add IDs from RFID cards to control
+the functionality of the Phoniebox. See the content of the file for
+more explanation.
 
 ~~~~
-cd /home/pi/RPi-Jukebox-RFID/scripts/
-cp rfid_trigger_play.sh.sample rfid_trigger_play.sh
-cp playout_controls.sh.sample playout_controls.sh
-chmod +x rfid_trigger_play.sh
-chmod +x playout_controls.sh
+cd /home/pi/RPi-Jukebox-RFID/settings/
+cp rfid_trigger_play.conf.sample rfid_trigger_play.conf
+sudo chown pi:pi rfid_trigger_play.conf
+sudo chmod 665 rfid_trigger_play.conf
 ~~~~
 
 ## <a name="systemdautostart"></a>Auto-start the jukebox
