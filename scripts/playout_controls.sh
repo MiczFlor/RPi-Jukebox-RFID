@@ -84,15 +84,15 @@ case $i in
 esac
 done
 
-if [ $COMMAND == "shutdown" ]
+if [ "$COMMAND" == "shutdown" ]
 then
     sudo halt
 
-elif [ $COMMAND == "reboot" ]
+elif [ "$COMMAND" == "reboot" ]
 then
     sudo reboot
 
-elif [ $COMMAND == "mute" ]
+elif [ "$COMMAND" == "mute" ]
 then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
@@ -109,11 +109,11 @@ then
     fi
     # alternative pull request: [ ! -e $VOLFILE ] && (amixer sget \'$DEVICE\' | egrep -o '[[:space:]][0-9]+[[:space:]]' | tail -n1> $VOLFILE && amixer sset \'$DEVICE\' 0%) || (amixer sset \'$DEVICE\' `<$VOLFILE` && rm -f $VOLFILE)
 
-elif [ $COMMAND == "setvolume" ]
+elif [ "$COMMAND" == "setvolume" ]
 then
     amixer sset \'$DEVICE\' $VALUE%
 
-elif [ $COMMAND == "volumeup" ]
+elif [ "$COMMAND" == "volumeup" ]
 then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
@@ -134,7 +134,7 @@ then
     fi
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
-elif [ $COMMAND == "volumedown" ]
+elif [ "$COMMAND" == "volumedown" ]
     then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
@@ -155,7 +155,7 @@ elif [ $COMMAND == "volumedown" ]
     fi
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
-elif [ $COMMAND == "playerstop" ]
+elif [ "$COMMAND" == "playerstop" ]
 then
     # kill all running VLC media players
     sudo pkill vlc
@@ -163,27 +163,27 @@ then
 # for controlling VLC over rc, see:  
 # https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
 
-elif [ $COMMAND == "playernext" ]
+elif [ "$COMMAND" == "playernext" ]
 then
     # play next track in playlist (==folder)
     echo "next" | nc.openbsd -w 1 localhost 4212
 
-elif [ $COMMAND == "playerprev" ]
+elif [ "$COMMAND" == "playerprev" ]
 then
     # play previous track in playlist (==folder)
     echo "prev" | nc.openbsd -w 1 localhost 4212
 
-elif [ $COMMAND == "playerpause" ]
+elif [ "$COMMAND" == "playerpause" ]
 then
     # pause current track
     echo "pause" | nc.openbsd -w 1 localhost 4212
 
-elif [ $COMMAND == "playerplay" ]
+elif [ "$COMMAND" == "playerplay" ]
 then
     # play / resume current track
     echo "play" | nc.openbsd -w 1 localhost 4212
 
-elif [ $COMMAND == "playerreplay" ]
+elif [ "$COMMAND" == "playerreplay" ]
 then
     # start the playing track from beginning
     echo "seek 0" | nc.openbsd -w 1 localhost 4212
