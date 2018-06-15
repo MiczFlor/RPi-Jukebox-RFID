@@ -12,7 +12,9 @@
 
 # Install packages
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 vlc mpg123 git
+sudo add-apt-repository ppa:ondrej/php
+sudo apt-get update
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php7.0-common php7.0-cgi php7.0 vlc mpg123 git
 sudo pip install "evdev == 0.7.0"
 
 # Get github code
@@ -51,7 +53,7 @@ sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
 # device name for barcode reader
-# Note: this will vary from reader to reader. If you run this install script, 
+# Note: this will vary from reader to reader. If you run this install script,
 # read 'Register your USB device for the jukebox' in docs/CONFIGURE-jessie.md to do this step manually
 # -rw-r--r-- 1 pi pi 20 Nov 17 21:22 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
@@ -71,7 +73,7 @@ echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 
-# The new way of making the bash daemon is using the helperscripts 
+# The new way of making the bash daemon is using the helperscripts
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
@@ -96,7 +98,7 @@ sudo systemctl enable dhcpcd
 
 # services to launch after boot using systmed
 # -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
 sudo chown root:root /etc/systemd/system/rfid-reader.service
@@ -111,7 +113,7 @@ sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 ############################
 
 # samba user
-# you must use password 'raspberry' because this is 
+# you must use password 'raspberry' because this is
 # expected in the smb.conf file
 sudo smbpasswd -a pi
 
