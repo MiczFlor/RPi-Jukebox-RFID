@@ -103,7 +103,7 @@ then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent and write to $VOLFILE
-        amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])' > $VOLFILE
+        amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])' > $VOLFILE
         # set volume to 0%
         amixer sset \'$DEVICE\' 0%
     else
@@ -124,7 +124,7 @@ then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
-        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])'`
+        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
         echo $VOLPERCENT
         # increase by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
@@ -145,7 +145,7 @@ elif [ "$COMMAND" == "volumedown" ]
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
-        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po '(?<=\[)[^]]*(?=%])'`
+        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
         echo $VOLPERCENT
         # increase by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}` 
