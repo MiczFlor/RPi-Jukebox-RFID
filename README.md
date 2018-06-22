@@ -76,10 +76,13 @@ If you find something that doesn't work. And you tried and tried again, but it s
 
 There is a growing section of [troubleshooting](docs/MANUAL.md#faq) including:
 
-* How do I get the jukebox into a new WiFi network?
-* The `amixer` command requires different device name, not `PCM`
-* Script `daemon_rfid_reader.py` only works via SSH not by RFID cards
-* Script daemon is closing down unexpectedly
+* I am moving, how do I get the jukebox into my new WiFi network?
+* The RFID Reader doesn't seem to work.
+* Changing the volume does not work, but the playout works.
+* Script `daemon_rfid_reader.py` only works via SSH not by RFID cards.
+* Script daemon is closing down unexpectedly.
+* Everything seems to work, but I hear nothing when swiping a card.
+* I would like to use two cards / IDs to do the same thing.
 
 ## Acknowledgments
 

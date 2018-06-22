@@ -388,6 +388,8 @@ Run this script every minute by adding the following line via crontab:
 
 There could be many reasons why the RFID Reader is not working reliably or behaves strangely. This could be due to a weak power supply or an insuficient power bank. Worth trying out before you try anything else.
 
+If you used the install script, you might have forgotten to register your RFID card reader. See the section *Register your USB device for the jukebox* inside [CONFIGURE-stretch.md](CONFIGURE-stretch.md) (if you are still running *jessie*, see [CONFIGURE-jessie.md](CONFIGURE-jessie.md). 
+
 ## Everything seems to work, but I hear nothing when swiping a card
 
 If the RFID reader works, and also the ID cards are listed in the `latestID.txt` and the WebApp plays audio correctly, but the cards don't start the audio playout, this is what could be the issue:
