@@ -72,9 +72,14 @@ sudo chown pi:pi rfid_trigger_play.conf
 sudo chmod 665 rfid_trigger_play.conf
 ~~~~
 
+## Create settings for audio playout
+
 Creating files for the `settings` folder which contain the short name
-of the amixer iface used and the percentage the volume in- or 
+of the amixer iface used and the percentage the volume increase or 
 decreases when using the `volumeup` and `volumedown`  function.
+
+**Troubleshooting**: Inside `settings/Audio_iFace_Name` is the iFace name of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
+To list all available iFace names, type `amixer controls`.
 
 ~~~
 echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name

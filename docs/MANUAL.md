@@ -253,39 +253,45 @@ The commands which are available in the script are:
 Once you have logged in to the RPi over SSH or booted with monitor and keyboard attached, open the script in the nano editor:
 
 ~~~~
-$ nano /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh
+$ nano /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 ~~~~
 
 Scroll down until you see the list of available commands:
 
 ~~~~
-CMDMUTE="mute"
-CMDVOL30="30"
-CMDVOL50="50"
-CMDVOL75="75"
-CMDVOL80="80"
-CMDVOL85="85"
-CMDVOL90="90"
-CMDVOL95="95"
-CMDVOL100="100"
-CMDSTOP="stop"
-CMDSHUTDOWN="halt"
+CMDMUTE="%CMDMUTE%"
+CMDVOL30="%CMDVOL30%"
+CMDVOL50="%CMDVOL50%"
+CMDVOL75="%CMDVOL75%"
+CMDVOL80="%CMDVOL80%"
+CMDVOL85="%CMDVOL85%"
+CMDVOL90="%CMDVOL90%"
+CMDVOL95="%CMDVOL95%"
+CMDVOL100="%CMDVOL100%"
+CMDVOLUP="%CMDVOLUP%"
+CMDVOLDOWN="%CMDVOLDOWN%"
+CMDSTOP="%CMDSTOP%"
+CMDSHUTDOWN="%CMDSHUTDOWN%"
+CMDREBOOT="%CMDREBOOT%"
 ~~~~
 
 Change the values of the commands you want to assign, leave the other ones unchanged. In our example, the changed list might look like this:
 
 ~~~~
-CMDMUTE="0594672283"
-CMDVOL30="30"
-CMDVOL50="50"
-CMDVOL75="75"
-CMDVOL80="80"
-CMDVOL85="85"
-CMDVOL90="1594672283"
-CMDVOL95="95"
-CMDVOL100="100"
-CMDSTOP="stop"
-CMDSHUTDOWN="2594672283"
+CMDMUTE="1352647584"
+CMDVOL30="%CMDVOL30%"
+CMDVOL50="%CMDVOL50%"
+CMDVOL75="%CMDVOL75%"
+CMDVOL80="%CMDVOL80%"
+CMDVOL85="%CMDVOL85%"
+CMDVOL90="%CMDVOL90%"
+CMDVOL95="%CMDVOL95%"
+CMDVOL100="%CMDVOL100%"
+CMDVOLUP="984000025364"
+CMDVOLDOWN="2636453782"
+CMDSTOP="%CMDSTOP%"
+CMDSHUTDOWN="%CMDSHUTDOWN%"
+CMDREBOOT="%CMDREBOOT%"
 ~~~~
 
 Save the changes and close the editor. The changes takes effect immediately.
@@ -336,9 +342,13 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
-## amixer command requires different device name, not PCM
+## Changing the volume does not work, but the playout works
 
-There is a script which allows you to specify the shorthand for the audio device, which is by default `PCM`. The file in question is [playout_controls.sh](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/playout_controls.sh.sample). See more in [the configuration manual](CONFIGURE-stretch.md) under *Copy the media player and daemon script*.
+The `amixer` command might require a different device name, not `PCM`.
+
+Inside `settings/Audio_iFace_Name` is the iFace name of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
+
+To list all available iFace names, type `amixer controls`.
 
 ## daemon_rfid_reader.py only works via SSH not by RFID cards
 `daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.
@@ -377,6 +387,8 @@ Run this script every minute by adding the following line via crontab:
 ## The RFID Reader doesn't seem to work
 
 There could be many reasons why the RFID Reader is not working reliably or behaves strangely. This could be due to a weak power supply or an insuficient power bank. Worth trying out before you try anything else.
+
+If you used the install script, you might have forgotten to register your RFID card reader. See the section *Register your USB device for the jukebox* inside [CONFIGURE-stretch.md](CONFIGURE-stretch.md) (if you are still running *jessie*, see [CONFIGURE-jessie.md](CONFIGURE-jessie.md). 
 
 ## Everything seems to work, but I hear nothing when swiping a card
 
