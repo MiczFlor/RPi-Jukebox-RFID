@@ -87,6 +87,10 @@ done
 
 if [ "$COMMAND" == "shutdown" ]
 then
+    sudo pkill vlc
+    sleep 1
+    /usr/bin/mpg123 $PATHDATA/../misc/shutdownsound.mp3 
+    sleep 3
     sudo halt
 
 elif [ "$COMMAND" == "shutdownafter" ]
