@@ -11,6 +11,26 @@ In this manual you will learn:
 * [How to control the jukebox through the web app.](#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](#cardcontrol)
 
+## Changing Phoniebox settings
+
+There is a folder called `settings` which contains audio and card settings. How to change the card settings, you will find below in this document. Here is a list of the other available settings.
+
+### `settings/Audio_iFace_Name`
+This is a file containing a string, by default `PCM`.
+
+Inside `settings/Audio_iFace_Name` is the **iFace name** of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
+To list all available iFace names, type `amixer controls`.
+
+### `settings/Max_Volume_Limit`
+This is a file containing a number, by default `100`.
+
+If one is **using an audio amplifier** (like the pHAT BEAT) without a physical volume limiter (like a potentiometer) your Phoniebox can get very loud "accidentally". The maximal volume can be set in `settings/Max_Volume_Limit`.
+
+### `settings/Audio_Volume_Change_Step`
+This is a file containing a number, by default `3`.
+
+Changing this number affects the `volumeup` and `volumedown` function in the web app or triggered by RFID cards. Increasing the number will result in larger volume jumps. Decreasing the number will result in smaller changes of the volume.
+
 ## <a name="connect"></a>Connecting to the jukebox to add files
 
 You need to connect to the jukebox in order to manage audio files and register new RFID cards. There are two ways to connect to the jukebox.

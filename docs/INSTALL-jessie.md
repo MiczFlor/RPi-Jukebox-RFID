@@ -2,19 +2,6 @@
 
 *Written for an tested on Raspbian GNU/Linux (jessie)*
 
-## Update information
-
-**Updates from version < 0.9.3**
-
-If you are updating your code from a version smaller 0.9.3 you need to manually make a copy of the file `scripts/playout_controls.sh.sample` to `scripts/playout_controls.sh`. Please run the following lines:
-~~~
-cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.sample /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
-sudo chmod 775 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh
-~~~
-
----
-
 The installation is the first step to get your jukebox up and running. Once you have done this, proceed to the [configuration](CONFIGURE-jessie.md).
 
 And Once you finished with the configuration, read the [manual](MANUAL.md) to add audio files and RFID cards.
