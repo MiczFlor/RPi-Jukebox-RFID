@@ -29,6 +29,7 @@ do
 	#Read volume and vlc status
 	VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
 	VLCSTATUS=`echo "status" | nc.openbsd -w 1 localhost 4212`
+	sleep 3
 
 	#Set shutdown time if no idle shutdoen time is set when vlc is not playing or volume is 0
 	if { [ "$(echo "$VLCSTATUS" | grep -c "state playing")" = "0" ] || [ $VOLPERCENT -eq "0" ]; } && [ -z "$(sudo atq -q i)" ]; 
