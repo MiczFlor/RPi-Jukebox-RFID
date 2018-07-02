@@ -59,6 +59,15 @@ fi
 # 2. then|or read value from file
 VOLSTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
 
+##############################################
+# Max volume limit
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Max_Volume_Limit ]; then
+    echo "100" > $PATHDATA/../settings/Max_Volume_Limit
+fi
+# 2. then|or read value from file
+MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
+
 #################################
 # path to file storing the current volume level
 # this file does not need to exist
@@ -87,6 +96,10 @@ done
 
 if [ "$COMMAND" == "shutdown" ]
 then
+    sudo pkill vlc
+    sleep 1
+    /usr/bin/mpg123 $PATHDATA/../misc/shutdownsound.mp3 
+    sleep 3
     sudo halt
 
 elif [ "$COMMAND" == "shutdownafter" ]
@@ -129,8 +142,12 @@ then
         # increase by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
         echo $VOLPERCENT
-        # sset volume level in percent
-        amixer sset \'$DEVICE\' $VOLPERCENT%
+	#increase volume only if VOLPERCENT is below the max volume limit
+	if [ $VOLPERCENT -le $MAXVOL ];
+	then
+        	# sset volume level in percent
+        	amixer sset \'$DEVICE\' $VOLPERCENT%
+	fi
     else
         # $VOLFILE DOES exist == audio off
         # read volume level from $VOLFILE and sset as percent
@@ -147,7 +164,7 @@ elif [ "$COMMAND" == "volumedown" ]
         # read volume in percent
         VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
         echo $VOLPERCENT
-        # increase by $VOLSTEP
+        # decrease by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}` 
         echo $VOLPERCENT
         # sset volume level in percent
