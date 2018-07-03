@@ -23,6 +23,7 @@
 # setvolume
 # volumeup
 # volumedown
+# getvolume
 # playerstop
 # playerstopafter
 # playernext
@@ -177,6 +178,12 @@ elif [ "$COMMAND" == "volumedown" ]
         rm -f $VOLFILE
     fi
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
+
+elif [ "$COMMAND" == "getvolume" ]
+    then
+    # read volume in percent
+    VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+    echo $VOLPERCENT
 
 elif [ "$COMMAND" == "playerstop" ]
 then
