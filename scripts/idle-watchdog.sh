@@ -30,8 +30,8 @@ do
 	VLCSTATUS=`echo "status" | nc.openbsd -w 1 localhost 4212`
 	sleep 3
 
-	#Set shutdown time if no idle shutdoen time is set when vlc is not playing or volume is 0
-	if { [ "$(echo "$VLCSTATUS" | grep -c "state playing")" = "0" ] || [ $VOLPERCENT -eq "0" ]; } && [ -z "$(sudo atq -q i)" ]; 
+	#Set shutdown time if no idle shutdown time is set when vlc is not playing or volume is 0
+	if { [ "$(echo "$VLCSTATUS" | grep -c "state playing")" == "0" ] || [ $VOLPERCENT -eq "0" ]; } && [ -z "$(sudo atq -q i)" ]; 
 	then
 		# shutdown pi after idling for $IDLETIME minutes
 		for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
@@ -40,7 +40,7 @@ do
 	fi
 	
 	# If vlc is playing and volume is greater 0, remove idle shutdown. Skip this if 'at'-queue is already empty
-	if [ "$(echo "$VLCSTATUS" | grep -c "state playing")" = "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
+	if [ "$(echo "$VLCSTATUS" | grep -c "state playing")" == "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
 	then
 		for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
 	fi	
