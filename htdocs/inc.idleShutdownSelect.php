@@ -36,12 +36,16 @@
 	</div><!-- / .col-xs-7 -->
 </div><!-- / .row -->
 <?php
-
 if ($idletimevalue != "0") {
 	$shutdowntime = exec("sudo atq -q i | awk '{print $5}'");
-	$remainingtime = (strtotime($shutdowntime)-time())/60;
-
-
+	$unixtime = time();
+	// For the night owls: if the shutdown time is after midnight (and so on the next day), $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
+	// strtotime($shutdowntime) returns the unix time for today and we get a negative value in the calculation below.
+	// This is fixed by subtracting a day from the current time, as we only need the difference.
+	if ($unixtime > strtotime($shutdowntime)) {
+		$unixtime = $unixtime - 86400;
+	}
+	$remainingtime = (strtotime($shutdowntime)-$unixtime)/60;
 
 print '<div class="row">';	
 print '	<div class="col-xs-5">';
