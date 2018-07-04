@@ -22,7 +22,14 @@
 			<?php
 			$sleeptimervalue = exec("sudo atq -q s | awk '{print $5}'");
 			if ($sleeptimervalue != "") {
-				$remainingsleeptimer = (strtotime($sleeptimervalue)-time())/60;
+				$unixtime = time();
+				// For the night owls: if the shutdown time is after midnight (and so on the next day), $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
+				// strtotime($shutdowntime) returns the unix time for today and we get a negative value in the calculation below.
+				// This is fixed by subtracting a day from the current time, as we only need the difference.
+				if ($unixtime > strtotime($sleeptimervalue)) {
+					$unixtime = $unixtime - 86400;
+				}
+				$remainingsleeptimer = (strtotime($sleeptimervalue)-$unixtime)/60;
 				print '<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="'.$remainingsleeptimer.'" aria-valuemin="0" aria-valuemax="60" style="width:'.($remainingsleeptimer*100/60).'%">';
 				print round($remainingsleeptimer)." min";
 			}
