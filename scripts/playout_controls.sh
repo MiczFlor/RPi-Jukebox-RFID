@@ -122,6 +122,7 @@ elif [ "$COMMAND" == "shutdownafter" ]
 then
     # remove shutdown times if existent
     for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
+    # -c=shutdownafter -v=0 is to remove the shutdown timer
     if [ $VALUE -gt 0 ];
     then
 	# shutdown pi after $VALUE minutes
@@ -157,6 +158,7 @@ then
     	# sset volume level in percent
     	amixer sset \'$DEVICE\' $VALUE%
     else
+    	# if we are over the max volume limit, set the volume to maxvol
 	amixer sset \'$DEVICE\' $MAXVOL%
     fi
     
@@ -216,11 +218,12 @@ elif [ "$COMMAND" == "setmaxvolume" ]
     then
     # read volume in percent
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
-    # if volume is greater than wanted maxvolume, set volume to maxvolume 
+    # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
     if [ $VOLPERCENT -gt $VALUE ];
     then
 	amixer sset \'$DEVICE\' $VALUE%
     fi
+    # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
 
 elif [ "$COMMAND" == "getmaxvolume" ]
@@ -229,6 +232,7 @@ elif [ "$COMMAND" == "getmaxvolume" ]
 
 elif [ "$COMMAND" == "setvolstep" ]
     then
+    # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
 
 elif [ "$COMMAND" == "getvolstep" ]
@@ -275,7 +279,9 @@ then
 
 elif [ "$COMMAND" == "setidletime" ]
 then
+    # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+    # restart service to apply the new value
     sudo systemctl restart idle-watchdog.service &
 
 elif [ "$COMMAND" == "getidletime" ]
