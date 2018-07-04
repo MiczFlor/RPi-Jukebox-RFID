@@ -3,7 +3,8 @@ A contactless jukebox for the Raspberry Pi, playing local audio files, playlists
 
 *Important update news*
 
-* **Latest Version: 0.9.5** For upgrade information please see [`UPGRADE.md`](docs/UPGRADE.md) for details on upgrading (2018-06-08)
+* **Latest Version: 0.9.7** For upgrade information please see [`UPGRADE.md`](docs/UPGRADE.md) for details on upgrading (2018-07-04)
+* **auto shutdown** Specify a number after which the idle Phoniebox will shutdown automatically. See [Phoniebox settings](docs/MANUAL.md#settings) for details (2018-07-03)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
 * **`config.php` removed in repo** To fix a flaw of the initial commit, I removed the `config.php` file from the `htdocs` directory. It will be created automatically from `config.php.sample`. If you encounter problems after `git pull`, download [`config.php.sample`](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/htdocs/config.php.sample) adjust and copy to `config.php`. (2018-05-03)
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#Remove old shutdown commands from all 'at' queues after boot to prevent immidiate shutdown
+#Remove old shutdown commands from all 'at' queues after boot to prevent immediate shutdown
 for i in `sudo atq | awk '{print $1}'`;do sudo atrm $i;done
 #Give the RPi enough time to get the correct time via network, no need for any hurry
 sleep 60
@@ -21,7 +21,6 @@ if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
 fi
 # 2. then|or read value from file
 DEVICE=`cat $PATHDATA/../settings/Audio_iFace_Name`
-
 
 #Go into infinite loop if idle time is greater 0
 while [ $IDLETIME -gt 0 ]

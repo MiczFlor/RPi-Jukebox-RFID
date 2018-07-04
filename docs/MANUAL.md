@@ -11,7 +11,7 @@ In this manual you will learn:
 * [How to control the jukebox through the web app.](#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the jukebox.](#cardcontrol)
 
-## Changing Phoniebox settings
+## <a name="settings"></a>Changing Phoniebox settings
 
 There is a folder called `settings` which contains audio and card settings. How to change the card settings, you will find below in this document. Here is a list of the other available settings.
 
@@ -30,6 +30,14 @@ If one is **using an audio amplifier** (like the pHAT BEAT) without a physical v
 This is a file containing a number, by default `3`.
 
 Changing this number affects the `volumeup` and `volumedown` function in the web app or triggered by RFID cards. Increasing the number will result in larger volume jumps. Decreasing the number will result in smaller changes of the volume.
+
+### `settings/Idle_Time_Before_Shutdown`
+This is a file containing a number, by default `0`.
+
+This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
+If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the VLC player is not playing and/or the sound has been muted.
+
+**IMPORTANT: if you do not want to use auto shutdown, the number in the file must be 0**
 
 ## <a name="connect"></a>Connecting to the jukebox to add files
 
