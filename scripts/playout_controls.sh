@@ -21,9 +21,13 @@
 # reboot
 # mute
 # setvolume
+# setmaxvolume
 # volumeup
 # volumedown
 # getvolume
+# getmaxvolume
+# setvolstep
+# getvolstep
 # playerstop
 # playerstopafter
 # playernext
@@ -31,6 +35,8 @@
 # playerpause
 # playerplay
 # playerreplay
+# getidletime
+# setidletime
 
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
@@ -75,6 +81,15 @@ MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 
+#################################
+# Idle time after the RPi will be shut down. 0=turn off feature.
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Idle_Time_Before_Shutdown ]; then
+    echo "0" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+fi
+# 2. then|or read value from file
+IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
+
 #echo $DEVICE
 #echo $VOLSTEP
 #echo $VOLFILE
@@ -105,8 +120,13 @@ then
 
 elif [ "$COMMAND" == "shutdownafter" ]
 then
-    # shutdown pi after $VALUE minutes 
-    echo "sudo halt" | at now + $VALUE minute
+    # remove shutdown times if existent
+    for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
+    if [ $VALUE -gt 0 ];
+    then
+	# shutdown pi after $VALUE minutes
+	echo "sudo halt" | at -q s now + $VALUE minute
+    fi 
 
 elif [ "$COMMAND" == "reboot" ]
 then
@@ -131,8 +151,15 @@ then
 
 elif [ "$COMMAND" == "setvolume" ]
 then
-    amixer sset \'$DEVICE\' $VALUE%
-
+    #increase volume only if VOLPERCENT is below the max volume limit
+    if [ $VALUE -le $MAXVOL ];
+    then
+    	# sset volume level in percent
+    	amixer sset \'$DEVICE\' $VALUE%
+    else
+	amixer sset \'$DEVICE\' $MAXVOL%
+    fi
+    
 elif [ "$COMMAND" == "volumeup" ]
 then
     if [ ! -f $VOLFILE ]; then
@@ -185,6 +212,29 @@ elif [ "$COMMAND" == "getvolume" ]
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
     echo $VOLPERCENT
 
+elif [ "$COMMAND" == "setmaxvolume" ]
+    then
+    # read volume in percent
+    VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+    # if volume is greater than wanted maxvolume, set volume to maxvolume 
+    if [ $VOLPERCENT -gt $VALUE ];
+    then
+	amixer sset \'$DEVICE\' $VALUE%
+    fi
+    echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
+
+elif [ "$COMMAND" == "getmaxvolume" ]
+    then
+    echo $MAXVOL
+
+elif [ "$COMMAND" == "setvolstep" ]
+    then
+    echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
+
+elif [ "$COMMAND" == "getvolstep" ]
+    then
+    echo $VOLSTEP
+
 elif [ "$COMMAND" == "playerstop" ]
 then
     # kill all running VLC media players
@@ -222,6 +272,15 @@ elif [ "$COMMAND" == "playerreplay" ]
 then
     # start the playing track from beginning
     echo "seek 0" | nc.openbsd -w 1 localhost 4212
+
+elif [ "$COMMAND" == "setidletime" ]
+then
+    echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+    sudo systemctl restart idle-watchdog.service &
+
+elif [ "$COMMAND" == "getidletime" ]
+then
+    echo $IDLETIME
 
 else
     echo Unknown COMMAND $COMMAND VALUE $VALUE
