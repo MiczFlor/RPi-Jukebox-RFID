@@ -5,7 +5,7 @@ After=network.target iptables.service firewalld.service
 [Service]
 User=pi
 Group=pi
-Type=oneshot
+Type=simple
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
 ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/idle-watchdog.sh
 
