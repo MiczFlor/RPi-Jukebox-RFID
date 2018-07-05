@@ -115,13 +115,13 @@ include("inc.idleShutdownSelect.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <i class='fa fa-keyboard-o'></i> Physical Input Settings
+        <i class='fa fa-keyboard-o'></i> Input Devices Settings
       </h4>
     </div><!-- /.panel-heading -->
     
       <div class="panel-body">
 <?php
-include("inc.physicalInputSetting.php");
+include("inc.inputDevicesSettings.php");
 ?>
       </div><!-- /.panel-body -->
     
