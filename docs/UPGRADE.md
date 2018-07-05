@@ -26,6 +26,9 @@ sudo chown root:root /etc/systemd/system/idle-watchdog.service
 sudo chmod 644 /etc/systemd/system/idle-watchdog.service
 # the config file where you can add the minutes after which Phoniebox shuts down
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
+# enable and start the service
+sudo systemctl enable idle-watchdog.service
+sudo systemctl start idle-watchdog.service
 ~~~
 
 # Upgrade from 0.9.4 to 0.9.5
