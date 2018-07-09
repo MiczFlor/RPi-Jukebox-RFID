@@ -131,3 +131,6 @@ sudo chmod 644 /etc/systemd/system/idle-watchdog.service
 # expected in the smb.conf file
 sudo smbpasswd -a pi
 
+# The final step: register your RFID reader and other configuration:
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/CONFIGURE-stretch.md
+
