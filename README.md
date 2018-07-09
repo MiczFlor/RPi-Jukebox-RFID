@@ -16,7 +16,7 @@ A contactless jukebox for the Raspberry Pi, playing local audio files, playlists
 
 **What makes this jukebox easy to install and use:**
 
-* Runs on all Raspberry Pi models (1, 2 and 3) and [Raspberry Zero](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/15).
+* Runs on all Raspberry Pi models (1, 2 and 3) and [Raspberry Zero](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/15). (jump to the [install instructions](#install))
 * Just plug and play using USB, no soldering iron needed.
 * Once the jukebox is up and running, add music from any computer on your home network.
 * Register new RFID cards easily without having to connect to the RPi.
@@ -42,11 +42,12 @@ The web app runs on any device and is mobile optimised. It provides:
 
 **See more innovation, upcycling and creativity in the [Jukebox Gallery](docs/GALLERY.md) or visit and share the project's homepage at [phoniebox.de](http://phoniebox.de/). There is also an [english Phoniebox page](http://phoniebox.de/index.php?l=en).**
 
-## Installation
+## <a name="install"></a>Installation
 
-* Installation instructions for Raspbian [Jessie](docs/INSTALL-jessie.md) and [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder. (experts might take a look at the [install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh)) or [install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh)).
-* Then walk through the configuraton for [Jessie](docs/CONFIGURE-jessie.md) or [Stretch](docs/CONFIGURE-stretch.md).
-* Once everything is set up and configured, read the manual to register cards and add audio: [`MANUAL.md`](docs/MANUAL.md)
+* Installation instructions for Raspbian [Jessie](docs/INSTALL-jessie.md) and [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder.
+* For a quick install procedure, take a look at the [bash install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh) or the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh). This should get you started quickly, but you still need to walk through the following steps:
+* Configure the Phoniebox after having installed all the components. See details for [Jessie](docs/CONFIGURE-jessie.md) or [Stretch](docs/CONFIGURE-stretch.md).
+* Once everything has been installed and configured, read the manual to change settings, register RFID cards, add audio: [`MANUAL.md`](docs/MANUAL.md)
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
 
