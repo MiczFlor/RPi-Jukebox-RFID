@@ -54,7 +54,7 @@ print '	</div>';
 print '	<div class="col-xs-7">';
 print '		<div class="progress">';
 			if ($shutdowntime != "") {
-				print '<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="'.$remainingtime.'" aria-valuemin="0" aria-valuemax="60" style="width:'.$remainingtime.'%">';
+				print '<div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="'.$remainingtime.'" aria-valuemin="0" aria-valuemax="60" style="width:'.($remainingtime*100/60).'%">';
     				print round($remainingtime).' min';
 			}
 			else {
