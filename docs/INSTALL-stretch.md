@@ -187,7 +187,7 @@ Now add the specific folder that we want to be exposed to the home network in th
 
 ~~~~
 [pi_jukebox]
-   comment= Pi Jukebox
+   comment=Pi Jukebox
    path=/home/pi/RPi-Jukebox-RFID/shared
    browseable=Yes
    writeable=Yes
@@ -195,6 +195,7 @@ Now add the specific folder that we want to be exposed to the home network in th
    create mask=0777
    directory mask=0777
    public=no
+   veto files=/._*/.DS_Store/
 ~~~~
 
 **Note:** the `path` given in this example works (only) if you are installing the jukebox code in the directory `/home/pi/`.
