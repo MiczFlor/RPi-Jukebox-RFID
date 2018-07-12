@@ -45,6 +45,7 @@ The web app runs on any device and is mobile optimised. It provides:
 ## <a name="install"></a>Installation
 
 * Installation instructions for Raspbian [Jessie](docs/INSTALL-jessie.md) and [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder.
+* You can also use the [headless installation over ssh](docs/INSTALL-stretch.md#ssh-install) straight from a fresh SD card.
 * For a quick install procedure, take a look at the [bash install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh) or the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh). This should get you started quickly, but you still need to walk through the following steps:
 * Configure the Phoniebox after having installed all the components. See details for [Jessie](docs/CONFIGURE-jessie.md) or [Stretch](docs/CONFIGURE-stretch.md).
 * Once everything has been installed and configured, read the manual to change settings, register RFID cards, add audio: [`MANUAL.md`](docs/MANUAL.md)
