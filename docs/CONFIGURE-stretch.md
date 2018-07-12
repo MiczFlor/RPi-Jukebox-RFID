@@ -80,8 +80,8 @@ decreases when using the `volumeup` and `volumedown`  function.
 
 **Troubleshooting**: 
 
-* Inside `settings/Audio_iFace_Name` is the **iFace name** of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
-To list all available iFace names, type `amixer controls`.
+* Inside `settings/Audio_iFace_Name` is the **iFace name** of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master` or `Speaker`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
+To list all available iFace names, type `amixer scontrols`.
 * If one is **using an audio amplifier (like the pHAT BEAT)** without a physical volume limiter (like a potentiometer) your Phoniebox can get very loud "accidentally". The maximal volume can be set in `settings/Max_Volume_Limit`.
 
 ~~~
