@@ -14,6 +14,8 @@ This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
 
 There are a number of operating systems to chose from on the [official RPi download page](https://www.raspberrypi.org/downloads/) on [www.raspberrypi.org](http://www.raspberrypi.org). We want to work with is the official distribution *Raspbian*. 
 
+Install and configure via SSH: if you need to install and configure the Phoniebox via SSH, you might want to jump to the [headless installation](#ssh-install) towards the end of this document.
+
 IMPORTANT: if you want to be sure that you have the same system running that this documentation was written for, you need to use the stretch distribution which you can download here: [2018-03-13-raspbian-stretch.zip](https://downloads.raspberrypi.org/raspbian/images/raspbian-2018-03-14/2018-03-13-raspbian-stretch.zip).
 
 After you downloaded the `zip` file, follow the instructions on the official [INSTALLING OPERATING SYSTEM IMAGES](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) page. I have used [etcher](https://etcher.io/) to make the SD card as described.
@@ -369,4 +371,35 @@ sudo reboot
 
 Continue with the configuration in the file [`CONFIGURE-stretch.md`](CONFIGURE-stretch.md).
 
+# APPENDIX
+
+## <a name="ssh-install"></a>Installation and configuration via SSH / headless installation
+
+Setting up the Phoniebox via a SSH connection saves the need for a monitor and a mouse. The following worked on Raspian stretch.
+
+* Flash your SD card with the Raspian image
+* Eject the card and insert it again. This should get the `boot` partition mounted.
+* In the boot partition, create a new empty file called `ssh`. This will enable the SSH server later.
+* Create another file in the same place called `wpa_supplicant.conf`. Set the file content according to the following example:
+
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+network={
+    ssid="YOUR_NETWORK_NAME"
+    psk="YOUR_PASSWORD"
+    key_mgmt=WPA-PSK
+}
+```
+
+Note: This works for WPA-secured wifi networks, which should be the vast majority.
+
+* Save the file
+* Unmount and eject the card, insert it into the Raspy, boot.
+* Find out the IP address of the raspberry. Most Wifi routers have a user interface that lists all devices in the network with the IP address they got assigned.
+* Connect via ssh with username `pi` and password `raspberry`.
+
+Sources
+
+* [how-to-set-up-wifi-on-your-raspberry-pi-without-ethernet](https://howchoo.com/g/ndy1zte2yjn/how-to-set-up-wifi-on-your-raspberry-pi-without-ethernet)
+* [how-to-enable-ssh-on-raspbian-without-a-screen](https://howchoo.com/g/ote0ywmzywj/how-to-enable-ssh-on-raspbian-without-a-screen)
 
