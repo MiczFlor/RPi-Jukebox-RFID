@@ -1,4 +1,4 @@
-# Installing Phoniebox on RPi Stretch
+# <a name="install"></a>Installing Phoniebox on RPi Stretch
 
 *Written for an tested on Raspbian GNU/Linux 9.4 (stretch) Kernel version: 4.14*
 
@@ -397,6 +397,7 @@ Note: This works for WPA-secured wifi networks, which should be the vast majorit
 * Unmount and eject the card, insert it into the Raspy, boot.
 * Find out the IP address of the raspberry. Most Wifi routers have a user interface that lists all devices in the network with the IP address they got assigned.
 * Connect via ssh with username `pi` and password `raspberry`.
+* Jump back to the [top of this document](#install) to walk through the other steps of the installation.
 
 Sources
 
