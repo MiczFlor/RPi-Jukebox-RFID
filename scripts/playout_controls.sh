@@ -274,7 +274,7 @@ elif [ "$COMMAND" == "playerpause" ]
 then
     # pause current track
     # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
-    $PATHDATA/resume_play.sh -c=savepos && mpc toggle
+    mpc toggle
     
 elif [ "$COMMAND" == "playerplay" ]
 then
