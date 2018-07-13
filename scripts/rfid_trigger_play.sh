@@ -252,13 +252,15 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
+# Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
+# Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
+# and this produces an error while saving lastplayed.dat
+
+sudo $PATHDATA/playout_controls.sh -c=playlistclear
 	
 # Before we create a new playlist, we remove the old one from the folder.
 # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
 # so we only want the current playlist in the "mpc lsplaylists" output.
-# Before the removal it would be good to call "resume_play.sh -c=savepos" to catch paused audio,
-# but this call is not working here, even with lots of sleep, reason unknown. Workaround is to save audio position
-# on every pause toggle.
 
 mpc lsplaylists | \
 while read i
@@ -305,9 +307,7 @@ if [ "$FOLDERNAME" ]; then
                 ;;
         esac
 	
-	# clear the loaded playlist => stop playing audio
-	mpc clear
-	# load new playlist and play	
+	# load new playlist and play
 	$PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
     fi
 fi
