@@ -13,6 +13,24 @@ As of version 0.9.4 there is a file `settings/version` containing the version nu
 For future reference, I will try to break down the upgrade patches / scripts from number
 to number. 
 
+# Upgrade from 0.9.5 to 0.9.7
+* Adding auto shutdown when idle for longer than x minutes (see [manual](MANUAL.md#settings) for details)
+* Adding maximum volume percent to settings (see [manual](MANUAL.md#settings) for details)
+* Fixing bug: settings volume for stereo audio iFace
+* Fixing bug: bash code compatible with all shells  
+* Web app enhancements (audio level, display 'playing now')
+~~~
+# services to launch after boot using systmed
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
+sudo chown root:root /etc/systemd/system/idle-watchdog.service
+sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+# the config file where you can add the minutes after which Phoniebox shuts down
+echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
+# enable and start the service
+sudo systemctl enable idle-watchdog.service
+sudo systemctl start idle-watchdog.service
+~~~
+
 # Upgrade from 0.9.4 to 0.9.5
 * Configuration of RFID card control in extra file `settings/rfid_trigger_play.conf`
 * Playout control config now uses `settings` folder to store iFace value (e.g. PCM) and percentage of relative volume change
