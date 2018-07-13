@@ -49,7 +49,6 @@ savepos)
 			CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
 			# Save filename and time to lastplayed.dat
 			printf "$CURRENTFILENAME\n$ELAPSED" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-			echo $FOLDER
 		fi
 	fi
 ;;
