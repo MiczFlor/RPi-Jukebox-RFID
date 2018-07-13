@@ -143,6 +143,14 @@ if(isset($_GET['gpiostatus']) && trim($_GET['gpiostatus']) == "turnon") {
 if(isset($_GET['gpiostatus']) && trim($_GET['gpiostatus']) == "turnoff") {
     $urlparams['gpiostatus'] = trim($_GET['gpiostatus']);
 }
+
+if(isset($_GET['enableresume']) && trim($_GET['enableresume']) != "") {
+    $urlparams['enableresume'] = trim($_GET['enableresume']);
+}
+
+if(isset($_GET['disableresume']) && trim($_GET['disableresume']) != "") {
+    $urlparams['disableresume'] = trim($_GET['disableresume']);
+}
 /*******************************************
 * ACTIONS
 *******************************************/
@@ -330,6 +338,31 @@ if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnoff") {
     }
 }
 
+// enable resume
+if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($urlparams['enableresume']))) {
+
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['enableresume']));
+    exec($exec);
+
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
+}
+
+// disable resume
+if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir(urldecode($urlparams['disableresume']))) {
+
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['disableresume']));
+    exec($exec);
+
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
+}
 
 // stop playing
 if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
