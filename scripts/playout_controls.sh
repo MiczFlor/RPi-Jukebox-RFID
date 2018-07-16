@@ -104,14 +104,14 @@ IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 # Get args from command line (see Usage above)
 for i in "$@"
 do
-case $i in
-    -c=*|--command=*)
-    COMMAND="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-esac
+    case $i in
+        -c=*|--command=*)
+        COMMAND="${i#*=}"
+        ;;
+        -v=*|--value=*)
+        VALUE="${i#*=}"
+        ;;
+    esac
 done
 
 if [ "$COMMAND" == "shutdown" ]
@@ -135,8 +135,8 @@ then
     # -c=shutdownafter -v=0 is to remove the shutdown timer
     if [ $VALUE -gt 0 ];
     then
-	# shutdown pi after $VALUE minutes
-	echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
+    # shutdown pi after $VALUE minutes
+    echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
     fi 
 
 elif [ "$COMMAND" == "reboot" ]
@@ -166,11 +166,11 @@ then
     #increase volume only if VOLPERCENT is below the max volume limit
     if [ $VALUE -le $MAXVOL ];
     then
-    	# sset volume level in percent
-    	amixer sset \'$DEVICE\' $VALUE%
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VALUE%
     else
-    	# if we are over the max volume limit, set the volume to maxvol
-	amixer sset \'$DEVICE\' $MAXVOL%
+        # if we are over the max volume limit, set the volume to maxvol
+    amixer sset \'$DEVICE\' $MAXVOL%
     fi
     
 elif [ "$COMMAND" == "volumeup" ]
@@ -183,12 +183,12 @@ then
         # increase by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
         echo $VOLPERCENT
-	#increase volume only if VOLPERCENT is below the max volume limit
-	if [ $VOLPERCENT -le $MAXVOL ];
-	then
-        	# sset volume level in percent
-        	amixer sset \'$DEVICE\' $VOLPERCENT%
-	fi
+    #increase volume only if VOLPERCENT is below the max volume limit
+    if [ $VOLPERCENT -le $MAXVOL ];
+    then
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VOLPERCENT%
+    fi
     else
         # $VOLFILE DOES exist == audio off
         # read volume level from $VOLFILE and sset as percent
@@ -199,7 +199,7 @@ then
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
 elif [ "$COMMAND" == "volumedown" ]
-    then
+then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
@@ -220,34 +220,34 @@ elif [ "$COMMAND" == "volumedown" ]
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
 elif [ "$COMMAND" == "getvolume" ]
-    then
+then
     # read volume in percent
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
     echo $VOLPERCENT
 
 elif [ "$COMMAND" == "setmaxvolume" ]
-    then
+then
     # read volume in percent
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
     # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
     if [ $VOLPERCENT -gt $VALUE ];
     then
-	amixer sset \'$DEVICE\' $VALUE%
+    amixer sset \'$DEVICE\' $VALUE%
     fi
     # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
 
 elif [ "$COMMAND" == "getmaxvolume" ]
-    then
+then
     echo $MAXVOL
 
 elif [ "$COMMAND" == "setvolstep" ]
-    then
+then
     # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
 
 elif [ "$COMMAND" == "getvolstep" ]
-    then
+then
     echo $VOLSTEP
 
 elif [ "$COMMAND" == "playerstop" ]
@@ -283,9 +283,9 @@ then
     PLAYSTATE=$(echo -e status\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
     if [ "$PLAYSTATE" == "pause" ]
     then
-	mpc play
+    mpc play
     else
-    	$PATHDATA/resume_play.sh -c=resume
+        $PATHDATA/resume_play.sh -c=resume
     fi
     
 elif [ "$COMMAND" == "playerreplay" ]
