@@ -47,8 +47,9 @@ savepos)
         then
             #Get the filename of the currently played audio
             CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
-            # Save filename and time to lastplayed.dat
-            printf "$CURRENTFILENAME\n$ELAPSED" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            # Save filename and time to lastplayed.dat. "Stopped" for signaling -c=resume that there was a stopping event
+            # (this is done to get a proper resume on the first track if the playlist has ended before)
+            printf "$CURRENTFILENAME\n$ELAPSED\nStopped" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         fi
     fi
 ;;
@@ -57,18 +58,35 @@ resume)
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
         # Read the last played filename and timestamp from lastplayed.dat
-        FILENAME=$(head -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
-        TIMESTAMP=$(tail -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
-
-        # Get the playlist position of the file from mpd
-        # Alternative approach: "mpc searchplay xx && mpc seek yy" 
-        PLAYLISTPOS=$(echo -e playlistfind filename \"$FILENAME\"\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
-
-        # If the file is found, it is played from timestamp, otherwise start playlist from beginning
-        if [ ! -z $PLAYLISTPOS ];
+        #FILENAME=$(head -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
+        #TIMESTAMP=$(tail -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
+        LASTPLAYED=$(cat $PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat)
+        FILENAME=$(echo "$LASTPLAYED" | sed -n '1p')
+        TIMESTAMP=$(echo "$LASTPLAYED" | sed -n '2p')
+        PLAYSTATUS=$(echo "$LASTPLAYED" | sed -n '3p')
+        
+        # Check if we got a "savepos" command after the last "resume". Otherwise we assume that the playlist was played until the end.
+        # In this case, start the playlist from beginning 
+        if [ $PLAYSTATUS != "Playing" ]
         then
-            echo -e seek $PLAYLISTPOS $TIMESTAMP \\nclose | nc.openbsd -w 1 localhost 6600
+            # Get the playlist position of the file from mpd
+            # Alternative approach: "mpc searchplay xx && mpc seek yy" 
+            PLAYLISTPOS=$(echo -e playlistfind filename \"$FILENAME\"\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
+
+            # If the file is found, it is played from timestamp, otherwise start playlist from beginning        
+            if [ ! -z $PLAYLISTPOS ];
+            then
+                echo -e seek $PLAYLISTPOS $TIMESTAMP \\nclose | nc.openbsd -w 1 localhost 6600
+            else
+                mpc play
+            fi
+            # If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks), there's no savepos event
+            # and we would resume at the last position anywhere in the playlist. To catch these, we signal it to the next "resume" call
+            # via writing it to the lastplayed.dat that we still assume that the audio is playing. Remark: $FILENAME and $TIMESTAMP can
+            # be anything here, as we won't the information if "Playing" is found by "resume".
+            printf "$FILENAME\n$TIMESTAMP\nPlaying" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         else
+            # We assume that the playlist ran to the end the last time and start from the beginning.
             mpc play
         fi
     else
@@ -77,7 +95,7 @@ resume)
     fi
 ;;
 enableresume)
-    echo -e "filename\n0" > "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    echo -e "filename\n0\nStopped" > "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
 ;;
 disableresume)
     rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
