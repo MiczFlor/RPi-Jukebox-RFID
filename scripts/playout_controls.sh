@@ -17,6 +17,7 @@
 #
 # VALID COMMANDS:
 # shutdown
+# shutdownsilent
 # shutdownafter
 # reboot
 # mute
@@ -35,6 +36,9 @@
 # playerpause
 # playerplay
 # playerreplay
+# playlistclear
+# playlistaddplay
+# playlistadd
 # getidletime
 # setidletime
 
@@ -112,10 +116,16 @@ done
 
 if [ "$COMMAND" == "shutdown" ]
 then
-    sudo pkill vlc
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sleep 1
     /usr/bin/mpg123 $PATHDATA/../misc/shutdownsound.mp3 
     sleep 3
+    sudo halt
+
+elif [ "$COMMAND" == "shutdownsilent" ]
+then
+    # doesn't play a shutdown sound
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sudo halt
 
 elif [ "$COMMAND" == "shutdownafter" ]
@@ -126,11 +136,12 @@ then
     if [ $VALUE -gt 0 ];
     then
 	# shutdown pi after $VALUE minutes
-	echo "sudo halt" | at -q s now + $VALUE minute
+	echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
     fi 
 
 elif [ "$COMMAND" == "reboot" ]
 then
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sudo reboot
 
 elif [ "$COMMAND" == "mute" ]
@@ -241,41 +252,62 @@ elif [ "$COMMAND" == "getvolstep" ]
 
 elif [ "$COMMAND" == "playerstop" ]
 then
-    # kill all running VLC media players
-    sudo pkill vlc
+    # stop the player
+    $PATHDATA/resume_play.sh -c=savepos && mpc stop
 
 elif [ "$COMMAND" == "playerstopafter" ]
 then
     # stop player after $VALUE minutes
-    echo "sudo pkill vlc" | at now + $VALUE minute
-
-# for controlling VLC over rc, see:  
-# https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
+    echo "mpc stop" | at -q s now + $VALUE minute
 
 elif [ "$COMMAND" == "playernext" ]
 then
     # play next track in playlist (==folder)
-    echo "next" | nc.openbsd -w 1 localhost 4212
+    mpc next
 
 elif [ "$COMMAND" == "playerprev" ]
 then
     # play previous track in playlist (==folder)
-    echo "prev" | nc.openbsd -w 1 localhost 4212
+    mpc prev
 
 elif [ "$COMMAND" == "playerpause" ]
 then
     # pause current track
-    echo "pause" | nc.openbsd -w 1 localhost 4212
-
+    # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
+    mpc toggle
+    
 elif [ "$COMMAND" == "playerplay" ]
 then
     # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
-
+    # No checking for resume if the audio is paused, just unpause it
+    PLAYSTATE=$(echo -e status\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+    if [ "$PLAYSTATE" == "pause" ]
+    then
+	mpc play
+    else
+    	$PATHDATA/resume_play.sh -c=resume
+    fi
+    
 elif [ "$COMMAND" == "playerreplay" ]
 then
     # start the playing track from beginning
-    echo "seek 0" | nc.openbsd -w 1 localhost 4212
+    mpc seek 0
+
+elif [ "$COMMAND" == "playlistclear" ]
+then
+    # clear playlist
+    $PATHDATA/resume_play.sh -c=savepos
+    mpc clear
+
+elif [ "$COMMAND" == "playlistaddplay" ]
+then
+    # add to playlist (and play)
+    mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
+
+elif [ "$COMMAND" == "playlistadd" ]
+then
+    # add to playlist, no autoplay
+    mpc load "${VALUE}"
 
 elif [ "$COMMAND" == "setidletime" ]
 then
