@@ -246,7 +246,6 @@ if [ "$CARDID" ]; then
     fi
 fi
 
-
 ##############################################################
 # We should now have a folder name with the audio files.
 # Either from prompt of from the card ID processing above
@@ -275,7 +274,6 @@ if [ "$FOLDERNAME" ]; then
     then
         # set path to playlist
         PLAYLISTPATH="/tmp/$FOLDERNAME.m3u"
-	
 
         # Check if we have something special to do
         # Read content file names of folder into string
@@ -290,24 +288,24 @@ if [ "$FOLDERNAME" ]; then
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)" .*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
-                ;;
+            ;;
             "livestream.txt")
-		# mpd can't read from .txt, so we have to write the livestream URL into playlist
-		cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/livestream.txt" > "$PLAYLISTPATH"
-		;;
+                # mpd can't read from .txt, so we have to write the livestream URL into playlist
+                cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/livestream.txt" > "$PLAYLISTPATH"
+            ;;
             *)
                 # Nothing special to do, folder with audio files
                 # write playlist to file using the same name as the folder with ending .m3u
                 # wrap $PLAYLIST string in "" to keep line breaks
-		# cd to ../shared/audiofolders as mpd accepts only filepaths relative to its music folder
-		# or starting with file:// (e.g. file:///home/pi...)
-		cd $PATHDATA/../shared/audiofolders
+        		# cd to ../shared/audiofolders as mpd accepts only filepaths relative to its music folder
+        		# or starting with file:// (e.g. file:///home/pi...)
+                cd $PATHDATA/../shared/audiofolders
                 #find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
-		find "$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
-                ;;
+                find "$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
+            ;;
         esac
 	
-	# load new playlist and play
-	$PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+        # load new playlist and play
+        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
     fi
 fi
