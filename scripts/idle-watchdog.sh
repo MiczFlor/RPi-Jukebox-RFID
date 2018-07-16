@@ -20,24 +20,24 @@ IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 #Go into infinite loop if idle time is greater 0
 while [ $IDLETIME -gt 0 ]
 do
-	#Read volume and vlc status
-	PLAYERSTATUS=$(mpc status)
-	VOLPERCENT=$(echo -e "status\nclose" | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-	sleep 1
-	#Set shutdown time if box is not playing or volume is 0 and no idle shutdown time is set
-	if { [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "0" ] || [ $VOLPERCENT -eq "0" ]; } && [ -z "$(sudo atq -q i)" ]; 
-	then
-		# shutdown pi after idling for $IDLETIME minutes
-		for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
-		sleep 1		
-		echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q i now + $IDLETIME minute
-	fi
-	
-	# If box is playing and volume is greater 0, remove idle shutdown. Skip this if "at"-queue is already empty
-	if [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
-	then
-		for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
-	fi	
-	
-	sleep 60
+    #Read volume and vlc status
+    PLAYERSTATUS=$(mpc status)
+    VOLPERCENT=$(echo -e "status\nclose" | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+    sleep 1
+    #Set shutdown time if box is not playing or volume is 0 and no idle shutdown time is set
+    if { [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "0" ] || [ $VOLPERCENT -eq "0" ]; } && [ -z "$(sudo atq -q i)" ]; 
+    then
+        # shutdown pi after idling for $IDLETIME minutes
+        for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
+        sleep 1        
+        echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q i now + $IDLETIME minute
+    fi
+    
+    # If box is playing and volume is greater 0, remove idle shutdown. Skip this if "at"-queue is already empty
+    if [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
+    then
+        for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
+    fi    
+    
+    sleep 60
 done
