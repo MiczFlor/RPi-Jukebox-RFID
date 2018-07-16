@@ -3,6 +3,7 @@ A contactless jukebox for the Raspberry Pi, playing local audio files, playlists
 
 *Important update news*
 
+* **Changing audio player? Your thoughts please** There is a [new branch with 'resume play'](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/pr80-mpd-as-audio-player) in the repo using `mpd` instead of `vlc` for audio playout. What do you think? Use this [thread for feedback and opinions](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/79) (2018-07-04)
 * **Latest Version: 0.9.7** For upgrade information please see [`UPGRADE.md`](docs/UPGRADE.md) for details on upgrading (2018-07-04)
 * **auto shutdown** Specify a number after which the idle Phoniebox will shutdown automatically. See [Phoniebox settings](docs/MANUAL.md#settings) for details (2018-07-03)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
@@ -79,6 +80,7 @@ If you find something that doesn't work. And you tried and tried again, but it s
 
 There is a growing section of [troubleshooting](docs/MANUAL.md#faq) including:
 
+* I want to improve the onboard audio quality
 * I am moving, how do I get the jukebox into my new WiFi network?
 * The RFID Reader doesn't seem to work.
 * Changing the volume does not work, but the playout works.

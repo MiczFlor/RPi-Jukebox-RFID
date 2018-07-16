@@ -43,10 +43,6 @@ Here are some pointers to get the software running on Ubuntu Mate for Raspberry 
 
 Now you have installed and operating system and even a windows manager (called Pixel on Raspbian). Start up your RPi and it will bring you straight to the home screen. Notice that you are not required to log in.
 
-### Firmware update improves audio out?
-
-If you want to update the RPI firmware, this is the right point to do so. This manual was written for the default firmware. Read more about how to update and why you might want to give it a try in a separate [Firmware Update document](FIRMWARE_UPDATE.md).
-
 ### Configure your keyboard
 
 In the dropdown menu at the top of the home screen, select:

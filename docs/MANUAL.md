@@ -328,6 +328,14 @@ Save the changes and close the editor. The changes takes effect immediately.
 
 # <a name="faq"></a>Troubleshooting / FAQ
 
+## <a name="faqaudioimprovement"></a>I want to improve the onboard audio quality
+
+The Pi onboard audio quality is not the best. If you don't intend to go with an external USB card, these hints might help to improve the quality. Please share your experience in the "issues" section on github. These suggestions might depend on your operating system, so don't just throw them all in the mix :) Here you can find a [good list of audio improvements to try](https://github.com/superjamie/lazyweb/wiki/Raspberry-Pi-3.5mm-Audio-Hiss). What seems to work for many:
+
+* **Setting 'audio dither'**: The onboard audio output uses config options to change the way the analogue audio is driven, and whether some firmware features are enabled or not. See the official Raspberry page for [more information on `disable_audio_dither` and `enable_audio_dither`](https://www.raspberrypi.org/documentation/configuration/config-txt/audio.md).
+* **Settings for PMW driver**: Available in newer Raspbian as of Feb 2016  is a PWM audio driver that significantly increases the audio quality available from the 3.5mm TRRS jack. In `/boot/config.txt` add the following line: `audio_pwm_mode=2`
+* **Firmware update**:  If you want to update the RPI firmware, this is the right point to do so. This manual was written for the default firmware. Read more about how to update and why you might want to give it a try in a separate [Firmware Update document](FIRMWARE_UPDATE.md).
+
 ## <a name="changewifisettings"></a>I am moving, how do I get the jukebox into my new WiFi network?
 
 You will need to open the jukebox and connect it to a monitor. The next question would be: do you need the graphical interface or are you good to go with the command line in the terminal window?
