@@ -40,8 +40,8 @@ include("inc.controlVolumeUpDown.php");
 
 <?php
       // show currently played track
-      if (array_key_exists('track', $vlcStatus)) {
-          $icon_class = ($vlcStatus['status'] === 'playing') ? 'play' : 'pause';
+      if (array_key_exists('track', $playerStatus)) {
+          $icon_class = ($playerStatus['status'] === 'play') ? 'play' : 'pause';
           print '
               <div class="well well-sm">
                   <div class="row">
@@ -49,7 +49,7 @@ include("inc.controlVolumeUpDown.php");
                           <i class="fa fa-'. $icon_class .'"></i>
                       </div>
                       <div class="col-lg-11 col-md-11 col-sm-11 col-xs-11">
-                          '.$vlcStatus['track'].'
+                          '.$playerStatus['track'].'
                       </div>
                   </div>
               </div>
@@ -71,7 +71,7 @@ include("inc.volumeSelect.php");
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
                 <i class='fa  fa-plus-circle'></i> Register new card ID
                 </a>
-	  </div><!-- / .col-lg-12 -->
+	</div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
 
     <div class="row">
@@ -104,10 +104,11 @@ foreach($audiofolders as $audiofolder) {
     $idcounter++;
     
     // get list of content for each folder
-    $files = scandir($audiofolder); 
+    $files = scandir($audiofolder);
     $accordion = "<h4>Contains the following file(s):</h4><ul>";
     foreach($files as $file) {
-        if(is_file($audiofolder."/".$file)){
+	// add file name to list, supress if it's lastplayed.dat
+        if(is_file($audiofolder."/".$file) && $file != "lastplayed.dat"){
             $accordion .= "\n<li>".$file."</li>";
         }
     }
@@ -129,11 +130,23 @@ foreach($audiofolders as $audiofolder) {
         print "
         <div class='well'>
             <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
+
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info btnFolder'>Folder:
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
                 <i class='fa fa-info-circle'></i>
             </span>
+	";
+	// Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
+	if (in_array("lastplayed.dat", $files) && ! in_array("livestream.txt", $files) ) {
+		print "<span class='label label-success'>Resume enabled</span>";
+		$accordion .= "<a href='?disableresume=".$audiofolder."' class='btn btn-danger'><i class='fa fa-power-off'></i> Disable Resume</a>";
+	}
+	elseif ( ! in_array("livestream.txt", $files) ) {
+		print "<span class='label label-danger'>Resume disabled</span>";
+		$accordion .= "<a href='?enableresume=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Enable Resume</a>";
+	}
+	print "
             <div id='folder".$idcounter."' class='collapse folderContent'>
             ".$accordion."
             </div>

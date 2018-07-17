@@ -17,6 +17,7 @@
 #
 # VALID COMMANDS:
 # shutdown
+# shutdownsilent
 # shutdownafter
 # reboot
 # mute
@@ -35,6 +36,9 @@
 # playerpause
 # playerplay
 # playerreplay
+# playlistclear
+# playlistaddplay
+# playlistadd
 # getidletime
 # setidletime
 
@@ -100,22 +104,28 @@ IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 # Get args from command line (see Usage above)
 for i in "$@"
 do
-case $i in
-    -c=*|--command=*)
-    COMMAND="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-esac
+    case $i in
+        -c=*|--command=*)
+        COMMAND="${i#*=}"
+        ;;
+        -v=*|--value=*)
+        VALUE="${i#*=}"
+        ;;
+    esac
 done
 
 if [ "$COMMAND" == "shutdown" ]
 then
-    sudo pkill vlc
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sleep 1
     /usr/bin/mpg123 $PATHDATA/../misc/shutdownsound.mp3 
     sleep 3
+    sudo halt
+
+elif [ "$COMMAND" == "shutdownsilent" ]
+then
+    # doesn't play a shutdown sound
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sudo halt
 
 elif [ "$COMMAND" == "shutdownafter" ]
@@ -125,12 +135,13 @@ then
     # -c=shutdownafter -v=0 is to remove the shutdown timer
     if [ $VALUE -gt 0 ];
     then
-	# shutdown pi after $VALUE minutes
-	echo "sudo halt" | at -q s now + $VALUE minute
+    # shutdown pi after $VALUE minutes
+    echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
     fi 
 
 elif [ "$COMMAND" == "reboot" ]
 then
+    $PATHDATA/resume_play.sh -c=savepos && mpc clear
     sudo reboot
 
 elif [ "$COMMAND" == "mute" ]
@@ -155,11 +166,11 @@ then
     #increase volume only if VOLPERCENT is below the max volume limit
     if [ $VALUE -le $MAXVOL ];
     then
-    	# sset volume level in percent
-    	amixer sset \'$DEVICE\' $VALUE%
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VALUE%
     else
-    	# if we are over the max volume limit, set the volume to maxvol
-	amixer sset \'$DEVICE\' $MAXVOL%
+        # if we are over the max volume limit, set the volume to maxvol
+    amixer sset \'$DEVICE\' $MAXVOL%
     fi
     
 elif [ "$COMMAND" == "volumeup" ]
@@ -172,12 +183,12 @@ then
         # increase by $VOLSTEP
         VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
         echo $VOLPERCENT
-	#increase volume only if VOLPERCENT is below the max volume limit
-	if [ $VOLPERCENT -le $MAXVOL ];
-	then
-        	# sset volume level in percent
-        	amixer sset \'$DEVICE\' $VOLPERCENT%
-	fi
+    #increase volume only if VOLPERCENT is below the max volume limit
+    if [ $VOLPERCENT -le $MAXVOL ];
+    then
+        # sset volume level in percent
+        amixer sset \'$DEVICE\' $VOLPERCENT%
+    fi
     else
         # $VOLFILE DOES exist == audio off
         # read volume level from $VOLFILE and sset as percent
@@ -188,7 +199,7 @@ then
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
 elif [ "$COMMAND" == "volumedown" ]
-    then
+then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
@@ -209,73 +220,94 @@ elif [ "$COMMAND" == "volumedown" ]
     # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
 elif [ "$COMMAND" == "getvolume" ]
-    then
+then
     # read volume in percent
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
     echo $VOLPERCENT
 
 elif [ "$COMMAND" == "setmaxvolume" ]
-    then
+then
     # read volume in percent
     VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
     # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
     if [ $VOLPERCENT -gt $VALUE ];
     then
-	amixer sset \'$DEVICE\' $VALUE%
+    amixer sset \'$DEVICE\' $VALUE%
     fi
     # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
 
 elif [ "$COMMAND" == "getmaxvolume" ]
-    then
+then
     echo $MAXVOL
 
 elif [ "$COMMAND" == "setvolstep" ]
-    then
+then
     # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
 
 elif [ "$COMMAND" == "getvolstep" ]
-    then
+then
     echo $VOLSTEP
 
 elif [ "$COMMAND" == "playerstop" ]
 then
-    # kill all running VLC media players
-    sudo pkill vlc
+    # stop the player
+    $PATHDATA/resume_play.sh -c=savepos && mpc stop
 
 elif [ "$COMMAND" == "playerstopafter" ]
 then
     # stop player after $VALUE minutes
-    echo "sudo pkill vlc" | at now + $VALUE minute
-
-# for controlling VLC over rc, see:  
-# https://n0tablog.wordpress.com/2009/02/09/controlling-vlc-via-rc-remote-control-interface-using-a-unix-domain-socket-and-no-programming/
+    echo "mpc stop" | at -q s now + $VALUE minute
 
 elif [ "$COMMAND" == "playernext" ]
 then
     # play next track in playlist (==folder)
-    echo "next" | nc.openbsd -w 1 localhost 4212
+    mpc next
 
 elif [ "$COMMAND" == "playerprev" ]
 then
     # play previous track in playlist (==folder)
-    echo "prev" | nc.openbsd -w 1 localhost 4212
+    mpc prev
 
 elif [ "$COMMAND" == "playerpause" ]
 then
     # pause current track
-    echo "pause" | nc.openbsd -w 1 localhost 4212
-
+    # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
+    mpc toggle
+    
 elif [ "$COMMAND" == "playerplay" ]
 then
     # play / resume current track
-    echo "play" | nc.openbsd -w 1 localhost 4212
-
+    # No checking for resume if the audio is paused, just unpause it
+    PLAYSTATE=$(echo -e status\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+    if [ "$PLAYSTATE" == "pause" ]
+    then
+    mpc play
+    else
+        $PATHDATA/resume_play.sh -c=resume
+    fi
+    
 elif [ "$COMMAND" == "playerreplay" ]
 then
     # start the playing track from beginning
-    echo "seek 0" | nc.openbsd -w 1 localhost 4212
+    mpc seek 0
+
+elif [ "$COMMAND" == "playlistclear" ]
+then
+    # clear playlist
+    $PATHDATA/resume_play.sh -c=savepos
+    mpc clear
+
+elif [ "$COMMAND" == "playlistaddplay" ]
+then
+    # add to playlist (and play)
+    mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
+
+elif [ "$COMMAND" == "playlistadd" ]
+then
+    # add to playlist, no autoplay
+    mpc load "${VALUE}"
 
 elif [ "$COMMAND" == "setidletime" ]
 then

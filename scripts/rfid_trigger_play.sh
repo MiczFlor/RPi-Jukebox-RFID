@@ -220,7 +220,7 @@ if [ "$CARDID" ]; then
         #                                         /x-alphabetically.mp3
         #
         # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
-    
+
         # Add info into the log, making it easer to monitor cards
         echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     
@@ -246,11 +246,27 @@ if [ "$CARDID" ]; then
     fi
 fi
 
-
 ##############################################################
 # We should now have a folder name with the audio files.
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
+
+# Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
+# Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
+# and this produces an error while saving lastplayed.dat
+
+sudo $PATHDATA/playout_controls.sh -c=playlistclear
+	
+# Before we create a new playlist, we remove the old one from the folder.
+# It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
+# so we only want the current playlist in the "mpc lsplaylists" output.
+
+mpc lsplaylists | \
+while read i
+do
+  mpc rm "$i"
+done
+
 if [ "$FOLDERNAME" ]; then
     
     # if a folder $FOLDERNAME exists, play content
@@ -272,23 +288,24 @@ if [ "$FOLDERNAME" ]; then
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)" .*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
-                ;;
+            ;;
+            "livestream.txt")
+                # mpd can't read from .txt, so we have to write the livestream URL into playlist
+                cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/livestream.txt" > "$PLAYLISTPATH"
+            ;;
             *)
                 # Nothing special to do, folder with audio files
                 # write playlist to file using the same name as the folder with ending .m3u
                 # wrap $PLAYLIST string in "" to keep line breaks
-                find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
-                ;;
+        		# cd to ../shared/audiofolders as mpd accepts only filepaths relative to its music folder
+        		# or starting with file:// (e.g. file:///home/pi...)
+                cd $PATHDATA/../shared/audiofolders
+                #find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
+                find "$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
+            ;;
         esac
-
-        # first kill any possible running vlc process => stop playing audio
-        sudo pkill vlc
-    
-        # now start the command line version of vlc loading the playlist
-        # start as a background process (command &) - otherwise the input only works once the playlist finished
-        cvlc --no-video --network-caching=10000 -I rc --rc-host localhost:4212 "$PLAYLISTPATH" &>/dev/null &
-
-        # wait for starting vlc to give play feedback to website
-        sleep 3
+	
+        # load new playlist and play
+        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
     fi
 fi
