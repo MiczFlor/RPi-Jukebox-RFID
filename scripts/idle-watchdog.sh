@@ -29,15 +29,15 @@ do
     then
         # shutdown pi after idling for $IDLETIME minutes
         for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
-        sleep 1        
+        sleep 1
         echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q i now + $IDLETIME minute
     fi
-    
+
     # If box is playing and volume is greater 0, remove idle shutdown. Skip this if "at"-queue is already empty
     if [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
     then
         for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
-    fi    
-    
+    fi
+
     sleep 60
 done
