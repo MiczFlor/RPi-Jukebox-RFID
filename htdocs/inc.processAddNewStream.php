@@ -8,9 +8,11 @@ switch($post['streamType']) {
     case "podcast":
         $filestream = "podcast.txt";
         break;
+/*
     case "youtube":
         $filestream = "youtube.txt";
         break;
+*/
     case "livestream":
         $filestream = "livestream.txt";
         break;
