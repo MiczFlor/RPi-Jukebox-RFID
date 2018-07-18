@@ -128,25 +128,26 @@ foreach($audiofolders as $audiofolder) {
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
-        <div class='well'>
-            <a href='?play=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Play</a>";
-
+        <div class='well'>";
         print "
-            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btn-info btnFolder'>Folder:
+            <h4><i class='fa fa-folder-o'></i>
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
-                <i class='fa fa-info-circle'></i>
-            </span>
-	";
-	// Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
-	if (in_array("lastplayed.dat", $files) && ! in_array("livestream.txt", $files) ) {
-		print "<span class='label label-success'>Resume enabled</span>";
-		$accordion .= "<a href='?disableresume=".$audiofolder."' class='btn btn-danger'><i class='fa fa-power-off'></i> Disable Resume</a>";
-	}
-	elseif ( ! in_array("livestream.txt", $files) ) {
-		print "<span class='label label-danger'>Resume disabled</span>";
-		$accordion .= "<a href='?enableresume=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Enable Resume</a>";
-	}
-	print "
+                </h4>";
+        print "
+            <a href='?play=".$audiofolder."' class='btn btn-info'><i class='fa fa-play'></i> Play</a> ";
+        // Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
+        if (in_array("lastplayed.dat", $files) && ! in_array("livestream.txt", $files) ) {
+            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>Resume: ON <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+            //print "<span class='label label-success'>Resume play <i class='fa fa-toggle-on' aria-hidden='true'></i></span>";
+            //$accordion .= "<a href='?disableresume=".$audiofolder."' class='btn btn-danger'><i class='fa fa-power-off'></i> Disable Resume</a>";
+        }
+        elseif ( ! in_array("livestream.txt", $files) ) {
+            print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>Resume: OFF <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
+            //$accordion .= "<a href='?enableresume=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Enable Resume</a>";
+        }
+        print "
+            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>Show files <i class='fa fa-folder-open-o'></i></span> ";
+        print "
             <div id='folder".$idcounter."' class='collapse folderContent'>
             ".$accordion."
             </div>
