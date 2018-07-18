@@ -52,15 +52,6 @@
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-####################################
-# amixer iface name (e.g. PCM, Speaker, Master)
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
-    echo "PCM" > $PATHDATA/../settings/Audio_iFace_Name
-fi
-# 2. then|or read value from file
-DEVICE=`cat $PATHDATA/../settings/Audio_iFace_Name`
-
 ##############################################
 # steps by which to change the audio output (vol up and down)
 # 1. create a default if file does not exist
@@ -94,7 +85,6 @@ fi
 # 2. then|or read value from file
 IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 
-#echo $DEVICE
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo `cat $VOLFILE`
@@ -135,8 +125,8 @@ then
     # -c=shutdownafter -v=0 is to remove the shutdown timer
     if [ $VALUE -gt 0 ];
     then
-    # shutdown pi after $VALUE minutes
-    echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
+        # shutdown pi after $VALUE minutes
+        echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
     fi 
 
 elif [ "$COMMAND" == "reboot" ]
@@ -149,28 +139,27 @@ then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent and write to $VOLFILE
-        amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])' > $VOLFILE
+        echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*' > $VOLFILE
         # set volume to 0%
-        amixer sset \'$DEVICE\' 0%
+        echo -e setvol 0\\nclose | nc -w 1 localhost 6600
     else
         # $VOLFILE DOES exist == audio off
-        # read volume level from $VOLFILE and sset as percent
-        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # read volume level from $VOLFILE and set as percent
+        echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600        
         # delete $VOLFILE
         rm -f $VOLFILE
     fi
-    # alternative pull request: [ ! -e $VOLFILE ] && (amixer sget \'$DEVICE\' | egrep -o '[[:space:]][0-9]+[[:space:]]' | tail -n1> $VOLFILE && amixer sset \'$DEVICE\' 0%) || (amixer sset \'$DEVICE\' `<$VOLFILE` && rm -f $VOLFILE)
 
 elif [ "$COMMAND" == "setvolume" ]
 then
     #increase volume only if VOLPERCENT is below the max volume limit
     if [ $VALUE -le $MAXVOL ];
     then
-        # sset volume level in percent
-        amixer sset \'$DEVICE\' $VALUE%
+        # set volume level in percent
+        echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
     else
         # if we are over the max volume limit, set the volume to maxvol
-    amixer sset \'$DEVICE\' $MAXVOL%
+        echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
     fi
     
 elif [ "$COMMAND" == "volumeup" ]
@@ -178,61 +167,53 @@ then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
-        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
-        echo $VOLPERCENT
+        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         # increase by $VOLSTEP
-        VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
-        echo $VOLPERCENT
-    #increase volume only if VOLPERCENT is below the max volume limit
-    if [ $VOLPERCENT -le $MAXVOL ];
-    then
-        # sset volume level in percent
-        amixer sset \'$DEVICE\' $VOLPERCENT%
-    fi
+        #increase volume only if VOLPERCENT is below the max volume limit
+        if [ $VOLPERCENT -le $MAXVOL ];
+        then
+            # set volume level in percent
+            echo -e volume +$VOLSTEP\\nclose | nc -w 1 localhost 6600
+        fi
     else
         # $VOLFILE DOES exist == audio off
-        # read volume level from $VOLFILE and sset as percent
-        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # read volume level from $VOLFILE and set as percent
+        echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
         # delete $VOLFILE
         rm -f $VOLFILE
     fi
-    # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} + ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}+)
 
 elif [ "$COMMAND" == "volumedown" ]
 then
     if [ ! -f $VOLFILE ]; then
         # $VOLFILE does NOT exist == audio on
         # read volume in percent
-        VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
-        echo $VOLPERCENT
+        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         # decrease by $VOLSTEP
-        VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}` 
-        echo $VOLPERCENT
-        # sset volume level in percent
-        amixer sset \'$DEVICE\' $VOLPERCENT%
+        # set volume level in percent
+        echo -e volume -$VOLSTEP\\nclose | nc -w 1 localhost 6600
     else
         # $VOLFILE DOES exist == audio off
-        # read volume level from $VOLFILE and sset as percent
-        amixer sset \'$DEVICE\' `<$VOLFILE`%
+        # read volume level from $VOLFILE and set as percent
+        echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
         # delete $VOLFILE
         rm -f $VOLFILE
     fi
-    # alternative pull request: [ -e $VOLFILE ] && (vol=`<$VOLFILE` && vol=`expr ${vol} - ${VOLSTEP}` && amixer sset \'$DEVICE\' $vol && rm -f $VOLFILE) || (amixer sset \'$DEVICE\' ${VOLSTEP}-)
 
 elif [ "$COMMAND" == "getvolume" ]
 then
     # read volume in percent
-    VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+    VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
     echo $VOLPERCENT
 
 elif [ "$COMMAND" == "setmaxvolume" ]
 then
     # read volume in percent
-    VOLPERCENT=`amixer sget \'$DEVICE\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+    VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
     # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
     if [ $VOLPERCENT -gt $VALUE ];
     then
-    amixer sset \'$DEVICE\' $VALUE%
+        echo -e setvol $VALUE | nc -w 1 localhost 6600
     fi
     # write new value to file
     echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
@@ -280,10 +261,10 @@ elif [ "$COMMAND" == "playerplay" ]
 then
     # play / resume current track
     # No checking for resume if the audio is paused, just unpause it
-    PLAYSTATE=$(echo -e status\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+    PLAYSTATE=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
     if [ "$PLAYSTATE" == "pause" ]
     then
-    mpc play
+        mpc play
     else
         $PATHDATA/resume_play.sh -c=resume
     fi
