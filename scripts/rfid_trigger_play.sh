@@ -63,6 +63,9 @@ if [ "$CARDID" ]; then
     # If you want to see the CARDID printed, uncomment the following line
     # echo CARDID = $CARDID
 
+    # Add info into the log, making it easer to monitor cards
+    echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
+
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
 
@@ -138,13 +141,16 @@ if [ "$CARDID" ]; then
     then
         # play next track in playlist (==folder)
         # echo "next" | nc.openbsd -w 1 localhost 4212
+        #echo "from rfid_trigger_play.sh calling 'sudo $PATHDATA/playout_controls.sh -c=playernext'"
         $PATHDATA/playout_controls.sh -c=playernext
+        #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playernext
         
     elif [ "$CARDID" == "$CMDPREV" ]
     then
         # play previous track in playlist (==folder)
         # echo "prev" | nc.openbsd -w 1 localhost 4212
-        $PATHDATA/playout_controls.sh -c=playerprev
+        sudo $PATHDATA/playout_controls.sh -c=playerprev
+        #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
         
     elif [ "$CARDID" == "$CMDPAUSE" ]
     then
@@ -220,9 +226,6 @@ if [ "$CARDID" ]; then
         #                                         /x-alphabetically.mp3
         #
         # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
-
-        # Add info into the log, making it easer to monitor cards
-        echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     
     	# Look for human readable shortcut in folder 'shortcuts'
     	# check if CARDID has a text file by the same name - which would contain the human readable folder name
@@ -242,7 +245,6 @@ if [ "$CARDID" ]; then
         fi
         # Add info into the log, making it easer to monitor cards
         echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
-    
     fi
 fi
 
@@ -251,23 +253,23 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
-# Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
-# Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
-# and this produces an error while saving lastplayed.dat
-
-sudo $PATHDATA/playout_controls.sh -c=playlistclear
-	
-# Before we create a new playlist, we remove the old one from the folder.
-# It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
-# so we only want the current playlist in the "mpc lsplaylists" output.
-
-mpc lsplaylists | \
-while read i
-do
-  mpc rm "$i"
-done
-
 if [ "$FOLDERNAME" ]; then
+
+    # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
+    # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
+    # and this produces an error while saving lastplayed.dat
+
+    sudo $PATHDATA/playout_controls.sh -c=playlistclear
+	
+    # Before we create a new playlist, we remove the old one from the folder.
+    # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
+    # so we only want the current playlist in the "mpc lsplaylists" output.
+
+    mpc lsplaylists | \
+    while read i
+    do
+        mpc rm "$i"
+    done
     
     # if a folder $FOLDERNAME exists, play content
     if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
