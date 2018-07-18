@@ -99,7 +99,7 @@ sudo chown pi:pi rfid_trigger_play.conf
 sudo chmod 665 rfid_trigger_play.conf
 ~~~~
 
-## Create settings for audio playout
+## <a name="configAudioIFace"></a>Create settings for audio playout
 
 Creating files for the `settings` folder which contain the short name
 of the amixer iface used and the percentage the volume increase or 

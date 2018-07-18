@@ -302,25 +302,35 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 
 Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.
 
-## Install the media player VLC
+## Install MPD, the music player daemon
 
-The VLC media player not only plays almost everything (local files, web streams, playlists, folders), it also comes with a command line interface `CLVC` which we will be using to play media on the jukebox.
+[Music Player Daemon](https://www.musicpd.org/) (MPD) is a flexible, powerful, server-side application for playing music. Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol. While MPD is running in the background, MPC acts like a player 'on top'. Install both:
 
-Install *VLC*
+```
+sudo apt-get install mpd mpc
+```
 
-~~~~
-sudo apt-get install vlc
-~~~~
+After the installation, you need to change the configuration file.
+~~~
+sudo nano /etc/mpd.conf
+~~~
 
-Ok, the next step is a severe hack. Quite a radical tweak: we will change the source code of the VLC binary file. We need to do this so that we can control the jukebox also over the web app. VLC was designed not to be run with the power of a superuser. In order to trigger VLC from the webserver, this is exactly what we are doing.
+Find these options and change to following:
 
-Changing the binary code is only a one liner, replacing `geteuid` with `getppid`. If you are interested in the details what this does, you can [read more about the VLC hack here](https://www.blackmoreops.com/2015/11/02/fixing-vlc-is-not-supposed-to-be-run-as-root-sorry-error/).
+* `music_directory "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"`
+* `playlist_directory "/tmp"`
+* `user "root"`
+* `auto_update "yes"` (you have to remove the # in front of that line)
 
-~~~~
-$ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
-~~~~
+Maybe you need to change the audio iFace in the config file, too. By default it uses `PCM` which should work out of the box. If it does not work, try `Master` or `Speakers`. Here you can find more information on [how to find the right audio iFace name](CONFIGURE-jessie.md#configAudioIFace) in the section 'Create settings for audio playout'.
 
-**Note:** changing the binary of VLC to allow the program to be run by the webserver as a superuser is another little step in a long string of potential security problems. In short: the jukebox is a perfectly fine project to run for your personal pleasure. It's not fit to run on a public server.
+* `mixer_control "yourAudioIfaceNameHere"` (you need to uncomment this line and change the audio iFace shortname)
+
+Then you need to update `mpc`:
+
+~~~
+mpc update
+~~~
 
 ## Install mpg123
 
