@@ -286,7 +286,7 @@ if [ "$FOLDERNAME" ]; then
                 # Podcast
                 PODCASTURL=`cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/podcast.txt"`
                 # parse podcast XML in sloppy but efficient way and write URLs to playlist
-                wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)" .*/\1/p' > "$PLAYLISTPATH"
+                wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
             ;;
