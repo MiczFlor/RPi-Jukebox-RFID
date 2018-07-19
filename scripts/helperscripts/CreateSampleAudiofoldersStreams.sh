@@ -27,13 +27,6 @@ echo "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" > ../../shared/au
 mkdir ../../shared/audiofolders/ZZZ-LiveStream-Bayern2
 echo "http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3" > ../../shared/audiofolders/ZZZ-LiveStream-Bayern2/livestream.txt
 
-# ZZZ-YouTube-Phoniebox (dir)
-# * youtube.txt (file)
-# * https://youtu.be/7GI0VdPehQI (content) 
-
-mkdir ../../shared/audiofolders/ZZZ-YouTube-Phoniebox
-echo "https://youtu.be/7GI0VdPehQI" > ../../shared/audiofolders/ZZZ-YouTube-Phoniebox/youtube.txt
-
 # ZZZ-MP3-StartUpSound (dir)
 # * startupsound.mp3 (file)
 
