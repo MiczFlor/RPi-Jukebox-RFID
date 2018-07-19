@@ -24,13 +24,13 @@ CMDVOLDOWN="%CMDVOLDOWN%"
 CMDSTOP="%CMDSTOP%"
 CMDSHUTDOWN="%CMDSHUTDOWN%"
 CMDREBOOT="%CMDREBOOT%"
-# The following commands control VLC playout
+# The following commands control audio playout
 # next and prev play the preivous or next track in the playlist (== folder)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
-# pause VLC playout
+# pause audio playout
 CMDPAUSE="%CMDPAUSE%"
-# resume VLC playout (makes only sense in combination with pause)
+# resume audio playout (makes only sense in combination with pause)
 CMDPLAY="%CMDPLAY%"
 # Timer top stop after x minutes
 STOPAFTER5="%STOPAFTER5%"

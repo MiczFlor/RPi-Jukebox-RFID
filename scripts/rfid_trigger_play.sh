@@ -121,8 +121,7 @@ if [ "$CARDID" ]; then
     
     elif [ "$CARDID" == "$CMDSTOP" ]
     then
-        # kill all running VLC media players
-        # sudo pkill vlc
+        # kill all running audio players
         $PATHDATA/playout_controls.sh -c=playerstop
     
     elif [ "$CARDID" == "$CMDSHUTDOWN" ]

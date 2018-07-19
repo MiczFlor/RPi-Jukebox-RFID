@@ -13,7 +13,7 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
   <div class="container">
 
 <?php
-include("inc.vlcStatus.php");
+include("inc.playerStatus.php");
 ?>
 
 <?php

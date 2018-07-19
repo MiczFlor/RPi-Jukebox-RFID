@@ -35,7 +35,7 @@ Changing this number affects the `volumeup` and `volumedown` function in the web
 This is a file containing a number, by default `0`.
 
 This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
-If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the VLC player is not playing and/or the sound has been muted.
+If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the audio player is not playing and/or the sound has been muted.
 
 **IMPORTANT: if you do not want to use auto shutdown, the number in the file must be 0**
 
@@ -190,17 +190,17 @@ Now you are ready to add the stream to your Phoniebox.
 3. Create a text file ending with `.txt`. For streams use `livestream.txt` (because I am working on podcasts and `podcast.txt` will be processed differently, same goes for `spotify.txt` at a later stage). 
 4. Open the text file and copy the URL of the live stream (or static file) into the file.
 
-That's it. Now, if you swipe with the card, the jukebox will open the matching folder, open the text file and send the content to the *VLC* media player.
+That's it. Now, if you swipe with the card, the jukebox will open the matching folder, open the text file and send the content to the audio player.
 
 **Good to know:** you can find a number of radio stations at the [Community Radio Browser](http://www.radio-browser.info). When you find a station you like, click on the *Save* icon which will download a file `radio.pls`. You can open this file with a text editor and within the file find the URL of the live web radio stream.
 
 **Troubleshooting:** 
 * if you are playing files with a high quality, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
-* if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
+* if you add a web stream or URL which is invalid, this might create the audio player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
 
 ### <a name="mixwebstreams"></a>Mixing audio files and web streams
 
-As described above, the media player will (attempt to) play any content it finds in a folder in alphabetical order. I decided to work with the *VLC* media player because it is very robust and really tries to play anything it can. This means it also mixes audio files and web streams.
+As described above, the media player will (attempt to) play any content it finds in a folder in alphabetical order. I decided to work with the audio player because it is very robust and really tries to play anything it can. This means it also mixes audio files and web streams.
 
 If you want to create such a mix, simply mix the content inside the audio folder. The jukebox will play all content in alphabetical order. Keep this in mind if you plan the order of the playlist.
 
@@ -220,7 +220,7 @@ In short:
 
 **Troubleshooting:** 
 * if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
-* if you add a web stream or URL which is invalid, this might create the *VLC* media player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
+* if you add a web stream or URL which is invalid, this might create the audio player to revert to what it played the last time it was launched. If your jukebox seems to become erratic, check the URLs in your audio folder.
 
 ## <a name="webapp"></a>The Jukebox Web App
 

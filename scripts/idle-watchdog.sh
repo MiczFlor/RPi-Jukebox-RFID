@@ -20,7 +20,7 @@ IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 #Go into infinite loop if idle time is greater 0
 while [ $IDLETIME -gt 0 ]
 do
-    #Read volume and vlc status
+    #Read volume and player status
     PLAYERSTATUS=$(mpc status)
     VOLPERCENT=$(echo -e "status\nclose" | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
     sleep 1

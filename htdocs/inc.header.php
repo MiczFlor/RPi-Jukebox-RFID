@@ -377,7 +377,7 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
     }
 }
 
-// play folder with VLC
+// play folder audio files
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
 
     // pass folder to playout script

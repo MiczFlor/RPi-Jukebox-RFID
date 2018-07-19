@@ -300,8 +300,6 @@ sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 ~~~~
 
-Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the webserver more power over the system by adding it to the list of `sudo` users.
-
 ## Install MPD, the music player daemon
 
 [Music Player Daemon](https://www.musicpd.org/) (MPD) is a flexible, powerful, server-side application for playing music. Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol. While MPD is running in the background, MPC acts like a player 'on top'. Install both:
@@ -334,7 +332,7 @@ mpc update
 
 ## Install mpg123
 
-While we are using *VLC* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md). To install this tiny but reliable player, type:
+While we are using *MPD* for all the media to be played on the jukebox, we are using the command line player *mpg123* for the boot sound. More about the boot sound in the file [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md). To install this tiny but reliable player, type:
 
 ```
 $ sudo apt-get install mpg123
