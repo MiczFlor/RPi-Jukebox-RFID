@@ -3,7 +3,8 @@ A contactless jukebox for the Raspberry Pi, playing local audio files, playlists
 
 *Important update news*
 
-* **Changing audio player? Your thoughts please** There is a [new branch with 'resume play'](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/pr80-mpd-as-audio-player) in the repo using `mpd` instead of `vlc` for audio playout. What do you think? Use this [thread for feedback and opinions](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/79) (2018-07-04)
+* **Phoniebox 0.9.8 released** The next release after that will not (actively) support `jessie` anymore. And will replace `VLC` with `mpd` to save battery power and add *resume play* as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). On the [release page you can find a list of features](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases).
+* **Changing audio player? Your thoughts please** There is a [new branch with 'resume play'](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/pr80-mpd-as-audio-player) in the repo using `mpd` instead of `vlc` for audio playout. What do you think? Use this [thread for feedback and opinions](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/79) (2018-07-17)
 * **Latest Version: 0.9.7** For upgrade information please see [`UPGRADE.md`](docs/UPGRADE.md) for details on upgrading (2018-07-04)
 * **auto shutdown** Specify a number after which the idle Phoniebox will shutdown automatically. See [Phoniebox settings](docs/MANUAL.md#settings) for details (2018-07-03)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
