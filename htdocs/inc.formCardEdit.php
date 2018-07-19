@@ -17,6 +17,9 @@ if($fdata['streamURL_ajax'] == "true") {
         print $fpost['cardID'];
     }
     print "\" id=\"cardID\" name=\"cardID\" placeholder=\"".$fdata['streamURL_placeholder']."\" class=\"form-control input-md\" type=\"text\">";
+?>
+
+<?php
 }
 
 // read the shortcuts available
@@ -125,9 +128,11 @@ foreach($audiofolders as $audiofolder) {
         <!-- Button (Double) -->
         <div class="form-group">
           <label class="col-md-4 control-label" for="submit"></label>
-          <div class="col-md-8"><br/>
+          <div class="col-md-8">
             <button id="submit" name="submit" class="btn btn-success" value="submit">Submit</button>
+            <button id="delete" name="delete" class="btn btn-warning" value="delete">Remove Card ID</button>
             <a href="index.php" id="cancel" name="cancel" class="btn btn-danger">Cancel</a>
+            <br clear='all'><br>
           </div>
         </div>
 

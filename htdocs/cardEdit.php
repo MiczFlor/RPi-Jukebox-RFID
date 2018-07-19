@@ -96,13 +96,25 @@ if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiof
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
     $post['submit'] = $_POST['submit'];
 }
+if(isset($_POST['delete']) && $_POST['delete'] == "delete") {
+    $post['delete'] = $_POST['delete'];
+}
+$fileshortcuts = $conf['shared_abs']."/shortcuts/".$post['cardID'];
 
 /*******************************************
 * ACTIONS
 *******************************************/
 $messageAction = "";
 $messageSuccess = "";
-if($post['submit'] == "submit") {
+
+if($post['delete'] == "delete") {
+    $messageAction .= "<p>The card with the ID '".$post['cardID']." has been deleted. 
+        If you made a mistake, this is your chance to press 'Submit' to restore the card settings. 
+        Else: Go <a href='index.php' class='mainMenu'><i class='fa fa-home'></i> Home</a>.</p>";
+    // remove $fileshortcuts to cardID file in shortcuts
+    $exec = "rm ".$fileshortcuts;
+    exec($exec);
+} elseif($post['submit'] == "submit") {
     /*
     * error check
     */
@@ -143,7 +155,6 @@ if($post['submit'] == "submit") {
         /*
         * do what's asked of us
         */
-        $fileshortcuts = $conf['shared_abs']."/shortcuts/".$post['cardID'];
         if(isset($post['streamURL'])) {
             /*
             * Stream URL to be created
@@ -194,7 +205,7 @@ if ($messageAction == "") {
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
     print '<div class="alert alert-success">'.$messageSuccess.'<p>Type another card ID pick one from the list on the <a href="index.php" class="mainMenu"><i class="fa fa-home"></i> home page</a>.</p></div>';
-    unset($post);
+    //unset($post);
 } else {
     if(isset($warning)) {
         print '<div class="alert alert-warning">'.$warning.'</div>';

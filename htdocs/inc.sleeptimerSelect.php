@@ -4,6 +4,7 @@
 		<form name='shutdownafter' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
 			<select name='shutdownafter' id="sel5" class="form-control">
 				<option value='0'>Unset sleep timer</option>
+				<option value='1'>1 min</option>
 				<option value='5'>5 min</option>
 				<option value='10'>10 min</option>
 				<option value='15'>15 min</option>
