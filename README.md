@@ -1,5 +1,5 @@
 # Phoniebox: the RPi-Jukebox-RFID
-A contactless jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
+A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
 *Important update news*
 
