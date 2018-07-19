@@ -12,15 +12,15 @@
 
 # Install packages
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 vlc mpg123 git
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 mpd mpc mpg123 git
 sudo pip install "evdev == 0.7.0"
 
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
-# Patch VLC
-sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
+# DISCONTINUED: Patch VLC
+# sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
 #####################################
 # COPY CONFIG PRESETS TO LIVE FOLDERS
@@ -64,6 +64,7 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 
 # creating files containing editable values for configuration
+# DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
@@ -110,6 +111,14 @@ sudo chmod 644 /etc/systemd/system/rfid-reader.service
 sudo chmod 644 /etc/systemd/system/startup-sound.service
 sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+
+# MPD configuration
+# -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+sudo chown mpd:audio /etc/mpd.conf
+sudo chmod 640 /etc/mpd.conf
+# update mpc / mpd DB
+mpc update
 
 ############################
 # Manual intervention needed
