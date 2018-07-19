@@ -21,7 +21,7 @@
 	<div class="col-xs-7">
 		<div class="progress">
 			<?php
-			$sleeptimervalue = exec("sudo atq -q s | awk '{print $5}'");
+			$sleeptimervalue = exec("sudo atq -q t | awk '{print $5}'");
 			if ($sleeptimervalue != "") {
 				$unixtime = time();
 				// For the night owls: if the shutdown time is after midnight (and so on the next day), $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
