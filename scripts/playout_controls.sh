@@ -128,7 +128,7 @@ elif [ "$COMMAND" == "shutdownafter" ]
 then
     # remove shutdown times if existent
     if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
-    for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
+    for i in `sudo atq -q t | awk '{print $1}'`;do sudo atrm $i;done
     # -c=shutdownafter -v=0 is to remove the shutdown timer
     if [ $VALUE -gt 0 ];
     then
