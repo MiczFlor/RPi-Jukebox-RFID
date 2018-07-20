@@ -38,11 +38,35 @@ include("inc.controlVolumeUpDown.php");
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
 
+    <div class="row">
+      <div class="col-lg-12">
+        <h3>Dashboard</h3>
+      <div class="row">
+
 <?php
       // show currently played track
       if (array_key_exists('track', $playerStatus)) {
           $icon_class = ($playerStatus['status'] === 'play') ? 'play' : 'pause';
           print '
+        <!-- input-group -->          
+          <div class="col-md-4 col-sm-6">
+            <div class="row" style="margin-bottom:1em;">
+              <div class="col-xs-12">
+              <h4>Now playing</h4>
+                  <div class="well well-sm" style="overflow:hidden;">
+                    <i class="fa fa-'. $icon_class .'"></i> '.$playerStatus['track'].'
+                  </div><!-- ./well -->
+              </div><!-- ./col -->
+            </div><!-- ./row -->
+          </div><!-- ./col -->
+        <!-- /input-group -->  
+        ';
+/*
+          print '         
+          <!-- input-group --> 
+          <div class="col-md-4 col-sm-6">
+            <div class="row" style="margin-bottom:1em;">
+              <div class="col-xs-12">
               <div class="well well-sm">
                   <div class="row">
                       <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
@@ -52,32 +76,36 @@ include("inc.controlVolumeUpDown.php");
                           '.$playerStatus['track'].'
                       </div>
                   </div>
-              </div>
+              </div><!-- ./well -->
+              </div><!-- ./row -->
+        </div><!-- ./col -->
+        <!-- /input-group -->  
           ';
+*/
       }
-?>
-<div class="row">
-	<div class="col-xs-12">
-		<h3>Volume</h3>
-	</div>
-</div>
-<?php
+
 include("inc.volumeSelect.php");
-?>              
-    <div class="row">
-      <div class="col-lg-12">
-        <h3>Manage Files and Chips</h3>
-              <!-- Button trigger modal -->
+?>      
+
+        <!-- input-group -->          
+          <div class="col-md-4 col-sm-6">
+            <div class="row" style="margin-bottom:1em;">
+              <div class="col-xs-12">
+              <h4>Manage Files and Chips</h4>
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
                 <i class='fa  fa-plus-circle'></i> Register new card ID
                 </a>
-	</div><!-- / .col-lg-12 -->
-    </div><!-- /.row -->
+              </div>
+            </div><!-- ./row -->
+        </div><!-- ./col -->
+        <!-- /input-group -->   
+        
+    </div><!-- ./row -->
 
     <div class="row">
       <div class="col-lg-12">
-        
-  <h3>Available audio</h3>
+        <h3>Available audio</h3>
+      <div class="row">
 <?php
 
 // read the shortcuts used
@@ -128,6 +156,7 @@ foreach($audiofolders as $audiofolder) {
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
+        <div class='col-md-6'>
         <div class='well'>";
         print "
             <h4><i class='fa fa-folder-o'></i>
@@ -156,9 +185,13 @@ foreach($audiofolders as $audiofolder) {
         if($ids != "") {
             print "
             <br/>Card ID: ".$ids;
+        } else {
+            print "            
+            <br/>&nbsp;";
         }
         print "
-        </div>
+        </div><!-- ./well -->
+        </div><!-- ./row -->
         ";
     }
 }
