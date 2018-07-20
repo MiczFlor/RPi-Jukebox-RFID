@@ -75,7 +75,9 @@ $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
 *******************************************/
 
 $urlparams = array();
-
+/*
+* Firstly, collect via 'GET', later collect 'POST'
+*/
 if(isset($_GET['play']) && trim($_GET['play']) != "") {
     $urlparams['play'] = trim($_GET['play']);
 }
@@ -88,16 +90,16 @@ if(isset($_GET['stop']) && trim($_GET['stop']) != "") {
     $urlparams['stop'] = trim($_GET['stop']);
 }
 
-if(isset($_POST['volume']) && trim($_POST['volume']) != "") {
-    $urlparams['volume'] = trim($_POST['volume']);
+if(isset($_GET['volume']) && trim($_GET['volume']) != "") {
+    $urlparams['volume'] = trim($_GET['volume']);
 }
 
-if(isset($_POST['maxvolume']) && trim($_POST['maxvolume']) != "") {
-    $urlparams['maxvolume'] = trim($_POST['maxvolume']);
+if(isset($_GET['maxvolume']) && trim($_GET['maxvolume']) != "") {
+    $urlparams['maxvolume'] = trim($_GET['maxvolume']);
 }
 
-if(isset($_POST['volstep']) && trim($_POST['volstep']) != "") {
-    $urlparams['volstep'] = trim($_POST['volstep']);
+if(isset($_GET['volstep']) && trim($_GET['volstep']) != "") {
+    $urlparams['volstep'] = trim($_GET['volstep']);
 }
 
 if(isset($_GET['mute']) && trim($_GET['mute']) == "true") {
@@ -120,12 +122,12 @@ if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
     $urlparams['reboot'] = trim($_GET['reboot']);
 }
 
-if(isset($_POST['idletime']) && trim($_POST['idletime']) != "") {
-    $urlparams['idletime'] = trim($_POST['idletime']);
+if(isset($_GET['idletime']) && trim($_GET['idletime']) != "") {
+    $urlparams['idletime'] = trim($_GET['idletime']);
 }
 
-if(isset($_POST['shutdownafter']) && trim($_POST['shutdownafter']) != "") {
-    $urlparams['shutdownafter'] = trim($_POST['shutdownafter']);
+if(isset($_GET['shutdownafter']) && trim($_GET['shutdownafter']) != "") {
+    $urlparams['shutdownafter'] = trim($_GET['shutdownafter']);
 }
 
 if(isset($_GET['rfidstatus']) && trim($_GET['rfidstatus']) == "turnon") {
@@ -151,9 +153,93 @@ if(isset($_GET['enableresume']) && trim($_GET['enableresume']) != "") {
 if(isset($_GET['disableresume']) && trim($_GET['disableresume']) != "") {
     $urlparams['disableresume'] = trim($_GET['disableresume']);
 }
+/*
+* Now check for $_POST
+*/
+if(isset($_POST['play']) && trim($_POST['play']) != "") {
+    $urlparams['play'] = trim($_POST['play']);
+}
+
+if(isset($_POST['player']) && trim($_POST['player']) != "") {
+    $urlparams['player'] = trim($_POST['player']);
+}
+
+if(isset($_POST['stop']) && trim($_POST['stop']) != "") {
+    $urlparams['stop'] = trim($_POST['stop']);
+}
+
+if(isset($_POST['volume']) && trim($_POST['volume']) != "") {
+    $urlparams['volume'] = trim($_POST['volume']);
+}
+
+if(isset($_POST['maxvolume']) && trim($_POST['maxvolume']) != "") {
+    $urlparams['maxvolume'] = trim($_POST['maxvolume']);
+}
+
+if(isset($_POST['volstep']) && trim($_POST['volstep']) != "") {
+    $urlparams['volstep'] = trim($_POST['volstep']);
+}
+
+if(isset($_POST['mute']) && trim($_POST['mute']) == "true") {
+    $urlparams['mute'] = trim($_POST['mute']);
+}
+
+if(isset($_POST['volumeup']) && trim($_POST['volumeup']) == "true") {
+    $urlparams['volumeup'] = trim($_POST['volumeup']);
+}
+
+if(isset($_POST['volumedown']) && trim($_POST['volumedown']) == "true") {
+    $urlparams['volumedown'] = trim($_POST['volumedown']);
+}
+
+if(isset($_POST['shutdown']) && trim($_POST['shutdown']) != "") {
+    $urlparams['shutdown'] = trim($_POST['shutdown']);
+}
+
+if(isset($_POST['reboot']) && trim($_POST['reboot']) != "") {
+    $urlparams['reboot'] = trim($_POST['reboot']);
+}
+
+if(isset($_POST['idletime']) && trim($_POST['idletime']) != "") {
+    $urlparams['idletime'] = trim($_POST['idletime']);
+}
+
+if(isset($_POST['shutdownafter']) && trim($_POST['shutdownafter']) != "") {
+    $urlparams['shutdownafter'] = trim($_POST['shutdownafter']);
+}
+
+if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnon") {
+    $urlparams['rfidstatus'] = trim($_POST['rfidstatus']);
+}
+
+if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnoff") {
+    $urlparams['rfidstatus'] = trim($_POST['rfidstatus']);
+}
+
+if(isset($_POST['gpiostatus']) && trim($_POST['gpiostatus']) == "turnon") {
+    $urlparams['gpiostatus'] = trim($_POST['gpiostatus']);
+}
+
+if(isset($_POST['gpiostatus']) && trim($_POST['gpiostatus']) == "turnoff") {
+    $urlparams['gpiostatus'] = trim($_POST['gpiostatus']);
+}
+
+if(isset($_POST['enableresume']) && trim($_POST['enableresume']) != "") {
+    $urlparams['enableresume'] = trim($_POST['enableresume']);
+}
+
+if(isset($_POST['disableresume']) && trim($_POST['disableresume']) != "") {
+    $urlparams['disableresume'] = trim($_POST['disableresume']);
+}
 /*******************************************
 * ACTIONS
 *******************************************/
+
+// if debug, do nothing but print everything
+if($debug == "true") { 
+    print "\$conf: <pre>\n"; print_r($conf); print "</pre>";
+    print "\$urlparams: <pre>\n"; print_r($urlparams); print "</pre>";
+}
 
 // change volume
 if(isset($urlparams['volume'])) {
@@ -340,7 +426,9 @@ if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnoff") {
 
 // enable resume
 if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($urlparams['enableresume']))) {
-
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['enableresume']));
@@ -349,11 +437,14 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit; 
+    }
 }
 
 // disable resume
 if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir(urldecode($urlparams['disableresume']))) {
-
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['disableresume']));
@@ -362,6 +453,7 @@ if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit; 
+    }
 }
 
 // stop playing
@@ -379,7 +471,9 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
 
 // play folder audio files
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
-
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
     // pass folder to playout script
     // escape whitespaces with backslashes
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',basename($urlparams['play']));//basename($urlparams['play']);
@@ -388,6 +482,7 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($ur
     /* redirect to drop all the url parameters */
     header("Location: ".$conf['url_abs']);
     exit; 
+    }
 }
 // control player through web interface
 if(isset($urlparams['player'])) {

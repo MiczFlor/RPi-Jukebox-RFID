@@ -14,7 +14,7 @@ Volume Select Form
               <h4>Volume</h4>
                 <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="volume" class="selectpicker form-control">
+                    <select id="volume" name="volume" class="selectpicker form-control">
                     <?php
                     $i = 100;
                     while ($i >= 0) {

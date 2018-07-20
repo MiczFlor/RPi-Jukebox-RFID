@@ -20,9 +20,13 @@ Idle Shutdown Set Form
         if ($idletimevalue != "0") {
             $shutdowntime = exec("sudo atq -q i | awk '{print $5}'");
             $unixtime = time();
-            // For the night owls: if the shutdown time is after midnight (and so on the next day), $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
-            // strtotime($shutdowntime) returns the unix time for today and we get a negative value in the calculation below.
-            // This is fixed by subtracting a day from the current time, as we only need the difference.
+            /*
+            * For the night owls: if the shutdown time is after midnight (and so on the next day), 
+            * $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
+            * strtotime($shutdowntime) returns the unix time for today and we get a negative 
+            * value in the calculation below.
+            * This is fixed by subtracting a day from the current time, as we only need the difference.
+            */
             if ($unixtime > strtotime($shutdowntime)) {
                 $unixtime = $unixtime - 86400;
             }
@@ -41,7 +45,7 @@ Idle Shutdown Set Form
               <h4>Idle Shutdown</h4>
                 <form name='idletime' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="idletime" class="selectpicker form-control">
+                    <select id="idletime" name="idletime" class="selectpicker form-control">
                         <option value='0'<?php
                             if($idletimevalue == 0) {
                                 print " selected";

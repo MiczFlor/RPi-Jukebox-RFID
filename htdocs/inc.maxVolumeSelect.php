@@ -14,7 +14,7 @@ Maximum Volume Select Form
               <h4>Maximum Volume</h4>
                 <form name='maxvolume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="maxvolume" class="selectpicker form-control">
+                    <select id="maxvolume" name="maxvolume" class="selectpicker form-control">
                     <?php
                     $i = 100;
                     while ($i >= 10) {

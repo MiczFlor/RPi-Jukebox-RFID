@@ -41,7 +41,7 @@ Sleep Timer Set Form
               <h4>Sleep Timer</h4>
                 <form name='shutdownafter' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="shutdownafter" class="selectpicker form-control">
+                    <select id="shutdownafter" name="shutdownafter" class="selectpicker form-control">
                         <option value='0'>OFF</option>
                     <?php
                     foreach($sleeptimervals as $i) {

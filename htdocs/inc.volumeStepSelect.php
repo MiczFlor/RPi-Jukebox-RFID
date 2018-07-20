@@ -14,7 +14,7 @@ Volume Up/Down Percent Form
               <h4>Vol. Change%</h4>
                 <form name='volstep' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="volstep" class="selectpicker form-control">
+                    <select id="volstep" name="volstep" class="selectpicker form-control">
                     <?php
                     $i = 1;
                     while ($i <= 15) {
