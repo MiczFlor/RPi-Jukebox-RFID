@@ -87,7 +87,13 @@ Idle Shutdown Set Form
               </div>
             </div><!-- ./row -->
         </div>
-        
+<?php
+/*
+* The following is showing the idle time
+* Don't show it, if the idle swith off is OFF
+*/
+if ($idletimevalue != 0) {
+?>
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
@@ -112,4 +118,7 @@ Idle Shutdown Set Form
               </div>
             </div><!-- ./row -->
         </div>
+<?php
+}
+?>
         <!-- /input-group -->
