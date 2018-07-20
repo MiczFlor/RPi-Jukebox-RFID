@@ -12,7 +12,7 @@
 
 # Install packages
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi php5 mpd mpc mpg123 git
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.4 lighttpd php5-common php5-cgi at php5 mpd mpc mpg123 git
 sudo pip install "evdev == 0.7.0"
 
 # Get github code
