@@ -91,7 +91,9 @@ IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 
 #echo $VOLSTEP
 #echo $VOLFILE
+#echo $MAXVOL
 #echo `cat $VOLFILE`
+#echo $IDLETIME
 
 #############################################################
 

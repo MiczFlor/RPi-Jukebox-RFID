@@ -25,14 +25,14 @@ include("inc.navigation.php");
     </div><!-- /.panel-heading -->
 
       <div class="panel-body">
-	    <div class="row">
-	      <div class="col-lg-12">
-	        <!-- Button trigger modal -->
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Button trigger modal -->
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
                 <i class='fa  fa-plus-circle'></i> Register new card ID
                 </a>
-	      </div><!-- / .col-lg-12 -->
-	    </div><!-- /.row -->
+          </div><!-- / .col-lg-12 -->
+        </div><!-- /.row -->
       </div><!-- /.panel-body -->
 
     </div><!-- /.panel -->
@@ -46,34 +46,17 @@ include("inc.navigation.php");
       </h4>
     </div><!-- /.panel-heading -->
 
-      <div class="panel-body">
-	<div class="row">
-		<div class="col-xs-12">
-		<h5>Volume</h5>
+    <div class="panel-body">
+      <div class="row">
 <?php
 include("inc.volumeSelect.php");
-?>
-		</div><!-- / .col-xs-12 -->
-	</div><!-- / .row -->
 
-	<div class="row">
-		<div class="col-xs-12">
-		<h5>Maximum Volume</h5>
-<?php
 include("inc.maxVolumeSelect.php");
-?>
-		</div><!-- / .col-xs-12 -->
-	</div><!-- / .row -->
 
-	<div class="row">
-		<div class="col-xs-12">
-		<h5>Volume Step</h5>
-<?php
 include("inc.volumeStepSelect.php");
 ?>
-		</div><!-- / .col-xs-12 -->
-	</div><!-- / .row -->
-      </div><!-- /.panel-body -->
+      </div><!-- / .row -->
+    </div><!-- /.panel-body -->
 
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
@@ -85,28 +68,23 @@ include("inc.volumeStepSelect.php");
         <i class='fa fa-clock-o'></i> Auto Shutdown Settings
       </h4>
     </div><!-- /.panel-heading -->
-    
-      <div class="panel-body">
+    <div class="panel-body">
 
-	<div class="row">
-		<div class="col-xs-12">
-		<h5>Sleep Timer</h5>
+        <div class="row">
+
 <?php
 include("inc.sleeptimerSelect.php");
 ?>
-		</div><!-- / .col-xs-12 -->
-	</div><!-- / .row -->
 
-	<div class="row">
-		<div class="col-xs-12">
-		<h5>Idle Shutdown</h5>
+        </div><!-- / .row -->
+
+        <div class="row">
 <?php
 include("inc.idleShutdownSelect.php");
 ?>
-		</div><!-- / .col-xs-12 -->
-	</div><!-- / .row -->
+        </div><!-- / .row -->
 
-      </div><!-- /.panel-body -->
+    </div><!-- /.panel-body -->
     
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->

@@ -20,6 +20,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         
         <!-- Latest compiled and minified CSS -->
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.min.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
         
         <!-- Latest compiled and minified JavaScript -->
         <script src=\"".$url_absolute."_assets/js/jquery.1.12.4.min.js\"></script>
