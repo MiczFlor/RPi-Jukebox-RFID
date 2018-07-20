@@ -52,9 +52,9 @@ include("inc.controlVolumeUpDown.php");
           <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-12">
-              <h4>Now playing</h4>
+              <h4><i class="fa fa-'. $icon_class .'"></i> Current file</h4>
                   <div class="well" style="overflow:hidden;">
-                    <i class="fa fa-'. $icon_class .'"></i> '.$playerStatus['track'].'
+                     '.$playerStatus['track'].'
                   </div><!-- ./well -->
               </div><!-- ./col -->
             </div><!-- ./row -->
