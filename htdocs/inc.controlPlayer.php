@@ -1,4 +1,4 @@
-        <div class="btn-group controlPlayer" role="group" aria-label="player">
+        <div class="btn-group controlPlayer" role="group" aria-label="player" style="margin-bottom:0.5em;">
           <a href='?player=prev' class='btn btn-default btn-success btn-lg'><i class='fa  fa-step-backward'></i></a>
 
 <?php
