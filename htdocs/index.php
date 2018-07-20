@@ -53,7 +53,7 @@ include("inc.controlVolumeUpDown.php");
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-12">
               <h4>Now playing</h4>
-                  <div class="well well-sm" style="overflow:hidden;">
+                  <div class="well" style="overflow:hidden;">
                     <i class="fa fa-'. $icon_class .'"></i> '.$playerStatus['track'].'
                   </div><!-- ./well -->
               </div><!-- ./col -->
