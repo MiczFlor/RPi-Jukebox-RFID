@@ -212,7 +212,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         echo $VOLPERCENT
-
+	;;
     setmaxvolume)
         # read volume in percent
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
@@ -242,6 +242,11 @@ case $COMMAND in
         # stop the player
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
+        if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
+        then
+            rm $PATHDATA/../shared/audiofolders/playing.txt
+        fi
+        if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playerstopafter)
         # stop player after $VALUE minutes
@@ -286,7 +291,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
-        ;;
+	;;
     playlistaddplay)
         # add to playlist (and play)
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi

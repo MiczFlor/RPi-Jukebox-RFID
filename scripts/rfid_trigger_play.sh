@@ -24,7 +24,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 
 # The absolute path to the folder whjch contains all the scripts.
@@ -57,7 +57,10 @@ done
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
-
+if [ $DEBUG == "true" ]
+then
+        echo "$NOW"   >> $PATHDATA/../logs/debug.log
+fi
 ##################################################################
 # Check if we got the card ID or the audio folder from the prompt.
 # Sloppy error check, because we assume the best.
@@ -68,6 +71,10 @@ if [ "$CARDID" ]; then
 
     # Add info into the log, making it easer to monitor cards
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
+    if [ $DEBUG == "true" ]
+    then
+        echo "Card ID '$CARDID' was used"   >> $PATHDATA/../logs/debug.log
+    fi
 
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
@@ -210,6 +217,10 @@ if [ "$CARDID" ]; then
                 FOLDERNAME=`cat $PATHDATA/../shared/shortcuts/$CARDID`
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
+                if [ $DEBUG == "true" ]
+                then
+                    echo "This ID has been used before."   >> $PATHDATA/../logs/debug.log
+                fi
             else
                 # Human readable shortcut does not exists, so create one with the content $CARDID
                 # this file can later be edited manually over the samba network
@@ -217,12 +228,20 @@ if [ "$CARDID" ]; then
                 FOLDERNAME=$CARDID
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
+                if [ $DEBUG == "true" ]
+                then
+                    echo "This ID was used for the first time."   >> $PATHDATA/../logs/debug.log
+                fi
             fi
             # Add info into the log, making it easer to monitor cards
             echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
+            if [ $DEBUG == "true" ]
+            then
+                echo "The shortcut points to audiofolder '$FOLDERNAME'."   >> $PATHDATA/../logs/debug.log
+            fi
             ;;
     esac
-
+fi
 ##############################################################
 # We should now have a folder name with the audio files.
 # Either from prompt of from the card ID processing above
@@ -235,6 +254,10 @@ if [ "$FOLDERNAME" ]; then
     # and this produces an error while saving lastplayed.dat
 
     sudo $PATHDATA/playout_controls.sh -c=playlistclear
+    if [ $DEBUG == "true" ]
+    then
+         echo "Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off"   >> $PATHDATA/../logs/debug.log
+    fi
 	
     # Before we create a new playlist, we remove the old one from the folder.
     # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
@@ -257,6 +280,10 @@ if [ "$FOLDERNAME" ]; then
         SPECIALFORMAT=$(ls "$PATHDATA/../shared/audiofolders/$FOLDERNAME" | grep .txt)
         # the following switch can be extended with other 'special' formats which require
         # more complex action than just piping the folder content into a playlist
+        if [ $DEBUG == "true" ]
+        then
+            echo "Check if we have something special to do"   >> $PATHDATA/../logs/debug.log
+        fi
         case $SPECIALFORMAT in
             "podcast.txt")
                 # Podcast
@@ -265,10 +292,18 @@ if [ "$FOLDERNAME" ]; then
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
+                if [ $DEBUG == "true" ]
+                then
+                    echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log
+                fi
             ;;
             "livestream.txt")
                 # mpd can't read from .txt, so we have to write the livestream URL into playlist
                 cat "$PATHDATA/../shared/audiofolders/$FOLDERNAME/livestream.txt" > "$PLAYLISTPATH"
+                if [ $DEBUG == "true" ]
+                then
+                    echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log
+                fi
             ;;
             *)
                 # Nothing special to do, folder with audio files
@@ -279,6 +314,10 @@ if [ "$FOLDERNAME" ]; then
                 cd $PATHDATA/../shared/audiofolders
                 #find "$PATHDATA/../shared/audiofolders/$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
                 find "$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
+                if [ $DEBUG == "true" ]
+                then
+                    echo "Nothing special $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log
+                fi
             ;;
         esac
 
@@ -286,11 +325,11 @@ if [ "$FOLDERNAME" ]; then
         then
             # if same playlist, only stop the player
             run_folder=$(cat $PATHDATA/../shared/audiofolders/playing.txt)
-            if [ "$PATHDATA/../playlists/$FOLDERNAME.m3u" == "$run_folder" ]
+            if [ "$FOLDERNAME" == "$run_folder" ]
             then
-                if [ $DEBUG = "true" ]
+                if [ $DEBUG == "true" ]
                 then
-                    echo "Same Playlist" >> $PATHDATA/../logs/debug.log
+                    echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
                 fi
                 only_stop=1
             else
@@ -298,25 +337,17 @@ if [ "$FOLDERNAME" ]; then
                 only_stop=0
             fi
             
-            # terminate the running instance by sendign quit to the correspondig playout controls
-            if $PATHDATA/../settings/playout_controls.sh -c=playerstop
-            then
-                if [ $DEBUG = "true" ]
-                then
-                    echo "Sigterm [success]" >> $PATHDATA/../logs/debug.log
-                fi
-            else
-                if [ $DEBUG = "true" ]
-                then
-                    echo "Sigterm [failed]" >> $PATHDATA/../logs/debug.log
-                fi
-            fi
             if [ $only_stop != 1 ]
             then
                 $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+            else
+                if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
+		then
+		    rm $PATHDATA/../shared/audiofolders/playing.txt
+		fi
             fi
         else
-            if [ $DEBUG = "true" ]
+            if [ $DEBUG == "true" ]
             then
                 echo "No Instance start with $PATHDATA/../settings/playout_controls.sh -c=play -v=$PATHDATA/../playlists/$FOLDERNAME.m3u"   >> $PATHDATA/../logs/debug.log
             fi
