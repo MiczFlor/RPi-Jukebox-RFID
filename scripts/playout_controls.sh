@@ -290,12 +290,16 @@ case $COMMAND in
     playlistaddplay)
         # add to playlist (and play)
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        # save playlist playing
+        echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         ;;
     playlistadd)
         # add to playlist, no autoplay
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        # save playlist playing
+        echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
