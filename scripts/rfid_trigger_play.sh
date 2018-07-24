@@ -23,6 +23,9 @@
 # Do NOT edit anything in this file.
 
 #############################################################
+# $DEBUG true|false
+DEBUG=false
+
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -69,183 +72,156 @@ if [ "$CARDID" ]; then
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
 
-    if [ "$CARDID" == "$CMDMUTE" ]
-    then
-        # amixer sset 'PCM' 0%
-        $PATHDATA/playout_controls.sh -c=mute
+    case $CARDID in 
+        $CMDMUTE)
+            # amixer sset 'PCM' 0%
+            $PATHDATA/playout_controls.sh -c=mute
+            ;;
+        $CMDVOL30)
+            # amixer sset 'PCM' 30%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=30
+            ;;
+        $CMDVOL50)
+            # amixer sset 'PCM' 50%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=50
+            ;;
+        $CMDVOL75)
+            # amixer sset 'PCM' 75%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=75
+            ;;
+        $CMDVOL85)
+            # amixer sset 'PCM' 85%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=85
+            ;;
+        $CMDVOL90)
+            # amixer sset 'PCM' 90%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=90
+            ;;
+        $CMDVOL95)
+            # amixer sset 'PCM' 95%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=95
+            ;;
+        $CMDVOL100)
+            # amixer sset 'PCM' 100%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=100
+            ;;
+        $CMDVOLUP)
+            # increase volume by x% set in Audio_Volume_Change_Step
+            $PATHDATA/playout_controls.sh -c=volumeup   
+            ;;
+        $CMDVOLDOWN)
+            # decrease volume by x% set in Audio_Volume_Change_Step
+            $PATHDATA/playout_controls.sh -c=volumedown
+            ;;
+        $CMDSTOP)
+            # kill all running audio players
+            $PATHDATA/playout_controls.sh -c=playerstop
+            ;;
+        $CMDSHUTDOWN)
+            # shutdown the RPi nicely
+            # sudo halt
+            $PATHDATA/playout_controls.sh -c=shutdown
+            ;;
+        $CMDREBOOT)
+            # shutdown the RPi nicely
+            # sudo reboot
+            $PATHDATA/playout_controls.sh -c=reboot
+            ;;
+        $CMDNEXT)
+            # play next track in playlist (==folder)
+            $PATHDATA/playout_controls.sh -c=playernext
+            ;;
+        $CMDPREV)
+            # play previous track in playlist (==folder)
+            # echo "prev" | nc.openbsd -w 1 localhost 4212
+            sudo $PATHDATA/playout_controls.sh -c=playerprev
+            #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
+            ;;
+        $CMDPAUSE)
+            # pause current track
+            # echo "pause" | nc.openbsd -w 1 localhost 4212
+            $PATHDATA/playout_controls.sh -c=playerpause
+            ;;
+        $CMDPLAY)
+            # play / resume current track
+            # echo "play" | nc.openbsd -w 1 localhost 4212
+            $PATHDATA/playout_controls.sh -c=playerplay
+            ;;
+        $STOPAFTER5)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=5
+            ;;
+        $STOPAFTER15)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=15
+            ;;
+        $STOPAFTER30)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=30
+            ;;
+        $STOPAFTER60)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=60
+            ;;
+        $SHUTDOWNAFTER5)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=5
+            ;;
+        $SHUTDOWNAFTER15)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=15
+            ;;
+        $SHUTDOWNAFTER30)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=30
+            ;;
+        $SHUTDOWNAFTER60)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
+            ;;
+        *)
+            # We checked if the card was a special command, seems it wasn't.
+            # Now we expect it to be a trigger for one or more audio file(s).
+            # Let's look at the ID, write a bit of log information and then try to play audio.
         
-    elif [ "$CARDID" == "$CMDVOL30" ]
-    then
-        # amixer sset 'PCM' 30%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=30
-    
-    elif [ "$CARDID" == "$CMDVOL50" ]
-    then
-        # amixer sset 'PCM' 50%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=50
-    
-    elif [ "$CARDID" == "$CMDVOL75" ]
-    then
-        # amixer sset 'PCM' 75%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=75
-    
-    elif [ "$CARDID" == "$CMDVOL85" ]
-    then
-        # amixer sset 'PCM' 85%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=85
-    
-    elif [ "$CARDID" == "$CMDVOL90" ]
-    then
-        # amixer sset 'PCM' 90%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=90
-    
-    elif [ "$CARDID" == "$CMDVOL95" ]
-    then
-        # amixer sset 'PCM' 95%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=95
-    
-    elif [ "$CARDID" == "$CMDVOL100" ]
-    then
-        # amixer sset 'PCM' 100%
-        $PATHDATA/playout_controls.sh -c=setvolume -v=100
-    
-    elif [ "$CARDID" == "$CMDVOLUP" ]
-    then
-        # increase volume by x% set in Audio_Volume_Change_Step
-        $PATHDATA/playout_controls.sh -c=volumeup   
-    
-    elif [ "$CARDID" == "$CMDVOLDOWN" ]
-    then
-        # decrease volume by x% set in Audio_Volume_Change_Step
-        $PATHDATA/playout_controls.sh -c=volumedown
-    
-    elif [ "$CARDID" == "$CMDSTOP" ]
-    then
-        # kill all running audio players
-        $PATHDATA/playout_controls.sh -c=playerstop
-    
-    elif [ "$CARDID" == "$CMDSHUTDOWN" ]
-    then
-        # shutdown the RPi nicely
-        # sudo halt
-        $PATHDATA/playout_controls.sh -c=shutdown
+            # Expected folder structure:
+            #
+            # $PATHDATA + /../shared/audiofolders/ + $FOLDERNAME
+            # Note: $FOLDERNAME is read from a file inside 'shortcuts'.
+            #       See manual for details
+            #
+            # Example:
+            #
+            # $PATHDATA/../shared/audiofolders/list1/01track.mp3
+            #                                       /what-a-great-track.mp3
+            #
+            # $PATHDATA/../shared/audiofolders/list987/always-will.mp3
+            #                                         /be.mp3
+            #                                         /playing.mp3
+            #                                         /x-alphabetically.mp3
+            #
+            # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
         
-    elif [ "$CARDID" == "$CMDREBOOT" ]
-    then
-        # shutdown the RPi nicely
-        # sudo reboot
-        $PATHDATA/playout_controls.sh -c=reboot
-        
-    elif [ "$CARDID" == "$CMDNEXT" ]
-    then
-        # play next track in playlist (==folder)
-        # echo "next" | nc.openbsd -w 1 localhost 4212
-        #echo "from rfid_trigger_play.sh calling 'sudo $PATHDATA/playout_controls.sh -c=playernext'"
-        $PATHDATA/playout_controls.sh -c=playernext
-        #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playernext
-        
-    elif [ "$CARDID" == "$CMDPREV" ]
-    then
-        # play previous track in playlist (==folder)
-        # echo "prev" | nc.openbsd -w 1 localhost 4212
-        sudo $PATHDATA/playout_controls.sh -c=playerprev
-        #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
-        
-    elif [ "$CARDID" == "$CMDPAUSE" ]
-    then
-        # pause current track
-        # echo "pause" | nc.openbsd -w 1 localhost 4212
-        $PATHDATA/playout_controls.sh -c=playerpause
-        
-    elif [ "$CARDID" == "$CMDPLAY" ]
-    then
-        # play / resume current track
-        # echo "play" | nc.openbsd -w 1 localhost 4212
-        $PATHDATA/playout_controls.sh -c=playerplay
-        
-    elif [ "$CARDID" == "$STOPAFTER5" ]
-    then
-        # stop player after -v minutes
-        $PATHDATA/playout_controls.sh -c=playerstopafter -v=5
-        
-    elif [ "$CARDID" == "$STOPAFTER15" ]
-    then
-        # stop player after -v minutes
-        $PATHDATA/playout_controls.sh -c=playerstopafter -v=15
-        
-    elif [ "$CARDID" == "$STOPAFTER30" ]
-    then
-        # stop player after -v minutes
-        $PATHDATA/playout_controls.sh -c=playerstopafter -v=30
-        
-    elif [ "$CARDID" == "$STOPAFTER60" ]
-    then
-        # stop player after -v minutes
-        $PATHDATA/playout_controls.sh -c=playerstopafter -v=60
-        
-    elif [ "$CARDID" == "$SHUTDOWNAFTER5" ]
-    then
-        # shutdown after -v minutes
-        $PATHDATA/playout_controls.sh -c=shutdownafter -v=5
-        
-    elif [ "$CARDID" == "$SHUTDOWNAFTER15" ]
-    then
-        # shutdown after -v minutes
-        $PATHDATA/playout_controls.sh -c=shutdownafter -v=15
-        
-    elif [ "$CARDID" == "$SHUTDOWNAFTER30" ]
-    then
-        # shutdown after -v minutes
-        $PATHDATA/playout_controls.sh -c=shutdownafter -v=30
-        
-    elif [ "$CARDID" == "$SHUTDOWNAFTER60" ]
-    then
-        # shutdown after -v minutes
-        $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
-        
-    else
-        # We checked if the card was a special command, seems it wasn't.
-        # Now we expect it to be a trigger for one or more audio file(s).
-        # Let's look at the ID, write a bit of log information and then try to play audio.
-    
-        # Expected folder structure:
-        #
-        # $PATHDATA + /../shared/audiofolders/ + $FOLDERNAME
-        # Note: $FOLDERNAME is read from a file inside 'shortcuts'.
-        #       See manual for details
-        #
-        # Example:
-        #
-        # $PATHDATA/../shared/audiofolders/list1/01track.mp3
-        #                                       /what-a-great-track.mp3
-        #
-        # $PATHDATA/../shared/audiofolders/list987/always-will.mp3
-        #                                         /be.mp3
-        #                                         /playing.mp3
-        #                                         /x-alphabetically.mp3
-        #
-        # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
-    
-    	# Look for human readable shortcut in folder 'shortcuts'
-    	# check if CARDID has a text file by the same name - which would contain the human readable folder name
-    	if [ -f $PATHDATA/../shared/shortcuts/$CARDID ]
-    	then
-            # Read human readable shortcut from file
-            FOLDERNAME=`cat $PATHDATA/../shared/shortcuts/$CARDID`
+            # Look for human readable shortcut in folder 'shortcuts'
+            # check if CARDID has a text file by the same name - which would contain the human readable folder name
+            if [ -f $PATHDATA/../shared/shortcuts/$CARDID ]
+            then
+                # Read human readable shortcut from file
+                FOLDERNAME=`cat $PATHDATA/../shared/shortcuts/$CARDID`
+                # Add info into the log, making it easer to monitor cards
+                echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
+            else
+                # Human readable shortcut does not exists, so create one with the content $CARDID
+                # this file can later be edited manually over the samba network
+                echo "$CARDID" > $PATHDATA/../shared/shortcuts/$CARDID
+                FOLDERNAME=$CARDID
+                # Add info into the log, making it easer to monitor cards
+                echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
+            fi
             # Add info into the log, making it easer to monitor cards
-            echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
-    	else
-            # Human readable shortcut does not exists, so create one with the content $CARDID
-            # this file can later be edited manually over the samba network
-            echo "$CARDID" > $PATHDATA/../shared/shortcuts/$CARDID
-            FOLDERNAME=$CARDID
-            # Add info into the log, making it easer to monitor cards
-            echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
-        fi
-        # Add info into the log, making it easer to monitor cards
-        echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
-    fi
-fi
+            echo "The shortcut points to audiofolder '$FOLDERNAME'." >> $PATHDATA/../shared/latestID.txt
+            ;;
+    esac
 
 ##############################################################
 # We should now have a folder name with the audio files.
@@ -305,8 +281,47 @@ if [ "$FOLDERNAME" ]; then
                 find "$FOLDERNAME" -type f | sort -n > "$PLAYLISTPATH"
             ;;
         esac
-	
-        # load new playlist and play
-        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+
+        if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
+        then
+            # if same playlist, only stop the player
+            run_folder=$(cat $PATHDATA/../shared/audiofolders/playing.txt)
+            if [ "$PATHDATA/../playlists/$FOLDERNAME.m3u" == "$run_folder" ]
+            then
+                if [ $DEBUG = "true" ]
+                then
+                    echo "Same Playlist" >> $PATHDATA/../logs/debug.log
+                fi
+                only_stop=1
+            else
+                # if playlist is different, stop the running player and restart with new playlist
+                only_stop=0
+            fi
+            
+            # terminate the running instance by sendign quit to the correspondig playout controls
+            if $PATHDATA/../settings/playout_controls.sh -c=playerstop
+            then
+                if [ $DEBUG = "true" ]
+                then
+                    echo "Sigterm [success]" >> $PATHDATA/../logs/debug.log
+                fi
+            else
+                if [ $DEBUG = "true" ]
+                then
+                    echo "Sigterm [failed]" >> $PATHDATA/../logs/debug.log
+                fi
+            fi
+            if [ $only_stop != 1 ]
+            then
+                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+            fi
+        else
+            if [ $DEBUG = "true" ]
+            then
+                echo "No Instance start with $PATHDATA/../settings/playout_controls.sh -c=play -v=$PATHDATA/../playlists/$FOLDERNAME.m3u"   >> $PATHDATA/../logs/debug.log
+            fi
+            # load new playlist and play
+            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+        fi
     fi
 fi
