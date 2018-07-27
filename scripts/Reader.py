@@ -12,7 +12,7 @@ class Reader:
 		path = os.path.dirname(os.path.realpath(__file__))
 		self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
 		if not os.path.isfile(path + '/deviceName.txt'):
-			sys.exit('Please run config.py first')
+			sys.exit('Please run RegisterDevice.py first')
 		else: 
 			with open(path + '/deviceName.txt','r') as f:
 				deviceName = f.read()
