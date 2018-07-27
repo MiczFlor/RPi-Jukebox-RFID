@@ -357,4 +357,4 @@ sudo reboot
 # Configure the Phoniebox
 
 Continue with the configuration in the file [`CONFIGURE-stretch.md`](CONFIGURE-stretch.md).
-for OS version "jessie" use  [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md).
+for RPi jessie use  [`CONFIGURE-jessie.md`](CONFIGURE-jessie.md).
