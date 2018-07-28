@@ -16,7 +16,8 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li><a href='index.php' class='mainMenu'><i class='fa fa-home'></i> Home</a></li>
-	<li><a href='settings.php' class='mainMenu'><i class='fa fa-wrench'></i> Settings</a></li>
+	      <li><a href='settings.php' class='mainMenu'><i class='fa fa-wrench'></i> Settings</a></li>
+        <li><a href='systemInfo.php' class='mainMenu'><i class='fa fa-info'></i> Info</a></li>
       </ul>
       
 <!-- sub menu -->
