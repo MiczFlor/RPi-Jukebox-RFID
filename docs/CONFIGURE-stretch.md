@@ -139,6 +139,12 @@ pi@Jukebox:~ $ systemctl status rfid-reader
 Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
 ```
 
+The mp3s for startup and shutdown sound have to be copied to the right folder. You may use your own sound files as well.
+```
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
+```
+
 # Connecting the hardware
 
 Once the software is all in place, make sure the hardware is connected correctly.
