@@ -123,6 +123,10 @@ sudo chmod 644 /etc/systemd/system/startup-sound.service
 sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 sudo chmod 644 /etc/systemd/system/idle-watchdog.service
 
+# copy mp3s for startup and shutdown sound to the right folder
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
+
 # MPD configuration
 # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf

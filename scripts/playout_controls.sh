@@ -115,7 +115,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         sleep 1
-        /usr/bin/mpg123 $PATHDATA/../misc/shutdownsound.mp3 
+        /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
         sleep 3
         sudo halt
         ;;
@@ -176,11 +176,15 @@ case $COMMAND in
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
+            VOLPERCENT=$VOLPERCENT+$VOLSTEP
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
                 # set volume level in percent
                 echo -e volume +$VOLSTEP\\nclose | nc -w 1 localhost 6600
+            else
+                # if we are over the max volume limit, set the volume to maxvol
+                echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
             fi
         else
             # $VOLFILE DOES exist == audio off
@@ -194,10 +198,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
-            # read volume in percent
-            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # decrease by $VOLSTEP
-            # set volume level in percent
             echo -e volume -$VOLSTEP\\nclose | nc -w 1 localhost 6600
         else
             # $VOLFILE DOES exist == audio off
