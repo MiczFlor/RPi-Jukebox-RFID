@@ -29,9 +29,9 @@ In my case, this will list the Barcode Reader and show that the system can inter
 lrwxrwxrwx 1 root root   9 Apr 30 09:55 usb-Sycreader_USB_Reader_08FF20150112-event-kbd -> ../event1
 ~~~
 
-## Register your USB device for the jukebox
+## Register your USB device for the Phoniebox
 
-Now we know a lot about the RFID reader attached to our RPi. In order to use it as a controller for our jukebox, the software needs to know which device to listen to.
+Now we know a lot about the RFID reader attached to our RPi. In order to use it as a controller for our Phoniebox, the software needs to know which device to listen to.
 
 To register your device, go to the directory containing all the scripts and run the file `RegisterDevice.py`.
 
@@ -55,7 +55,7 @@ You can check if your device was registered properly by taking a look inside the
 cat deviceName.txt
 ~~~~
 
-Now your jukebox knows which device to listen to when you are swiping your cards or keyrings.
+Now your Phoniebox knows which device to listen to when you are swiping your cards or keyrings.
 
 ## Copy the RFID chip configuration file
 
@@ -90,9 +90,9 @@ echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 ~~~
 
-## <a name="systemdautostart"></a>Auto-start the jukebox
+## <a name="systemdautostart"></a>Auto-start the Phoniebox
 
-This is the final tweak to the configuration: automatically start our jukebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.
+This is the final tweak to the configuration: automatically start our Phoniebox software after the RPi has booted and have it listen to RFID cards. The Raspbian OS 9 (stretch) uses systemd to start the components.
 
 **Systemd will launch the required services after booting AND take care of restarting the script in case they die**. 
 
@@ -118,7 +118,7 @@ sudo systemctl enable startup-sound
 sudo systemctl enable gpio-buttons (optional)
 ```
 
-The newly installed service can be started either by rebooting the jukebox or
+The newly installed service can be started either by rebooting the Phoniebox or
 with:
 ```sudo systemctl start rfid-reader```
 
@@ -154,6 +154,6 @@ Once the software is all in place, make sure the hardware is connected correctly
 
 Adding control buttons for volume, skipping tracks, pause, play, read the [GPIO buttons installation guide](GPIO-BUTTONS.md).
 
-# Jukebox manual
+# Phoniebox manual
 
-Now the installation and configuration are complete. Time to read the manual of the jukebox to add songs, web streams, register new cards and so on. Read the [`MANUAL.md`](MANUAL.md).
+Now the installation and configuration are complete. Time to read the manual of the Phoniebox to add songs, web streams, register new cards and so on. Read the [`MANUAL.md`](MANUAL.md).
