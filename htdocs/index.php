@@ -6,7 +6,7 @@ include("inc.header.php");
 * START HTML
 *******************************************/
 
-html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
+html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 
 ?>
 <body>
@@ -86,20 +86,6 @@ include("inc.controlVolumeUpDown.php");
 
 include("inc.volumeSelect.php");
 ?>      
-
-        <!-- input-group -->          
-          <div class="col-md-4 col-sm-6">
-            <div class="row" style="margin-bottom:1em;">
-              <div class="col-xs-12">
-              <h4>Manage Files and Chips</h4>
-                <a href="cardRegisterNew.php" class="btn btn-primary btn">
-                <i class='fa  fa-plus-circle'></i> Register new card ID
-                </a>
-              </div>
-            </div><!-- ./row -->
-        </div><!-- ./col -->
-        <!-- /input-group -->   
-        
     </div><!-- ./row -->
 
     <div class="row">
@@ -199,6 +185,19 @@ foreach($audiofolders as $audiofolder) {
 ?>
 
       </div><!-- / .col-lg-12 -->
+        <!-- input-group -->          
+          <div class="col-md-4 col-sm-6">
+            <div class="row" style="margin-bottom:1em;">
+              <div class="col-xs-12">
+              <h4>Manage Files and Chips</h4>
+                <a href="cardRegisterNew.php" class="btn btn-primary btn">
+                <i class='fa  fa-plus-circle'></i> Register new card ID
+                </a>
+              </div>
+            </div><!-- ./row -->
+        </div><!-- ./col -->
+        <!-- /input-group --> 
+	      
     </div><!-- /.row -->
     
     <!-- Modal -->
