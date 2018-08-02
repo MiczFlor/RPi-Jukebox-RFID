@@ -322,7 +322,7 @@ if(isset($urlparams['volumedown'])) {
 
 // reboot the jukebox
 if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=reboot";
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=reboot > /dev/null 2>&1 &";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
@@ -335,7 +335,7 @@ if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
 
 // shutdown the jukebox
 if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdown";
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdown > /dev/null 2>&1 &";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
