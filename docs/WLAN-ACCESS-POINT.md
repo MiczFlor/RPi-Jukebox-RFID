@@ -1,8 +1,8 @@
 
-# Access Jukebox without Router
+# Access Phoniebox without Router
 
-It is possible to connect to the jukebox directly, without having your
-laptop and the jukebox connect to the same WiFi network. Configuring the
+It is possible to connect to the Phoniebox directly, without having your
+laptop and the Phoniebox connect to the same WiFi network. Configuring the
 Raspberry Pi to be a WiFi access point.
 
 I tested this only with the Raspberry Pi 3, which has a WiFi card onboard.
@@ -21,7 +21,7 @@ sudo apt-get install dnsmasq hostapd
 ## Configure the network
 
 Using jessie, dhcpd is activated by default. This dhcp daemon is assigning
-IP addresses to devices which want to connect to the jukebox.
+IP addresses to devices which want to connect to the Phoniebox.
 
 Set the IP address for the wlan card by opening:
 ```
@@ -59,7 +59,7 @@ Remember: we need the wlan0 interface to hook up other devices to a WiFi network
 RPi is creating.
 
 Let's check if all interfaces are up and running. We only really need the wlan0
-but if eth0 is also up and is connected to the Internet, your jukebox will be online
+but if eth0 is also up and is connected to the Internet, your Phoniebox will be online
 and all devices connected to it. Type in the command line:
 
 ```
@@ -129,7 +129,7 @@ interface=wlan0
 #driver=nl80211
 
 # WLAN-config
-ssid=jukebox
+ssid=Phoniebox
 channel=1
 hw_mode=g
 ieee80211n=1
@@ -144,7 +144,7 @@ wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 wpa_passphrase=Pl4yM3N0w
 ```
-The network will be listed as `jukebox` and the password
+The network will be listed as `Phoniebox` and the password
 to connect to the network is `Pl4yM3N0w` (as in 'play me now' with a number four and a number three and a zero). If you want a different ssid and/or password, edit the lines above.
 
 This file contains a password in raw text, so make
@@ -164,7 +164,7 @@ wlan0: AP-ENABLED
 ```
 If yes, you can also try to hook
 up a device with the network already.
-See if you can find `jukebox` as a WiFi network.
+See if you can find `Phoniebox` as a WiFi network.
 
 If that works, all is well. Stop the `hostapd` daemon with `Ctrl&C`.
 
@@ -188,7 +188,7 @@ Check if the daemon is up and running:
 ```
 sudo systemctl status hostapd
 ```
-This concludes what we need to connect to the jukebox directly via WiFi.
+This concludes what we need to connect to the Phoniebox directly via WiFi.
 
 If you plan to connect the `eth0` via a cable with the Internet, you need to learn about firewall configurations. Google how to do this (I hope to replace this last paragraph with a nicer explanation and a link later, when I find the time. Apologies.)
 

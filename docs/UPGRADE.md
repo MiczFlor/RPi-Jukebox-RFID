@@ -11,9 +11,11 @@ Some elements of the installation depend on the OS (like 'Jessie' vs. 'Stretch')
 
 As of version 0.9.4 there is a file `settings/version` containing the version number.
 For future reference, I will try to break down the upgrade patches / scripts from number
-to number. 
+to number.
 
 # Upgrade from 0.9.5 to 0.9.7
+* Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
+* Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
 * Adding auto shutdown when idle for longer than x minutes (see [manual](MANUAL.md#settings) for details)
 * Adding maximum volume percent to settings (see [manual](MANUAL.md#settings) for details)
 * Fixing bug: settings volume for stereo audio iFace

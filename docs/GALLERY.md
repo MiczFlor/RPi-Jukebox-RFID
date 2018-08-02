@@ -1,6 +1,6 @@
 
-# Jukebox Gallery
-Because everybody is an individual - and so are their jukeboxes - I started this gallery. If you want to be part of it, either create a pull request or post your image to the [Pics of my jukebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/5) thread. I will copy them to the gallery.
+# Phoniebox Gallery
+Because everybody is an individual - and so are their Phonieboxes - I started this gallery. If you want to be part of it, either create a pull request or post your image to the [Pics of my Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/5) thread. I will copy them to the gallery.
 
 |  |  |
 | --- | --- |

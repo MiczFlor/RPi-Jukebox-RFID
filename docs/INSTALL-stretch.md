@@ -2,7 +2,7 @@
 
 *Written for an tested on Raspbian GNU/Linux 9.4 (stretch) Kernel version: 4.14*
 
-The installation is the first step to get your jukebox up and running. Once you have done this, proceed to the [configuration](CONFIGURE-stretch.md).
+The installation is the first step to get your Phoniebox up and running. Once you have done this, proceed to the [configuration](CONFIGURE-stretch.md).
 
 And Once you finished with the configuration, read the [manual](MANUAL.md) to add audio files and RFID cards.
 
@@ -73,7 +73,7 @@ And then check again with `iwconfig` that the line now says: `Power Management:o
 
 ### Access over SSH
 
-SSH will allow you to log into the RPi from any machine in the network. This is useful because once the jukebox is up and running, it won't have a keyboard, mouse or monitor attached to it. Via SSH you can still configure the system and make changes - if you must.
+SSH will allow you to log into the RPi from any machine in the network. This is useful because once the Phoniebox is up and running, it won't have a keyboard, mouse or monitor attached to it. Via SSH you can still configure the system and make changes - if you must.
 
 Open a terminal to star the RPi configuration tool.
 
@@ -88,7 +88,7 @@ Find out more about how to [connect over SSH from Windows, Mac, Linux or Android
 
 ### Autologin after boot
 
-When you start the jukebox, it needs to fire up without stalling at the login screen. This can also be configured using the RPi config tool.
+When you start the Phoniebox, it needs to fire up without stalling at the login screen. This can also be configured using the RPi config tool.
 
 Open a terminal to star the RPi configuration tool.
 
@@ -150,7 +150,7 @@ sudo pip install youtube_dl
 
 ### Using git to pull the code from github
 
-[*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the jukebox software is located.
+[*git* is a version control system](https://git-scm.com/) which makes it easy to pull software from GitHub - which is where the Phoniebox software is located.
 
 ~~~~
 cd /home/pi/
@@ -163,7 +163,7 @@ Now you have the code repo of the Phoniebox in the directory `/home/pi/RPi-Jukeb
 
 ### Samba: Share files and folder over your home network 
 
-To make the jukebox easy to administer, it is important that you can add new songs and register new RFID cards over your home network. This can be done from any machine. The way to integrate your RPi into your home network is using *Samba*, the standard [Windows interoperability suite for Linux and Unix](https://www.samba.org/).
+To make the Phoniebox easy to administer, it is important that you can add new songs and register new RFID cards over your home network. This can be done from any machine. The way to integrate your RPi into your home network is using *Samba*, the standard [Windows interoperability suite for Linux and Unix](https://www.samba.org/).
 
 Open a terminal and install the required packages with this line:
 
@@ -197,7 +197,7 @@ Now add the specific folder that we want to be exposed to the home network in th
    veto files=/._*/.DS_Store/
 ~~~~
 
-**Note:** the `path` given in this example works (only) if you are installing the jukebox code in the directory `/home/pi/`.
+**Note:** the `path` given in this example works (only) if you are installing the Phoniebox code in the directory `/home/pi/`.
 
 Finally, add the user `pi` to *Samba*. For simplicity and against better knowledge regarding security, I suggest to stick to the default user and password:
 
@@ -248,7 +248,7 @@ Which I added in the long install line above: `sudo apt-get install linux-header
 
 ### Running the web app
 
-There is a second way to control the RFID jukebox: through the browser. You can open a browser on your phone or computer and type in the static IP address that we assigned to the RPi earlier. As long as your phone or PC are connected to the same WiFi network that the RPi is connected to, you will see the web app in your browser.
+There is a second way to control the RFID Phoniebox: through the browser. You can open a browser on your phone or computer and type in the static IP address that we assigned to the RPi earlier. As long as your phone or PC are connected to the same WiFi network that the RPi is connected to, you will see the web app in your browser.
 
 ### lighttpd: web server for web app
 
@@ -260,7 +260,7 @@ Open the configuration file:
 sudo nano /etc/lighttpd/lighttpd.conf
 ~~~~
 
-Change the document root, meaning the folder where the webserver will look for things to display or do when somebody types in the static IP address. To point it to the Jukebox web app, change the line in the configuration to:
+Change the document root, meaning the folder where the webserver will look for things to display or do when somebody types in the static IP address. To point it to the Phoniebox web app, change the line in the configuration to:
 
 ~~~~
 server.document-root = "/home/pi/RPi-Jukebox-RFID/htdocs"
@@ -368,13 +368,13 @@ Using the Jessie distribution, you might be lucky and there is a quick fix setti
 
 ## Reboot your Raspberry Pi
 
-Ok, after all of this, it's about time to reboot your jukebox. Make sure you have the static IP address at hand to login over SSH after the reboot.
+Ok, after all of this, it's about time to reboot your Phoniebox. Make sure you have the static IP address at hand to login over SSH after the reboot.
 
 ~~~~
 sudo reboot
 ~~~~
 
-# Configure the jukebox
+# Configure the Phoniebox
 
 Continue with the configuration in the file [`CONFIGURE-stretch.md`](CONFIGURE-stretch.md).
 
