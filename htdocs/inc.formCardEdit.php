@@ -124,6 +124,75 @@ foreach($audiofolders as $audiofolder) {
         </div>
         
         </fieldset>
+
+        <fieldset>        
+        <!-- Form Name -->
+        <legend>YouTube</legend>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="YTstreamURL">c) ... or download YouTube audio</label>  
+          <div class="col-md-6">
+          <input value="<?php
+          if (isset($fpost['YTstreamURL'])) {
+              print $fpost['YTstreamURL'];
+          }
+          ?>" id="YTstreamURL" name="YTstreamURL" placeholder="https://www.youtube.com/watch?v=7GI0VdPehQI" class="form-control input-md" type="text">
+          <span class="help-block">Add the full YouTube-URL like in the example</span>  
+          </div>
+        </div>
+        
+        <!-- Select Basic -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="audiofolder"></label>
+           <div class="col-md-6">
+            <select id="audiofolder" name="audiofolder" class="form-control">
+              <option value="false">Pull down to select a folder or create a new one below</option>
+<?php
+// read the subfolders of shared/audiofolders
+$audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
+usort($audiofolders, 'strcasecmp');
+
+// check if we can preselect an audiofolder if NOT a foldername was posted
+if(! isset($fpost['audiofolder'])) {
+    if(array_key_exists($fpost['cardID'], $shortcuts)) {
+        print "got one!!!";    
+        $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
+    }
+}
+    
+// counter for ID of each folder
+$idcounter = 0;
+
+// go through all folders
+foreach($audiofolders as $audiofolder) {
+    
+    print "              <option value='".basename($audiofolder)."'";
+    if(basename($audiofolder) == $fpost['audiofolder']) {
+        print " selected=selected";
+    }
+    print ">".basename($audiofolder)."</option>\n";
+   
+}
+?>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="streamFolderName"></label>  
+          <div class="col-md-6">
+          <input value="<?php
+          if (isset($fpost['streamFolderName'])) {
+              print $fpost['streamFolderName'];
+          }
+          ?>" id="streamFolderName" name="streamFolderName" placeholder="e.g. 'New Folder'" class="form-control input-md" type="text">
+          <span class="help-block">Name for the audio folder that will contain the YouTube audio.</span>  
+          </div>
+        </div>
+        
+        </fieldset>
         
         <!-- Button (Double) -->
         <div class="form-group">
