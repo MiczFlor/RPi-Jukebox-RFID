@@ -3,7 +3,7 @@
 
 (Other docs: [Installation](INSTALL-stretch.md) |
 [Configuration](CONFIGURE-stretch.md) |
-[Jukebox manual](MANUAL.md))
+[Phoniebox manual](MANUAL.md))
 
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
