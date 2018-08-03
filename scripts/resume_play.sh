@@ -41,7 +41,7 @@ savepos)
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
         # Get the elapsed time of the currently played audio file from mpd
-        ELAPSED=$(echo -e "status\nclose" | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+        ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
         # mpd reports an elapsed time only if the audio is playing or is paused. Check if we got an elapsed time
         if [ ! -z $ELAPSED ]; # Why does -n not work here?
         then
@@ -57,10 +57,8 @@ resume)
     # Check if "lastplayed.dat" exists
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
-        # Read the last played filename and timestamp from lastplayed.dat
-        #FILENAME=$(head -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
-        #TIMESTAMP=$(tail -n 1 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
-        LASTPLAYED=$(cat $PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat)
+        # Read the last played filename, timestamp and playstatus from lastplayed.dat
+        LASTPLAYED=$(cat "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
         FILENAME=$(echo "$LASTPLAYED" | sed -n '1p')
         TIMESTAMP=$(echo "$LASTPLAYED" | sed -n '2p')
         PLAYSTATUS=$(echo "$LASTPLAYED" | sed -n '3p')
@@ -71,12 +69,12 @@ resume)
         then
             # Get the playlist position of the file from mpd
             # Alternative approach: "mpc searchplay xx && mpc seek yy" 
-            PLAYLISTPOS=$(echo -e playlistfind filename \"$FILENAME\"\\nclose | nc.openbsd -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
+            PLAYLISTPOS=$(echo -e playlistfind filename \"$FILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
 
             # If the file is found, it is played from timestamp, otherwise start playlist from beginning        
             if [ ! -z $PLAYLISTPOS ];
             then
-                echo -e seek $PLAYLISTPOS $TIMESTAMP \\nclose | nc.openbsd -w 1 localhost 6600
+                echo -e seek $PLAYLISTPOS $TIMESTAMP \\nclose | nc -w 1 localhost 6600
             else
                 mpc play
             fi
