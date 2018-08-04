@@ -40,6 +40,7 @@ DEBUG=false
 # playerpause
 # playerplay
 # playerreplay
+# playerrepeat
 # playlistclear
 # playlistaddplay
 # playlistadd
@@ -176,7 +177,7 @@ case $COMMAND in
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
-            VOLPERCENT=$VOLPERCENT+$VOLSTEP
+            VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
@@ -286,6 +287,26 @@ case $COMMAND in
         # start the playing track from beginning
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc seek 0
+        ;;
+    playerrepeat)
+        # repeats a single track or a playlist. 
+        # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
+        # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
+        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        case $VALUE in 	
+            single)
+                mpc repeat on
+                mpc single on
+                ;;
+            playlist)
+                mpc repeat on
+                mpc single off
+                ;;
+            *)
+                mpc repeat off
+                mpc single off
+                ;;
+        esac
         ;;
     playlistclear)
         # clear playlist

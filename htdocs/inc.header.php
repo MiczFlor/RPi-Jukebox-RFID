@@ -541,5 +541,38 @@ if(isset($urlparams['player'])) {
             exit; 
         }
     }
+    if($urlparams['player'] == "repeat") {
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=playlist";
+        if($debug == "true") { 
+            print "Command: ".$exec; 
+        } else { 
+            exec($exec);
+            /* redirect to drop all the url parameters */
+            header("Location: ".$conf['url_abs']);
+            exit; 
+        }
+    }
+    if($urlparams['player'] == "single") {
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=single";
+        if($debug == "true") { 
+            print "Command: ".$exec; 
+        } else { 
+            exec($exec);
+            /* redirect to drop all the url parameters */
+            header("Location: ".$conf['url_abs']);
+            exit; 
+        }
+    }
+    if($urlparams['player'] == "repeatoff") {
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=off";
+        if($debug == "true") { 
+            print "Command: ".$exec; 
+        } else { 
+            exec($exec);
+            /* redirect to drop all the url parameters */
+            header("Location: ".$conf['url_abs']);
+            exit; 
+        }
+    }
 }
 ?>
