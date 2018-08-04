@@ -40,8 +40,7 @@ DEBUG=false
 # playerpause
 # playerplay
 # playerreplay
-# repeatsingle
-# repeatplaylist
+# playerrepeat
 # playlistclear
 # playlistaddplay
 # playlistadd
@@ -178,7 +177,7 @@ case $COMMAND in
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
-            VOLPERCENT=$VOLPERCENT+$VOLSTEP
+            VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
@@ -289,21 +288,25 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc seek 0
         ;;
-    repeatsingle)
-        # repeats a single track. If "single" is "on" but "repeat" is "off", 
-        # the playout stops after the current song
-        # This command may be called with ./playout_controls.sh -c=repeatsingle -v=on or off
-        # to switch to a defined state. Calling this command without -v toggles "repeat" and "single"
+    playerrepeat)
+        # repeats a single track or a playlist. 
+        # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
+        # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
-        mpc repeat $VALUE
-        mpc single $VALUE
-        ;;
-    repeatplaylist)
-        # repeats the whole playlist.
-        # This command may be called with ./playout_controls.sh -c=repeatplaylist -v=on or off
-        # to switch to a defined state. Calling this command without -v toggles between on and off.
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
-        mpc repeat $VALUE
+        case $VALUE in 	
+            single)
+                mpc repeat on
+                mpc single on
+                ;;
+            playlist)
+                mpc repeat on
+                mpc single off
+                ;;
+            *)
+                mpc repeat off
+                mpc single off
+                ;;
+        esac
         ;;
     playlistclear)
         # clear playlist

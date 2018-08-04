@@ -542,7 +542,7 @@ if(isset($urlparams['player'])) {
         }
     }
     if($urlparams['player'] == "repeat") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=repeatplaylist -v=on";
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=playlist";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 
@@ -553,7 +553,7 @@ if(isset($urlparams['player'])) {
         }
     }
     if($urlparams['player'] == "single") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=repeatsingle -v=on";
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=single";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 
@@ -564,7 +564,7 @@ if(isset($urlparams['player'])) {
         }
     }
     if($urlparams['player'] == "repeatoff") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=repeatsingle -v=off";
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=off";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 
