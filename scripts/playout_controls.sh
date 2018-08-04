@@ -40,6 +40,8 @@ DEBUG=false
 # playerpause
 # playerplay
 # playerreplay
+# repeatsingle
+# repeatplaylist
 # playlistclear
 # playlistaddplay
 # playlistadd
@@ -286,6 +288,22 @@ case $COMMAND in
         # start the playing track from beginning
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc seek 0
+        ;;
+    repeatsingle)
+        # repeats a single track. If "single" is "on" but "repeat" is "off", 
+        # the playout stops after the current song
+        # This command may be called with ./playout_controls.sh -c=repeatsingle -v=on or off
+        # to switch to a defined state. Calling this command without -v toggles "repeat" and "single"
+        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        mpc repeat $VALUE
+        mpc single $VALUE
+        ;;
+    repeatplaylist)
+        # repeats the whole playlist.
+        # This command may be called with ./playout_controls.sh -c=repeatplaylist -v=on or off
+        # to switch to a defined state. Calling this command without -v toggles between on and off.
+        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        mpc repeat $VALUE
         ;;
     playlistclear)
         # clear playlist
