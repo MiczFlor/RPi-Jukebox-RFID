@@ -6,9 +6,7 @@
 # sketch for a luxury one line install script
 
 clear
-echo "Welcome to the install script of your:
-
-##################################################### 
+echo "##################################################### 
 #    ___  __ ______  _  __________ ____   __  _  _  #
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
@@ -16,33 +14,61 @@ echo "Welcome to the install script of your:
 #                                                   #
 ##################################################### 
 
+Welcome to the installation script.
+
+
 This script will install Phoniebox on your Raspberry Pi.
-To do so, you must be online. The install script will 
-will automatically configure:
+To do so, you must be online. The install script can 
+automatically configure:
 
 * WiFi settings (SSID, password and static IP)
 
 All these are optional and can also be done later
 manually.
 
-If you are ready, hit ENTER
-"
-
-read INPUT; clear
+If you are ready, hit ENTER"
+read INPUT
 
 ##################################################### 
-#Ask if wifi config
+# Check for existing Phoniebox
+# check for existing Phoniebox installation
+# change to home directory to check relative paths
+#cd
+# phoniebox dir exists?
+# shortcuts dir exists and not empty?
+# audiofolders exists and not empty?
+# card ID conf exists?
+# GPIO file exists?
+# Sounds startup Shutdown?
+#Echo install found
+#Ask if existing files and ocnfig should be used? All/None/Specify individually
 
+# NONE delete Phoniebox dir
+# ELSE 
+## del dir BACKUP
+## move Phoniebox dir to BACKUP
+
+##################################################### 
+# Ask if wifi config
+
+clear
 WIFIconfig=YES
 
-echo "###################################"
+echo "#####################################################
+#
+# CONFIGURE WIFI
+#
+# Requires SSID, WiFi password and the static IP you want 
+# to assign to your Phoniebox.
+# (Note: can be done manually later, if you are unsure.)
+"
 read -r -p "Do you want to configure your WiFi? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
     	WIFIconfig=NO
     	echo "You want to configure WiFi later."
     	echo "Hit ENTER to proceed to the next step."
-        read INPUT; clear
+        read INPUT
         ;;
     *)
     	WIFIconfig=YES
@@ -73,6 +99,67 @@ case "$response" in
         ;;
 esac
 
+##################################################### 
+# Ask if access point
+
+clear
+ACCESSconfig=YES
+
+echo "#####################################################
+#
+# CONFIGURE ACCESS POINT
+#
+# If you take your Phoniebox on the road and it is not 
+# connected to a WiFi network, it can automatically turn 
+# into an access point and show up as SSID 'phoniebox'.
+# This will work for RPi3 out of the box. It might not
+# work for other models and WiFi cards.
+# (Note: can be done manually later, if you are unsure.)
+"
+read -r -p "Do you want to configure as Access Point? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	ACCESSconfig=NO
+    	echo "You don't want to configure as an Access Point."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+    *)
+    	ACCESSconfig=YES
+        ;;
+esac
+
+
+##################################################### 
+# Configure MPD
+
+clear
+MPDconfig=YES
+
+echo "#####################################################
+#
+# CONFIGURE MPD
+#
+# MPD (Music Player Daemon)  runs the audio output and must
+# be configured. Do it now, if you are unsure.
+# (Note: can be done manually later.)
+"
+read -r -p "Do you want to configure MPD? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	MPDconfig=NO
+    	echo "You want to configure MPD later."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+    *)
+    	MPDconfig=YES
+    	echo "MPD will be set up with default values."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+esac
+
 clear
 echo "Good news: you completed the input. 
 Let the install begin.
@@ -87,6 +174,7 @@ Hit ENTER to start the installation."
 read INPUT; clear
 
 #Ask if Spotify config
+
 #Ask if access point
 
 
@@ -97,22 +185,6 @@ read INPUT; clear
 #Ask samba password
 #Ask ssh password
 
-# check for existkng Phoniebox installation
-# change to home directory to check relative paths
-#cd
-# phoniebox dir exists?
-# shortcuts dir exists and not empty?
-# audiofolders exists and not empty?
-# card ID conf exists?
-# GPIO file exists?
-# Sounds startup Shutdown?
-#Echo install found
-#Ask if existing files and ocnfig should be used? All/None/Specify individually
-
-# NONE delete Phoniebox dir
-# ELSE 
-## del dir BACKUP
-## move Phoniebox dir to BACKUP
 
 # get existing install
 # new config should be done with sed using existing conf and user input
