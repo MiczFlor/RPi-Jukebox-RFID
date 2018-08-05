@@ -175,9 +175,6 @@ read INPUT; clear
 
 #Ask if Spotify config
 
-#Ask if access point
-
-
 #If Spotify
 #Ask for user
 #Ask for password
