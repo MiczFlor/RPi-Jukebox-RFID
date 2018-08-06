@@ -5,6 +5,9 @@
 #
 # sketch for a luxury one line install script
 
+# The absolute path to the folder which contains this script
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 clear
 echo "##################################################### 
 #    ___  __ ______  _  __________ ____   __  _  _  #
@@ -40,7 +43,7 @@ read INPUT
 rm PhonieboxInstall.conf
 # Create empty config file
 touch PhonieboxInstall.conf
-echo "# Phoniebox config" > PhonieboxInstall.conf
+echo "# Phoniebox config" > $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Check for existing Phoniebox
@@ -147,10 +150,10 @@ case "$response" in
                 ;;
             *)
                 # append variables to config file
-#                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
-#                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
-#                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
-#                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
+                echo "WIFIconfig=\"$WIFIconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
                 ;;
         esac
         ;;
@@ -184,13 +187,14 @@ case "$response" in
     	ACCESSconfig=YES
         ;;
 esac
+# append variables to config file
+echo "ACCESSconfig=\"$ACCESSconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
 
 ##################################################### 
 # Configure MPD
 
 clear
-MPDconfig=YES
 
 echo "#####################################################
 #
@@ -215,6 +219,8 @@ case "$response" in
         read INPUT
         ;;
 esac
+# append variables to config file
+echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
 clear
 echo "Good news: you completed the input. 
