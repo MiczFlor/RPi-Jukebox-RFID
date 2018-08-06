@@ -30,29 +30,77 @@ If you are ready, hit ENTER"
 read INPUT
 
 ##################################################### 
-# Check for existing Phoniebox
-# check for existing Phoniebox installation
-# change to home directory to check relative paths
-#cd
-# phoniebox dir exists?
-# shortcuts dir exists and not empty?
-# audiofolders exists and not empty?
-# card ID conf exists?
-# GPIO file exists?
-# Sounds startup Shutdown?
-#Echo install found
-#Ask if existing files and ocnfig should be used? All/None/Specify individually
+# CONFIG FILE
+# This file will contain all the data given in the
+# following dialogue
+# At a later stage, the install should also be done
+# from such a config file with no user input.
 
-# NONE delete Phoniebox dir
-# ELSE 
-## del dir BACKUP
-## move Phoniebox dir to BACKUP
+# Remove existing config file
+rm PhonieboxInstall.conf
+# Create empty config file
+touch PhonieboxInstall.conf
+echo "# Phoniebox config" > PhonieboxInstall.conf
+
+##################################################### 
+# Check for existing Phoniebox
+# 
+# later use of:
+# shortcuts content
+# audiofolders content
+# card ID conf 
+# GPIO file(s)
+# Sounds startup shutdown
+
+# move to home directory
+cd
+# check if Phoniebox folder exists
+if [ -d RPi-Jukebox-RFID ]; then
+    echo "WARNING: an existing Phoniebox installation was found."
+    # YES, check if we find the version number
+    if [ -f RPi-Jukebox-RFID/settings/version ]; then
+        echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
+        echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+    fi
+    # Delete or use existing installation?
+    read -r -p "Do you want to use audiofiles, config and RFID codes for the new install? [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+    	    EXISTINGuse=NO
+    	    echo "Phoniebox will be a fresh install. The existing version will be dropped."
+    	    echo "Hit ENTER to proceed to the next step."
+            #rm -r RPi-Jukebox-RFID
+            read INPUT
+            ;;
+        *)
+    	    EXISTINGuse=YES
+            # CREATE BACKUP
+            # delete existing BACKUP dir if exists
+            if [ -d BACKUP ]; then
+                sudo rm -r BACKUP
+            fi
+            # move install to BACKUP dir
+            mv RPi-Jukebox-RFID BACKUP
+            # delete .git dir
+            if [ -d BACKUP/.git ]; then
+                sudo rm -r BACKUP/.git
+            fi
+            # delete placeholder files so moving the folder content back later will not create git pull conflicts
+            rm BACKUP/shared/audiofolders/placeholder
+            rm BACKUP/shared/shortcuts/placeholder
+            echo "The existing install can be found in the BACKUP directory."
+            echo "Hit ENTER to proceed to the next step."
+            read INPUT
+            ;;
+    esac
+    # append variables to config file
+    echo "EXISTINGuse=$EXISTINGuse" >> PhonieboxInstall.conf
+fi
 
 ##################################################### 
 # Ask if wifi config
 
 clear
-WIFIconfig=YES
 
 echo "#####################################################
 #
@@ -69,6 +117,8 @@ case "$response" in
     	echo "You want to configure WiFi later."
     	echo "Hit ENTER to proceed to the next step."
         read INPUT
+        # append variables to config file
+        echo "WIFIconfig=$WIFIconfig" >> PhonieboxInstall.conf
         ;;
     *)
     	WIFIconfig=YES
@@ -95,15 +145,30 @@ case "$response" in
             	echo "Hit ENTER to exit and start over."
                 read INPUT; exit
                 ;;
+            *)
+                # append variables to config file
+                echo "hello 1"
+                echo -e "hello 1" >> PhonieboxInstall.conf
+                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
+                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
+                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
+                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
+                echo "hello"
+                ;;
         esac
         ;;
 esac
 
+                echo -e "hello 1" >> PhonieboxInstall.conf
+                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
+                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
+                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
+                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
+exit
 ##################################################### 
 # Ask if access point
 
 clear
-ACCESSconfig=YES
 
 echo "#####################################################
 #
@@ -172,6 +237,42 @@ You will be prompted later to complete the installation.
 
 Hit ENTER to start the installation."
 read INPUT; clear
+
+
+##################################################### 
+# INSTALLATION
+
+##############
+# Access Point
+# http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
+# Remove dns-root-data
+sudo apt-get purge dns-root-data
+# Install packages
+sudo apt-get install hostapd dnsmasq
+# Stop running processes
+sudo systemctl stop hostapd
+sudo systemctl stop dnsmasq
+
+echo "
+########################
+# Hotspot (Access Point)
+NOTE:
+The network 'phoniebox' appears only when away from your usual WiFi.
+You can connect from any device with the password 'PlayItLoud'.
+In your browser, open the IP '10.0.0.10' to access the web app.
+"
+
+# BACKUP conf files
+# cp /etc/hostapd/hostapd.conf hostapd.conf.stretch.sample
+# cp /etc/default/hostapd hostapd.stretch.sample
+# cp /etc/dnsmasq.conf dnsmasq.conf.stretch.sample
+# cp /etc/network/interfaces interfaces.stretch.sample
+
+# / Access Point
+################
+
+# / INSTALLATION
+##################################################### 
 
 #Ask if Spotify config
 
