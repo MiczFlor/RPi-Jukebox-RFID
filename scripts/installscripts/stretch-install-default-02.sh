@@ -190,7 +190,6 @@ esac
 # append variables to config file
 echo "ACCESSconfig=\"$ACCESSconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
-
 ##################################################### 
 # Configure MPD
 
@@ -239,31 +238,41 @@ read INPUT; clear
 ##################################################### 
 # INSTALLATION
 
-##############
-# Access Point
-# http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
-# Remove dns-root-data
-sudo apt-get purge dns-root-data
-# Install packages
-sudo apt-get install hostapd dnsmasq
-# Stop running processes
-sudo systemctl stop hostapd
-sudo systemctl stop dnsmasq
+# Read install config as written so far
+# (this might look stupid so far, but makes sense once
+# the option to install from config file is introduced.)
+. $PATHDATA/PhonieboxInstall.conf
 
-echo "
-########################
-# Hotspot (Access Point)
-NOTE:
-The network 'phoniebox' appears only when away from your usual WiFi.
-You can connect from any device with the password 'PlayItLoud'.
-In your browser, open the IP '10.0.0.10' to access the web app.
-"
 
-# BACKUP conf files
-# cp /etc/hostapd/hostapd.conf hostapd.conf.stretch.sample
-# cp /etc/default/hostapd hostapd.stretch.sample
-# cp /etc/dnsmasq.conf dnsmasq.conf.stretch.sample
-# cp /etc/network/interfaces interfaces.stretch.sample
+if [ $ACCESSconfig == "YES" ]
+then
+    ##############
+    # Access Point
+    # http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
+    
+    # Work in progress, so keep in mind: BACKUP conf files for ACCESS POINT
+    # cp /etc/hostapd/hostapd.conf hostapd.conf.stretch.sample
+    # cp /etc/default/hostapd hostapd.stretch.sample
+    # cp /etc/dnsmasq.conf dnsmasq.conf.stretch.sample
+    # cp /etc/network/interfaces interfaces.stretch.sample
+
+    # Remove dns-root-data
+    sudo apt-get purge dns-root-data
+    # Install packages
+    sudo apt-get install hostapd dnsmasq
+    # Stop running processes
+    sudo systemctl stop hostapd
+    sudo systemctl stop dnsmasq
+    
+    echo "
+    ########################
+    # Hotspot (Access Point)
+    NOTE:
+    The network 'phoniebox' appears only when away from your usual WiFi.
+    You can connect from any device with the password 'PlayItLoud'.
+    In your browser, open the IP '10.0.0.10' to access the web app.
+    "
+fi
 
 # / Access Point
 ################
