@@ -280,6 +280,9 @@ fi
 # / INSTALLATION
 ##################################################### 
 
+#####################################################
+# notes for things to do
+
 #Ask if Spotify config
 
 #If Spotify
@@ -292,7 +295,7 @@ fi
 
 # get existing install
 # new config should be done with sed using existing conf and user input
-# samba nad yss password iwthout prompt
+# samba and ssh password without prompt
 
 # CLEANUP
 ## remove dir BACKUP (possibly not, because we od this ta the ebginning after user confirms for latest config)
