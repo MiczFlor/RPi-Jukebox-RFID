@@ -230,10 +230,18 @@ between 15 minutes to half an hour, depending on
 your Raspberry Pi and Internet connectivity.
 
 You will be prompted later to complete the installation.
+"
 
-Hit ENTER to start the installation."
-read INPUT; clear
-
+read -r -p "Do you want to start the installation? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	echo "Your configuration data was saved in this file:"
+    	echo $PATHDATA/PhonieboxInstall.conf
+    	echo "Hit ENTER to exit the install script."
+    	read INPUT
+        exit
+        ;;
+esac
 
 ##################################################### 
 # INSTALLATION
@@ -242,7 +250,6 @@ read INPUT; clear
 # (this might look stupid so far, but makes sense once
 # the option to install from config file is introduced.)
 . $PATHDATA/PhonieboxInstall.conf
-
 
 if [ $ACCESSconfig == "YES" ]
 then
