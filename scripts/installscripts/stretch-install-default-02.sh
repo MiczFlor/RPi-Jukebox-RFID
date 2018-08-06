@@ -147,24 +147,15 @@ case "$response" in
                 ;;
             *)
                 # append variables to config file
-                echo "hello 1"
-                echo -e "hello 1" >> PhonieboxInstall.conf
-                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
-                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
-                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
-                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
-                echo "hello"
+#                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
+#                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
+#                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
+#                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
                 ;;
         esac
         ;;
 esac
 
-                echo -e "hello 1" >> PhonieboxInstall.conf
-                echo WIFIconfig=$WIFIconfig >> PhonieboxInstall.conf
-                echo "WIFIssid=$WIFIssid" >> PhonieboxInstall.conf
-                echo "WIFIpass=$WIFIpass" >> PhonieboxInstall.conf
-                echo "WIFIip=$WIFIip" >> PhonieboxInstall.conf
-exit
 ##################################################### 
 # Ask if access point
 
