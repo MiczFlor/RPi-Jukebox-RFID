@@ -49,7 +49,14 @@ savepos)
             CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
             # Save filename and time to lastplayed.dat. "Stopped" for signaling -c=resume that there was a stopping event
             # (this is done to get a proper resume on the first track if the playlist has ended before)
-            printf "$CURRENTFILENAME\n$ELAPSED\nStopped" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            #printf "$CURRENTFILENAME\n$ELAPSED\nStopped" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old"
+            # copy sample file to audiofolder
+            cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            # replace values with current values
+            # for $CURRENTFILENAME using | as alternate regex delimiter because of the folder path slash 
+            sudo sed -i 's|%FILENAME%|'"$CURRENTFILENAME"'|' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            sudo sed -i 's/%TIMESTAMP%/'"$ELAPSED"'/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         fi
     fi
 ;;
@@ -58,10 +65,12 @@ resume)
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
         # Read the last played filename, timestamp and playstatus from lastplayed.dat
-        LASTPLAYED=$(cat "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat")
-        FILENAME=$(echo "$LASTPLAYED" | sed -n '1p')
-        TIMESTAMP=$(echo "$LASTPLAYED" | sed -n '2p')
-        PLAYSTATUS=$(echo "$LASTPLAYED" | sed -n '3p')
+        #LASTPLAYED=$(cat "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old")
+        #FILENAME=$(echo "$LASTPLAYED" | sed -n '1p')
+        #TIMESTAMP=$(echo "$LASTPLAYED" | sed -n '2p')
+        #PLAYSTATUS=$(echo "$LASTPLAYED" | sed -n '3p')
+        # read vars from lastplayed.dat
+        . "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         
         # Check if we got a "savepos" command after the last "resume". Otherwise we assume that the playlist was played until the end.
         # In this case, start the playlist from beginning 
@@ -82,7 +91,14 @@ resume)
             # and we would resume at the last position anywhere in the playlist. To catch these, we signal it to the next "resume" call
             # via writing it to the lastplayed.dat that we still assume that the audio is playing. Remark: $FILENAME and $TIMESTAMP can
             # be anything here, as we won't the information if "Playing" is found by "resume".
-            printf "$FILENAME\n$TIMESTAMP\nPlaying" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            #printf "$FILENAME\n$TIMESTAMP\nPlaying" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old"
+            # copy sample file to audiofolder
+            cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            # replace values with current values
+            # for $FILENAME using | as alternate regex delimiter because of the folder path slash 
+            sudo sed -i 's|%FILENAME%|'"$FILENAME"'|' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            sudo sed -i 's/%TIMESTAMP%/'"$TIMESTAMP"'/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            sudo sed -i 's/%PLAYSTATUS%/Playing/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         else
             # We assume that the playlist ran to the end the last time and start from the beginning.
             mpc play
@@ -93,9 +109,16 @@ resume)
     fi
 ;;
 enableresume)
-    echo -e "filename\n0\nStopped" > "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    #echo -e "filename\n0\nStopped" > "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat.old"
+    # copy sample file to audiofolder
+    cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    # replace values with current values
+    sudo sed -i 's/%FILENAME%/filename/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    sudo sed -i 's/%TIMESTAMP%/0/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
 ;;
 disableresume)
+    #rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat.old"
     rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
 ;;
 *)
