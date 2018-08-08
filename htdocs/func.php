@@ -68,4 +68,24 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
     </head>\n";
 }
 
+function startsWith($haystack, $needle)
+{
+     $length = strlen($needle);
+     return (substr($haystack, 0, $length) === $needle);
+}
+
+function replaceUmlaute($string) {
+    $searchreplace = array(
+        "/Ä/" => "Ae",
+        "/Ö/" => "Oe",
+        "/Ü/" => "Ue",
+        "/ä/" => "ae",
+        "/ö/" => "oe",
+        "/ü/" => "ue",
+        "/ß/" => "ss",
+    );
+    $search = array_keys($searchreplace);
+    $replace = array_values($searchreplace);
+    return(preg_replace($search, $replace, $string));
+}
 ?>
