@@ -123,7 +123,9 @@ foreach($audiofolders as $audiofolder) {
     foreach($files as $file) {
 	// add file name to list, supress if it's lastplayed.dat
         if(is_file($audiofolder."/".$file) && $file != "lastplayed.dat"){
-            $accordion .= "\n<li>".$file."</li>";
+            $accordion .= "\n<li>".$file;
+            $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='fa fa-wrench'></i> Edit</a>";
+            $accordion .= "</li>";
         }
     }
     $accordion .= "</ul>";
