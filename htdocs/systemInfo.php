@@ -42,24 +42,24 @@ if($debug == "true") {
       </h4>
     </div><!-- /.panel-heading -->
 
-  <div class="panel-body">
+    <div class="panel-body">
   
-    <div class="row">	
-      <label class="col-md-4 control-label" for="">OS Distributor</label> 
-      <div class="col-md-6"><?php echo trim($distributor); ?></div>
-    </div><!-- / row -->
-    <div class="row">	
-      <label class="col-md-4 control-label" for=""> Description</label> 
-      <div class="col-md-6"><?php echo trim($description); ?></div>
-    </div><!-- / row -->
-    <div class="row">	
-      <label class="col-md-4 control-label" for="">Release</label> 
-      <div class="col-md-6"><?php echo trim($release); ?></div>
-    </div><!-- / row -->
-    <div class="row">	
-      <label class="col-md-4 control-label" for="">Codename</label> 
-      <div class="col-md-6"><?php echo trim($codename); ?></div>
-    </div><!-- / row -->
+        <div class="row">	
+          <label class="col-md-4 control-label" for="">OS Distributor</label> 
+          <div class="col-md-6"><?php echo trim($distributor); ?></div>
+        </div><!-- / row -->
+        <div class="row">	
+          <label class="col-md-4 control-label" for=""> Description</label> 
+          <div class="col-md-6"><?php echo trim($description); ?></div>
+        </div><!-- / row -->
+        <div class="row">	
+          <label class="col-md-4 control-label" for="">Release</label> 
+          <div class="col-md-6"><?php echo trim($release); ?></div>
+        </div><!-- / row -->
+        <div class="row">	
+          <label class="col-md-4 control-label" for="">Codename</label> 
+          <div class="col-md-6"><?php echo trim($codename); ?></div>
+        </div><!-- / row -->
       
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
