@@ -45,6 +45,71 @@ touch PhonieboxInstall.conf
 echo "# Phoniebox config" > $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
+# Ask if wifi config
+
+clear
+
+echo "#####################################################
+#
+# CONFIGURE WIFI
+#
+# Requires SSID, WiFi password and the static IP you want 
+# to assign to your Phoniebox.
+# (Note: can be done manually later, if you are unsure.)
+"
+read -r -p "Do you want to configure your WiFi? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	WIFIconfig=NO
+    	echo "You want to configure WiFi later."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        # append variables to config file
+        echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
+        ;;
+    *)
+    	WIFIconfig=YES
+        #Ask for ssid
+        echo "* Type SSID name"
+        read INPUT
+        WIFIssid="$INPUT"
+        #Ask for password
+        echo "* Type password"
+        read INPUT
+        WIFIpass="$INPUT"
+        #Ask for IP
+        echo "* Static IP (e.g. 192.168.1.199)"
+        read INPUT
+        WIFIip="$INPUT"
+        #Ask for Router IP
+        echo "* Router IP (e.g. 192.168.1.1)"
+        read INPUT
+        WIFIipRouter="$INPUT"
+        echo "Your WiFi config:"
+        echo "SSID      : $WIFIssid"
+        echo "Password  : $WIFIpass"
+        echo "Static IP : $WIFIip"
+        echo "Router IP : $WIFIipRouter"
+        read -r -p "Are these values correct? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+            	echo "The values are incorrect."
+            	echo "Hit ENTER to exit and start over."
+                read INPUT; exit
+                ;;
+            *)
+                # append variables to config file
+                echo "WIFIconfig=\"$WIFIconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIipRouter=\"$WIFIipRouter\"" >> $PATHDATA/PhonieboxInstall.conf
+                ;;
+        esac
+        ;;
+esac
+
+##################################################### 
 # Check for existing Phoniebox
 #
 # In case there is no existing install, 
@@ -57,9 +122,14 @@ cd
 if [ -d /home/pi/RPi-Jukebox-RFID ]; then
     # Houston, we found something!
     clear
-    echo "?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!"
-    echo "WARNING: an existing Phoniebox installation was found."
-    # YES, check if we find the version number
+echo "#####################################################
+#
+# . . . * alert * alert * alert * alert * . . .
+# 
+# WARNING: an existing Phoniebox installation was found.
+# 
+"
+    # check if we find the version number
     if [ -f /home/pi/RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
     fi
@@ -166,71 +236,6 @@ if [ -d /home/pi/RPi-Jukebox-RFID ]; then
 fi
 # append variables to config file
 echo "EXISTINGuse=$EXISTINGuse" >> $PATHDATA/PhonieboxInstall.conf
-
-##################################################### 
-# Ask if wifi config
-
-clear
-
-echo "#####################################################
-#
-# CONFIGURE WIFI
-#
-# Requires SSID, WiFi password and the static IP you want 
-# to assign to your Phoniebox.
-# (Note: can be done manually later, if you are unsure.)
-"
-read -r -p "Do you want to configure your WiFi? [Y/n] " response
-case "$response" in
-    [nN][oO]|[nN])
-    	WIFIconfig=NO
-    	echo "You want to configure WiFi later."
-    	echo "Hit ENTER to proceed to the next step."
-        read INPUT
-        # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
-        ;;
-    *)
-    	WIFIconfig=YES
-        #Ask for ssid
-        echo "* Type SSID name"
-        read INPUT
-        WIFIssid="$INPUT"
-        #Ask for password
-        echo "* Type password"
-        read INPUT
-        WIFIpass="$INPUT"
-        #Ask for IP
-        echo "* Static IP (e.g. 192.168.1.199)"
-        read INPUT
-        WIFIip="$INPUT"
-        #Ask for Router IP
-        echo "* Router IP (e.g. 192.168.1.1)"
-        read INPUT
-        WIFIipRouter="$INPUT"
-        echo "Your WiFi config:"
-        echo "SSID      : $WIFIssid"
-        echo "Password  : $WIFIpass"
-        echo "Static IP : $WIFIip"
-        echo "Router IP : $WIFIipRouter"
-        read -r -p "Are these values correct? [Y/n] " response
-        case "$response" in
-            [nN][oO]|[nN])
-            	echo "The values are incorrect."
-            	echo "Hit ENTER to exit and start over."
-                read INPUT; exit
-                ;;
-            *)
-                # append variables to config file
-                echo "WIFIconfig=\"$WIFIconfig\"" >> $PATHDATA/PhonieboxInstall.conf
-                echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
-                echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
-                echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
-                echo "WIFIipRouter=\"$WIFIipRouter\"" >> $PATHDATA/PhonieboxInstall.conf
-                ;;
-        esac
-        ;;
-esac
 
 ##################################################### 
 # Ask if access point
