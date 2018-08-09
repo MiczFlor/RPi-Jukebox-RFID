@@ -372,6 +372,9 @@ sudo pip install youtube_dl
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+# the following two lines are needed as long as this is not the master branch:
+git fetch
+git checkout pr80-mpd-as-audio-player
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
