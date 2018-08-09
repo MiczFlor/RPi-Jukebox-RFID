@@ -412,14 +412,6 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sam
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
-# device name for barcode reader
-# Note: this will vary from reader to reader. If you run this install script, 
-# read 'Register your USB device for the jukebox' in docs/CONFIGURE-stretch.md to do this step manually
-# -rw-r--r-- 1 pi pi 20 Nov 17 21:22 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/deviceName.txt.stretch-default.sample /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
-sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
-
 # copy shell script for player
 cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
@@ -447,10 +439,6 @@ sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
 sudo service lighttpd force-reload
-
-# start DHCP
-sudo service dhcpcd start
-sudo systemctl enable dhcpcd
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
@@ -503,6 +491,11 @@ then
     sudo chown root:netdev /etc/dhcpcd.conf
     sudo chmod 664 /etc/dhcpcd.conf
 fi
+
+# start DHCP
+sudo service dhcpcd start
+sudo systemctl enable dhcpcd
+
 # / WiFi settings (SSID password)
 ###############################
 
@@ -643,6 +636,8 @@ case "$response" in
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/
         python2 RegisterDevice.py
+        sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+        sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
 esac
 
