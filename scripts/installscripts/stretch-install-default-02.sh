@@ -646,13 +646,10 @@ case "$response" in
         ;;
 esac
 
-clear
-
-echo "#####################################################
-#
-# START INSTALLATION
-#
-
+echo
+echo "DONE. Let the sounds begin."
+echo "Find more information and documentation on the github account:"
+echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/docs/"
 
 #####################################################
 # notes for things to do
