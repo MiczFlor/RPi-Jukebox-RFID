@@ -509,7 +509,10 @@ fi
 # http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
 if [ $ACCESSconfig == "YES" ]
 then
-    
+
+#
+# NOT IMPLEMENTED YET
+#
     # Work in progress, so keep in mind: BACKUP conf files for ACCESS POINT
     # cp /etc/hostapd/hostapd.conf hostapd.conf.stretch.sample
     # cp /etc/default/hostapd hostapd.stretch.sample
@@ -517,21 +520,22 @@ then
     # cp /etc/network/interfaces interfaces.stretch.sample
 
     # Remove dns-root-data
-    sudo apt-get purge dns-root-data
+#    sudo apt-get purge dns-root-data
     # Install packages
-    sudo apt-get install hostapd dnsmasq
+#    sudo apt-get install hostapd dnsmasq
     # Stop running processes
-    sudo systemctl stop hostapd
-    sudo systemctl stop dnsmasq
+#    sudo systemctl stop hostapd
+#    sudo systemctl stop dnsmasq
     
-    echo "
-    ########################
-    # Hotspot (Access Point)
-    NOTE:
-    The network 'phoniebox' appears only when away from your usual WiFi.
-    You can connect from any device with the password 'PlayItLoud'.
-    In your browser, open the IP '10.0.0.10' to access the web app.
-    "
+ #   echo "
+ #   ########################
+ #   # Hotspot (Access Point)
+ #   NOTE:
+ #   The network 'phoniebox' appears only when away from your usual WiFi.
+ #   You can connect from any device with the password 'PlayItLoud'.
+ #   In your browser, open the IP '10.0.0.10' to access the web app.
+ #   "
+
 fi
 
 # / Access Point
