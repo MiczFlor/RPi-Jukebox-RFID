@@ -62,10 +62,10 @@ if [ -d RPi-Jukebox-RFID ]; then
     # YES, check if we find the version number
     if [ -f RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
-        echo "IMPORTANT: you can use the existing content and configuration files for your new install."
-        echo "Whatever you chose to keep will be moved to the new install."
-        echo "Everything else will remain in a folder called 'BACKUP'."
     fi
+    echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+    echo "Whatever you chose to keep will be moved to the new install."
+    echo "Everything else will remain in a folder called 'BACKUP'."
     # Delete or use existing installation?
     read -r -p "Do you want to use audiofiles, config and RFID codes for the new install? [Y/n] " response
     case "$response" in
@@ -510,8 +510,8 @@ fi
 ##############
 # Access Point
 # http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
-if [ $ACCESSconfig == "YES" ]
-then
+#if [ $ACCESSconfig == "YES" ]
+#then
 
 #
 # NOT IMPLEMENTED YET
@@ -539,7 +539,7 @@ then
  #   In your browser, open the IP '10.0.0.10' to access the web app.
  #   "
 
-fi
+#fi
 
 # / Access Point
 ################
