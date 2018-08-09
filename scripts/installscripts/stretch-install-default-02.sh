@@ -386,7 +386,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.s
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 # Samba: create user 'pi' with password 'raspberry'
-(echo "raspberry"; echo "raspberry") | smbpasswd -s -a pi
+(echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
 
 # Web server configuration settings
 # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
