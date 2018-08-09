@@ -372,7 +372,8 @@ sudo pip install youtube_dl
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-# the following two lines are needed as long as this is not the master branch:
+# the following three lines are needed as long as this is not the master branch:
+cd RPi-Jukebox-RFID
 git fetch
 git checkout pr80-mpd-as-audio-player
 
