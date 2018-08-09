@@ -376,20 +376,6 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
 
-#####################################
-# COPY CONFIG PRESETS TO LIVE FOLDERS
-#####################################
-
-# DHCP configuration settings
-#-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
-# Change IP for router and Phoniebox
-sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
-sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
-# Change user:group and access mod
-sudo chown root:netdev /etc/dhcpcd.conf
-sudo chmod 664 /etc/dhcpcd.conf
-
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
@@ -503,10 +489,17 @@ mpc update
 # $WIFIpass
 # $WIFIip
 # $WIFIipRouter
-#
 if [ $WIFIconfig == "YES" ]
 then
-
+    # DHCP configuration settings
+    #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
+    # Change IP for router and Phoniebox
+    sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
+    sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
+    # Change user:group and access mod
+    sudo chown root:netdev /etc/dhcpcd.conf
+    sudo chmod 664 /etc/dhcpcd.conf
 fi
 # / WiFi settings (SSID password)
 ###############################
@@ -547,6 +540,48 @@ fi
 # / INSTALLATION
 ##################################################### 
 
+##################################################### 
+# EXISTING ASSETS TO USE FROM EXISTING INSTALL
+
+if [ $EXISTINGuse == "YES" ]
+then
+    
+    # RFID config for system control
+    if [ $EXISTINGuseRfidConf == "YES" ]
+    then
+        # read old values and write them into new file (copied above already)
+        # do not overwrite but use 'sed' in case their are new vars
+    fi
+    
+    # RFID shortcuts for audio folders
+    if [ $EXISTINGuseRfidLinks == "YES" ]
+    then
+        # copy from backup to new install
+    fi
+    
+    # Audio folders: use existing
+    if [ $EXISTINGuseAudio == "YES" ]
+    then
+        # copy from backup to new install
+    fi
+    
+    # GPIO: use existing file
+    if [ $EXISTINGuseGpio == "YES" ]
+    then
+        # copy from backup to new install
+    fi
+    
+    # Sound effects: use existing startup / shutdown sounds
+    if [ $EXISTINGuseSounds == "YES" ]
+    then
+        # copy from backup to new install
+    fi
+
+fi
+
+# / EXISTING ASSETS TO USE FROM EXISTING INSTALL
+##################################################### 
+
 #####################################################
 # notes for things to do
 
@@ -556,7 +591,6 @@ fi
 #Ask for password
 
 #Ask ssh password
-
 
 # get existing install
 # new config should be done with sed using existing conf and user input
