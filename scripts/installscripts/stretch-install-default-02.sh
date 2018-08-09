@@ -54,13 +54,13 @@ EXISTINGuse=NO
 # The install will be in the home dir of user pi
 # Move to home directory now to check
 cd
-if [ -d RPi-Jukebox-RFID ]; then
+if [ -d /home/pi/RPi-Jukebox-RFID ]; then
     # Houston, we found something!
     clear
     echo "?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!"
     echo "WARNING: an existing Phoniebox installation was found."
     # YES, check if we find the version number
-    if [ -f RPi-Jukebox-RFID/settings/version ]; then
+    if [ -f /home/pi/RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
     fi
     echo "IMPORTANT: you can use the existing content and configuration files for your new install."
