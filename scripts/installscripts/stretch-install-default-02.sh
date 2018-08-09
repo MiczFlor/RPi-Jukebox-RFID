@@ -19,7 +19,6 @@ echo "#####################################################
 
 Welcome to the installation script.
 
-
 This script will install Phoniebox on your Raspberry Pi.
 To do so, you must be online. The install script can 
 automatically configure:
@@ -97,7 +96,7 @@ if [ -d RPi-Jukebox-RFID ]; then
             ;;
     esac
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> PhonieboxInstall.conf
+    echo "EXISTINGuse=$EXISTINGuse" >> $PATHDATA/PhonieboxInstall.conf
 fi
 
 ##################################################### 
@@ -121,7 +120,7 @@ case "$response" in
     	echo "Hit ENTER to proceed to the next step."
         read INPUT
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> PhonieboxInstall.conf
+        echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
         ;;
     *)
     	WIFIconfig=YES
@@ -134,13 +133,18 @@ case "$response" in
         read INPUT
         WIFIpass="$INPUT"
         #Ask for IP
-        echo "* Static IP (e.g. 192.168.1.1)"
+        echo "* Static IP (e.g. 192.168.1.199)"
         read INPUT
         WIFIip="$INPUT"
+        #Ask for Router IP
+        echo "* Router IP (e.g. 192.168.1.1)"
+        read INPUT
+        WIFIipRouter="$INPUT"
         echo "Your WiFi config:"
         echo "SSID      : $WIFIssid"
         echo "Password  : $WIFIpass"
         echo "Static IP : $WIFIip"
+        echo "Static IP : $WIFIipRouter"
         read -r -p "Are these values correct? [Y/n] " response
         case "$response" in
             [nN][oO]|[nN])
@@ -154,6 +158,7 @@ case "$response" in
                 echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
                 echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
                 echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIipRouter=\"$WIFIipRouter\"" >> $PATHDATA/PhonieboxInstall.conf
                 ;;
         esac
         ;;
@@ -221,15 +226,55 @@ esac
 # append variables to config file
 echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
+##################################################### 
+# Folder path for audio files 
+# default: /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+
 clear
-echo "Good news: you completed the input. 
-Let the install begin.
 
-Get yourself a cup of something. The install takes 
-between 15 minutes to half an hour, depending on 
-your Raspberry Pi and Internet connectivity.
+echo "#####################################################
+#
+# FOLDER CONTAINING AUDIO FILES
+#
+# The default location for folders containing audio files:
+# /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+#
+# If unsure, keep it like this. If your files are somewhere
+# else, you can specify the folder in the next step.
+"
 
-You will be prompted later to complete the installation.
+read -r -p "Do you want to use the default location? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	echo "Please type the absolute path here (no trailing slash)."
+        read INPUT
+        DIRaudioFolders="$INPUT"
+        ;;
+    *)
+    	DIRaudioFolders="/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
+        ;;
+esac
+# append variables to config file
+echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "Your audio folders live in this dir:"
+echo $DIRaudioFolders
+echo "Hit ENTER to proceed to the next step."
+read INPUT
+
+clear
+
+echo "#####################################################
+#
+# START INSTALLATION
+#
+# Good news: you completed the input.
+# Let the install begin.
+#
+# Get yourself a cup of something. The install takes 
+# between 15 minutes to half an hour, depending on 
+# your Raspberry Pi and Internet connectivity.
+#
+# You will be prompted later to complete the installation.
 "
 
 read -r -p "Do you want to start the installation? [Y/n] " response
@@ -270,15 +315,21 @@ sudo iwconfig wlan0 power off
 
 # DHCP configuration settings
 #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default.sample /etc/dhcpcd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
+# Change IP for router and Phoniebox
+sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
+sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
+# Change user:group and access mod
 sudo chown root:netdev /etc/dhcpcd.conf
 sudo chmod 664 /etc/dhcpcd.conf
 
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default.sample /etc/samba/smb.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
+# Samba: create user and password
+(echo "raspberry"; echo "raspberry") | smbpasswd -s -a pi
 
 # Web server configuration settings
 # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
@@ -373,6 +424,22 @@ sudo chmod 640 /etc/mpd.conf
 # update mpc / mpd DB
 mpc update
 
+###############################
+# WiFi settings (SSID password)
+#
+# https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
+# 
+# $WIFIssid="ssid"
+# $WIFIpass="pass"
+# $WIFIip="123"
+#
+if [ $WIFIconfig == "YES" ]
+then
+
+fi
+# / WiFi settings (SSID password)
+###############################
+
 ##############
 # Access Point
 # http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
@@ -418,7 +485,6 @@ fi
 #Ask for user
 #Ask for password
 
-#Ask samba password
 #Ask ssh password
 
 
