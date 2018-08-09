@@ -273,14 +273,18 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
+        # May be called with e.g. -v=1 to start a track in the middle of the playlist.
+        # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
+        # of the playlist
+        # Another note: "mpc play 1" starts the first track (!)
         # No checking for resume if the audio is paused, just unpause it
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
-        PLAYSTATE=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+        PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ "$PLAYSTATE" == "pause" ]
         then
-            mpc play
+            echo -e "play $VALUE" | nc -w 1 localhost 6600
         else
-            $PATHDATA/resume_play.sh -c=resume
+            $PATHDATA/resume_play.sh -c=resume -v=$VALUE
         fi
         ;;
     playerreplay)
