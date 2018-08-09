@@ -65,9 +65,9 @@ if [ -d /home/pi/RPi-Jukebox-RFID ]; then
     fi
     echo "IMPORTANT: you can use the existing content and configuration files for your new install."
     echo "Whatever you chose to keep will be moved to the new install."
-    echo "Everything else will remain in a folder called 'BACKUP'."
+    echo "Everything else will remain in a folder called 'BACKUP'.\n"
     # Delete or use existing installation?
-    read -r -p "Do you want to use audiofiles, config and RFID codes for the new install? [Y/n] " response
+    read -r -p "Re-use config, audio and RFID codes for the new install? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
     	    EXISTINGuse=NO
@@ -96,7 +96,7 @@ if [ -d /home/pi/RPi-Jukebox-RFID ]; then
             # ask for things to use
             echo "Ok. You want to use stuff from the existing installation."
             echo "What would you want to keep? Answer now."
-            read -r -p "RFID config for system control (e.g. card for 'volume up' etc.)? [Y/n] " response
+            read -r -p "RFID config for system control (e.g. 'volume up' etc.)? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
                 	EXISTINGuseRfidConf=NO
@@ -108,7 +108,7 @@ if [ -d /home/pi/RPi-Jukebox-RFID ]; then
             # append variables to config file
             echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> $PATHDATA/PhonieboxInstall.conf
 
-            read -r -p "RFID shortcuts for audio folders (e.g. the cards triggering audio play)? [Y/n] " response
+            read -r -p "RFID shortcuts to play audio folders? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
                 	EXISTINGuseRfidLinks=NO
