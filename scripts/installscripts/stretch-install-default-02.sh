@@ -328,7 +328,7 @@ sudo chmod 664 /etc/dhcpcd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
-# Samba: create user and password
+# Samba: create user 'pi' with password 'raspberry'
 (echo "raspberry"; echo "raspberry") | smbpasswd -s -a pi
 
 # Web server configuration settings
@@ -345,7 +345,7 @@ sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.jessie-default.sample /etc/sudoers
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sample /etc/sudoers
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
@@ -397,7 +397,10 @@ sudo service lighttpd force-reload
 sudo service dhcpcd start
 sudo systemctl enable dhcpcd
 
-# services to launch after boot using systmed
+# create copy of GPIO script
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+
+# services to launch after boot using systemd
 # -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
