@@ -82,6 +82,10 @@ if(isset($_GET['play']) && trim($_GET['play']) != "") {
     $urlparams['play'] = trim($_GET['play']);
 }
 
+if(isset($_GET['playpos']) && trim($_GET['playpos']) != "") {
+    $urlparams['playpos'] = trim($_GET['playpos']);
+}
+
 if(isset($_GET['player']) && trim($_GET['player']) != "") {
     $urlparams['player'] = trim($_GET['player']);
 }
@@ -158,6 +162,10 @@ if(isset($_GET['disableresume']) && trim($_GET['disableresume']) != "") {
 */
 if(isset($_POST['play']) && trim($_POST['play']) != "") {
     $urlparams['play'] = trim($_POST['play']);
+}
+
+if(isset($_POST['playpos']) && trim($_POST['playpos']) != "") {
+    $urlparams['playpos'] = trim($_POST['playpos']);
 }
 
 if(isset($_POST['player']) && trim($_POST['player']) != "") {
@@ -484,6 +492,21 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($ur
     exit; 
     }
 }
+
+// play from playlist position
+if(isset($urlparams['playpos'])) {
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=".$urlparams['playpos'];
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
+
+
 // control player through web interface
 if(isset($urlparams['player'])) {
     if($urlparams['player'] == "next") {
