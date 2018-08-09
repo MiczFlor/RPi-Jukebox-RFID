@@ -550,7 +550,22 @@ then
     if [ $EXISTINGuseRfidConf == "YES" ]
     then
         # read old values and write them into new file (copied above already)
-        # do not overwrite but use 'sed' in case their are new vars
+        # do not overwrite but use 'sed' in case there are new vars in new version installed
+        
+        # Read the existing RFID config file line by line and use
+        # only lines which are separated (IFS) by '='.
+        while IFS== read -r key val ; do
+            # $var should be stripped of possible leading or trailing "
+            val=${val%\"}
+            val=${val#\"} 
+            key=${key}
+            # Additional error check: key should not start with a hash and not be empty.
+            if ([ ! ${key:0:1} == '#' ] && [ ! -z "$key" ])
+            then
+                # Replace the matching value in the newly created conf file
+                sed -i 's/%'"$key"'%/'"$val"'/' /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+            fi
+        done </home/pi/BACKUP/settings/rfid_trigger_play.conf
     fi
     
     # RFID shortcuts for audio folders
