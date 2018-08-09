@@ -2,7 +2,7 @@
           <a href='?player=prev' class='btn btn-default btn-success btn-lg'><i class='fa  fa-step-backward'></i></a>
 
 <?php
-    if (array_key_exists('status', $playerStatus) && $playerStatus['status'] === 'play') {
+    if (array_key_exists('state', $playerStatus) && $playerStatus['state'] === 'play') {
         print '<a href="?player=pause" class="btn btn-default btn-success btn-lg"><i class="fa fa-pause"></i></a>';
     }
     else {
@@ -11,7 +11,7 @@
 ?>
           <a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='fa fa-refresh'></i></a>
 <?php
-    if (array_key_exists('status', $playerStatus)) {
+    if (array_key_exists('state', $playerStatus)) {
         print '<a href="?stop=true" class="btn btn-default btn-success btn-lg"><i class="fa fa-stop"></i></a>';
     }
 ?>
@@ -28,4 +28,3 @@
     }
 ?>
         </div>
-       
