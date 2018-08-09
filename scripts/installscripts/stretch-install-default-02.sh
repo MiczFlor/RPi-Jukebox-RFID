@@ -443,14 +443,6 @@ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 # create config file for web app from sample
 sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
 
-# make sure the shared folder is accessible by the web server
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
-
-# make sure the htdocs folder can be changed by the web server
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
-
 # Starting web server
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
@@ -616,8 +608,60 @@ fi
 # / EXISTING ASSETS TO USE FROM EXISTING INSTALL
 ##################################################### 
 
+##################################################### 
+# Access settings
+
+# make sure the shared folder is accessible by the web server
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
+
+# make sure the htdocs folder can be changed by the web server
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
+
+# / Access settings
+##################################################### 
+
+echo "#####################################################
+#
+# INSTALLATION FINISHED
+#
+# Now a few final touches from you.
+#
+
+"
+
+##################################################### 
+# Register external device(s)
+
+echo "If you are using an USB RFID reader, connect it to your RPi."
+echo "(In case your RFID reader required soldering, consult the manual.)"
+read -r -p "Have you connected your USB Reader? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+        ;;
+    *)
+        cd /home/pi/RPi-Jukebox-RFID/scripts/
+        python2 RegisterDevice.py
+        ;;
+esac
+
+clear
+
+echo "#####################################################
+#
+# START INSTALLATION
+#
+
+
 #####################################################
 # notes for things to do
+
+# Soundcard
+# PCM is currently set
+# This needs to be done for mpd and in settings folder
+
+
 
 #Ask if Spotify config
 #If Spotify
