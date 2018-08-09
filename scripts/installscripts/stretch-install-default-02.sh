@@ -557,24 +557,29 @@ then
     if [ $EXISTINGuseRfidLinks == "YES" ]
     then
         # copy from backup to new install
+        mv /home/pi/BACKUP/shared/shortcuts/* /home/pi/RPi-Jukebox-RFID/shared/shortcuts/
     fi
     
     # Audio folders: use existing
     if [ $EXISTINGuseAudio == "YES" ]
     then
         # copy from backup to new install
+        mv /home/pi/BACKUP/shared/audiofolders/* "$DIRaudioFolders/"
     fi
     
     # GPIO: use existing file
     if [ $EXISTINGuseGpio == "YES" ]
     then
         # copy from backup to new install
+        mv /home/pi/BACKUP/scripts/gpio-buttons.py /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
     fi
     
     # Sound effects: use existing startup / shutdown sounds
     if [ $EXISTINGuseSounds == "YES" ]
     then
         # copy from backup to new install
+        mv /home/pi/BACKUP/shared/startupsound.mp3 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+        mv /home/pi/BACKUP/shared/shutdownsound.mp3 /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
     fi
 
 fi
