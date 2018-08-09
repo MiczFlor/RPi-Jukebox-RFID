@@ -46,23 +46,25 @@ echo "# Phoniebox config" > $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Check for existing Phoniebox
-# 
-# later use of:
-# shortcuts content
-# audiofolders content
-# card ID conf 
-# GPIO file(s)
-# Sounds startup shutdown
+#
+# In case there is no existing install, 
+# set the var now for later use:
+EXISTINGuse=NO
 
-# move to home directory
+# The install will be in the home dir of user pi
+# Move to home directory now to check
 cd
-# check if Phoniebox folder exists
 if [ -d RPi-Jukebox-RFID ]; then
+    # Houston, we found something!
+    clear
+    echo "?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!?!"
     echo "WARNING: an existing Phoniebox installation was found."
     # YES, check if we find the version number
     if [ -f RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
         echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+        echo "Whatever you chose to keep will be moved to the new install."
+        echo "Everything else will remain in a folder called 'BACKUP'."
     fi
     # Delete or use existing installation?
     read -r -p "Do you want to use audiofiles, config and RFID codes for the new install? [Y/n] " response
@@ -90,14 +92,79 @@ if [ -d RPi-Jukebox-RFID ]; then
             # delete placeholder files so moving the folder content back later will not create git pull conflicts
             rm BACKUP/shared/audiofolders/placeholder
             rm BACKUP/shared/shortcuts/placeholder
+            
+            # ask for things to use
+            echo "Ok. You want to use stuff from the existing installation."
+            echo "What would you want to keep? Answer now."
+            read -r -p "RFID config for system control (e.g. card for 'volume up' etc.)? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                	EXISTINGuseRfidConf=NO
+                    ;;
+                *)
+                	EXISTINGuseRfidConf=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> $PATHDATA/PhonieboxInstall.conf
+
+            read -r -p "RFID shortcuts for audio folders (e.g. the cards triggering audio play)? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                	EXISTINGuseRfidLinks=NO
+                    ;;
+                *)
+                	EXISTINGuseRfidLinks=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> $PATHDATA/PhonieboxInstall.conf
+
+            read -r -p "Audio folders: use existing? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                	EXISTINGuseAudio=NO
+                    ;;
+                *)
+                	EXISTINGuseAudio=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> $PATHDATA/PhonieboxInstall.conf
+
+            read -r -p "GPIO: use existing file? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                	EXISTINGuseGpio=NO
+                    ;;
+                *)
+                	EXISTINGuseGpio=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> $PATHDATA/PhonieboxInstall.conf
+
+            read -r -p "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                	EXISTINGuseSounds=NO
+                    ;;
+                *)
+                	EXISTINGuseSounds=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> $PATHDATA/PhonieboxInstall.conf
+
+            echo "Thanks. Got it."
             echo "The existing install can be found in the BACKUP directory."
             echo "Hit ENTER to proceed to the next step."
             read INPUT
             ;;
     esac
-    # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> $PATHDATA/PhonieboxInstall.conf
 fi
+# append variables to config file
+echo "EXISTINGuse=$EXISTINGuse" >> $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Ask if wifi config
@@ -144,7 +211,7 @@ case "$response" in
         echo "SSID      : $WIFIssid"
         echo "Password  : $WIFIpass"
         echo "Static IP : $WIFIip"
-        echo "Static IP : $WIFIipRouter"
+        echo "Router IP : $WIFIipRouter"
         read -r -p "Are these values correct? [Y/n] " response
         case "$response" in
             [nN][oO]|[nN])
@@ -280,10 +347,10 @@ echo "#####################################################
 read -r -p "Do you want to start the installation? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
+    	echo "Exiting the installation."
     	echo "Your configuration data was saved in this file:"
     	echo $PATHDATA/PhonieboxInstall.conf
-    	echo "Hit ENTER to exit the install script."
-    	read INPUT
+    	echo
         exit
         ;;
 esac
@@ -432,9 +499,10 @@ mpc update
 #
 # https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
 # 
-# $WIFIssid="ssid"
-# $WIFIpass="pass"
-# $WIFIip="123"
+# $WIFIssid
+# $WIFIpass
+# $WIFIip
+# $WIFIipRouter
 #
 if [ $WIFIconfig == "YES" ]
 then
@@ -483,7 +551,6 @@ fi
 # notes for things to do
 
 #Ask if Spotify config
-
 #If Spotify
 #Ask for user
 #Ask for password
@@ -493,7 +560,6 @@ fi
 
 # get existing install
 # new config should be done with sed using existing conf and user input
-# samba and ssh password without prompt
 
 # CLEANUP
-## remove dir BACKUP (possibly not, because we od this ta the ebginning after user confirms for latest config)
+## remove dir BACKUP (possibly not, because we do this at the beginning after user confirms for latest config)
