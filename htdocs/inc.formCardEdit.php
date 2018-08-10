@@ -144,9 +144,9 @@ foreach($audiofolders as $audiofolder) {
         
         <!-- Select Basic -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="audiofolder"></label>
+          <label class="col-md-4 control-label" for="YTaudiofolder"></label>
            <div class="col-md-6">
-            <select id="audiofolder" name="audiofolder" class="form-control">
+            <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
               <option value="false">Pull down to select a folder or create a new one below</option>
 <?php
 // read the subfolders of shared/audiofolders
@@ -181,13 +181,13 @@ foreach($audiofolders as $audiofolder) {
         
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="streamFolderName"></label>  
+          <label class="col-md-4 control-label" for="YTstreamFolderName"></label>  
           <div class="col-md-6">
           <input value="<?php
           if (isset($fpost['streamFolderName'])) {
               print $fpost['streamFolderName'];
           }
-          ?>" id="streamFolderName" name="streamFolderName" placeholder="e.g. 'New Folder'" class="form-control input-md" type="text">
+          ?>" id="YTstreamFolderName" name="YTstreamFolderName" placeholder="e.g. 'New Folder'" class="form-control input-md" type="text">
           <span class="help-block">Name for the audio folder that will contain the YouTube audio.</span>  
           </div>
         </div>
