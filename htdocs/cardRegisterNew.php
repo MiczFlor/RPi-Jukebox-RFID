@@ -92,6 +92,12 @@ if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiof
 if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
     $post['YTstreamURL'] = $_POST['YTstreamURL'];
 }
+if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
+    $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
+}
+if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists('../shared/audiofolders/'.$_POST['YTaudiofolder'])) {
+    $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
+}
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
     $post['submit'] = $_POST['submit'];
 }
@@ -105,7 +111,24 @@ if($post['submit'] == "submit") {
     /*
     * error check
     */
-    
+    // The dropdown menus for the audiofolders in the section "Audio folders" and "YouTube" are interchangeable.
+    // So you may select the folder in any of both.
+    // Check if two different audiofolders are selectied in the dropdowns
+    if(isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
+        $messageAction .= "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
+    } elseif(!isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
+        //set the audiofolder variable (if unset) to the YTaudiofolder variable. This makes the further handling easier.
+        $post['audiofolder'] = $post['YTaudiofolder'];
+    }
+    // Like above: stream folder inputs are interchangeable.
+    // Check if two different stream folder names are entered
+    if(isset($post['streamFolderName']) && isset($post['YTstreamFolderName']) && $post['streamFolderName'] != $post['YTstreamFolderName']) {
+        $messageAction .= "<p>This is too much! Please enter only one folder name. Make up your mind.</p>";
+    } elseif(!isset($post['streamFolderName']) && isset($post['YTstreamFolderName'])) {
+        //set the streamFolderName variable (if unset) to the YTstreamFolderName variable. This makes the further handling easier.
+        $post['streamFolderName'] = $post['YTstreamFolderName'];
+    }
+
     // posted too much?
     if(isset($post['streamURL']) && isset($post['audiofolder'])) {
         $messageAction .= "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
