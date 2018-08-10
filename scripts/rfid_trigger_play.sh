@@ -24,8 +24,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
-
+DEBUG=false
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -69,7 +68,7 @@ if [ "$CARDID" ]; then
     # If you want to see the CARDID printed, uncomment the following line
     # echo CARDID = $CARDID
 
-    # Add info into the log, making it easer to monitor cards
+    # Add info into the log, making it easer to monitor cards 
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     if [ $DEBUG == "true" ]
     then
@@ -247,6 +246,18 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
+if mpc status | awk 'NR==2' | grep playing > /dev/null;
+then 
+    mpd_status="playing"
+    if [ $DEBUG == "true" ]
+    then
+       mpc status
+    fi
+else 
+   mpd_status="offline"
+fi
+
+
 if [ "$FOLDERNAME" ]; then
 
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
@@ -262,13 +273,11 @@ if [ "$FOLDERNAME" ]; then
     # Before we create a new playlist, we remove the old one from the folder.
     # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
     # so we only want the current playlist in the "mpc lsplaylists" output.
-
     mpc lsplaylists | \
     while read i
     do
         mpc rm "$i"
     done
-    
     # if a folder $FOLDERNAME exists, play content
     if [ -d "$PATHDATA/../shared/audiofolders/$FOLDERNAME" ]
     then
@@ -321,38 +330,46 @@ if [ "$FOLDERNAME" ]; then
             ;;
         esac
 
-        if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
+        if [ $mpd_status == "playing" ]
         then
-            # if same playlist, only stop the player
-            run_folder=$(cat $PATHDATA/../shared/audiofolders/playing.txt)
-            if [ "$FOLDERNAME" == "$run_folder" ]
-            then
-                if [ $DEBUG == "true" ]
-                then
-                    echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
-                fi
-                only_stop=1
-            else
-                # if playlist is different, stop the running player and restart with new playlist
-                only_stop=0
-            fi
-            
-            if [ $only_stop != 1 ]
-            then
-                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
-            else
-                if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
-		then
-		    rm $PATHDATA/../shared/audiofolders/playing.txt
-		fi
-            fi
+           if [ $DEBUG == "true" ]
+           then 
+              echo "status playing" >> $PATHDATA/../logs/debug.log
+           fi
+           run_folder=$(mpc lsplaylists)
+           # if same playlist, only stop the player
+           if [ "$FOLDERNAME" == "$run_folder" ]
+           then
+              if [ $DEBUG == "true" ]
+              then
+                 echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
+              fi
+              only_stop=1
+           else
+              if [ $DEBUG == "true" ]
+              then
+                 echo "different Playlist. Reload" >> $PATHDATA/../logs/debug.log
+              fi
+              # if playlist is different, stop the running player and restart with new playlist
+              only_stop=0
+           fi
+
+           if [ $only_stop != 1 ]
+           then
+              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+           fi
         else
-            if [ $DEBUG == "true" ]
-            then
-                echo "No Instance start with $PATHDATA/../settings/playout_controls.sh -c=play -v=$PATHDATA/../playlists/$FOLDERNAME.m3u"   >> $PATHDATA/../logs/debug.log
-            fi
-            # load new playlist and play
-            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+              if [ $DEBUG == "true" ]
+              then
+                 echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDERNAME | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
+              fi
+              # load new playlist and play
+              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
         fi
+    else
+	    if [ $DEBUG == "true" ]
+            then
+                echo "Path not found $PATHDATA/../shared/audiofolders/$FOLDERNAME"   >> $PATHDATA/../logs/debug.log 
+            fi
     fi
 fi
