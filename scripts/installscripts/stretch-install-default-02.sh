@@ -447,8 +447,6 @@ sudo chmod 440 /etc/sudoers
 
 # copy shell script for player
 cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
-sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 
 # creating files containing editable values for configuration
 # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
@@ -647,6 +645,10 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 # make sure the htdocs folder can be changed by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
+
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/settings
+sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings
+
 
 # / Access settings
 ##################################################### 
