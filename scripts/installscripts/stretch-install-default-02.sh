@@ -269,6 +269,39 @@ esac
 echo "ACCESSconfig=\"$ACCESSconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
+# Audio iFace
+
+clear
+
+echo "#####################################################
+#
+# CONFIGURE AUDIO INTERFACE (iFace)
+#
+# By default for the RPi the audio interface would be 'PCM'. 
+# But this does not work for every setup, alternatives are
+# 'Master' or 'Speaker'. Other external sound cards might 
+# use different interface names. 
+# To list all available iFace names, type 'amixer scontrols'
+# in the terminal.
+"
+read -r -p "Use PCM as iFace? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	echo "Type the iFace name you want to use:"
+        read INPUT
+        AUDIOiFace="$INPUT"
+        ;;
+    *)
+    	AUDIOiFace="PCM"
+        ;;
+esac
+# append variables to config file
+echo "AUDIOiFace=\"$AUDIOiFace\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "Your iFace ist called'$AUDIOiFace'"
+echo "Hit ENTER to proceed to the next step."
+read INPUT
+
+##################################################### 
 # Configure MPD
 
 clear
@@ -419,7 +452,7 @@ sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 
 # creating files containing editable values for configuration
 # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
-echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
+echo "$AUDIOiFace" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
@@ -465,6 +498,9 @@ cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/p
 # MPD configuration
 # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+# Change vars to match install config
+sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
+sudo sed -i 's/%DIRaudioFolders%/'"$DIRaudioFolders"'/' /etc/mpd.conf
 sudo chown mpd:audio /etc/mpd.conf
 sudo chmod 640 /etc/mpd.conf
 # update mpc / mpd DB

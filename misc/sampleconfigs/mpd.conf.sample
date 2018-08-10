@@ -11,7 +11,7 @@
 # be disabled and audio files will only be accepted over ipc socket (using
 # file:// protocol) or streaming files over an accepted protocol.
 #
-music_directory		"/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
+music_directory		"%DIRaudioFolders%"
 #
 # This setting sets the MPD internal playlist directory. The purpose of this
 # directory is storage for playlists created by MPD. The server will use 
@@ -214,7 +214,7 @@ audio_output {
 #	device		"hw:0,0"	# optional
 #	mixer_type      "hardware"      # optional
 #	mixer_device	"default"	# optional
-	mixer_control	"PCM"		# optional
+	mixer_control	"%AUDIOiFace%"		# optional
 #	mixer_index	"0"		# optional
 }
 #
@@ -226,7 +226,7 @@ audio_output {
 #	device		"/dev/dsp"	# optional
 #	mixer_type      "hardware"      # optional
 #	mixer_device	"/dev/mixer"	# optional
-#	mixer_control	"PCM"		# optional
+#	mixer_control	"%AUDIOiFace%"		# optional
 #}
 #
 # An example of a shout output (for streaming to Icecast):
