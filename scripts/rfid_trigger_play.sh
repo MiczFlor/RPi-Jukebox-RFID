@@ -58,7 +58,7 @@ done
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 if [ $DEBUG == "true" ]
 then
-        echo "$NOW"   >> $PATHDATA/../logs/debug.log
+    echo "$NOW"   >> $PATHDATA/../logs/debug.log
 fi
 ##################################################################
 # Check if we got the card ID or the audio folder from the prompt.
@@ -260,6 +260,11 @@ fi
 
 if [ "$FOLDERNAME" ]; then
 
+    # write RFID to file 
+    echo "${CARDID}" > $PATHDATA/../settings/latestRfidPlayed.txt
+    # write foldername triggered by RFID to file 
+    echo "${FOLDERNAME}" > $PATHDATA/../settings/latestRfidFolderPlayed.txt
+
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
     # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
     # and this produces an error while saving lastplayed.dat
@@ -359,12 +364,14 @@ if [ "$FOLDERNAME" ]; then
               $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
            fi
         else
-              if [ $DEBUG == "true" ]
-              then
-                 echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDERNAME | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
-              fi
-              # load new playlist and play
-              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+            if [ $DEBUG == "true" ]
+            then
+                echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDERNAME | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
+            fi
+            # write foldername to settings file 
+            echo "${FOLDERNAME}" > $PATHDATA/../settings/latestFolderPlayed.txt
+            # load new playlist and play
+            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
         fi
     else
 	    if [ $DEBUG == "true" ]

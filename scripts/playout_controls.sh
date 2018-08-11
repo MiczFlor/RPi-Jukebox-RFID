@@ -323,6 +323,10 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         # save playlist playing
         echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
+        # write latest folder played to settings file
+        # NOTE: this has the same content as latestRfidFolderPlayed.txt 
+        # IF (only if) the playout was triggered by an RFID card
+        echo $VALUE > $PATHDATA/../settings/latestFolderPlayed.txt
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         ;;
