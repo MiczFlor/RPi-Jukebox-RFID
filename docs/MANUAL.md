@@ -34,16 +34,21 @@ Changing this number affects the `volumeup` and `volumedown` function in the web
 ### `settings/Idle_Time_Before_Shutdown`
 This is a file containing a number, by default `0`.
 
-### `settings/latestRfidPlayed.txt`
-Contains the latest RFID that triggered a playout. Created in script `rfid_trigger_play.sh`
+### `settings/Latest_RFID`
+Contains the latest RFID used, which could start an audio playout but might also 
+control the system (e.g. volume up or shutdown). 
+Created in script `rfid_trigger_play.sh`
 
-### `settings/latestRfidFolderPlayed.txt`
-Contains the latest folder triggered by RFID that was piped to `playout_controls.sh -c=playlistaddplay -v=... Created in script `rfid_trigger_play.sh`
+### `settings/Latest_RFID_Played`
+Contains the latest RFID that triggered an audio folder
+piped to `playout_controls.sh -c=playlistaddplay -v=...`
+Created in script `rfid_trigger_play.sh`
 
-### `settings/latestFolderPlayed.txt`
-Contains the last folder that was played. Created in `playout_controls.sh`. 
-NOTE: this has the same content as `latestRfidFolderPlayed.txt` 
-IF (only if) the playout was triggered by an RFID card.
+### `settings/Latest_Folder_Played`
+Contains the last folder that was played. 
+Created in `playout_controls.sh` AND `rfid_trigger_play.sh` (currently all play triggers - webapp and RFID are
+piped through `rfid_trigger_play.sh`. So it seems redundant. But who knows if at a later dev stage
+some scripts might use only `playout_controls.sh`). 
 
 This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
 If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the audio player is not playing and/or the sound has been muted.

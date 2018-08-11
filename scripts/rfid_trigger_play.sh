@@ -70,6 +70,7 @@ if [ "$CARDID" ]; then
 
     # Add info into the log, making it easer to monitor cards 
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
+    echo "$CARDID" > $PATHDATA/../settings/Latest_RFID
     if [ $DEBUG == "true" ]
     then
         echo "Card ID '$CARDID' was used"   >> $PATHDATA/../logs/debug.log
@@ -241,29 +242,45 @@ if [ "$CARDID" ]; then
             ;;
     esac
 fi
+
 ##############################################################
 # We should now have a folder name with the audio files.
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
-if mpc status | awk 'NR==2' | grep playing > /dev/null;
-then 
-    mpd_status="playing"
-    if [ $DEBUG == "true" ]
-    then
-       mpc status
-    fi
-else 
-   mpd_status="offline"
-fi
-
-
 if [ "$FOLDERNAME" ]; then
 
+    # HERE WE COULD CHECK 
+    # - IF PLAYOUT RUNNING
+    # - AND RFID CARD USED FOR SAME FOLDER
+    # and then accordingly stop the player
+    # Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
+    # if [ "$Latest_Folder_Played" == "FOLDERNAME" ]; then
+    # # Identical means:
+    # # a) RFID card used for the folder played last
+    # # b) Webapp button pressed for the folder played last
+    # fi
+
+    # prep to check "if same playlist playing" later
+    if mpc status | awk 'NR==2' | grep playing > /dev/null;
+    then 
+        mpd_status="playing"
+        if [ $DEBUG == "true" ]
+        then
+           mpc status
+        fi
+    else 
+       mpd_status="offline"
+    fi
+
     # write RFID to file 
-    echo "${CARDID}" > $PATHDATA/../settings/latestRfidPlayed.txt
+    # because webapp is also pushed from htdocs/inc.header.php to this script,
+    # but without a CARDID, only -d (FOLDERNAME), we need to check IF CARDID is set.
+    if [ "$CARDID" ]; then
+        echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
+    fi
     # write foldername triggered by RFID to file 
-    echo "${FOLDERNAME}" > $PATHDATA/../settings/latestRfidFolderPlayed.txt
+    echo "${FOLDERNAME}" > $PATHDATA/../settings/Latest_Folder_Played
 
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
     # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
@@ -368,8 +385,6 @@ if [ "$FOLDERNAME" ]; then
             then
                 echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDERNAME | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
             fi
-            # write foldername to settings file 
-            echo "${FOLDERNAME}" > $PATHDATA/../settings/latestFolderPlayed.txt
             # load new playlist and play
             $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
         fi

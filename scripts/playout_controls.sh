@@ -321,12 +321,16 @@ case $COMMAND in
     playlistaddplay)
         # add to playlist (and play)
         if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        
         # save playlist playing
         echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
+        
         # write latest folder played to settings file
-        # NOTE: this has the same content as latestRfidFolderPlayed.txt 
-        # IF (only if) the playout was triggered by an RFID card
-        echo $VALUE > $PATHDATA/../settings/latestFolderPlayed.txt
+        # Chances are, this was already written in 'rfid_trigger_play.sh'
+        # However, new development might jump right here and not pipe
+        # through 'rfid_trigger_play.sh'
+        echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
+        
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         ;;
