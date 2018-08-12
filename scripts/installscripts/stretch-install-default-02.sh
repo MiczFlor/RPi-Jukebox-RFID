@@ -498,7 +498,8 @@ cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/p
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
 # Change vars to match install config
 sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
-sudo sed -i 's/%DIRaudioFolders%/'"$DIRaudioFolders"'/' /etc/mpd.conf
+# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
 sudo chown mpd:audio /etc/mpd.conf
 sudo chmod 640 /etc/mpd.conf
 # update mpc / mpd DB
