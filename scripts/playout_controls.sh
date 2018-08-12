@@ -111,9 +111,11 @@ do
     esac
 done
 
+# For debugging purposes, show command
+if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+        
 case $COMMAND in 
     shutdown)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         sleep 1
         /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
@@ -122,13 +124,11 @@ case $COMMAND in
         ;;
     shutdownsilent)
         # doesn't play a shutdown sound
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         sudo halt
         ;;
     shutdownafter)
         # remove shutdown times if existent
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         for i in `sudo atq -q t | awk '{print $1}'`;do sudo atrm $i;done
         # -c=shutdownafter -v=0 is to remove the shutdown timer
         if [ $VALUE -gt 0 ];
@@ -138,12 +138,10 @@ case $COMMAND in
         fi 
         ;;
     reboot)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         sudo reboot
         ;;
     mute)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # read volume in percent and write to $VOLFILE
@@ -159,7 +157,6 @@ case $COMMAND in
         fi
         ;;
     setvolume)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         #increase volume only if VOLPERCENT is below the max volume limit
         if [ $VALUE -le $MAXVOL ];
         then
@@ -171,7 +168,6 @@ case $COMMAND in
         fi
         ;;
     volumeup)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
@@ -196,7 +192,6 @@ case $COMMAND in
         fi
         ;;
     volumedown)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # decrease by $VOLSTEP
@@ -211,13 +206,11 @@ case $COMMAND in
         ;;
     getvolume)
         # read volume in percent
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         echo $VOLPERCENT
 	;;
     setmaxvolume)
         # read volume in percent
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
         if [ $VOLPERCENT -gt $VALUE ];
@@ -228,21 +221,17 @@ case $COMMAND in
         echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
         ;;
     getmaxvolume)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo $MAXVOL
         ;;
     setvolstep)
         # write new value to file
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
         ;;
     getvolstep)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo $VOLSTEP
         ;;
     playerstop)
         # stop the player
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
         if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
         then
@@ -252,23 +241,19 @@ case $COMMAND in
         ;;
     playerstopafter)
         # stop player after $VALUE minutes
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo "mpc stop" | at -q s now + $VALUE minute
         ;;
     playernext)
         # play next track in playlist (==folder)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc next
         ;;
     playerprev)
         # play previous track in playlist (==folder)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc prev
         ;;
     playerpause)
         # pause current track
         # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc toggle
         ;;
     playerplay)
@@ -278,7 +263,6 @@ case $COMMAND in
         # of the playlist
         # Another note: "mpc play 1" starts the first track (!)
         # No checking for resume if the audio is paused, just unpause it
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ "$PLAYSTATE" == "pause" ]
         then
@@ -289,14 +273,12 @@ case $COMMAND in
         ;;
     playerreplay)
         # start the playing track from beginning
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         mpc seek 0
         ;;
     playerrepeat)
         # repeats a single track or a playlist. 
         # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
         # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         case $VALUE in 	
             single)
                 mpc repeat on
@@ -314,13 +296,11 @@ case $COMMAND in
         ;;
     playlistclear)
         # clear playlist
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
 	;;
     playlistaddplay)
         # add to playlist (and play)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         
         # save playlist playing
         echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
@@ -336,20 +316,17 @@ case $COMMAND in
         ;;
     playlistadd)
         # add to playlist, no autoplay
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         # save playlist playing
         echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
         # write new value to file
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
         # restart service to apply the new value
         sudo systemctl restart idle-watchdog.service &
         ;;
     getidletime)
-        if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
         echo $IDLETIME
         ;;
     *)
