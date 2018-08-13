@@ -3,10 +3,8 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
-* **Phoniebox 0.9.7 released** The next release after that will not (actively) support `jessie` anymore. And will replace `VLC` with `mpd` to save battery power and add *resume play* as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). On the [release page you can find a list of features](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases). (2018-07-19)
-* **Changing audio player? Your thoughts please** There is a [new branch with 'resume play'](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/pr80-mpd-as-audio-player) in the repo using `mpd` instead of `vlc` for audio playout. What do you think? Use this [thread for feedback and opinions](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/79) (2018-07-17)
+* **Phoniebox 1.0 released** The latest release is saving battery power on the road, replaces the audio player with `mpd` and adds *resume play" as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). And it comes with a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](). (2018-08-19)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
-* **`config.php` removed in repo** To fix a flaw of the initial commit, I removed the `config.php` file from the `htdocs` directory. It will be created automatically from `config.php.sample`. If you encounter problems after `git pull`, download [`config.php.sample`](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/htdocs/config.php.sample) adjust and copy to `config.php`. (2018-05-03)
 
 ---
 

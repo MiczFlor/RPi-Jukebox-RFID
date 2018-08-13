@@ -393,6 +393,38 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
+## Audio is not working
+
+This could happen if you are using an external soundcard. Generally, if you have audio troubles, try searching the web, because it might get complicated. But try this first:
+
+Learn here why [to specify the audio iFace](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#settingsaudio_iface_name) in the file `settingsaudio_iface_name`. 
+
+If that doesn't work, check if the device is recognised by your Pi:
+~~~
+$ cat /proc/asound/modules
+0 snd_bcm2835
+1 snd_usb_audio
+~~~
+This shows that device 1 is the usb audio card.
+Open the sound configuration file.
+~~~
+$ sudo nano /usr/share/alsa/alsa.conf
+~~~
+Now replace the lines near the end of the file:
+~~~
+defaults.ctl.card 0
+defaults.pcm.card 0
+~~~
+with:
+~~~
+defaults.ctl.card 1
+defaults.pcm.card 1
+~~~
+Now the audio card for the system is set to 1. Reboot the RPi:
+~~~
+$ sudo reboot
+~~~
+
 ## Changing the volume does not work, but the playout works
 
 The `amixer` command might require a different device name, not `PCM`.

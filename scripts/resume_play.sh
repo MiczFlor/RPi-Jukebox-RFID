@@ -14,7 +14,6 @@
 # - before you stop the player
 # - before you shutdown the Pi (maybe not necessary as mpc stores the position between reboots, but it feels saver)
 
-
 for i in "$@"
 do
 case $i in
@@ -26,8 +25,6 @@ case $i in
     ;;
 esac
 done
-
-
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -49,7 +46,6 @@ savepos)
             CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
             # Save filename and time to lastplayed.dat. "Stopped" for signaling -c=resume that there was a stopping event
             # (this is done to get a proper resume on the first track if the playlist has ended before)
-            #printf "$CURRENTFILENAME\n$ELAPSED\nStopped" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old"
             # copy sample file to audiofolder
             cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
             # replace values with current values
@@ -64,13 +60,12 @@ resume)
     # Check if "lastplayed.dat" exists
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
-        # Read the last played filename, timestamp and playstatus from lastplayed.dat
-        #LASTPLAYED=$(cat "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old")
-        #FILENAME=$(echo "$LASTPLAYED" | sed -n '1p')
-        #TIMESTAMP=$(echo "$LASTPLAYED" | sed -n '2p')
-        #PLAYSTATUS=$(echo "$LASTPLAYED" | sed -n '3p')
         # read vars from lastplayed.dat
         . "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+        # will generate variables:
+        #FILENAME
+        #TIMESTAMP
+        #PLAYSTATUS
         
         # Check if we got a "savepos" command after the last "resume". Otherwise we assume that the playlist was played until the end.
         # In this case, start the playlist from beginning 
@@ -92,7 +87,6 @@ resume)
             # and we would resume at the last position anywhere in the playlist. To catch these, we signal it to the next "resume" call
             # via writing it to the lastplayed.dat that we still assume that the audio is playing. Remark: $FILENAME and $TIMESTAMP can
             # be anything here, as we won't use the information if "Playing" is found by "resume".
-            #printf "$FILENAME\n$TIMESTAMP\nPlaying" > "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat.old"
             # copy sample file to audiofolder
             cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
             # replace values with current values
@@ -111,7 +105,6 @@ resume)
     fi
     ;;
 enableresume)
-    #echo -e "filename\n0\nStopped" > "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat.old"
     # copy sample file to audiofolder
     cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     # replace values with current values
@@ -120,7 +113,6 @@ enableresume)
     sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     ;;
 disableresume)
-    #rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat.old"
     rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     ;;
 *)
