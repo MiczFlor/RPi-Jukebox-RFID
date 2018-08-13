@@ -73,6 +73,10 @@ case "$response" in
         echo "* Type SSID name"
         read INPUT
         WIFIssid="$INPUT"
+        #Ask for wifi country code
+        echo "* WiFi Country Code (e.g. DE, GB, CZ or US)"
+        read INPUT
+        WIFIcountryCode="$INPUT"
         #Ask for password
         echo "* Type password"
         read INPUT
@@ -87,6 +91,7 @@ case "$response" in
         WIFIipRouter="$INPUT"
         echo "Your WiFi config:"
         echo "SSID      : $WIFIssid"
+        echo "WiFi Country Code      : $WIFIcountryCode"
         echo "Password  : $WIFIpass"
         echo "Static IP : $WIFIip"
         echo "Router IP : $WIFIipRouter"
@@ -100,6 +105,7 @@ case "$response" in
             *)
                 # append variables to config file
                 echo "WIFIconfig=\"$WIFIconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIcountryCode=\"$WIFIcountryCode\"" >> $PATHDATA/PhonieboxInstall.conf
                 echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
                 echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
                 echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
@@ -523,6 +529,7 @@ then
     # Change IP for router and Phoniebox
     sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
     sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
+    sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/dhcpcd.conf
     # Change user:group and access mod
     sudo chown root:netdev /etc/dhcpcd.conf
     sudo chmod 664 /etc/dhcpcd.conf
@@ -538,8 +545,8 @@ sudo systemctl enable dhcpcd
 ##############
 # Access Point
 # http://www.raspberryconnect.com/network/item/331-raspberry-pi-auto-wifi-hotspot-switch-no-internet-routing
-#if [ $ACCESSconfig == "YES" ]
-#then
+if [ $ACCESSconfig == "IGNOREFORNOWYES" ]
+then
 
 #
 # NOT IMPLEMENTED YET
@@ -549,25 +556,41 @@ sudo systemctl enable dhcpcd
     # cp /etc/default/hostapd hostapd.stretch.sample
     # cp /etc/dnsmasq.conf dnsmasq.conf.stretch.sample
     # cp /etc/network/interfaces interfaces.stretch.sample
+    # WIFIcountryCode
+    # https://www.cisco.com/en/US/products/ps6305/products_configuration_guide_chapter09186a00804ddd8a.html
 
     # Remove dns-root-data
-#    sudo apt-get purge dns-root-data
+    sudo apt-get purge dns-root-data
     # Install packages
-#    sudo apt-get install hostapd dnsmasq
-    # Stop running processes
-#    sudo systemctl stop hostapd
-#    sudo systemctl stop dnsmasq
-    
- #   echo "
- #   ########################
- #   # Hotspot (Access Point)
- #   NOTE:
- #   The network 'phoniebox' appears only when away from your usual WiFi.
- #   You can connect from any device with the password 'PlayItLoud'.
- #   In your browser, open the IP '10.0.0.10' to access the web app.
- #   "
+    sudo apt-get install hostapd dnsmasq
+    # enter Y when prompted
 
-#fi
+    # The installers will have set up the programme so they run when the pi is started. 
+    # For this setup they only need to be started if the home router is not found. 
+    # So automatic startup needs to be disabled. This is done with the following commands:
+    sudo systemctl disable hostapd
+    sudo systemctl disable dnsmasq
+    
+    # -rw-r--r-- 1 root root 345 Aug 13 17:55 /etc/hostapd/hostapd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/hostapd.conf.stretch2-Hotspot.sample /etc/hostapd/hostapd.conf
+    sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/hostapd/hostapd.conf
+    sudo chmod 644 /etc/hostapd/hostapd.conf
+    sudo chown root:root /etc/hostapd/hostapd.conf
+    
+    # -rw-r--r-- 1 root root 794 Aug 13 18:40 /etc/default/hostapd
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/hostapd.stretch2.sample /etc/default/hostapd
+    sudo chmod 644 /etc/default/hostapd
+    sudo chown root:root /etc/default/hostapd
+    
+    echo "
+    ########################
+    # Hotspot (Access Point)
+    NOTE:
+    The network 'phoniebox' appears only when away from your usual WiFi.
+    You can connect from any device with the password 'PlayItLoud'.
+    In your browser, open the IP '10.0.0.10' to access the web app.
+    "
+fi
 
 # / Access Point
 ################
