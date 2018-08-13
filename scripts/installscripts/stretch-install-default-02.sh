@@ -451,6 +451,7 @@ cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi
 # creating files containing editable values for configuration
 # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "$AUDIOiFace" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
+echo "$DIRaudioFolders" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Folders_Path
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
@@ -650,6 +651,9 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/settings
 sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings
 
+# audio folders might be somewhere else, so treat them separately
+sudo chown pi:www-data "$DIRaudioFolders"
+sudo chmod 775 "$DIRaudioFolders"
 
 # / Access settings
 ##################################################### 

@@ -38,6 +38,14 @@ if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
     sudo chmod -R 775 $PATHDATA/../settings/rfid_trigger_play.conf
 fi
 
+# Path to folder containing audio / streams
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
+    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
+fi
+# 2. then|or read value from file
+AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
+
 # Read configuration file
 . $PATHDATA/../settings/rfid_trigger_play.conf
 
@@ -301,14 +309,14 @@ if [ "$FOLDER" ]; then
         mpc rm "$i"
     done
     # if a folder $FOLDER exists, play content
-    if [ -d "$PATHDATA/../shared/audiofolders/$FOLDER" ]
+    if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
         # set path to playlist
         PLAYLISTPATH="/tmp/$FOLDER.m3u"
 
         # Check if we have something special to do
         # Read content file names of folder into string
-        SPECIALFORMAT=$(ls "$PATHDATA/../shared/audiofolders/$FOLDER" | grep .txt)
+        SPECIALFORMAT=$(ls "$AUDIOFOLDERSPATH/$FOLDER" | grep .txt)
         # the following switch can be extended with other 'special' formats which require
         # more complex action than just piping the folder content into a playlist
         if [ $DEBUG == "true" ]
@@ -318,7 +326,7 @@ if [ "$FOLDER" ]; then
         case $SPECIALFORMAT in
             "podcast.txt")
                 # Podcast
-                PODCASTURL=`cat "$PATHDATA/../shared/audiofolders/$FOLDER/podcast.txt"`
+                PODCASTURL=`cat "$AUDIOFOLDERSPATH/$FOLDER/podcast.txt"`
                 # parse podcast XML in sloppy but efficient way and write URLs to playlist
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
@@ -330,7 +338,7 @@ if [ "$FOLDER" ]; then
             ;;
             "livestream.txt")
                 # mpd can't read from .txt, so we have to write the livestream URL into playlist
-                cat "$PATHDATA/../shared/audiofolders/$FOLDER/livestream.txt" > "$PLAYLISTPATH"
+                cat "$AUDIOFOLDERSPATH/$FOLDER/livestream.txt" > "$PLAYLISTPATH"
                 if [ $DEBUG == "true" ]
                 then
                     echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log
@@ -340,9 +348,9 @@ if [ "$FOLDER" ]; then
                 # Nothing special to do, folder with audio files
                 # write playlist to file using the same name as the folder with ending .m3u
                 # wrap $PLAYLIST string in "" to keep line breaks
-        		# cd to ../shared/audiofolders as mpd accepts only filepaths relative to its music folder
+        		# cd to $AUDIOFOLDERSPATH as mpd accepts only filepaths relative to its music folder
         		# or starting with file:// (e.g. file:///home/pi...)
-                cd $PATHDATA/../shared/audiofolders
+                cd $AUDIOFOLDERSPATH
                 find "$FOLDER" -type f | sort -n > "$PLAYLISTPATH"
                 if [ $DEBUG == "true" ]
                 then
@@ -406,7 +414,7 @@ if [ "$FOLDER" ]; then
     else
 	    if [ $DEBUG == "true" ]
             then
-                echo "Path not found $PATHDATA/../shared/audiofolders/$FOLDER"   >> $PATHDATA/../logs/debug.log 
+                echo "Path not found $AUDIOFOLDERSPATH/$FOLDER"   >> $PATHDATA/../logs/debug.log 
             fi
     fi
 fi

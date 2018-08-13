@@ -90,11 +90,21 @@ fi
 # 2. then|or read value from file
 IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 
+##############################################
+# Path to folder containing audio / streams
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
+    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
+fi
+# 2. then|or read value from file
+AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
+
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo $MAXVOL
 #echo `cat $VOLFILE`
 #echo $IDLETIME
+#echo $AUDIOFOLDERSPATH
 
 #############################################################
 
@@ -233,9 +243,9 @@ case $COMMAND in
     playerstop)
         # stop the player
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
-        if [ -e $PATHDATA/../shared/audiofolders/playing.txt ]
+        if [ -e $AUDIOFOLDERSPATH/playing.txt ]
         then
-            rm $PATHDATA/../shared/audiofolders/playing.txt
+            rm $AUDIOFOLDERSPATH/playing.txt
         fi
         if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
@@ -303,7 +313,7 @@ case $COMMAND in
         # add to playlist (and play)
         
         # save playlist playing
-        echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
+        echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         
         # write latest folder played to settings file
         # Chances are, this was already written in 'rfid_trigger_play.sh'
@@ -317,7 +327,7 @@ case $COMMAND in
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
-        echo $VALUE > $PATHDATA/../shared/audiofolders/playing.txt 
+        echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
