@@ -258,17 +258,6 @@ fi
 
 if [ "$FOLDER" ]; then
 
-    # HERE WE COULD CHECK 
-    # - IF PLAYOUT RUNNING
-    # - AND RFID CARD USED FOR SAME FOLDER
-    # and then accordingly stop the player
-    # Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
-    # if [ "$Latest_Folder_Played" == "FOLDER" ]; then
-    # # Identical means:
-    # # a) RFID card used for the folder played last
-    # # b) Webapp button pressed for the folder played last
-    # fi
-
     # prep to check "if same playlist playing" later
     if mpc status | awk 'NR==2' | grep playing > /dev/null;
     then 
@@ -280,15 +269,6 @@ if [ "$FOLDER" ]; then
     else 
        mpd_status="offline"
     fi
-
-    # write RFID to file 
-    # because webapp is also pushed from htdocs/inc.header.php to this script,
-    # but without a CARDID, only -d (FOLDER), we need to check IF CARDID is set.
-    if [ "$CARDID" ]; then
-        echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
-    fi
-    # write foldername triggered by RFID to file 
-    echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
 
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
     # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
@@ -358,63 +338,76 @@ if [ "$FOLDER" ]; then
                 fi
             ;;
         esac
-#        # read the latest folder into var
-#        Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
-#        
-#        # 1. if player is running: stop player
-#        if [ $mpd_status == "playing" ]
-#            then
-#            # use the proper process to stop, because 
-#            # IF resume play: save current position
-#            $PATHDATA/playout_controls.sh -c=playerstop
-#        fi
-#        
-#        # 2. if a new playlist was swiped or pressed: play it
-#        if [ "$Latest_Folder_Played" != "$FOLDERNAME" ]
-#            then
-#            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
-#        fi
-
+        
+        # Now we know what we will be playing -> start playing!
+        
+        # read the latest folder into var
+        Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
+        
+        # 1. if player is running: stop player
         if [ $mpd_status == "playing" ]
-        then
-           if [ $DEBUG == "true" ]
-           then 
-              echo "status playing" >> $PATHDATA/../logs/debug.log
-           fi
-           run_folder=$(mpc lsplaylists)
-           # if same playlist, only stop the player
-           if [ "$FOLDER" == "$run_folder" ]
-           then
-              if [ $DEBUG == "true" ]
-              then
-                 echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
-              fi
-              only_stop=1
-           else
-              if [ $DEBUG == "true" ]
-              then
-                 echo "different Playlist. Reload" >> $PATHDATA/../logs/debug.log
-              fi
-              # if playlist is different, stop the running player and restart with new playlist
-              only_stop=0
-           fi
-
-           if [ $only_stop != 1 ]
-           then
-              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
-           fi
-        else
-            if [ $DEBUG == "true" ]
             then
-                echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDER | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
-            fi
-            # load new playlist and play
-            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+            # use the proper process to stop, because 
+            # IF resume play: save current position
+            $PATHDATA/playout_controls.sh -c=playerstop
         fi
+        
+        # 2. if a new playlist was swiped or selected in web app: play it
+        if [ "$Latest_Folder_Played" != "$FOLDERNAME" ]
+            then
+            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
+        fi
+
+#        if [ $mpd_status == "playing" ]
+#        then
+#           if [ $DEBUG == "true" ]
+#           then 
+#              echo "status playing" >> $PATHDATA/../logs/debug.log
+#           fi
+#           run_folder=$(mpc lsplaylists)
+#           # if same playlist, only stop the player
+#           if [ "$FOLDER" == "$run_folder" ]
+#           then
+#              if [ $DEBUG == "true" ]
+#              then
+#                 echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
+#              fi
+#              only_stop=1
+#           else
+#              if [ $DEBUG == "true" ]
+#              then
+#                 echo "different Playlist. Reload" >> $PATHDATA/../logs/debug.log
+#              fi
+#              # if playlist is different, stop the running player and restart with new playlist
+#              only_stop=0
+#           fi
+#
+#           if [ $only_stop != 1 ]
+#           then
+#              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+#           fi
+#        else
+#            if [ $DEBUG == "true" ]
+#            then
+#                echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDER | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
+#            fi
+#            # load new playlist and play
+#            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+#        fi
+
     else
 	    if [ $DEBUG == "true" ]
             then
                 echo "Path not found $AUDIOFOLDERSPATH/$FOLDER"   >> $PATHDATA/../logs/debug.log 
             fi
     fi
+
+    # write RFID to file 
+    # because webapp is also pushed from htdocs/inc.header.php to this script,
+    # but without a CARDID, only -d (FOLDER), we need to check IF CARDID is set.
+    if [ "$CARDID" ]; then
+        echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
+    fi
+    # write foldername triggered by RFID to file 
+    echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
 fi
