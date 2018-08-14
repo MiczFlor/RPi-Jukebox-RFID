@@ -484,7 +484,7 @@ if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($ur
     } else { 
         // pass folder to playout script
         // escape whitespaces with backslashes
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',basename($urlparams['play']));//basename($urlparams['play']);
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',basename($urlparams['play']));
         exec($exec);
     
         /* redirect to drop all the url parameters */

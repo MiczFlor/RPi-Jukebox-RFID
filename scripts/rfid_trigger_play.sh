@@ -26,9 +26,13 @@
 # $DEBUG true|false
 DEBUG=false
 
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
+
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ $DEBUG == "true" ]; then echo "## SCRIPT rfid_trigger_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
@@ -61,13 +65,9 @@ case $i in
     ;;
 esac
 done
+if [ $DEBUG == "true" ]; then echo "VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-# Set the date and time of now
-NOW=`date +%Y-%m-%d.%H:%M:%S`
-if [ $DEBUG == "true" ]
-then
-    echo "$NOW"   >> $PATHDATA/../logs/debug.log
-fi
 ##################################################################
 # Check if we got the card ID or the audio folder from the prompt.
 # Sloppy error check, because we assume the best.
@@ -79,10 +79,7 @@ if [ "$CARDID" ]; then
     # Add info into the log, making it easer to monitor cards 
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     echo "$CARDID" > $PATHDATA/../settings/Latest_RFID
-    if [ $DEBUG == "true" ]
-    then
-        echo "Card ID '$CARDID' was used"   >> $PATHDATA/../logs/debug.log
-    fi
+    if [ $DEBUG == "true" ]; then echo "Card ID '$CARDID' was used"   >> $PATHDATA/../logs/debug.log; fi
 
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
@@ -225,10 +222,7 @@ if [ "$CARDID" ]; then
                 FOLDER=`cat $PATHDATA/../shared/shortcuts/$CARDID`
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
-                if [ $DEBUG == "true" ]
-                then
-                    echo "This ID has been used before."   >> $PATHDATA/../logs/debug.log
-                fi
+                if [ $DEBUG == "true" ]; then echo "This ID has been used before."   >> $PATHDATA/../logs/debug.log; fi
             else
                 # Human readable shortcut does not exists, so create one with the content $CARDID
                 # this file can later be edited manually over the samba network
@@ -236,17 +230,11 @@ if [ "$CARDID" ]; then
                 FOLDER=$CARDID
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
-                if [ $DEBUG == "true" ]
-                then
-                    echo "This ID was used for the first time."   >> $PATHDATA/../logs/debug.log
-                fi
+                if [ $DEBUG == "true" ]; then echo "This ID was used for the first time."   >> $PATHDATA/../logs/debug.log; fi
             fi
             # Add info into the log, making it easer to monitor cards
             echo "The shortcut points to audiofolder '$FOLDER'." >> $PATHDATA/../shared/latestID.txt
-            if [ $DEBUG == "true" ]
-            then
-                echo "The shortcut points to audiofolder '$FOLDER'."   >> $PATHDATA/../logs/debug.log
-            fi
+            if [ $DEBUG == "true" ]; then echo "The shortcut points to audiofolder '$FOLDER'." >> $PATHDATA/../logs/debug.log; fi
             ;;
     esac
 fi
@@ -256,29 +244,13 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
-if [ "$FOLDER" ]; then
+if [ $DEBUG == "true" ]; then echo "Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-    # prep to check "if same playlist playing" later
-    if mpc status | awk 'NR==2' | grep playing > /dev/null;
-    then 
-        mpd_status="playing"
-        if [ $DEBUG == "true" ]
-        then
-           mpc status
-        fi
-    else 
-       mpd_status="offline"
-    fi
+if [ "$FOLDER" ]; then
 
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
     # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
     # and this produces an error while saving lastplayed.dat
-
-    sudo $PATHDATA/playout_controls.sh -c=playlistclear
-    if [ $DEBUG == "true" ]
-    then
-         echo "Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off"   >> $PATHDATA/../logs/debug.log
-    fi
 	
     # Before we create a new playlist, we remove the old one from the folder.
     # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
@@ -288,21 +260,36 @@ if [ "$FOLDER" ]; then
     do
         mpc rm "$i"
     done
+
     # if a folder $FOLDER exists, play content
     if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
+
         # set path to playlist
         PLAYLISTPATH="/tmp/$FOLDER.m3u"
+        if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
+
+        # prep to check "if same playlist playing or paused" later
+        if [ $DEBUG == "true" ]; then mpc status; fi
+        mpd_status="offline"
+        if mpc status | awk 'NR==2' | grep playing > /dev/null;
+        then 
+            mpd_status="playing"
+        fi
+        if mpc status | awk 'NR==2' | grep paused > /dev/null;
+        then 
+            mpd_status="paused"
+        fi
+        if [ $DEBUG == "true" ]; then echo "VAR mpd_status: $mpd_status" >> $PATHDATA/../logs/debug.log; fi
 
         # Check if we have something special to do
         # Read content file names of folder into string
         SPECIALFORMAT=$(ls "$AUDIOFOLDERSPATH/$FOLDER" | grep .txt)
+        if [ $DEBUG == "true" ]; then echo "VAR SPECIALFORMAT: $SPECIALFORMAT"   >> $PATHDATA/../logs/debug.log; fi
+
         # the following switch can be extended with other 'special' formats which require
         # more complex action than just piping the folder content into a playlist
-        if [ $DEBUG == "true" ]
-        then
-            echo "Check if we have something special to do"   >> $PATHDATA/../logs/debug.log
-        fi
+        if [ $DEBUG == "true" ]; then echo "CHECK Something special to do?" >> $PATHDATA/../logs/debug.log; fi
         case $SPECIALFORMAT in
             "podcast.txt")
                 # Podcast
@@ -328,78 +315,69 @@ if [ "$FOLDER" ]; then
                 # Nothing special to do, folder with audio files
                 # write playlist to file using the same name as the folder with ending .m3u
                 # wrap $PLAYLIST string in "" to keep line breaks
-        		# cd to $AUDIOFOLDERSPATH as mpd accepts only filepaths relative to its music folder
-        		# or starting with file:// (e.g. file:///home/pi...)
+        	# cd to $AUDIOFOLDERSPATH as mpd accepts only filepaths relative to its music folder
+        	# or starting with file:// (e.g. file:///home/pi...)
                 cd $AUDIOFOLDERSPATH
                 find "$FOLDER" -type f | sort -n > "$PLAYLISTPATH"
-                if [ $DEBUG == "true" ]
-                then
-                    echo "Nothing special $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log
-                fi
+                if [ $DEBUG == "true" ]; then echo "Nothing special $PLAYLISTPATH" >> $PATHDATA/../logs/debug.log; fi
             ;;
         esac
         
-        # Now we know what we will be playing -> start playing!
+        # Now we know what we will be playing -> start playing (or pausing?)!
         
         # read the latest folder into var
         Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
-        
-        # 1. if player is running: stop player
-        if [ $mpd_status == "playing" ]
-            then
-            # use the proper process to stop, because 
-            # IF resume play: save current position
-            $PATHDATA/playout_controls.sh -c=playerstop
-        fi
-        
-        # 2. if a new playlist was swiped or selected in web app: play it
-        if [ "$Latest_Folder_Played" != "$FOLDERNAME" ]
-            then
-            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDERNAME}"
-        fi
+        if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-#        if [ $mpd_status == "playing" ]
-#        then
-#           if [ $DEBUG == "true" ]
-#           then 
-#              echo "status playing" >> $PATHDATA/../logs/debug.log
-#           fi
-#           run_folder=$(mpc lsplaylists)
-#           # if same playlist, only stop the player
-#           if [ "$FOLDER" == "$run_folder" ]
-#           then
-#              if [ $DEBUG == "true" ]
-#              then
-#                 echo "Same Playlist Stop only" >> $PATHDATA/../logs/debug.log
-#              fi
-#              only_stop=1
-#           else
-#              if [ $DEBUG == "true" ]
-#              then
-#                 echo "different Playlist. Reload" >> $PATHDATA/../logs/debug.log
-#              fi
-#              # if playlist is different, stop the running player and restart with new playlist
-#              only_stop=0
-#           fi
-#
-#           if [ $only_stop != 1 ]
-#           then
-#              $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
-#           fi
-#        else
-#            if [ $DEBUG == "true" ]
-#            then
-#                echo "No Instance start with $PATHDATA/playout_controls.sh -c=playlistaddplay -v=$(echo $FOLDER | rev | cut -d"/" -f1 | rev)"   >> $PATHDATA/../logs/debug.log
-#            fi
-#            # load new playlist and play
-#            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
-#        fi
+        # 1. MPD playing
+        if [ $mpd_status == "playing" ]
+        then
+            if [ $DEBUG == "true" ]; then echo "1. MPD playing" >> $PATHDATA/../logs/debug.log; fi
+            # 1.1 IF new folder given ("$Latest_Folder_Played" != "$FOLDER")
+            if [ $DEBUG == "true" ]; then echo "1.1 CHECK Latest_Folder_Played ($Latest_Folder_Played) != FOLDER($FOLDER)" >> $PATHDATA/../logs/debug.log; fi
+            if [ "$Latest_Folder_Played" != "$FOLDER" ]
+            then
+                # 1.1.1 YES => stop current && start (resume) new
+                if [ $DEBUG == "true" ]; then echo "1.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+                $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
+                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+            else 
+                # 1.1.2 NO => stop current
+                if [ $DEBUG == "true" ]; then echo "1.1.2 CHECK FALSE => playout_controls.sh -c=playerstop" >> $PATHDATA/../logs/debug.log; fi
+                $PATHDATA/playout_controls.sh -c=playerstop
+            fi
+        fi
+        
+        # 2. MPD paused
+        if [ $mpd_status == "paused" ]
+        then
+            if [ $DEBUG == "true" ]; then echo "2. MPD paused" >> $PATHDATA/../logs/debug.log; fi
+            # 2.1 IF new folder given ("$Latest_Folder_Played" != "$FOLDER")
+            if [ $DEBUG == "true" ]; then echo "2.1 CHECK Latest_Folder_Played ($Latest_Folder_Played) != FOLDER($FOLDER)" >> $PATHDATA/../logs/debug.log; fi
+            if [ "$Latest_Folder_Played" != "$FOLDER" ]
+            then
+                # 2.1.1 YES => stop current && start (resume) new
+                if [ $DEBUG == "true" ]; then echo "2.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+                $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
+                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+            else 
+                # 2.1.2 NO => play (resume) current
+                if [ $DEBUG == "true" ]; then echo "2.1.2 CHECK FALSE => playout_controls.sh -c=playerpause" >> $PATHDATA/../logs/debug.log; fi
+                $PATHDATA/playout_controls.sh -c=playerpause
+            fi
+        fi
+        
+        # 3. MPD offline
+        if [ $mpd_status == "offline" ]
+        then
+            if [ $DEBUG == "true" ]; then echo "3. MPD offline" >> $PATHDATA/../logs/debug.log; fi
+            # 3.1 play (resume) current
+            if [ $DEBUG == "true" ]; then echo "3.1 play (resume) current" >> $PATHDATA/../logs/debug.log; fi
+            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+        fi
 
     else
-	    if [ $DEBUG == "true" ]
-            then
-                echo "Path not found $AUDIOFOLDERSPATH/$FOLDER"   >> $PATHDATA/../logs/debug.log 
-            fi
+        if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
     fi
 
     # write RFID to file 

@@ -8,8 +8,11 @@
 # the playout player easier.
 
 # $DEBUG true|false
-# prints $COMMAND in the terminal
+# prints $COMMAND in the terminal and/or log file
 DEBUG=false
+
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # USAGE EXAMPLES:
 # 
@@ -56,6 +59,7 @@ DEBUG=false
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ $DEBUG == "true" ]; then echo "## SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 ##############################################
 # steps by which to change the audio output (vol up and down)
@@ -120,9 +124,8 @@ do
         ;;
     esac
 done
-
-# For debugging purposes, show command
-if [ "$DEBUG" == "true" ]; then echo "$COMMAND"; fi
+if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         
 case $COMMAND in 
     shutdown)
@@ -245,7 +248,7 @@ case $COMMAND in
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
         if [ -e $AUDIOFOLDERSPATH/playing.txt ]
         then
-            rm $AUDIOFOLDERSPATH/playing.txt
+            sudo rm $AUDIOFOLDERSPATH/playing.txt
         fi
         if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
@@ -268,6 +271,7 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
+        if [ $DEBUG == "true" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
@@ -311,23 +315,25 @@ case $COMMAND in
 	;;
     playlistaddplay)
         # add to playlist (and play)
+        if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         
         # save playlist playing
-        echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
+        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         
         # write latest folder played to settings file
         # Chances are, this was already written in 'rfid_trigger_play.sh'
         # However, new development might jump right here and not pipe
         # through 'rfid_trigger_play.sh'
-        echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
-        
+        #echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
+        # clear track(s) from playlist
+        mpc clear
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         ;;
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
-        echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
+        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
