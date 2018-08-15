@@ -246,11 +246,6 @@ case $COMMAND in
     playerstop)
         # stop the player
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
-        if [ -e $AUDIOFOLDERSPATH/playing.txt ]
-        then
-            sudo rm $AUDIOFOLDERSPATH/playing.txt
-        fi
-        if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playerstopafter)
         # stop player after $VALUE minutes
@@ -271,7 +266,6 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
-        if [ $DEBUG == "true" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
@@ -315,25 +309,14 @@ case $COMMAND in
 	;;
     playlistaddplay)
         # add to playlist (and play)
-        if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        
-        # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
-        
-        # write latest folder played to settings file
-        # Chances are, this was already written in 'rfid_trigger_play.sh'
-        # However, new development might jump right here and not pipe
-        # through 'rfid_trigger_play.sh'
-        #echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
-        # clear track(s) from playlist
-        mpc clear
+        # save latest loaded playlist
+        sudo echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         ;;
     playlistadd)
         # add to playlist, no autoplay
-        # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
+        # save latest loaded playlist
+        sudo echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
         mpc load "${VALUE}"
         ;;
     setidletime)
