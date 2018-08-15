@@ -131,7 +131,13 @@ if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debu
 case $COMMAND in 
     shutdown)
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
-        sleep 1
+    	#remove shuffle mode
+	if [ -e $AUDIOFOLDERSPATH/random.txt ]
+        then
+            sudo rm $AUDIOFOLDERSPATH/random.txt
+            mpc random off
+        fi
+	sleep 1
         /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
         sleep 3
         sudo halt
@@ -139,7 +145,13 @@ case $COMMAND in
     shutdownsilent)
         # doesn't play a shutdown sound
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
-        sudo halt
+        #remove shuffle mode
+        if [ -e $AUDIOFOLDERSPATH/random.txt ]
+        then
+            sudo rm $AUDIOFOLDERSPATH/random.txt
+            mpc random off
+        fi
+	sudo halt
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -153,6 +165,12 @@ case $COMMAND in
         ;;
     reboot)
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
+	#remove shuffle mode
+        if [ -e $AUDIOFOLDERSPATH/random.txt ]
+        then
+            sudo rm $AUDIOFOLDERSPATH/random.txt
+            mpc random off
+        fi
         sudo reboot
         ;;
     mute)
@@ -313,8 +331,6 @@ case $COMMAND in
         # activates random file order permanently (not only the current playlist)
         # Remark: IF $AUDIOFOLDERSPATH/random.txt exists, random will be deactivated 
         # This command may be called with ./playout_controls.sh -c=playershuffle
-        # sudo echo $VALUE > $AUDIOFOLDERSPATH/random.txt
-
 	if [ -e $AUDIOFOLDERSPATH/random.txt ]
         then
             sudo rm $AUDIOFOLDERSPATH/random.txt
