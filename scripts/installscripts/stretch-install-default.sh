@@ -1,9 +1,7 @@
 #!/bin/bash
-# DO NOT USE UNTIL THIS LINE HAS DISAPPEARED
 #
 # see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
-#
-# sketch for a luxury one line install script
+# Especially the docs folder for documentation
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -394,7 +392,6 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
 git fetch
-git checkout pr80-mpd-as-audio-player
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off

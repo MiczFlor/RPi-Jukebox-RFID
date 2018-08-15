@@ -8,13 +8,28 @@ And Once you finished with the configuration, read the [manual](MANUAL.md) to ad
 
 This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
 
-## Quick install script
+## <a name="oneLineInstall"></a>One line install command
 
-For the impatient: there is a one line script. If you have your Pi up and running and are connected to the Internet, open the terminal and paste the following line:
+For the impatient: there is a one line script. If you have your
+
+* Raspberry Pi up and running on stretch and 
+* are connected to the Internet
+
+open the terminal and paste the following line:
+
 ~~~
-wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/pr80-mpd-as-audio-player/scripts/installscripts/stretch-install-default-02.sh; chmod +x stretch-install-default-02.sh; ./stretch-install-default-02.sh
+cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
 ~~~
-Having said this, you might learn a bit more about your Raspberry Pi to walk through the installation process step by step.
+
+Having said this, you might learn a bit more about your Raspberry Pi to walk through the installation process step by step, like this:
+
+The one line install command contains five separate commands linked up by replacing the *end of line* with `;`. The commands do the following:
+
+* `cd` - move to the home directory
+* `rm stretch-install-default-02*` - remove previously downloaded versions of the install script
+* `wget https://raw.githubusercont...` - download the actual install script from github
+* `chmod +x stretch-install-default-02.sh` - make the script executable
+* `./stretch-install-default-02.sh` - run the script
 
 ## Install Raspbian on your RPi
 
