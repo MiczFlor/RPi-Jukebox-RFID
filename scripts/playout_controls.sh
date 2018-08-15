@@ -9,7 +9,7 @@
 
 # $DEBUG true|false
 # prints $COMMAND in the terminal and/or log file
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -44,6 +44,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerplay
 # playerreplay
 # playerrepeat
+# playershuffle
 # playlistclear
 # playlistaddplay
 # playlistadd
@@ -186,7 +187,7 @@ case $COMMAND in
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
+	    VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
@@ -308,6 +309,21 @@ case $COMMAND in
                 ;;
         esac
         ;;
+    playershuffle)
+        # activates random file order permanently (not only the current playlist)
+        # Remark: IF $AUDIOFOLDERSPATH/random.txt exists, random will be deactivated 
+        # This command may be called with ./playout_controls.sh -c=playershuffle
+        # sudo echo $VALUE > $AUDIOFOLDERSPATH/random.txt
+
+	if [ -e $AUDIOFOLDERSPATH/random.txt ]
+        then
+            sudo rm $AUDIOFOLDERSPATH/random.txt
+	    mpc random off
+        else
+	    sudo echo $VALUE > $AUDIOFOLDERSPATH/random.txt
+	    mpc random on
+	fi
+	;;
     playlistclear)
         # clear playlist
         $PATHDATA/resume_play.sh -c=savepos
