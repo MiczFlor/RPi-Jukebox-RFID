@@ -14,6 +14,13 @@
 # - before you stop the player
 # - before you shutdown the Pi (maybe not necessary as mpc stores the position between reboots, but it feels saver)
 
+#############################################################
+# $DEBUG true|false
+DEBUG=false
+
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
+
 for i in "$@"
 do
 case $i in
@@ -23,25 +30,32 @@ case $i in
     -v=*|--value=*)
     VALUE="${i#*=}"
     ;;
+    -d=*|--dir=*)
+    FOLDER="${i#*=}"
+    ;;
 esac
 done
 
-# $DEBUG true|false
-# prints $COMMAND in the terminal and/or log file
-DEBUG=false
-
-# Set the date and time of now
-NOW=`date +%Y-%m-%d.%H:%M:%S`
-
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ $DEBUG == "true" ]; then echo "## SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "## SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio by extracting the playlist name 
-FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+# ONLY if none was passed on. The "pass on" is needed to save position
+# when starting a new playlist while an old is playing. In this case
+# mpc lsplaylists will get confused because it has more than one.
+# check if $FOLDER is empty / unset
+if [ -z "$FOLDER" ]
+then 
+    FOLDER=$(mpc lsplaylists)
+fi
 
 case "$COMMAND" in
 
 savepos)
+    if [ $DEBUG == "true" ]; then echo "   savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     # Check if "lastplayed.dat" exists
     if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
     then
@@ -115,7 +129,7 @@ resume)
 enableresume)
     # copy sample file to audiofolder
     sudo cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    # replace values with basic info
+    # replace values with current values
     sudo sed -i 's/%FILENAME%/filename/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%TIMESTAMP%/0/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
