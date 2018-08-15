@@ -75,6 +75,7 @@ savepos)
             sudo sed -i 's|%FILENAME%|'"$CURRENTFILENAME"'|' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
             sudo sed -i 's/%TIMESTAMP%/'"$ELAPSED"'/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
             sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            sudo chmod 777 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
         fi
     fi
     ;;
@@ -133,6 +134,7 @@ enableresume)
     sudo sed -i 's/%FILENAME%/filename/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%TIMESTAMP%/0/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+    sudo chmod 777 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
     ;;
 disableresume)
     sudo rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"

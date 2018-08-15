@@ -24,7 +24,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -244,7 +244,7 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
-if [ $DEBUG == "true" ]; then echo "Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 if [ "$FOLDER" ]; then
 
@@ -267,6 +267,7 @@ if [ "$FOLDER" ]; then
 
         # set path to playlist
         PLAYLISTPATH="/tmp/$FOLDER.m3u"
+        if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
 
         # prep to check "if same playlist playing or paused" later
@@ -327,6 +328,18 @@ if [ "$FOLDER" ]; then
         
         # read the latest folder into var
         Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
+        # now we can write folder name and write RFID to file 
+        # because webapp is also pushed from htdocs/inc.header.php to this script,
+        # but without a CARDID, only -d (FOLDER), we need to check IF CARDID is set.
+        if [ "$CARDID" ]; then
+            sudo echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
+            sudo chmod 777 $PATHDATA/../settings/Latest_RFID_Played
+        fi
+        # write foldername triggered by RFID to file 
+        sudo echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
+        if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
         # 1. MPD playing
@@ -339,12 +352,12 @@ if [ "$FOLDER" ]; then
             then
                 # 1.1.1 YES => stop current && start (resume) new
                 if [ $DEBUG == "true" ]; then echo "1.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-                $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+                sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
+                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
             else 
                 # 1.1.2 NO => stop current
                 if [ $DEBUG == "true" ]; then echo "1.1.2 CHECK FALSE => playout_controls.sh -c=playerstop" >> $PATHDATA/../logs/debug.log; fi
-                $PATHDATA/playout_controls.sh -c=playerstop
+                sudo $PATHDATA/playout_controls.sh -c=playerstop &>/dev/null &
             fi
         fi
         
@@ -358,12 +371,12 @@ if [ "$FOLDER" ]; then
             then
                 # 2.1.1 YES => stop current && start (resume) new
                 if [ $DEBUG == "true" ]; then echo "2.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-                $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+                sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
+                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
             else 
                 # 2.1.2 NO => play (resume) current
                 if [ $DEBUG == "true" ]; then echo "2.1.2 CHECK FALSE => playout_controls.sh -c=playerpause" >> $PATHDATA/../logs/debug.log; fi
-                $PATHDATA/playout_controls.sh -c=playerpause
+                sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null &
             fi
         fi
         
@@ -373,19 +386,10 @@ if [ "$FOLDER" ]; then
             if [ $DEBUG == "true" ]; then echo "3. MPD offline" >> $PATHDATA/../logs/debug.log; fi
             # 3.1 play (resume) current
             if [ $DEBUG == "true" ]; then echo "3.1 play (resume) current" >> $PATHDATA/../logs/debug.log; fi
-            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
+            sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
         fi
 
     else
         if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
     fi
-
-    # write RFID to file 
-    # because webapp is also pushed from htdocs/inc.header.php to this script,
-    # but without a CARDID, only -d (FOLDER), we need to check IF CARDID is set.
-    if [ "$CARDID" ]; then
-        echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
-    fi
-    # write foldername triggered by RFID to file 
-    echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
 fi
