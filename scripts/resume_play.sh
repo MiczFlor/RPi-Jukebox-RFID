@@ -26,7 +26,15 @@ case $i in
 esac
 done
 
+# $DEBUG true|false
+# prints $COMMAND in the terminal and/or log file
+DEBUG=false
+
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
+
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ $DEBUG == "true" ]; then echo "## SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio by extracting the playlist name 
 FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
@@ -107,7 +115,7 @@ resume)
 enableresume)
     # copy sample file to audiofolder
     sudo cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    # replace values with current values
+    # replace values with basic info
     sudo sed -i 's/%FILENAME%/filename/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%TIMESTAMP%/0/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
     sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"

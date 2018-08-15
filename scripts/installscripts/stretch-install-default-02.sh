@@ -471,6 +471,11 @@ sudo chmod 644 /etc/systemd/system/rfid-reader.service
 sudo chmod 644 /etc/systemd/system/startup-sound.service
 sudo chmod 644 /etc/systemd/system/gpio-buttons.service
 sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+# enable the services needed
+# idle-watchdog.service is controlled via the web app
+sudo systemctl enable rfid-reader
+sudo systemctl enable startup-sound
+sudo systemctl enable gpio-buttons
 
 # copy mp3s for startup and shutdown sound to the right folder
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3

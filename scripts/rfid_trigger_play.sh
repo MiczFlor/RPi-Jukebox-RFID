@@ -22,13 +22,17 @@
 # Please consult this file for more information.
 # Do NOT edit anything in this file.
 
-#############################################################
+# $DEBUG true|false
+# prints $COMMAND in the terminal and/or log file
+DEBUG=false
+
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ $DEBUG == "true" ]; then echo "## SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
@@ -257,7 +261,7 @@ if [ "$FOLDER" ]; then
     then
         # As there will be a new playlist loaded, we clear the old one and 
         # save the position (to catch playing and paused audio) for resume -> audio off
-        # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
+        # It has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
         # and this produces an error while saving lastplayed.dat
         sudo $PATHDATA/playout_controls.sh -c=playlistclear
 

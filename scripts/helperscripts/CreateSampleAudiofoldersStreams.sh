@@ -5,7 +5,7 @@
 # * Podcast
 # * Web radio
 # inside the shared/audiofolders directory
-#
+
 # ZZZ-Podcast-DLF-Kinderhoerspiele (dir)
 # * podcast.txt (file)
 # * http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml (content)
@@ -31,13 +31,19 @@ echo "http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3" > ../..
 # * startupsound.mp3 (file)
 
 mkdir ../../shared/audiofolders/ZZZ-MP3-StartUpSound
-cp ../../misc/startupsound.mp3 ../../shared/audiofolders/ZZZ-MP3-StartUpSound/
+cp ../../misc/sampleconfigs/startupsound.mp3.sample ../../shared/audiofolders/ZZZ-MP3-StartUpSound/startupsound.mp3
 
 # ZZZ MP3 Whitespace StartUpSound (dir)
 # * startupsound.mp3 (file)
 
 mkdir ../../shared/audiofolders/ZZZ\ MP3\ Whitespace\ StartUpSound
-cp ../../misc/startupsound.mp3 ../../shared/audiofolders/ZZZ\ MP3\ Whitespace\ StartUpSound/
+cp ../../misc/sampleconfigs/startupsound.mp3.sample ../../shared/audiofolders/ZZZ\ MP3\ Whitespace\ StartUpSound/startupsound.mp3
+
+# ZZZ-AudioFormatsTest (dir)
+# * startupsound.mp3 (file)
+
+mkdir ../../shared/audiofolders/ZZZ-AudioFormatsTest
+cp ../../misc/audiofiletype* ../../shared/audiofolders/ZZZ-AudioFormatsTest/
 
 
 
