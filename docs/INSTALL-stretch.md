@@ -8,7 +8,28 @@ And Once you finished with the configuration, read the [manual](MANUAL.md) to ad
 
 This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
 
-**Quick install script:** after you installed Raspbian and are online with your RPi, you might want to proceed to the [install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh). Having said this, if you are new to your Raspberry, you will learn more going through this step by step.
+## <a name="oneLineInstall"></a>One line install command
+
+For the impatient: there is a one line script. If you have your
+
+* Raspberry Pi up and running on stretch and 
+* are connected to the Internet
+
+open the terminal and paste the following line:
+
+~~~
+cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
+~~~
+
+Having said this, you might learn a bit more about your Raspberry Pi to walk through the installation process step by step, like this:
+
+The one line install command contains five separate commands linked up by replacing the *end of line* with `;`. The commands do the following:
+
+* `cd` - move to the home directory
+* `rm stretch-install-default-02*` - remove previously downloaded versions of the install script
+* `wget https://raw.githubusercont...` - download the actual install script from github
+* `chmod +x stretch-install-default-02.sh` - make the script executable
+* `./stretch-install-default-02.sh` - run the script
 
 ## Install Raspbian on your RPi
 
@@ -20,15 +41,7 @@ IMPORTANT: if you want to be sure that you have the same system running that thi
 
 After you downloaded the `zip` file, follow the instructions on the official [INSTALLING OPERATING SYSTEM IMAGES](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) page. I have used [etcher](https://etcher.io/) to make the SD card as described.
 
-## Configure your RPi
-
-Before you boot your RPi for the first time, make sure that you have all the external devices plugged in. What we need at this stage:
-
-1. An external monitor connected over HDMI
-2. A WiFi card over USB (unless you are using a RPi with an inbuilt WiFi card).
-3. A keyboard and mouse over USB.
-
-Now you have installed and operating system and even a windows manager (called Pixel on Raspbian). Start up your RPi and it will bring you straight to the home screen. Notice that you are not required to log in.
+Plug the SD into your Pi, connect keyboard, monitor and mouse. And fire it up.
 
 ### Configure your keyboard
 
@@ -143,8 +156,9 @@ The following lines will install all the required packages:
 
 ~~~
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm vlc mpg123 at git
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen
 sudo pip install "evdev == 0.7.0"
+sudo pip install youtube_dl
 ~~~
 
 ### Using git to pull the code from github
@@ -181,10 +195,10 @@ wins support = yes
 
 If you are already running a windows home network, add the name of the network where I have added `WORKGROUP`. 
 
-Now add the specific folder that we want to be exposed to the home network in the `smb.conf` file. 
+Now add the specific folder that we want to be exposed to the home network in the `smb.conf` file.
 
 ~~~~
-[pi_jukebox]
+[phoniebox]
    comment=Pi Jukebox
    path=/home/pi/RPi-Jukebox-RFID/shared
    browseable=Yes
@@ -197,6 +211,21 @@ Now add the specific folder that we want to be exposed to the home network in th
 ~~~~
 
 **Note:** the `path` given in this example works (only) if you are installing the Phoniebox code in the directory `/home/pi/`.
+
+If the audio files are not inside the `shared` folder, you might want to add another section to the config file. Otherwise you can not manage audio files over the samba / windows network. This might look like this - changing the path to your needs:
+
+~~~~
+[phoniebox_audio]
+   comment=Pi Jukebox
+   path=/path/to/audiofolders
+   browseable=Yes
+   writeable=Yes
+   only guest=no
+   create mask=0777
+   directory mask=0777
+   public=no
+   veto files=/._*/.DS_Store/
+~~~~
 
 Finally, add the user `pi` to *Samba*. For simplicity and against better knowledge regarding security, I suggest to stick to the default user and password:
 
@@ -333,21 +362,31 @@ sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 ~~~~
 
-Next on the list is the media player which will play the audio files and playlists: VLC. In the coming section you will also learn more about why we gave the web server more power over the system by adding it to the list of `sudo` users.
+## Install MPD, the music player daemon
 
-### VLC: the media player
+[Music Player Daemon](https://www.musicpd.org/) (MPD) is a flexible, powerful, server-side application for playing music. Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol. While MPD is running in the background, MPC acts like a player 'on top'. 
 
-The VLC media player not only plays almost everything (local files, web streams, playlists, folders), it also comes with a command line interface `CLVC` which we will be using to play media on the Phoniebox.
+You need to change the configuration file.
+~~~
+sudo nano /etc/mpd.conf
+~~~
 
-The next step is a severe hack. Quite a radical tweak: we will change the source code of the VLC binary file. We need to do this so that we can control the Phoniebox also over the web app. VLC was designed not to be run with the power of a superuser. In order to trigger VLC from the webserver, this is exactly what we are doing.
+Find these options and change to the following:
 
-Changing the binary code is only a one liner, replacing `geteuid` with `getppid`. If you are interested in the details what this does, you can [read more about the VLC hack here](https://www.blackmoreops.com/2015/11/02/fixing-vlc-is-not-supposed-to-be-run-as-root-sorry-error/).
+* `music_directory "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"`
+* `playlist_directory "/tmp"`
+* `user "root"`
+* `auto_update "yes"` (you have to remove the # in front of that line)
 
-~~~~
-$ sudo sed -i 's/geteuid/getppid/' /usr/bin/vlc
-~~~~
+Maybe you need to change the audio iFace in the config file, too. By default it uses `PCM` which should work out of the box. If it does not work, try `Master` or `Speakers`. Here you can find more information on [how to find the right audio iFace name](CONFIGURE-stretch.md#configAudioIFace) in the section 'Create settings for audio playout'.
 
-**Note:** changing the binary of VLC to allow the program to be run by the webserver as a superuser is another little step in a long string of potential security problems. In short: the Phoniebox is a perfectly fine project to run for your personal pleasure. It's not fit to run on a public server.
+* `mixer_control "yourAudioIfaceNameHere"` (you need to uncomment this line and change the audio iFace shortname)
+
+Then you need to update `mpc`:
+
+~~~
+mpc update
+~~~
 
 ## Using a USB soundcard
 

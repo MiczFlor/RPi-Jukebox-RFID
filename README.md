@@ -1,12 +1,12 @@
 # Phoniebox: the RPi-Jukebox-RFID
-A contactless jukebox for the Raspberry Pi, playing local audio files, playlists or even web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
+
+A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
 *Important update news*
 
-* **Phoniebox 0.9.7 released** The next release after that will not (actively) support `jessie` anymore. And will replace `VLC` with `mpd` to save battery power and add *resume play* as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). On the [release page you can find a list of features](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases). (2018-07-19)
-* **Changing audio player? Your thoughts please** There is a [new branch with 'resume play'](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/pr80-mpd-as-audio-player) in the repo using `mpd` instead of `vlc` for audio playout. What do you think? Use this [thread for feedback and opinions](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/79) (2018-07-17)
+* **Phoniebox 1.0 released** The latest release is saving battery power on the road, replaces the audio player with `mpd` and adds *resume play* as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). (2018-08-18)
+* **One Line Install Script** As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
-* **`config.php` removed in repo** To fix a flaw of the initial commit, I removed the `config.php` file from the `htdocs` directory. It will be created automatically from `config.php.sample`. If you encounter problems after `git pull`, download [`config.php.sample`](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/htdocs/config.php.sample) adjust and copy to `config.php`. (2018-05-03)
 
 ---
 
@@ -44,15 +44,13 @@ The web app runs on any device and is mobile optimised. It provides:
 
 ## <a name="install"></a>Installation
 
-* Installation instructions for Raspbian [Jessie](docs/INSTALL-jessie.md) and [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder.
+* Installation instructions for Raspbian [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder.
 * You can also use the [headless installation over ssh](docs/INSTALL-stretch.md#ssh-install) straight from a fresh SD card.
-* For a quick install procedure, take a look at the [bash install script for Jessie](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/jessie-install-default-01.sh) or the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh). This should get you started quickly, but you still need to walk through the following steps:
-* Configure the Phoniebox after having installed all the components. See details for [Jessie](docs/CONFIGURE-jessie.md) or [Stretch](docs/CONFIGURE-stretch.md).
+* For a quick install procedure, take a look at the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default.sh). This should get you started quickly.
+* If you choose the step by step installation, you need to walk through the configuration steps for [Stretch](docs/CONFIGURE-stretch.md).
 * Once everything has been installed and configured, read the manual to change settings, register RFID cards, add audio: [`MANUAL.md`](docs/MANUAL.md)
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
-
-*A German version for the installation ... hier ist eine etwas überholte [deutsche Version der Installationsdoku für Jessie](http://docplayer.org/68280452-Anleitung-jukebox-kinder-https-github-com-miczflor-rpi-jukebox-rfid-mit-buttons-und-hifiberry-miniamp.html) von [hailogugo](https://forum-raspberrypi.de/user/51824-hailogugo/)* 
 
 ## Manual
 
@@ -60,7 +58,7 @@ In [`MANUAL.md`](docs/MANUAL.md) you will learn:
 
 * [How to connect to the Phoniebox from any computer to add and edit audio files.](docs/MANUAL.md#connect)
 * [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](docs/MANUAL.md#registercards)
-* [How to add web radios, YouTube and other streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
+* [How to add webradio stations and other streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
 * [Adding Podcasts the your Phoniebox](docs/MANUAL.md#podcasts)
 * [How to control the Phoniebox through the web app.](docs/MANUAL.md#webapp)
 * [How to assign cards specific tasks such as changing the volume level or shutting down the Phoniebox.](docs/MANUAL.md#cardcontrol)
@@ -92,6 +90,7 @@ There is a growing section of [troubleshooting](docs/MANUAL.md#faq) including:
 
 There are many, many, many inspiring suggestions and solutions on the web to bring together the idea of a jukebox with RFID cards. I want to mention a few of these that have inspired me.
 
+* Thanks to all the [contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors). Not only for the good code review and feature suggestions, but also for the good spirit I get each time a new Phoniebox comes to this world :)
 * Thanks to Andreas aka [hailogugo](https://github.com/hailogugo) for writing and testing the script for the [GPIO buttons as controllers for the jukebox](docs/GPIO-BUTTONS.md).
 * [Francisco Sahli's Music Cards: RFID cards + Spotify + Raspberry Pi](https://fsahli.wordpress.com/2015/11/02/music-cards-rfid-cards-spotify-raspberry-pi/) written in python, playing songs from Spotify. The code [music-cards](https://github.com/fsahli/music-cards) is on GitHub.
 * [Jeremy Lightsmith's rpi-jukebox](https://github.com/jeremylightsmith/rpi-jukebox) written in Python, using the mpg123 player

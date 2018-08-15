@@ -72,7 +72,7 @@ sudo chown pi:pi rfid_trigger_play.conf
 sudo chmod 665 rfid_trigger_play.conf
 ~~~~
 
-## Create settings for audio playout
+## <a name="configAudioIFace"></a>Create settings for audio playout
 
 Creating files for the `settings` folder which contain the short name
 of the amixer iface used and the percentage the volume increase or 
@@ -88,6 +88,7 @@ To list all available iFace names, type `amixer scontrols`.
 echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
+echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 ~~~
 
 ## <a name="systemdautostart"></a>Auto-start the Phoniebox
@@ -99,9 +100,10 @@ This is the final tweak to the configuration: automatically start our Phoniebox 
 First copy the service config files to the correct directory:
 
 ```
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
 ```
 
 Now systemd has to be notified that there are new service files:
@@ -137,6 +139,12 @@ pi@Jukebox:~ $ systemctl status rfid-reader
            └─393 /usr/bin/python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_
 
 Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.
+```
+
+The mp3s for startup and shutdown sound have to be copied to the right folder. You may use your own sound files as well.
+```
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
 ```
 
 # Connecting the hardware

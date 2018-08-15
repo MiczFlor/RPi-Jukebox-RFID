@@ -20,6 +20,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         
         <!-- Latest compiled and minified CSS -->
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.min.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
         
         <!-- Latest compiled and minified JavaScript -->
         <script src=\"".$url_absolute."_assets/js/jquery.1.12.4.min.js\"></script>
@@ -67,4 +68,24 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
     </head>\n";
 }
 
+function startsWith($haystack, $needle)
+{
+     $length = strlen($needle);
+     return (substr($haystack, 0, $length) === $needle);
+}
+
+function replaceUmlaute($string) {
+    $searchreplace = array(
+        "/Ä/" => "Ae",
+        "/Ö/" => "Oe",
+        "/Ü/" => "Ue",
+        "/ä/" => "ae",
+        "/ö/" => "oe",
+        "/ü/" => "ue",
+        "/ß/" => "ss",
+    );
+    $search = array_keys($searchreplace);
+    $replace = array_values($searchreplace);
+    return(preg_replace($search, $replace, $string));
+}
 ?>

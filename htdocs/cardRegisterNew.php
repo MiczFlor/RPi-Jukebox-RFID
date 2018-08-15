@@ -89,6 +89,15 @@ if(isset($_POST['streamType']) && $_POST['streamType'] != "" && $_POST['streamTy
 if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists('../shared/audiofolders/'.$_POST['audiofolder'])) {
     $post['audiofolder'] = $_POST['audiofolder'];
 }
+if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
+    $post['YTstreamURL'] = $_POST['YTstreamURL'];
+}
+if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
+    $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
+}
+if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists('../shared/audiofolders/'.$_POST['YTaudiofolder'])) {
+    $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
+}
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
     $post['submit'] = $_POST['submit'];
 }
@@ -102,15 +111,37 @@ if($post['submit'] == "submit") {
     /*
     * error check
     */
-    
+    // The dropdown menus for the audiofolders in the section "Audio folders" and "YouTube" are interchangeable.
+    // So you may select the folder in any of both.
+    // Check if two different audiofolders are selectied in the dropdowns
+    if(isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
+        $messageAction .= "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
+    } elseif(!isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
+        //set the audiofolder variable (if unset) to the YTaudiofolder variable. This makes the further handling easier.
+        $post['audiofolder'] = $post['YTaudiofolder'];
+    }
+    // Like above: stream folder inputs are interchangeable.
+    // Check if two different stream folder names are entered
+    if(isset($post['streamFolderName']) && isset($post['YTstreamFolderName']) && $post['streamFolderName'] != $post['YTstreamFolderName']) {
+        $messageAction .= "<p>This is too much! Please enter only one folder name. Make up your mind.</p>";
+    } elseif(!isset($post['streamFolderName']) && isset($post['YTstreamFolderName'])) {
+        //set the streamFolderName variable (if unset) to the YTstreamFolderName variable. This makes the further handling easier.
+        $post['streamFolderName'] = $post['YTstreamFolderName'];
+    }
+
     // posted too much?
     if(isset($post['streamURL']) && isset($post['audiofolder'])) {
         $messageAction .= "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
     }
     
     // posted too little?
-    if(!isset($post['streamURL']) && !isset($post['audiofolder'])) {
+    if(!isset($post['streamURL']) && !isset($post['audiofolder']) && !isset($post['YTstreamURL'])) {
         $messageAction .= "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
+    }
+
+    // posted streamFolderName and audiofolder
+    if(isset($post['streamFolderName']) && isset($post['audiofolder'])) {
+        $messageAction .= "<p>This is too much! Either choose an existing folder or create a new one.</p>";
     }
     
     // streamFolderName already exists
@@ -118,7 +149,7 @@ if($post['submit'] == "submit") {
         $messageAction .= "<p>A folder named '".$post['streamFolderName']."' already exists! Chose a different one.</p>";
     }
     
-    // streamFolderName already exists
+    // No streamFolderName entered
     if(isset($post['streamURL']) && !isset($post['streamFolderName'])) {
         $messageAction .= "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
         // get rid of strange chars, prefixes and the like
@@ -126,7 +157,7 @@ if($post['submit'] == "submit") {
     }
     
     // streamFolderName not given
-    if(isset($post['streamURL']) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
+    if( ( isset($post['streamURL']) || isset($post['YTstreamURL']) ) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
         $messageAction .= "<p>A folder name for the stream needs to be created. I'll make a suggestion.</p>";
         // get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
@@ -147,6 +178,14 @@ if($post['submit'] == "submit") {
             include('inc.processAddNewStream.php');
             // success message
             $messageSuccess = "<p>Stream inside folder '".$post['streamFolderName']."' is now linked to card ID '".$post['cardID']."'</p>";
+        }
+        elseif(isset($post['YTstreamURL'])) {
+            /*
+            * Stream URL to be created
+            */
+            include('inc.processAddYT.php');
+            // success message
+            $messageSuccess = "<p>YouTube audio is downloading. This may take a couple of minutes. You may check the logfile \"youtube-dl.log\" in the shared folder.</p>";
         } else {
             /*
             * connect card with existing audio folder
