@@ -311,8 +311,6 @@ case $COMMAND in
         # add to playlist (and play)
         # save latest loaded playlist
         sudo echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
-        # clear track(s) from playlist
-        mpc clear
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
         ;;
     playlistadd)
