@@ -85,6 +85,11 @@ if [ "$CARDID" ]; then
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in 
+	#SCA 15.08.2018 Shuffle mode
+	$CMDSHUFFLE)
+            $PATHDATA/playout_controls.sh -c=playershuffle
+	    ;;
+
         $CMDMUTE)
             # amixer sset 'PCM' 0%
             $PATHDATA/playout_controls.sh -c=mute
