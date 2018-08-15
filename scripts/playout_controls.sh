@@ -9,7 +9,7 @@
 
 # $DEBUG true|false
 # prints $COMMAND in the terminal and/or log file
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
