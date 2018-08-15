@@ -379,6 +379,9 @@ esac
 # the option to install from config file is introduced.)
 . $PATHDATA/PhonieboxInstall.conf
 
+# power management of wifi: switch off to avoid disconnecting
+sudo iwconfig wlan0 power off
+
 # Install required packages
 sudo apt-get update
 sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen
@@ -401,6 +404,8 @@ sudo iwconfig wlan0 power off
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
+# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
 # Samba: create user 'pi' with password 'raspberry'
 (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
 

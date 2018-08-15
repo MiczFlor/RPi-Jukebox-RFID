@@ -252,9 +252,20 @@
 # to the drivers directory for these users to have write rights in it
 ;   write list = root, @lpadmin
 
-[pi_jukebox]
+[phoniebox]
    comment= Pi Jukebox
    path=/home/pi/RPi-Jukebox-RFID/shared
+   browseable=Yes
+   writeable=Yes
+   only guest=no
+   create mask=0777
+   directory mask=0777
+   public=no
+   
+# if the audiofiles are not in 'shared', we need this
+[phoniebox_audiofile]
+   comment= Pi Jukebox
+   path=%DIRaudioFolders%
    browseable=Yes
    writeable=Yes
    only guest=no

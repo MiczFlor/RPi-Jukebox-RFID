@@ -8,7 +8,13 @@ And Once you finished with the configuration, read the [manual](MANUAL.md) to ad
 
 This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
 
-**Quick install script:** after you installed Raspbian and are online with your RPi, you might want to proceed to the [install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default-01.sh). Having said this, if you are new to your Raspberry, you will learn more going through this step by step.
+## Quick install script
+
+For the impatient: there is a one line script. If you have your Pi up and running and are connected to the Internet, open the terminal and paste the following line:
+~~~
+wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/pr80-mpd-as-audio-player/scripts/installscripts/stretch-install-default-02.sh; chmod +x stretch-install-default-02.sh; ./stretch-install-default-02.sh
+~~~
+Having said this, you might learn a bit more about your Raspberry Pi to walk through the installation process step by step.
 
 ## Install Raspbian on your RPi
 
@@ -20,15 +26,7 @@ IMPORTANT: if you want to be sure that you have the same system running that thi
 
 After you downloaded the `zip` file, follow the instructions on the official [INSTALLING OPERATING SYSTEM IMAGES](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) page. I have used [etcher](https://etcher.io/) to make the SD card as described.
 
-## Configure your RPi
-
-Before you boot your RPi for the first time, make sure that you have all the external devices plugged in. What we need at this stage:
-
-1. An external monitor connected over HDMI
-2. A WiFi card over USB (unless you are using a RPi with an inbuilt WiFi card).
-3. A keyboard and mouse over USB.
-
-Now you have installed and operating system and even a windows manager (called Pixel on Raspbian). Start up your RPi and it will bring you straight to the home screen. Notice that you are not required to log in.
+Plug the SD into your Pi, connect keyboard, monitor and mouse. And fire it up.
 
 ### Configure your keyboard
 
@@ -143,7 +141,7 @@ The following lines will install all the required packages:
 
 ~~~
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm mpd mpc mpg123 at git ffmpeg
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen
 sudo pip install "evdev == 0.7.0"
 sudo pip install youtube_dl
 ~~~
@@ -182,10 +180,10 @@ wins support = yes
 
 If you are already running a windows home network, add the name of the network where I have added `WORKGROUP`. 
 
-Now add the specific folder that we want to be exposed to the home network in the `smb.conf` file. 
+Now add the specific folder that we want to be exposed to the home network in the `smb.conf` file.
 
 ~~~~
-[pi_jukebox]
+[phoniebox]
    comment=Pi Jukebox
    path=/home/pi/RPi-Jukebox-RFID/shared
    browseable=Yes
@@ -198,6 +196,21 @@ Now add the specific folder that we want to be exposed to the home network in th
 ~~~~
 
 **Note:** the `path` given in this example works (only) if you are installing the Phoniebox code in the directory `/home/pi/`.
+
+If the audio files are not inside the `shared` folder, you might want to add another section to the config file. Otherwise you can not manage audio files over the samba / windows network. This might look like this - changing the path to your needs:
+
+~~~~
+[phoniebox_audio]
+   comment=Pi Jukebox
+   path=/path/to/audiofolders
+   browseable=Yes
+   writeable=Yes
+   only guest=no
+   create mask=0777
+   directory mask=0777
+   public=no
+   veto files=/._*/.DS_Store/
+~~~~
 
 Finally, add the user `pi` to *Samba*. For simplicity and against better knowledge regarding security, I suggest to stick to the default user and password:
 
