@@ -86,7 +86,7 @@ if [ "$CARDID" ]; then
 
     case $CARDID in 
 	$CMDSHUFFLE)
-	    # sets random=on or =off
+	    # toogles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
 	    ;;
         $CMDMUTE)
