@@ -1,3 +1,45 @@
+
+
+
+<?php
+/*
+<div class="collapse" id="collapsePlaylist" aria-expanded="false" style="height: 0px;"> 
+<table class="table table-striped table-hover table-condensed"> 
+    <!--thead> 
+        <tr> 
+            <th></th> 
+        </tr> 
+    </thead--> 
+    <tbody style="a {color:black;}; a:hover {color:white;}"> 
+        <tr> 
+            <td><a href="?playpos='.$i.'" class="btn btn-success btn-xs"><i class="fa fa-play" aria-hidden="true"></i></a></td> 
+            <th scope=row>1</th> 
+            <td>The title of the track - it could be long</td> 
+            <td>03:12</td> 
+        </tr>  
+        <tr> 
+            <td><a href="?playpos='.$i.'" class="btn btn-xs" style="color:black;"><i class="fa fa-play" aria-hidden="true"></i></a></td>  
+            <th scope=row>2</th> 
+            <td class="text">
+                <span>
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                This is the tenth album by 
+                </span>
+            </td> 
+            <td>23:42</td> 
+        </tr>  
+    </tbody> 
+</table>
+</div> 
+
+*/
+?>
 <?php
 print '
         <div class="panel-group">

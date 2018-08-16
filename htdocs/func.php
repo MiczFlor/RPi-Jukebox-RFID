@@ -19,12 +19,14 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <title>".$title."</title>
         
         <!-- Latest compiled and minified CSS -->
-        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.min.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.cosmo.css\">
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
         
         <!-- Latest compiled and minified JavaScript -->
         <script src=\"".$url_absolute."_assets/js/jquery.1.12.4.min.js\"></script>
         <script src=\"".$url_absolute."_assets/bootstrap-3/js/bootstrap.min.js\"></script>
+        <script src=\"".$url_absolute."_assets/bootstrap-3/js/collapse.js\"></script>
+        <script src=\"".$url_absolute."_assets/bootstrap-3/js/transition.js\"></script>
 
         <link rel='stylesheet' href='".$url_absolute."_assets/font-awesome/css/font-awesome.min.css'>
         
@@ -62,6 +64,55 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .btnFolder, .folderContent {
             max-width: 100%;
             overflow: hidden;
+        }
+        .btn-player-xl {
+            padding:4px 10px;
+            font-size:38px;
+            line-height:1;
+            border-radius:6px;
+        }
+        .btn-player-l {
+            padding:0px 16px;
+            font-size:30px;
+            line-height:1;
+            border-radius:6px;
+        }
+        .btn-player-m {
+            padding:15px 16px;
+            font-size:18px;
+            line-height:1;
+            border-radius:6px;
+        }
+        .btn-player-s {
+            padding:15px 5px;
+            font-size:11px;
+            line-height:1;
+            border-radius:6px;
+        }
+        .playerWrapper {
+            display: block!important;
+            clear: both;
+            height: auto;
+            margin: 0 auto;
+            text-align: center;
+            margin-top: 1em;
+            color: ;
+        }
+        .playerWrapper a {
+            color: #456!important;
+        }
+        .playerWrapper a:hover {
+            color: black!important;
+        }
+        .table td.text {
+            max-width: 100px;
+        }
+        .table td.text span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            max-width: 100%;
         }
         </style>
         

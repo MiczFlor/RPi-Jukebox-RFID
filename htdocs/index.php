@@ -32,7 +32,6 @@ if(isset($warning)) {
 
 include("inc.controlPlayer.php");
 
-include("inc.controlVolumeUpDown.php");
 ?>
 
       </div><!-- / .col-lg-12 -->
@@ -40,6 +39,7 @@ include("inc.controlVolumeUpDown.php");
 
 <?php
 // show currently played track
+            include("inc.loadedPlaylist.php");
 if (isset($playerStatus['file'])) {
     print '
     <div class="row">
