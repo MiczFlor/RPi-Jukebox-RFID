@@ -24,7 +24,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -85,6 +85,10 @@ if [ "$CARDID" ]; then
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in 
+	$CMDSHUFFLE)
+	    # toogles shuffle mode  (random on/off)
+            $PATHDATA/playout_controls.sh -c=playershuffle
+	    ;;
         $CMDMUTE)
             # amixer sset 'PCM' 0%
             $PATHDATA/playout_controls.sh -c=mute

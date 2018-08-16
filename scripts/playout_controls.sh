@@ -9,7 +9,7 @@
 
 # $DEBUG true|false
 # prints $COMMAND in the terminal and/or log file
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -44,6 +44,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerplay
 # playerreplay
 # playerrepeat
+# playershuffle
 # playlistclear
 # playlistaddplay
 # playlistadd
@@ -106,7 +107,7 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo $MAXVOL
-#echo `cat $VOLFILE`
+#echo $VOLFILE
 #echo $IDLETIME
 #echo $AUDIOFOLDERSPATH
 
@@ -130,7 +131,10 @@ if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debu
 case $COMMAND in 
     shutdown)
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
-        sleep 1
+    	#remove shuffle mode if active
+	SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+	sleep 1
         /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
         sleep 3
         sudo halt
@@ -138,7 +142,10 @@ case $COMMAND in
     shutdownsilent)
         # doesn't play a shutdown sound
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
-        sudo halt
+        #remove shuffle mode if active
+        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+	sudo halt
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -152,6 +159,9 @@ case $COMMAND in
         ;;
     reboot)
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
+	#remove shuffle mode if active
+        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sudo reboot
         ;;
     mute)
@@ -186,7 +196,7 @@ case $COMMAND in
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
+	    VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
@@ -308,6 +318,12 @@ case $COMMAND in
                 ;;
         esac
         ;;
+    playershuffle)
+        # toogles shuffle mode on/off (not only the current playlist but for the whole mpd)
+        # this is why a check if "random on" has to be done for shutdown and reboot
+        # This command may be called with ./playout_controls.sh -c=playershuffle
+	mpc random
+	;;
     playlistclear)
         # clear playlist
         $PATHDATA/resume_play.sh -c=savepos
