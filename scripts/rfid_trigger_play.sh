@@ -319,7 +319,7 @@ if [ "$FOLDER" ]; then
         	# cd to $AUDIOFOLDERSPATH as mpd accepts only filepaths relative to its music folder
         	# or starting with file:// (e.g. file:///home/pi...)
                 cd $AUDIOFOLDERSPATH
-                find "$FOLDER" -type f | sort -n > "$PLAYLISTPATH"
+                find "$FOLDER" -type f | sort -f > "$PLAYLISTPATH"
                 if [ $DEBUG == "true" ]; then echo "Nothing special $PLAYLISTPATH" >> $PATHDATA/../logs/debug.log; fi
             ;;
         esac
