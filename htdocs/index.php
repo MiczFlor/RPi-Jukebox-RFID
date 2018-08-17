@@ -39,7 +39,7 @@ include("inc.controlPlayer.php");
 
 <?php
 // show currently played track
-            include("inc.loadedPlaylist.php");
+
 if (isset($playerStatus['file'])) {
     print '
     <div class="row">
