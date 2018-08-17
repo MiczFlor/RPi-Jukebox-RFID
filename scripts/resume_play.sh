@@ -21,6 +21,9 @@ DEBUG=false
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
+# path to audio folders
+AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
+
 for i in "$@"
 do
 case $i in
@@ -52,12 +55,25 @@ then
     FOLDER=$(mpc lsplaylists)
 fi
 
+# Some error checking: if folder.conf does not exist, create default
+if [ ! -e "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]
+then
+    # now we create a default folder.conf file by calling this script
+    # with the command param createDefaultFolderConf
+    # (see script for details)
+    # the $FOLDER would not need to be passed on, because it is already set in this script
+    # see inc.writeFolderConfig.sh for details
+    . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+fi
+# Read the current config file (include will execute == read)
+. "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+
 case "$COMMAND" in
 
 savepos)
     if [ $DEBUG == "true" ]; then echo "   savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
-    # Check if "lastplayed.dat" exists
-    if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
+    # Check if "folder.conf" exists
+    if [ $RESUME == "ON" ];
     then
         # Get the elapsed time of the currently played audio file from mpd
         ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
@@ -66,28 +82,29 @@ savepos)
         then
             #Get the filename of the currently played audio
             CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
-            # Save filename and time to lastplayed.dat. "Stopped" for signaling -c=resume that there was a stopping event
+            # Save filename and time to folder.conf. 
+            # "Stopped" for signaling -c=resume that there was a stopping event
             # (this is done to get a proper resume on the first track if the playlist has ended before)
-            # copy sample file to audiofolder
-            sudo cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            # replace values with current values
-            # for $CURRENTFILENAME using | as alternate regex delimiter because of the folder path slash 
-            sudo sed -i 's|%FILENAME%|'"$CURRENTFILENAME"'|' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            sudo sed -i 's/%TIMESTAMP%/'"$ELAPSED"'/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            sudo chmod 777 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            
+            # set the vars we need to change
+            CURRENTFILENAME=$CURRENTFILENAME
+            ELAPSED=$ELAPSED
+            PLAYSTATUS="Stopped"
+            # now calling a script which will only replace these new vars in folder.conf
+            # (see script for details)
+            . $PATHDATA/inc.writeFolderConfig.sh
         fi
     fi
     ;;
 resume)
-    # Check if "lastplayed.dat" exists
-    if [ -e "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat" ];
+    # Check if RESUME is switched on
+    if [ $RESUME == "ON" ];
     then
-        # read vars from lastplayed.dat
-        . "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+        # read vars from folder.conf
+        . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
         # will generate variables:
-        #FILENAME
-        #TIMESTAMP
+        #CURRENTFILENAME
+        #ELAPSED
         #PLAYSTATUS
         
         # Check if we got a "savepos" command after the last "resume". Otherwise we assume that the playlist was played until the end.
@@ -96,27 +113,28 @@ resume)
         then
             # Get the playlist position of the file from mpd
             # Alternative approach: "mpc searchplay xx && mpc seek yy" 
-            PLAYLISTPOS=$(echo -e playlistfind filename \"$FILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
+            PLAYLISTPOS=$(echo -e playlistfind filename \"$CURRENTFILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
 
-            # If the file is found, it is played from timestamp, otherwise start playlist from beginning. If we got a playlist position
+            # If the file is found, it is played from ELAPSED, otherwise start playlist from beginning. If we got a playlist position
             # play from that position, not the saved one.
             if [ ! -z $PLAYLISTPOS ] && [ -z $VALUE ] ;
             then
-                echo -e seek $PLAYLISTPOS $TIMESTAMP \\nclose | nc -w 1 localhost 6600
+                echo -e seek $PLAYLISTPOS $ELAPSED \\nclose | nc -w 1 localhost 6600
             else
                 echo -e "play $VALUE" | nc -w 1 localhost 6600
             fi
-            # If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks), there's no savepos event
-            # and we would resume at the last position anywhere in the playlist. To catch these, we signal it to the next "resume" call
-            # via writing it to the lastplayed.dat that we still assume that the audio is playing. Remark: $FILENAME and $TIMESTAMP can
+            # If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks), 
+            # there's no savepos event and we would resume at the last position anywhere in the playlist. 
+            # To catch these, we signal it to the next "resume" call via writing it to folder.conf that 
+            # we still assume that the audio is playing. 
             # be anything here, as we won't use the information if "Playing" is found by "resume".
-            # copy sample file to audiofolder
-            sudo cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            # replace values with current values
-            # for $FILENAME using | as alternate regex delimiter because of the folder path slash 
-            sudo sed -i 's|%FILENAME%|'"$FILENAME"'|' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            sudo sed -i 's/%TIMESTAMP%/'"$TIMESTAMP"'/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
-            sudo sed -i 's/%PLAYSTATUS%/Playing/' "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+            
+            # set the vars we need to change
+            PLAYSTATUS="Playing"
+            # now calling a script which will only replace these new vars in folder.conf
+            # (see script for details)
+            . $PATHDATA/inc.writeFolderConfig.sh
+            
         else
             # We assume that the playlist ran to the end the last time and start from the beginning.
             # Or: playlist is playing and we've got a play from playlist position command.
@@ -128,16 +146,18 @@ resume)
     fi
     ;;
 enableresume)
-    # copy sample file to audiofolder
-    sudo cp "$PATHDATA/../misc/lastplayed.dat.sample" "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    # replace values with current values
-    sudo sed -i 's/%FILENAME%/filename/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    sudo sed -i 's/%TIMESTAMP%/0/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    sudo sed -i 's/%PLAYSTATUS%/Stopped/' "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
-    sudo chmod 777 "$PATHDATA/../shared/audiofolders/$FOLDER/lastplayed.dat"
+        # set the vars we need to change
+        RESUME="ON"
+        # now calling a script which will only replace these new vars in folder.conf
+        # (see script for details)
+        . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 disableresume)
-    sudo rm "$PATHDATA/../shared/audiofolders/$VALUE/lastplayed.dat"
+        # set the vars we need to change
+        RESUME="OFF"
+        # now calling a script which will only replace these new vars in folder.conf
+        # (see script for details)
+        . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 *)
     echo "Command unknown"
