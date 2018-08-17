@@ -114,6 +114,8 @@ foreach($audiofolders as $audiofolder) {
         }
         $ids = rtrim($ids, "| "); // get rid of trailing slash
     }
+    parse_str($conf['base_path'].'/shared/audiofolders/'.$audiofolder.'/folder.conf', $folderConf);
+    $folderConfRaw = file_get_contents($audiofolder.'/folder.conf');
     // if folder not empty, display play button and content
     if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
         print "
@@ -126,15 +128,23 @@ foreach($audiofolders as $audiofolder) {
         print "
             <a href='?play=".$audiofolder."' class='btn btn-info'><i class='fa fa-play'></i> Play</a> ";
         // Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
-        if (in_array("lastplayed.dat", $files) && ! in_array("livestream.txt", $files) ) {
-            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>Resume: ON <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
-            //print "<span class='label label-success'>Resume play <i class='fa fa-toggle-on' aria-hidden='true'></i></span>";
-            //$accordion .= "<a href='?disableresume=".$audiofolder."' class='btn btn-danger'><i class='fa fa-power-off'></i> Disable Resume</a>";
-        }
-        elseif ( ! in_array("livestream.txt", $files) ) {
+
+// RESUME BUTTON
+// do not show any if there is a live stream in the folder
+if (!in_array("livestream.txt", $files) ) {
+    $foundResume = "OFF";
+    if( file_exists($audiofolder."/folder.conf") && strpos(file_get_contents($audiofolder."/folder.conf"),'RESUME="ON"') !== false) {
+        $foundResume = "ON";
+    } else {
+    }
+}
+if( $foundResume == "OFF" ) {
+        // do stuff
             print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>Resume: OFF <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
-            //$accordion .= "<a href='?enableresume=".$audiofolder."' class='btn btn-success'><i class='fa fa-play'></i> Enable Resume</a>";
-        }
+    } elseif($foundResume == "ON") {
+            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>Resume: ON <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+}
+
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>Show files <i class='fa fa-folder-open-o'></i></span> ";
         print "
