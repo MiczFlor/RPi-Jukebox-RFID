@@ -103,25 +103,10 @@ then
     if [ "$SHUFFLE" ]; then NEWSHUFFLE="$SHUFFLE"; fi
     if [ "$LOOP" ]; then NEWLOOP="$LOOP"; fi
 
-if [ $DEBUG == "true" ]; then echo "VAR NEWCURRENTFILENAME: $NEWCURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR NEWELAPSED: $NEWELAPSED" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR NEWPLAYSTATUS: $NEWPLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR NEWRESUME: $NEWRESUME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR NEWSHUFFLE: $NEWSHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR NEWLOOP: $NEWLOOP" >> $PATHDATA/../logs/debug.log; fi
-
     # Read the current config file (include will execute == read)
     . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR PLAYSTATUS: $PLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR RESUME: $RESUME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR SHUFFLE: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.log; fi
 
     #########################################################
     # RAW CONFIG FILE
@@ -162,15 +147,6 @@ if [ $DEBUG == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.
     sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo chmod 777 "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-
-if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR PLAYSTATUS: $PLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR RESUME: $RESUME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR SHUFFLE: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.log; fi
 
 else
     if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder" >> $PATHDATA/../logs/debug.log; fi
