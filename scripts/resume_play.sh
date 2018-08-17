@@ -21,9 +21,6 @@ DEBUG=false
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
-# path to audio folders
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
-
 for i in "$@"
 do
 case $i in
@@ -40,7 +37,12 @@ esac
 done
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# path to audio folders
+AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
+
 if [ $DEBUG == "true" ]; then echo "## SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
@@ -53,6 +55,8 @@ if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/de
 if [ -z "$FOLDER" ]
 then 
     FOLDER=$(mpc lsplaylists)
+    # actually, this should be the latest folder:
+    FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
 fi
 
 # Some error checking: if folder.conf does not exist, create default
@@ -63,15 +67,27 @@ then
     # (see script for details)
     # the $FOLDER would not need to be passed on, because it is already set in this script
     # see inc.writeFolderConfig.sh for details
-    . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+    if [ $DEBUG == "true" ]; then echo "  - calling inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=\$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    #. $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+    if [ $DEBUG == "true" ]; then echo "  - back from inc.writeFolderConfig.sh" >> $PATHDATA/../logs/debug.log; fi
 fi
 # Read the current config file (include will execute == read)
 . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR PLAYSTATUS: $PLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR RESUME: $RESUME" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR SHUFFLE: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.log; fi
+
+if [ $DEBUG == "true" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 
 case "$COMMAND" in
 
 savepos)
-    if [ $DEBUG == "true" ]; then echo "   savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "  savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     # Check if "folder.conf" exists
     if [ $RESUME == "ON" ];
     then
@@ -97,6 +113,7 @@ savepos)
     fi
     ;;
 resume)
+    if [ $DEBUG == "true" ]; then echo "  entering: resume with value $RESUME" >> $PATHDATA/../logs/debug.log; fi
     # Check if RESUME is switched on
     if [ $RESUME == "ON" ];
     then
@@ -146,6 +163,7 @@ resume)
     fi
     ;;
 enableresume)
+        if [ $DEBUG == "true" ]; then echo "  entering: enableresume" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
         RESUME="ON"
         # now calling a script which will only replace these new vars in folder.conf
@@ -153,6 +171,7 @@ enableresume)
         . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 disableresume)
+        if [ $DEBUG == "true" ]; then echo "  entering: disableresume" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
         RESUME="OFF"
         # now calling a script which will only replace these new vars in folder.conf

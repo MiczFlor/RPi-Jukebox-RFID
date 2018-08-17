@@ -130,6 +130,7 @@ if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debu
         
 case $COMMAND in 
     shutdown)
+        if [ $DEBUG == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
     	#remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -343,8 +344,8 @@ case $COMMAND in
         #echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
         # clear track(s) from playlist
         mpc clear
-        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
+        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE
+        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE"; fi
         ;;
     playlistadd)
         # add to playlist, no autoplay

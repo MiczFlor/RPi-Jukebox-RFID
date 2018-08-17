@@ -13,6 +13,9 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
   <div class="container">
 
 <?php
+
+
+
 include("inc.playerStatus.php");
 ?>
 
