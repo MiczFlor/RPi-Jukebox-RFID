@@ -1,3 +1,9 @@
+<?php
+/*
+* load language strings
+*/
+include("inc.langLoad.php");
+?>
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">

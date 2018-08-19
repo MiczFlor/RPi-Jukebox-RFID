@@ -63,7 +63,7 @@ include("inc.volumeSelect.php");
 
     <div class="row">
       <div class="col-lg-12">
-        <h3>Available audio</h3>
+        <h3><?php print $lang['indexAvailAudio']; ?></h3>
       <div class="row">
 <?php
 
@@ -92,12 +92,12 @@ foreach($audiofolders as $audiofolder) {
     
     // get list of content for each folder
     $files = scandir($audiofolder);
-    $accordion = "<h4>Contains the following file(s):</h4><ul>";
+    $accordion = "<h4>".$lang['indexContainsFiles']."</h4><ul>";
     foreach($files as $file) {
 	// add file name to list, supress if it's lastplayed.dat
         if(is_file($audiofolder."/".$file) && $file != "lastplayed.dat"){
             $accordion .= "\n<li>".$file;
-            $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='fa fa-wrench'></i> Edit</a>";
+            $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='fa fa-wrench'></i> ".$lang['globalEdit']."</a>";
             $accordion .= "</li>";
         }
     }
@@ -117,7 +117,7 @@ foreach($audiofolders as $audiofolder) {
     parse_str($conf['base_path'].'/shared/audiofolders/'.$audiofolder.'/folder.conf', $folderConf);
     $folderConfRaw = file_get_contents($audiofolder.'/folder.conf');
     // if folder not empty, display play button and content
-    if ($accordion != "<h4>Contains the following file(s):</h4><ul></ul>") {
+    if ($accordion != "<h4>".$lang['indexContainsFiles']."</h4><ul></ul>") {
         print "
         <div class='col-md-6'>
         <div class='well'>";
@@ -126,7 +126,7 @@ foreach($audiofolders as $audiofolder) {
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
                 </h4>";
         print "
-            <a href='?play=".$audiofolder."' class='btn btn-info'><i class='fa fa-play'></i> Play</a> ";
+            <a href='?play=".$audiofolder."' class='btn btn-info'><i class='fa fa-play'></i> ".$lang['globalPlay']."</a> ";
         // Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
 
 // RESUME BUTTON
@@ -140,13 +140,13 @@ if (!in_array("livestream.txt", $files) ) {
 }
 if( $foundResume == "OFF" ) {
         // do stuff
-            print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>Resume: OFF <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
+            print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
     } elseif($foundResume == "ON") {
-            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>Resume: ON <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
 }
 
         print "
-            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>Show files <i class='fa fa-folder-open-o'></i></span> ";
+            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>".$lang['indexShowFiles']." <i class='fa fa-folder-open-o'></i></span> ";
         print "
             <div id='folder".$idcounter."' class='collapse folderContent'>
             ".$accordion."
@@ -155,7 +155,7 @@ if( $foundResume == "OFF" ) {
         // print ID if any found
         if($ids != "") {
             print "
-            <br/>Card ID: ".$ids;
+            <br/>".$lang['globalCardId'].": ".$ids;
         } else {
             print "            
             <br/>&nbsp;";
@@ -174,9 +174,9 @@ if( $foundResume == "OFF" ) {
           <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-12">
-              <h4>Manage Files and Chips</h4>
+              <h4><?php print $lang['indexManageFilesChips']; ?></h4>
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
-                <i class='fa  fa-plus-circle'></i> Register new card ID
+                <i class='fa  fa-plus-circle'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
               </div>
             </div><!-- ./row -->
@@ -191,7 +191,7 @@ if( $foundResume == "OFF" ) {
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Last used Chip ID</h4>
+            <h4 class="modal-title" id="myModalLabel"><?php print $lang['globalLastUsedCard']; ?></h4>
           </div>
           <div class="modal-body">
 <pre>
@@ -201,7 +201,7 @@ print file_get_contents($conf['base_path'].'/shared/latestID.txt', true);
 </pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><?php print $lang['globalClose']; ?></button>
           </div>
     
         </div><!-- / .modal-content -->

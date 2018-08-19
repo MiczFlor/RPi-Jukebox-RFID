@@ -13,10 +13,6 @@
 */
 $debug = "false"; // true or false
 
-/*
-* Lang files
-*/
-include("lang/lang-UK.php");
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
