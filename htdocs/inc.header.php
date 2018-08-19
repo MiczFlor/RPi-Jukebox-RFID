@@ -13,6 +13,7 @@
 */
 $debug = "false"; // true or false
 
+
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
 * Configuration file
@@ -439,7 +440,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
     } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['enableresume']));
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableresume']));
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -455,7 +456,7 @@ if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is
     } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -v=".preg_replace('/\s+/', '\ ',basename($urlparams['disableresume']));
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableresume']));
     exec($exec);
 
     /* redirect to drop all the url parameters */

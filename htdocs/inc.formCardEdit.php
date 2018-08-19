@@ -2,7 +2,7 @@
         <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
         
         <fieldset> 
-        <legend>Card ID</legend>
+        <legend><?php print $lang['globalCardId']; ?></legend>
         <!-- Text input-->
         <div class="form-group">
           <label class="col-md-4 control-label" for="streamURL"><?php print $fdata['streamURL_label']; ?></label>  
@@ -38,14 +38,14 @@ foreach ($shortcutstemp as $shortcuttemp) {
         
         <fieldset>        
         <!-- Form Name -->
-        <legend>Audio folder</legend>
+        <legend><?php print $lang['cardFormFolderLegend']; ?></legend>
         
         <!-- Select Basic -->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="audiofolder">a) Link card to audio folder</label>
+          <label class="col-md-4 control-label" for="audiofolder"><?php print $lang['cardFormFolderLabel']; ?></label>
           <div class="col-md-6">
             <select id="audiofolder" name="audiofolder" class="form-control">
-              <option value="false">None (pulldown to select a folder)</option>
+              <option value="false"><?php print $lang['cardFormFolderSelectDefault']; ?></option>
 <?php
 // read the subfolders of shared/audiofolders
 $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
@@ -80,18 +80,18 @@ foreach($audiofolders as $audiofolder) {
         
         <fieldset>        
         <!-- Form Name -->
-        <legend>Stream</legend>
+        <legend><?php print $lang['globalStream']; ?></legend>
         
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="streamURL">b) ... or connect with Stream URL</label>  
+          <label class="col-md-4 control-label" for="streamURL"><?php print $lang['cardFormStreamLabel']; ?></label>  
           <div class="col-md-6">
           <input value="<?php
           if (isset($fpost['streamURL'])) {
               print $fpost['streamURL'];
           }
-          ?>" id="streamURL" name="streamURL" placeholder="http(...).mp3 / .m3u / .ogg / ..." class="form-control input-md" type="text">
-          <span class="help-block">Add the URL for a podcast, web radio, stream or other online media</span>  
+          ?>" id="streamURL" name="streamURL" placeholder="<?php print $lang['cardFormStreamPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['cardFormStreamHelp']; ?></span>  
           </div>
         </div>
         
@@ -100,13 +100,13 @@ foreach($audiofolders as $audiofolder) {
           <label class="col-md-4 control-label" for="streamType"></label>
           <div class="col-md-6">
             <select id="streamType" name="streamType" class="form-control">
-              <option value="false">Select type of stream</option>
+              <option value="false"><?php print $lang['cardFormStreamTypeSelectDefault']; ?></option>
               <option value='podcast'<?php if($fpost['streamType'] == "podcast") { print " selected=selected"; } ?>>Podcast</option>
               <!-option value='youtube'<?php if($fpost['streamType'] == "youtube") { print " selected=selected"; } ?>>YouTube</option->
               <option value='livestream'<?php if($fpost['streamType'] == "livestream") { print " selected=selected"; } ?>>Web radio / live stream</option>
               <option value='other'<?php if($fpost['streamType'] == "other") { print " selected=selected"; } ?>>Other</option>
             </select>
-            <span class="help-block">Select the type of URL / stream you are adding</span>  
+            <span class="help-block"><?php print $lang['cardFormStreamTypeHelp']; ?></span>  
           </div>
         </div>
         
@@ -118,8 +118,8 @@ foreach($audiofolders as $audiofolder) {
           if (isset($fpost['streamFolderName'])) {
               print $fpost['streamFolderName'];
           }
-          ?>" id="streamFolderName" name="streamFolderName" placeholder="e.g. 'Station Name'" class="form-control input-md" type="text">
-          <span class="help-block">Name for the audio folder that will contain the stream URL.</span>  
+          ?>" id="streamFolderName" name="streamFolderName" placeholder="<?php print $lang['cardFormStreamFolderPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['cardFormStreamFolderHelp']; ?></span>  
           </div>
         </div>
         
@@ -127,18 +127,18 @@ foreach($audiofolders as $audiofolder) {
 
         <fieldset>        
         <!-- Form Name -->
-        <legend>YouTube</legend>
+        <legend><?php print $lang['cardFormYTLegend']; ?></legend>
         
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="YTstreamURL">c) ... or download YouTube audio</label>  
+          <label class="col-md-4 control-label" for="YTstreamURL"><?php print $lang['cardFormYTLabel']; ?></label>  
           <div class="col-md-6">
           <input value="<?php
           if (isset($fpost['YTstreamURL'])) {
               print $fpost['YTstreamURL'];
           }
-          ?>" id="YTstreamURL" name="YTstreamURL" placeholder="https://www.youtube.com/watch?v=7GI0VdPehQI" class="form-control input-md" type="text">
-          <span class="help-block">Add the full YouTube-URL like in the example</span>  
+          ?>" id="YTstreamURL" name="YTstreamURL" placeholder="<?php print $lang['cardFormYTPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['cardFormYTHelp']; ?></span>  
           </div>
         </div>
         
@@ -147,7 +147,7 @@ foreach($audiofolders as $audiofolder) {
           <label class="col-md-4 control-label" for="YTaudiofolder"></label>
            <div class="col-md-6">
             <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
-              <option value="false">Pull down to select a folder or create a new one below</option>
+              <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
 // read the subfolders of shared/audiofolders
 $audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
@@ -187,8 +187,8 @@ foreach($audiofolders as $audiofolder) {
           if (isset($fpost['streamFolderName'])) {
               print $fpost['streamFolderName'];
           }
-          ?>" id="YTstreamFolderName" name="YTstreamFolderName" placeholder="e.g. 'New Folder'" class="form-control input-md" type="text">
-          <span class="help-block">Name for the audio folder that will contain the YouTube audio.</span>  
+          ?>" id="YTstreamFolderName" name="YTstreamFolderName" placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['cardFormYTFolderHelp']; ?></span>  
           </div>
         </div>
         
@@ -198,13 +198,13 @@ foreach($audiofolders as $audiofolder) {
         <div class="form-group">
           <label class="col-md-4 control-label" for="submit"></label>
           <div class="col-md-8">
-            <button id="submit" name="submit" class="btn btn-success" value="submit">Submit</button>
+            <button id="submit" name="submit" class="btn btn-success" value="submit"><?php print $lang['globalSubmit']; ?></button>
 <?php
 if($fdata['streamURL_ajax'] != "true") {
-    print '<button id="delete" name="delete" class="btn btn-warning" value="delete">Remove Card ID</button>';
+    print '<button id="delete" name="delete" class="btn btn-warning" value="delete">'.$lang['cardFormRemoveCard'].'</button>';
 }
 ?>
-            <a href="index.php" id="cancel" name="cancel" class="btn btn-danger">Cancel</a>
+            <a href="index.php" id="cancel" name="cancel" class="btn btn-danger"><?php print $lang['globalCancel']; ?></a>
             <br clear='all'><br>
           </div>
         </div>

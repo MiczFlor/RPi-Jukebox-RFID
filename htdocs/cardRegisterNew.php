@@ -115,7 +115,7 @@ if($post['submit'] == "submit") {
     // So you may select the folder in any of both.
     // Check if two different audiofolders are selectied in the dropdowns
     if(isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
-        $messageAction .= "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
+        $messageAction .= $lang['cardRegisterErrorTooMuch'];
     } elseif(!isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
         //set the audiofolder variable (if unset) to the YTaudiofolder variable. This makes the further handling easier.
         $post['audiofolder'] = $post['YTaudiofolder'];
@@ -123,7 +123,7 @@ if($post['submit'] == "submit") {
     // Like above: stream folder inputs are interchangeable.
     // Check if two different stream folder names are entered
     if(isset($post['streamFolderName']) && isset($post['YTstreamFolderName']) && $post['streamFolderName'] != $post['YTstreamFolderName']) {
-        $messageAction .= "<p>This is too much! Please enter only one folder name. Make up your mind.</p>";
+        $messageAction .= $lang['cardRegisterErrorTooMuch'];
     } elseif(!isset($post['streamFolderName']) && isset($post['YTstreamFolderName'])) {
         //set the streamFolderName variable (if unset) to the YTstreamFolderName variable. This makes the further handling easier.
         $post['streamFolderName'] = $post['YTstreamFolderName'];
@@ -131,34 +131,34 @@ if($post['submit'] == "submit") {
 
     // posted too much?
     if(isset($post['streamURL']) && isset($post['audiofolder'])) {
-        $messageAction .= "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
+        $messageAction .= $lang['cardRegisterErrorStreamAndAudio'];
     }
     
     // posted too little?
     if(!isset($post['streamURL']) && !isset($post['audiofolder']) && !isset($post['YTstreamURL'])) {
-        $messageAction .= "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
+        $messageAction .= $lang['cardRegisterErrorStreamOrAudio'];
     }
 
     // posted streamFolderName and audiofolder
     if(isset($post['streamFolderName']) && isset($post['audiofolder'])) {
-        $messageAction .= "<p>This is too much! Either choose an existing folder or create a new one.</p>";
+        $messageAction .= $lang['cardRegisterErrorExistingAndNew'];
     }
     
     // streamFolderName already exists
     if(isset($post['streamFolderName']) && file_exists('../shared/audiofolders/'.$post['streamFolderName'])) {
-        $messageAction .= "<p>A folder named '".$post['streamFolderName']."' already exists! Chose a different one.</p>";
+        $messageAction .= $lang['cardRegisterErrorExistingFolder'];
     }
     
     // No streamFolderName entered
     if(isset($post['streamURL']) && !isset($post['streamFolderName'])) {
-        $messageAction .= "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
         // get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     
     // streamFolderName not given
     if( ( isset($post['streamURL']) || isset($post['YTstreamURL']) ) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
-        $messageAction .= "<p>A folder name for the stream needs to be created. I'll make a suggestion.</p>";
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
         // get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
@@ -177,7 +177,7 @@ if($post['submit'] == "submit") {
             */
             include('inc.processAddNewStream.php');
             // success message
-            $messageSuccess = "<p>Stream inside folder '".$post['streamFolderName']."' is now linked to card ID '".$post['cardID']."'</p>";
+            $messageSuccess = "<p>".$lang['cardRegisterStream2Card']." ".$lang['globalFolder']." '".$post['streamFolderName']."' ".$lang['globalCardId']." '".$post['cardID']."'</p>";
         }
         elseif(isset($post['YTstreamURL'])) {
             /*
@@ -185,7 +185,7 @@ if($post['submit'] == "submit") {
             */
             include('inc.processAddYT.php');
             // success message
-            $messageSuccess = "<p>YouTube audio is downloading. This may take a couple of minutes. You may check the logfile \"youtube-dl.log\" in the shared folder.</p>";
+            $messageSuccess = $lang['cardRegisterDownloadingYT'];
         } else {
             /*
             * connect card with existing audio folder
@@ -194,7 +194,7 @@ if($post['submit'] == "submit") {
             $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolder']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
             exec($exec);
             // success message
-            $messageSuccess = "<p>Audio folder '".$post['audiofolder']."' is now linked to card ID '".$post['cardID']."'</p>";
+            $messageSuccess = "<p>".$lang['cardRegisterFolder2Card']."  ".$lang['globalFolder']." '".$post['streamFolderName']."' ".$lang['globalCardId']." '".$post['cardID']."'</p>";
         }
     } else {
         /*
@@ -219,16 +219,16 @@ include("inc.navigation.php");
 
     <div class="row playerControls">
       <div class="col-lg-12">
-        <h1>Add new card ID</h1>
+        <h1><?php print $lang['cardRegisterTitle']; ?></h1>
 <?php
 /*
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = "The 'Latest Card ID' value in the form is updated on the fly as you swipe a RFID card.<br/>(Requires Javascript in the browser to be enabled.)";
+    $messageAction = $lang['cardRegisterMessageDefault'];
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
-    print '<div class="alert alert-success">'.$messageSuccess.'<p>Swipe another card, if you want to register more cards.</p></div>';
+    print '<div class="alert alert-success">'.$messageSuccess.'<p>'.$lang['cardRegisterMessageSwipeNew'].'</p></div>';
     unset($post);
 } else {
     if(isset($warning)) {
@@ -263,8 +263,8 @@ if($debug == "true") {
 */
 $fdata = array(
     "streamURL_ajax" => "true",
-    "streamURL_label" => "Latest Card ID",
-    "streamURL_help" => "This will automatically update as you swipe a RFID card.",
+    "streamURL_label" => $lang['globalLastUsedCard'],
+    "streamURL_help" => $lang['cardRegisterSwipeUpdates'],
 );
 $fpost = $post;
 include("inc.formCardEdit.php");

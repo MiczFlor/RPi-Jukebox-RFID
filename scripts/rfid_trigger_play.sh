@@ -24,7 +24,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -252,9 +252,19 @@ if [ $DEBUG == "true" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOL
 
 if [ "$FOLDER" ]; then
 
+    # if we play a folder the first time, add some sensible information to the folder.conf
+    if [ ! -f "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]; then
+        # now we create a default folder.conf file by calling this script
+        # with the command param createDefaultFolderConf
+        # (see script for details)
+        # the $FOLDER would not need to be passed on, because it is already set in this script
+        # see inc.writeFolderConfig.sh for details
+        . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+    fi
+
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
     # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
-    # and this produces an error while saving lastplayed.dat
+    # and this produces an error while saving folder.conf
 	
     # Before we create a new playlist, we remove the old one from the folder.
     # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
@@ -343,7 +353,6 @@ if [ "$FOLDER" ]; then
         sudo echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
         if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
         # 1. MPD playing
