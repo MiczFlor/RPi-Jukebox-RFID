@@ -9,21 +9,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.php">Phoniebox</a>
+      <a class="navbar-brand" href="index.php"><?php print $lang['navBrand']; ?></a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href='index.php' class='mainMenu'><i class='fa fa-home'></i> Home</a></li>
-	      <li><a href='settings.php' class='mainMenu'><i class='fa fa-wrench'></i> Settings</a></li>
-        <li><a href='systemInfo.php' class='mainMenu'><i class='fa fa-info'></i> Info</a></li>
+        <li><a href='index.php' class='mainMenu'><i class='fa fa-home'></i> <?php print $lang['navHome']; ?></a></li>
+	      <li><a href='settings.php' class='mainMenu'><i class='fa fa-wrench'></i> <?php print $lang['navSettings']; ?></a></li>
+        <li><a href='systemInfo.php' class='mainMenu'><i class='fa fa-info'></i> <?php print $lang['navInfo']; ?></a></li>
       </ul>
       
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href='index.php?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> Shutdown</a></li>
-        <li><a href='index.php?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> Reboot</a></li>
+        <li><a href='index.php?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> <?php print $lang['navShutdown']; ?></a></li>
+        <li><a href='index.php?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> <?php print $lang['navReboot']; ?></a></li>
       </ul>
 <!-- / sub menu -->
     </div><!-- /.navbar-collapse -->
