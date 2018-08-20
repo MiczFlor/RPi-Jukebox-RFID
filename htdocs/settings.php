@@ -77,11 +77,11 @@ if($debug == "true") {
     <div class="panel-body">
       <div class="row">
 <?php
-include("inc.volumeSelect.php");
+include("inc.setVolume.php");
 
-include("inc.maxVolumeSelect.php");
+include("inc.setMaxVolume.php");
 
-include("inc.volumeStepSelect.php");
+include("inc.setVolumeStep.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->
@@ -101,14 +101,14 @@ include("inc.volumeStepSelect.php");
         <div class="row">
 
 <?php
-include("inc.sleeptimerSelect.php");
+include("inc.setSleeptimer.php");
 ?>
 
         </div><!-- / .row -->
 
         <div class="row">
 <?php
-include("inc.idleShutdownSelect.php");
+include("inc.setIdleShutdown.php");
 ?>
         </div><!-- / .row -->
 
@@ -144,7 +144,7 @@ include("inc.setWifi.php");
     
       <div class="panel-body">
 <?php
-include("inc.inputDevicesSettings.php");
+include("inc.setInputDevices.php");
 ?>
       </div><!-- /.panel-body -->
     

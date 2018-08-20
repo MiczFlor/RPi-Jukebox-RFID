@@ -38,11 +38,11 @@ Sleep Timer Set Form
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4>Sleep Timer</h4>
+              <h4><?php print $lang['globalSleepTimer']; ?></h4>
                 <form name='shutdownafter' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
                     <select id="shutdownafter" name="shutdownafter" class="selectpicker form-control">
-                        <option value='0'>OFF</option>
+                        <option value='0'><?php print $lang['globalOff']; ?></option>
                     <?php
                     foreach($sleeptimervals as $i) {
                         print "
@@ -53,7 +53,7 @@ Sleep Timer Set Form
                     ?>
                     </select> 
                     <span class="input-group-btn">
-                        <input type='submit' class="btn btn-default" name='submit' value='Set'/>
+                        <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>
@@ -63,7 +63,7 @@ Sleep Timer Set Form
                   <div class="orange c100 p<?php print round($remainingsleeptimerselect*100/60); ?>">
                     <span><?php 
                         if($remainingsleeptimerselect == 0) {
-                            print "OFF";
+                            print $lang['globalOff'];
                         } else {
                             print $remainingsleeptimerselect."min"; 
                         }

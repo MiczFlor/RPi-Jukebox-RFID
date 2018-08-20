@@ -3,6 +3,7 @@ $lang = array();
 
 $lang['globalEdit'] = "Edit";
 $lang['globalResume'] = "Resume";
+$lang['globalPassword'] = "Password";
 $lang['globalOff'] = "OFF";
 $lang['globalOn'] = "ON";
 $lang['globalCardId'] = "Card ID";
@@ -18,6 +19,8 @@ $lang['globalVolume'] = "Volume";
 $lang['globalVolumeSettings'] = "Volume Settings";
 $lang['globalWifi'] = "WiFi";
 $lang['globalWifiSettings'] = "WiFi Settings";
+$lang['globalWifiNetwork'] = "WiFi Settings";
+$lang['globalSSID'] = "SSID";
 $lang['globalSet'] = "Set";
 $lang['globalSettings'] = "Settings";
 $lang['globalFolder'] = "Set";
@@ -31,6 +34,17 @@ $lang['globalSleepTimer'] = "Sleep Timer";
 $lang['globalExternalInterfaces'] = "External Devices & Interfaces";
 $lang['globalIdleTime'] = "Idle Time";
 $lang['globalNotIdle'] = "Not Idle";
+$lang['globalGpioButtons'] = "GPIO Buttons";
+$lang['globalRfidReader'] = "RFID Reader";
+$lang['globalEnabled'] = "Enabled";
+$lang['globalDisabled'] = "Disabled";
+$lang['globalSwitchOn'] = "Switch ON";
+$lang['globalSwitchOff'] = "Switch OFF";
+$lang['globalSystem'] = "System";
+$lang['globalVersion'] = "Version";
+$lang['globalDescription'] = "Description";
+$lang['globalRelease'] = "Release";
+$lang['globalStorage'] = "Storage";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
@@ -91,5 +105,15 @@ $lang['cardFormRemoveCard'] = "Remove Card ID";
 */
 $lang['settingsVolChangePercent'] = "Vol. Change %";
 $lang['settingsMaxVol'] = "Maximum Volume";
+$lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
+$lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
+$lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";
+
+/*
+* System info
+*/
+$lang['infoOsDistrib'] = "OS Distribution";
+$lang['infoOsCodename'] = "Codename";
+$lang['infoStorageUsed'] = "Storage usage";
 
 ?>

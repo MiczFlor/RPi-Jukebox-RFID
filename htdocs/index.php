@@ -53,7 +53,7 @@ if (isset($playerStatus['file'])) {
     <div class="row">
       <div class="col-lg-12">
 <?php
-include("inc.volumeSelect.php");
+include("inc.setVolume.php");
 ?>      
     </div><!-- ./col-lg-12 -->
     </div><!-- ./row -->

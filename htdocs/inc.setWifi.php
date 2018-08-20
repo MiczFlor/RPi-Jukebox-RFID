@@ -66,31 +66,31 @@ if($debug == "true") {
         
         <fieldset>        
         <!-- Form Name -->
-        <legend>Wifi network</legend>
+        <legend><?php print $lang['globalWifiNetwork']; ?></legend>
 <?php
     if(isset($exec)) {
         print '
         <div class="alert alert-info">
-        The changes applied to your WiFi connection require a restart to take effect.
+        '.$lang['settingsWifiRestart'].'
         </div>';
     }
 ?>        
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="WIFIssid">SSID</label>
+          <label class="col-md-4 control-label" for="WIFIssid"><?php print $lang['globalSSID']; ?></label>
           <div class="col-md-6">
           <input value="<?php
             if(isset($WIFIssid) && $WIFIssid != "") {
                 print $WIFIssid;
             }
-          ?>" id="WIFIssid" name="WIFIssid" placeholder="e.g.: PhonieHomie" class="form-control input-md" type="text" required="required">
-          <span class="help-block">The name under which your WiFi shows up as 'available network'</span>  
+          ?>" id="WIFIssid" name="WIFIssid" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text" required="required">
+          <span class="help-block"><?php print $lang['settingsWifiSsidHelp']; ?></span>  
           </div>
         </div>
         
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-4 control-label" for="WIFIpass">Password</label>
+          <label class="col-md-4 control-label" for="WIFIpass"><?php print $lang['globalPassword']; ?></label>
           <div class="col-md-6">
           <input value="<?php
             if(isset($WIFIpass) && $WIFIpass != "") {
@@ -107,7 +107,7 @@ if($debug == "true") {
         <div class="form-group">
           <label class="col-md-4 control-label" for="submit"></label>
           <div class="col-md-8">
-            <button id="submitWifi" name="submitWifi" class="btn btn-success" value="submit">Submit</button>
+            <button id="submitWifi" name="submitWifi" class="btn btn-success" value="submit"><?php print $lang['globalSubmit']; ?></button>
             <br clear='all'><br>
           </div>
         </div>

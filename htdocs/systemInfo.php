@@ -14,6 +14,7 @@ html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
 
 <?php
 include("inc.navigation.php");
+
 // get Phoniebox Version
 $exec = "cat ".$conf["base_path"]."/settings/version";
 if($debug == "true") { 
@@ -38,26 +39,26 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-         <i class='fa fa-microchip'></i> System <small>Vers.: <?php echo $version; ?></small>
+         <i class='fa fa-microchip'></i> <?php print $lang['globalSystem']; ?> <small><?php print $lang['globalVersion']; ?>: <?php echo $version; ?></small>
       </h4>
     </div><!-- /.panel-heading -->
 
     <div class="panel-body">
   
         <div class="row">	
-          <label class="col-md-4 control-label" for="">OS Distributor</label> 
+          <label class="col-md-4 control-label" for=""><?php print $lang['infoOsDistrib']; ?></label> 
           <div class="col-md-6"><?php echo trim($distributor); ?></div>
         </div><!-- / row -->
         <div class="row">	
-          <label class="col-md-4 control-label" for=""> Description</label> 
+          <label class="col-md-4 control-label" for=""><?php print $lang['globalDescription']; ?></label> 
           <div class="col-md-6"><?php echo trim($description); ?></div>
         </div><!-- / row -->
         <div class="row">	
-          <label class="col-md-4 control-label" for="">Release</label> 
+          <label class="col-md-4 control-label" for=""><?php print $lang['globalRelease']; ?></label> 
           <div class="col-md-6"><?php echo trim($release); ?></div>
         </div><!-- / row -->
         <div class="row">	
-          <label class="col-md-4 control-label" for="">Codename</label> 
+          <label class="col-md-4 control-label" for=""><?php print $lang['infoOsCodename']; ?></label> 
           <div class="col-md-6"><?php echo trim($codename); ?></div>
         </div><!-- / row -->
       
@@ -83,7 +84,7 @@ $exec = "df -H -B K / ";
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <i class='fa fa-hdd-o'></i> Storage <small>(<?php echo round($all/1024,2); ?> GB)</small>
+        <i class='fa fa-hdd-o'></i> <?php print $lang['globalStorage']; ?> <small>(<?php echo round($all/1024,2); ?> GB)</small>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -105,7 +106,7 @@ $exec = "df -H -B K / ";
 			$system = $used - $Media;
 		?>
 
-			<h5>Storage usage <small>(<?php echo round($free/1024,2); ?> GB free)</small></h5>
+			<h5><?php print $lang['infoStorageUsed']; ?> <small>(<?php echo round($free/1024,2); ?> GB free)</small></h5>
 			<div class="row">
 				<div class="col-xs-12">
 					<div class="progress">
