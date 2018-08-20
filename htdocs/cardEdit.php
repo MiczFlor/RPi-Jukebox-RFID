@@ -68,6 +68,19 @@ $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // U
 
 include("func.php");
 
+/*******************************************
+* START HTML
+*******************************************/
+
+html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
+
+?>
+<body>
+  <div class="container">
+      
+<?php
+include("inc.navigation.php");
+
 // path to script folder from github repo on RPi
 $conf['shared_abs'] = realpath(getcwd().'/../shared/');
 
@@ -121,29 +134,29 @@ if($post['delete'] == "delete") {
     
     // posted too much?
     if(isset($post['streamURL']) && isset($post['audiofolder'])) {
-        $messageAction .= "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
+        $messageAction .= $lang['cardRegisterErrorStreamAndAudio'];
     }
     
     // posted too little?
     if(!isset($post['streamURL']) && !isset($post['audiofolder'])) {
-        $messageAction .= "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
+        $messageAction .= $lang['cardRegisterErrorStreamOrAudio'];
     }
     
     // streamFolderName already exists
     if(isset($post['streamFolderName']) && file_exists('../shared/audiofolders/'.$post['streamFolderName'])) {
-        $messageAction .= "<p>A folder named '".$post['streamFolderName']."' already exists! Chose a different one.</p>";
+        $messageAction .= $lang['cardRegisterErrorExistingFolder'];
     }
     
     // streamFolderName already exists
     if(isset($post['streamURL']) && !isset($post['streamFolderName'])) {
-        $messageAction .= "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
         // get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     
     // streamFolderName not given
     if(isset($post['streamURL']) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
-        $messageAction .= "<p>A folder name for the stream needs to be created. I'll make a suggestion.</p>";
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
         // get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
@@ -161,7 +174,7 @@ if($post['delete'] == "delete") {
             */
             include('inc.processAddNewStream.php');
             // success message
-            $messageSuccess = "<p>Stream inside folder '".$post['streamFolderName']."' is now linked to card ID '".$post['cardID']."'</p>";
+            $messageSuccess = "<p>".$lang['cardRegisterStream2Card']." ".$lang['globalFolder']." '".$post['streamFolderName']."' ".$lang['globalCardId']." '".$post['cardID']."'</p>";
         } else {
             /*
             * connect card with existing audio folder
@@ -170,7 +183,7 @@ if($post['delete'] == "delete") {
             $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolder']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
             exec($exec);
             // success message
-            $messageSuccess = "<p>Audio folder '".$post['audiofolder']."' is now linked to card ID '".$post['cardID']."'</p>";
+            $messageSuccess = "<p>".$lang['cardRegisterFolder2Card']."  ".$lang['globalFolder']." '".$post['streamFolderName']."' ".$lang['globalCardId']." '".$post['cardID']."'</p>";
         }
     } else {
         /*
@@ -179,32 +192,20 @@ if($post['delete'] == "delete") {
     }
 }
 
-/*******************************************
-* START HTML
-*******************************************/
-
-html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
-
-?>
-<body>
-  <div class="container">
-      
-<?php
-include("inc.navigation.php");
 ?>
 
     <div class="row playerControls">
       <div class="col-lg-12">
-        <h1>Edit or add card</h1>
+        <h1><?php print $lang['cardEditTitle']; ?></h1>
 <?php
 /*
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = "The card IDs used in this system are listed on the <a href='index.php' class='mainMenu'><i class='fa fa-home'></i> home page</a>.";
+    $messageAction = $lang['cardEditMessageDefault'];
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
-    print '<div class="alert alert-success">'.$messageSuccess.'<p>Type another card ID pick one from the list on the <a href="index.php" class="mainMenu"><i class="fa fa-home"></i> home page</a>.</p></div>';
+    print '<div class="alert alert-success">'.$messageSuccess.'<p>'.$lang['cardEditMessageInputNew'].'</p></div>';
     //unset($post);
 } else {
     if(isset($warning)) {
@@ -239,9 +240,9 @@ if($debug == "true") {
 */
 $fdata = array(
     "streamURL_ajax" => "false",
-    "streamURL_label" => "Card ID",
-    "streamURL_placeholder" => "e.g. '1234567890'",
-    "streamURL_help" => "The ID is usually printed on the card or fob. A list of used IDs can be found on the home page.",
+    "streamURL_label" => $lang['globalCardId'],
+    "streamURL_placeholder" => $lang['globalCardIdPlaceholder'],
+    "streamURL_help" => $lang['globalCardIdHelp'],
 );
 $fpost = $post;
 include("inc.formCardEdit.php");

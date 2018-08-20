@@ -42,7 +42,7 @@ Idle Shutdown Set Form
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4>Idle Shutdown</h4>
+              <h4><?php print $lang['globalIdleShutdown']; ?></h4>
                 <form name='idletime' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
                     <select id="idletime" name="idletime" class="selectpicker form-control">
@@ -50,7 +50,7 @@ Idle Shutdown Set Form
                             if($idletimevalue == 0) {
                                 print " selected";
                             }
-                        ?>>OFF</option>
+                        ?>><?php print $lang['globalOff']; ?></option>
                     <?php
                     foreach($idletimervals as $i) {
                         print "
@@ -64,7 +64,7 @@ Idle Shutdown Set Form
                     ?>
                     </select> 
                     <span class="input-group-btn">
-                        <input type='submit' class="btn btn-default" name='submit' value='Set'/>
+                        <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>
@@ -74,7 +74,7 @@ Idle Shutdown Set Form
                   <div class="c100 p<?php print round($idletimevalue*100/60); ?>">
                     <span><?php 
                         if ($idletimevalue == 0) {
-                            print "OFF";
+                            print $lang['globalOff'];
                         } else {
                             print $idletimevalue."min"; 
                         }
@@ -97,7 +97,7 @@ if ($idletimevalue != 0) {
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4>Box Idle Time</h4>
+              <h4><?php print $lang['globalIdleTime']; ?></h4>
               </div>
               
               <div class="col-xs-6">
@@ -107,7 +107,7 @@ if ($idletimevalue != 0) {
                             print $remainingtimedisplay.'min';
                         }
                         else {
-                            print 'Not idle';
+                            print $lang['globalNotIdle'];
                         }
                     ?></span>
                     <div class="slice">

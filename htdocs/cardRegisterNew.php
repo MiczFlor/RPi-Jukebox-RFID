@@ -68,6 +68,19 @@ $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // U
 
 include("func.php");
 
+/*******************************************
+* START HTML
+*******************************************/
+
+html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
+
+?>
+<body>
+  <div class="container">
+      
+<?php
+include("inc.navigation.php");
+
 // path to script folder from github repo on RPi
 $conf['shared_abs'] = realpath(getcwd().'/../shared/');
 
@@ -203,18 +216,6 @@ if($post['submit'] == "submit") {
     }
 }
 
-/*******************************************
-* START HTML
-*******************************************/
-
-html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
-
-?>
-<body>
-  <div class="container">
-      
-<?php
-include("inc.navigation.php");
 ?>
 
     <div class="row playerControls">

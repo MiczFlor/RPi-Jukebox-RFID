@@ -17,9 +17,7 @@ if($fdata['streamURL_ajax'] == "true") {
         print $fpost['cardID'];
     }
     print "\" id=\"cardID\" name=\"cardID\" placeholder=\"".$fdata['streamURL_placeholder']."\" class=\"form-control input-md\" type=\"text\">";
-?>
 
-<?php
 }
 
 // read the shortcuts available

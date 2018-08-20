@@ -6,16 +6,31 @@ $lang['globalResume'] = "Resume";
 $lang['globalOff'] = "OFF";
 $lang['globalOn'] = "ON";
 $lang['globalCardId'] = "Card ID";
+$lang['globalRFIDCard'] = "RFID Card";
+$lang['globalRFIDCards'] = "RFID Cards";
+$lang['globalCardIdPlaceholder'] = "e.g. '1234567890'";
+$lang['globalCardIdHelp'] = "The ID is usually printed on the card or fob. A list of used IDs can be found on the home page.";
 $lang['globalRegisterCard'] = "Register new card ID";
 $lang['globalLastUsedCard'] = "Last used Chip ID";
 $lang['globalClose'] = "Close";
 $lang['globalPlay'] = "Play";
 $lang['globalVolume'] = "Volume";
+$lang['globalVolumeSettings'] = "Volume Settings";
+$lang['globalWifi'] = "WiFi";
+$lang['globalWifiSettings'] = "WiFi Settings";
 $lang['globalSet'] = "Set";
+$lang['globalSettings'] = "Settings";
 $lang['globalFolder'] = "Set";
 $lang['globalStream'] = "Stream";
 $lang['globalSubmit'] = "Submit";
 $lang['globalCancel'] = "Cancel";
+$lang['globalJumpTo'] = "Jump to";
+$lang['globalAutoShutdown'] = "Auto Shutdown";
+$lang['globalIdleShutdown'] = "Idle Shutdown";
+$lang['globalSleepTimer'] = "Sleep Timer";
+$lang['globalExternalInterfaces'] = "External Devices & Interfaces";
+$lang['globalIdleTime'] = "Idle Time";
+$lang['globalNotIdle'] = "Not Idle";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
@@ -30,11 +45,14 @@ $lang['indexShowFiles'] = "Show files";
 $lang['indexManageFilesChips'] = "Manage Files and Chips";
 
 /*
-* Register new cards
+* Register & Edit Cards
 */
-$lang['cardRegisterTitle'] = "Add new card ID";
+$lang['cardRegisterTitle'] = "Add new card";
+$lang['cardEditTitle'] = "Edit or add card";
 $lang['cardRegisterMessageDefault'] = "The 'Latest Card ID' value in the form is updated on the fly as you swipe a RFID card.<br/>(Requires Javascript in the browser to be enabled.)";
+$lang['cardEditMessageDefault'] = "The card IDs used in this system are listed on the <a href='index.php' class='mainMenu'><i class='fa fa-home'></i> home page</a>.";
 $lang['cardRegisterMessageSwipeNew'] = "Swipe another card, if you want to register more cards.";
+$lang['cardEditMessageInputNew'] = "Type another card ID pick one from the list on the <a href='index.php' class='mainMenux'><i class='fa fa-home'></i> home page</a>.";
 $lang['cardRegisterErrorTooMuch'] = "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamAndAudio'] = "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
@@ -69,8 +87,9 @@ $lang['cardFormYTHelp'] = "Add the full YouTube-URL like in the example";
 $lang['cardFormRemoveCard'] = "Remove Card ID";
 
 /*
-foreach($lang as $key => $value) {
-    $lang[$key] = "NEW".$value;
-}
-/**/
+* Settings
+*/
+$lang['settingsVolChangePercent'] = "Vol. Change %";
+$lang['settingsMaxVol'] = "Maximum Volume";
+
 ?>

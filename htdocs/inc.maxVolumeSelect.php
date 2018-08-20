@@ -11,7 +11,7 @@ Maximum Volume Select Form
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4>Maximum Volume</h4>
+              <h4><?php print $lang['settingsMaxVol']; ?></h4>
                 <form name='maxvolume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
                     <select id="maxvolume" name="maxvolume" class="selectpicker form-control">
@@ -30,7 +30,7 @@ Maximum Volume Select Form
                     ?>
                     </select> 
                     <span class="input-group-btn">
-                        <input type='submit' class="btn btn-default" name='submit' value='Set'/>
+                        <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>

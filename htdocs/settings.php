@@ -26,21 +26,21 @@ if($debug == "true") {
 
 <div class="row">
   <div class="col-lg-12">
-  <strong>Jump to:</strong>
+  <strong><?php print $lang['globalJumpTo']; ?>:</strong>
         <a href="#RFID" class="btn btn-default ">
-        <i class='fa  fa-credit-card'></i> RFID cards
+        <i class='fa  fa-credit-card'></i> <?php print $lang['globalRFIDCards']; ?>
         </a>
         <a href="#volume" class="btn btn-default ">
-        <i class='fa  fa-bullhorn'></i> Volume Settings
+        <i class='fa  fa-bullhorn'></i> <?php print $lang['globalVolumeSettings']; ?>
         </a>
         <a href="#autoShutdown" class="btn btn-default ">
-        <i class='fa  fa-clock-o'></i> Auto Shutdown / Sleep Timer
+        <i class='fa  fa-clock-o'></i> <?php print $lang['globalIdleShutdown']." / ".$lang['globalSleepTimer']; ?>
         </a>
         <a href="#wifi" class="btn btn-default ">
-        <i class='fa  fa-wifi'></i> WiFi Settings
+        <i class='fa  fa-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
         </a>
         <a href="#externalInterfaces" class="btn btn-default ">
-        <i class='fa  fa-usb'></i> External Devices & Interfaces
+        <i class='fa  fa-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
         </a>
   </div>
 </div>
@@ -49,7 +49,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="RFID"></a>
-         <i class='fa fa-credit-card'></i> Manage Files and Chips
+         <i class='fa fa-credit-card'></i> <?php print $lang['indexManageFilesChips']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -57,7 +57,7 @@ if($debug == "true") {
         <div class="row">
           <div class="col-lg-12">
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
-                <i class='fa  fa-plus-circle'></i> Register new card ID
+                <i class='fa  fa-plus-circle'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
           </div><!-- / .col-lg-12 -->
         </div><!-- /.row -->
@@ -70,7 +70,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="volume"></a>
-         <i class='fa fa-bullhorn'></i> Volume Settings
+         <i class='fa fa-bullhorn'></i> <?php print $lang['globalVolumeSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -93,7 +93,7 @@ include("inc.volumeStepSelect.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="autoShutdown"></a>
-        <i class='fa fa-clock-o'></i> Auto Shutdown Settings
+        <i class='fa fa-clock-o'></i> <?php print $lang['globalAutoShutdown']." ".$lang['globalSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     <div class="panel-body">
@@ -121,7 +121,7 @@ include("inc.idleShutdownSelect.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="wifi"></a>
-        <i class='fa fa-wifi'></i> WiFi Settings
+        <i class='fa fa-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     
@@ -138,7 +138,7 @@ include("inc.setWifi.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="externalInterfaces"></a>
-        <i class='fa fa-usb'></i> External Devices & Interfaces
+        <i class='fa fa-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     
