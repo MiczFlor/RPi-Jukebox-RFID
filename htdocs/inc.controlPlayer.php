@@ -1,4 +1,12 @@
 
+
+<?php
+if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')) { 
+    print '<div class="playerWrapperCover"><center>';
+    print '<img class="img-responsive img-thumbnail" src="image.php?img='.$conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg" alt="Suli Pushban"/>';
+    print '</center></div>';
+}
+?>
 <div class="playerWrapper">
   <!--a href='?player=skipBackward15' class='btn btn-player-s '>15<i class='fa fa-arrow-left'></i></a-->
   <a href='?player=prev' class='btn btn-player-l '><i class='fa fa-backward'></i></a>

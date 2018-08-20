@@ -104,6 +104,9 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .playerWrapper a:hover {
             color: black!important;
         }
+        .playerWrapperCover img {
+            max-height: 200px;
+        }
         .table td.text {
             max-width: 100px;
         }
