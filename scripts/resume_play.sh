@@ -113,6 +113,17 @@ savepos)
     fi
     ;;
 resume)
+    #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
+	if [ $SHUFFLE == "ON" ]
+	then 
+		if [ $DEBUG == "true" ]; then echo "  entering: shuffle with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+		mpc random on
+	else
+		if [ $DEBUG == "true" ]; then echo "  entering: shuffle with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+		mpc random off
+	fi
+
+
     if [ $DEBUG == "true" ]; then echo "  entering: resume with value $RESUME" >> $PATHDATA/../logs/debug.log; fi
     # Check if RESUME is switched on
     if [ $RESUME == "ON" ];
@@ -178,6 +189,24 @@ disableresume)
         # (see script for details)
         . $PATHDATA/inc.writeFolderConfig.sh
     ;;
+enableshuffle)
+        if [ $DEBUG == "true" ]; then echo "  entering: enableshuffle" >> $PATHDATA/../logs/debug.log; fi
+        # set the vars we need to change
+        SHUFFLE="ON"
+        # now calling a script which will only replace these new vars in folder.conf
+        # (see script for details)
+        . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
+disableshuffle)
+        if [ $DEBUG == "true" ]; then echo "  entering: disableshuffle" >> $PATHDATA/../logs/debug.log; fi
+        # set the vars we need to change
+        SHUFFLE="OFF"
+        # now calling a script which will only replace these new vars in folder.conf
+        # (see script for details)
+        . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
+
+
 *)
     echo "Command unknown"
     ;;
