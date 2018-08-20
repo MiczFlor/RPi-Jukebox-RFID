@@ -259,7 +259,7 @@ if [ "$FOLDER" ]; then
         # (see script for details)
         # the $FOLDER would not need to be passed on, because it is already set in this script
         # see inc.writeFolderConfig.sh for details
-        . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+        . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
     fi
 
     # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off

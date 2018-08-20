@@ -68,7 +68,7 @@ then
     # the $FOLDER would not need to be passed on, because it is already set in this script
     # see inc.writeFolderConfig.sh for details
     if [ $DEBUG == "true" ]; then echo "  - calling inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=\$FOLDER" >> $PATHDATA/../logs/debug.log; fi
-    . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=$FOLDER
+    . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
     if [ $DEBUG == "true" ]; then echo "  - back from inc.writeFolderConfig.sh" >> $PATHDATA/../logs/debug.log; fi
 fi
 # Read the current config file (include will execute == read)
