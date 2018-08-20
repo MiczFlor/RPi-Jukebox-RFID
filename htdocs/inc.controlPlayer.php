@@ -33,10 +33,10 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
         print '<a href="?player=repeat" class="btn  btn-lg"><i class="fa fa-refresh"></i> OFF</a>'; 
     }
     elseif ($playerStatus['single'] == "1") {
-        print '<a href="?player=repeat" class="btn  btn-lg"><i class="fa fa-refresh"></i> TRACK</a>'; 
+        print '<a href="?player=repeatoff" class="btn  btn-lg"><i class="fa fa-refresh"></i> TRACK</a>'; 
     }
     else {
-        print '<a href="?player=repeat" class="btn  btn-lg"><i class="fa fa-refresh"></i> LIST</a>'; 
+        print '<a href="?player=single" class="btn  btn-lg"><i class="fa fa-refresh"></i> LIST</a>'; 
     }
     if (array_key_exists('state', $playerStatus)) {
         print '         <a href="?stop=true" class="btn  btn-lg"><i class="fa fa-stop"></i></a>';
