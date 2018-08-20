@@ -27,21 +27,21 @@ if($debug == "true") {
 <div class="row">
   <div class="col-lg-12">
   <strong><?php print $lang['globalJumpTo']; ?>:</strong>
-        <a href="#RFID" class="btn btn-default ">
+        <a href="#RFID" class="xbtn xbtn-default ">
         <i class='fa  fa-credit-card'></i> <?php print $lang['globalRFIDCards']; ?>
-        </a>
-        <a href="#volume" class="btn btn-default ">
+        </a> | 
+        <a href="#volume" class="xbtn xbtn-default ">
         <i class='fa  fa-bullhorn'></i> <?php print $lang['globalVolumeSettings']; ?>
-        </a>
-        <a href="#autoShutdown" class="btn btn-default ">
+        </a> | 
+        <a href="#autoShutdown" class="xbtn xbtn-default ">
         <i class='fa  fa-clock-o'></i> <?php print $lang['globalIdleShutdown']." / ".$lang['globalSleepTimer']; ?>
-        </a>
-        <a href="#wifi" class="btn btn-default ">
+        </a> | 
+        <a href="#wifi" class="xbtn xbtn-default ">
         <i class='fa  fa-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
-        </a>
-        <a href="#externalInterfaces" class="btn btn-default ">
+        </a> | 
+        <a href="#externalInterfaces" class="xbtn xbtn-default ">
         <i class='fa  fa-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
-        </a>
+        </a> 
   </div>
 </div>
         <br/>
