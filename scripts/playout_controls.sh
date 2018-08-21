@@ -346,7 +346,10 @@ case $COMMAND in
         mpc clear
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE"; fi
-        ;;
+        # call shuffle_ceck to enable/disable folder-based shuffeling
+        $PATHDATA/shuffle_play.sh -c=shuffle_check
+        if [ $DEBUG == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
+	;;
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
