@@ -26,7 +26,7 @@ top of things.
 * Make commits of logical and atomic units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 
-  ```
+~~~
       Added shuffle mode and RFID controls for it (issue #130) #140
       
       Adds a shuffle mode for MPD to be triggered by RFID card.
@@ -41,8 +41,7 @@ top of things.
       
       Update: This time without the need to create an extra random.txt file.and uptodate with the 
       master branch.
-
-  ```
+~~~
 ## Making Trivial Changes
 
 For changes of a trivial nature, it is not always necessary to create a new issue. 
