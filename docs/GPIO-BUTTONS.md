@@ -79,10 +79,10 @@ $ sudo apt-get install python3-gpiozero python-gpiozero
 
 **Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
-Make a copy of the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
+Make a copy of the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 
 ~~~
-$ cp /home/pi/RPi-Jukebox-RFID/misc/GPIO-button-sample.py /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+$ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
 And change the copy to be executable
@@ -91,6 +91,6 @@ And change the copy to be executable
 $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
-**Note**: work in progress: the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) will be explained when I get to it.
+**Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.
 
 To have this started automatically at boot. Please read the section on [autostarting the scripts](CONFIGURE-stretch.md#systemdautostart) in the configuration documentation [CONFIGURE-stretch.md](CONFIGURE-stretch.md#systemdautostart).
