@@ -142,6 +142,22 @@ if( $foundResume == "OFF" ) {
             print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
 }
 
+// SHUFFLE BUTTON
+// do not show any if there is a live stream in the folder
+if (!in_array("livestream.txt", $files) ) {
+    $foundShuffle = "OFF";
+    if( file_exists($audiofolder."/folder.conf") && strpos(file_get_contents($audiofolder."/folder.conf"),'SHUFFLE="ON"') !== false) {
+        $foundShuffle = "ON";
+    }
+}
+if( $foundShuffle == "OFF" ) {
+        // do stuff
+            print "<a href='?enableshuffle=".$audiofolder."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
+    } elseif($foundShuffle == "ON") {
+            print "<a href='?disableshuffle=".$audiofolder."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+}
+
+
         print "
             <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>".$lang['indexShowFiles']." <i class='fa fa-folder-open-o'></i></span> ";
         print "

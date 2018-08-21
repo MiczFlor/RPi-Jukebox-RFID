@@ -158,6 +158,15 @@ if(isset($_GET['enableresume']) && trim($_GET['enableresume']) != "") {
 if(isset($_GET['disableresume']) && trim($_GET['disableresume']) != "") {
     $urlparams['disableresume'] = trim($_GET['disableresume']);
 }
+
+if(isset($_GET['enableshuffle']) && trim($_GET['enableshuffle']) != "") {
+    $urlparams['enableshuffle'] = trim($_GET['enableshuffle']);
+}
+
+if(isset($_GET['disableshuffle']) && trim($_GET['disableshuffle']) != "") {
+    $urlparams['disableshuffle'] = trim($_GET['disableshuffle']);
+}
+
 /*
 * Now check for $_POST
 */
@@ -240,6 +249,17 @@ if(isset($_POST['enableresume']) && trim($_POST['enableresume']) != "") {
 if(isset($_POST['disableresume']) && trim($_POST['disableresume']) != "") {
     $urlparams['disableresume'] = trim($_POST['disableresume']);
 }
+
+if(isset($_POST['enableshuffle']) && trim($_POST['enableshuffle']) != "") {
+    $urlparams['enableshuffle'] = trim($_POST['enableshuffle']);
+}
+
+if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
+    $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
+}
+
+
+
 /*******************************************
 * ACTIONS
 *******************************************/
@@ -464,6 +484,41 @@ if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is
     exit; 
     }
 }
+
+// enable shuffle
+if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($urlparams['enableshuffle']))) {
+
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableshuffle']));
+    exec($exec);
+
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
+    }
+}
+
+// disable shuffle
+if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && is_dir(urldecode($urlparams['disableshuffle']))) {
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableshuffle']));
+    exec($exec);
+
+    /* redirect to drop all the url parameters */
+    header("Location: ".$conf['url_abs']);
+    exit; 
+    }
+}
+
+
 
 // stop playing
 if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
