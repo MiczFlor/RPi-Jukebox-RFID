@@ -8,8 +8,8 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 }
 ?>
 <div class="playerWrapper">
-  <!--a href='?player=skipBackward15' class='btn btn-player-s '>15<i class='fa fa-arrow-left'></i></a-->
-  <a href='?player=prev' class='btn btn-player-l '><i class='fa fa-backward'></i></a>
+    <!--a href='?player=skipBack15'><img width=20 src='_assets/img/skip-15-back-grey.svg'/></a-->
+    <a href='?player=prev' class='btn btn-player-l '><i class='fa fa-backward'></i></a>
 
 <?php
     if (array_key_exists('state', $playerStatus) && $playerStatus['state'] === 'play') {
@@ -22,6 +22,7 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
           <!--a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='fa fa-refresh'></i></a-->
 
     <a href='?player=next' class='btn btn-player-l '><i class='fa fa-forward'></i></a>
+    <!--a href='?player=skipAhead15'><img width=20 src='_assets/img/skip-15-forward-grey.svg'/></a-->
 </div><!-- ./playerWrapper -->
 <div class="playerWrapper">
         <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
