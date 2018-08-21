@@ -29,6 +29,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <script src=\"".$url_absolute."_assets/bootstrap-3/js/transition.js\"></script>
 
         <link rel='stylesheet' href='".$url_absolute."_assets/font-awesome/css/font-awesome.min.css'>
+        <link href='".$url_absolute."_assets/MaterialDesign-Webfont-master/css/materialdesignicons.min.css' media='all' rel='stylesheet' type='text/css' />
         
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -66,13 +67,13 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             overflow: hidden;
         }
         .btn-player-xl {
-            padding:4px 10px;
+            padding:4px 0px;
             font-size:38px;
             line-height:1;
             border-radius:6px;
         }
         .btn-player-l {
-            padding:0px 16px;
+            padding:0px 0px;
             font-size:30px;
             line-height:1;
             border-radius:6px;
@@ -116,6 +117,12 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             text-overflow: ellipsis;
             display: inline-block;
             max-width: 100%;
+        }
+        .mdi-72px.mdi-set, .mdi-72px.mdi:before {
+          font-size: 72px;
+        }
+        .mdi-60px.mdi-set, .mdi-60px.mdi:before {
+          font-size: 60px;
         }
         </style>
         
