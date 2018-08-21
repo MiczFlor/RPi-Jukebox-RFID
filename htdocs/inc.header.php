@@ -493,7 +493,7 @@ if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is
     } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableshuffle']));
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableshuffle']));
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -509,7 +509,7 @@ if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && 
     } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableshuffle']));
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableshuffle']));
     exec($exec);
 
     /* redirect to drop all the url parameters */
