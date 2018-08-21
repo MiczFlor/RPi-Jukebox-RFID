@@ -332,18 +332,19 @@ case $COMMAND in
 	;;
     playlistaddplay)
         # add to playlist (and play)
+        # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        
-        # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
-        
-        # write latest folder played to settings file
-        # Chances are, this was already written in 'rfid_trigger_play.sh'
-        # However, new development might jump right here and not pipe
-        # through 'rfid_trigger_play.sh'
-        #echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
-        # clear track(s) from playlist
+
+        # first clear playlist (and save position if resume play is on)
+        $PATHDATA/resume_play.sh -c=savepos
         mpc clear
+
+        # write latest folder played to settings file
+        sudo echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
+        if [ $DEBUG == "true" ]; then echo "echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+
         mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE"; fi
         # call shuffle_ceck to enable/disable folder-based shuffeling
@@ -353,7 +354,6 @@ case $COMMAND in
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
