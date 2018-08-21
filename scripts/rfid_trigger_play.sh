@@ -306,12 +306,12 @@ if [ "$FOLDER" ]; then
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
-                if [ $DEBUG == "true" ]; then echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log fi
+                if [ $DEBUG == "true" ]; then echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log; fi
             ;;
             "livestream.txt")
                 # mpd can't read from .txt, so we have to write the livestream URL into playlist
                 cat "$AUDIOFOLDERSPATH/$FOLDER/livestream.txt" > "$PLAYLISTPATH"
-                if [ $DEBUG == "true" ]; then echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log fi
+                if [ $DEBUG == "true" ]; then echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
             ;;
             *)
                 # Nothing special to do, folder with audio files
