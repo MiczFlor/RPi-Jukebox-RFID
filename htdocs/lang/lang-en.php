@@ -46,6 +46,7 @@ $lang['globalDescription'] = "Description";
 $lang['globalRelease'] = "Release";
 $lang['globalStorage'] = "Storage";
 $lang['globalShuffle'] = "Shuffle";
+
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
 $lang['navSettings'] = "Settings";
