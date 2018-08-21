@@ -366,11 +366,11 @@ if [ "$FOLDER" ]; then
                 # 1.1.1 YES => stop current && start (resume) new
                 if [ $DEBUG == "true" ]; then echo "1.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
                 sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
+                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
             else 
                 # 1.1.2 NO => stop current
                 if [ $DEBUG == "true" ]; then echo "1.1.2 CHECK FALSE => playout_controls.sh -c=playerstop" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/playout_controls.sh -c=playerstop &>/dev/null &
+                sudo $PATHDATA/playout_controls.sh -c=playerstop &>/dev/null
             fi
         fi
         
@@ -385,11 +385,11 @@ if [ "$FOLDER" ]; then
                 # 2.1.1 YES => stop current && start (resume) new
                 if [ $DEBUG == "true" ]; then echo "2.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
                 sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
+                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
             else 
                 # 2.1.2 NO => play (resume) current
                 if [ $DEBUG == "true" ]; then echo "2.1.2 CHECK FALSE => playout_controls.sh -c=playerpause" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null &
+                sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
             fi
         fi
         
@@ -399,7 +399,7 @@ if [ "$FOLDER" ]; then
             if [ $DEBUG == "true" ]; then echo "3. MPD offline" >> $PATHDATA/../logs/debug.log; fi
             # 3.1 play (resume) current
             if [ $DEBUG == "true" ]; then echo "3.1 play (resume) current" >> $PATHDATA/../logs/debug.log; fi
-            sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null &
+            sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
         fi
 
     else
