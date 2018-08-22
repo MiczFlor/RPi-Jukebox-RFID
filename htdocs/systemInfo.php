@@ -84,7 +84,7 @@ $exec = "df -H -B K / ";
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <i class='mdi mdi-harddisk'></i> <?php print $lang['globalStorage']; ?> <small>(<?php echo round($all/1024,2); ?> GB)</small>
+        <i class='mdi mdi-server'></i> <?php print $lang['globalStorage']; ?> <small>(<?php echo round($all/1024,2); ?> GB)</small>
       </h4>
     </div><!-- /.panel-heading -->
 

@@ -28,7 +28,7 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 <div class="playerWrapper">
         <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
             <!--a href="#collapsePlaylist" class="btn btn-lg collapsed" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" m="1"><i class="mdi mdi-playlist-play"></i></a-->
-            <a href='?player=replay' class='btn  btn-lg' title='<?php print $lang['globalReplay']; ?>'><i class='mdi mdi-play-speed'></i></a>
+            <a href='?player=replay' class='btn  btn-lg' title='<?php print $lang['globalReplay']; ?>'><i class='mdi mdi-backup-restore'></i></a>
 <!-- currently unused: -->
 <!--a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='mdi mdi-loop'></i></a-->
 <!--a href="?player=random" class="btn  btn-lg"><i class="mdi mdi-shuffle"></i></a-->
