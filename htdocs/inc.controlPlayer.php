@@ -55,7 +55,14 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 */
 ?>
        <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
-                <a href='?mute=true' class='btn  btn-lg'><i class='mdi mdi-volume-off'></i></a>
+       <?php
+if(file_exists('../settings/Audio_Volume_Level')) {
+    print "                <a href='?mute=true' class='btn  btn-lg'><i class='mdi mdi-volume-off'></i></a>";
+} else {
+    print "                <a href='?mute=true' class='btn  btn-lg'><i class='mdi mdi-volume-high'></i></a>";
+}
+?>
+
                 <a href='?volumedown=true' class='btn  btn-lg'><i class='mdi mdi-volume-minus'></i></a>
                 <a href='?volumeup=true' class='btn  btn-lg'><i class='mdi mdi-volume-plus'></i></a>
         </div>
