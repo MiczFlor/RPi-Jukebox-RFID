@@ -10,7 +10,7 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 ?>
 <div class="playerWrapper">
     <!--a href='?player=seekBack15' class='btn btn-player-l'><i class="mdi mdi-24px mdi-replay"></i></a-->
-    <a href='?player=prev' class='btn btn-player-l'><i class="mdi mdi-48px mdi-flip-h mdi-fast-forward"></i></a>
+    <a href='?player=prev' class='btn btn-player-l'><i class="mdi mdi-48px mdi-rewind"></i></a>
 
 <?php
     if (array_key_exists('state', $playerStatus) && $playerStatus['state'] === 'play') {
@@ -27,23 +27,23 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 </div><!-- ./playerWrapper -->
 <div class="playerWrapper">
         <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
-            <!--a href="#collapsePlaylist" class="btn btn-lg collapsed" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" m="1"><i class="fa fa-bars"></i></a-->
-            <a href='?player=replay' class='btn  btn-lg'><i class='fa fa-recycle'></i></a>
+            <!--a href="#collapsePlaylist" class="btn btn-lg collapsed" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" m="1"><i class="mdi mdi-playlist-play"></i></a-->
+            <a href='?player=replay' class='btn  btn-lg' title='<?php print $lang['globalReplay']; ?>'><i class='mdi mdi-play-speed'></i></a>
 <!-- currently unused: -->
-<!--a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='fa fa-refresh'></i></a-->
-<!--a href="?player=random" class="btn  btn-lg"><i class="fa fa-random"></i></a-->
+<!--a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='mdi mdi-loop'></i></a-->
+<!--a href="?player=random" class="btn  btn-lg"><i class="mdi mdi-shuffle"></i></a-->
 <?php
     if ($playerStatus['repeat'] == "0") {
-        print '<a href="?player=repeat" class="btn  btn-lg"><i class="fa fa-refresh"></i> OFF</a>'; 
+        print '<a href="?player=repeat" class="btn btn-lg" title="'.$lang['globalLoop'].': '.$lang['globalOff'].'"><i class="mdi mdi-repeat-off"></i> '.$lang['globalOff'].'</a>'; 
     }
     elseif ($playerStatus['single'] == "1") {
-        print '<a href="?player=repeatoff" class="btn  btn-lg"><i class="fa fa-refresh"></i> TRACK</a>'; 
+        print '<a href="?player=repeatoff" class="btn  btn-lg" title="'.$lang['globalLoop'].": ".$lang['globalTrack'].'"><i class="mdi mdi-repeat-once"></i> '.$lang['globalTrack'].'</a>'; 
     }
     else {
-        print '<a href="?player=single" class="btn  btn-lg"><i class="fa fa-refresh"></i> LIST</a>'; 
+        print '<a href="?player=single" class="btn  btn-lg" title="'.$lang['globalLoop'].': '.$lang['globalList'].'"><i class="mdi mdi-repeat"></i> '.$lang['globalList'].'</a>'; 
     }
     if (array_key_exists('state', $playerStatus)) {
-        print '         <a href="?stop=true" class="btn  btn-lg"><i class="fa fa-stop"></i></a>';
+        print '         <a href="?stop=true" class="btn  btn-lg"><i class="mdi mdi-stop"></i></a>';
     }
 ?>
         </div><!-- ./btn-group -->

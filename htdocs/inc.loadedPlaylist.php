@@ -12,13 +12,13 @@
     </thead--> 
     <tbody style="a {color:black;}; a:hover {color:white;}"> 
         <tr> 
-            <td><a href="?playpos='.$i.'" class="btn btn-success btn-xs"><i class="fa fa-play" aria-hidden="true"></i></a></td> 
+            <td><a href="?playpos='.$i.'" class="btn btn-success btn-xs"><i class="mdi mdi-play" aria-hidden="true"></i></a></td> 
             <th scope=row>1</th> 
             <td>The title of the track - it could be long</td> 
             <td>03:12</td> 
         </tr>  
         <tr> 
-            <td><a href="?playpos='.$i.'" class="btn btn-xs" style="color:black;"><i class="fa fa-play" aria-hidden="true"></i></a></td>  
+            <td><a href="?playpos='.$i.'" class="btn btn-xs" style="color:black;"><i class="mdi mdi-play" aria-hidden="true"></i></a></td>  
             <th scope=row>2</th> 
             <td class="text">
                 <span>
@@ -48,7 +48,7 @@ print '
                     <h4 class="panel-title">
                         <div class="row" style="margin-bottom:1em;">
                             <div class="col-xs-1">
-                                <i class="fa fa-'. $playerStatus['state'] .'"></i>
+                                <i class="mdi mdi-'. $playerStatus['state'] .'"></i>
                             </div>
                             <div class="col-xs-8 col-md-9">
                                 '.$playerStatus['file'].'
@@ -64,7 +64,7 @@ print '
                         </div>
                         <div class="row">
                             <div class="col-xs-1">
-                                <i class="fa fa-list-ol"></i>
+                                <i class="mdi mdi-playlist-play"></i>
                             </div>
                             <div class="col-xs-8 col-md-9">
                                 <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a>
@@ -88,7 +88,7 @@ print '
                         <li class="list-group-item">
                             <div class="row">
                                 <div class="col-xs-2 col-md-1">
-                                    <a href="?playpos='.$i.'" class="btn btn-success"><i class="fa fa-play" aria-hidden="true"></i></a>
+                                    <a href="?playpos='.$i.'" class="btn btn-success"><i class="mdi mdi-play" aria-hidden="true"></i></a>
                                 </div>
                                 <div class="col-xs-8 col-md-9">
                                     '.$trackname.'

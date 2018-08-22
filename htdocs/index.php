@@ -94,7 +94,7 @@ foreach($audiofolders as $audiofolder) {
 	// add file name to list, supress if it's lastplayed.dat
         if(is_file($audiofolder."/".$file) && $file != "lastplayed.dat"){
             $accordion .= "\n<li>".$file;
-            $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='fa fa-wrench'></i> ".$lang['globalEdit']."</a>";
+            $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>";
             $accordion .= "</li>";
         }
     }
@@ -106,7 +106,7 @@ foreach($audiofolders as $audiofolder) {
     if(in_array($audiofolderbasename, $shortcuts)) {
         foreach ($shortcuts as $key => $value) {
             if($value == $audiofolderbasename) {
-                $ids .= " <a href='cardEdit.php?cardID=$key'>".$key." <i class='fa fa-wrench'></i></a> | ";
+                $ids .= " <a href='cardEdit.php?cardID=$key'>".$key." <i class='mdi mdi-wrench'></i></a> | ";
             }
         }
         $ids = rtrim($ids, "| "); // get rid of trailing slash
@@ -119,11 +119,11 @@ foreach($audiofolders as $audiofolder) {
         <div class='col-md-6'>
         <div class='well'>";
         print "
-            <h4><i class='fa fa-folder-o'></i>
+            <h4><i class='mdi mdi-folder'></i>
                 ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
                 </h4>";
         print "
-            <a href='?play=".$audiofolder."' class='btn btn-info'><i class='fa fa-play'></i> ".$lang['globalPlay']."</a> ";
+            <a href='?play=".$audiofolder."' class='btn btn-info'><i class='mdi mdi-play'></i> ".$lang['globalPlay']."</a> ";
         // Adds a button to enable/disable resume play. Checks if lastplayed.dat exists and livestream.txt not (no resume for livestreams)
 
 // RESUME BUTTON
@@ -137,9 +137,9 @@ if (!in_array("livestream.txt", $files) ) {
 }
 if( $foundResume == "OFF" ) {
         // do stuff
-            print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
+            print "<a href='?enableresume=".$audiofolder."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
     } elseif($foundResume == "ON") {
-            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+            print "<a href='?disableresume=".$audiofolder."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a>";
 }
 
 // SHUFFLE BUTTON
@@ -152,14 +152,14 @@ if (!in_array("livestream.txt", $files) ) {
 }
 if( $foundShuffle == "OFF" ) {
         // do stuff
-            print "<a href='?enableshuffle=".$audiofolder."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='fa fa-toggle-off' aria-hidden='true'></i></a> ";
+            print "<a href='?enableshuffle=".$audiofolder."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
     } elseif($foundShuffle == "ON") {
-            print "<a href='?disableshuffle=".$audiofolder."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='fa fa-toggle-on' aria-hidden='true'></i></a>";
+            print "<a href='?disableshuffle=".$audiofolder."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a>";
 }
 
 
         print "
-            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>".$lang['indexShowFiles']." <i class='fa fa-folder-open-o'></i></span> ";
+            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>".$lang['indexShowFiles']." <i class='mdi mdi-folder-open'></i></span> ";
         print "
             <div id='folder".$idcounter."' class='collapse folderContent'>
             ".$accordion."
@@ -189,7 +189,7 @@ if( $foundShuffle == "OFF" ) {
               <div class="col-xs-12">
               <h4><?php print $lang['indexManageFilesChips']; ?></h4>
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
-                <i class='fa  fa-plus-circle'></i> <?php print $lang['globalRegisterCard']; ?>
+                <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
               </div>
             </div><!-- ./row -->

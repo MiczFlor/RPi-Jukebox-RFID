@@ -123,7 +123,7 @@ $messageSuccess = "";
 if($post['delete'] == "delete") {
     $messageAction .= "<p>The card with the ID '".$post['cardID']." has been deleted. 
         If you made a mistake, this is your chance to press 'Submit' to restore the card settings. 
-        Else: Go <a href='index.php' class='mainMenu'><i class='fa fa-home'></i> Home</a>.</p>";
+        Else: Go <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> Home</a>.</p>";
     // remove $fileshortcuts to cardID file in shortcuts
     $exec = "rm ".$fileshortcuts;
     exec($exec);

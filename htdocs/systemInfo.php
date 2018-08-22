@@ -39,7 +39,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-         <i class='fa fa-microchip'></i> <?php print $lang['globalSystem']; ?> <small><?php print $lang['globalVersion']; ?>: <?php echo $version; ?></small>
+         <i class='mdi mdi-settings'></i> <?php print $lang['globalSystem']; ?> <small><?php print $lang['globalVersion']; ?>: <?php echo $version; ?></small>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -84,7 +84,7 @@ $exec = "df -H -B K / ";
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <i class='fa fa-hdd-o'></i> <?php print $lang['globalStorage']; ?> <small>(<?php echo round($all/1024,2); ?> GB)</small>
+        <i class='mdi mdi-harddisk'></i> <?php print $lang['globalStorage']; ?> <small>(<?php echo round($all/1024,2); ?> GB)</small>
       </h4>
     </div><!-- /.panel-heading -->
 

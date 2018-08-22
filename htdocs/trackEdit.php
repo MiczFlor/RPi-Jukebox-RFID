@@ -347,7 +347,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-         <i class='fa fa-info'></i> Track information
+         <i class='mdi mdi-information-outline'></i> Track information
       </h4>
     </div><!-- /.panel-heading -->
 

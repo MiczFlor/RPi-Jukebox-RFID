@@ -28,19 +28,19 @@ if($debug == "true") {
   <div class="col-lg-12">
   <strong><?php print $lang['globalJumpTo']; ?>:</strong>
         <a href="#RFID" class="xbtn xbtn-default ">
-        <i class='fa  fa-credit-card'></i> <?php print $lang['globalRFIDCards']; ?>
+        <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRFIDCards']; ?>
         </a> | 
         <a href="#volume" class="xbtn xbtn-default ">
-        <i class='fa  fa-bullhorn'></i> <?php print $lang['globalVolumeSettings']; ?>
+        <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
         </a> | 
         <a href="#autoShutdown" class="xbtn xbtn-default ">
-        <i class='fa  fa-clock-o'></i> <?php print $lang['globalIdleShutdown']." / ".$lang['globalSleepTimer']; ?>
+        <i class='mdi mdi-clock-end'></i> <?php print $lang['globalIdleShutdown']." / ".$lang['globalSleepTimer']; ?>
         </a> | 
         <a href="#wifi" class="xbtn xbtn-default ">
-        <i class='fa  fa-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
+        <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
         </a> | 
         <a href="#externalInterfaces" class="xbtn xbtn-default ">
-        <i class='fa  fa-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
+        <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
         </a> 
   </div>
 </div>
@@ -49,7 +49,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="RFID"></a>
-         <i class='fa fa-credit-card'></i> <?php print $lang['indexManageFilesChips']; ?>
+         <i class='mdi mdi-cards-outline'></i> <?php print $lang['indexManageFilesChips']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -57,7 +57,7 @@ if($debug == "true") {
         <div class="row">
           <div class="col-lg-12">
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
-                <i class='fa  fa-plus-circle'></i> <?php print $lang['globalRegisterCard']; ?>
+                <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
           </div><!-- / .col-lg-12 -->
         </div><!-- /.row -->
@@ -70,7 +70,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="volume"></a>
-         <i class='fa fa-bullhorn'></i> <?php print $lang['globalVolumeSettings']; ?>
+         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -93,7 +93,7 @@ include("inc.setVolumeStep.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="autoShutdown"></a>
-        <i class='fa fa-clock-o'></i> <?php print $lang['globalAutoShutdown']." ".$lang['globalSettings']; ?>
+        <i class='mdi mdi-clock-end'></i> <?php print $lang['globalAutoShutdown']." ".$lang['globalSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     <div class="panel-body">
@@ -121,7 +121,7 @@ include("inc.setIdleShutdown.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="wifi"></a>
-        <i class='fa fa-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
+        <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     
@@ -138,7 +138,7 @@ include("inc.setWifi.php");
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="externalInterfaces"></a>
-        <i class='fa fa-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
+        <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
       </h4>
     </div><!-- /.panel-heading -->
     

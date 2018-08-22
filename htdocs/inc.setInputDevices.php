@@ -8,13 +8,13 @@ if ($gpiostatus != "") {
 	print $lang['globalGpioButtons'].' <span class="label label-success">'.$lang['globalEnabled'].'</span>';
 	print '</div><!-- / .col-xs-6 -->';
 	print '<div class="col-xs-6">';
-	print "<a href='?gpiostatus=turnoff' class='btn btn-sm btn-danger'><i class='fa  fa-power-off'></i> ".$lang['globalSwitchOff']."</a>";
+	print "<a href='?gpiostatus=turnoff' class='btn btn-sm btn-danger'><i class='mdi mdi-cancel'></i> ".$lang['globalSwitchOff']."</a>";
 }
 else {
 	print $lang['globalGpioButtons'].' <span class="label label-danger">'.$lang['globalDisabled'].'</span>';
 	print '</div><!-- / .col-xs-4 -->';
 	print '<div class="col-xs-4">';
-	print "<a href='?gpiostatus=turnon' class='btn btn-sm btn-success'><i class='fa fa-play'></i> ".$lang['globalSwitchOn']."</a>";
+	print "<a href='?gpiostatus=turnon' class='btn btn-sm btn-success'><i class='mdi mdi-play'></i> ".$lang['globalSwitchOn']."</a>";
 }
 ?>
 		</div><!-- / .col-xs-6 -->
@@ -30,13 +30,13 @@ if ($rfidstatus != "") {
 	print $lang['globalRfidReader'].' <span class="label label-success">'.$lang['globalEnabled'].'</span>';
 	print '</div><!-- / .col-xs-6 -->';
 	print '<div class="col-xs-6">';
-	print "<a href='?rfidstatus=turnoff' class='btn btn-sm btn-danger'><i class='fa  fa-power-off'></i> ".$lang['globalSwitchOff']."</a>";
+	print "<a href='?rfidstatus=turnoff' class='btn btn-sm btn-danger'><i class='mdi mdi-cancel'></i> ".$lang['globalSwitchOff']."</a>";
 }
 else {
 	print $lang['globalRfidReader'].' <span class="label label-danger">'.$lang['globalDisabled'].'</span>';
 	print '</div><!-- / .col-xs-4 -->';
 	print '<div class="col-xs-4">';
-	print "<a href='?rfidstatus=turnon' class='btn btn-sm btn-success'><i class='fa fa-play'></i> ".$lang['globalSwitchOn']."</a>";
+	print "<a href='?rfidstatus=turnon' class='btn btn-sm btn-success'><i class='mdi mdi-play'></i> ".$lang['globalSwitchOn']."</a>";
 }
 ?>
 		</div><!-- / .col-xs-6 -->
