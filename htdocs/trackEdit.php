@@ -1,18 +1,13 @@
 <?php
 
+include("inc.header.php");
+
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
 * INSTALL-stretch.md instructions.
 * If you want to change the paths, edit config.php
 ***************************************************/
-
-/*
-* DEBUGGING
-* for debugging, set following var to true.
-* This will only print the executable strings, not execute them
-*/
-$debug = "false"; // true or false
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*

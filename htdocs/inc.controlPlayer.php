@@ -1,12 +1,11 @@
 
 <?php
-/*
-if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')) { 
+if(file_exists(trim($Audio_Folders_Path).'/'.trim($Latest_Folder_Played).'/cover.jpg')) { 
     print '<div class="playerWrapperCover"><center>';
-    print '<img class="img-responsive img-thumbnail" src="image.php?img='.$conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg" alt="Suli Pushban"/>';
+    print '<img class="img-responsive img-thumbnail" src="image.php?img='.trim($Audio_Folders_Path).'/'.trim($Latest_Folder_Played).'/cover.jpg" alt=""/>';
     print '</center></div>';
 }
-*/
+
 ?>
 <div class="playerWrapper">
     <!--a href='?player=seekBack15' class='btn btn-player-l'><i class="mdi mdi-24px mdi-replay"></i></a-->

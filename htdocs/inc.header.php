@@ -71,6 +71,12 @@ include("func.php");
 // path to script folder from github repo on RPi
 $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
 
+/*
+* Vars from the settings folder
+*/
+$Audio_Folders_Path = file_get_contents('../settings/Audio_Folders_Path');
+$Latest_Folder_Played = file_get_contents('../settings/Latest_Folder_Played');
+
 /*******************************************
 * URLPARAMETERS
 *******************************************/
