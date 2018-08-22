@@ -20,7 +20,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 * Just plug and play using USB, no soldering iron needed.
 * Once the Phoniebox is up and running, add music from any computer on your home network.
 * Register new RFID cards easily without having to connect to the RPi.
-* Play single or multiple files, even mix them with web streams.
+* Play single or multiple files, podcasts or web streams.
 * Volume control is also done with RFID cards or key fobs.
 * Connect to your Phoniebox via your wifi network or run the Phoniebox like an access point and connect directly without a router.
 * **Bonus:** control the Phoniebox from your phone or computer via a web app.
@@ -29,10 +29,12 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 The web app runs on any device and is mobile optimised. It provides:
 
-* An audio player to pause, resume, stop and skip to previous and next track.
+* An audio player to pause, resume, shuffle, loop, stop and skip to previous and next track.
 * Control and change the volume level.
 * Full list of all available audio and trigger to play it from the browser.
 * Shutdown or reboot the RPi gracefully.
+* The web app allows to manage settings, registering new cards, display system info and edit the wifi connection.
+* Covers displayed in the web app (files called `cover.jpg`).
 
 ## Phoniebox Gallery
 

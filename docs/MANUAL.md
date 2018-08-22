@@ -165,6 +165,10 @@ That's it. If you swipe the card across the Phoniebox, it will play all the file
 
 **Note:** files are played in alphabetical order. If you want to change the order, rename the files accordingly.
 
+### Show covers in web app
+
+If your audio folder contains a file called `cover.jpg` (lowercase!) it will be displayed in the web app above the player controls.
+
 ### Playing audio files from a USB stick
 
 If you have your audio files on an external USB stick, you need to point the folder `audiofolders` to the external USB device. The USB-stick is automatically mounted to `/media/usb0`.
@@ -342,6 +346,13 @@ Save the changes and close the editor. The changes takes effect immediately.
 **Note:** if you (accidently) assign a command and an audio folder to the same card, the Phoniebox will not play the audio. It will only execute the command.
 
 # <a name="faq"></a>Troubleshooting / FAQ
+
+## The album covers are not displayed in the web app
+
+If your audio folder contains a file called `cover.jpg` (lowercase!) it will be displayed in the web app above the player controls.
+
+* Possibly your file is named differently? Like `Cover.JPG` or `cover.jpeg`?
+* Make sure the group www-data has the rights to see the file (i.e. the webserver can read it).
 
 ## <a name="faqaudioimprovement"></a>I want to improve the onboard audio quality
 
