@@ -45,8 +45,8 @@ foreach ($shortcutstemp as $shortcuttemp) {
             <select id="audiofolder" name="audiofolder" class="form-control">
               <option value="false"><?php print $lang['cardFormFolderSelectDefault']; ?></option>
 <?php
-// read the subfolders of shared/audiofolders
-$audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
+// read the subfolders of $Audio_Folders_Path
+$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
 usort($audiofolders, 'strcasecmp');
 
 // check if we can preselect an audiofolder if NOT a foldername was posted
@@ -147,8 +147,8 @@ foreach($audiofolders as $audiofolder) {
             <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
               <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
-// read the subfolders of shared/audiofolders
-$audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
+// read the subfolders of $Audio_Folders_Path
+$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
 usort($audiofolders, 'strcasecmp');
 
 // check if we can preselect an audiofolder if NOT a foldername was posted

@@ -74,8 +74,8 @@ foreach ($shortcutstemp as $shortcuttemp) {
 //print "<pre>"; print_r($shortcutstemp); print "</pre>"; //???
 //print "<pre>"; print_r($shortcuts); print "</pre>"; //???
 
-// read the subfolders of shared/audiofolders
-$audiofolders = array_filter(glob($conf['base_path'].'/shared/audiofolders/*'), 'is_dir');
+// read the subfolders of $Audio_Folders_Path
+$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
 usort($audiofolders, 'strcasecmp');
 
 // counter for ID of each folder
@@ -111,7 +111,7 @@ foreach($audiofolders as $audiofolder) {
         }
         $ids = rtrim($ids, "| "); // get rid of trailing slash
     }
-    parse_str($conf['base_path'].'/shared/audiofolders/'.$audiofolder.'/folder.conf', $folderConf);
+    parse_str($Audio_Folders_Path.'/'.$audiofolder.'/folder.conf', $folderConf);
     $folderConfRaw = file_get_contents($audiofolder.'/folder.conf');
     // if folder not empty, display play button and content
     if ($accordion != "<h4>".$lang['indexContainsFiles']."</h4><ul></ul>") {
@@ -120,7 +120,7 @@ foreach($audiofolders as $audiofolder) {
         <div class='well'>";
         print "
             <h4><i class='mdi mdi-folder'></i>
-                ".str_replace($conf['base_path'].'/shared/audiofolders/', '', $audiofolder)."
+                ".str_replace($Audio_Folders_Path.'/', '', $audiofolder)."
                 </h4>";
         print "
             <a href='?play=".$audiofolder."' class='btn btn-info'><i class='mdi mdi-play'></i> ".$lang['globalPlay']."</a> ";

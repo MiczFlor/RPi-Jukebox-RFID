@@ -354,6 +354,23 @@ If your audio folder contains a file called `cover.jpg` (lowercase!) it will be 
 * Possibly your file is named differently? Like `Cover.JPG` or `cover.jpeg`?
 * Make sure the group www-data has the rights to see the file (i.e. the webserver can read it).
 
+## I moved my audiofiles now the playout does not work
+
+If you are moving your audio files to a different location, you need to edit two files to make sure Phoniebox (in alliance with mpd) can still play the content.
+
+~~~
+nano /home/pi/RPi-Jukebox-RFID/settings/Audio_Folders_Path
+~~~
+... needs to contain the absolute path to your folder containing other audio folders. And so does the variable `music_directory` in the config file of `mpd`:
+~~~
+sudo nano /etc/mpd.conf
+~~~
+Once you have these changed, update mpd:
+~~~ 
+sudo service mpd restart
+mpc update
+~~~
+
 ## <a name="faqaudioimprovement"></a>I want to improve the onboard audio quality
 
 The Pi onboard audio quality is not the best. If you don't intend to go with an external USB card, these hints might help to improve the quality. Please share your experience in the "issues" section on github. These suggestions might depend on your operating system, so don't just throw them all in the mix :) Here you can find a [good list of audio improvements to try](https://github.com/superjamie/lazyweb/wiki/Raspberry-Pi-3.5mm-Audio-Hiss). What seems to work for many:

@@ -10,58 +10,8 @@ include("inc.header.php");
 ***************************************************/
 
 /* NO CHANGES BENEATH THIS LINE ***********/
-/*
-* Configuration file
-* Due to an initial commit with the config file 'config.php' and NOT 'config.php.sample'
-* we need to check first if the config file exists (it might get erased by 'git pull').
-* If it does not exist:
-* a) copy sample file to config.php and give warning
-* b) if sample file does not exist: throw error and die
-*/
-if(!file_exists("config.php")) {
-    if(!file_exists("config.php.sample")) {
-        // no config nor sample config found. die.
-        print "<h1>Configuration file not found</h1>
-            <p>The files 'config.php' and 'config.php.sample' were not found in the
-            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the 
-            <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
-            copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
-        die;
-    } else {
-        // no config but sample config found: make copy (and give warning)
-        if(!(copy("config.php.sample", "config.php"))) {
-            // sample config can not be copied. die.
-            print "<h1>Configuration file could not be created</h1>
-                <p>The file 'config.php' was not found in the
-                directory 'htdocs'. Attempting to create this file from 'config.php.sample'
-                resulted in an error. </p>
-                <p>
-                Are the folder settings correct? You could try to run the following commands
-                inside the folder 'RPi-Jukebox-RFID' and then reload the page:<br/>
-                <pre>
-sudo chmod -R 775 htdocs/
-sudo chgrp -R www-data htdocs/
-                </pre>
-                </p>
-                Alternatively, download 'htdocs/config.php.sample' from the 
-                <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
-                copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
-            die;
-        } else {
-            $warning = "<h4>Configuration file created</h4>
-                <p>The file 'config.php' was not found in the
-                directory 'htdocs'. A copy of the sample file 'config.php.sample' was made automatically.
-                If you encounter any errors, edit the newly created 'config.php'.
-                </p>
-            ";
-        }
-    }
-}
-include("config.php");
 
 $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
-
-include("func.php");
 
 /*******************************************
 * START HTML
@@ -94,7 +44,7 @@ if(isset($_POST['streamFolderName']) && $_POST['streamFolderName'] != "") {
 if(isset($_POST['streamType']) && $_POST['streamType'] != "" && $_POST['streamType'] != "false") {
     $post['streamType'] = $_POST['streamType'];
 }
-if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists('../shared/audiofolders/'.$_POST['audiofolder'])) {
+if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['audiofolder'])) {
     $post['audiofolder'] = $_POST['audiofolder'];
 }
 if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
@@ -103,7 +53,7 @@ if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
 if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
     $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
 }
-if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists('../shared/audiofolders/'.$_POST['YTaudiofolder'])) {
+if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['YTaudiofolder'])) {
     $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
 }
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
@@ -153,7 +103,7 @@ if($post['submit'] == "submit") {
     }
     
     // streamFolderName already exists
-    if(isset($post['streamFolderName']) && file_exists('../shared/audiofolders/'.$post['streamFolderName'])) {
+    if(isset($post['streamFolderName']) && file_exists($Audio_Folders_Path.'/'.$post['streamFolderName'])) {
         $messageAction .= $lang['cardRegisterErrorExistingFolder'];
     }
     

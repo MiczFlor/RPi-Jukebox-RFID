@@ -264,8 +264,6 @@ if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
     $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
 }
 
-
-
 /*******************************************
 * ACTIONS
 *******************************************/
