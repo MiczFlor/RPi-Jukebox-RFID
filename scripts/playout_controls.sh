@@ -296,6 +296,14 @@ case $COMMAND in
             $PATHDATA/resume_play.sh -c=resume -v=$VALUE
         fi
         ;;
+    seekAhead)
+        # start the playing track from beginning
+        mpc seek +15
+        ;;
+    seekBack)
+        # start the playing track from beginning
+        mpc seek -15
+        ;;
     playerreplay)
         # start the playing track from beginning
         mpc seek 0

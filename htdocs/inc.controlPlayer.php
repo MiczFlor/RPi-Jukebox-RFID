@@ -8,7 +8,7 @@ if(file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg')) {
 
 ?>
 <div class="playerWrapper">
-    <!--a href='?player=seekBack15' class='btn btn-player-l'><i class="mdi mdi-24px mdi-replay"></i></a-->
+    <a href='?player=seekBack' class='btn btn-player-l'><i class="mdi mdi-24px mdi-replay"></i></a>
     <a href='?player=prev' class='btn btn-player-l'><i class="mdi mdi-48px mdi-rewind"></i></a>
 
 <?php
@@ -21,7 +21,7 @@ if(file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg')) {
 ?>
 
     <a href='?player=next' class='btn btn-player-l' ><i class="mdi mdi-48px mdi-fast-forward"></i></a>
-    <!--a href='?player=seekForward15' class='btn btn-player-l'><i class="mdi mdi-24px mdi-flip-h mdi-replay"></i></a-->
+    <a href='?player=seekAhead' class='btn btn-player-l'><i class="mdi mdi-24px mdi-flip-h mdi-replay"></i></a>
 
 </div><!-- ./playerWrapper -->
 <div class="playerWrapper">
