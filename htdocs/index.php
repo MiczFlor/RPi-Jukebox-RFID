@@ -159,7 +159,7 @@ if( $foundShuffle == "OFF" ) {
 
 
         print "
-            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder'>".$lang['indexShowFiles']." <i class='mdi mdi-folder-open'></i></span> ";
+            <span data-toggle='collapse' data-target='#folder".$idcounter."' class='btn btnFolder hoverGrey'>".$lang['indexShowFiles']." <i class='mdi mdi-folder-open'></i></span> ";
         print "
             <div id='folder".$idcounter."' class='collapse folderContent'>
             ".$accordion."

@@ -48,6 +48,18 @@ if(file_exists($conf['base_path'].'/shared/audiofolders/Suli Pushban/cover.jpg')
 ?>
         </div><!-- ./btn-group -->
 <?php
-include("inc.controlVolumeUpDown.php");
+/*
+       <a href="#collapseVolume" class="btn btn-lg collapsed" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" m="1"><i class="mdi mdi-volume-high"></i></a>
+       
+<div class="collapse well" id="collapseVolume" aria-expanded="false" style="height: 0px;"> 
+*/
+?>
+       <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
+                <a href='?mute=true' class='btn  btn-lg'><i class='mdi mdi-volume-off'></i></a>
+                <a href='?volumedown=true' class='btn  btn-lg'><i class='mdi mdi-volume-minus'></i></a>
+                <a href='?volumeup=true' class='btn  btn-lg'><i class='mdi mdi-volume-plus'></i></a>
+        </div>
+<?php
+//include("inc.controlVolumeUpDown.php");
 ?>        
 </div><!-- ./playerWrapper -->
