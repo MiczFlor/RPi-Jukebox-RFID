@@ -74,8 +74,8 @@ $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
 /*
 * Vars from the settings folder
 */
-$Audio_Folders_Path = file_get_contents('../settings/Audio_Folders_Path');
-$Latest_Folder_Played = file_get_contents('../settings/Latest_Folder_Played');
+$Audio_Folders_Path = trim(file_get_contents('../settings/Audio_Folders_Path'));
+$Latest_Folder_Played = trim(file_get_contents('../settings/Latest_Folder_Played'));
 
 /*******************************************
 * URLPARAMETERS

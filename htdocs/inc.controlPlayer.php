@@ -1,8 +1,8 @@
 
 <?php
-if(file_exists(trim($Audio_Folders_Path).'/'.trim($Latest_Folder_Played).'/cover.jpg')) { 
+if(file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg')) { 
     print '<div class="playerWrapperCover"><center>';
-    print '<img class="img-responsive img-thumbnail" src="image.php?img='.trim($Audio_Folders_Path).'/'.trim($Latest_Folder_Played).'/cover.jpg" alt=""/>';
+    print '<img class="img-responsive img-thumbnail" src="image.php?img='.$Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg" alt=""/>';
     print '</center></div>';
 }
 
