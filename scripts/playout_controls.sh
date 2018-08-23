@@ -378,7 +378,7 @@ case $COMMAND in
 	enablewifi)
 		rfkill unblock wifi
 		;;
-	disablewifi
+	disablewifi)
 		# see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
 		# as good as it gets
 		rfkill block wifi
