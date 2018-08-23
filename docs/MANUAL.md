@@ -294,8 +294,21 @@ The commands which are available in the script are:
 
 * **CMDMUTE** - will mute the Phoniebox. The file(s) continue to play, but there will be no sound coming out.
 * **CMDVOL30** to **CMDVOL100** - sets the volume to the percentage passed on, being one of: 30%, 50%, 75%, 85%, 90%, 95%, 100%.
+* **CMDVOLUP** and **CMDVOLDOWN** - increases or decreases the volume by the percentage step defined in 
+
 * **CMDSTOP** - stop the media player (without changing the volume).
 * **CMDSHUTDOWN** - shutdown the Phoniebox. While you can switch off the RPi the hard way by unplugging it from the power source, in the long run using the proper shutdown method extends the life expectation of your Phoniebox. After the shutdown, you still should detach the power supply - if only to make sure the speakers don't drain power.
+* **CMDREBOOT** - reboot the Phoniebox
+
+* **CMDNEXT** and **CMDPREV** - to skip one track forward or backward
+* **CMDPAUSE** and **CMDPLAY** - pause and resume audio playout
+
+* **STOPAFTER5** to **STOPAFTER60** - timer to stop after x minutes
+* **SHUTDOWNAFTER5** to **SHUTDOWNAFTER60** - timer to shutdown the Phoniebox after x minutes
+
+* **DISABLEWIFI** and **ENABLEWIFI** - toggle wifi like with cellphones in airplane mode, to increase battery live and reduce radiation
+
+* **CMDSHUFFLE** - toggle shuffle mode (not only for the current playlist)
 
 Once you have logged in to the RPi over SSH or booted with monitor and keyboard attached, open the script in the nano editor:
 
