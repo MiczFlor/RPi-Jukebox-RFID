@@ -71,6 +71,12 @@ include("func.php");
 // path to script folder from github repo on RPi
 $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
 
+/*
+* Vars from the settings folder
+*/
+$Audio_Folders_Path = trim(file_get_contents('../settings/Audio_Folders_Path'));
+$Latest_Folder_Played = trim(file_get_contents('../settings/Latest_Folder_Played'));
+
 /*******************************************
 * URLPARAMETERS
 *******************************************/
@@ -257,8 +263,6 @@ if(isset($_POST['enableshuffle']) && trim($_POST['enableshuffle']) != "") {
 if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
     $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
 }
-
-
 
 /*******************************************
 * ACTIONS
@@ -644,6 +648,28 @@ if(isset($urlparams['player'])) {
     }
     if($urlparams['player'] == "repeatoff") {
         $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=off";
+        if($debug == "true") { 
+            print "Command: ".$exec; 
+        } else { 
+            exec($exec);
+            /* redirect to drop all the url parameters */
+            header("Location: ".$conf['url_abs']);
+            exit; 
+        }
+    }
+    if($urlparams['player'] == "seekBack") {
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=seekBack";
+        if($debug == "true") { 
+            print "Command: ".$exec; 
+        } else { 
+            exec($exec);
+            /* redirect to drop all the url parameters */
+            header("Location: ".$conf['url_abs']);
+            exit; 
+        }
+    }
+    if($urlparams['player'] == "seekAhead") {
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=seekAhead";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 

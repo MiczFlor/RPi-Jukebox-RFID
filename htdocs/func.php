@@ -124,6 +124,9 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .mdi-60px.mdi-set, .mdi-60px.mdi:before {
           font-size: 60px;
         }
+        .hoverGrey:hover {
+            color: #999!important;
+        }
         </style>
         
     </head>\n";

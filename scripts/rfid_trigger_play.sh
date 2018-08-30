@@ -195,6 +195,12 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
+		$ENABLEWIFI)
+            $PATHDATA/playout_controls.sh -c=enablewifi
+			;;
+		$DISABLEWIFI)
+            $PATHDATA/playout_controls.sh -c=disablewifi
+			;;
         *)
             # We checked if the card was a special command, seems it wasn't.
             # Now we expect it to be a trigger for one or more audio file(s).

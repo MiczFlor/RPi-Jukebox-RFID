@@ -21,15 +21,15 @@ include("inc.langLoad.php");
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href='index.php' class='mainMenu'><i class='fa fa-home'></i> <?php print $lang['navHome']; ?></a></li>
-	      <li><a href='settings.php' class='mainMenu'><i class='fa fa-wrench'></i> <?php print $lang['navSettings']; ?></a></li>
-        <li><a href='systemInfo.php' class='mainMenu'><i class='fa fa-info'></i> <?php print $lang['navInfo']; ?></a></li>
+        <li><a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> <?php print $lang['navHome']; ?></a></li>
+	      <li><a href='settings.php' class='mainMenu'><i class='mdi mdi-settings'></i> <?php print $lang['navSettings']; ?></a></li>
+        <li><a href='systemInfo.php' class='mainMenu'><i class='mdi mdi-information-outline'></i> <?php print $lang['navInfo']; ?></a></li>
       </ul>
       
 <!-- sub menu -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href='index.php?shutdown=true' class='mainMenu'><i class='fa fa-power-off'></i> <?php print $lang['navShutdown']; ?></a></li>
-        <li><a href='index.php?reboot=true' class='mainMenu'><i class='fa fa-refresh'></i> <?php print $lang['navReboot']; ?></a></li>
+        <li><a href='index.php?shutdown=true' class='mainMenu'><i class='mdi mdi-power'></i> <?php print $lang['navShutdown']; ?></a></li>
+        <li><a href='index.php?reboot=true' class='mainMenu'><i class='mdi mdi-refresh'></i> <?php print $lang['navReboot']; ?></a></li>
       </ul>
 <!-- / sub menu -->
     </div><!-- /.navbar-collapse -->

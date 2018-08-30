@@ -50,6 +50,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playlistadd
 # getidletime
 # setidletime
+# disablewifi
+# enablewifi
 
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
@@ -296,6 +298,14 @@ case $COMMAND in
             $PATHDATA/resume_play.sh -c=resume -v=$VALUE
         fi
         ;;
+    seekAhead)
+        # start the playing track from beginning
+        mpc seek +15
+        ;;
+    seekBack)
+        # start the playing track from beginning
+        mpc seek -15
+        ;;
     playerreplay)
         # start the playing track from beginning
         mpc seek 0
@@ -365,6 +375,14 @@ case $COMMAND in
     getidletime)
         echo $IDLETIME
         ;;
+	enablewifi)
+		rfkill unblock wifi
+		;;
+	disablewifi)
+		# see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
+		# as good as it gets
+		rfkill block wifi
+		;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
         ;;
