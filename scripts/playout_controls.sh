@@ -293,18 +293,19 @@ case $COMMAND in
         PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ "$PLAYSTATE" == "pause" ]
         then
-            echo -e "play $VALUE" | nc -w 1 localhost 6600
+            echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
         else
             $PATHDATA/resume_play.sh -c=resume -v=$VALUE
         fi
         ;;
-    seekAhead)
-        # start the playing track from beginning
-        mpc seek +15
-        ;;
-    seekBack)
-        # start the playing track from beginning
-        mpc seek -15
+    playerseek)
+        # jumps back and forward in track.
+        # Usage: ./playout_controls.sh -c=playerseek -v=+15 to jump 15 seconds ahead
+        #        ./playout_controls.sh -c=playerseek -v=-10 to jump 10 seconds back
+        # Note: Not using "mpc seek" here as it fails if one tries to jump ahead of the beginning of the track
+        # (e.g. "mpc seek -15" executed at an elapsed time of 10 seconds let the player hang).
+        # mpd seekcur can handle this.
+        echo -e "seekcur $VALUE\nclose" | nc -w 1 localhost 6600
         ;;
     playerreplay)
         # start the playing track from beginning

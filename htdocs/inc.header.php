@@ -658,7 +658,7 @@ if(isset($urlparams['player'])) {
         }
     }
     if($urlparams['player'] == "seekBack") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=seekBack";
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerseek -v=-15";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 
@@ -669,7 +669,7 @@ if(isset($urlparams['player'])) {
         }
     }
     if($urlparams['player'] == "seekAhead") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=seekAhead";
+        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerseek -v=+15";
         if($debug == "true") { 
             print "Command: ".$exec; 
         } else { 
