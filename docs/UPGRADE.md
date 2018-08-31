@@ -9,9 +9,11 @@ Some elements of the installation depend on the OS (like 'Jessie' vs. 'Stretch')
 
 ## Which version am I on?
 
-As of version 0.9.4 there is a file `settings/version` containing the version number.
-For future reference, I will try to break down the upgrade patches / scripts from number
-to number.
+There is a file `settings/version` containing the version number.
+
+# Upgrade to Version 1.0
+
+As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall).
 
 # Upgrade from 0.9.5 to 0.9.7
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services

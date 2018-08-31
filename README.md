@@ -5,9 +5,10 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 *Important update news*
 
 * **Phoniebox 1.0 released** The latest release is saving battery power on the road, replaces the audio player with `mpd` and adds *resume play* as a feature - which is not meant for toddlers but audiobook lovers (aka Phoniebox is growing up!). (2018-08-18)
+* **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-08-30)
 * **One Line Install Script** As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
-
+* **Bleeding edge: `develop` branch** The maintenance with a growing contributor team (kudos!) got complicated. I introduced the branch `develop` which is where all new stuff is happening before merged to `master`. (2018-08-30)
 ---
 
 <a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="docs/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>

@@ -70,6 +70,8 @@ include("func.php");
 
 // path to script folder from github repo on RPi
 $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
+// path to shared folder from github repo on RPi
+$conf['shared_abs'] = realpath(getcwd().'/../shared/');
 
 /*
 * Vars from the settings folder
