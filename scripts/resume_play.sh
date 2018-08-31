@@ -62,12 +62,6 @@ fi
 . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
 if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR PLAYSTATUS: $PLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR RESUME: $RESUME" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR SHUFFLE: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.log; fi
 
 if [ $DEBUG == "true" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 

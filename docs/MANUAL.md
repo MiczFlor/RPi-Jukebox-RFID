@@ -238,10 +238,6 @@ In short:
 
 **Good to know:** A podcast is an RSS-feed containing a list of items featuring the special `enclosure` tag. This special tag has the `url` attribute pointing to an audio file on the web. The file ending for a podcast is often `.rss` or `.xml`. 
 
-**Troubleshooting:** 
-* if you are playing YouTube clips, they might break off and/or stutter. This is a buffering issue. See troubleshooting at the end of this document. 
-* if you add a web stream or URL which is invalid, this might create the audio player to revert to what it played the last time it was launched. If your Phoniebox seems to become erratic, check the URLs in your audio folder.
-
 ## <a name="webapp"></a>The Phoniebox Web App
 
 You can control the Phoniebox with your mobile phone, smart TV or through a browser on a computer. On any device connected to the same WiFi home network as your Phoniebox, open the browser and type in the static IP address of your Phoniebox. If you do this on your phone, the web app should something look like this:
@@ -434,11 +430,15 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
-## Audio is not working
+## ## <a name="faqAudioNotWorking"></a>Audio is not working
+
+This might occur if you are using external sound cards like *pHat BEAT* or the like. I split this into two parts: a) sound did never work and b) sound worked once, now, with a new soundcard, it doesn't.
+
+**a) Audio never worked**
 
 This could happen if you are using an external soundcard. Generally, if you have audio troubles, try searching the web, because it might get complicated. But try this first:
 
-Learn here why [to specify the audio iFace](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#settingsaudio_iface_name) in the file `settingsaudio_iface_name`. 
+Learn here why [to specify the audio iFace](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#settingsaudio_iface_name) in the file `settings/Audio_iFace_Name`. 
 
 If that doesn't work, check if the device is recognised by your Pi:
 ~~~
@@ -466,13 +466,36 @@ Now the audio card for the system is set to 1. Reboot the RPi:
 $ sudo reboot
 ~~~
 
+**b) Audio worked, then you changed the sound card and it stopped working**
+
+If you change your sound card, you need to alter the configuration in two parts by adding the iFace name:
+
+* Inside `settings/Audio_iFace_Name` of your Phoniebox installation
+* Inside `/etc/mpd.conf` 
+
+During the install procedure, both files are set using `PCM`. After you added your sound card, you need to alter these two files. In `mpd.conf` you can find a section which looks like this:
+~~~
+audio_output {
+	type		"alsa"
+	name		"My ALSA Device"
+#	device		"hw:0,0"	# optional
+#	mixer_type      "hardware"      # optional
+#	mixer_device	"default"	# optional
+	mixer_control	"%AUDIOiFace%"		# optional
+#	mixer_index	"0"		# optional
+}
+~~~
+Replace `%AUDIOiFace%` with the iFace name of your device. Other values might also need to be changed. Consult the `mpd` manual for details.
+
+"How do I get the right iFace name?", you might wonder. Rightly so. In short: type `amixer scontrols` - and read the following section to find out more.
+
 ## Changing the volume does not work, but the playout works
 
-The `amixer` command might require a different device name, not `PCM`.
+The `amixer` command might require a specific device name, not the default `PCM`. Changing the volume is done by Phoniebox, playout is done by `mpd`, which is why one might work while the other doesn't.
 
 Inside `settings/Audio_iFace_Name` is the iFace name of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
 
-To list all available iFace names, type `amixer controls`.
+To list all available iFace names, type `amixer scontrols`.
 
 ## daemon_rfid_reader.py only works via SSH not by RFID cards
 `daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.
