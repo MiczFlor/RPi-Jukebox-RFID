@@ -92,7 +92,7 @@ foreach($audiofolders as $audiofolder) {
     $accordion = "<h4>".$lang['indexContainsFiles']."</h4><ul>";
     foreach($files as $file) {
 	// add file name to list, supress if it's lastplayed.dat
-        if(is_file($audiofolder."/".$file) && $file != "lastplayed.dat"){
+        if(is_file($audiofolder."/".$file) && $file != "folder.conf"){
             $accordion .= "\n<li>".$file;
             $accordion .= " <a href='trackEdit.php?folder=$audiofolder&filename=$file'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>";
             $accordion .= "</li>";
