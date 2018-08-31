@@ -27,10 +27,13 @@ $lang['globalWifiNetwork'] = "WiFi Settings";
 $lang['globalSSID'] = "SSID";
 $lang['globalSet'] = "Set";
 $lang['globalSettings'] = "Settings";
-$lang['globalFolder'] = "Set";
+$lang['globalFolder'] = "Folder";
+$lang['globalFilename'] = "File name";
 $lang['globalStream'] = "Stream";
 $lang['globalSubmit'] = "Submit";
+$lang['globalUpdate'] = "Update";
 $lang['globalCancel'] = "Cancel";
+$lang['globalMove'] = "Move";
 $lang['globalJumpTo'] = "Jump to";
 $lang['globalAutoShutdown'] = "Auto Shutdown";
 $lang['globalIdleShutdown'] = "Idle Shutdown";
@@ -107,6 +110,16 @@ $lang['cardFormYTFolderPlaceholder'] = "e.g. 'New Folder'";
 $lang['cardFormYTFolderHelp'] = "Name for the audio folder that will contain the YouTube audio.";
 $lang['cardFormYTHelp'] = "Add the full YouTube-URL like in the example";
 $lang['cardFormRemoveCard'] = "Remove Card ID";
+
+/*
+* Track edit form
+*/
+$lang['trackEditTitle'] = "Track management";
+$lang['trackEditInformation'] = "Track information";
+$lang['trackEditMove'] = "Move track";
+$lang['trackEditMoveSelectLabel'] = "Select new folder";
+$lang['trackEditMoveSelectDefault'] = "Do not move file";
+
 
 /*
 * Settings
