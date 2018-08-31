@@ -37,6 +37,14 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             <script src=\"".$url_absolute."_assets/bootstrap-3/js/respond1.4.2.min.js\"></script>
         <![endif]-->
         
+        
+<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+<link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload.css'>
+<link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui.css'>
+<!-- CSS adjustments for browsers with JavaScript disabled -->
+<noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-noscript.css'></noscript>
+<noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui-noscript.css'></noscript>
+        
         <link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"".$url_absolute."_assets/icons/apple-icon-57x57.png\">
         <link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"".$url_absolute."_assets/icons/apple-icon-60x60.png\">
         <link rel=\"apple-touch-icon\" sizes=\"72x72\" href=\"".$url_absolute."_assets/icons/apple-icon-72x72.png\">
@@ -152,4 +160,20 @@ function replaceUmlaute($string) {
     $replace = array_values($searchreplace);
     return(preg_replace($search, $replace, $string));
 }
+function getFiles() {
+    $result = array();
+    foreach($_FILES as $name => $fileArray) {
+        if (is_array($fileArray['name'])) {
+            foreach ($fileArray as $attrib => $list) {
+                foreach ($list as $index => $value) {
+                    $result[$name][$index][$attrib]=$value;
+                }
+            }
+        } else {
+            $result[$name][] = $fileArray;
+        }
+    }
+    return $result;
+}
+
 ?>

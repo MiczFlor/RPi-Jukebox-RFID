@@ -31,6 +31,7 @@ $lang['globalFolder'] = "Folder";
 $lang['globalFilename'] = "File name";
 $lang['globalStream'] = "Stream";
 $lang['globalSubmit'] = "Submit";
+$lang['globalUpload'] = "Upload";
 $lang['globalUpdate'] = "Update";
 $lang['globalCancel'] = "Cancel";
 $lang['globalMove'] = "Move";
@@ -136,6 +137,15 @@ $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'ava
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
+
+/*
+* File Upload
+*/
+$lang['fileUploadTitle'] = "Upload files";
+$lang['fileUploadLegend'] = "Select files and folder";
+$lang['fileUploadLabel'] = "Select folder or create new";
+$lang['fileUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";
+
 
 ?>
 

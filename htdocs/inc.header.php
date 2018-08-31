@@ -270,12 +270,6 @@ if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
 * ACTIONS
 *******************************************/
 
-// if debug, do nothing but print everything
-if($debug == "true") { 
-    print "\$conf: <pre>\n"; print_r($conf); print "</pre>";
-    print "\$urlparams: <pre>\n"; print_r($urlparams); print "</pre>";
-}
-
 // change volume
 if(isset($urlparams['volume'])) {
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=".$urlparams['volume'];
