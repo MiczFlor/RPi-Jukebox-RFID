@@ -142,6 +142,7 @@ $lang['infoStorageUsed'] = "Storage usage";
 * File Upload
 */
 $lang['fileUploadTitle'] = "Upload files";
+$lang['fileUploadFilesLabel'] = "Select files from your drive";
 $lang['fileUploadLegend'] = "Select files and folder";
 $lang['fileUploadLabel'] = "Select folder or create new";
 $lang['fileUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";

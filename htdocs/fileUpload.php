@@ -184,7 +184,7 @@ if($debug == "true") {
 
         <!-- Select Basic -->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="folder"><?php print $lang['fileUploadLabel']; ?></label>
+          <label class="col-md-3 control-label" for="folder"><?php print $lang['fileUploadFilesLabel']; ?></label>
            <div class="col-md-7">
                 <ol>
                     <li> <input name="ufile[]" type="file" /></li>
