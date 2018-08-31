@@ -285,7 +285,7 @@ echo "#####################################################
 #
 # CONFIGURE MPD
 #
-# MPD (Music Player Daemon)  runs the audio output and must
+# MPD (Music Player Daemon) runs the audio output and must
 # be configured. Do it now, if you are unsure.
 # (Note: can be done manually later.)
 "
@@ -322,12 +322,17 @@ echo "#####################################################
 #
 # If unsure, keep it like this. If your files are somewhere
 # else, you can specify the folder in the next step.
+# IMPORTANT: the folder will not be created, only the path
+# will be remembered. If you use a custom folder, you must
+# create it.
 "
 
 read -r -p "Do you want to use the default location? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
     	echo "Please type the absolute path here (no trailing slash)."
+    	echo "Default would be for example:"
+    	echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
         read INPUT
         DIRaudioFolders="$INPUT"
         ;;
