@@ -195,6 +195,12 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
+		$ENABLEWIFI)
+            $PATHDATA/playout_controls.sh -c=enablewifi
+			;;
+		$DISABLEWIFI)
+            $PATHDATA/playout_controls.sh -c=disablewifi
+			;;
         *)
             # We checked if the card was a special command, seems it wasn't.
             # Now we expect it to be a trigger for one or more audio file(s).
@@ -262,40 +268,33 @@ if [ "$FOLDER" ]; then
         . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
     fi
 
-    # Save position (to catch playing and paused audio) for resume and clear the playlist -> audio off
-    # Is has to be sudo as daemon_rfid_reader.py doesn't call this script with sudo
-    # and this produces an error while saving folder.conf
-	
-    # Before we create a new playlist, we remove the old one from the folder.
-    # It's a workaround for resume playing as mpd doesn't know how its current playlist is named,
-    # so we only want the current playlist in the "mpc lsplaylists" output.
-    mpc lsplaylists | \
-    while read i
-    do
-        mpc rm "$i"
-    done
+    # get the name of the last folder played. As mpd doesn't store the name of the last
+    # playlist, we have to keep track of it via the Latest_Folder_Played file
+    LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
 
-    # if a folder $FOLDER exists, play content
-    if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
+    # check if we have a the playlist already loaded which is associated with the rfid card ("second swipe").
+    # check the length of the playlist, if =0 then it was cleared before (a state, which should only
+    # be possible after a reboot).
+    PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
+    if [ "$LASTFOLDER" == "$FOLDER" ] && [ $PLLENGTH -gt 0 ]
     then
-
+        STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+        if [ $STATE == "play" ]
+        then
+            if [ $DEBUG == "true" ]; then echo "MPD playing, pausing the player" >> $PATHDATA/../logs/debug.log; fi
+            sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
+        else
+            if [ $DEBUG == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
+            sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
+        fi
+    # if this is not a "second swipe", check if folder $FOLDER exists and play content
+    elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
+    then
         # set path to playlist
         PLAYLISTPATH="/tmp/$FOLDER.m3u"
+
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
-
-        # prep to check "if same playlist playing or paused" later
-        if [ $DEBUG == "true" ]; then mpc status; fi
-        mpd_status="offline"
-        if mpc status | awk 'NR==2' | grep playing > /dev/null;
-        then 
-            mpd_status="playing"
-        fi
-        if mpc status | awk 'NR==2' | grep paused > /dev/null;
-        then 
-            mpd_status="paused"
-        fi
-        if [ $DEBUG == "true" ]; then echo "VAR mpd_status: $mpd_status" >> $PATHDATA/../logs/debug.log; fi
 
         # Check if we have something special to do
         # Read content file names of folder into string
@@ -313,18 +312,12 @@ if [ "$FOLDER" ]; then
                 wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
                 # uncomment the following line to see playlist content in terminal
                 # cat "$PLAYLISTPATH"
-                if [ $DEBUG == "true" ]
-                then
-                    echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log
-                fi
+                if [ $DEBUG == "true" ]; then echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log; fi
             ;;
             "livestream.txt")
                 # mpd can't read from .txt, so we have to write the livestream URL into playlist
                 cat "$AUDIOFOLDERSPATH/$FOLDER/livestream.txt" > "$PLAYLISTPATH"
-                if [ $DEBUG == "true" ]
-                then
-                    echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log
-                fi
+                if [ $DEBUG == "true" ]; then echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
             ;;
             *)
                 # Nothing special to do, folder with audio files
@@ -338,69 +331,8 @@ if [ "$FOLDER" ]; then
             ;;
         esac
         
-        # Now we know what we will be playing -> start playing (or pausing?)!
-        
-        # read the latest folder into var
-        Latest_Folder_Played=`cat $PATHDATA/../settings/Latest_Folder_Played`
-        # now we can write folder name and write RFID to file 
-        # because webapp is also pushed from htdocs/inc.header.php to this script,
-        # but without a CARDID, only -d (FOLDER), we need to check IF CARDID is set.
-        if [ "$CARDID" ]; then
-            sudo echo "${CARDID}" > $PATHDATA/../settings/Latest_RFID_Played
-            sudo chmod 777 $PATHDATA/../settings/Latest_RFID_Played
-        fi
-        # write foldername triggered by RFID to file 
-        sudo echo "${FOLDER}" > $PATHDATA/../settings/Latest_Folder_Played
-        sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-
-        # 1. MPD playing
-        if [ $mpd_status == "playing" ]
-        then
-            if [ $DEBUG == "true" ]; then echo "1. MPD playing" >> $PATHDATA/../logs/debug.log; fi
-            # 1.1 IF new folder given ("$Latest_Folder_Played" != "$FOLDER")
-            if [ $DEBUG == "true" ]; then echo "1.1 CHECK Latest_Folder_Played ($Latest_Folder_Played) != FOLDER($FOLDER)" >> $PATHDATA/../logs/debug.log; fi
-            if [ "$Latest_Folder_Played" != "$FOLDER" ]
-            then
-                # 1.1.1 YES => stop current && start (resume) new
-                if [ $DEBUG == "true" ]; then echo "1.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
-            else 
-                # 1.1.2 NO => stop current
-                if [ $DEBUG == "true" ]; then echo "1.1.2 CHECK FALSE => playout_controls.sh -c=playerstop" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/playout_controls.sh -c=playerstop &>/dev/null
-            fi
-        fi
-        
-        # 2. MPD paused
-        if [ $mpd_status == "paused" ]
-        then
-            if [ $DEBUG == "true" ]; then echo "2. MPD paused" >> $PATHDATA/../logs/debug.log; fi
-            # 2.1 IF new folder given ("$Latest_Folder_Played" != "$FOLDER")
-            if [ $DEBUG == "true" ]; then echo "2.1 CHECK Latest_Folder_Played ($Latest_Folder_Played) != FOLDER($FOLDER)" >> $PATHDATA/../logs/debug.log; fi
-            if [ "$Latest_Folder_Played" != "$FOLDER" ]
-            then
-                # 2.1.1 YES => stop current && start (resume) new
-                if [ $DEBUG == "true" ]; then echo "2.1.1 CHECK TRUE => resume_play.sh -c=savepos -d=${Latest_Folder_Played} playout_controls.sh -c=playlistaddplay -v=${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/resume_play.sh -c=savepos -d="${Latest_Folder_Played}"
-                sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
-            else 
-                # 2.1.2 NO => play (resume) current
-                if [ $DEBUG == "true" ]; then echo "2.1.2 CHECK FALSE => playout_controls.sh -c=playerpause" >> $PATHDATA/../logs/debug.log; fi
-                sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
-            fi
-        fi
-        
-        # 3. MPD offline
-        if [ $mpd_status == "offline" ]
-        then
-            if [ $DEBUG == "true" ]; then echo "3. MPD offline" >> $PATHDATA/../logs/debug.log; fi
-            # 3.1 play (resume) current
-            if [ $DEBUG == "true" ]; then echo "3.1 play (resume) current" >> $PATHDATA/../logs/debug.log; fi
-            sudo $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}" &>/dev/null
-        fi
+        # load new playlist and play
+        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${FOLDER}"
 
     else
         if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi

@@ -50,6 +50,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playlistadd
 # getidletime
 # setidletime
+# disablewifi
+# enablewifi
 
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
@@ -291,18 +293,19 @@ case $COMMAND in
         PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ "$PLAYSTATE" == "pause" ]
         then
-            echo -e "play $VALUE" | nc -w 1 localhost 6600
+            echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
         else
             $PATHDATA/resume_play.sh -c=resume -v=$VALUE
         fi
         ;;
-    seekAhead)
-        # start the playing track from beginning
-        mpc seek +15
-        ;;
-    seekBack)
-        # start the playing track from beginning
-        mpc seek -15
+    playerseek)
+        # jumps back and forward in track.
+        # Usage: ./playout_controls.sh -c=playerseek -v=+15 to jump 15 seconds ahead
+        #        ./playout_controls.sh -c=playerseek -v=-10 to jump 10 seconds back
+        # Note: Not using "mpc seek" here as it fails if one tries to jump ahead of the beginning of the track
+        # (e.g. "mpc seek -15" executed at an elapsed time of 10 seconds let the player hang).
+        # mpd seekcur can handle this.
+        echo -e "seekcur $VALUE\nclose" | nc -w 1 localhost 6600
         ;;
     playerreplay)
         # start the playing track from beginning
@@ -340,20 +343,21 @@ case $COMMAND in
 	;;
     playlistaddplay)
         # add to playlist (and play)
+        # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        
-        # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
-        
-        # write latest folder played to settings file
-        # Chances are, this was already written in 'rfid_trigger_play.sh'
-        # However, new development might jump right here and not pipe
-        # through 'rfid_trigger_play.sh'
-        #echo $VALUE > $PATHDATA/../settings/Latest_Folder_Played
-        # clear track(s) from playlist
+
+        # first clear playlist (and save position if resume play is on)
+        $PATHDATA/resume_play.sh -c=savepos
         mpc clear
-        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume -d=$VALUE"; fi
+
+        # write latest folder played to settings file
+        sudo echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
+        if [ $DEBUG == "true" ]; then echo "echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+
+        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
+        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         # call shuffle_ceck to enable/disable folder-based shuffeling
         $PATHDATA/shuffle_play.sh -c=shuffle_check
         if [ $DEBUG == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
@@ -361,7 +365,6 @@ case $COMMAND in
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
-        sudo echo $VALUE > $AUDIOFOLDERSPATH/playing.txt 
         mpc load "${VALUE}"
         ;;
     setidletime)
@@ -372,6 +375,14 @@ case $COMMAND in
         ;;
     getidletime)
         echo $IDLETIME
+        ;;
+    enablewifi)
+        rfkill unblock wifi
+        ;;
+    disablewifi)
+        # see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
+        # as good as it gets
+        rfkill block wifi
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
