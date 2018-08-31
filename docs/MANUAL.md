@@ -587,3 +587,30 @@ then
     # amixer sset 'PCM' 95%
     $PATHDATA/playout_controls.sh -c=setvolume -v=95
 ~~~
+
+## Using Logitech V20 Speaker
+
+They Logitech V20 Speaker has some keys and will be recognized as normal usb keyboard input. The following script can be added to make these recognised by Phoniebox (kudos to contributor [ekorn](https://github.com/ekorn):
+~~~
+#File with Phoniebox keybindings for the Logitech V20 Speaker
+#loadkeys /home/pi/RPi-Jukebox-RFID/misc/mykeys
+
+#play/pause
+string F100 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerpause\n"
+string F101 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerstop\n"
+string F102 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev\n"
+string F103 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playernext\n"
+#mute/unmute
+string F104 = "amixer -c 1 set PCM 1+ toggle\n"
+string F105 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=volumeup\n"
+string F106 = "/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=volumedown\n"
+
+keycode 164 = F100
+keycode 166 = F101
+keycode 165 = F102
+keycode 163 = F103
+keycode 113 = F104
+keycode 115 = F105
+keycode 114 = F106
+~~~
+and add it to the end of the /etc/rc.local to autostart it and make sure that the pi user is loged in so that the key inputs work with raspi-config->Boot Options->Autologin Text Console
