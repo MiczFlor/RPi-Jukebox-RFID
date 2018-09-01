@@ -164,6 +164,25 @@ $messageAction = "";
 $messageSuccess = "";
 
 /*
+* Move file to different dir
+*/
+if($_POST['ACTION'] == "trackMove") {
+    if(
+    trim($_POST['folderNew']) != "" 
+    && file_exists($Audio_Folders_Path."/".$_POST['folderNew'])
+    && is_dir($Audio_Folders_Path."/".$_POST['folderNew'])
+    // check if new folder is different from current
+    && $_POST['folderNew'] != basename($post['folder'])
+    ) {
+        // rename($post['folder']."/".$post['filename'], $Audio_Folders_Path."/".$_POST['folderNew']."/".$post['filename']);
+        $exec = "mv ".$post['folder']."/".$post['filename']." ".$Audio_Folders_Path."/".$_POST['folderNew']."/";
+        exec($exec);
+        // set new location for form that is being displayed
+        $post['folder'] = $Audio_Folders_Path."/".$_POST['folderNew'];
+    }
+}
+
+/*
 * Update track tags
 * WARNING: I spent two days testing with ffmpeg, id3v2, id3 and mid3v2 to make utf-8 work. 
 * And failed.
@@ -202,13 +221,22 @@ if($_POST['ACTION'] == "trackUpdate") {
         }
     }
 }
-if($post['delete'] == "delete") {
-} elseif($post['submit'] == "submit") {
-    if($messageAction == "") {
+/*
+* Delete file
+*/
+if($_POST['ACTION'] == "trackDelete") {
+    if($_POST['deleteTrack'] == "yes") {
+        // delte the file
+        $exec = "sudo rm ".$post['folder']."/".$post['filename'];
+        exec($exec);
+        $messageSuccess = "<p>File '".$post['folder']."/".$post['filename']."' was deleted from your collection.</p>";
+        // unset the filename and folder var
+        unset($post['filename']);
+        unset($post['folder']);
     } else {
+        $messageWarning = "<p>File '".$post['folder']."/".$post['filename']."' was NOT deleted. You need to select 'yes' to confirm.</p>";
     }
 }
-
 
 /*
 * read metadata
@@ -241,70 +269,165 @@ include("inc.navigation.php");
 
     <div class="row playerControls">
       <div class="col-lg-12">
-        <h1>Track management</h1>
+        <h1><?php print $lang['trackEditTitle']; ?></h1>
 <?php
 /*
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = "Please note that the tag editing only works well for ASCII chars. German Umlaute will be replaced. Other UTF-8 chars turn into '?'. Help needed: please file pull requests :)";
-} 
+    $messageAction = "";
+}  
+if(isset($messageWarning) && $messageWarning != "") {
+    print '<div class="alert alert-warning">'.$messageWarning.'</div>';
+}
+if(isset($messageAction) && $messageAction != "") {
+    print '<div class="alert alert-info">'.$messageAction.'</div>';
+}
 if(isset($messageSuccess) && $messageSuccess != "") {
     print '<div class="alert alert-success">'.$messageSuccess.'</div>';
     //unset($post);
-} else {
-    if(isset($warning)) {
-        print '<div class="alert alert-warning">'.$warning.'</div>';
-    }
-    if(isset($messageAction)) {
-        print '<div class="alert alert-info">'.$messageAction.'</div>';
-    }
 }
 
 
-?>
-
-<?php
-if($debug == "true") {
-    print "<pre>";
-    print "_POST\n";
-    print_r($_POST);
-    print "\nconf\n";
-    print_r($conf);
-    print "\npost\n";
-    print_r($post);
-    print "\nfile extension: ".strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION))."\n";//.lower(pathinfo($filname, PATHINFO_EXTENSION));
-    print_r($trackDat);
-    print $res;
-    print "</pre>";
-}
 ?>
 
        </div>
     </div>
-
+<?php
+/*
+* ONLY show the forms if the file and folder are set and known. e.g. not after file was deleted.
+*/
+if(
+    isset($post['filename'])
+    && isset($post['folder'])
+    && $post['filename'] != ""
+    && $post['folder'] != ""
+    ) {
+?>
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-         <i class='mdi mdi-information-outline'></i> Track information
+         <i class='mdi mdi-information-outline'></i> <?php print $lang['trackEditInformation']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
     <div class="panel-body">
   
         <div class="row">	
-          <label class="col-md-3 control-label" for="">Folder</label> 
+          <label class="col-md-3 control-label" for=""><?php print $lang['globalFolder']; ?></label> 
           <div class="col-md-9"><?php print $post['folder']; ?></div>
         </div><!-- / row -->
         <div class="row">	
-          <label class="col-md-3 control-label" for=""> Filename</label> 
+          <label class="col-md-3 control-label" for=""> <?php print $lang['globalFilename']; ?></label> 
           <div class="col-md-9"><?php print $post['filename']; ?></div>
         </div><!-- / row -->
       
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
+
+    <div class="row">
+      <div class="col-lg-12">
+
+      
+        <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
+          <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
+          <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
+          <input type="hidden" name="ACTION" value="trackMove">
+        <fieldset> 
+        <legend><i class='mdi mdi-folder-move'></i> <?php print $lang['trackEditMove']; ?></legend>
+        
+        
+        <!-- Select Basic -->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="folderNew"><?php print $lang['trackEditMoveSelectLabel']; ?></label>
+          <div class="col-md-7">
+            <select id="folderNew" name="folderNew" class="form-control">
+              <!-- the first option will contain the name of the original folder. If this is found after posting, it will mean: do not move -->
+              <option value="<?php print basename($post['folder']); ?>" selected="selected"><?php print $lang['trackEditMoveSelectDefault']; ?></option>
+<?php
+// read the subfolders of $Audio_Folders_Path
+$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
+usort($audiofolders, 'strcasecmp');
+    
+// counter for ID of each folder
+$idcounter = 0;
+// go through all folders
+foreach($audiofolders as $audiofolder) {
+    if(basename($post['folder']) != basename($audiofolder)) {
+        print "              <option value='".basename($audiofolder)."'";
+        print ">".basename($audiofolder)."</option>\n";
+    }   
+}
+?>
+            </select>
+            <span class="help-block"></span>  
+          </div>
+        </div>
+        </fieldset>
+        
+        <!-- Button (Double) -->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="submit"></label>
+          <div class="col-md-9">
+            <button id="submit" name="submit" class="btn btn-success" value="trackMove"><?php print $lang['globalMove']; ?></button>
+            <br clear='all'><br>
+          </div>
+        </div>
+
+        </form>
+
+      </div><!-- / .col-lg-12 -->
+    </div><!-- /.row -->
+
+    <div class="row">
+      <div class="col-lg-12">
+
+      
+        <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
+          <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
+          <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
+          <input type="hidden" name="ACTION" value="trackDelete">
+        <fieldset> 
+        <legend><i class='mdi mdi-folder-move'></i> <?php print $lang['trackEditDelete']; ?></legend>
+          
+    <!-- Multiple Radios -->
+    <div class="form-group">
+      <label class="col-md-3 control-label" for="radios"><?php print $lang['trackEditDeleteLabel']; ?></label>
+      <div class="col-md-7">
+      <div class="radio">
+    <label for="radios-0">
+      <input name="deleteTrack" id="deleteTrack-0" value="no" checked="checked" type="radio">
+      <?php print $lang['trackEditDeleteNo']; ?>
+    </label>
+	</div>
+  <div class="radio">
+    <label for="radios-1">
+      <input name="deleteTrack" id="deleteTrack-1" value="yes" type="radio">
+      <?php print $lang['trackEditDeleteYes']; ?>
+    </label>
+	</div>
+          <span class="help-block"><?php print $lang['trackEditDeleteHelp']; ?></span>  
+  </div>
+    </div>
+
+        </fieldset>
+        
+        <!-- Button (Double) -->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="submit"></label>
+          <div class="col-md-9">
+            <button id="submit" name="submit" class="btn btn-warning" value="trackMove"><?php print $lang['globalDelete']; ?></button>
+            <br clear='all'><br>
+          </div>
+        </div>
+
+        </form>
+
+      </div><!-- / .col-lg-12 -->
+    </div><!-- /.row -->
+
     <div class="row">
       <div class="col-lg-12">
 
@@ -314,7 +437,8 @@ if($debug == "true") {
           <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
           <input type="hidden" name="ACTION" value="trackUpdate">
         <fieldset> 
-        <legend>Edit track information</legend>
+        <legend><i class='mdi mdi-information-outline'></i> Edit track information</legend>
+        <div class="alert alert-info">Please note that the tag editing only works well for ASCII chars. German Umlaute will be replaced. Other UTF-8 chars turn into '?'. Help needed: please file pull requests :)</div>
         
         <!-- Text input-->
         <div class="form-group">
@@ -373,7 +497,7 @@ if($debug == "true") {
         <div class="form-group">
           <label class="col-md-3 control-label" for="submit"></label>
           <div class="col-md-9">
-            <button id="submit" name="submit" class="btn btn-success" value="trackUpdate">Submit / Update</button>
+            <button id="submit" name="submit" class="btn btn-success" value="trackUpdate"><?php print $lang['globalUpdate']; ?></button>
             <br clear='all'><br>
           </div>
         </div>
@@ -381,9 +505,40 @@ if($debug == "true") {
         </form>
 
       </div><!-- / .col-lg-12 -->
-    </div><!-- /.row -->
+    </div><!-- /.row -->  
+
+<?php
+/*
+* ONLY show the forms if the file and folder are set and known. e.g. not after file was deleted.
+*
+if(
+    isset($post['filename'])
+    && isset($post['folder'])
+    && $post['filename'] != ""
+    && $post['folder'] != ""
+    ) {
+*/
+}
+?>  
+    
   </div><!-- /.container -->
 
+<?php
+if($debug == "true") {
+    print "<pre>";
+    print "_POST\n";
+    print_r($_POST);
+    print "\nconf\n";
+    print_r($conf);
+    print "\npost\n";
+    print_r($post);
+    print "\nfile extension: ".strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION))."\n";//.lower(pathinfo($filname, PATHINFO_EXTENSION));
+    print_r($trackDat);
+    print $res;
+    print "</pre>";
+    include('inc.debug.php');
+}
+?>
 </body>
 </html>
 

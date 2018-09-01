@@ -27,10 +27,15 @@ $lang['globalWifiNetwork'] = "WiFi Settings";
 $lang['globalSSID'] = "SSID";
 $lang['globalSet'] = "Set";
 $lang['globalSettings'] = "Settings";
-$lang['globalFolder'] = "Set";
+$lang['globalFolder'] = "Folder";
+$lang['globalFilename'] = "File name";
 $lang['globalStream'] = "Stream";
 $lang['globalSubmit'] = "Submit";
+$lang['globalUpload'] = "Upload";
+$lang['globalUpdate'] = "Update";
 $lang['globalCancel'] = "Cancel";
+$lang['globalDelete'] = "Delete";
+$lang['globalMove'] = "Move";
 $lang['globalJumpTo'] = "Jump to";
 $lang['globalAutoShutdown'] = "Auto Shutdown";
 $lang['globalIdleShutdown'] = "Idle Shutdown";
@@ -109,6 +114,21 @@ $lang['cardFormYTHelp'] = "Add the full YouTube-URL like in the example";
 $lang['cardFormRemoveCard'] = "Remove Card ID";
 
 /*
+* Track edit form
+*/
+$lang['trackEditTitle'] = "Track management";
+$lang['trackEditInformation'] = "Track information";
+$lang['trackEditMove'] = "Move track";
+$lang['trackEditMoveSelectLabel'] = "Select new folder";
+$lang['trackEditMoveSelectDefault'] = "Do not move file";
+$lang['trackEditDelete'] = "Delete track";
+$lang['trackEditDeleteLabel'] = "Sure you want to delete???";
+$lang['trackEditDeleteHelp'] = "There is no 'undo' for deleted files. They are gone! Are you sure?";
+$lang['trackEditDeleteNo'] = "Do NOT delete this track";
+$lang['trackEditDeleteYes'] = "Yes, DELETE this track";
+
+
+/*
 * Settings
 */
 $lang['settingsVolChangePercent'] = "Vol. Change %";
@@ -123,6 +143,16 @@ $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'ava
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
+
+/*
+* File Upload
+*/
+$lang['fileUploadTitle'] = "Upload files";
+$lang['fileUploadFilesLabel'] = "Select files from your drive";
+$lang['fileUploadLegend'] = "Select files and folder";
+$lang['fileUploadLabel'] = "Select folder or create new";
+$lang['fileUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";
+
 
 ?>
 

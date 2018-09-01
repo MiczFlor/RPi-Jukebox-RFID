@@ -154,7 +154,6 @@ usort($audiofolders, 'strcasecmp');
 // check if we can preselect an audiofolder if NOT a foldername was posted
 if(! isset($fpost['audiofolder'])) {
     if(array_key_exists($fpost['cardID'], $shortcuts)) {
-        print "got one!!!";    
         $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
     }
 }
