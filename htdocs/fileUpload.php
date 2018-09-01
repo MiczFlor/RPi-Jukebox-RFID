@@ -43,7 +43,7 @@ if(isset($_GET['filename']) && $_GET['filename'] != "") {
 $messageAction = "";
 $messageSuccess = "";
 // no error to start with
-$warning = "";
+$messageWarning = "";
 
 /*
 * Move file to different dir
@@ -66,7 +66,7 @@ if($_POST['ACTION'] == "fileUpload") {
     }
     if(count($uFiles['ufile']) == 0) {
         // if 0 there are no files
-        $warning .= "<p>No files were uploaded.</p>";
+        $messageWarning .= "<p>No files were uploaded.</p>";
     } elseif(
         // see if we have a folder selected that exists
         isset($post['folder'])
@@ -86,14 +86,14 @@ if($_POST['ACTION'] == "fileUpload") {
             // yes, valid new folder 
             $messageAction .= "Will create new folder and move files to: '".$post['folderNew']."'";
             // create folder
-            $exec = "mkdir ".$Audio_Folders_Path."/".$post['folderNew']."; chmod 777 ".$Audio_Folders_Path."/".$post['folderNew'];
+            $exec = "sudo mkdir ".$Audio_Folders_Path."/".$post['folderNew']."; sudo chmod 777 ".$Audio_Folders_Path."/".$post['folderNew'];
             exec($exec);
             $moveFolder = $Audio_Folders_Path."/".$post['folderNew'];
     } else {
-        $warning .= "<p>No folder selected nor a valid new folder specified.</p>";
+        $messageWarning .= "<p>No folder selected nor a valid new folder specified.</p>";
     }
     // if neither: error message
-    if($warning == "") {
+    if($messageWarning == "") {
         // else: move files to folder
         foreach($uFiles['ufile'] as $key => $values) {
             $exec = "mv ".$values['tmp_name']." ".$moveFolder."/".$values['name']."; chmod 777 ".$moveFolder."/".$values['name'];
@@ -129,16 +129,16 @@ include("inc.navigation.php");
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = "<p>If the upload does not work, make sure that you adjust these variables in <code>php.ini</code>:<br>
+    $messageAction = "<p>If the upload does not work, make sure that you adjust these variables in <code>/etc/php/7.0/fpm/php.ini</code>:<br>
     <code>file_uploads = On</code><br>
-    <code>upload_max_filesize = 200M</code><br>
+    <code>upload_max_filesize = 0</code><br>
     <code>max_file_uploads = 20</code><br>
-    <code>post_max_size = 200M</code><br>
+    <code>post_max_size = 0</code><br>
     And restart the webserver.
     </p>";
 } 
-if(isset($warning) && $warning != "") {
-    print '<div class="alert alert-warning">'.$warning.'</div>';
+if(isset($messageWarning) && $messageWarning != "") {
+    print '<div class="alert alert-warning">'.$messageWarning.'</div>';
 }
 if(isset($messageAction) && $messageAction != "") {
     print '<div class="alert alert-info">'.$messageAction.'</div>';
@@ -149,24 +149,6 @@ if(isset($messageSuccess) && $messageSuccess != "") {
 }
 
 
-?>
-
-<?php
-if($debug == "true") {
-    print "<pre>";
-    print "_POST\n";
-    print_r($_POST);
-    print "uFiles\n";
-    print_r($uFiles);
-    print "\nconf\n";
-    print_r($conf);
-    print "\npost\n";
-    print_r($post);
-    print "\nfile extension: ".strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION))."\n";//.lower(pathinfo($filname, PATHINFO_EXTENSION));
-    print_r($trackDat);
-    print $res;
-    print "</pre>";
-}
 ?>
 
        </div>
@@ -277,6 +259,24 @@ foreach($audiofolders as $audiofolder) {
     
   </div><!-- /.container -->
 
+<?php
+if($debug == "true") {
+    print "<pre>";
+    print "_POST\n";
+    print_r($_POST);
+    print "uFiles\n";
+    print_r($uFiles);
+    print "\nconf\n";
+    print_r($conf);
+    print "\npost\n";
+    print_r($post);
+    print "\nfile extension: ".strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION))."\n";//.lower(pathinfo($filname, PATHINFO_EXTENSION));
+    print_r($trackDat);
+    print $res;
+    print "</pre>";
+    include('inc.debug.php');
+}
+?>
 </body>
 </html>
 

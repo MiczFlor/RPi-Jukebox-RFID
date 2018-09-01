@@ -34,6 +34,7 @@ $lang['globalSubmit'] = "Submit";
 $lang['globalUpload'] = "Upload";
 $lang['globalUpdate'] = "Update";
 $lang['globalCancel'] = "Cancel";
+$lang['globalDelete'] = "Delete";
 $lang['globalMove'] = "Move";
 $lang['globalJumpTo'] = "Jump to";
 $lang['globalAutoShutdown'] = "Auto Shutdown";
@@ -120,6 +121,11 @@ $lang['trackEditInformation'] = "Track information";
 $lang['trackEditMove'] = "Move track";
 $lang['trackEditMoveSelectLabel'] = "Select new folder";
 $lang['trackEditMoveSelectDefault'] = "Do not move file";
+$lang['trackEditDelete'] = "Delete track";
+$lang['trackEditDeleteLabel'] = "Sure you want to delete???";
+$lang['trackEditDeleteHelp'] = "There is no 'undo' for deleted files. They are gone! Are you sure?";
+$lang['trackEditDeleteNo'] = "Do NOT delete this track";
+$lang['trackEditDeleteYes'] = "Yes, DELETE this track";
 
 
 /*

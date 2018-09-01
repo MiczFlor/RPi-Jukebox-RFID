@@ -422,6 +422,11 @@ sudo chmod 644 /etc/lighttpd/lighttpd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.stretch-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
+# settings for php.ini to support upload
+# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.0/fpm/php.ini
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.0/fpm/php.ini
+sudo chown root:root /etc/php/7.0/fpm/php.ini
+sudo chmod 644 /etc/php/7.0/fpm/php.ini
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
@@ -451,10 +456,11 @@ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 # create config file for web app from sample
 sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
 
-# Starting web server
+# Starting web server and php7
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
 sudo service lighttpd force-reload
+sudo service php7.0-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
