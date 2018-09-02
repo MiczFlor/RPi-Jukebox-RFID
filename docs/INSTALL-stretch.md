@@ -343,6 +343,31 @@ Now load the new configs into the web server by typing:
 sudo service lighttpd force-reload
 ~~~
 
+### File upload via web app: changes in php.ini
+
+The Phoniebox web app allows to upload files through the web app. To do so, php needs to understand that it is allowed to ignore files sizes and maximum size per file and the like. Such restrictions are set in the file `/etc/php/7.0/fpm/php.ini`. What you need to change (or use the sample script in the following step) are these variables - they need to be changed to read like the following:
+
+~~~
+file_uploads = On
+upload_max_filesize = 0
+max_file_uploads = 20
+post_max_size = 0
+~~~
+
+Copy the `php.ini` file to the right place and change the user and access rights:
+
+~~~
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.0/fpm/php.ini
+sudo chown root:root /etc/php/7.0/fpm/php.ini
+sudo chmod 644 /etc/php/7.0/fpm/php.ini
+~~~
+
+If you don't want to reboot your Phoniebox, you need to restart `php7.0-fpm` to load the new `php.ini` file.
+
+~~~
+sudo service php7.0-fpm restart
+~~~
+
 ### Make a copy of the web app config file
 
 There is a sample config file in the `htdocs` folder which you need to copy to `config.php`.
