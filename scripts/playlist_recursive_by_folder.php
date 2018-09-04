@@ -29,7 +29,7 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
     /*
     * now we look recursively only if list=recursive was given when calling this script
     */
-    if($_GET['list'] == "recursive") {
+    if(isset($_GET['list']) && $_GET['list'] == "recursive") {
         $folders = dir_list_recursively($Audio_Folders_Path_Playlist);
     } else {
         /*
@@ -37,22 +37,10 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
         */
         $folders = array($Audio_Folders_Path_Playlist);
     }
-    usort($folders, 'strnatcasecmp');
     /*
-    * Eliminate folders which contain special formats like a live stream
+    * sorting now to make sure we have aaaaallllll the folder in a neat list
     */
-    foreach($folders as $key => $value) {
-        if(file_exists($value."/livestream.txt")) {
-            unset($folders[$key]);
-        } else {
-            /*
-            * relative path from the $Audio_Folders_Path_Playlist folder
-            * which is also set in the mpd.conf
-            * ARRGH, commented out, not needed here, but for the files :)
-            */
-            //$folders[$key] = substr($value, strlen($Audio_Folders_Path) + 1, strlen($value));
-        }
-    }
+    usort($folders, 'strnatcasecmp');
 }
 
 $return = "";
@@ -61,54 +49,94 @@ foreach($folders as $folder) {
 }
 /*
 * prints all folders in a neat order:
+*
 print trim($return);
-*/
+/**/
 
 /*
 * Walk through the folder paths and get the files
 */
 $files_playlist = array();
 foreach($folders as $folder) {
+    print "\n---------------------\nFOLDER:".$folder."\n";//???
     /*
-    * list all files and folders
+    * empty the array from what we might have found the last time in this foreach
     */
-    $folder_files = array_diff(scandir($folder), array('..', '.'));
+    $folder_files = array();
     /*
-    * clean the list 
+    * totally skip live stream folders
     */
-    foreach ($folder_files as $key => $value) {
-        // drop directories
-        if(is_dir($folder."/".$value)){
-            unset($folder_files[$key]);
-        }
-        // drop config files
-        if(file_exists($folder."/folder.conf")){
-            unset($folder_files[$key]);
-        }
-        // podcasts
-        // not sure yet how to handle them, drop them for now
+    if(!file_exists($folder."/livestream.txt")){
+        /*
+        * podcasts, get the files
+        * special treatment for podcasts - which are URLs not relative paths!
+        */
         if(file_exists($folder."/podcast.txt")){
-            unset($folder_files[$key]);
+            /*
+            * Read podcast URL and extract audio links from enclosure tag
+            */
+            $podcast = trim(file_get_contents($folder."/podcast.txt"));
+            //wget -q -O - "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
+            //wget -q -O - "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
+            $exec = 'wget -q -O - \''.$podcast.'\' | sed -n \'s/.*enclosure.*url="\([^"]*\)".*/\1/p\'';
+            /*
+            * get all the playlist enclosure URLs in a multiline string
+            */
+            $podcastitems = trim(shell_exec($exec));
+            /*
+            * Now we replace $folder_files with the podcast playlist URLs
+            */
+            $folder_files = explode("\n", $podcastitems);     
+            /* 
+            * NOTE: podcast content is NOT ordered - because they are an ordered playlist already
+            */
+        } else {
+            /*
+            * ordinary, local files
+            * list all files and folders
+            * ignore . and ..
+            */
+            $folder_files = array_diff(scandir($folder), array('..', '.'));
+            print_r($folder_files);//???
+            /*
+            * clean up what we found in the folder
+            */
+            foreach ($folder_files as $key => $value) {
+                // drop directories
+                if(is_dir($folder."/".$value)){
+                    unset($folder_files[$key]);
+                }
+                // drop config files
+                if(file_exists($folder."/folder.conf")){
+                    unset($folder_files[$key]);
+                } 
+            }  
+            
+            /*
+            * relative path from the $Audio_Folders_Path_Playlist folder
+            * which is also set in the mpd.conf
+            */
+            foreach ($folder_files as $key => $value) {
+                $folder_files[$key] = substr($folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
+            }       
+            /* 
+            * order the remaining files - if any...
+            * NOTE: podcast content is NOT ordered - because they are an ordered playlist already
+            */
+            usort($folder_files, 'strnatcasecmp');
         }
+        /*
+        * push files to playlist
+        */
+        $files_playlist = array_merge($files_playlist, $folder_files);
     }
-    /*
-    * relative path from the $Audio_Folders_Path_Playlist folder
-    * which is also set in the mpd.conf
-    */
-    foreach ($folder_files as $key => $value) {
-        $folder_files[$key] = substr($folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
-    }    
-    /* 
-    * order the remaining files - if any...
-    */
-    usort($folder_files, 'strnatcasecmp');
-    
-    $files_playlist = array_merge($files_playlist, $folder_files);
 }
 
 $return = "";
 foreach($files_playlist as $file_playlist) {
-    $return .= $file_playlist."\n";
+    if($file_playlist != "") {
+        $return .= $file_playlist."\n";
+    }
 }
 
 print trim($return);

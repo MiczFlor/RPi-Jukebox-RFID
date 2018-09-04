@@ -22,6 +22,9 @@ echo "http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml" > $AUDIO
 mkdir $AUDIOFOLDERSPATH/ZZZ-Podcast-Kakadu
 echo "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" > $AUDIOFOLDERSPATH/ZZZ-Podcast-Kakadu/podcast.txt
 
+mkdir $AUDIOFOLDERSPATH/ZZZ-Podcast-WDR-Hörspielspeicher
+echo "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" > $AUDIOFOLDERSPATH/ZZZ-Podcast-WDR-Hörspielspeicher/podcast.txt
+
 # ZZZ-LiveStream-Bayern2 (dir)
 # * livestream.txt (file)
 # * http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3 (content)
@@ -54,6 +57,9 @@ cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMas
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/1-LiveStream-Bayern2
 echo "http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/1-LiveStream-Bayern2/livestream.txt
 
+mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/WDR-Hörspielspeicher\ Podcast
+echo "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/WDR-Hörspielspeicher\ Podcast/podcast.txt
+
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/100-MP3-StartUpSound
 cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMaster/100-MP3-StartUpSound/startupsound.mp3
 
@@ -65,6 +71,9 @@ cp ../../misc/audiofiletype* $AUDIOFOLDERSPATH/ZZZ-SubMaster/bbb-AudioFormatsTes
 
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/CCC-Podcast-Kakadu
 echo "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/CCC-Podcast-Kakadu/podcast.txt
+
+mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/Podcast\ DLF\ Kinderhoerspiele
+echo "http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/Podcast\ DLF\ Kinderhoerspiele/podcast.txt
 
 mkdir $AUDIOFOLDERSPATH/001-SubSub
 cp -R $AUDIOFOLDERSPATH/ZZZ-SubMaster/* $AUDIOFOLDERSPATH/001-SubSub/
