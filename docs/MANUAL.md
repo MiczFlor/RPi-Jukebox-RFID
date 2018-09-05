@@ -614,3 +614,10 @@ keycode 115 = F105
 keycode 114 = F106
 ~~~
 and add it to the end of the /etc/rc.local to autostart it and make sure that the pi user is loged in so that the key inputs work with raspi-config->Boot Options->Autologin Text Console
+
+## Recoder functionality
+If you are using a external sound card with micro line in, phoniebox is able to record the audio.
+The recordings can be controlled with the commands STARTRECORD600 (starts recording for max 10 minutes) and STOPRECORD. A RFID card can be assign in rfid_trigger_play.conf
+If a recording is already is runnig, no other recording will be started.
+The recordings will be stored in the $audiofiles/Recordings, the filename contains date and time of the record start.
+     
