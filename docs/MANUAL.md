@@ -617,7 +617,13 @@ and add it to the end of the /etc/rc.local to autostart it and make sure that th
 
 ## Recoder functionality
 If you are using a external sound card with micro line in, phoniebox is able to record the audio.
-The recordings can be controlled with the commands STARTRECORD600 (starts recording for max 10 minutes) and STOPRECORD. A RFID card can be assign in rfid_trigger_play.conf
+The recordings can be controlled with the commands STARTRECORD600 (starts recording for max 10 minutes) and STOPRECORD. A RFID card can be assigned in rfid_trigger_play.conf
+
+~~~
+STARTRECORD600 ="%STARTRECORD600%"
+STOPRECORD = "%STOPRECORD%"
+~~~
+
 If a recording is already is runnig, no other recording will be started.
 The recordings will be stored in the $audiofiles/Recordings, the filename contains date and time of the record start.
-     
+   
