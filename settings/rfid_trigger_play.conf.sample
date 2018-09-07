@@ -47,4 +47,7 @@ ENABLEWIFI="%ENABLEWIFI%"
 DISABLEWIFI="%DISABLEWIFI%"
 # Toggle Shuffle mode (not only for the current playlist)
 CMDSHUFFLE="%CMDSHUFFLE%"
+#Controll commands for Audio Recording
+STARTRECORD600="%STARTRECORD600%"
+STOPRECORD="%STOPRECORD%"
 
