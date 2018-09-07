@@ -71,24 +71,24 @@ if($_POST['ACTION'] == "fileUpload") {
         // see if we have a folder selected that exists
         isset($post['folder'])
         && $post['folder'] != ""
-        && file_exists($Audio_Folders_Path."/".$post['folder'])
-        && is_dir($Audio_Folders_Path."/".$post['folder'])
-        ){
-            // yes, a folder was selected
-            $messageAction .= "Will move files to folder: '".$post['folder']."'";
-            $moveFolder = $Audio_Folders_Path."/".$post['folder'];
+        && file_exists($post['folder'])
+        && is_dir($post['folder'])
+    ){
+        // yes, a folder was selected
+        $messageAction .= "Will move files to folder: '".$post['folder']."'";
+        $moveFolder = $post['folder'];
     } elseif(
         // if not, see if we have a new folder to create
         isset($post['folderNew'])
         && $post['folderNew'] != ""
-        && ! file_exists($Audio_Folders_Path."/".$post['folderNew'])
+            && ! file_exists($post['folderNew'])
         ){
             // yes, valid new folder 
             $messageAction .= "Will create new folder and move files to: '".$post['folderNew']."'";
             // create folder
-            $exec = "sudo mkdir ".$Audio_Folders_Path."/".$post['folderNew']."; sudo chmod 777 ".$Audio_Folders_Path."/".$post['folderNew'];
+            $exec = "sudo mkdir ".$post['folderNew']."; sudo chmod 777 ".$post['folderNew'];
             exec($exec);
-            $moveFolder = $Audio_Folders_Path."/".$post['folderNew'];
+            $moveFolder = $post['folderNew'];
     } else {
         $messageWarning .= "<p>No folder selected nor a valid new folder specified.</p>";
     }
@@ -198,9 +198,24 @@ if(isset($messageSuccess) && $messageSuccess != "") {
 
               <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
-// read the subfolders of $Audio_Folders_Path
-$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
-usort($audiofolders, 'strcasecmp');
+/*
+* read the subfolders of $Audio_Folders_Path
+*/
+$audiofolders_abs = dir_list_recursively($Audio_Folders_Path);
+usort($audiofolders_abs, 'strcasecmp');
+/*
+* get relative paths for pulldown
+*/
+$audiofolders = array();
+foreach($audiofolders_abs as $audiofolder){
+    /*
+    * get the relative path as value, set the absolute path as key
+    */
+    $relpath = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
+    if($relpath != "") {
+        $audiofolders[$audiofolder] = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
+    }
+}
 
 // check if we can preselect an audiofolder if NOT a foldername was posted
 if(! isset($fpost['folder'])) {
@@ -213,13 +228,13 @@ if(! isset($fpost['folder'])) {
 $idcounter = 0;
 
 // go through all folders
-foreach($audiofolders as $audiofolder) {
+foreach($audiofolders as $keyfolder => $audiofolder) {
     
-    print "              <option value='".basename($audiofolder)."'";
-    if(basename($audiofolder) == $post['folder']) {
+    print "              <option value='".$keyfolder."'";
+    if($keyfolder == $post['folder']) {
         print " selected=selected";
     }
-    print ">".basename($audiofolder)."</option>\n";
+    print ">".$audiofolder."</option>\n";
    
 }
 ?>

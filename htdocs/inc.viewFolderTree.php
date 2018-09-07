@@ -39,6 +39,7 @@ foreach($subfolders as $key => $subfolder) {
     foreach($subfolderfolders as $subfolderfolder) {
         if(count($subfolderfolders) > 0){
             // YES, we found at least one subfolder
+            // take the relative path only
             $containingfolders[$subfolderfolder] = substr($subfolderfolder, strlen($Audio_Folders_Path) + 1, strlen($subfolderfolder));
         }
     }

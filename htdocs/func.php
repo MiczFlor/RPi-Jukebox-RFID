@@ -234,7 +234,6 @@ function index_folders_print($item, $key, $level=0)
     print "
               <span class='mb-0' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>
               <i class='mdi mdi-folder-outline'></i> ".$contentTree[$key]['basename'];
-              
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
     }

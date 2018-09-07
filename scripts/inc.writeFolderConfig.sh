@@ -148,10 +148,10 @@ then
     sudo sed -i 's/%RESUME%/'"$RESUME"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo chmod 777 "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
-    if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder '${AUDIOFOLDERSPATH}/${FOLDER}'" >> $PATHDATA/../logs/debug.log; fi
 fi
 
 
