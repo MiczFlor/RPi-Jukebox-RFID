@@ -50,9 +50,18 @@ cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ\ MP3\ 
 mkdir $AUDIOFOLDERSPATH/ZZZ-AudioFormatsTest
 cp ../../misc/audiofiletype* $AUDIOFOLDERSPATH/ZZZ-AudioFormatsTest/
 
+###########################################
 # Now doing the same with nested subfolders
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster
 cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMaster/startupsound.mp3
+
+# start nested with jump back two levels
+mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs
+cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs/startupsound.mp3
+mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs/twoSubs
+cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs/twoSubs/startupsound.mp3
+mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs/twoSubs/oneSub
+cp ../../misc/sampleconfigs/startupsound.mp3.sample $AUDIOFOLDERSPATH/ZZZ-SubMaster/fff-threeSubs/twoSubs/oneSub/startupsound.mp3
 
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/1-LiveStream-Bayern2
 echo "http://br-br2-nord.cast.addradio.de/br/br2/nord/mp3/56/stream.mp3" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/1-LiveStream-Bayern2/livestream.txt
@@ -75,9 +84,9 @@ echo "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" > $AUDIOFOLDERSPA
 mkdir $AUDIOFOLDERSPATH/ZZZ-SubMaster/Podcast\ DLF\ Kinderhoerspiele
 echo "http://www.kakadu.de/podcast-kinderhoerspiel.3420.de.podcast.xml" > $AUDIOFOLDERSPATH/ZZZ-SubMaster/Podcast\ DLF\ Kinderhoerspiele/podcast.txt
 
-mkdir $AUDIOFOLDERSPATH/001-SubSub
-cp -R $AUDIOFOLDERSPATH/ZZZ-SubMaster/* $AUDIOFOLDERSPATH/001-SubSub/
-mv $AUDIOFOLDERSPATH/001-SubSub/ $AUDIOFOLDERSPATH/ZZZ-SubMaster/
-
 mkdir $AUDIOFOLDERSPATH/ZZZ\ SubMaster\ Whitespaces
 cp -R $AUDIOFOLDERSPATH/ZZZ-SubMaster/* $AUDIOFOLDERSPATH/ZZZ\ SubMaster\ Whitespaces/
+
+# chmod chown
+sudo chown -R micz:www-data $AUDIOFOLDERSPATH/ZZZ-SubMaster
+sudo chmod -R 777 $AUDIOFOLDERSPATH/ZZZ-SubMaster

@@ -10,6 +10,8 @@
 * ./playlist_recursive_by_folder.php folder='ZZZ-SubMaster/001-SubSub/AAA MP3 Whitespace StartUpSound' list=recursive
 */
 
+include('../htdocs/func.php');
+
 // path to audiofolder
 $Audio_Folders_Path = trim(file_get_contents('../settings/Audio_Folders_Path'));
 
@@ -43,13 +45,14 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
     usort($folders, 'strnatcasecmp');
 }
 
+
+/*
+* prints all folders in a neat order:
+*/
 $return = "";
 foreach($folders as $folder) {
     $return .= $folder."\n";
 }
-/*
-* prints all folders in a neat order:
-*
 print trim($return);
 /**/
 
@@ -58,7 +61,7 @@ print trim($return);
 */
 $files_playlist = array();
 foreach($folders as $folder) {
-    print "\n---------------------\nFOLDER:".$folder."\n";//???
+    //print "\n---------------------\nFOLDER:".$folder."\n";//???
     /*
     * empty the array from what we might have found the last time in this foreach
     */
@@ -97,7 +100,6 @@ foreach($folders as $folder) {
             * ignore . and ..
             */
             $folder_files = array_diff(scandir($folder), array('..', '.'));
-            print_r($folder_files);//???
             /*
             * clean up what we found in the folder
             */
@@ -141,27 +143,4 @@ foreach($files_playlist as $file_playlist) {
 
 print trim($return);
 
-//////////////////////////////////////////////////////////////////////
-
-function dir_list_recursively($rootdir = "") {
-  /*
-  * Get directory tree recursively.
-  * The dir path will end without '/'.
-  */
-  
-  $iter = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS),
-    RecursiveIteratorIterator::SELF_FIRST,
-    RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
-  );
-
-  $paths = array($rootdir);
-  foreach ($iter as $path => $dir) {
-      if ($dir->isDir()) {
-          $paths[] = $path;
-      } 
-  }
-
-  return $paths;
-}
 ?>
