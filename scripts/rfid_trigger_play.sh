@@ -298,7 +298,7 @@ if [ "$FOLDER" ]; then
     elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
         # set path to playlist
-        PLAYLISTPATH="/tmp/$FOLDER.m3u"
+        PLAYLISTPATH="/tmp/${FOLDER//\//SLASH}.m3u"
 
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi

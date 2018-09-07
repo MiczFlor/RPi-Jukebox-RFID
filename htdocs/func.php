@@ -225,11 +225,11 @@ function index_folders_print($item, $key, $level=0)
             <h3>";
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_abs']."' class='btn-panel-big' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_abs']."&recursive=true' class='btn-panel-big' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
     print "
               <span class='mb-0' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>
@@ -259,9 +259,9 @@ function index_folders_print($item, $key, $level=0)
         }
         if( $foundResume == "OFF" ) {
             // do stuff
-            print "<a href='?enableresume=".$contentTree[$key]['path_abs']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
         } elseif($foundResume == "ON") {
-            print "<a href='?disableresume=".$contentTree[$key]['path_abs']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a>";
+            print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
         }
     }
     
@@ -277,9 +277,9 @@ function index_folders_print($item, $key, $level=0)
         }
         if( $foundShuffle == "OFF" ) {
             // do stuff
-            print "<a href='?enableshuffle=".$contentTree[$key]['path_abs']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a></span> ";
+            print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
         } elseif($foundShuffle == "ON") {
-            print "<a href='?disableshuffle=".$contentTree[$key]['path_abs']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a>";
+            print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
         }
     }
     print "
@@ -292,7 +292,7 @@ function index_folders_print($item, $key, $level=0)
     if(in_array($contentTree[$key]['basename'], $shortcuts)) {
         foreach ($shortcuts as $IDkey => $IDvalue) {
             if($IDvalue == $contentTree[$key]['basename']) {
-                $IDchips .= " <a href='cardEdit.php?cardID=$key'>".$IDkey." <i class='mdi mdi-wrench'></i></a> | ";
+                $IDchips .= " <a href='cardEdit.php?cardID=$IDkey'>".$IDkey." <i class='mdi mdi-wrench'></i></a> | ";
             }
         }
         $IDchips = rtrim($IDchips, "| "); // get rid of trailing slash

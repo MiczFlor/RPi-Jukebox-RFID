@@ -358,7 +358,7 @@ case $COMMAND in
         if [ $DEBUG == "true" ]; then echo "echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
+        mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         # call shuffle_ceck to enable/disable folder-based shuffeling
         $PATHDATA/shuffle_play.sh -c=shuffle_check

@@ -21,7 +21,6 @@ usort($subfolders, 'strnatcasecmp');
 
 $contentTree = array(); // this will be the tree we need for display
 
-
 /*
 * now we need to collect some extra info such as: subfolders? files in folder?
 * And create the final array with all this information to display the tree
