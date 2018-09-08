@@ -96,7 +96,7 @@ if($_POST['ACTION'] == "fileUpload") {
     if($messageWarning == "") {
         // else: move files to folder
         foreach($uFiles['ufile'] as $key => $values) {
-            $exec = "mv ".$values['tmp_name']." ".$moveFolder."/".$values['name']."; chmod 777 ".$moveFolder."/".$values['name'];
+            $exec = 'mv "'.$values['tmp_name'].' '.$moveFolder.'/'.$values['name'].'"; chmod 777 "'.$moveFolder.'/'.$values['name'].'"';
             exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
