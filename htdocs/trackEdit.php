@@ -227,7 +227,7 @@ if($_POST['ACTION'] == "trackUpdate") {
 if($_POST['ACTION'] == "trackDelete") {
     if($_POST['deleteTrack'] == "yes") {
         // delte the file
-        $exec = "sudo rm ".$post['folder']."/".$post['filename'];
+        $exec = 'sudo rm "'.$post['folder'].'/'.$post['filename'].'"';
         exec($exec);
         $messageSuccess = "<p>File '".$post['folder']."/".$post['filename']."' was deleted from your collection.</p>";
         // unset the filename and folder var
