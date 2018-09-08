@@ -86,7 +86,7 @@ if($_POST['ACTION'] == "fileUpload") {
             // yes, valid new folder 
             $messageAction .= "Will create new folder and move files to: '".$post['folderNew']."'";
             // create folder
-            $exec = "sudo mkdir ".$Audio_Folders_Path."/".$post['folderNew']."; sudo chmod 777 ".$Audio_Folders_Path."/".$post['folderNew'];
+            $exec = 'sudo mkdir "'.$Audio_Folders_Path.'/'.$post['folderNew'].'"; sudo chown -R pi:www-data "'.$Audio_Folders_Path."/".$post['folderNew'].'"; sudo chmod 775 "'.$Audio_Folders_Path."/".$post['folderNew'].'"';
             exec($exec);
             $moveFolder = $Audio_Folders_Path."/".$post['folderNew'];
     } else {
@@ -96,7 +96,8 @@ if($_POST['ACTION'] == "fileUpload") {
     if($messageWarning == "") {
         // else: move files to folder
         foreach($uFiles['ufile'] as $key => $values) {
-            $exec = "mv ".$values['tmp_name']." ".$moveFolder."/".$values['name']."; chmod 777 ".$moveFolder."/".$values['name'];
+            $targetName = $moveFolder.'/'.$values['name'];
+            $exec = 'sudo mv "'.$values['tmp_name'].'" "'.$targetName.'"; sudo chown -R pi:www-data "'.$targetName.'"; sudo chmod 775 "'.$targetName.'"';
             exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
