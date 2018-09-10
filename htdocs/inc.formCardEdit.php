@@ -27,6 +27,7 @@ $shortcuts = array(); // the array with pairs of ID => foldername
 foreach ($shortcutstemp as $shortcuttemp) {
     $shortcuts[basename($shortcuttemp)] = trim(file_get_contents($shortcuttemp));
 }
+//print "<pre>"; print_r($shortcuts); print "</pre>"; //???
 ?>
           
           <span class="help-block"><?php print $fdata['streamURL_help']; ?></span>  
@@ -45,30 +46,57 @@ foreach ($shortcutstemp as $shortcuttemp) {
             <select id="audiofolder" name="audiofolder" class="form-control">
               <option value="false"><?php print $lang['cardFormFolderSelectDefault']; ?></option>
 <?php
-// read the subfolders of $Audio_Folders_Path
-$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
-usort($audiofolders, 'strcasecmp');
-
-// check if we can preselect an audiofolder if NOT a foldername was posted
-if(! isset($fpost['audiofolder'])) {
-    if(array_key_exists($fpost['cardID'], $shortcuts)) {
-        print "got one!!!";    
-        $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
+/*
+* read the subfolders of $Audio_Folders_Path
+*/
+$audiofolders_abs = dir_list_recursively($Audio_Folders_Path);
+usort($audiofolders_abs, 'strcasecmp');
+/*
+* get relative paths for pulldown
+*/
+$audiofolders = array();
+foreach($audiofolders_abs as $audiofolder){
+    /*
+    * get the relative path as value, set the absolute path as key
+    */
+    $relpath = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
+    if($relpath != "") {
+        $audiofolders[$audiofolder] = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
     }
 }
+//print "<pre>"; print_r($audiofolders); print "</pre>"; //???
+
     
+/*
+// counter for ID of each folder
+$idcounter = 0;
+// go through all folders
+foreach($audiofolders as $keyfolder => $audiofolder) {
+    if($post['folder'] != $keyfolder) {
+        print "              <option value='".$keyfolder."'";
+        print ">".$audiofolder."</option>\n";
+    }   
+}
+*/
+
+
 // counter for ID of each folder
 $idcounter = 0;
 
+// check if we can preselect an audiofolder if NOT a foldername was posted
+if(! isset($fpost['audiofolder']) OR trim($fpost['audiofolder']) == "") {
+    if(array_key_exists($fpost['cardID'], $shortcuts)) {
+        $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
+    }
+}
+
 // go through all folders
-foreach($audiofolders as $audiofolder) {
-    
-    print "              <option value='".basename($audiofolder)."'";
-    if(basename($audiofolder) == $fpost['audiofolder']) {
+foreach($audiofolders as $keyfolder => $audiofolder) {
+    print "              <option value='".$audiofolder."'";
+    if($audiofolder == $fpost['audiofolder']) {
         print " selected=selected";
     }
-    print ">".basename($audiofolder)."</option>\n";
-   
+    print ">".$audiofolder."</option>\n";
 }
 ?>
             </select>
@@ -144,12 +172,9 @@ foreach($audiofolders as $audiofolder) {
         <div class="form-group">
           <label class="col-md-4 control-label" for="YTaudiofolder"></label>
            <div class="col-md-6">
-            <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
+            <select id="YTaudiofolder" name="audiofolder" class="form-control">
               <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
-// read the subfolders of $Audio_Folders_Path
-$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
-usort($audiofolders, 'strcasecmp');
 
 // check if we can preselect an audiofolder if NOT a foldername was posted
 if(! isset($fpost['audiofolder'])) {
@@ -162,13 +187,12 @@ if(! isset($fpost['audiofolder'])) {
 $idcounter = 0;
 
 // go through all folders
-foreach($audiofolders as $audiofolder) {
-    
-    print "              <option value='".basename($audiofolder)."'";
-    if(basename($audiofolder) == $fpost['audiofolder']) {
+foreach($audiofolders as $keyfolder => $audiofolder) {
+    print "              <option value='".$audiofolder."'";
+    if($audiofolder == $fpost['audiofolder']) {
         print " selected=selected";
     }
-    print ">".basename($audiofolder)."</option>\n";
+    print ">".$audiofolder."</option>\n";
    
 }
 ?>
@@ -181,8 +205,8 @@ foreach($audiofolders as $audiofolder) {
           <label class="col-md-4 control-label" for="YTstreamFolderName"></label>  
           <div class="col-md-6">
           <input value="<?php
-          if (isset($fpost['streamFolderName'])) {
-              print $fpost['streamFolderName'];
+          if (isset($fpost['YTstreamFolderName'])) {
+              print $fpost['YTstreamFolderName'];
           }
           ?>" id="YTstreamFolderName" name="YTstreamFolderName" placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>" class="form-control input-md" type="text">
           <span class="help-block"><?php print $lang['cardFormYTFolderHelp']; ?></span>  

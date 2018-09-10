@@ -1,4 +1,9 @@
 <?php
+/*******************************************
+* STUFF
+*******************************************/
+
+$debugcol = array("red","blue","green","yellow","black");
 
 /*******************************************
 * FUNCTIONS
@@ -21,6 +26,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <!-- Latest compiled and minified CSS -->
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.cosmo.css\">
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/viewTree.css\">
         
         <!-- Latest compiled and minified JavaScript -->
         <script src=\"".$url_absolute."_assets/js/jquery.1.12.4.min.js\"></script>
@@ -135,6 +141,11 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .hoverGrey:hover {
             color: #999!important;
         }
+        .btn-panel-big {
+            font-size: 1.5em; 
+            margin-right: 0.3em;
+        }
+        
         </style>
         
     </head>\n";
@@ -160,6 +171,7 @@ function replaceUmlaute($string) {
     $replace = array_values($searchreplace);
     return(preg_replace($search, $replace, $string));
 }
+
 function getFiles() {
     $result = array();
     foreach($_FILES as $name => $fileArray) {
@@ -175,5 +187,189 @@ function getFiles() {
     }
     return $result;
 }
+
+
+function dir_list_recursively($rootdir = "") {
+  /*
+  * Get directory tree recursively.
+  * The dir path will end without '/'.
+  */
+  
+  $iter = new RecursiveIteratorIterator(
+    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS),
+    RecursiveIteratorIterator::SELF_FIRST,
+    RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+  );
+
+  $paths = array($rootdir);
+  foreach ($iter as $path => $dir) {
+      if ($dir->isDir()) {
+          $paths[] = $path;
+      } 
+  }
+
+  return $paths;
+}
+
+function index_folders_print($item, $key, $level=0)
+{
+    global $lang;
+    global $contentTree;
+    global $shortcuts;
+    global $debugcol;
+    //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
+    //print "<pre>\nshortcuts:"; print_r($shortcuts); print "</pre>"; //???
+    print "
+      <div class='panel panel-default'>
+        <div class='panel-heading' id='heading".$contentTree[$key]['id']."'>
+            <h3>";
+    if($contentTree[$key]['count_files'] > 0) {
+        print "
+              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
+    }
+    if($contentTree[$key]['count_subdirs'] > 0) {
+        print "
+              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+    }
+    print "
+              <span class='mb-0' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>
+              <i class='mdi mdi-folder-outline'></i> ".$contentTree[$key]['basename'];
+    if($contentTree[$key]['count_subdirs'] > 0) {
+        print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
+    }
+    print "            <span class='badge' title='Show files'><i class='mdi mdi-library-music'></i> ".$contentTree[$key]['count_files']."</span>";
+    print "
+              </span>
+            </h3>";
+    /*
+    * settings buttons
+    */
+    print "
+            <div><!-- settings buttons -->";
+    // RESUME BUTTON
+    // do not show any if there is a live stream in the folder
+    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+        $foundResume = "OFF";
+        if( 
+            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'RESUME="ON"') !== false
+        ) {
+            $foundResume = "ON";
+        } else {
+        }
+        if( $foundResume == "OFF" ) {
+            // do stuff
+            print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundResume == "ON") {
+            print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
+    }
+    
+    // SHUFFLE BUTTON
+    // do not show any if there is a live stream in the folder
+    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+        $foundShuffle = "OFF";
+        if( 
+            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SHUFFLE="ON"') !== false
+        ) {
+            $foundShuffle = "ON";
+        }
+        if( $foundShuffle == "OFF" ) {
+            // do stuff
+            print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundShuffle == "ON") {
+            print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
+    }
+    print "
+            </div><!-- / settings buttons -->";
+    
+
+    // get all IDs that match this folder
+    $IDchips = ""; // print later
+    //$ids = $contentTree[$key]['path_rel']; // print later
+    if(in_array($contentTree[$key]['basename'], $shortcuts)) {
+        foreach ($shortcuts as $IDkey => $IDvalue) {
+            if($IDvalue == $contentTree[$key]['basename']) {
+                $IDchips .= " <a href='cardEdit.php?cardID=$IDkey'>".$IDkey." <i class='mdi mdi-wrench'></i></a> | ";
+            }
+        }
+        $IDchips = rtrim($IDchips, "| "); // get rid of trailing slash
+        if($IDchips != "") {
+            print "\n                ".$lang['globalCardId'].": ".$IDchips;
+        }
+    }
+    print "
+        </div><!-- ./ .panel-heading -->
+        <div id='collapse".$contentTree[$key]['id']."' class='collapse' aria-labelledby='heading".$contentTree[$key]['id']."' data-parent='#accordion'>
+          <div class='panel-body'>";
+                
+    printPlaylistHtml($contentTree[$key]['files']);
+    
+    if(is_array($item)) {
+        array_walk($item, 'index_folders_print');
+    }
+    print "
+          </div><!-- ./ class='panel-body' -->
+        </div><!-- ./ class='collapse' -->
+      </div><!-- ./ class='panel' -->";
+        
+}
+function getSubDirectories( $path = '.', $level = 0, $showfiles = 0 ){ 
+
+    $return = array();
+
+    // Directories to ignore when listing output. Many hosts 
+    // will deny PHP access to the cgi-bin. 
+    $ignore = array( '.', '..', '.git', '.github' ); 
+
+    // Open the directory to the handle $dh 
+    $dh = @opendir($path);
+     
+    while( false !== ( $file = readdir( $dh ) ) ){ 
+    // Loop through the directory 
+     
+        if( !in_array( $file, $ignore ) ){ 
+        // Check that this file is not to be ignored 
+             
+            //$spaces = str_repeat( '&nbsp;', ( $level * 4 ) ); 
+            // Just to add spacing to the list, to better 
+            // show the directory tree. 
+             
+            if(is_dir("$path/$file") ){ 
+            // Its a directory, so we need to keep reading down... 
+                $return[$path."/".$file] = getSubDirectories("$path/$file",($level+1));
+             
+            } elseif($showfiles == "1") { 
+                //$return[$path."/".$file]['files'] = $file;
+            } 
+        } 
+    } 
+
+    closedir( $dh ); 
+    
+    uksort($return, 'strnatcasecmp');
+    return $return;
+}
+
+function printPlaylistHtml($files)
+{ 
+    global $lang;
+      
+    print "
+            <ol>"; 
+    foreach($files as $file) {
+        print "
+                <li>
+                    <strong>".basename($file)."</strong>
+                    <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>
+                </li>";
+    }
+    print "
+            </ol>"; 
+}
+
+
 
 ?>

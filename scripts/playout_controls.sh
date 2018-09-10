@@ -52,6 +52,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setidletime
 # disablewifi
 # enablewifi
+# startrecord
+# stoprecord
 
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
@@ -356,7 +358,7 @@ case $COMMAND in
         if [ $DEBUG == "true" ]; then echo "echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-        mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume
+        mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE}" && $PATHDATA/resume_play.sh -c=resume"; fi
         # call shuffle_ceck to enable/disable folder-based shuffeling
         $PATHDATA/shuffle_play.sh -c=shuffle_check
@@ -384,6 +386,22 @@ case $COMMAND in
         # as good as it gets
         rfkill block wifi
         ;;
+    startrecord)	
+
+	#mkdir $AUDIOFOLDERSPATH/Recordings
+	#start recorder if not already started 
+	if ! pgrep -x "arecord" > /dev/null
+	then	
+	    echo "start recorder"	
+	    arecord -D plughw:1 --duration=$VALUE -f cd -vv $AUDIOFOLDERSPATH/Recordings/$(date +"%Y-%m-%d_%H-%M-%S").wav &
+	else
+	    echo "device is already recording"
+	fi
+	;;
+    stoprecord)
+	#kill arecord instances
+	sudo pkill arecord
+	;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
         ;;

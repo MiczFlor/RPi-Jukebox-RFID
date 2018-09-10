@@ -11,6 +11,28 @@ Some elements of the installation depend on the OS (like 'Jessie' vs. 'Stretch')
 
 There is a file `settings/version` containing the version number.
 
+**Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
+# Upgrade from Version 1.0.0 to 1.1.0
+
+This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
+~~~
+cd
+cd RPi-Jukebox-RFID
+git fetch
+git checkout master
+git pull
+# settings for php.ini to support upload
+# make backup
+sudo cp /etc/php/7.0/fpm/php.ini /etc/php/7.0/fpm/php.ini.backup
+# replace file
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.0/fpm/php.ini
+sudo chown root:root /etc/php/7.0/fpm/php.ini
+sudo chmod 644 /etc/php/7.0/fpm/php.ini
+sudo service lighttpd force-reload
+sudo service php7.0-fpm restart
+~~~
+
 # Upgrade to Version 1.0
 
 As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall).

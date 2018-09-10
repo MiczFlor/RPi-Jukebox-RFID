@@ -347,17 +347,33 @@ if(
               <!-- the first option will contain the name of the original folder. If this is found after posting, it will mean: do not move -->
               <option value="<?php print basename($post['folder']); ?>" selected="selected"><?php print $lang['trackEditMoveSelectDefault']; ?></option>
 <?php
-// read the subfolders of $Audio_Folders_Path
-$audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
-usort($audiofolders, 'strcasecmp');
-    
+/*
+* read the subfolders of $Audio_Folders_Path
+*/
+$audiofolders_abs = dir_list_recursively($Audio_Folders_Path);
+usort($audiofolders_abs, 'strcasecmp');
+/*
+* get relative paths for pulldown
+*/
+$audiofolders = array();
+foreach($audiofolders_abs as $audiofolder){
+    /*
+    * get the relative path as value, set the absolute path as key
+    */
+    $relpath = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
+    if($relpath != "") {
+        $audiofolders[$audiofolder] = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
+    }
+}
+//print "<pre>"; print_r($audiofolders); print "</pre>"; //???
+
 // counter for ID of each folder
 $idcounter = 0;
 // go through all folders
-foreach($audiofolders as $audiofolder) {
-    if(basename($post['folder']) != basename($audiofolder)) {
-        print "              <option value='".basename($audiofolder)."'";
-        print ">".basename($audiofolder)."</option>\n";
+foreach($audiofolders as $keyfolder => $audiofolder) {
+    if($post['folder'] != $keyfolder) {
+        print "              <option value='".$keyfolder."'";
+        print ">".$audiofolder."</option>\n";
     }   
 }
 ?>

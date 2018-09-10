@@ -79,7 +79,7 @@ $lang['cardEditTitle'] = "Edit or add card";
 $lang['cardRegisterMessageDefault'] = "The 'Latest Card ID' value in the form is updated on the fly as you swipe a RFID card.<br/>(Requires Javascript in the browser to be enabled.)";
 $lang['cardEditMessageDefault'] = "The card IDs used in this system are listed on the <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterMessageSwipeNew'] = "Swipe another card, if you want to register more cards.";
-$lang['cardEditMessageInputNew'] = "Type another card ID pick one from the list on the <a href='index.php' class='mainMenux'><i class='mdi mdi-home'></i> home page</a>.";
+$lang['cardEditMessageInputNew'] = "Type another card ID pick one from the list on the <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterErrorTooMuch'] = "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamAndAudio'] = "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";

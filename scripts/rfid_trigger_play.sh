@@ -195,12 +195,19 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
-		$ENABLEWIFI)
+	$ENABLEWIFI)
             $PATHDATA/playout_controls.sh -c=enablewifi
-			;;
-		$DISABLEWIFI)
+	    ;;
+	$DISABLEWIFI)
             $PATHDATA/playout_controls.sh -c=disablewifi
-			;;
+	    ;;
+        $STARTRECORD600)
+            #start recorder for -v seconds
+	    $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
+            ;;
+        $STOPRECORD)
+            $PATHDATA/playout_controls.sh -c=stoprecord
+            ;;
         *)
             # We checked if the card was a special command, seems it wasn't.
             # Now we expect it to be a trigger for one or more audio file(s).
@@ -291,7 +298,7 @@ if [ "$FOLDER" ]; then
     elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
         # set path to playlist
-        PLAYLISTPATH="/tmp/$FOLDER.m3u"
+        PLAYLISTPATH="/tmp/${FOLDER//\//SLASH}.m3u"
 
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
