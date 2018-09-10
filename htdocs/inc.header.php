@@ -454,13 +454,13 @@ if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnoff") {
 }
 
 // enable resume
-if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($urlparams['enableresume']))) {
+if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableresume']))) {
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
     // pass folder to resume script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableresume']));
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['enableresume']);
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -470,46 +470,44 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
 }
 
 // disable resume
-if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir(urldecode($urlparams['disableresume']))) {
+if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir($Audio_Folders_Path."/".urldecode($urlparams['disableresume']))) {
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['disableresume']);
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
-    // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableresume']));
-    exec($exec);
-
-    /* redirect to drop all the url parameters */
-    header("Location: ".$conf['url_abs']);
-    exit; 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
     }
 }
 
 // enable shuffle
-if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($urlparams['enableshuffle']))) {
+if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableshuffle']))) {
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['enableshuffle']);
 
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
-    // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['enableshuffle']));
-    exec($exec);
-
-    /* redirect to drop all the url parameters */
-    header("Location: ".$conf['url_abs']);
-    exit; 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
     }
 }
 
 // disable shuffle
-if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && is_dir(urldecode($urlparams['disableshuffle']))) {
+if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['disableshuffle']))) {
+    // pass folder to resume script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['disableshuffle']);
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
-    // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',basename($urlparams['disableshuffle']));
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -534,15 +532,14 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
 }
 
 // play folder audio files
-if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($urlparams['play']))) {
+if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['play']))) {
+    // pass folder to playout script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',$urlparams['play']);
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
-        // pass folder to playout script
-        // escape whitespaces with backslashes
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',basename($urlparams['play']));
         exec($exec);
-    
         /* redirect to drop all the url parameters */
         header("Location: ".$conf['url_abs']);
         exit; 

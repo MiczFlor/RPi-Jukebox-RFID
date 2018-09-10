@@ -1,8 +1,8 @@
 <?php
 // create folder $post['streamFolderName']
-$exec = "mkdir '".$conf['shared_abs']."/audiofolders/".$post['streamFolderName']."'";
+$exec = "sudo mkdir '".$Audio_Folders_Path."/".$post['streamFolderName']."'; chmod 777 '".$Audio_Folders_Path."/".$post['streamFolderName']."'";
 exec($exec);
-//print "<p>".$exec."</p>";//???
+print "<p>".$exec."</p>";//???
 // figure out $filestream depending on $post['streamType']
 switch($post['streamType']) {
     case "podcast":

@@ -71,8 +71,10 @@ if [ $DEBUG == "true" ]; then echo "VAR CONFCOMMAND: $CONFCOMMAND" >> $PATHDATA/
 if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 
+
+if [ $DEBUG == "true" ]; then echo "CHECK FOLDER EXISTS: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 # Only continue if $FOLDER exists
-if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
+if [ -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]
 then
 
     # IF we got given the command to create a default folder.conf file
@@ -104,7 +106,7 @@ then
     if [ "$LOOP" ]; then NEWLOOP="$LOOP"; fi
 
     # Read the current config file (include will execute == read)
-    . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    . "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 
@@ -146,10 +148,10 @@ then
     sudo sed -i 's/%RESUME%/'"$RESUME"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo chmod 777 "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
-    if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder '${AUDIOFOLDERSPATH}/${FOLDER}'" >> $PATHDATA/../logs/debug.log; fi
 fi
 
 
