@@ -81,15 +81,14 @@ if($_POST['ACTION'] == "fileUpload") {
         // if not, see if we have a new folder to create
         isset($post['folderNew'])
         && $post['folderNew'] != ""
-        && ! file_exists($Audio_Folders_Path.'/'.$post['folderNew'])
+        && ! file_exists($Audio_Folders_Path."/".$post['folderNew'])
     ){
         // yes, valid new folder 
         $messageAction .= "Will create new folder and move files to: '".$post['folderNew']."'";
         // create folder
         $exec = 'sudo mkdir "'.$Audio_Folders_Path.'/'.$post['folderNew'].'"; sudo chown -R pi:www-data "'.$Audio_Folders_Path."/".$post['folderNew'].'"; sudo chmod 775 "'.$Audio_Folders_Path."/".$post['folderNew'].'"';
-        print $exec;
-        //exec($exec);
-        $moveFolder = $post['folderNew'];
+        exec($exec);
+        $moveFolder = $Audio_Folders_Path."/".$post['folderNew'];
     } else {
         $messageWarning .= "<p>No folder selected nor a valid new folder specified.</p>";
     }
@@ -99,13 +98,11 @@ if($_POST['ACTION'] == "fileUpload") {
         foreach($uFiles['ufile'] as $key => $values) {
             $targetName = $moveFolder.'/'.$values['name'];
             $exec = 'sudo mv "'.$values['tmp_name'].'" "'.$targetName.'"; sudo chown -R pi:www-data "'.$targetName.'"; sudo chmod 775 "'.$targetName.'"';
-            print $exec;
-            //exec($exec);
+            //print $exec;
+            exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
     }
-    
-    
 }
 
 /*******************************************

@@ -83,7 +83,6 @@ $idcounter = 0;
 
 // go through all folders
 foreach($audiofolders as $audiofolder) {
-    
     // increase ID counter
     $idcounter++;
     
