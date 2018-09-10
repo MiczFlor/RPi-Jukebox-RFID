@@ -179,6 +179,34 @@ You can do this by creating a symbolic link to the USB stick with the following 
 ln -s /media/usb0/* /home/pi/RPi-Jukebox-RFID/shared/audiofolders/
 ~~~
 
+To make the USB stick fully accessible to the web app, too, here is what you need to do:
+
+#### Read and write to USB via web app
+
+Assuming your USB stick has been formatted to FAT32 (which is the common format allowing easy access in Windows and OSX), you need to install `usbmount` to mount the stick automatically.
+~~~
+sudo apt-get install usbmount
+~~~
+In Rasbian `stretch` change the config file:
+~~~
+sudo nano /lib/systemd/system/systemd-udevd.service
+~~~
+and change `MountFlags=slave` to `MountFlags=shared`.
+Now you can see the USB stick under `/media/usb0`. But it is read only, not writeable. To change that, edit the config:
+~~~
+sudo nano /etc/usbmount/usbmount.conf
+~~~
+And add the following:
+~~~
+FS_MOUNTOPTIONS="-fstype=vfat,flush,gid=users,uid=33,umask=007,iocharset=utf8"
+~~~
+The problem are the access rights for the user `pi` and `www-data` (the webserver). The above line fixes this, because:
+
+* `pi` is part of `gid=users`
+*  `www-data` has the `uid=33`
+
+This is work in progress, please share more insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
 ### <a name="webstreams"></a>Adding webradio station and other online streams
 
 In short:

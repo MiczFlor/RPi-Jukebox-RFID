@@ -88,7 +88,7 @@ foreach($audiofolders as $audiofolder) {
     $idcounter++;
     
     include('inc.viewFolderTree.php');
-    include('inc.viewFolderWell.php');
+    //include('inc.viewFolderWell.php');
     
 }
 
