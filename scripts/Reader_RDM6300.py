@@ -29,16 +29,27 @@ import string
 
 class Reader:
     def __init__(self):
+        device = '/dev/ttyS0'
+        baudrate = 9600
+        ser_timeout = 0.1
+
         GPIO.setmode(GPIO.BCM)
-        self.rfid_serial = serial.Serial('/dev/ttyS0', 9600)
+        self.rfid_serial = serial.Serial(device, baudrate, timeout=ser_timeout)
 
     def readCard(self):
         while True:
             card_id = ''
-            read_byte = self.rfid_serial.read()
-            if read_byte == b'\x02':
-                while read_byte != b'\x03':
-                    read_byte = self.rfid_serial.read()
-                    card_id += read_byte.decode('utf-8')
-                card_id = ''.join(x for x in card_id if x in string.printable)
-                return card_id
+            try:
+                read_byte = self.rfid_serial.read()
+                if read_byte == b'\x02':
+                    while read_byte != b'\x03':
+                        read_byte = self.rfid_serial.read()
+                        card_id += read_byte.decode('utf-8')
+                    card_id = ''.join(x for x in card_id if x in string.printable)
+                    card_id
+                    return card_id
+
+            except ValueError as e:
+                print(e)
+                self.readCard()
+
