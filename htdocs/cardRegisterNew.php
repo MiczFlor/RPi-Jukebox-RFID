@@ -171,7 +171,7 @@ if($post['submit'] == "submit") {
 * Do we need to voice a warning here?
 */
 if ($messageAction == "") {
-    $messageAction = $lang['cardRegisterMessageDefault'];
+    $messageAction = $lang['cardRegisterMessageDefault'].$lang['cardRegisterManualLinks'];
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
     print '<div class="alert alert-success">'.$messageSuccess.'<p>'.$lang['cardRegisterMessageSwipeNew'].'</p></div>';

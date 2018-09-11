@@ -150,7 +150,10 @@ This is why you can assign *human readable* names for card IDs. This is how you 
 
 Now you have told the Phoniebox that every time the card with the ID `0594672283` is swiped across, play what's in the folder `birds`. Let's continue and make that folder and the audio files inside.
 
-**Important:** Make sure your editor does not add a line break at the end of the shortcuts file. It must only contain the folder name.
+**Important:** 
+* Make sure your editor does not add a line break at the end of the shortcuts file. It must only contain the folder name.
+* If your folder contains white spaces (e.g. `bird songs`) do not escape the white spaces in the shortcuts file (e.g. do NOT write `bird\ songs`).
+* If you are linking a subfolder, add the relative path to your audio folder. Correct: `animal songs/bird songs`. Not correct: `home/pi/RPi-Jukebox-RFID/shared/audiofolders/animal songs/bird songs`.
 
 ### Adding new audio files and create a playlist for a new card
 

@@ -362,8 +362,12 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li>
-                    <strong>".basename($file)."</strong>
-                    <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>
+                    <strong>".basename($file)."</strong>";
+        if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt") {
+            print"
+                    <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>";
+        }
+        print "
                 </li>";
     }
     print "
