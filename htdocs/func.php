@@ -289,9 +289,9 @@ function index_folders_print($item, $key, $level=0)
     // get all IDs that match this folder
     $IDchips = ""; // print later
     //$ids = $contentTree[$key]['path_rel']; // print later
-    if(in_array($contentTree[$key]['basename'], $shortcuts)) {
+    if(in_array($contentTree[$key]['path_rel'], $shortcuts)) {
         foreach ($shortcuts as $IDkey => $IDvalue) {
-            if($IDvalue == $contentTree[$key]['basename']) {
+            if($IDvalue == $contentTree[$key]['path_rel']) {
                 $IDchips .= " <a href='cardEdit.php?cardID=$IDkey'>".$IDkey." <i class='mdi mdi-wrench'></i></a> | ";
             }
         }
