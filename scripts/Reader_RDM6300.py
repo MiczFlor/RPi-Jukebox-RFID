@@ -29,7 +29,6 @@ import string
 
 class Reader:
     def __init__(self):
-        self.last_id = ''
         device = '/dev/ttyS0'
         baudrate = 9600
         ser_timeout = 0.1
@@ -47,9 +46,10 @@ class Reader:
                         read_byte = self.rfid_serial.read()
                         card_id += read_byte.decode('utf-8')
                     card_id = ''.join(x for x in card_id if x in string.printable)
-                    self.last_id = card_id
+                    card_id
                     return card_id
 
             except ValueError as e:
                 print(e)
-                return self.last_id
+                self.readCard()
+
