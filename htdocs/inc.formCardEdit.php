@@ -172,7 +172,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
         <div class="form-group">
           <label class="col-md-4 control-label" for="YTaudiofolder"></label>
            <div class="col-md-6">
-            <select id="YTaudiofolder" name="audiofolder" class="form-control">
+            <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
               <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
 
