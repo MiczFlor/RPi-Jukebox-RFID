@@ -64,7 +64,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ $DEBUG == "true" ]; then echo "## SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 ##############################################
 # steps by which to change the audio output (vol up and down)
@@ -118,17 +118,21 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #############################################################
 
 # Get args from command line (see Usage above)
-for i in "$@"
-do
-    case $i in
-        -c=*|--command=*)
-        COMMAND="${i#*=}"
-        ;;
-        -v=*|--value=*)
-        VALUE="${i#*=}"
-        ;;
-    esac
-done
+# Read the args passed on by the command line
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
+#for i in "$@"
+#do
+#    case $i in
+#        -c=*|--command=*)
+#        COMMAND="${i#*=}"
+#        ;;
+#        -v=*|--value=*)
+#        VALUE="${i#*=}"
+#        ;;
+#    esac
+#done
+
 if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         
@@ -346,16 +350,19 @@ case $COMMAND in
     playlistaddplay)
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
+        # FOLDER = rel path from audiofolders
+        # VALUE = name of playlist
         if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ $DEBUG == "true" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
         # first clear playlist (and save position if resume play is on)
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
 
         # write latest folder played to settings file
-        sudo echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played
+        sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ $DEBUG == "true" ]; then echo "echo ${VALUE} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
         mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume

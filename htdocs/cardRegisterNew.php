@@ -7,6 +7,7 @@ include("inc.header.php");
 * No changes required if you stuck to the
 * INSTALL-stretch.md instructions.
 * If you want to change the paths, edit config.php
+* If you want to change the paths, edit config.php
 ***************************************************/
 
 /* NO CHANGES BENEATH THIS LINE ***********/

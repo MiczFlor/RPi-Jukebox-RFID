@@ -36,7 +36,7 @@
 # VARIABLES
 
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -45,17 +45,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Get args from command line. Needed for "create default folder.conf" file
-for i in "$@"
-do
-    case $i in
-        -c=*|--command=*)
-        CONFCOMMAND="${i#*=}"
-        ;;
-        -d=*|--dir=*)
-        FOLDER="${i#*=}"
-        ;;
-    esac
-done
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
 
 # IMPORTANT: the $FOLDER var does not need to be passed on if it was set in the master script
 # that calls this one. For elegance, it might be better to pass it on.
@@ -66,7 +57,7 @@ done
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
 # some debug info
-if [ $DEBUG == "true" ]; then echo "## SCRIPT inc.writeFolderConfig.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "########### SCRIPT inc.writeFolderConfig.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR CONFCOMMAND: $CONFCOMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi

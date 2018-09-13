@@ -6,7 +6,7 @@
 # or play audio folder content directly
 #
 # Usage for card ID
-# ./rfid_trigger_play.sh -c=1234567890
+# ./rfid_trigger_play.sh -i=1234567890
 # or
 # ./rfid_trigger_play.sh --cardid=1234567890
 #
@@ -35,7 +35,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ $DEBUG == "true" ]; then echo "## SCRIPT rfid_trigger_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "########### SCRIPT rfid_trigger_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
@@ -59,29 +59,14 @@ if [ ! -f $PATHDATA/../settings/Playlists_Folders_Path ]; then
     echo "/tmp" > $PATHDATA/../settings/Playlists_Folders_Path
 fi
 # 2. then|or read value from file
-PLAYLISTSFOLDERSPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
+PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
 
 # Read configuration file
 . $PATHDATA/../settings/rfid_trigger_play.conf
 
 # Get args from command line (see Usage above)
-for i in "$@"
-do
-case $i in
-    -c=*|--cardid=*)
-    CARDID="${i#*=}"
-    ;;
-    -d=*|--dir=*)
-    FOLDER="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-esac
-done
-if [ $DEBUG == "true" ]; then echo "VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
 
 ##################################################################
 # Check if we got the card ID or the audio folder from the prompt.
@@ -279,9 +264,9 @@ fi
 if [ $DEBUG == "true" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
-if [ "${FOLDER}" ]; then
+if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]; then
 
-    if [ $DEBUG == "true" ]; then echo "Var exists \$FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "Folder found \$FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
     if [ ! -f "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]; then
@@ -298,12 +283,30 @@ if [ "${FOLDER}" ]; then
     LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
     LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
     if [ $DEBUG == "true" ]; then echo "Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi
 
     # check if we have a the playlist already loaded which is associated with the rfid card ("second swipe").
     # check the length of the playlist, if =0 then it was cleared before (a state, which should only
     # be possible after a reboot).
+    if [ $DEBUG == "true" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+    if [ $VALUE == "recursive" ]; then
+        # set path to playlist
+        # replace subfolder slashes with " % "
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
+        PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
+        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
+        if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" list='recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+    else
+        # set path to playlist
+        # replace subfolder slashes with " % "
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }"
+        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" > "${PLAYLISTPATH}"
+        if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+    fi
+
     PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
-    if [ "$LASTFOLDER" == "$FOLDER" ] && [ $PLLENGTH -gt 0 ]
+    if [ "$LASTPLAYLIST" == "$PLAYLISTNAME" ] && [ $PLLENGTH -gt 0 ]
     then
         STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ $STATE == "play" ]
@@ -333,19 +336,6 @@ if [ "${FOLDER}" ]; then
     #   $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive'
     elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
-        if [ $VALUE == "recursive" ]; then
-            # set path to playlist
-            # replace subfolder slashes with " % "
-            PLAYLISTPATH="${PLAYLISTSFOLDERSPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
-            PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
-            $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
-        else
-            # set path to playlist
-            # replace subfolder slashes with " % "
-            PLAYLISTPATH="${PLAYLISTSFOLDERSPATH}/${FOLDER//\//\ %\ }.m3u"
-            PLAYLISTNAME="${FOLDER//\//\ %\ }"
-            $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" > "$PLAYLISTPATH"
-        fi
 
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
@@ -385,17 +375,19 @@ if [ "${FOLDER}" ]; then
                 
 #            ;;
 #        esac
-        if [ $VALUE == "recursive" ]; then
-            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
-        else
-            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" > "${PLAYLISTPATH}"
-        fi
+#        if [ $VALUE == "recursive" ]; then
+#            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
+#        else
+#            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" > "${PLAYLISTPATH}"
+#        fi
         
         # load new playlist and play
-        if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\"" >> $PATHDATA/../logs/debug.log; fi
+        if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
         # the variable passed on to play is NOT the folder name, but the playlist name
-        # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)
-        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}"
+        # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
+        sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
+        $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
 
     else
         if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi

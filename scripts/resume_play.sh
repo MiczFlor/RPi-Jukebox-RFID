@@ -21,30 +21,25 @@ DEBUG=false
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
-for i in "$@"
-do
-case $i in
-    -c=*|--command=*)
-    COMMAND="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-esac
-done
-
+# path to this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Read the args passed on by the command line
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
 
 # path to audio folders
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
-if [ $DEBUG == "true" ]; then echo "## SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "########### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio 
 FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
+if [ $DEBUG == "true" ]; then echo "VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Some error checking: if folder.conf does not exist, create default
 if [ ! -e "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]

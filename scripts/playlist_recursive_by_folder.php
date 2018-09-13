@@ -13,7 +13,7 @@
 * ./rfid_trigger_play.sh -d="ZZZ SubMaster Whitespaces" -v=recursive
 */
 
-$debug = "true";
+$debug = "false";
 
 // get path of this file
 //$PATHDATA = ;
@@ -63,7 +63,7 @@ if($debug == "true") {
 
 /*
 * prints all folders in a neat order:
-*/
+*
 $return = "";
 foreach($folders as $folder) {
     $return .= $folder."\n";
