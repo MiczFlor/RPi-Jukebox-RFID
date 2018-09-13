@@ -90,6 +90,9 @@ $urlparams = array();
 if(isset($_GET['play']) && trim($_GET['play']) != "") {
     $urlparams['play'] = trim($_GET['play']);
 }
+if(isset($_GET['recursive']) && trim($_GET['recursive']) == "true") {
+    $urlparams['recursive'] = trim($_GET['recursive']);
+}
 
 if(isset($_GET['playpos']) && trim($_GET['playpos']) != "") {
     $urlparams['playpos'] = trim($_GET['playpos']);
@@ -180,6 +183,9 @@ if(isset($_GET['disableshuffle']) && trim($_GET['disableshuffle']) != "") {
 */
 if(isset($_POST['play']) && trim($_POST['play']) != "") {
     $urlparams['play'] = trim($_POST['play']);
+}
+if(isset($_POST['recursive']) && trim($_POST['recursive']) == "true") {
+    $urlparams['recursive'] = trim($_POST['recursive']);
 }
 
 if(isset($_POST['playpos']) && trim($_POST['playpos']) != "") {
@@ -535,7 +541,11 @@ if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['play']))) {
     // pass folder to playout script
     // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/rfid_trigger_play.sh -d=".preg_replace('/\s+/', '\ ',$urlparams['play']);
+    #$exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.preg_replace('/\s+/', '\ ',$urlparams['play']).'"';
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.$urlparams['play'].'"';
+    if($urlparams['recursive'] == "true") {
+        $exec .= ' -v="recursive"';
+    }
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
