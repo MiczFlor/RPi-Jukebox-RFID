@@ -3,23 +3,29 @@
 /*
 * Examples below
 * Note: folder in '' to support whitespaces in folder names
-* ./playlist_recursive_by_folder.php folder='ZZZ-SubMaster'
-* ./playlist_recursive_by_folder.php folder='ZZZ-SubMaster' list=recursive
-* ./playlist_recursive_by_folder.php folder='ZZZ SubMaster Whitespaces' list=recursive
-* ./playlist_recursive_by_folder.php folder='ZZZ-SubMaster/001-SubSub/bbb-AudioFormatsTest' list=recursive
-* ./playlist_recursive_by_folder.php folder='ZZZ-SubMaster/001-SubSub/AAA MP3 Whitespace StartUpSound' list=recursive
+* ./playlist_recursive_by_folder.php folder="ZZZ-SubMaster"
+* ./playlist_recursive_by_folder.php folder="ZZZ-SubMaster" list=recursive
+* ./playlist_recursive_by_folder.php folder="ZZZ SubMaster Whitespaces" list=recursive
+* ./playlist_recursive_by_folder.php folder="ZZZ-SubMaster/fff-threeSubs" list=recursive
+*
+* ./rfid_trigger_play.sh -d="ZZZ-SubMaster" -v=recursive
+* ./rfid_trigger_play.sh -d="ZZZ-SubMaster/fff-threeSubs" -v=recursive
+* ./rfid_trigger_play.sh -d="ZZZ SubMaster Whitespaces" -v=recursive
 */
 
-include('../htdocs/func.php');
+$debug = "false";
+
+// get path of this file
+//$PATHDATA = ;
+include(dirname(__FILE__).'/../htdocs/func.php');
 
 // path to audiofolder
-$Audio_Folders_Path = trim(file_get_contents('../settings/Audio_Folders_Path'));
+$Audio_Folders_Path = trim(file_get_contents(dirname(__FILE__).'/../settings/Audio_Folders_Path'));
 
 /*
 * Get vars passed on from command line
 */
 parse_str(implode('&', array_slice($argv, 1)), $_GET);
-//print_r($_GET);
 
 
 /*
@@ -45,10 +51,19 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
     usort($folders, 'strnatcasecmp');
 }
 
+// some debugging info
+if($debug == "true") {
+    print "\$_GET:";
+    print_r($_GET);
+    print "\$Audio_Folders_Path: ".$Audio_Folders_Path."\n";
+    print "\$folders:";
+    print_r($folders);
+}
+
 
 /*
 * prints all folders in a neat order:
-*/
+*
 $return = "";
 foreach($folders as $folder) {
     $return .= $folder."\n";
@@ -68,8 +83,12 @@ foreach($folders as $folder) {
     $folder_files = array();
     /*
     * totally skip live stream folders
+    * a folder with a live stream is dealt with already in rfid_trigger_play.sh
+    * and should not be part of a recursive list, because it never stops playing?
+    * Actually, let's keep it in, because the listener can always skip forward
+    * to get out of the live stream.
     */
-    if(!file_exists($folder."/livestream.txt")){
+    //if(!file_exists($folder."/livestream.txt")){
         /*
         * podcasts, get the files
         * special treatment for podcasts - which are URLs not relative paths!
@@ -93,6 +112,12 @@ foreach($folders as $folder) {
             /* 
             * NOTE: podcast content is NOT ordered - because they are an ordered playlist already
             */
+        } elseif(file_exists($folder."/livestream.txt")) {
+            /*
+            * Read content of the file and add to the array
+            */
+            $livestreamURL = file_get_contents($folder."/livestream.txt");
+            $folder_files = array($livestreamURL);
         } else {
             /*
             * ordinary, local files
@@ -100,6 +125,12 @@ foreach($folders as $folder) {
             * ignore . and ..
             */
             $folder_files = array_diff(scandir($folder), array('..', '.'));
+            // some debugging info
+            if($debug == "true") {
+                print "\$folder:".$folder."\n";
+                print "\$folder_files all:";
+                print_r($folder_files);
+            }
             /*
             * clean up what we found in the folder
             */
@@ -109,10 +140,15 @@ foreach($folders as $folder) {
                     unset($folder_files[$key]);
                 }
                 // drop config files
-                if(file_exists($folder."/folder.conf")){
+                if($folder."/".$value == $folder."/folder.conf"){
                     unset($folder_files[$key]);
                 } 
             }  
+            // some debugging info
+            if($debug == "true") {
+                print "\$folder_files cleaned:";
+                print_r($folder_files);
+            }
             
             /*
             * relative path from the $Audio_Folders_Path_Playlist folder
@@ -131,7 +167,7 @@ foreach($folders as $folder) {
         * push files to playlist
         */
         $files_playlist = array_merge($files_playlist, $folder_files);
-    }
+    //}
 }
 
 $return = "";
