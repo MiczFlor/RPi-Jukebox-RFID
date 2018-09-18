@@ -461,7 +461,7 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
-## ## <a name="faqAudioNotWorking"></a>Audio is not working
+## <a name="faqAudioNotWorking"></a>Audio is not working
 
 This might occur if you are using external sound cards like *pHat BEAT* or the like. I split this into two parts: a) sound did never work and b) sound worked once, now, with a new soundcard, it doesn't.
 
@@ -497,12 +497,12 @@ Now the audio card for the system is set to 1. Reboot the RPi:
 $ sudo reboot
 ~~~
 
-**b) Audio worked, then you changed the sound card and it stopped working**
+**b) <a name="faqAudioChangedSoundcard"></a>Audio worked, then you changed the sound card and it stopped working**
 
 If you change your sound card, you need to alter the configuration in two parts by adding the iFace name:
 
 * Inside `settings/Audio_iFace_Name` of your Phoniebox installation
-* Inside `/etc/mpd.conf` 
+* Inside `/etc/mpd.conf`
 
 During the install procedure, both files are set using `PCM`. After you added your sound card, you need to alter these two files. In `mpd.conf` you can find a section which looks like this:
 ~~~
@@ -520,13 +520,43 @@ Replace `%AUDIOiFace%` with the iFace name of your device. Other values might al
 
 "How do I get the right iFace name?", you might wonder. Rightly so. In short: type `amixer scontrols` - and read the following section to find out more.
 
+### `hifiberry DAC+` soundcard details
+
+Read [Hifiberry info on volume control](https://www.hifiberry.com/build/documentation/adding-software-volume-control/) for details.
+
+According to the upper guide you need to configure the _/etc/mpd.conf_ file. And especially the _audio_output_ section needs some updating:
+~~~
+audio_output {
+        enabled         "yes"
+        type            "alsa"
+        name            "HiFiBerry DAC+ Lite"
+        device          "hifiberry"
+        auto_resample   "no"
+        auto_channels   "no"
+        auto_format     "no"
+        dop             "no"
+}
+~~~
+
+What the guide does not say is, that in the audio_output section, there are several deviced preconfigured but commented out.
+Amongst others, the first default device is
+~~~
+audio_output {
+        type               "alsa"
+        name            "My ALSA Device"
+}
+~~~
+These four lines must not be commented out but active (in addition to the hifiberry entries).
+
+
 ## Changing the volume does not work, but the playout works
 
-The `amixer` command might require a specific device name, not the default `PCM`. Changing the volume is done by Phoniebox, playout is done by `mpd`, which is why one might work while the other doesn't.
+If you change your sound card, you need to alter the configuration in two parts by adding the iFace name:
 
-Inside `settings/Audio_iFace_Name` is the iFace name of the sound card. By default for the RPi this would be `PCM`. But this does not work for every setup. If you are using *phatbeat* as a DAC for example, you need to change the content of `Audio_iFace_Name` from `PCM` to `Master`. Other external sound cards might use different interface names. To see if `PCM` could work for you, type `amixer sget PCM`.
+* Inside `settings/Audio_iFace_Name` of your Phoniebox installation
+* Inside `/etc/mpd.conf`
 
-To list all available iFace names, type `amixer scontrols`.
+Jumpt to the section which covers [changes after changing the audio card](#faqAudioChangedSoundcard) to see more.
 
 ## daemon_rfid_reader.py only works via SSH not by RFID cards
 `daemon_rfid_reader.py` works perfectly when running through SSH manually. However, when running at reboot, it does not play the audio files when triggered by RFID tag. This can happen when cron runs them too early in the boot process.
