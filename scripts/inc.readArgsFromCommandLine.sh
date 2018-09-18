@@ -10,9 +10,6 @@
 # passed on to a script via the command line.
 
 #############################################################
-# $DEBUG true|false
-DEBUG=false
-
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
