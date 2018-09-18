@@ -101,7 +101,7 @@ foreach($subfolders as $key => $subfolder) {
         * Check if folder.conf file exists. If not create it
         */
         if(!file_exists($subfolder."/folder.conf")) {
-            $exec = $conf['scripts_abs'].'/inc.writeFolderConfig.sh -d="'.preg_replace('/\ /', '\ ', $temp['path_rel']).'"';
+            $exec = $conf['scripts_abs'].'/inc.writeFolderConfig.sh -c="createDefaultFolderConf" -d="'.preg_replace('/\ /', ' ', $temp['path_rel']).'"';
             //print $exec;
             exec($exec);
         }

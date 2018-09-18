@@ -58,7 +58,7 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
 # some debug info
 if [ $DEBUG == "true" ]; then echo "########### SCRIPT inc.writeFolderConfig.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR CONFCOMMAND: $CONFCOMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 
@@ -70,7 +70,7 @@ then
 
     # IF we got given the command to create a default folder.conf file
     # set default vars, write file, exit
-    if [ $CONFCOMMAND == "createDefaultFolderConf" ]
+    if [ $COMMAND == "createDefaultFolderConf" ]
     then
         if [ $DEBUG == "true" ]; then echo "  !!!setting default vars for raw create!!!" >> $PATHDATA/../logs/debug.log; fi
         # set default vars
@@ -98,27 +98,27 @@ then
 
     # Read the current config file (include will execute == read)
     . "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
-    if [ $DEBUG == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-    if [ $DEBUG == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "  content of ${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then cat "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 
     #########################################################
     # RAW CONFIG FILE
     # Replace current config with empty sample    
     # write "empty" config file with vars that will be replaced later
-    rm "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "CURRENTFILENAME=\"%CURRENTFILENAME%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "ELAPSED=\"%ELAPSED%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "PLAYSTATUS=\"%PLAYSTATUS%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "RESUME=\"%RESUME%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "SHUFFLE=\"%SHUFFLE%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    echo "LOOP=\"%LOOP%\"" >> "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    rm "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "CURRENTFILENAME=\"%CURRENTFILENAME%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "ELAPSED=\"%ELAPSED%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "PLAYSTATUS=\"%PLAYSTATUS%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "RESUME=\"%RESUME%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "SHUFFLE=\"%SHUFFLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "LOOP=\"%LOOP%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
     # Let the juggle begin
     
     #########################################################
     # REPLACE VALUES FROM THE CONFIG FILE WITH NEW ONES
     # Walk through all vars and prefer new over existing to write to config
-    if [ $DEBUG == "true" ]; then echo "  RELACE VALUES FROM THE CONFIG FILE WITH NEW ONES" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "  REPLACE VALUES FROM THE CONFIG FILE WITH NEW ONES" >> $PATHDATA/../logs/debug.log; fi
     if [ "$NEWCURRENTFILENAME" ]; then 
         CURRENTFILENAME="$NEWCURRENTFILENAME"; 
         if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
@@ -133,12 +133,12 @@ then
     # WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG
     # for $CURRENTFILENAME using | as alternate regex delimiter because of the folder path slash 
     if [ $DEBUG == "true" ]; then echo "  WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG" >> $PATHDATA/../logs/debug.log; fi
-    sudo sed -i 's|%CURRENTFILENAME%|'"$CURRENTFILENAME"'|' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo sed -i 's/%ELAPSED%/'"$ELAPSED"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo sed -i 's/%PLAYSTATUS%/'"$PLAYSTATUS"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo sed -i 's/%RESUME%/'"$RESUME"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-    sudo sed -i 's/%LOOP%/'"$LOOP"'/' "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    sudo sed -i 's|%CURRENTFILENAME%|'"$CURRENTFILENAME"'|' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%ELAPSED%/'"$ELAPSED"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%PLAYSTATUS%/'"$PLAYSTATUS"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%RESUME%/'"$RESUME"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%LOOP%/'"$LOOP"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
