@@ -26,7 +26,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 * Connect to your Phoniebox via your wifi network or run the Phoniebox like an access point and connect directly without a router.
 * **Bonus:** control the Phoniebox from your phone or computer via a web app.
 
-![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](docs/img/web-app-iphone-screens.jpg "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
 The **web app** runs on any device and is mobile optimised. It provides:
 
