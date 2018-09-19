@@ -444,6 +444,7 @@ echo "$DIRaudioFolders" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Folders_Path
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
+echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh

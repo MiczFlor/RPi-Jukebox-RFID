@@ -44,7 +44,7 @@ if (isset($playerStatus['file'])) {
     print '
     <div class="row">
         <div class="col-lg-12">';
-            include("inc.loadedPlaylist.php");
+include("inc.loadedPlaylist.php");
     print '
         </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->';
