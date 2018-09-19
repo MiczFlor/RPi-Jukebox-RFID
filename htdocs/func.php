@@ -24,9 +24,9 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <title>".$title."</title>
         
         <!-- Latest compiled and minified CSS -->
-        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.cosmo.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.darkly.css\">
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
-        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/viewTree.css\">
+        <!--link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/viewTree.css\"-->
         
         <!-- Latest compiled and minified JavaScript -->
         <script src=\"".$url_absolute."_assets/js/jquery.1.12.4.min.js\"></script>
@@ -104,23 +104,29 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             line-height:1;
             border-radius:6px;
         }
-        .playerWrapper {
+        .playerWrapper,
+        .playerWrapperSub {
             display: block!important;
             clear: both;
             height: auto;
             margin: 0 auto;
             text-align: center;
             margin-top: 1em;
-            color: ;
         }
         .playerWrapper a {
-            color: #456!important;
+            color: #00bc8c!important;
         }
         .playerWrapper a:hover {
-            color: black!important;
+            color: #008966!important;
         }
         .playerWrapperCover img {
             max-height: 200px;
+        }
+        .playerWrapperSub a {
+            color: #aaa!important;
+        }
+        .playerWrapperSub a:hover {
+            color: #eee!important;
         }
         .table td.text {
             max-width: 100px;
@@ -142,85 +148,14 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             color: #999!important;
         }
         .btn-panel-big {
-            font-size: 1.5em; 
-            margin-right: 0.3em;
-        }
-        .playlist_headline {
-            color: #000000;
-        }
-        .playlist_headline:hover {
-            color: #ffffff;
-        }
-        .panel-playlist {
-          border-color: #2780e3;
-        }
-        .panel-playlist > .panel-heading {
-          color: #ffffff;
-          background-color: #2780e3;
-          border-color: #2780e3;
-        }
-        .panel-playlist > .panel-heading + .panel-collapse > .panel-body {
-          border-top-color: #2780e3;
-        }
-        .panel-playlist > .panel-heading .badge {
-          color: #ffffff;
-          background-color: #000000;
-        }
-        .panel-playlist > .panel-footer + .panel-collapse > .panel-body {
-          border-bottom-color: #2780e3;
-        }
-        .panel-playlist a {
-            color: #ffffff;
-        }
-        .panel-playlist a:hover {
-            color: #000000;
-        }
-        .panel-playlist h3,
-        .panel-playlist .h3 {
-            margin-top: 5px;
-        }
-        .panel-subplaylist {
-          border-color: #2780e3;
-        }
-        .panel-subplaylist > .panel-heading {
-          color: #ffffff;
-          background-color: #2780e3;
-          border-color: #2780e3;
-        }
-        .panel-subplaylist > .panel-heading + .panel-collapse > .panel-body {
-          border-top-color: #2780e3;
-        }
-        .panel-subplaylist > .panel-heading .badge {
-          color: #ffffff;
-          background-color: #000000;
-        }
-        .panel-subplaylist > .panel-footer + .panel-collapse > .panel-body {
-          border-bottom-color: #2780e3;
-        }
-        .panel-subplaylist a {
-            color: #ffffff;
-        }
-        .panel-subplaylist a:hover {
-            color: #000000;
-        }
-        .panel-subplaylist h3,
-        .panel-subplaylist .h3 {
-            margin-top: 5px;
-        }
-
-        /* panels all */
-
-        .panel-playlist,
-        .panel-subplaylist {
-          margin-bottom: 10px;
-          /*padding-left: 100px;*/
-          /*border-color: transparent;*/
+            font-size: 3em!important; 
+            margin-right: 0.1em;
         }
         .btn-panel-col {
-            color: #ff7518!important;
+            /*color: #f39c12!important;*/
         }
         .btn-panel-col:hover {
-            color: #e45c00!important;
+            /*color: #e45c00!important;*/
         }
         .img-playlist-item {
             max-width: 100px;
@@ -312,9 +247,9 @@ function index_folders_print($item, $key)
     /*
     * Special style for level 0 (top level) panels
     */
-    $panelStyle = "panel-subplaylist";
+    $panelStyle = "panel-default";
     if($contentTree[$key]['level'] == 0) {
-        $panelStyle = "panel-playlist";
+        $panelStyle = "panel-default";
     }
 /*
 if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
@@ -330,7 +265,7 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
         <div class='panel-heading' id='heading".$contentTree[$key]['id']."'>";
 
     print "
-            <h3>";
+            <h4>";
     if($contentTree[$key]['count_files'] > 0) {
         print "
               <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
@@ -351,7 +286,7 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
     print "            <span class='badge' title='Show files'><i class='mdi mdi-library-music'></i> ".$contentTree[$key]['count_files']."</span>";
     print "
               </span>
-            </h3>";
+            </h4>";
     /*
     * settings buttons
     */
@@ -467,16 +402,35 @@ function getSubDirectories( $path = '.', $level = 0, $showfiles = 0 ){
 function printPlaylistHtml($files)
 { 
     global $lang;
-      
+    $counter = 1;
+    
+/*      
     print "
-            <ol>"; 
+            <dl class='dl-horizontal'>"; 
     foreach($files as $file) {
         print "
-                <li>
-                    <strong>".basename($file)."</strong>";
+                    <dt>".$counter++."</dt>
+                    <dd>".basename($file);
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt") {
             print"
                     <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-wrench'></i> ".$lang['globalEdit']."</a>";
+        }
+        print "
+                </dd>";
+    }
+    print "
+            </dl>"; 
+*/    
+      
+    print "
+            <ol class='list-group'>"; 
+    foreach($files as $file) {
+        print "
+                <li class='list-group-item'>".$counter++." : 
+                    <strong>".basename($file)."</strong>";
+        if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt") {
+            print"
+                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
         }
         print "
                 </li>";
