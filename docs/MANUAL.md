@@ -101,7 +101,7 @@ The easiest way to add and edit cards is done using the web app. Let's start wit
 ![Add new card ID form](img/Phoniebox-RegisterNew_Button.png "Add new card ID form")
 
 * This will bring up a form looking like this:
-![Add new card ID form](img/Phoniebox-Manual-AddNewCardID-shadow.png "Add new card ID form")
+![Add new card ID form](img/Phoniebox-Manual-AddNewCardID.png "Add new card ID form")
 The card ID will be updated as you swipe a new card over the Phoniebox. Do not try to edit the card ID manually, it will revert to the last swiped ID.
 * Either select an audio folder in the drop down menu near the top OR
 * Add the URL of a webradio, podcast, live stream, select the type of stream and give this new stream a name.
