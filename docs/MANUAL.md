@@ -273,7 +273,7 @@ In short:
 
 You can control the Phoniebox with your mobile phone, smart TV or through a browser on a computer. On any device connected to the same WiFi home network as your Phoniebox, open the browser and type in the static IP address of your Phoniebox. If you do this on your phone, the web app should something look like this:
 
-![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/docs/img/web-app-iphone-screens.png "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](img/web-app-iphone-screens.jpg "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
 ### Change the volume level
 
