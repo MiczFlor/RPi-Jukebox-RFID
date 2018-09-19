@@ -387,6 +387,10 @@ Save the changes and close the editor. The changes takes effect immediately.
 
 # <a name="faq"></a>Troubleshooting / FAQ
 
+## The web app isn't showing up
+
+If you have the webserver `apache` running on your Pi when installing Phoniebox, the web app is not showing. Unistall `apache` to fix this. Phoniebox is using the webserver `lighttpd`.
+
 ## The album covers are not displayed in the web app
 
 If your audio folder contains a file called `cover.jpg` (lowercase!) it will be displayed in the web app above the player controls.

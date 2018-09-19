@@ -216,6 +216,12 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
           /*padding-left: 100px;*/
           /*border-color: transparent;*/
         }
+        .btn-panel-col {
+            color: #ff7518!important;
+        }
+        .btn-panel-col:hover {
+            color: #e45c00!important;
+        }
         .img-playlist-item {
             max-width: 100px;
             float: left;
@@ -327,16 +333,18 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
             <h3>";
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
     print "
               <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>";
     //print "\n              <i class='mdi mdi-folder-outline'></i> ";
     print $contentTree[$key]['basename'];
+    //print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
+    print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
     }
