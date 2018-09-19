@@ -24,7 +24,7 @@ if(file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg')) {
     <a href='?player=seekAhead' class='btn btn-player-l'><i class="mdi mdi-24px mdi-flip-h mdi-replay"></i></a>
 
 </div><!-- ./playerWrapper -->
-<div class="playerWrapper">
+<div class="playerWrapperSub">
         <div class="btn-group controlVolumeUpDown" role="group" aria-label="volume" style="margin-bottom:0.5em;">
             <!--a href="#collapsePlaylist" class="btn btn-lg collapsed" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample" m="1"><i class="mdi mdi-playlist-play"></i></a-->
             <a href='?player=replay' class='btn  btn-lg' title='<?php print $lang['globalReplay']; ?>'><i class='mdi mdi-backup-restore'></i></a>
