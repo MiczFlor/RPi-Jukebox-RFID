@@ -145,7 +145,97 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             font-size: 1.5em; 
             margin-right: 0.3em;
         }
-        
+        .playlist_headline {
+            color: #000000;
+        }
+        .playlist_headline:hover {
+            color: #ffffff;
+        }
+        .panel-playlist {
+          border-color: #2780e3;
+        }
+        .panel-playlist > .panel-heading {
+          color: #ffffff;
+          background-color: #2780e3;
+          border-color: #2780e3;
+        }
+        .panel-playlist > .panel-heading + .panel-collapse > .panel-body {
+          border-top-color: #2780e3;
+        }
+        .panel-playlist > .panel-heading .badge {
+          color: #ffffff;
+          background-color: #000000;
+        }
+        .panel-playlist > .panel-footer + .panel-collapse > .panel-body {
+          border-bottom-color: #2780e3;
+        }
+        .panel-playlist a {
+            color: #ffffff;
+        }
+        .panel-playlist a:hover {
+            color: #000000;
+        }
+        .panel-playlist h3,
+        .panel-playlist .h3 {
+            margin-top: 5px;
+        }
+        .panel-subplaylist {
+          border-color: #2780e3;
+        }
+        .panel-subplaylist > .panel-heading {
+          color: #ffffff;
+          background-color: #2780e3;
+          border-color: #2780e3;
+        }
+        .panel-subplaylist > .panel-heading + .panel-collapse > .panel-body {
+          border-top-color: #2780e3;
+        }
+        .panel-subplaylist > .panel-heading .badge {
+          color: #ffffff;
+          background-color: #000000;
+        }
+        .panel-subplaylist > .panel-footer + .panel-collapse > .panel-body {
+          border-bottom-color: #2780e3;
+        }
+        .panel-subplaylist a {
+            color: #ffffff;
+        }
+        .panel-subplaylist a:hover {
+            color: #000000;
+        }
+        .panel-subplaylist h3,
+        .panel-subplaylist .h3 {
+            margin-top: 5px;
+        }
+
+        /* panels all */
+
+        .panel-playlist,
+        .panel-subplaylist {
+          margin-bottom: 10px;
+          /*padding-left: 100px;*/
+          /*border-color: transparent;*/
+        }
+        .btn-panel-col {
+            color: #ff7518!important;
+        }
+        .btn-panel-col:hover {
+            color: #e45c00!important;
+        }
+        .img-playlist-item {
+            max-width: 100px;
+            float: left;
+            margin-right: 1em;
+            border:1px solid white;
+        }
+        .img-playlist-item-placeholder {
+            display: block;
+            background-color: transparent;
+            width: 100px;
+            height: 50px;
+            float: left;
+            margin-right: 1em
+        }
         </style>
         
     </head>\n";
@@ -211,7 +301,7 @@ function dir_list_recursively($rootdir = "") {
   return $paths;
 }
 
-function index_folders_print($item, $key, $level=0)
+function index_folders_print($item, $key)
 {
     global $lang;
     global $contentTree;
@@ -219,21 +309,42 @@ function index_folders_print($item, $key, $level=0)
     global $debugcol;
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nshortcuts:"; print_r($shortcuts); print "</pre>"; //???
+    /*
+    * Special style for level 0 (top level) panels
+    */
+    $panelStyle = "panel-subplaylist";
+    if($contentTree[$key]['level'] == 0) {
+        $panelStyle = "panel-playlist";
+    }
+/*
+if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
+    print '<img class="img-playlist-item img-responsive" src="image.php?img='.$contentTree[$key]['path_abs'].'/cover.jpg" alt=""/>';
+} else {
+    print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
+}
+*/
     print "
-      <div class='panel panel-default'>
-        <div class='panel-heading' id='heading".$contentTree[$key]['id']."'>
+      <div class='panel ".$panelStyle."'>";
+
+    print "
+        <div class='panel-heading' id='heading".$contentTree[$key]['id']."'>";
+
+    print "
             <h3>";
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
     print "
-              <span class='mb-0' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>
-              <i class='mdi mdi-folder-outline'></i> ".$contentTree[$key]['basename'];
+              <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>";
+    //print "\n              <i class='mdi mdi-folder-outline'></i> ";
+    print $contentTree[$key]['basename'];
+    //print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
+    print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
     }

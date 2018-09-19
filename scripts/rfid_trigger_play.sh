@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -79,14 +79,14 @@ if [ "$CARDID" ]; then
     # Add info into the log, making it easer to monitor cards 
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     echo "$CARDID" > $PATHDATA/../settings/Latest_RFID
-    if [ $DEBUG == "true" ]; then echo "Card ID '$CARDID' was used"   >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "Card ID '$CARDID' was used" >> $PATHDATA/../logs/debug.log; fi
 
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in 
-	$CMDSHUFFLE)
-            # toogles shuffle mode  (random on/off)
+	    $CMDSHUFFLE)
+            # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
             ;;
         $CMDMUTE)
@@ -195,15 +195,15 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
-	$ENABLEWIFI)
+        $ENABLEWIFI)
             $PATHDATA/playout_controls.sh -c=enablewifi
-	    ;;
-	$DISABLEWIFI)
+            ;;
+        $DISABLEWIFI)
             $PATHDATA/playout_controls.sh -c=disablewifi
-	    ;;
+            ;;
         $STARTRECORD600)
             #start recorder for -v seconds
-	    $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
+            $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
             ;;
         $STOPRECORD)
             $PATHDATA/playout_controls.sh -c=stoprecord
@@ -212,24 +212,6 @@ if [ "$CARDID" ]; then
             # We checked if the card was a special command, seems it wasn't.
             # Now we expect it to be a trigger for one or more audio file(s).
             # Let's look at the ID, write a bit of log information and then try to play audio.
-        
-            # Expected folder structure:
-            #
-            # $PATHDATA + /../shared/audiofolders/ + $FOLDER
-            # Note: $FOLDER is read from a file inside 'shortcuts'.
-            #       See manual for details
-            #
-            # Example:
-            #
-            # $PATHDATA/../shared/audiofolders/list1/01track.mp3
-            #                                       /what-a-great-track.mp3
-            #
-            # $PATHDATA/../shared/audiofolders/list987/always-will.mp3
-            #                                         /be.mp3
-            #                                         /playing.mp3
-            #                                         /x-alphabetically.mp3
-            #
-            # $PATHDATA/../shared/audiofolders/webradio/filewithURL.txt
         
             # Look for human readable shortcut in folder 'shortcuts'
             # check if CARDID has a text file by the same name - which would contain the human readable folder name
@@ -264,9 +246,15 @@ fi
 if [ $DEBUG == "true" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 if [ $DEBUG == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
-if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]; then
+# check if 
+# - $FOLDER is not empty (! -z "$FOLDER") 
+# - AND (-a) 
+# - $FOLDER is set (! -z ${FOLDER+x})
+# - AND (-a) 
+# - and points to existing directory (-d "$AUDIOFOLDERSPATH/$FOLDER")
+if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "$AUDIOFOLDERSPATH/$FOLDER" ]; then
 
-    if [ $DEBUG == "true" ]; then echo "Folder found \$FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "\$FOLDER set, not empty and dir exists: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
     if [ ! -f "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]; then
@@ -288,8 +276,10 @@ if [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]; then
     # check if we have a the playlist already loaded which is associated with the rfid card ("second swipe").
     # check the length of the playlist, if =0 then it was cleared before (a state, which should only
     # be possible after a reboot).
+    
     if [ $DEBUG == "true" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-    if [ $VALUE == "recursive" ]; then
+
+    if [ "$VALUE" == "recursive" ]; then
         # set path to playlist
         # replace subfolder slashes with " % "
         PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
