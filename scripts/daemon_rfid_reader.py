@@ -18,7 +18,7 @@ def end_read(signal, frame):
     global continue_reading
     print "Ctrl+C captured, ending read."
     continue_reading = False
-    GPIO.cleanup()
+    reader.reader.cleanup()
 
 
 # Welcome message
@@ -29,7 +29,7 @@ signal.signal(signal.SIGINT, end_read)
 
 while continue_reading:
     # reading the card id
-    cardid = reader.read_card()
+    cardid = reader.reader.read_card()
     if cardid is not None:
         try:
             # start the player script and pass on the card id
