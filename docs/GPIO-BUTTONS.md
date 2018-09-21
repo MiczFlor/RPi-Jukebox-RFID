@@ -1,9 +1,9 @@
 
 # Control Jukebox with buttons / GPIO
 
-(Other docs: [Installation](INSTALL.md) |
-[Configuration](CONFIGURE.md) |
-[Jukebox manual](MANUAL.md))
+(Other docs: [Installation](INSTALL-stretch.md) |
+[Configuration](CONFIGURE-stretch.md) |
+[Phoniebox manual](MANUAL.md))
 
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
@@ -79,10 +79,10 @@ $ sudo apt-get install python3-gpiozero python-gpiozero
 
 **Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
-Make a copy of the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
+Make a copy of the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 
 ~~~
-$ cp /home/pi/RPi-Jukebox-RFID/misc/GPIO-button-sample.py /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+$ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
 And change the copy to be executable
@@ -91,17 +91,6 @@ And change the copy to be executable
 $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
-**Note**: we will look into the [python script for the GPIO buttons](../misc/GPIO-button-sample.py) later.
+**Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.
 
-To have this started automatically at boot, we need to add one line to the following file. Type:
-
-~~~
-$ sudo nano /etc/rc.local
-~~~
-
-And add this line (the '&' is important to run this in the background):
-
-~~~
-/home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py &
-~~~
-
+To have this started automatically at boot. Please read the section on [autostarting the scripts](CONFIGURE-stretch.md#systemdautostart) in the configuration documentation [CONFIGURE-stretch.md](CONFIGURE-stretch.md#systemdautostart).

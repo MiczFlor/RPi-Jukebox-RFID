@@ -1,0 +1,53 @@
+# VARIABLES TO CHANGE
+# This file is read by scripts/rfid_trigger_play.conf
+# It contains the RFID chip IDs which are used to control the Phoniebox.
+# Adjust these variables to match your system and configuration.
+
+# If you use cards to change audio level, stop playing or shutdown the RPi,
+# replace the following strings with the ID of the card. For example:
+# Using the card ID 1234567890 to set the audio to mute, change this line:
+# CMDMUTE="mute"
+# to the following:
+# CMDMUTE="1234567890"
+# Leave everything untouched where you do not use a card.
+CMDMUTE="%CMDMUTE%"
+CMDVOL30="%CMDVOL30%"
+CMDVOL50="%CMDVOL50%"
+CMDVOL75="%CMDVOL75%"
+CMDVOL80="%CMDVOL80%"
+CMDVOL85="%CMDVOL85%"
+CMDVOL90="%CMDVOL90%"
+CMDVOL95="%CMDVOL95%"
+CMDVOL100="%CMDVOL100%"
+CMDVOLUP="%CMDVOLUP%"
+CMDVOLDOWN="%CMDVOLDOWN%"
+CMDSTOP="%CMDSTOP%"
+CMDSHUTDOWN="%CMDSHUTDOWN%"
+CMDREBOOT="%CMDREBOOT%"
+# The following commands control audio playout
+# next and prev play the preivous or next track in the playlist (== folder)
+CMDNEXT="%CMDNEXT%"
+CMDPREV="%CMDPREV%"
+# pause audio playout
+CMDPAUSE="%CMDPAUSE%"
+# resume audio playout (makes only sense in combination with pause)
+CMDPLAY="%CMDPLAY%"
+# Timer top stop after x minutes
+STOPAFTER5="%STOPAFTER5%"
+STOPAFTER15="%STOPAFTER15%"
+STOPAFTER30="%STOPAFTER30%"
+STOPAFTER60="%STOPAFTER60%"
+# Timer top shutdown after x minutes
+SHUTDOWNAFTER5="%SHUTDOWNAFTER5%"
+SHUTDOWNAFTER15="%SHUTDOWNAFTER15%"
+SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
+SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
+# Toggle wifi like in airplane mode
+ENABLEWIFI="%ENABLEWIFI%"
+DISABLEWIFI="%DISABLEWIFI%"
+# Toggle Shuffle mode (not only for the current playlist)
+CMDSHUFFLE="%CMDSHUFFLE%"
+#Controll commands for Audio Recording
+STARTRECORD600="%STARTRECORD600%"
+STOPRECORD="%STOPRECORD%"
+

@@ -1,0 +1,11 @@
+[Unit]
+Description=GPIO Buttons Service
+After=network.target iptables.service firewalld.service
+
+[Service]
+Restart=always
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+
+[Install]
+WantedBy=multi-user.target
