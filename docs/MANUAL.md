@@ -45,10 +45,20 @@ piped to `playout_controls.sh -c=playlistaddplay -v=...`
 Created in script `rfid_trigger_play.sh`
 
 ### `settings/Latest_Folder_Played`
-Contains the last folder that was played. 
+Contains the last folder that was being played. 
 Created in `playout_controls.sh` AND `rfid_trigger_play.sh` (currently all play triggers - webapp and RFID are
 piped through `rfid_trigger_play.sh`. So it seems redundant. But who knows if at a later dev stage
 some scripts might use only `playout_controls.sh`). 
+
+### `settings/Latest_Playlist_Played`
+Contains the last playlist name that was being played. 
+Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playlist was made. 
+
+### `settings/Second_Swipe`
+Contains RESTART or PAUSE. 
+This establises if a second swipe of the same RFID card either starts the playlist from the beginning (RESTART)
+or toggles pause and play (PAUSE) for the current playlist.
+The value can be changed in the web app under settings.
 
 This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
 If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the audio player is not playing and/or the sound has been muted.

@@ -85,7 +85,8 @@ foreach($subfolders as $key => $subfolder) {
         $temp['path_rel'] = substr($subfolder, strlen($Audio_Folders_Path) + 1, strlen($subfolder));
         // some special version with no slashes or whitespaces for IDs on the panel collapse
         $temp['id'] = preg_replace('/\//', '---', $temp['path_rel']);
-        $temp['id'] = "ID".preg_replace('/\ /', '-_-', $temp['id']);
+        $temp['id'] = preg_replace('/\ /', '-_-', $temp['id']);
+        $temp['id'] = "ID".preg_replace('/\:/', '-+-', $temp['id']);
         // count the level depth in the tree by counting the slashes in the path
         $temp['level'] = substr_count($temp['path_rel'], '/');
         // information about the content
@@ -100,11 +101,13 @@ foreach($subfolders as $key => $subfolder) {
         /*
         * Check if folder.conf file exists. If not create it
         */
+        /* not needed to check and create folder conf on each load?
         if(!file_exists($subfolder."/folder.conf")) {
             $exec = $conf['scripts_abs'].'/inc.writeFolderConfig.sh -c="createDefaultFolderConf" -d="'.preg_replace('/\ /', ' ', $temp['path_rel']).'"';
             //print $exec;
             exec($exec);
         }
+        */
         /*
         print "<hr>
         ".$contentTree[$temp['path_abs']]['path_abs']." |

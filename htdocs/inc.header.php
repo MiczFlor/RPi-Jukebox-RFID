@@ -72,12 +72,15 @@ include("func.php");
 $conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
 // path to shared folder from github repo on RPi
 $conf['shared_abs'] = realpath(getcwd().'/../shared/');
+// path to settings folder from github repo on RPi
+$conf['settings_abs'] = realpath(getcwd().'/../settings/');
 
 /*
 * Vars from the settings folder
 */
-$Audio_Folders_Path = trim(file_get_contents('../settings/Audio_Folders_Path'));
-$Latest_Folder_Played = trim(file_get_contents('../settings/Latest_Folder_Played'));
+$Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
+$Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
+$Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
 
 /*******************************************
 * URLPARAMETERS

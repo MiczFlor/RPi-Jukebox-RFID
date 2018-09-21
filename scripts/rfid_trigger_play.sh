@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -49,6 +49,7 @@ fi
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
     echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
+    chmod 777 $PATHDATA/../settings/Audio_Folders_Path
 fi
 # 2. then|or read value from file
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
@@ -57,9 +58,22 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Playlists_Folders_Path ]; then
     echo "/tmp" > $PATHDATA/../settings/Playlists_Folders_Path
+    chmod 777 $PATHDATA/../settings/Playlists_Folders_Path
 fi
 # 2. then|or read value from file
 PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
+
+##############################################
+# Second swipe
+# What happens when the same card is swiped a second time?
+# RESTART => start the playlist again vs. PAUSE => toggle pause and play current
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Second_Swipe ]; then
+    echo "RESTART" > $PATHDATA/../settings/Second_Swipe
+    chmod 777 $PATHDATA/../settings/Second_Swipe
+fi
+# 2. then|or read value from file
+SECONDSWIPE=`cat $PATHDATA/../settings/Second_Swipe`
 
 # Read configuration file
 . $PATHDATA/../settings/rfid_trigger_play.conf
@@ -252,9 +266,9 @@ if [ $DEBUG == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA
 # - $FOLDER is set (! -z ${FOLDER+x})
 # - AND (-a) 
 # - and points to existing directory (-d "$AUDIOFOLDERSPATH/$FOLDER")
-if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "$AUDIOFOLDERSPATH/$FOLDER" ]; then
+if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
-    if [ $DEBUG == "true" ]; then echo "\$FOLDER set, not empty and dir exists: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
     if [ ! -f "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]; then
@@ -271,12 +285,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "$AUDIOFOLDERSPATH/$FOLDER" ]; the
     LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
     LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
     if [ $DEBUG == "true" ]; then echo "Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
-    if [ $DEBUG == "true" ]; then echo "Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi
-
-    # check if we have a the playlist already loaded which is associated with the rfid card ("second swipe").
-    # check the length of the playlist, if =0 then it was cleared before (a state, which should only
-    # be possible after a reboot).
-    
+    if [ $DEBUG == "true" ]; then echo "Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi    
     if [ $DEBUG == "true" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
     if [ "$VALUE" == "recursive" ]; then
@@ -295,8 +304,15 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "$AUDIOFOLDERSPATH/$FOLDER" ]; the
         if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     fi
 
+    # check if 
+    # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
+    # - AND (-a) 
+    # - The same playlist is cued up ("$LASTPLAYLIST" == "$PLAYLISTNAME")
+    # - AND (-a) 
+    # - check the length of the playlist, if =0 then it was cleared before, a state, which should only
+    #   be possible after a reboot ($PLLENGTH -gt 0)
     PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
-    if [ "$LASTPLAYLIST" == "$PLAYLISTNAME" ] && [ $PLLENGTH -gt 0 ]
+    if [ "$SECONDSWIPE" == "PAUSE" -a "$LASTPLAYLIST" == "$PLAYLISTNAME" -a $PLLENGTH -gt 0 ]
     then
         STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ $STATE == "play" ]
@@ -307,25 +323,25 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "$AUDIOFOLDERSPATH/$FOLDER" ]; the
             if [ $DEBUG == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
             sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
         fi
-    # if this is not a "second swipe", check if folder $FOLDER exists and play content
-    # the process is as such - because of the recursive play option:
-    # - each folder can be played. 
-    # - a single folder will create a playlist with the same name as the folder
-    # - because folders can live inside other folders, the relative path might contain
-    #   slashes (e.g. audiobooks/Moby Dick/)
-    # - because slashes can not be in the playlist name, slashes are replaced with " % "
-    # - the "recursive" option means that the content of the folder AND all subfolders
-    #   is being played
-    # - in this case, the playlist is related to the same folder name, which means we need
-    #   to make a different name for "recursive" playout
-    # - a recursive playlist has the suffix " %RCRSV%" - keeping it cryptic to avoid clashes
-    #   with a possible "real" name for a folder
-    # - with this new logic, there are no more SPECIALFORMAT playlists. Live streams and podcasts
-    #   are now all unfolded into the playlist
-    # - creating the playlist is now done in the php script with parameters:
-    #   $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive'
     elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
     then
+        # if this is not a "second swipe", check if folder $FOLDER exists and play content
+        # the process is as such - because of the recursive play option:
+        # - each folder can be played. 
+        # - a single folder will create a playlist with the same name as the folder
+        # - because folders can live inside other folders, the relative path might contain
+        #   slashes (e.g. audiobooks/Moby Dick/)
+        # - because slashes can not be in the playlist name, slashes are replaced with " % "
+        # - the "recursive" option means that the content of the folder AND all subfolders
+        #   is being played
+        # - in this case, the playlist is related to the same folder name, which means we need
+        #   to make a different name for "recursive" playout
+        # - a recursive playlist has the suffix " %RCRSV%" - keeping it cryptic to avoid clashes
+        #   with a possible "real" name for a folder
+        # - with this new logic, there are no more SPECIALFORMAT playlists. Live streams and podcasts
+        #   are now all unfolded into the playlist
+        # - creating the playlist is now done in the php script with parameters:
+        #   $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive'
 
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi

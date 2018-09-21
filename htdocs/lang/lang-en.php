@@ -137,6 +137,10 @@ $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
 $lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";
+$lang['settingsSecondSwipe'] = "Second Swipe";
+$lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, what happens? Start the playlist again? Toggle pause/play?";
+$lang['settingsSecondSwipeRestart'] = "Re-start playlist";
+$lang['settingsSecondSwipePause'] = "Toggle pause / play";
 
 /*
 * System info

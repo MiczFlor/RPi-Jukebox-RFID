@@ -50,10 +50,10 @@ print '
                             <div class="col-xs-1">
                                 <i class="mdi mdi-'. $playerStatus['state'] .'"></i>
                             </div>
-                            <div class="col-xs-8 col-md-9">
+                            <div class="col-xs-7">
                                 '.$playerStatus['file'].'
                             </div> 
-                            <div class="col-xs-2">
+                            <div class="col-xs-4">
                                 <span class="badge">'.date("i:s",$playerStatus['elapsed']);
                                 // Livestream and podcasts have no time length, show only elapsed time
                                 if ( $plTime['1'][$playerStatus['pos']] > 0 ) {
@@ -66,10 +66,10 @@ print '
                             <div class="col-xs-1">
                                 <i class="mdi mdi-playlist-play"></i>
                             </div>
-                            <div class="col-xs-8 col-md-9">
+                            <div class="col-xs-7">
                                 <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a>
                             </div>
-                            <div class="col-xs-2">';
+                            <div class="col-xs-4">';
                                 // Livestream and podcasts have no time length, check to suppress badge
                                 if ( $playlistOverallTime > 0 ) {
                                     print '<span class="badge">'.date("i:s",$playlistPlayedTime).' / '.date("i:s",$playlistOverallTime).'</span>';
@@ -87,13 +87,13 @@ print '
                         print '
                         <li class="list-group-item">
                             <div class="row">
-                                <div class="col-xs-2 col-md-1">
+                                <div class="col-xs-1">
                                     <a href="?playpos='.$i.'" class="btn btn-success"><i class="mdi mdi-play" aria-hidden="true"></i></a>
                                 </div>
-                                <div class="col-xs-8 col-md-9">
+                                <div class="col-xs-7">
                                     '.$trackname.'
                                 </div>
-                                <div class="col-xs-2">';
+                                <div class="col-xs-4">';
                                     // Livestreams and podcasts have no time length, check to suppress badge
                                     if ( $plTime['1'][$i] > 0 ) {
                                         print '<span class="badge">'.date("i:s",$plTime['1'][$i]).'</span>';
