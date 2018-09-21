@@ -101,11 +101,13 @@ foreach($subfolders as $key => $subfolder) {
         /*
         * Check if folder.conf file exists. If not create it
         */
+        /* not needed to check and create folder conf on each load?
         if(!file_exists($subfolder."/folder.conf")) {
             $exec = $conf['scripts_abs'].'/inc.writeFolderConfig.sh -c="createDefaultFolderConf" -d="'.preg_replace('/\ /', ' ', $temp['path_rel']).'"';
             //print $exec;
             exec($exec);
         }
+        */
         /*
         print "<hr>
         ".$contentTree[$temp['path_abs']]['path_abs']." |

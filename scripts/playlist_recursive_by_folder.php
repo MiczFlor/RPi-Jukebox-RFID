@@ -176,7 +176,7 @@ foreach($files_playlist as $file_playlist) {
         $return .= $file_playlist."\n";
     }
 }
-
-print trim($return);
+print $return;
+//print trim($return);
 
 ?>
