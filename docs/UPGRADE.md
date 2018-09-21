@@ -13,7 +13,19 @@ There is a file `settings/version` containing the version number.
 
 **Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
-# Upgrade from Version 1.0.0 to 1.1.x
+# Upgrade from Version 1.1.1 to 1.1.2
+
+A few important bug fixes. And a new design. And the option to decide what the 'second swipe' of a card does (see settings in the web app).
+
+~~~
+cd
+cd RPi-Jukebox-RFID
+git fetch
+git checkout master
+git pull
+~~~
+
+# Upgrade from Version 1.0.0 to 1.1.1
 
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
