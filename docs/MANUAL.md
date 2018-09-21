@@ -23,16 +23,13 @@ To list all available iFace names, type `amixer scontrols`.
 
 ### `settings/Max_Volume_Limit`
 This is a file containing a number, by default `100`.
-
 If one is **using an audio amplifier** (like the pHAT BEAT) without a physical volume limiter (like a potentiometer) your Phoniebox can get very loud "accidentally". The maximal volume can be set in `settings/Max_Volume_Limit`.
+Can be edited in the *Settings* page of the web app.
 
 ### `settings/Audio_Volume_Change_Step`
 This is a file containing a number, by default `3`.
-
 Changing this number affects the `volumeup` and `volumedown` function in the web app or triggered by RFID cards. Increasing the number will result in larger volume jumps. Decreasing the number will result in smaller changes of the volume.
-
-### `settings/Idle_Time_Before_Shutdown`
-This is a file containing a number, by default `0`.
+Can be edited in the *Settings* page of the web app.
 
 ### `settings/Latest_RFID`
 Contains the latest RFID used, which could start an audio playout but might also 
@@ -58,10 +55,12 @@ Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playli
 Contains RESTART or PAUSE. 
 This establises if a second swipe of the same RFID card either starts the playlist from the beginning (RESTART)
 or toggles pause and play (PAUSE) for the current playlist.
-The value can be changed in the web app under settings.
+Can be edited in the *Settings* page of the web app.
 
+### `settings/Idle_Time_Before_Shutdown`
 This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
 If you want to use the *idle shutdown* feature, you can specify the number of minutes in this file, after which the Phoniebox will shut down when either the audio player is not playing and/or the sound has been muted.
+Can be edited in the *Settings* page of the web app.
 
 **IMPORTANT: if you do not want to use auto shutdown, the number in the file must be 0**
 
