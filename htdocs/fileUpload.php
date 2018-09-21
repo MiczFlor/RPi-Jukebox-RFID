@@ -132,7 +132,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                 $messageAction = '
 <div class="wrap-collabsible">
   <input id="collapsible" class="toggle" type="checkbox">
-  <label for="collapsible" class="lbl-toggle">Having trouble with your uploads?</label>
+  <label for="collapsible" class="lbl-toggle">Are you having trouble with uploading files?</label>
   <div class="collapsible-content">
     <div class="content-inner">
     <p>If the upload does not work, make sure that you adjust these variables in <code>/etc/php/7.0/fpm/php.ini</code>:<br>
@@ -181,7 +181,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                         <label class="col-md-3 control-label"
                                for="folder"><?php print $lang['fileUploadFilesLabel']; ?></label>
                         <div class="col-md-7">
-                            <input class="form-control" name="ufile[]" type="file" multiple accept="audio/*" />
+                            <input class="form-control" name="ufile[]" type="file" multiple accept="audio/*" required />
                         </div>
                     </div>
 
