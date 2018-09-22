@@ -26,6 +26,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <!-- Latest compiled and minified CSS -->
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/bootstrap-3/css/bootstrap.darkly.css\">
         <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/circle.css\">
+        <link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/collapsible.css\">
         <!--link rel=\"stylesheet\" href=\"".$url_absolute."_assets/css/viewTree.css\"-->
         
         <!-- Latest compiled and minified JavaScript -->
