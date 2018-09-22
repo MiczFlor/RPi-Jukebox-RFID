@@ -1,3 +1,14 @@
+settings/Audio_Folders_Path
+settings/Audio_Volume_Change_Step
+settings/Audio_iFace_Name
+settings/Idle_Time_Before_Shutdown
+settings/Latest_Folder_Played
+settings/Latest_Playlist_Played
+settings/Latest_RFID
+settings/Max_Volume_Limit
+settings/Playlists_Folders_Path
+settings/rfid_trigger_play.conf
+
 shared/*
 playlists/*
 .git*
