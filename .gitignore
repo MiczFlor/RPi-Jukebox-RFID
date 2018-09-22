@@ -8,6 +8,7 @@ settings/Latest_RFID
 settings/Max_Volume_Limit
 settings/Playlists_Folders_Path
 settings/rfid_trigger_play.conf
+htdocs/config.php
 
 shared/*
 playlists/*
