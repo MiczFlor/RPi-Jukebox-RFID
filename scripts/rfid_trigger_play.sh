@@ -167,6 +167,14 @@ if [ "$CARDID" ]; then
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
             ;;
+        $CMDSEEKFORW)
+            # jump 15 seconds ahead
+            $PATHDATA/playout_controls.sh -c=playerseek -v=+15
+            ;;
+        $CMDSEEKBACK)
+            # jump 15 seconds back
+            $PATHDATA/playout_controls.sh -c=playerseek -v=-15
+            ;;
         $CMDPAUSE)
             # pause current track
             # echo "pause" | nc.openbsd -w 1 localhost 4212

@@ -28,6 +28,9 @@ CMDREBOOT="%CMDREBOOT%"
 # next and prev play the preivous or next track in the playlist (== folder)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
+# seek ahead or back 15 seconds
+CMDSEEKFORW="%CMDSEEKFORW%"
+CMDSEEKBACK="%CMDSEEKBACK%"
 # pause audio playout
 CMDPAUSE="%CMDPAUSE%"
 # resume audio playout (makes only sense in combination with pause)
