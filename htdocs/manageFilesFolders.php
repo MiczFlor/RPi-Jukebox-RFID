@@ -36,6 +36,20 @@ if (isset($_GET['filename']) && $_GET['filename'] != "") {
         $post['filename'] = $_POST['filename'];
     }
 }
+if (isset($_GET['folderCreateNew']) && trim($_GET['folderCreateNew']) != "") {
+    $post['folderCreateNew'] = trim($_GET['folderCreateNew']);
+} else {
+    if (isset($_POST['folderCreateNew']) && trim($_POST['folderCreateNew']) != "") {
+        $post['folderCreateNew'] = trim($_POST['folderCreateNew']);
+    }
+}
+if (isset($_GET['folderParent']) && trim($_GET['folderParent']) != "") {
+    $post['folderParent'] = trim($_GET['folderParent']);
+} else {
+    if (isset($_POST['folderParent']) && trim($_POST['folderParent']) != "") {
+        $post['folderParent'] = trim($_POST['folderParent']);
+    }
+}
 
 /*******************************************
  * ACTIONS
@@ -46,7 +60,7 @@ $messageSuccess = "";
 $messageWarning = "";
 
 /*
-* Move file to different dir
+* Move uploaded file to different dir
 */
 if ($_POST['ACTION'] == "fileUpload") {
     /*
@@ -90,7 +104,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         exec($exec);
         $moveFolder = $Audio_Folders_Path . "/" . $post['folderNew'];
     } else {
-        $messageWarning .= "<p>No folder selected nor a valid new folder specified.</p>";
+        $messageWarning .= $lang['manageFilesFoldersErrorNewFolder'];
     }
     // if neither: error message
     if ($messageWarning == "") {
@@ -102,6 +116,37 @@ if ($_POST['ACTION'] == "fileUpload") {
             exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
+    }
+}
+// create new folder
+if ($_POST['ACTION'] == "folderCreateNew") {
+    if($post['folderParent'] != "") {
+        $newDirPathRel = $post['folderParent']."/".$post['folderCreateNew'];
+    } else {
+        $newDirPathRel = $post['folderCreateNew'];
+    }
+    if($post['folderCreateNew'] == "") {
+        $messageWarning .= $lang['manageFilesFoldersErrorNewFolderName'];
+    } else {
+        if(file_exists($Audio_Folders_Path."/".$newDirPathRel)) {
+            $messageWarning .= $lang['manageFilesFoldersErrorNewFolderExists'];
+        }
+        if($post['folderParent'] != "" && !file_exists($Audio_Folders_Path."/".$post['folderParent'])) {
+            $messageWarning .= $lang['manageFilesFoldersErrorNewFolderNotParent'];
+        }
+    }
+    /*
+    * have we come here without warning?
+    */
+    if($messageWarning == "") {
+        /*
+        * create folder
+        */        
+        $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chmod 777 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"';
+        exec($exec);
+        $messageSuccess = "<p>".$lang['manageFilesFoldersSuccessNewFolder']." '".$newDirPathRel."'</p>";
+        
+        
     }
 }
 
@@ -121,7 +166,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
 
     <div class="row playerControls">
         <div class="col-lg-12">
-            <h1><?php print $lang['fileUploadTitle']; ?></h1>
+            <h1><?php print $lang['manageFilesFoldersTitle']; ?></h1>
             <?php
 
             //phpinfo();
@@ -174,12 +219,12 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                 <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
                 <input type="hidden" name="ACTION" value="fileUpload">
                 <fieldset>
-                    <legend><i class='mdi mdi-upload-multiple'></i> <?php print $lang['fileUploadLegend']; ?></legend>
+                    <legend><i class='mdi mdi-upload-multiple'></i> <?php print $lang['manageFilesFoldersUploadLegend']; ?></legend>
 
                     <!-- Select Basic -->
                     <div class="form-group">
                         <label class="col-md-3 control-label"
-                               for="folder"><?php print $lang['fileUploadFilesLabel']; ?></label>
+                               for="folder"><?php print $lang['manageFilesFoldersUploadFilesLabel']; ?></label>
                         <div class="col-md-7">
                             <input class="form-control" name="ufile[]" type="file" multiple accept="audio/*" required />
                         </div>
@@ -188,7 +233,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                     <div class="form-group">
 
                         <label class="col-md-3 control-label"
-                               for="folder"><?php print $lang['fileUploadLabel']; ?></label>
+                               for="folder"><?php print $lang['manageFilesFoldersUploadLabel']; ?></label>
                         <div class="col-md-7">
                             <select id="folder" name="folder" class="form-control">
 
@@ -220,9 +265,6 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                                     }
                                 }
 
-                                // counter for ID of each folder
-                                $idcounter = 0;
-
                                 // go through all folders
                                 foreach ($audiofolders as $keyfolder => $audiofolder) {
 
@@ -249,7 +291,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                             ?>" id="folderNew" name="folderNew"
                                    placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>"
                                    class="form-control input-md" type="text">
-                            <span class="help-block"><?php print $lang['fileUploadFolderHelp']; ?></span>
+                            <span class="help-block"><?php print $lang['manageFilesFoldersUploadFolderHelp']; ?></span>
                         </div>
                     </div>
 
@@ -259,8 +301,8 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="submit"></label>
                     <div class="col-md-9">
-                        <button id="submit" name="submit" class="btn btn-success"
-                                value="trackMove"><?php print $lang['globalUpload']; ?></button>
+                        <button id="submit" name="submit" class="btn btn-success" value="fileUpload"><?php print $lang['globalUpload']; ?></button>
+                        <a href="index.php" id="cancel" name="cancel" class="btn btn-danger"><?php print $lang['globalCancel']; ?></a>
                         <br clear='all'><br>
                     </div>
                 </div>
@@ -269,6 +311,68 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
 
         </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal" name='fileUpload' enctype="multipart/form-data" method="post"
+                  action='<?php print $_SERVER['PHP_SELF']; ?>'>
+                <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
+                <!--input type="hidden" name="filename" value="<?php print $post['filename']; ?>"-->
+                <input type="hidden" name="ACTION" value="folderCreateNew">
+
+        <fieldset>        
+        <!-- Form Name -->
+        <legend><i class='mdi mdi-folder-plus'></i> <?php print $lang['manageFilesFoldersNewFolderTitle']; ?></legend>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="folderCreateNew"><?php print $lang['globalFolderName']; ?></label>  
+          <div class="col-md-7">
+          <input value="" id="folderCreateNew" name="folderCreateNew" placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['folderCreateNew']; ?></span>  
+          </div>
+        </div>
+        
+        <!-- Select Basic -->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="folderParent"><?php print $lang['manageFilesFoldersNewFolderPositionLegend']; ?></label>
+           <div class="col-md-7">
+            <select id="folderParent" name="folderParent" class="form-control">
+              <option value=""><?php print $lang['manageFilesFoldersNewFolderPositionDefault']; ?></option>
+<?php
+
+// go through all folders
+foreach($audiofolders as $keyfolder => $audiofolder) {
+    print "              <option value='".$audiofolder."'";
+    if($audiofolder == $post['folderParent']) {
+        print " selected=selected";
+    }
+    print ">".$audiofolder."</option>\n";
+   
+}
+?>
+            </select>
+            <span class="help-block"></span>  
+          </div>
+        </div>
+        
+        </fieldset>
+        
+        <!-- Button (Double) -->
+        <div class="form-group">
+          <label class="col-md-3 control-label" for="submit"></label>
+          <div class="col-md-7">
+            <button id="submit" name="submit" class="btn btn-success" value="folderCreateNew"><?php print $lang['globalCreate']; ?></button>
+            <a href="index.php" id="cancel" name="cancel" class="btn btn-danger"><?php print $lang['globalCancel']; ?></a>
+            <br clear='all'><br>
+          </div>
+        </div>
+
+        </form>
+
+        </div><!-- / .col-lg-12 -->
+    </div><!-- /.row -->
+
 
 
 </div><!-- /.container -->
@@ -288,7 +392,7 @@ if ($debug == "true") {
     print_r($trackDat);
     print $res;
     print "</pre>";
-    include('inc.debug.php');
+    //include('inc.debug.php');
 }
 ?>
 </body>

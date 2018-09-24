@@ -197,6 +197,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
 }
 ?>
             </select>
+            <span class="help-block"></span>  
           </div>
         </div>
         

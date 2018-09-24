@@ -14,6 +14,12 @@
 $debug = "false"; // true or false
 
 
+/*
+* load language strings
+*/
+include("inc.langLoad.php");
+
+
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
 * Configuration file

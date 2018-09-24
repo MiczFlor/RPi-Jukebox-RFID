@@ -1,9 +1,3 @@
-<?php
-/*
-* load language strings
-*/
-include("inc.langLoad.php");
-?>
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -24,7 +18,7 @@ include("inc.langLoad.php");
         <li><a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> <?php print $lang['navHome']; ?></a></li>
 	      <li><a href='settings.php' class='mainMenu'><i class='mdi mdi-settings'></i> <?php print $lang['navSettings']; ?></a></li>
         <li><a href='systemInfo.php' class='mainMenu'><i class='mdi mdi-information-outline'></i> <?php print $lang['navInfo']; ?></a></li>
-        <li><a href='fileUpload.php' class='mainMenu'><i class='mdi mdi-upload-multiple'></i> <?php print $lang['fileUploadTitle']; ?></a></li>
+        <li><a href='manageFilesFolders.php' class='mainMenu'><i class='mdi mdi-folder-upload'></i> <?php print $lang['manageFilesFoldersTitle']; ?></a></li>
       </ul>
       
 <!-- sub menu -->

@@ -28,6 +28,7 @@ $lang['globalSSID'] = "SSID";
 $lang['globalSet'] = "Set";
 $lang['globalSettings'] = "Settings";
 $lang['globalFolder'] = "Folder";
+$lang['globalFolderName'] = "Folder name";
 $lang['globalFilename'] = "File name";
 $lang['globalStream'] = "Stream";
 $lang['globalSubmit'] = "Submit";
@@ -35,6 +36,7 @@ $lang['globalUpload'] = "Upload";
 $lang['globalUpdate'] = "Update";
 $lang['globalCancel'] = "Cancel";
 $lang['globalDelete'] = "Delete";
+$lang['globalCreate'] = "Create";
 $lang['globalMove'] = "Move";
 $lang['globalJumpTo'] = "Jump to";
 $lang['globalAutoShutdown'] = "Auto Shutdown";
@@ -150,13 +152,22 @@ $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
 
 /*
-* File Upload
+* Folder Management and File Upload
 */
-$lang['fileUploadTitle'] = "Upload files";
-$lang['fileUploadFilesLabel'] = "Select files from your drive";
-$lang['fileUploadLegend'] = "Select files and folder";
-$lang['fileUploadLabel'] = "Select folder or create new";
-$lang['fileUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";
+$lang['manageFilesFoldersTitle'] = "Folders &amp; Files";
+$lang['manageFilesFoldersUploadFilesLabel'] = "Select files from your drive";
+$lang['manageFilesFoldersUploadLegend'] = "Upload files";
+$lang['manageFilesFoldersUploadLabel'] = "Select folder or create new";
+$lang['manageFilesFoldersUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";
+$lang['manageFilesFoldersNewFolderTitle'] = "Create new folder";
+$lang['manageFilesFoldersNewFolderPositionLegend'] = "Folder position";
+$lang['manageFilesFoldersNewFolderPositionDefault'] = "The new folder will be on the root level or inside (choose below)";
+$lang['manageFilesFoldersErrorNewFolderName'] = "<p>No valid folder name given.</p>";
+$lang['manageFilesFoldersErrorNewFolder'] = "<p>No folder selected nor a valid new folder specified.</p>";
+$lang['manageFilesFoldersErrorNewFolderExists'] = "<p>A folder by that name already exists. Be original, type a new name.</p>";
+$lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>The parent folder does not exist.</p>";
+$lang['manageFilesFoldersSuccessNewFolder'] = "New folder created: ";
+
 
 
 ?>
