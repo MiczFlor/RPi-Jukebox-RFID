@@ -11,6 +11,6 @@ if(isset($post['streamFolderName'])) {
     // link to existing audiofolder
     $foldername = $Audio_Folders_Path."/".$post['audiofolder'];
 }
-$exec = "cd '".$foldername."' && youtube-dl -f bestaudio --extract-audio --audio-format mp3 ".$post['YTstreamURL']." > ".$conf['shared_abs']."/youtube-dl.log 2>&1 &";
+$exec = "cd '".$foldername."'; youtube-dl -f bestaudio --extract-audio --audio-format mp3 ".$post['YTstreamURL']." > ".$conf['shared_abs']."/youtube-dl.log; chmod 777 ".$foldername."/* 2>&1 &";
 exec($exec);
 ?>
