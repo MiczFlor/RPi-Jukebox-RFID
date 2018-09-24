@@ -275,6 +275,39 @@ if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
     $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
 }
 
+
+/*******************************************
+* URLPARAMETERS cardEdit.php and cardRegisterNew.php
+*******************************************/
+if(isset($_POST['cardID']) && $_POST['cardID'] != "") { // && file_exists('../shared/shortcuts/'.$_POST['cardID'])) {
+    $post['cardID'] = $_POST['cardID'];
+}
+if(isset($_POST['streamURL']) && $_POST['streamURL'] != "") {
+    $post['streamURL'] = $_POST['streamURL'];
+}
+if(isset($_POST['streamFolderName']) && $_POST['streamFolderName'] != "") {
+    $post['streamFolderName'] = $_POST['streamFolderName'];
+}
+if(isset($_POST['streamType']) && $_POST['streamType'] != "" && $_POST['streamType'] != "false") {
+    $post['streamType'] = $_POST['streamType'];
+}
+if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['audiofolder'])) {
+    $post['audiofolder'] = $_POST['audiofolder'];
+}
+if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
+    $post['YTstreamURL'] = $_POST['YTstreamURL'];
+}
+if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
+    $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
+}
+if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['YTaudiofolder'])) {
+    $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
+}
+if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
+    $post['submit'] = $_POST['submit'];
+}
+
+
 /*******************************************
 * ACTIONS
 *******************************************/
