@@ -1,8 +1,12 @@
 # Forked from Francisco Sahli's https://github.com/fsahli/music-cards/blob/master/Reader.py
 import os.path
 import sys
+import serial
+import string
+import RPi.GPIO as GPIO
 
 from evdev import InputDevice, categorize, ecodes, list_devices
+import MFRC522
 
 
 def get_devices():
@@ -37,10 +41,9 @@ class UsbReader(object):
         return stri[:-1]
 
 
-class Mfrc622Reader(object):
+class Mfrc522Reader(object):
     def __init__(self):
-        from MFRC522 import MFRC522
-        self.device = MFRC522()
+        self.device = MFRC522.MFRC522()
 
     def read_card(self):
         # Scan for cards
@@ -57,11 +60,11 @@ class Mfrc622Reader(object):
         if status == self.device.MI_OK:
             return ''.join((str(x) for x in uid))
         else:
+            print "No Device ID found."
             return None
 
     @staticmethod
     def cleanup():
-        import RPi.GPIO as GPIO
         GPIO.cleanup()
 
 
@@ -78,9 +81,6 @@ class Rdm6300Reader:
             exit(1)
 
     def read_card(self):
-        import serial
-        import string
-
         byte_card_id = b''
 
         try:
@@ -125,8 +125,8 @@ class Reader(object):
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read()
 
-            if device_name == 'MFRC622':
-                self.reader = Mfrc622Reader()
+            if device_name == 'MFRC522':
+                self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
                 self.reader = Rdm6300Reader()
             else:
@@ -134,5 +134,4 @@ class Reader(object):
                     device = [device for device in get_devices() if device.name == device_name][0]
                     self.reader = UsbReader(device)
                 except IndexError:
-                    sys.exit('Could not find the device %s\n. Make sure is connected' % device_name)
-
+                    sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)

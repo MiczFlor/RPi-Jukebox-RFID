@@ -2,7 +2,6 @@
 import subprocess
 import os
 import signal
-import RPi.GPIO as GPIO
 
 from Reader import Reader
 
