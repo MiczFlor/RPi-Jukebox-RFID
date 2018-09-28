@@ -56,6 +56,7 @@ Contains RESTART or PAUSE.
 This establises if a second swipe of the same RFID card either starts the playlist from the beginning (RESTART)
 or toggles pause and play (PAUSE) for the current playlist.
 Can be edited in the *Settings* page of the web app.
+**NOTE:** in the web app you can set *Resume* for each folder, which means that the content of this folder starts from the time where it was last stopped. If you choose *Restart* for the *Second Swipe* AND *Resume* for a folder is enabled, swiping the card a second time will seem to do nothing - the playout continues. However, this is the correct behaviour: swiping the same card a second time triggers *stop* and *play*. The *play* command then checks if the folder has *Resume* enabled, if it does, it will play from the last stored *stop* position - which was the same second swipe.
 
 ### `settings/Idle_Time_Before_Shutdown`
 This feature is helpful for powerbank users who want to save battery power. It shuts down the idle Phoniebox after a specified number of minutes.
@@ -610,6 +611,16 @@ Run this script every minute by adding the following line via crontab:
 There could be many reasons why the RFID Reader is not working reliably or behaves strangely. This could be due to a weak power supply or an insuficient power bank. Worth trying out before you try anything else.
 
 If you used the install script, you might have forgotten to register your RFID card reader. See the section *Register your USB device for the Phoniebox* inside [CONFIGURE-stretch.md](CONFIGURE-stretch.md) (if you are still running *jessie*, see [CONFIGURE-jessie.md](CONFIGURE-jessie.md). 
+
+## How can I disable the beeping noixe of the RFID Reader?
+
+You might want to have a look at this [discussion thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/223). The most promising solutions that came up were all opening up the RFID Reader and then:
+
+* cut out the beeper
+* stick some tape over the beeper to muffle it or
+* drop some candle wax on the beeper to muffle it
+
+*Note:* in another thread, users of a different RFID reader without a beep were [discussing how to make a beep](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/11#issuecomment-382337194). So before you kill it alltogether, you might try muffling it.
 
 ## Everything seems to work, but I hear nothing when swiping a card
 
