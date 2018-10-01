@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -312,6 +312,9 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     fi
 
+    # Second Swipe value
+    if [ $DEBUG == "true" ]; then echo "VAR \$SECONDSWIPE=\"${SECONDSWIPE}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+    
     # check if 
     # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
     # - AND (-a) 
@@ -364,9 +367,11 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
-    else
+    #elif [ "$SECONDSWIPE" == "NOAUDIOPLAY" ]
+    #then
         # "$SECONDSWIPE" == "NOAUDIOPLAY"
         # => do nothing
+        # commented out because error if no statement given...
     fi
 else
     if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
