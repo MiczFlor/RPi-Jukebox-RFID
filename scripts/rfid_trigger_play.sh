@@ -331,8 +331,11 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             if [ $DEBUG == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
             sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
         fi
-    elif [ -d "$AUDIOFOLDERSPATH/$FOLDER" ]
+    elif [ "$SECONDSWIPE" == "RESTART" ]
     then
+        # Above we already checked if the folder exists -d "$AUDIOFOLDERSPATH/$FOLDER" 
+        # Now we check if we need to play from start.
+        #
         # if this is not a "second swipe", check if folder $FOLDER exists and play content
         # the process is as such - because of the recursive play option:
         # - each folder can be played. 
@@ -353,48 +356,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
 
         if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
-
-        # Check if we have something special to do
-        # Read content file names of folder into string
-#        SPECIALFORMAT=$(ls "$AUDIOFOLDERSPATH/$FOLDER" | grep .txt)
-#        if [ $DEBUG == "true" ]; then echo "VAR SPECIALFORMAT: $SPECIALFORMAT"   >> $PATHDATA/../logs/debug.log; fi
-
-        # the following switch can be extended with other 'special' formats which require
-        # more complex action than just piping the folder content into a playlist
-#        if [ $DEBUG == "true" ]; then echo "CHECK Something special to do?" >> $PATHDATA/../logs/debug.log; fi
-#        case $SPECIALFORMAT in
-#            "podcast.txt")
-                # Podcast
-#                PODCASTURL=`cat "$AUDIOFOLDERSPATH/$FOLDER/podcast.txt"`
-                # parse podcast XML in sloppy but efficient way and write URLs to playlist
-#                wget -q -O - "$PODCASTURL" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p' > "$PLAYLISTPATH"
-                # uncomment the following line to see playlist content in terminal
-                # cat "$PLAYLISTPATH"
-#                if [ $DEBUG == "true" ]; then echo "Podcast: $PODCASTURL"   >> $PATHDATA/../logs/debug.log; fi
-#            ;;
-#            "livestream.txt")
-                # mpd can't read from .txt, so we have to write the livestream URL into playlist
-#                cat "$AUDIOFOLDERSPATH/$FOLDER/livestream.txt" > "$PLAYLISTPATH"
-#                if [ $DEBUG == "true" ]; then echo "Livestream $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
-#            ;;
-#            *)
-                # Nothing special to do, folder with audio files
-                # write playlist to file using the same name as the folder with ending .m3u
-                # wrap $PLAYLIST string in "" to keep line breaks
-        	    # cd to $AUDIOFOLDERSPATH as mpd accepts only filepaths relative to its music folder
-        	    # or starting with file:// (e.g. file:///home/pi...)
-#                cd $AUDIOFOLDERSPATH
-#                find "$FOLDER" -type f | sort -f > "$PLAYLISTPATH"
-#                if [ $DEBUG == "true" ]; then echo "Nothing special $PLAYLISTPATH" >> $PATHDATA/../logs/debug.log; fi
-                
-#            ;;
-#        esac
-#        if [ $VALUE == "recursive" ]; then
-#            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
-#        else
-#            $PATHDATA/playlist_recursive_by_folder.php playlist="${FOLDER}" > "${PLAYLISTPATH}"
-#        fi
-        
+       
         # load new playlist and play
         if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
         # the variable passed on to play is NOT the folder name, but the playlist name
@@ -402,8 +364,10 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
-
     else
-        if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+        # "$SECONDSWIPE" == "NOAUDIOPLAY"
+        # => do nothing
     fi
+else
+    if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 fi
