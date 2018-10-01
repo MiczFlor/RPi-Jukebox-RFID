@@ -52,10 +52,14 @@ Contains the last playlist name that was being played.
 Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playlist was made. 
 
 ### `settings/Second_Swipe`
-Contains RESTART or PAUSE. 
-This establises if a second swipe of the same RFID card either starts the playlist from the beginning (RESTART)
-or toggles pause and play (PAUSE) for the current playlist.
-Can be edited in the *Settings* page of the web app.
+Contains RESTART or PAUSE or NOAUDIOPLAY. 
+This establises if a second swipe of the same RFID card either 
+
+* starts the playlist from the beginning (RESTART) or 
+* toggles pause and play (PAUSE) for the current playlist or
+* ignores to play audio at all (NOAUDIOPLAY) only executres commands (like *volume up* or *shutdown*).
+
+The behaviour can be edited in the *Settings* page of the web app.
 **NOTE:** in the web app you can set *Resume* for each folder, which means that the content of this folder starts from the time where it was last stopped. If you choose *Restart* for the *Second Swipe* AND *Resume* for a folder is enabled, swiping the card a second time will seem to do nothing - the playout continues. However, this is the correct behaviour: swiping the same card a second time triggers *stop* and *play*. The *play* command then checks if the folder has *Resume* enabled, if it does, it will play from the last stored *stop* position - which was the same second swipe.
 
 ### `settings/Idle_Time_Before_Shutdown`
@@ -474,6 +478,81 @@ static routers=192.168.178.1
 static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+## <a name="addmultiplewifissids"></a>I want to add another Wi-ssid e.g. at a friend?
+To add multiple wifi networks you can simply add and ssid section into dhcpd.conf.
+This can be usefull if you take your phoniebox on a trip to a friend or want to control it on the go by let the phoniebox connect to your mobiles own hotspot.
+
+~~~~
+$ sudo nano /etc/dhcpcd.conf
+~~~~
+
+If you need another wifi that automatically connects via DHCP e.g. an android-hotspot just add one line
+If you need a static network configuration for home-wifi like metioned above just put the static lines below that ssid line
+ 
+~~~~
+ssid androidhotspot
+
+ssid homewifi
+static ip_address=192.168.178.199/24
+static routers=192.168.178.1
+static domain_name_servers=192.168.178.1
+~~~~
+
+Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+Then open file for ssid and password
+
+~~~
+$ sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+~~~
+
+Beside the ssid and passwords you can put a priotity to any ssid so the higher priority gets chosen if both networks are in the range.
+
+~~~
+network={
+        ssid="homewifi"
+        psk="passwordhere"
+        id_str="home"
+        priority=3
+}
+
+network={
+        ssid="androidhotspot"
+        psk="passwordhere"
+        id_str="mobile"
+        priority=5
+}
+~~~
+
+Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+Some words to security and costs:
+
+**Mobile Hotspot use:**
+Be aware your PI is using your perhaps expensive 3G data plan (e.g. in foreign country) so perhaps deactivate mobile data prior to letting PI connect.
+
+**Hotel use / Hotspot use:**
+Be aware that everyone on that wifi can connect to your Pi and could at least control mpc and upload files
+
+To always be able to connect to your phoniebox no matter what IP config the network has, be sure to know the hostname (default:raspberry) or change it to a more unique one
+~~~
+$ sudo nano /etc/hostname
+~~~
+just put the name in there
+~~~
+phoniebox
+~~~
+
+Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
+
+~~~
+$ sudo reboot
+~~~
+
+**Then always connect to your box, like this:**
+* via browser http://phoniebox (be sure to use the http:// - if it didn't work, it could be you land on phoniebox.de ;) )
+* via ssh using phoniebox:22
 
 ## <a name="faqAudioNotWorking"></a>Audio is not working
 

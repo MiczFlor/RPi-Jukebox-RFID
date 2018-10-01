@@ -287,6 +287,8 @@ if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
 *******************************************/
 if(isset($_POST['cardID']) && $_POST['cardID'] != "") { // && file_exists('../shared/shortcuts/'.$_POST['cardID'])) {
     $post['cardID'] = $_POST['cardID'];
+} elseif(isset($_GET['cardID']) && $_GET['cardID'] != "") {
+    $post['cardID'] = $_GET['cardID'];
 }
 if(isset($_POST['streamURL']) && $_POST['streamURL'] != "") {
     $post['streamURL'] = $_POST['streamURL'];
