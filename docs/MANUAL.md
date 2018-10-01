@@ -54,10 +54,12 @@ Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playli
 ### `settings/Second_Swipe`
 Contains RESTART or PAUSE or NOAUDIOPLAY. 
 This establises if a second swipe of the same RFID card either 
+
 * starts the playlist from the beginning (RESTART) or 
 * toggles pause and play (PAUSE) for the current playlist or
 * ignores to play audio at all (NOAUDIOPLAY) only executres commands (like *volume up* or *shutdown*).
-Can be edited in the *Settings* page of the web app.
+
+The behaviour can be edited in the *Settings* page of the web app.
 **NOTE:** in the web app you can set *Resume* for each folder, which means that the content of this folder starts from the time where it was last stopped. If you choose *Restart* for the *Second Swipe* AND *Resume* for a folder is enabled, swiping the card a second time will seem to do nothing - the playout continues. However, this is the correct behaviour: swiping the same card a second time triggers *stop* and *play*. The *play* command then checks if the folder has *Resume* enabled, if it does, it will play from the last stored *stop* position - which was the same second swipe.
 
 ### `settings/Idle_Time_Before_Shutdown`
