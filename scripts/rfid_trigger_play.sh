@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -313,7 +313,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     fi
 
     # Second Swipe value
-    if [ $DEBUG == "true" ]; then echo "VAR \$SECONDSWIPE=\"${SECONDSWIPE}\""   >> $PATHDATA/../logs/debug.log; fi
+    if [ $DEBUG == "true" ]; then echo "Var \$SECONDSWIPE: ${SECONDSWIPE}"   >> $PATHDATA/../logs/debug.log; fi
     
     # check if 
     # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
