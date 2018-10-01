@@ -11,7 +11,7 @@
 * for debugging, set following var to true.
 * This will only print the executable strings, not execute them
 */
-$debug = "true"; // true or false
+$debug = "false"; // true or false
 
 
 /*
