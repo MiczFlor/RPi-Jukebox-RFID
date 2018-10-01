@@ -479,12 +479,9 @@ static domain_name_servers=192.168.178.1
 ~~~~
 Save the changes with `Ctrl & O` then `Enter` then `Ctrl & X`.
 
-
-
-## <a name="addmultiplewifissids"></a>I want to add another wifi-ssid e.g. at a friend?
+## <a name="addmultiplewifissids"></a>I want to add another Wi-ssid e.g. at a friend?
 To add multiple wifi networks you can simply add and ssid section into dhcpd.conf.
 This can be usefull if you take your phoniebox on a trip to a friend or want to control it on the go by let the phoniebox connect to your mobiles own hotspot.
-
 
 ~~~~
 $ sudo nano /etc/dhcpcd.conf
@@ -538,7 +535,6 @@ Be aware your PI is using your perhaps expensive 3G data plan (e.g. in foreign c
 **Hotel use / Hotspot use:**
 Be aware that everyone on that wifi can connect to your Pi and could at least control mpc and upload files
 
-
 To always be able to connect to your phoniebox no matter what IP config the network has, be sure to know the hostname (default:raspberry) or change it to a more unique one
 ~~~
 $ sudo nano /etc/hostname
@@ -557,8 +553,6 @@ $ sudo reboot
 **Then always connect to your box, like this:**
 * via browser http://phoniebox (be sure to use the http:// - if it didn't work, it could be you land on phoniebox.de ;) )
 * via ssh using phoniebox:22
-
-
 
 ## <a name="faqAudioNotWorking"></a>Audio is not working
 

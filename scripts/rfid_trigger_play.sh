@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -314,32 +314,60 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
 
     # Second Swipe value
     if [ $DEBUG == "true" ]; then echo "Var \$SECONDSWIPE: ${SECONDSWIPE}"   >> $PATHDATA/../logs/debug.log; fi
+    # Playlist name
+    if [ $DEBUG == "true" ]; then echo "Var \$PLAYLISTNAME: ${PLAYLISTNAME}"   >> $PATHDATA/../logs/debug.log; fi
     
-    # check if 
-    # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
-    # - AND (-a) 
+    # Setting a VAR to start "play playlist from start"
+    # This will be changed in the following checks "if this is the second swipe"
+    PLAYPLAYLIST=yes
+    
+    # Check if the second swipe happened
     # - The same playlist is cued up ("$LASTPLAYLIST" == "$PLAYLISTNAME")
-    # - AND (-a) 
-    # - check the length of the playlist, if =0 then it was cleared before, a state, which should only
-    #   be possible after a reboot ($PLLENGTH -gt 0)
-    PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
-    if [ "$SECONDSWIPE" == "PAUSE" -a "$LASTPLAYLIST" == "$PLAYLISTNAME" -a $PLLENGTH -gt 0 ]
+    if [ "$LASTPLAYLIST" == "$PLAYLISTNAME" ]
     then
-        STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
-        if [ $STATE == "play" ]
+        if [ $DEBUG == "true" ]; then echo "Second Swipe DID happen: \$LASTPLAYLIST == \$PLAYLISTNAME"   >> $PATHDATA/../logs/debug.log; fi
+        
+        # check if 
+        # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
+        # - AND (-a) 
+        # - AND (-a) 
+        # - check the length of the playlist, if =0 then it was cleared before, a state, which should only
+        #   be possible after a reboot ($PLLENGTH -gt 0)
+        PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
+        if [ "$SECONDSWIPE" == "PAUSE" -a $PLLENGTH -gt 0 ]
         then
-            if [ $DEBUG == "true" ]; then echo "MPD playing, pausing the player" >> $PATHDATA/../logs/debug.log; fi
-            sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
-        else
-            if [ $DEBUG == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
-            sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
+            # The following involves NOT playing the playlist, so we set: 
+            PLAYPLAYLIST=no
+        
+            STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+            if [ $STATE == "play" ]
+            then
+                if [ $DEBUG == "true" ]; then echo "MPD playing, pausing the player" >> $PATHDATA/../logs/debug.log; fi
+                sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
+            else
+                if [ $DEBUG == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
+                sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
+            fi
+            if [ $DEBUG == "true" ]; then echo "Completed: toggle pause/play" >> $PATHDATA/../logs/debug.log; fi
+        elif [ "$SECONDSWIPE" == "NOAUDIOPLAY" ]
+        then
+            # The following involves NOT playing the playlist, so we set: 
+            PLAYPLAYLIST=no
+
+            # "$SECONDSWIPE" == "NOAUDIOPLAY"
+            # "$LASTPLAYLIST" == "$PLAYLISTNAME" => same playlist triggered again 
+            # => do nothing
+            # echo "do nothing" > /dev/null 2>&1
+            if [ $DEBUG == "true" ]; then echo "Completed: do nothing" >> $PATHDATA/../logs/debug.log; fi
         fi
-    elif [ "$SECONDSWIPE" == "RESTART" ]
+    fi
+    # now we check if we are still on for playing what we got passed on:
+    if [ "$PLAYPLAYLIST" == "yes" ]
     then
+        if [ $DEBUG == "true" ]; then echo "We must play the playlist no matter what: \$PLAYPLAYLIST == yes"   >> $PATHDATA/../logs/debug.log; fi
+
         # Above we already checked if the folder exists -d "$AUDIOFOLDERSPATH/$FOLDER" 
-        # Now we check if we need to play from start.
         #
-        # if this is not a "second swipe", check if folder $FOLDER exists and play content
         # the process is as such - because of the recursive play option:
         # - each folder can be played. 
         # - a single folder will create a playlist with the same name as the folder
@@ -364,15 +392,10 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
         # the variable passed on to play is NOT the folder name, but the playlist name
         # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
-        sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
-        sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
-    #elif [ "$SECONDSWIPE" == "NOAUDIOPLAY" ]
-    #then
-        # "$SECONDSWIPE" == "NOAUDIOPLAY"
-        # => do nothing
-        # commented out because error if no statement given...
     fi
+    sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
+    sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
 else
     if [ $DEBUG == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 fi
