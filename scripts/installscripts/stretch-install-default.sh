@@ -618,8 +618,8 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 
-sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/settings
-sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/settings
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/settings
 
 # audio folders might be somewhere else, so treat them separately
 sudo chown pi:www-data "$DIRaudioFolders"
