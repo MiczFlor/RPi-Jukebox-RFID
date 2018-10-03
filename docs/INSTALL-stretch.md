@@ -157,8 +157,6 @@ The following lines will install all the required packages:
 ~~~
 sudo apt-get update
 sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen
-sudo pip install "evdev == 0.7.0"
-sudo pip install youtube_dl
 ~~~
 
 ### Using git to pull the code from github
@@ -169,6 +167,14 @@ sudo pip install youtube_dl
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 ~~~~
+
+### Install python requirements
+
+~~~~
+cd /home/pi/RPi-Jukebox-RFID/
+pip install -r requirements.txt
+~~~~
+
 
 Now you have the code repo of the Phoniebox in the directory `/home/pi/RPi-Jukebox-RFID`.
 
