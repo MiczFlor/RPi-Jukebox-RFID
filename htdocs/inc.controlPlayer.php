@@ -1,12 +1,14 @@
 
-<?php
-if(file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg')) { 
-    print '<div class="playerWrapperCover"><center>';
-    print '<img class="img-responsive img-thumbnail" src="image.php?img='.$Audio_Folders_Path.'/'.$Latest_Folder_Played.'/cover.jpg" alt=""/>';
-    print '</center></div>';
-}
+<div class="playerWrapperCover" id="coverWrapper"></div>
+<script>
+$(document).ready(function() {
+    $('#coverWrapper').load('ajax.loadCover.php.php');
+    var refreshId = setInterval(function() {
+        $('#coverWrapper').load('ajax.loadCover.php?' + 1*new Date());
+    }, 4000);
+});
+</script>  
 
-?>
 <div class="playerWrapper">
     <a href='?player=seekBack' class='btn btn-player-l'><i class="mdi mdi-24px mdi-replay"></i></a>
     <a href='?player=prev' class='btn btn-player-l'><i class="mdi mdi-48px mdi-rewind"></i></a>
