@@ -4,8 +4,10 @@
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
 
 # Neural net and related libraries.
-evdev == 0.7.0
+evdev==0.7.0
+git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube-dl
+serial
 
 # Type checking for python
 # typing
