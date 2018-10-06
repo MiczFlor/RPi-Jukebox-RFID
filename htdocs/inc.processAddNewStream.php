@@ -1,6 +1,6 @@
 <?php
 // create folder $post['streamFolderName']
-$exec = "sudo mkdir '".$Audio_Folders_Path."/".$post['streamFolderName']."'; chmod 777 '".$Audio_Folders_Path."/".$post['streamFolderName']."'";
+$exec = "sudo mkdir '".$Audio_Folders_Path."/".$post['streamFolderName']."'; sudo chmod 777 '".$Audio_Folders_Path."/".$post['streamFolderName']."'";
 exec($exec);
 print "<p>".$exec."</p>";//???
 // figure out $filestream depending on $post['streamType']
@@ -25,11 +25,11 @@ $exec = "echo '".$post['streamURL']."' > '".$filestream."'";
 exec($exec);
 //print "<p>".$exec."</p>";//???
 // make this file accessible by user pi as well as webserver            
-$exec = "chmod -R 777 '".$conf['shared_abs']."/audiofolders/".$post['streamFolderName']."'";
+$exec = "sudo chmod -R 777 '".$conf['shared_abs']."/audiofolders/".$post['streamFolderName']."'";
 exec($exec);
 //print "<p>".$exec."</p>";//???
 // write $post['streamFolderName'] to cardID file in shortcuts
-$exec = "rm ".$fileshortcuts."; echo '".$post['streamFolderName']."' > '".$fileshortcuts."'; chmod 777 '".$fileshortcuts."'";
+$exec = "rm ".$fileshortcuts."; echo '".$post['streamFolderName']."' > '".$fileshortcuts."'; sudo chmod 777 '".$fileshortcuts."'";
 exec($exec);
 //print "<p>".$exec."</p>";//???
 ?>

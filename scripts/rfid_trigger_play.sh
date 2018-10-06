@@ -273,19 +273,19 @@ if [ $DEBUG == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA
 # - AND (-a) 
 # - $FOLDER is set (! -z ${FOLDER+x})
 # - AND (-a) 
-# - and points to existing directory (-d "$AUDIOFOLDERSPATH/$FOLDER")
+# - and points to existing directory (-d "${AUDIOFOLDERSPATH}/${FOLDER}")
 if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
     if [ $DEBUG == "true" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
-    if [ ! -f "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]; then
+    if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
         # now we create a default folder.conf file by calling this script
         # with the command param createDefaultFolderConf
         # (see script for details)
         # the $FOLDER would not need to be passed on, because it is already set in this script
         # see inc.writeFolderConfig.sh for details
-        . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
+        . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
     fi
 
     # get the name of the last folder played. As mpd doesn't store the name of the last
@@ -329,7 +329,6 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         
         # check if 
         # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
-        # - AND (-a) 
         # - AND (-a) 
         # - check the length of the playlist, if =0 then it was cleared before, a state, which should only
         #   be possible after a reboot ($PLLENGTH -gt 0)
@@ -390,6 +389,27 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
        
         # load new playlist and play
         if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
+        
+        # copy cover.jpg for display in web app
+        # before we start playing, delete the cover.jpg folder in the settings dir
+        # and copy cover.jpg, if exists, from the new folder to settings
+        # it will be displayed in the web app player
+        
+        # delete any existing cover file first
+        if [ -f "${PATHDATA}/../settings/cover.jpg" ]; then
+            rm "${PATHDATA}/../settings/cover.jpg"
+        fi
+        
+        # now copy the cover file if it does exist
+        # escape whitespaces and special chars
+        #EXEC=$(printf %q "${AUDIOFOLDERSPATH}/${FOLDER}/cover.jpg")
+        # actually, we do not need to escape whitepaces
+        EXEC="${AUDIOFOLDERSPATH}/${FOLDER}/cover.jpg"
+        if [ -f "$EXEC" ]; then
+            cp "$EXEC" "${PATHDATA}/../settings/"
+        fi
+        
+        # play playlist
         # the variable passed on to play is NOT the folder name, but the playlist name
         # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
