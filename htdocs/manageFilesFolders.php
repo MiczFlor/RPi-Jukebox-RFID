@@ -11,7 +11,6 @@ include("inc.header.php");
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 
-
 /*******************************************
  * URLPARAMETERS
  *******************************************/
@@ -70,7 +69,8 @@ if ($_POST['ACTION'] == "fileUpload") {
     * confusing. Later I discovery the problem was in the POST_MAX_SIZE been 3m, so it happen 
     * that not only MAX_UPLOAD_SIZE is responsible and that is why I'd like to know there is no 
     * error message that shows the cause.
-    */
+    */    
+    
     $uFiles = getFiles();
     //print "<pre>"; print_r($uFiles); print "</pre>"; //???
     // are there any files?
@@ -82,34 +82,53 @@ if ($_POST['ACTION'] == "fileUpload") {
     if (count($uFiles['ufile']) == 0) {
         // if 0 there are no files
         $messageWarning .= "<p>No files were uploaded.</p>";
-    } elseif (
-        // see if we have a folder selected that exists
+    } 
+    /*
+    * let's start building the path to move the files to
+    * as a relative path.
+    */
+    if(
         isset($post['folder'])
         && $post['folder'] != ""
         && file_exists($post['folder'])
         && is_dir($post['folder'])
     ) {
-        // yes, a folder was selected
-        $messageAction .= "Will move files to folder: '" . $post['folder'] . "'";
+        // add the existing folder to the path
         $moveFolder = $post['folder'];
-    } elseif (
-        // if not, see if we have a new folder to create
+    } else {
+        $moveFolder = $Audio_Folders_Path;
+    }
+    /*
+    * see if we need to create a new folder
+    */
+    if (
+        // did we get a new folder to create?
         isset($post['folderNew'])
         && $post['folderNew'] != ""
-        && !file_exists($Audio_Folders_Path . "/" . $post['folderNew'])
     ) {
-        // yes, valid new folder 
-        $messageAction .= "Will create new folder and move files to: '" . $post['folderNew'] . "'";
-        // create folder
-        $exec = 'mkdir "' . $Audio_Folders_Path . '/' . $post['folderNew'] . '"; chown -R pi:www-data "' . $Audio_Folders_Path . "/" . $post['folderNew'] . '"; chmod 775 "' . $Audio_Folders_Path . "/" . $post['folderNew'] . '"';
-        exec($exec);
-        $moveFolder = $Audio_Folders_Path . "/" . $post['folderNew'];
-    } else {
-        $messageWarning .= $lang['manageFilesFoldersErrorNewFolder'];
+        // add the new folder to the relative folder path
+        $moveFolder = $moveFolder . "/" . $post['folderNew'];
+        // hang on, does that folder exist already?
+        if(!file_exists($Audio_Folders_Path . "/" . $moveFolder)) {
+            // no, so create the folder
+            $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; chmod 775 "' . $moveFolder . '"';
+            exec($exec);   
+            $messageAction .= "Will create new folder and move files to: '" . $moveFolder . "'";
+        } else {
+            // folder exists already :(
+            $messageWarning .= $lang['manageFilesFoldersErrorNewFolderExists'] . "(".$moveFolder.")";
+        }
     }
-    // if neither: error message
+    /*
+    * see if any valid folder has been chosen
+    */
+    if($moveFolder == $Audio_Folders_Path) {
+        $messageWarning .= $lang['manageFilesFoldersErrorNoNewFolder'];
+    }
+    
+    // if no error message
     if ($messageWarning == "") {
-        // else: move files to folder
+        // move files to folder
         foreach ($uFiles['ufile'] as $key => $values) {
             $targetName = $moveFolder . '/' . $values['name'];
             $exec = 'mv "' . $values['tmp_name'] . '" "' . $targetName . '"; sudo chown -R pi:www-data "' . $targetName . '"; chmod 775 "' . $targetName . '"';
