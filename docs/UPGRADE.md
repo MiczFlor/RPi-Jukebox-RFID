@@ -32,6 +32,10 @@ sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/settings
 sudo chmod -R 777 /home/pi/RPi-Jukebox-RFID/settings
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
+sudo chown root:root /etc/systemd/system/rfid-reader.service
+sudo chmod 644 /etc/systemd/system/rfid-reader.service
+sudo systemctl enable rfid-reader
 ~~~
 
 # Upgrade from Version 1.0.0 to 1.1.1
