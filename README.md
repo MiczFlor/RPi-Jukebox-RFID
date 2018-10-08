@@ -4,9 +4,9 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
-* **Phoniebox 1.1.1 released** Adding *recursive folder playout* and *recording* to the Phoniebox. With version 1.0.0 we switched the audio player to `mpd`, added *resume play* for audiobook lovers, RFID switch for *wifi off*, new *player interface*, *random* and *repeat*. At this stage the *recursive* playout only works in the web app, not RFID cards. (2018-09-13)
-* **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-09-10)
-* **One Line Install Script** As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
+* **Phoniebox 1.1.6 released** Adding *recursive folder playout* and *recording* to the Phoniebox. With version 1.x we switched the audio player to `mpd`, added *resume play* for audiobook lovers, RFID switch for *wifi off*, new *player interface*, *random* and *repeat*. At this stage the *recursive* playout only works in the web app, not RFID cards. (2018-10-08)
+* **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-10-08)
+* **One Line Install Script** As of version 1.x there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
 * **Bleeding edge: `develop` branch** The maintenance with a growing contributor team (kudos!) got complicated. I introduced the branch `develop` which is where all new stuff is happening before merged to `master`. (2018-08-30)
 ---
