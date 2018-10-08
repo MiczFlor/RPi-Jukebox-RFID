@@ -122,7 +122,8 @@ if ($_POST['ACTION'] == "fileUpload") {
     /*
     * see if any valid folder has been chosen
     */
-    if($moveFolder == $Audio_Folders_Path) {
+    print "if(".realpath($moveFolder)." == ".realpath($Audio_Folders_Path).") {";
+    if(realpath($moveFolder) == realpath($Audio_Folders_Path)) {
         $messageWarning .= $lang['manageFilesFoldersErrorNoNewFolder'];
     }
     
@@ -256,7 +257,7 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
                         <div class="col-md-7">
                             <select id="folder" name="folder" class="form-control">
 
-                                <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
+                                <option value="false"><?php print $lang['manageFilesFoldersSelectDefault']; ?></option>
                                 <?php
                                 /*
                                 * read the subfolders of $Audio_Folders_Path
