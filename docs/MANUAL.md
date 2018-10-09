@@ -26,6 +26,11 @@ This is a file containing a number, by default `100`.
 If one is **using an audio amplifier** (like the pHAT BEAT) without a physical volume limiter (like a potentiometer) your Phoniebox can get very loud "accidentally". The maximal volume can be set in `settings/Max_Volume_Limit`.
 Can be edited in the *Settings* page of the web app.
 
+### `settings/Startup_Volume`
+This is a file containing a number (between 1-100), by default not existing.
+If somebody wants to reset volume on system startup you
+can do it with this setting.
+
 ### `settings/Audio_Volume_Change_Step`
 This is a file containing a number, by default `3`.
 Changing this number affects the `volumeup` and `volumedown` function in the web app or triggered by RFID cards. Increasing the number will result in larger volume jumps. Decreasing the number will result in smaller changes of the volume.

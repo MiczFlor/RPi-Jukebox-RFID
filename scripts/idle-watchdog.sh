@@ -1,11 +1,6 @@
 #!/bin/bash
 #Remove old shutdown commands from all 'at' queues after boot to prevent immediate shutdown
 for i in `sudo atq | awk '{print $1}'`;do sudo atrm $i;done
-#Give the RPi enough time to get the correct time via network
-#Otherwise there may be an immediate shutdown because this script may set a shutdown time dated in the past
-#in the first loop. If the Pi gets a correct time via network, "at" suddenly detects a overdue job, which is:
-#shutting down the Pi.  
-sleep 60
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -16,6 +11,21 @@ if [ ! -f $PATHDATA/../settings/Idle_Time_Before_Shutdown ]; then
 fi
 # 2. then|or read value from file
 IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
+
+
+# Set Startup Volume to value from settingsfile
+if [ -f $PATHDATA/../settings/Startup_Volume ]; then
+    # read value from settings file
+    STARTUPVOLUME=`cat $PATHDATA/../settings/Startup_Volume`
+    # give volume setting to mpc
+    $PATHDATA/playout_controls.sh -c=setvolume -v=$STARTUPVOLUME
+fi
+
+#Give the RPi enough time to get the correct time via network
+#Otherwise there may be an immediate shutdown because this script may set a shutdown time dated in the past
+#in the first loop. If the Pi gets a correct time via network, "at" suddenly detects a overdue job, which is:
+#shutting down the Pi.
+sleep 60
 
 #Go into infinite loop if idle time is greater 0
 while [ $IDLETIME -gt 0 ]
