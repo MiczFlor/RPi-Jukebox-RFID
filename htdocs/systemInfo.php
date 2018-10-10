@@ -6,7 +6,7 @@ include("inc.header.php");
 * START HTML
 *******************************************/
 
-html_bootstrap3_createHeader("en","RPi Jukebox",$conf['base_url']);
+html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 
 ?>
 <body>
