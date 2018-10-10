@@ -185,7 +185,7 @@ if(isset($messageSuccess) && $messageSuccess != "") {
           <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
           <input type="hidden" name="ACTION" value="userScript">
         <fieldset> 
-        <legend><i class='mdi mdi-upload-multiple'></i>Start custom scripts</legend>
+        <legend><i class='mdi mdi-file-document-box'></i>Start custom scripts</legend>
 
         <!-- Select Basic -->
         <div class="form-group">
@@ -201,19 +201,20 @@ if(isset($messageSuccess) && $messageSuccess != "") {
 $audiofolders = array_filter(glob($conf['scripts_abs'].'/userscripts/*'), 'is_file');
 usort($audiofolders, 'strcasecmp');
 
+
 // check if we can preselect an audiofolder if NOT a foldername was posted
-if(! isset($fpost['folder'])) {
+/* if(! isset($fpost['folder'])) {
     if(array_key_exists($fpost['cardID'], $shortcuts)) {
         $fpost['folder'] = $shortcuts[$fpost['cardID']];
     }
 }
-    
+*/  
 // counter for ID of each folder
 $idcounter = 0;
 
 // go through all folders
 foreach($audiofolders as $audiofolder) {
-    
+
     print "              <option value='".basename($audiofolder)."'";
     if(basename($audiofolder) == $post['folder']) {
         print " selected=selected";
@@ -238,9 +239,10 @@ foreach($audiofolders as $audiofolder) {
               print $post['folderNew'];
           }
           ?>" id="folderNew" name="folderNew" placeholder="add cmdline parameters here (e.g. <newssid ssid passwort> for addhotspot.sh" class="form-control input-md" type="text">
-          <span class="help-block">Select the script you want to execute an add parameters </span>  
+          <span class="help-block">Select the script you want to execute and add parameters (see full script below for parameter order) </span>  
           </div>
         </div>
+
         
         </fieldset>
         
@@ -254,8 +256,38 @@ foreach($audiofolders as $audiofolder) {
         </div>
 
         </form>
+<br/><br/>
+<label class="col-md-3 control-label" for="scriptfiles"></label>
+<?php
+// parse all scriptfiles with linebreaks into alterboxes and hide them for later unhiding via selectbox onchange 
+foreach($audiofolders as $audiofolder) {
+$perms = substr(decoct(fileperms($conf["scripts_abs"]."/userscripts/".basename($audiofolder))), 3);
+if(preg_match("([7|5|3|1])",$perms)) {$fcolor =""; }
+else {$fcolor ="red"; }
+print "<div id='".basename($audiofolder)."' class='col-md-7 alert alert-info source' style='font-family: monospace; font-size: small; display:none'>";
+print "Filename:".basename($audiofolder)."(Filerights:<font color=".$fcolor.">".$perms."</font>)<br/>";
+print "--------------------------------------------------------<br/>";
+print nl2br(file_get_contents($conf['scripts_abs']."/userscripts/".basename($audiofolder)));
+print "--------------------------------------------------------<br/>";
+print "</div>";
+}
+?>
 
+<br/><br/>
 
+<script type="text/javascript">
+ 
+   var sel = document.getElementById('folder');
+   sel.onchange = function() {
+    // hide all scripts
+    var elems = document.getElementsByClassName('source');
+      for(var i = 0; i < elems.length; i++) {
+    elems[i].style.display = "none";
+     }
+    // display only selected script to see which variables should be entered
+    document.getElementById(this.value).style.display = "block";
+    }
+</script>
 
 
       </div><!-- / .col-lg-12 -->
