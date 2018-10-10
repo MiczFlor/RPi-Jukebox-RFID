@@ -9,6 +9,7 @@ settings/Latest_RFID
 settings/Max_Volume_Limit
 settings/Playlists_Folders_Path
 settings/rfid_trigger_play.conf
+settings/Second_Swipe
 htdocs/config.php
 scripts/gpio-buttons.py
 
