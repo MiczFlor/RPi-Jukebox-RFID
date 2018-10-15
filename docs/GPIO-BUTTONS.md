@@ -16,12 +16,8 @@ Many, many fellow jukebox tweakers have contacted me to push
 the envelope a bit further and add buttons to the jukebox.
 Buttons to change the volume and skip between tracks in a playlist.
 
-Right now (12th Dec 2017) I still have to get my soldering iron
-out of the shelf and try this myself. Until then, what I have done here
-is compiling and editing howto mails and docs I got sent.
-I would love to hear feedback and get pull requests to improve 
-this documentation. So if you are successful, give back to the project
-by sharing your knowledge.
+So this documentation is entirely community driven, I am only editing and asking for
+confirmation that this works :)
 
 Enough said, here we go.
 
@@ -52,13 +48,14 @@ On the above image you can also see the pin numbering, in this case containing b
 
 The script for the GPIO buttons we are using have been provided by Andreas aka [hailogugo](https://github.com/hailogugo). He also sent the picture above and has a working version of the GPIO button solution. Pin numbers and functionality in this example connect as such:
 
-| Board | GPIO (BCM) | Function |
-| --- | --- | --- |
-| 15 | 22 | Volume up |
-| 16 | 23 | Volume down |
-| 11 | 17 | Next track |
-| 13 | 27 | Previous track |
-| 37 | 26 | Play/Pause |
+* **Volume Down** GPIO19 (PIN35) and GND (PIN39)
+* **Volume Up** GPIO16 (PIN36) and GND (PIN34)
+* **Play/Pause/Halt (or how you call it)** GPIO21 (PIN40) and GND (PIN25)
+* **Next** GPIO26 (PIN37) and GND (PIN30)
+* **Previous** GPIO20 (PIN38) and GND (PIN20)
+* **Shutdown (you need to hold button for 2 secs for shutdown)** GPIO3 (PIN5) and GND (PIN6)
+
+**!!! IMPORTANT Only when using the above listed pins for wiring you will be able to power-up the Raspberry PI from firmware halt. !!!**
 
 ### Circuit example(s) for the button wiring
 

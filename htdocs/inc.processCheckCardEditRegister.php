@@ -9,7 +9,7 @@
 $messageAction = "";
 $messageSuccess = "";
 
-if($_POST['delete'] == "delete") {
+if($post['delete'] == "delete") {
     $messageAction .= "<p>The card with the ID '".$post['cardID']." has been deleted. 
         If you made a mistake, this is your chance to press 'Submit' to restore the card settings. 
         Else: Go <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> Home</a>.</p>";
