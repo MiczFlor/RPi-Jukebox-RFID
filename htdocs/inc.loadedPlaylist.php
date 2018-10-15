@@ -40,6 +40,18 @@
 
 */
 ?>
+<script>
+$(document).ready(function() {
+	$('#infoWrapper').load('ajax.loadInfo.php');
+	$('#timeWrapper').load('ajax.loadTime.php');
+	$('#overalltimeWrapper').load('ajax.loadOverallTime.php');
+	var refreshId = setInterval(function() {
+		$('#infoWrapper').load('ajax.loadInfo.php?' + 1*new Date());
+		$('#timeWrapper').load('ajax.loadTime.php?' + 1*new Date());
+		$('#overalltimeWrapper').load('ajax.loadOverallTime.php?' + 1*new Date());
+	}, 1000);
+});
+</script>
 <?php
 print '
         <div class="panel-group">
@@ -50,16 +62,11 @@ print '
                             <div class="col-xs-1">
                                 <i class="mdi mdi-'. $playerStatus['state'] .'"></i>
                             </div>
-                            <div class="col-xs-7">
-                                '.$playerStatus['file'].'
-                            </div> 
+                            <div class="col-xs-7" id="infoWrapper"></div> 
                             <div class="col-xs-4">
-                                <span class="badge">'.date("i:s",$playerStatus['elapsed']);
-                                // Livestream and podcasts have no time length, show only elapsed time
-                                if ( $plTime['1'][$playerStatus['pos']] > 0 ) {
-                                    print ' / '.date("i:s",$plTime['1'][$playerStatus['pos']]);
-                                }
-                                print '</span>
+                                <span class="badge">
+									<div id="timeWrapper"></div>
+								</span>
                             </div>
                         </div>
                         <div class="row">
@@ -69,13 +76,7 @@ print '
                             <div class="col-xs-7">
                                 <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a>
                             </div>
-                            <div class="col-xs-4">';
-                                // Livestream and podcasts have no time length, check to suppress badge
-                                if ( $playlistOverallTime > 0 ) {
-                                    print '<span class="badge">'.date("i:s",$playlistPlayedTime).' / '.date("i:s",$playlistOverallTime).'</span>';
-                                }
-                            print '
-                            </div>
+                            <div class="col-xs-4" id="overalltimeWrapper"></div>
                         </div>
                     </h4>
                 </div>
@@ -83,7 +84,7 @@ print '
                     <ul class="list-group">
                     ';
                     $i=0;
-                    foreach($plFile[1] AS $trackname) {
+                    foreach($plFile[1] AS $file) {
                         print '
                         <li class="list-group-item">
                             <div class="row">
@@ -91,12 +92,23 @@ print '
                                     <a href="?playpos='.$i.'" class="btn btn-success"><i class="mdi mdi-play" aria-hidden="true"></i></a>
                                 </div>
                                 <div class="col-xs-7">
-                                    '.$trackname.'
-                                </div>
+                                    <strong>'.$plTitle['1'][$i].'</strong>
+									<br><i>'.str_replace(";", " and ", $plArtist['1'][$i]).'</i>';
+									if (empty($plAlbum['1'][$i]) != true) {
+										print "<br><font color=#7d7d7d>".$plAlbum['1'][$i];
+										if (empty($plDate['1'][$i]) != true) {
+											print " (".$plDate['1'][$i].")";
+										}
+										print "</font>";
+									}
+								print '
+								</div>
                                 <div class="col-xs-4">';
                                     // Livestreams and podcasts have no time length, check to suppress badge
-                                    if ( $plTime['1'][$i] > 0 ) {
+                                    if ( $plTime['1'][$i] > 0 && $plTime['1'][$i] < 3600 ) {
                                         print '<span class="badge">'.date("i:s",$plTime['1'][$i]).'</span>';
+                                    } elseif ( $plTime['1'][$i] > 0 ) {
+                                        print '<span class="badge">'.date("H:i:s",$plTime['1'][$i]).'</span>';
                                     }
                                 print'
                                 </div>
