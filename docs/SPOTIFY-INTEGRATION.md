@@ -355,12 +355,12 @@ I don't know if it works, for me it does after several tries.
 
 When you right-click an album, a track or a playlist in MOPIDY IRIS or Spotify Client (share button), you get a Spotify URI.
 This Spotify URI must be used when registering a card with the following syntax:
-
+~~~
 Tracks: spotify:track:######################
 Albums: spotify:album:######################
 Playlists: spotify:user:username:playlist:######################
 (e.g. spotify:user:spotify:playlist:37i9dQZF1DWUVpAXiEPK8P or spotify:user:tomorrowlandofficial:playlist:0yS25E7g9xQZ1Dst5SqUZn)
 
 Podcast: spotify:show:###################### (This has not been tested yet!)
-
+~~~
 The information will be stored in a spotify.txt in an audiofolder.
