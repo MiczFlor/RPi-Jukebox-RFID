@@ -95,6 +95,7 @@ The files MUST be put here on the phoniebox:
 /usr/lib/python2.7/dist-packages/mopidy_spotify/
 ~~~
 I think there is a method to get this over git via installerscript.
+This method worked for me: git clone -b fix/incompatible_playlists --single-branch https://github.com/BlackLight/mopidy-spotify.git
 
 ## Mopidy as service...
 
