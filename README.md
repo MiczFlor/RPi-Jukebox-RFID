@@ -4,6 +4,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
+* **Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524) and the [Spotify integration manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/develop/docs/SPOTIFY-INTEGRATION.md).
 * **Phoniebox 1.1.6 released** Adding *recursive folder playout* and *recording* to the Phoniebox. With version 1.x we switched the audio player to `mpd`, added *resume play* for audiobook lovers, RFID switch for *wifi off*, new *player interface*, *random* and *repeat*. At this stage the *recursive* playout only works in the web app, not RFID cards. (2018-10-08)
 * **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-10-08)
 * **One Line Install Script** As of version 1.x there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
