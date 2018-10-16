@@ -1,6 +1,7 @@
 
 # Spotify support for Phoniebox
 
+**Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch. 
 
 ## Installing stretch on your Pi
