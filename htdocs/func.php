@@ -275,18 +275,47 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
         print "
               <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
-    print "
-              <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>";
-    //print "\n              <i class='mdi mdi-folder-outline'></i> ";
-    print $contentTree[$key]['basename'];
-    //print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
-    print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
+	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
+		print "
+				  <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>";
+		print "<i class='mdi mdi-folder-outline mdi-36px'></i> ";
+		print $contentTree[$key]['basename'];
+		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
+		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
+
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
     }
     print "            <span class='badge' title='Show files'><i class='mdi mdi-library-music'></i> ".$contentTree[$key]['count_files']."</span>";
     print "
-              </span>
+              </span>";
+	} elseif (in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files'])) {
+		$spotilink = trim(file_get_contents($contentTree[$key]['path_abs']."/spotify.txt"));
+		
+		// this is for loading title into WebUI!
+		$url = "https://open.spotify.com/oembed/?url=".$spotilink."&format=json";
+
+		$str = file_get_contents($url);
+
+		$json  = json_decode($str, true);
+		
+		$title = $json['title'];
+		
+		print '<i class="mdi mdi-spotify mdi-36px"></i> ';
+		print $title;
+		
+	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
+		print "<i class='mdi mdi-podcast mdi-36px'></i> ";
+		print $contentTree[$key]['basename'];
+		
+	} elseif (in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files'])) {
+		print "<i class='mdi mdi-cast mdi-36px'></i> ";
+		print $contentTree[$key]['basename'];
+		
+	} else {
+		print $contentTree[$key]['basename'];
+	}
+	print "
             </h4>";
     /*
     * settings buttons
@@ -429,7 +458,7 @@ function printPlaylistHtml($files)
         print "
                 <li class='list-group-item'>".$counter++." : 
                     <strong>".basename($file)."</strong>";
-        if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt") {
+        if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
                     &nbsp;&nbsp; <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
         }

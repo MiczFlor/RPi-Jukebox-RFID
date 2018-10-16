@@ -85,7 +85,7 @@ shuffle_check)
 	if [ $SHUFFLE == "ON" ]
 	then 
 		if [ $DEBUG == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-		mpc random on
+		mpc shuffle
 	else
 		if [ $DEBUG == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
 		mpc random off

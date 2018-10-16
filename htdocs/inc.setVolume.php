@@ -35,7 +35,7 @@ Volume Select Form
                             print " limit";
                         }
                         print "</option>";
-                        $i = $i - 10;  
+                        $i = $i - 5;  
                     };
                     print "\n";
                     ?>
