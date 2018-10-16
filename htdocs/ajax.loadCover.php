@@ -10,7 +10,8 @@ $Latest_Played_File = trim(file_get_contents('../settings/Latest_Played_File'));
 $pathSettings = realpath('../settings/');
 $spover = $Audio_Folders_Path."/../../settings/cover.jpg";
 $ocover = $Audio_Folders_Path."/".$Latest_Folder_Played."/cover.jpg";
-$nocover = "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+//$nocover = "https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg";
+$nocover = "_assets/img/No_Cover.jpg";
 
 if (file_exists($Audio_Folders_Path.'/'.$Latest_Folder_Played.'/spotify.txt') && $file != $Latest_Played_File) {
 	// this is for loading cover!
