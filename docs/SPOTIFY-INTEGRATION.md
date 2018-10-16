@@ -359,7 +359,8 @@ This Spotify URI must be used when registering a card with the following syntax:
 Tracks: spotify:track:######################
 Albums: spotify:album:######################
 Playlists: spotify:user:username:playlist:######################
-(e.g. spotify:user:spotify:playlist:37i9dQZF1DWUVpAXiEPK8P or spotify:user:tomorrowlandofficial:playlist:0yS25E7g9xQZ1Dst5SqUZn)
+(e.g. spotify:user:spotify:playlist:37i9dQZF1DWUVpAXiEPK8P or 
+spotify:user:tomorrowlandofficial:playlist:0yS25E7g9xQZ1Dst5SqUZn)
 
 Podcast: spotify:show:###################### (This has not been tested yet!)
 ~~~
