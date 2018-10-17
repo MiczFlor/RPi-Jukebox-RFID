@@ -85,8 +85,8 @@ Finally, you need to set a couple of config values, and then you’re ready to r
 To install one of the listed packages, e.g. mopidy-spotify, simply run:
 sudo apt-get install mopidy-spotify
 		
-**The actual master branch of mopidy_spotify is not working with playlists from spotify.
-To fix this, you have to integrate alle file from this fork:**
+**The actual master branch of mopidy_spotify is not working with playlists from spotify anymore.
+To fix this, you have to integrate all files from this fork:**
 ~~~
 https://github.com/BlackLight/mopidy-spotify/tree/fix/incompatible_playlists/mopidy_spotify
 ~~~
@@ -94,7 +94,7 @@ The files MUST be put here on the phoniebox:
 ~~~
 /usr/lib/python2.7/dist-packages/mopidy_spotify/
 ~~~
-I think there is a method to get this over git via installerscript.
+I think there is a method to get this over git via installerscript, but this has to be integrated.
 
 ## Mopidy as service...
 
@@ -124,7 +124,9 @@ sudo reboot
 ~~~
 sudo nano /etc/mopidy/mopidy.conf
 ~~~
-Add to the end if entries not exist (client id und secret hier erstellen: https://www.mopidy.com/authenticate/ )
+Add to the end if entries not exist (you have to get client-id and client-secret here: https://www.mopidy.com/authenticate/ )
+This must be done manually. Put your username, password, client_id, client_secret into the spotify section.
+The audio section has to be tested, because i don't know if  "output = alsasink" works for everyone. "mixer_volume" is the start volume of phoniebox! attention: if you leave this blank, volume will be 100% after reboot!!
 ~~~
 [audio]
 output = alsasink
@@ -351,6 +353,15 @@ I don't know if it works, for me it does after several tries.
 
 ## How to use Spotify?
 
-When you right-click an album, a track or a playlist in MOPIDY IRIS or Spotify Client, you get a spotify URL.
-This spotify URL must be used when registering a card.
-It will be stored in a spotify.txt in an audiofolder.
+When you right-click an album, a track or a playlist in MOPIDY IRIS or Spotify Client (share button), you get a Spotify URI.
+This Spotify URI must be used when registering a card with the following syntax:
+~~~
+Tracks: spotify:track:######################
+Albums: spotify:album:######################
+Playlists: spotify:user:username:playlist:######################
+(e.g. spotify:user:spotify:playlist:37i9dQZF1DWUVpAXiEPK8P or 
+spotify:user:tomorrowlandofficial:playlist:0yS25E7g9xQZ1Dst5SqUZn)
+
+Podcast: spotify:show:###################### (This has not been tested yet!)
+~~~
+The information will be stored in a spotify.txt in an audiofolder.
