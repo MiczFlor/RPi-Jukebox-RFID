@@ -124,10 +124,25 @@ sudo reboot
 ~~~
 sudo nano /etc/mopidy/mopidy.conf
 ~~~
-Add to the end if entries not exist (you have to get client-id and client-secret here: https://www.mopidy.com/authenticate/ )
+This file should look like this (you have to get client-id and client-secret here: https://www.mopidy.com/authenticate/ )
 This must be done manually. Put your username, password, client_id, client_secret into the spotify section.
 The audio section has to be tested, because i don't know if  "output = alsasink" works for everyone. "mixer_volume" is the start volume of phoniebox! attention: if you leave this blank, volume will be 100% after reboot!!
 ~~~
+[core]
+cache_dir = /var/cache/mopidy
+config_dir = /etc/mopidy
+data_dir = /var/lib/mopidy
+
+[logging]
+config_file = /etc/mopidy/logging.conf
+debug_file = /var/log/mopidy/mopidy-debug.log
+
+[local]
+media_dir = /var/lib/mopidy/media
+
+[m3u]
+playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
+
 [audio]
 output = alsasink
 mixer_volume = 30
@@ -276,7 +291,7 @@ hostname = 0.0.0.0
 #base_dir = $XDG_MUSIC_DIR
 #default_encoding = latin-1
 #default_extension = .m3u8
-#playlists_dir =
+playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 
 [softwaremixer]
 #enabled = true
@@ -339,7 +354,7 @@ cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor
 ~~~
 ## Change Playlists_Folders_Path to:
 ~~~
-/var/lib/mopidy/playlists
+/home/pi/RPi-Jukebox-RFID/playlists
 ~~~
 ## You have to disable MPD because we use mopidy instead and MPD is included there.
 
