@@ -2,7 +2,39 @@
 # Spotify support for Phoniebox
 
 **Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
-This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch. 
+This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
+
+# How to switch to the `develop` branch, assuming:
+
+* you can delete your `develop` branch, if you have any
+
+~~~
+cd /home/pi/RPi-Jukebox-RFID/
+git checkout master
+git branch -D develop
+git checkout --track origin/develop
+~~~
+
+This should end with something like this: 
+~~~
+Branch 'develop' set up to track remote branch 'develop' from 'origin'.
+Switched to a new branch 'develop'
+~~~
+
+And you can check if you are on the branch by typing:
+~~~
+git branch
+~~~
+
+To make sure the code is really what you are looking for, typing the following:
+~~~
+cat htdocs/ajax.loadCover.php | grep spotify.com
+~~~
+
+Should return (at least, possibly more if the code has been changed since I wrote this):
+~~~
+$url = "https://open.spotify.com/oembed/?url=".$playerStatus['file']."&format=json";
+~~~
 
 ## Installing stretch on your Pi
 
