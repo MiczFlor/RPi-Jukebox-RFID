@@ -4,6 +4,8 @@
 **Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
 
+The plan is to have an alternative isntall script for the Spotify version alongside the default install. Later I plan to make this an option in the default install script.
+
 ## Installing stretch on your Pi
 
 1. Install Strech on SD Card.
@@ -84,19 +86,14 @@ Finally, you need to set a couple of config values, and then you’re ready to r
 
 To install one of the listed packages, e.g. mopidy-spotify, simply run:
 ~~~
-sudo apt-get install mopidy-spotify
+sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
+sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+cd
+sudo rm -rf mopidy-spotify
+git clone -b fix/incompatible_playlists --single-branch https://github.com/BlackLight/mopidy-spotify.git
+cd mopidy-spotify
+sudo python setup.py install
 ~~~
-
-**The actual master branch of mopidy_spotify is not working with playlists from spotify anymore.
-To fix this, you have to integrate all files from this fork:**
-~~~
-https://github.com/BlackLight/mopidy-spotify/tree/fix/incompatible_playlists/mopidy_spotify
-~~~
-The files MUST be put here on the phoniebox:
-~~~
-/usr/lib/python2.7/dist-packages/mopidy_spotify/
-~~~
-I think there is a method to get this over git via installerscript, but this has to be integrated.
 
 ## Mopidy as service...
 
