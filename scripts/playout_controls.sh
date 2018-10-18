@@ -340,7 +340,7 @@ case $COMMAND in
         # toogles shuffle mode on/off (not only the current playlist but for the whole mpd)
         # this is why a check if "random on" has to be done for shutdown and reboot
         # This command may be called with ./playout_controls.sh -c=playershuffle
-        mpc random
+        mpc shuffle
 	;;
     playlistclear)
         # clear playlist
@@ -365,10 +365,9 @@ case $COMMAND in
         if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-        mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume
+		# call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
+        mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume"; fi
-        # call shuffle_ceck to enable/disable folder-based shuffeling
-        $PATHDATA/shuffle_play.sh -c=shuffle_check
         if [ $DEBUG == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
 	;;
     playlistadd)

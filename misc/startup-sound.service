@@ -1,6 +1,6 @@
 [Unit]  
 Description=Startup Sound
-After=network.target iptables.service firewalld.service rfid-reader.service
+After=network.target iptables.service firewalld.service rfid-reader.service mopidy.service
 
 [Service]
 User=pi

@@ -77,6 +77,8 @@ foreach($subfolders as $key => $subfolder) {
             $temp['type'] = "podcast";
         } elseif(file_exists($subfolder."/livestream.txt")){
             $temp['type'] = "livestream";
+        } elseif(file_exists($subfolder."/spotify.txt")){
+            $temp['type'] = "spotify";
         } else {
             $temp['type'] = "generic";
         }

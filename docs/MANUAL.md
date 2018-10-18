@@ -556,6 +556,13 @@ $ sudo reboot
 
 ## <a name="faqAudioNotWorking"></a>Audio is not working
 
+Before you file a ticket on github, please read this section and when you file it, please answer these questions:
+
+* what version are you on? Type in terminal `cat /home/pi/settings/version`
+* what soundcard are you using?
+* does your Raspberry Pi play any sound?
+* did the audio work and then you connected a sound card and now it doesn't?
+
 This might occur if you are using external sound cards like *pHat BEAT* or the like. I split this into two parts: a) sound did never work and b) sound worked once, now, with a new soundcard, it doesn't.
 
 **a) Audio never worked**
