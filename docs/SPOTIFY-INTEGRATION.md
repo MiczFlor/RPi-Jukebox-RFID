@@ -2,7 +2,7 @@
 # Spotify support for Phoniebox
 
 **Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
-This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
+This is the first draft (2018-10-18) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
 
 The plan is to have an alternative isntall script for the Spotify version alongside the default install. Later I plan to make this an option in the default install script.
 
@@ -84,7 +84,7 @@ sudo apt-get install mopidy
 ~~~
 Finally, you need to set a couple of config values, and then you’re ready to run Mopidy. Alternatively you may want to have Mopidy run as a system service, automatically starting at boot.
 
-To install one of the listed packages, e.g. mopidy-spotify, simply run:
+To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
 sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
