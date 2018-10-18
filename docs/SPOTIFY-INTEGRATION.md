@@ -2,39 +2,9 @@
 # Spotify support for Phoniebox
 
 **Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
-This is the first draft (2018-10-16) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
+This is the first draft (2018-10-18) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
 
-# How to switch to the `develop` branch, assuming:
-
-* you can delete your `develop` branch, if you have any
-
-~~~
-cd /home/pi/RPi-Jukebox-RFID/
-git checkout master
-git branch -D develop
-git checkout --track origin/develop
-~~~
-
-This should end with something like this: 
-~~~
-Branch 'develop' set up to track remote branch 'develop' from 'origin'.
-Switched to a new branch 'develop'
-~~~
-
-And you can check if you are on the branch by typing:
-~~~
-git branch
-~~~
-
-To make sure the code is really what you are looking for, typing the following:
-~~~
-cat htdocs/ajax.loadCover.php | grep spotify.com
-~~~
-
-Should return (at least, possibly more if the code has been changed since I wrote this):
-~~~
-$url = "https://open.spotify.com/oembed/?url=".$playerStatus['file']."&format=json";
-~~~
+The plan is to have an alternative isntall script for the Spotify version alongside the default install. Later I plan to make this an option in the default install script.
 
 ## Installing stretch on your Pi
 
@@ -114,19 +84,16 @@ sudo apt-get install mopidy
 ~~~
 Finally, you need to set a couple of config values, and then you’re ready to run Mopidy. Alternatively you may want to have Mopidy run as a system service, automatically starting at boot.
 
-To install one of the listed packages, e.g. mopidy-spotify, simply run:
-sudo apt-get install mopidy-spotify
-		
-**The actual master branch of mopidy_spotify is not working with playlists from spotify anymore.
-To fix this, you have to integrate all files from this fork:**
+To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
-https://github.com/BlackLight/mopidy-spotify/tree/fix/incompatible_playlists/mopidy_spotify
+sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
+sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+cd
+sudo rm -rf mopidy-spotify
+git clone -b fix/incompatible_playlists --single-branch https://github.com/BlackLight/mopidy-spotify.git
+cd mopidy-spotify
+sudo python setup.py install
 ~~~
-The files MUST be put here on the phoniebox:
-~~~
-/usr/lib/python2.7/dist-packages/mopidy_spotify/
-~~~
-I think there is a method to get this over git via installerscript, but this has to be integrated.
 
 ## Mopidy as service...
 
