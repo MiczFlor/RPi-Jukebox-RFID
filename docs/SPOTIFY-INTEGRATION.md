@@ -174,9 +174,6 @@ client_secret = spotify_client_secret
 #search_track_count = 50
 #toplist_countries =
 
-[spotify_web]
-client_id = spotify_client_id
-client_secret = spotify_client_secret
 ~~~
 Then edit this file:
 ~~~
@@ -342,9 +339,6 @@ client_secret = spotify_client_secret
 #search_track_count = 50
 #toplist_countries =
 
-[spotify_web]
-client_id = spotify_client_id
-client_secret = spotify_client_secret
 ~~~
 
 ## Install Phoniebox
