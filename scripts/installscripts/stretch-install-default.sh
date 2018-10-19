@@ -475,6 +475,7 @@ then
 	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 	cd mopidy-spotify
 	sudo python setup.py install
+	cd
 	sudo pip install Mopidy-Iris
 fi
 
