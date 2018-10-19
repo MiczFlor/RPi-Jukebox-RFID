@@ -475,7 +475,6 @@ then
 	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 	cd mopidy-spotify
 	sudo python setup.py install
-	cd
 	sudo pip install Mopidy-Iris
 fi
 
@@ -601,6 +600,7 @@ then
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.sample /etc/default/locale
 	sudo locale-gen
+	sudo mkdir /home/pi/.config/mopidy
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
 	# Change vars to match install config
