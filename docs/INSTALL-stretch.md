@@ -10,15 +10,21 @@ This project has been tested on Raspberry Pi model 1, 2, 3 HiFiBerry and Zero.
 
 ## <a name="oneLineInstall"></a>One line install command
 
-For the impatient: there is a one line script. If you have your
+For the impatient: there is the one line script. If you have your
 
 * Raspberry Pi up and running on stretch and 
 * are connected to the Internet
 
-open the terminal and paste the following line:
+You need to decide if you want to install the pure Phoniebox version OR the version which supports Spotify as well. There are two different one liner scripts to pick from. Make your choice:
 
+Phoniebox pure:
 ~~~
-cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
+cd; rm stretch-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
+~~~
+
+Phoniebox with Spotify integration:
+~~~
+cd; rm stretch-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-spotify.sh; chmod +x stretch-install-spotify.sh; ./stretch-install-spotify.sh
 ~~~
 
 Having said this, you might learn a bit more about your Raspberry Pi to walk through the installation process step by step, like this:

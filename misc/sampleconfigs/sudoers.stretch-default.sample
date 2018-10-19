@@ -26,4 +26,4 @@ root	ALL=(ALL:ALL) ALL
 
 #includedir /etc/sudoers.d
 www-data ALL=(ALL) NOPASSWD: ALL
-
+mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh
