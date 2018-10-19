@@ -319,18 +319,23 @@ case "$response" in
 # Please note your client_id and client_secret!
 #
 "
+		echo ""
     	echo "Type your Spotify username:"
         read INPUT
         SPOTIuser="$INPUT"
+		echo ""
     	echo "Type your Spotify password:"
         read INPUT
         SPOTIpass="$INPUT"
+		echo ""
     	echo "Type your client_id:"
         read INPUT
         SPOTIclientid="$INPUT"
+		echo ""
     	echo "Type your client_secret:"
         read INPUT
         SPOTIclientsecret="$INPUT"
+		echo ""
     	echo "Hit ENTER to proceed to the next step."
         read INPUT
         ;;
