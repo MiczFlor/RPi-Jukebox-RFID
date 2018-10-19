@@ -149,6 +149,10 @@ foreach($folders as $folder) {
                 if($folder."/".$value == $folder."/folder.conf"){
                     unset($folder_files[$key]);
                 } 
+                // drop cover files
+                if($folder."/".$value == $folder."/cover.jpg"){
+                    unset($folder_files[$key]);
+                } 
             }  
             // some debugging info
             if($debug == "true") {
