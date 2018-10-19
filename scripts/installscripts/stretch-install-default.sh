@@ -467,6 +467,7 @@ then
 	sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/stretch.list
 	sudo apt-get update
 	sudo apt-get install mopidy
+	sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
 	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 	sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
 	cd
@@ -474,6 +475,7 @@ then
 	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 	cd mopidy-spotify
 	sudo python setup.py install
+	cd
 	sudo pip install Mopidy-Iris
 fi
 
