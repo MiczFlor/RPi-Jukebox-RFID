@@ -290,20 +290,8 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
     print "
               </span>";
 	} elseif (in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files'])) {
-		$spotilink = trim(file_get_contents($contentTree[$key]['path_abs']."/spotify.txt"));
-		
-		// this is for loading title into WebUI!
-		$url = "https://open.spotify.com/oembed/?url=".$spotilink."&format=json";
-
-		$str = file_get_contents($url);
-
-		$json  = json_decode($str, true);
-		
-		$title = $json['title'];
-		
 		print '<i class="mdi mdi-spotify mdi-36px"></i> ';
-		print $title;
-		
+		print $contentTree[$key]['basename'];
 	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
 		print "<i class='mdi mdi-podcast mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
