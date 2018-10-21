@@ -47,15 +47,16 @@ Volume Select Form
                 </form>
               </div>
               
-              <div class="col-xs-6">
-                  <div class="c100 p<?php print $volumevaluedisplay; ?>">
-                    <span><?php print $volumevaluedisplay; ?>%</span>
-                    <div class="slice">
-                        <div class="bar"></div>
-                        <div class="fill"></div>
-                    </div>
-                  </div> 
-              </div>
+				<div id="controlVolume"></div>
+
+				<script>
+				$(document).ready(function() {
+					$('#controlVolume').load('ajax.loadVolume.php');
+					var refreshId = setInterval(function() {
+						$('#controlVolume').load('ajax.loadVolume.php?' + 1*new Date());
+					}, 2000);
+				});
+				</script> 
             </div><!-- ./row -->
         </div>
         <!-- /input-group -->

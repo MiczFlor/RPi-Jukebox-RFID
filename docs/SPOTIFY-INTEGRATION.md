@@ -1,10 +1,11 @@
 
-# Spotify support for Phoniebox
+# Spotify support for Phoniebox (this guide is for updaters)
 
-**Testers needed for the Spotify integration** to make it universal and include into the install process soon. Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
-This is the first draft (2018-10-18) of the documentation on how to integrate Spotify into your Phoniebox. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code on the `develop` branch.
+**Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 
-The plan is to have an alternative isntall script for the Spotify version alongside the default install. Later I plan to make this an option in the default install script.
+This is the documentation on how to integrate Spotify into your Phoniebox if you want to manually install it. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code.
+
+# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/INSTALL-stretch.md#one-line-install-command).
 
 ## Installing stretch on your Pi
 
@@ -33,7 +34,7 @@ Note: This works for WPA-secured wifi networks, which should be the vast majorit
 * Connect via ssh with username pi and password raspberry.
 * Jump back to the top of this document to walk through the other steps of the installation.
 
-## Sort Order of sound cards - correction.
+## If you have a USB Sound Card: Correct the Sort Order
 
 ~~~
 cat /proc/asound/modules
@@ -60,12 +61,20 @@ cat /proc/asound/modules
 0 snd_usb_audio
 1 snd_bcm2835
 ~~~
-## For Root-User
+## If you need Root-User, get your system prepared
 ~~~
 sudo passwd root
 sudo nano /etc/ssh/sshd_config
 ~~~
-Search for PermitRootLogin and change it to yes.
+Search for PermitRootLogin and change 
+
+~~~
+#PermitRootLogin prohibit-password
+~~~
+to
+~~~
+PermitRootLogin yes
+~~~
 	
 ## Install MOPIDY
 
@@ -86,6 +95,7 @@ Finally, you need to set a couple of config values, and then you’re ready to r
 
 To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
+sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
 sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
 cd
@@ -93,6 +103,7 @@ sudo rm -rf mopidy-spotify
 git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 cd mopidy-spotify
 sudo python setup.py install
+cd
 ~~~
 
 ## Mopidy as service...
@@ -102,28 +113,31 @@ On modern systems using systemd you can enable the Mopidy service by running:
 sudo systemctl enable mopidy
 ~~~
 This will make Mopidy start when the system boots.
-Mopidy is started, stopped, and restarted just like any other systemd service:
-~~~
-sudo systemctl start mopidy
-sudo systemctl stop mopidy
-sudo systemctl restart mopidy
-~~~
-You can check if Mopidy is currently running as a service by running:
-~~~
-sudo systemctl status mopidy
-~~~		
+	
 ## Install MOPIDY-IRIS Web Interface
 ~~~
 sudo pip install Mopidy-Iris
-su -
-sudo echo "mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh" >> /etc/sudoers
+~~~
+
+Set the rights
+~~~
+sudo nano /etc/sudoers
+~~~
+Add this line to the end
+~~~
+mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh
+~~~
+
+You have to reboot now.
+~~~
 sudo reboot
 ~~~
+
 ## Configure Mopidy...
 ~~~
 sudo nano /etc/mopidy/mopidy.conf
 ~~~
-This file should look like this (you have to get client-id and client-secret here: https://www.mopidy.com/authenticate/ )
+This file should look like this (you first have to get client-id and client-secret here: https://www.mopidy.com/authenticate/ )
 This must be done manually. Put your username, password, client_id, client_secret into the spotify section.
 The audio section has to be tested, because i don't know if  "output = alsasink" works for everyone. "mixer_volume" is the start volume of phoniebox! attention: if you leave this blank, volume will be 100% after reboot!!
 ~~~
@@ -341,7 +355,7 @@ client_secret = spotify_client_secret
 
 ~~~
 
-## Install Phoniebox
+## Install Phoniebox (if not done yet) - if you want to UPGRADE to spotify only, skip this step
 ~~~
 cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
 ~~~
