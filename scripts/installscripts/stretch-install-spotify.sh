@@ -529,11 +529,12 @@ cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi
 # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "$AUDIOiFace" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
 echo "$DIRaudioFolders" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Folders_Path
-echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
 echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
 echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
+echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
+echo "m3u8" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
