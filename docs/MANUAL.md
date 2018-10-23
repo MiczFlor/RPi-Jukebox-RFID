@@ -51,6 +51,15 @@ some scripts might use only `playout_controls.sh`).
 Contains the last playlist name that was being played. 
 Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playlist was made. 
 
+### `settings/Playlists_Folders_Path`
+Contains the absolute path to the folder containing playlists.
+Default value: "/home/pi/RPi-Jukebox-RFID/playlists" 
+Used in `rfid_trigger_play.sh`. 
+
+### `settings/Playlists_File_Extension`
+Contains `m3u` for default mpd and `m3u8` for the spotify / mopidy installation. 
+Used in `rfid_trigger_play.sh`. 
+
 ### `settings/Second_Swipe`
 Contains RESTART or PAUSE or NOAUDIOPLAY. 
 This establises if a second swipe of the same RFID card either 
