@@ -13,6 +13,40 @@ There is a file `settings/version` containing the version number.
 
 **Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
+# Upgrade from Version 1.1.7 to 1.1.8-beta
+
+We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Classic" and "Phoniebox +Spotify".
+
+**This is a bugfix-version.** After release of "Phoniebox +Spotify" there were reported some problems, which are bugfixed now, hopefully. e.g. Improved loading time of local music **(please go to "Folders & Files" and scan your library ONCE after update and everytime you upload new files to your box!)**. To reduce the boot up time of Phoniebox, be sure you are using the newest version of mopidy-spotify. The upgrade is integrated into the following steps.
+
+**Please use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature.**
+
+Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
+
+~~~
+cd /home/pi/RPi-Jukebox-RFID
+git checkout master
+git fetch origin
+git reset --hard origin/master
+git pull
+sudo systemctl stop mpd
+sudo systemctl stop mopidy
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample /home/pi/.config/mopidy/mopidy.conf
+echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
+EDITION=$(grep 'SPOTinstall' /home/pi/PhonieboxInstall.conf|sed 's/SPOTinstall="//g'|sed 's/"//g'); if [ $EDITION == "YES" ]; then echo "plus"; else echo "classic"; fi > /home/pi/RPi-Jukebox-RFID/settings/edition
+
+sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
+sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
+sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+cd
+sudo rm -rf mopidy-spotify
+git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
+cd mopidy-spotify
+sudo python setup.py install
+~~~
+
 # Upgrade from Version 1.1.1 to 1.1.7
 
 Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
