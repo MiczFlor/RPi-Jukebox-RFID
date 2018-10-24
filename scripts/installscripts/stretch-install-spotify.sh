@@ -12,7 +12,7 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# including spotify support							#
+# +Spotify                                          #
 #                                                   #
 ##################################################### 
 
@@ -534,7 +534,6 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-echo "m3u8" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
