@@ -46,7 +46,9 @@ You will be running wires from the RPi board to another board where the buttons 
 
 On the above image you can also see the pin numbering, in this case containing both: the RPi board numbering on the RPi3 and the Broadcom (BCM) pin numbering used for the code.
 
-The script for the GPIO buttons we are using have been provided by Andreas aka [hailogugo](https://github.com/hailogugo). He also sent the picture above and has a working version of the GPIO button solution. Pin numbers and functionality in this example connect as such:
+The [script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) we are using originally been provided by Andreas aka [hailogugo](https://github.com/hailogugo). It's been modified since then and a [second script version](../misc/sampleconfigs/gpio-buttons.py.sample-2) now provides `pull_up=True` for all pins (not incl. shutdown).
+
+Here is how to connect the buttons:
 
 * **Volume Down** GPIO19 (PIN35) and GND (PIN39)
 * **Volume Up** GPIO16 (PIN36) and GND (PIN34)
