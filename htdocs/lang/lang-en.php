@@ -154,6 +154,7 @@ $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only s
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
+$lang['infoMopidyStatus'] = "Mopidy Server Status";
 
 /*
 * Folder Management and File Upload
@@ -174,4 +175,9 @@ $lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>The parent folder does 
 $lang['manageFilesFoldersSuccessNewFolder'] = "New folder created: ";
 $lang['manageFilesFoldersSelectDefault'] = "Pull down to select a folder and/or create a new child folder below";
 
+$lang['manageFilesFoldersRenewDB'] = "Renew database";
+$lang['manageFilesFoldersLocalScan'] = "Scan Music Library";
+
+
 ?>
+
