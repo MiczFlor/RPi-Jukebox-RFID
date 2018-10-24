@@ -46,7 +46,7 @@ git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxw
 cd mopidy-spotify
 sudo python setup.py install
 
-sudo systemctl start mopidy
+sudo reboot
 ~~~
 
 # Upgrade from Version 1.1.1 to 1.1.7
