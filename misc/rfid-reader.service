@@ -1,6 +1,6 @@
 [Unit]  
 Description=RFID-Reader Service
-After=network.target iptables.service firewalld.service mpd.service
+After=network.target iptables.service firewalld.service mopidy.service
 
 [Service]
 User=pi

@@ -27,7 +27,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -57,11 +57,21 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 # Path to folder containing playlists
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Playlists_Folders_Path ]; then
-    echo "/tmp" > $PATHDATA/../settings/Playlists_Folders_Path
+    echo "/home/pi/RPi-Jukebox-RFID/playlists" > $PATHDATA/../settings/Playlists_Folders_Path
     chmod 777 $PATHDATA/../settings/Playlists_Folders_Path
 fi
 # 2. then|or read value from file
 PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
+
+# File extension for playlists
+# This needs to be m3u by default and m3u8 for spotify integration
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Playlists_File_Extension ]; then
+    echo "m3u" > $PATHDATA/../settings/Playlists_File_Extension
+    chmod 777 $PATHDATA/../settings/Playlists_File_Extension
+fi
+# 2. then|or read value from file
+PLAYLISTSFILEEXTENSION=`cat $PATHDATA/../settings/Playlists_File_Extension`
 
 ##############################################
 # Second swipe
@@ -299,14 +309,14 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     if [ "$VALUE" == "recursive" ]; then
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.${PLAYLISTSFILEEXTENSION}"
         PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
         $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
         if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" list='recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     else
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.${PLAYLISTSFILEEXTENSION}"
         PLAYLISTNAME="${FOLDER//\//\ %\ }"
         $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" > "${PLAYLISTPATH}"
         if [ $DEBUG == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
@@ -329,7 +339,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         
         # check if 
         # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
-        # - AND (-a) 
+        # - AND (-a)
         # - check the length of the playlist, if =0 then it was cleared before, a state, which should only
         #   be possible after a reboot ($PLLENGTH -gt 0)
         PLLENGTH=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
@@ -389,27 +399,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
        
         # load new playlist and play
         if [ $DEBUG == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
-        
-        # copy cover.jpg for display in web app
-        # before we start playing, delete the cover.jpg folder in the settings dir
-        # and copy cover.jpg, if exists, from the new folder to settings
-        # it will be displayed in the web app player
-        
-        # delete any existing cover file first
-        if [ -f "${PATHDATA}/../settings/cover.jpg" ]; then
-            rm "${PATHDATA}/../settings/cover.jpg"
-        fi
-        
-        # now copy the cover file if it does exist
-        # escape whitespaces and special chars
-        #EXEC=$(printf %q "${AUDIOFOLDERSPATH}/${FOLDER}/cover.jpg")
-        # actually, we do not need to escape whitepaces
-        EXEC="${AUDIOFOLDERSPATH}/${FOLDER}/cover.jpg"
-        if [ -f "$EXEC" ]; then
-            cp "$EXEC" "${PATHDATA}/../settings/"
-        fi
-        
-        # play playlist
+		# play playlist
         # the variable passed on to play is NOT the folder name, but the playlist name
         # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"

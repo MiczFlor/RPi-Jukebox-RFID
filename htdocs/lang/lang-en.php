@@ -16,6 +16,7 @@ $lang['globalRFIDCards'] = "RFID Cards";
 $lang['globalCardIdPlaceholder'] = "e.g. '1234567890'";
 $lang['globalCardIdHelp'] = "The ID is usually printed on the card or fob. A list of used IDs can be found on the home page.";
 $lang['globalRegisterCard'] = "Register new card ID";
+$lang['globalRegisterCardShort'] = "Card ID";
 $lang['globalLastUsedCard'] = "Last used Chip ID";
 $lang['globalClose'] = "Close";
 $lang['globalPlay'] = "Play";
@@ -73,6 +74,8 @@ $lang['indexContainsFiles'] = "Contains the following file(s):";
 $lang['indexShowFiles'] = "Show files";
 $lang['indexManageFilesChips'] = "Manage Files and Chips";
 
+$lang['Spotify'] = "Spotify";
+
 /*
 * Register & Edit Cards
 */
@@ -101,11 +104,11 @@ $lang['cardFormFolderLegend'] = "Audio Folder";
 $lang['cardFormFolderLabel'] = "a) Link card to audio folder";
 $lang['cardFormFolderSelectDefault'] = "None (pulldown to select a folder)";
 $lang['cardFormStreamLabel'] = "b) ... or connect with Stream URL";
-$lang['cardFormStreamPlaceholder'] = "http(...).mp3 / .m3u / .ogg / ...";
-$lang['cardFormStreamHelp'] = "Add the URL for a podcast, web radio, stream or other online media";
-$lang['cardFormStreamTypeSelectDefault'] = "Select type of stream";
-$lang['cardFormStreamTypeHelp'] = "Select the type of URL / stream you are adding";
-$lang['cardFormStreamFolderPlaceholder'] = "e.g. 'Station Name'";
+$lang['cardFormStreamPlaceholder'] = "Spotify: spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
+$lang['cardFormStreamTypeSelectDefault'] = "Select type";
+$lang['cardFormStreamTypeHelp'] = "Select the type you are adding";
+$lang['cardFormStreamFolderPlaceholder'] = "e.g. 'Album/Playlist/Station Name'";
 $lang['cardFormStreamFolderHelp'] = "Name for the audio folder that will contain the stream URL.";
 $lang['cardFormYTLegend'] = "YouTube";
 $lang['cardFormYTLabel'] = "c) ... or download YouTube audio";
@@ -158,18 +161,17 @@ $lang['infoStorageUsed'] = "Storage usage";
 $lang['manageFilesFoldersTitle'] = "Folders &amp; Files";
 $lang['manageFilesFoldersUploadFilesLabel'] = "Select files from your drive";
 $lang['manageFilesFoldersUploadLegend'] = "Upload files";
-$lang['manageFilesFoldersUploadLabel'] = "Select folder or create new";
-$lang['manageFilesFoldersUploadFolderHelp'] = "Name for the audio folder that will contain the uploaded files.";
+$lang['manageFilesFoldersUploadLabel'] = "Select and/or create new folder";
+$lang['manageFilesFoldersUploadFolderHelp'] = "If you select AND name a new folder, the new folder will be created inside the selected folder.";
 $lang['manageFilesFoldersNewFolderTitle'] = "Create new folder";
 $lang['manageFilesFoldersNewFolderPositionLegend'] = "Folder position";
 $lang['manageFilesFoldersNewFolderPositionDefault'] = "The new folder will be on the root level or inside (choose below)";
 $lang['manageFilesFoldersErrorNewFolderName'] = "<p>No valid folder name given.</p>";
 $lang['manageFilesFoldersErrorNewFolder'] = "<p>No folder selected nor a valid new folder specified.</p>";
+$lang['manageFilesFoldersErrorNoNewFolder'] = "<p>No folder selected nor a valid new folder specified.</p>";
 $lang['manageFilesFoldersErrorNewFolderExists'] = "<p>A folder by that name already exists. Be original, type a new name.</p>";
 $lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>The parent folder does not exist.</p>";
 $lang['manageFilesFoldersSuccessNewFolder'] = "New folder created: ";
-
-
+$lang['manageFilesFoldersSelectDefault'] = "Pull down to select a folder and/or create a new child folder below";
 
 ?>
-

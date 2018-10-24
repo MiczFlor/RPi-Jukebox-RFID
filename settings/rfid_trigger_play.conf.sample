@@ -25,7 +25,7 @@ CMDSTOP="%CMDSTOP%"
 CMDSHUTDOWN="%CMDSHUTDOWN%"
 CMDREBOOT="%CMDREBOOT%"
 # The following commands control audio playout
-# next and prev play the preivous or next track in the playlist (== folder)
+# next and prev play the preivous or next track in the playlist (== folder & spotify)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
 # seek ahead or back 15 seconds
@@ -48,7 +48,7 @@ SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
 # Toggle wifi like in airplane mode
 ENABLEWIFI="%ENABLEWIFI%"
 DISABLEWIFI="%DISABLEWIFI%"
-# Toggle Shuffle mode (not only for the current playlist)
+# Toggle Shuffle mode
 CMDSHUFFLE="%CMDSHUFFLE%"
 #Controll commands for Audio Recording
 STARTRECORD600="%STARTRECORD600%"

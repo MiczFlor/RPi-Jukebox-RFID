@@ -12,6 +12,7 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
+# including spotify support							#
 #                                                   #
 ##################################################### 
 
@@ -277,6 +278,73 @@ echo "Hit ENTER to proceed to the next step."
 read INPUT
 
 ##################################################### 
+# Configure spotify
+
+clear
+
+echo "#####################################################
+#
+# OPTIONAL: INCLUDE SPOTIFY SUPPORT
+#
+# Spotify uses Mopidy for audio output and must
+# be configured. Do it now, or never.
+# (Note: To add this later, you must re-install phoniebox)
+"
+read -r -p "Do you want to install Mopidy? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	SPOTinstall=NO
+    	echo "You don't want spotify support."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+    *)
+    	SPOTinstall=YES
+		clear
+    	echo "This was a great decision! Mopidy will be set up."
+		echo "#####################################################
+#
+# CONFIGURE MOPIDY
+#
+# Requires spotify username, password, client_id and client_secret 
+# to get connection to Spotify.
+#
+# (Note: You need a device with browser to generate ID and SECRET)
+#
+# Please go to this website:
+# https://www.mopidy.com/authenticate/
+# and follow the instructions.
+#
+# Your credential will appear on the site below the login button.
+# Please note your client_id and client_secret!
+#
+"
+		echo ""
+    	echo "Type your Spotify username:"
+        read INPUT
+        SPOTIuser="$INPUT"
+		echo ""
+    	echo "Type your Spotify password:"
+        read INPUT
+        SPOTIpass="$INPUT"
+		echo ""
+    	echo "Type your client_id:"
+        read INPUT
+        SPOTIclientid="$INPUT"
+		echo ""
+    	echo "Type your client_secret:"
+        read INPUT
+        SPOTIclientsecret="$INPUT"
+		echo ""
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+esac
+# append variables to config file
+echo "SPOTinstall=\"$SPOTinstall\"" >> $PATHDATA/PhonieboxInstall.conf
+
+if [ $SPOTinstall == "NO" ]; then
+##################################################### 
 # Configure MPD
 
 clear
@@ -291,21 +359,22 @@ echo "#####################################################
 "
 read -r -p "Do you want to configure MPD? [Y/n] " response
 case "$response" in
-    [nN][oO]|[nN])
-    	MPDconfig=NO
-    	echo "You want to configure MPD later."
-    	echo "Hit ENTER to proceed to the next step."
-        read INPUT
-        ;;
-    *)
-    	MPDconfig=YES
-    	echo "MPD will be set up with default values."
-    	echo "Hit ENTER to proceed to the next step."
-        read INPUT
-        ;;
+	[nN][oO]|[nN])
+		MPDconfig=NO
+		echo "You want to configure MPD later."
+		echo "Hit ENTER to proceed to the next step."
+		read INPUT
+		;;
+	*)
+		MPDconfig=YES
+		echo "MPD will be set up with default values."
+		echo "Hit ENTER to proceed to the next step."
+		read INPUT
+		;;
 esac
 # append variables to config file
 echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+fi
 
 ##################################################### 
 # Folder path for audio files 
@@ -391,6 +460,25 @@ sudo apt-get install apt-transport-https samba samba-common-bin python-dev pytho
 sudo pip install "evdev == 0.7.0"
 sudo pip install youtube_dl
 
+# Install required spotify packages
+if [ $SPOTinstall == "YES" ]
+then
+	wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+	sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/stretch.list
+	sudo apt-get update
+	sudo apt-get install mopidy
+	sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
+	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
+	sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+	cd
+	sudo rm -rf mopidy-spotify
+	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
+	cd mopidy-spotify
+	sudo python setup.py install
+	cd
+	sudo pip install Mopidy-Iris
+fi
+
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
@@ -446,7 +534,7 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-echo "m3u" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
+echo "m3u8" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
@@ -492,17 +580,42 @@ sudo systemctl enable gpio-buttons
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
 
-# MPD configuration
-# -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
-# Change vars to match install config
-sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
-# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
-sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
-sudo chown mpd:audio /etc/mpd.conf
-sudo chmod 640 /etc/mpd.conf
-# update mpc / mpd DB
-mpc update
+if [ $SPOTinstall == "NO" ]
+then
+	# MPD configuration
+	# -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+	# Change vars to match install config
+	sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
+	# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+	sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+	sudo chown mpd:audio /etc/mpd.conf
+	sudo chmod 640 /etc/mpd.conf
+	# update mpc / mpd DB
+	mpc update
+fi
+
+if [ $SPOTinstall == "YES" ]
+then
+	sudo systemctl disable mpd
+	sudo systemctl enable mopidy
+	# Install Config Files
+	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
+	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.sample /etc/default/locale
+	sudo locale-gen
+	sudo mkdir /home/pi/.config/mopidy
+	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
+	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+	# Change vars to match install config
+	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' /etc/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' /etc/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ~/.config/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
+	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
+fi
 
 ###############################
 # WiFi settings (SSID password)
@@ -528,7 +641,7 @@ then
     
     # WiFi SSID & Password
     # -rw-r--r-- 1 root root 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs//wpa_supplicant.conf.stretch-default2.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch-default2.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
@@ -658,20 +771,25 @@ echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/docs/"
+echo ""
 
 #####################################################
+
+read -r -p "Reboot now? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+    	echo "You have to reboot manually!"
+        ;;
+    *)
+    	sudo reboot
+        ;;
+esac
+
 # notes for things to do
 
 # Soundcard
 # PCM is currently set
 # This needs to be done for mpd and in settings folder
-
-
-
-#Ask if Spotify config
-#If Spotify
-#Ask for user
-#Ask for password
 
 #Ask ssh password
 

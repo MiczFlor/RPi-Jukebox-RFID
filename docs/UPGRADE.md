@@ -5,13 +5,27 @@ Assuming that you use `git pull` to update the code base of your Phoniebox,
 every now and then you need to run some update scripts, like patches.
 To make this somewhat consistent, I started this page to document things that need to be done.
 
-Some elements of the installation depend on the OS (like 'Jessie' vs. 'Stretch'). These differences might not be covered by the update script below. If you still encounter problems after running these scripts, check inside the folder `scripts/installscripts/` for scripts which contain the entire install process. They are not perfect and flexible, but they might also give you more insight into things you would need to do in case your upgrade does not work out of the box.
+If you still encounter problems after running the below upgrade snippets, check inside the folder `scripts/installscripts/` for scripts which contain the entire install process. 
 
 ## Which version am I on?
 
 There is a file `settings/version` containing the version number.
 
 **Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
+# Upgrade from Version 1.1.1 to 1.1.7
+
+Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
+
+Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
+
+~~~
+cd /home/pi/RPi-Jukebox-RFID
+git checkout master
+git fetch origin
+git reset --hard origin/master
+git pull
+~~~
 
 # Upgrade from Version 1.1.1 to 1.1.6
 

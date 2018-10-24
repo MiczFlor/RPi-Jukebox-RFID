@@ -56,6 +56,15 @@ some scripts might use only `playout_controls.sh`).
 Contains the last playlist name that was being played. 
 Used in `rfid_trigger_play.sh` to establish if a second swipe on the same playlist was made. 
 
+### `settings/Playlists_Folders_Path`
+Contains the absolute path to the folder containing playlists.
+Default value: "/home/pi/RPi-Jukebox-RFID/playlists" 
+Used in `rfid_trigger_play.sh`. 
+
+### `settings/Playlists_File_Extension`
+Contains `m3u` for default mpd and `m3u8` for the spotify / mopidy installation. 
+Used in `rfid_trigger_play.sh`. 
+
 ### `settings/Second_Swipe`
 Contains RESTART or PAUSE or NOAUDIOPLAY. 
 This establises if a second swipe of the same RFID card either 
@@ -560,6 +569,13 @@ $ sudo reboot
 * via ssh using phoniebox:22
 
 ## <a name="faqAudioNotWorking"></a>Audio is not working
+
+Before you file a ticket on github, please read this section and when you file it, please answer these questions:
+
+* what version are you on? Type in terminal `cat /home/pi/settings/version`
+* what soundcard are you using?
+* does your Raspberry Pi play any sound?
+* did the audio work and then you connected a sound card and now it doesn't?
 
 This might occur if you are using external sound cards like *pHat BEAT* or the like. I split this into two parts: a) sound did never work and b) sound worked once, now, with a new soundcard, it doesn't.
 

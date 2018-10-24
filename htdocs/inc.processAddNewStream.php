@@ -2,9 +2,12 @@
 // create folder $post['streamFolderName']
 $exec = "sudo mkdir '".$Audio_Folders_Path."/".$post['streamFolderName']."'; sudo chmod 777 '".$Audio_Folders_Path."/".$post['streamFolderName']."'";
 exec($exec);
-print "<p>".$exec."</p>";//???
+//print "<p>".$exec."</p>";//???
 // figure out $filestream depending on $post['streamType']
 switch($post['streamType']) {
+	case "spotify":
+        $filestream = "spotify.txt";
+        break;
     case "podcast":
         $filestream = "podcast.txt";
         break;

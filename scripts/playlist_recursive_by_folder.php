@@ -118,6 +118,12 @@ foreach($folders as $folder) {
             */
             $livestreamURL = file_get_contents($folder."/livestream.txt");
             $folder_files = array($livestreamURL);
+        } elseif(file_exists($folder."/spotify.txt")) {
+            /*
+            * Read content of the file and add to the array
+            */
+            $spotifyURL = file_get_contents($folder."/spotify.txt");
+            $folder_files = array($spotifyURL);
         } else {
             /*
             * ordinary, local files
@@ -143,6 +149,10 @@ foreach($folders as $folder) {
                 if($folder."/".$value == $folder."/folder.conf"){
                     unset($folder_files[$key]);
                 } 
+                // drop cover files
+                if($folder."/".$value == $folder."/cover.jpg"){
+                    unset($folder_files[$key]);
+                } 
             }  
             // some debugging info
             if($debug == "true") {
@@ -155,7 +165,7 @@ foreach($folders as $folder) {
             * which is also set in the mpd.conf
             */
             foreach ($folder_files as $key => $value) {
-                $folder_files[$key] = substr($folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
+                $folder_files[$key] = substr($Audio_Folders_Path."/".$folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
             }       
             /* 
             * order the remaining files - if any...
