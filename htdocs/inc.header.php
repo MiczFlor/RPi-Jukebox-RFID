@@ -87,6 +87,8 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 $Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
 $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
 $Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
+$edition = trim(file_get_contents($conf['settings_abs'].'/edition'));
+$version = trim(file_get_contents($conf['settings_abs'].'/version'));
 
 /*******************************************
 * URLPARAMETERS
@@ -145,6 +147,10 @@ if(isset($_GET['shutdown']) && trim($_GET['shutdown']) != "") {
 
 if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
     $urlparams['reboot'] = trim($_GET['reboot']);
+}
+
+if(isset($_GET['scan']) && trim($_GET['scan']) != "") {
+    $urlparams['scan'] = trim($_GET['scan']);
 }
 
 if(isset($_GET['idletime']) && trim($_GET['idletime']) != "") {
@@ -241,6 +247,10 @@ if(isset($_POST['reboot']) && trim($_POST['reboot']) != "") {
     $urlparams['reboot'] = trim($_POST['reboot']);
 }
 
+if(isset($_POST['scan']) && trim($_POST['scan']) != "") {
+    $urlparams['scan'] = trim($_POST['scan']);
+}
+
 if(isset($_POST['idletime']) && trim($_POST['idletime']) != "") {
     $urlparams['idletime'] = trim($_POST['idletime']);
 }
@@ -280,7 +290,6 @@ if(isset($_POST['enableshuffle']) && trim($_POST['enableshuffle']) != "") {
 if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
     $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
 }
-
 
 /*******************************************
 * URLPARAMETERS cardEdit.php and cardRegisterNew.php
@@ -566,6 +575,18 @@ if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && 
     }
 }
 
+// scan the library
+if(isset($urlparams['scan']) && $urlparams['scan'] == "true") {
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &";
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
 
 
 // stop playing
