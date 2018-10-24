@@ -27,6 +27,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shutdownsilent
 # shutdownafter
 # reboot
+# scan
 # mute
 # setvolume
 # setmaxvolume
@@ -172,6 +173,15 @@ case $COMMAND in
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sudo reboot
+        ;;
+    scan)
+        $PATHDATA/resume_play.sh -c=savepos && mpc clear
+        #remove shuffle mode if active
+        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+        sudo systemctl stop mopidy
+		sudo mopidyctl local scan
+		sudo systemctl start mopidy
         ;;
     mute)
         if [ ! -f $VOLFILE ]; then
@@ -367,7 +377,7 @@ case $COMMAND in
 
 		# call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
         mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/resume_play.sh -c=resume
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume"; fi
+        if [ $DEBUG == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
         if [ $DEBUG == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
 	;;
     playlistadd)
