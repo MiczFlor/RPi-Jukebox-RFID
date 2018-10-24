@@ -21,6 +21,8 @@ include(dirname(__FILE__).'/../htdocs/func.php');
 
 // path to audiofolder
 $Audio_Folders_Path = trim(file_get_contents(dirname(__FILE__).'/../settings/Audio_Folders_Path'));
+$edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
+$version = trim(file_get_contents(dirname(__FILE__).'/../settings/version'));
 
 /*
 * Get vars passed on from command line
@@ -164,9 +166,17 @@ foreach($folders as $folder) {
             * relative path from the $Audio_Folders_Path_Playlist folder
             * which is also set in the mpd.conf
             */
-            foreach ($folder_files as $key => $value) {
-                $folder_files[$key] = substr($Audio_Folders_Path."/".$folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
-            }       
+			if ($edition == "plus") {
+				// M3U will contain local:track: path for mopidy
+				foreach ($folder_files as $key => $value) {
+					$folder_files[$key] = "local:track:".str_replace("%2F", "/", rawurlencode(str_replace($Audio_Folders_Path."/", "", $folder."/".$value)));
+				}
+			} elseif ($edition == "classic") {
+				// M3U will contain normal relative path
+				foreach ($folder_files as $key => $value) {
+					$folder_files[$key] = substr($Audio_Folders_Path."/".$folder."/".$value, strlen($Audio_Folders_Path) + 1, strlen($folder."/".$value));
+				}
+			}
             /* 
             * order the remaining files - if any...
             * NOTE: podcast content is NOT ordered - because they are an ordered playlist already
