@@ -498,6 +498,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.co
 sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
 sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 sudo chown mpd:audio /etc/mpd.conf
 sudo chmod 640 /etc/mpd.conf
 # update mpc / mpd DB
