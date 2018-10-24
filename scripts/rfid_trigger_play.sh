@@ -63,16 +63,6 @@ fi
 # 2. then|or read value from file
 PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
 
-# File extension for playlists
-# This needs to be m3u by default and m3u8 for spotify integration
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Playlists_File_Extension ]; then
-    echo "m3u" > $PATHDATA/../settings/Playlists_File_Extension
-    chmod 777 $PATHDATA/../settings/Playlists_File_Extension
-fi
-# 2. then|or read value from file
-PLAYLISTSFILEEXTENSION=`cat $PATHDATA/../settings/Playlists_File_Extension`
-
 ##############################################
 # Second swipe
 # What happens when the same card is swiped a second time?
