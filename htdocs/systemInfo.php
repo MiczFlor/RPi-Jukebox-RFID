@@ -60,11 +60,27 @@ if($debug == "true") {
         <div class="row">	
           <label class="col-md-4 control-label" for=""><?php print $lang['infoOsCodename']; ?></label> 
           <div class="col-md-6"><?php echo trim($codename); ?></div>
-        </div><!-- / row -->
+        </div>
+		<br>
+		<div class="row">	
+          <label class="col-md-4 control-label" for=""><?php print $lang['infoMopidyStatus']; ?></label> 
+		  <div id="mopidystatus"></div>
+		</div>
+		<!-- / row -->
       
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
+
+<script>
+$(document).ready(function() {
+    $('#mopidystatus').load('ajax.loadMopidyStatus.php');
+    var refreshId = setInterval(function() {
+        $('#mopidystatus').load('ajax.loadMopidyStatus.php?' + 1*new Date());
+    }, 2000);
+});
+
+</script>  
 
 <?php
 // get the information of storage usage
