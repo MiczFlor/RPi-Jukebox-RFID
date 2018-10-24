@@ -63,8 +63,16 @@ if($debug == "true") {
         </div>
 		<br>
 		<div class="row">	
-          <label class="col-md-4 control-label" for=""><?php print $lang['infoMopidyStatus']; ?></label> 
-		  <div id="mopidystatus"></div>
+          <label class="col-md-4 control-label" for="">
+		  <?php
+		  if ($edition == "classic") {
+			  print $lang['infoMPDStatus']."</label> 
+		  <div id='mpdstatus'></div>";
+		  } elseif ($edition == "plus") {
+			  print $lang['infoMopidyStatus']."</label> 
+		  <div id='mopidystatus'></div>";
+		  }
+		  ?>
 		</div>
 		<!-- / row -->
       
@@ -72,7 +80,19 @@ if($debug == "true") {
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
 
-<script>
+<?php
+if ($edition == "classic") {
+	print "<script>
+$(document).ready(function() {
+    $('#mpdstatus').load('ajax.loadMPDStatus.php');
+    var refreshId = setInterval(function() {
+        $('#mpdstatus').load('ajax.loadMPDStatus.php?' + 1*new Date());
+    }, 2000);
+});
+
+</script>";
+} elseif ($edition == "plus") {
+	print "<script>
 $(document).ready(function() {
     $('#mopidystatus').load('ajax.loadMopidyStatus.php');
     var refreshId = setInterval(function() {
@@ -80,7 +100,9 @@ $(document).ready(function() {
     }, 2000);
 });
 
-</script>  
+</script>";
+}
+?>
 
 <?php
 // get the information of storage usage
