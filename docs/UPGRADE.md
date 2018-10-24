@@ -27,7 +27,7 @@ Upgrading is therefore fairly simple. The following will overwrite any local cha
 cd /home/pi/RPi-Jukebox-RFID
 git checkout develop
 git fetch origin
-git reset --hard origin/master
+git reset --hard origin/develop
 git pull
 sudo systemctl stop mpd
 sudo systemctl stop mopidy
