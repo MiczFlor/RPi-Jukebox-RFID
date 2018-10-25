@@ -12,7 +12,7 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# including spotify support							#
+# +Spotify                                          #
 #                                                   #
 ##################################################### 
 
@@ -534,7 +534,6 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-echo "m3u8" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
@@ -589,6 +588,7 @@ then
 	sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 	# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
 	sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+	echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 	sudo chown mpd:audio /etc/mpd.conf
 	sudo chmod 640 /etc/mpd.conf
 	# update mpc / mpd DB
@@ -606,6 +606,7 @@ then
 	sudo mkdir /home/pi/.config/mopidy
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+	echo "plus" > /home/pi/RPi-Jukebox-RFID/settings/edition
 	# Change vars to match install config
 	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf

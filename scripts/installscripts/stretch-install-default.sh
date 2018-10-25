@@ -446,7 +446,6 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-echo "m3u" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
@@ -499,6 +498,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.co
 sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
 sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 sudo chown mpd:audio /etc/mpd.conf
 sudo chmod 640 /etc/mpd.conf
 # update mpc / mpd DB

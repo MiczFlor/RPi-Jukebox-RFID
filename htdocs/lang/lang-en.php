@@ -63,6 +63,9 @@ $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
 
 $lang['navBrand'] = "Phoniebox";
+$lang['navEditionClassic'] = "Classic";
+$lang['navEditionPlus'] = "+Spotify";
+
 $lang['navHome'] = "Home";
 $lang['navSettings'] = "Settings";
 $lang['navInfo'] = "Info";
@@ -104,7 +107,8 @@ $lang['cardFormFolderLegend'] = "Audio Folder";
 $lang['cardFormFolderLabel'] = "a) Link card to audio folder";
 $lang['cardFormFolderSelectDefault'] = "None (pulldown to select a folder)";
 $lang['cardFormStreamLabel'] = "b) ... or connect with Stream URL";
-$lang['cardFormStreamPlaceholder'] = "Spotify: spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlus'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Select type";
 $lang['cardFormStreamTypeHelp'] = "Select the type you are adding";
@@ -154,6 +158,8 @@ $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only s
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
+$lang['infoMopidyStatus'] = "Mopidy Server Status";
+$lang['infoMPDStatus'] = "MPD Server Status";
 
 /*
 * Folder Management and File Upload
@@ -174,4 +180,9 @@ $lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>The parent folder does 
 $lang['manageFilesFoldersSuccessNewFolder'] = "New folder created: ";
 $lang['manageFilesFoldersSelectDefault'] = "Pull down to select a folder and/or create a new child folder below";
 
+$lang['manageFilesFoldersRenewDB'] = "Renew database";
+$lang['manageFilesFoldersLocalScan'] = "Scan Music Library";
+
+
 ?>
+

@@ -102,8 +102,8 @@ hostname = 0.0.0.0
 [m3u]
 #enabled = true
 #base_dir = $XDG_MUSIC_DIR
-#default_encoding = latin-1
-#default_extension = .m3u8
+default_encoding = UTF-8
+default_extension = .m3u
 playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 
 [softwaremixer]
@@ -119,24 +119,26 @@ playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 #  .jpeg
 #show_dotfiles = false
 #follow_symlinks = false
-#metadata_timeout = 1000
+metadata_timeout = 1
 
 [local]
-#enabled = true
+enabled = true
 #library = json
-#media_dir = $XDG_MUSIC_DIR
+media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 #scan_timeout = 1000
 #scan_flush_threshold = 100
 #scan_follow_symlinks = false
-#excluded_file_extensions = 
+excluded_file_extensions = 
 #  .directory
 #  .html
 #  .jpeg
-#  .jpg
+  .jpg
 #  .log
 #  .nfo
 #  .png
-#  .txt
+  .txt
+  .conf
+  placeholder
 
 [spotify]
 enabled = true
