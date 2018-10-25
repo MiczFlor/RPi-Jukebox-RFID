@@ -15,6 +15,8 @@ There is a file `settings/version` containing the version number.
 
 # Upgrade from Version 1.1.7 to 1.1.8-beta
 
+**NOTE**: version `1.1.8-beta` is only available for testing in the `develop` branch at the moment. If you are interested only in stable releases (well, that's what we call the excited late night releases which more often than not create mayhem during the following days), so if you want to wait for the tested, stable release, keep coming back here [2018-10-25].
+
 We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Classic" and "Phoniebox +Spotify".
 
 **This is a bugfix-version.** After release of "Phoniebox +Spotify" there were reported some problems, which are bugfixed now, hopefully. e.g. Improved loading time of local music **(please go to "Folders & Files" and scan your library ONCE after update and everytime you upload new files to your box!)**. To reduce the boot up time of Phoniebox, be sure you are using the newest version of mopidy-spotify. The upgrade is integrated into the following steps.

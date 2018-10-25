@@ -114,12 +114,21 @@ Now systemd has to be notified that there are new service files:
 sudo systemctl daemon-reload
 ```
 
-The last step is to enable the service files:
+Now enable the service files, which will start them on reboot:
 
 ```
+sudo systemctl enable phoniebox-idle-watchdog
 sudo systemctl enable phoniebox-rfid-reader
 sudo systemctl enable phoniebox-startup-sound
-sudo systemctl enable phoniebox-gpio-buttons (optional)
+sudo systemctl enable phoniebox-gpio-buttons
+```
+And now you can reboot to have your daemons running or start them manually:
+
+```
+sudo systemctl start phoniebox-idle-watchdog
+sudo systemctl start phoniebox-rfid-reader
+sudo systemctl start phoniebox-startup-sound
+sudo systemctl start phoniebox-gpio-buttons
 ```
 
 The newly installed service can be started either by rebooting the Phoniebox or
@@ -132,7 +141,7 @@ sudo systemctl status phoniebox-rfid-reader
 ```
 This should produce an output like this:
 ```
-pi@Jukebox:~ $ systemctl status rfid-reader
+pi@Jukebox:~ $ systemctl status phoniebox-rfid-reader
  * phoniebox-rfid-reader.service - RFID-Reader Service
    Loaded: loaded (/etc/systemd/system/phoniebox-rfid-reader.service; enabled; vendor pres
    Active: active (running) since Fri 2018-04-13 07:34:53 UTC; 5h 47min ago
