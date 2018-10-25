@@ -34,7 +34,7 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # path to audio folders
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
-if [ "$DEBUG" == "true" ]; then echo "## SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "## SCRIPT shuffle_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
