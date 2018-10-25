@@ -389,7 +389,7 @@ case $COMMAND in
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
         # restart service to apply the new value
-        sudo systemctl restart idle-watchdog.service &
+        sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
     getidletime)
         echo $IDLETIME

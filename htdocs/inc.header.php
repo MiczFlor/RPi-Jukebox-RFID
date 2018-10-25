@@ -87,8 +87,13 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 $Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
 $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
 $Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
-$edition = trim(file_get_contents($conf['settings_abs'].'/edition'));
 $version = trim(file_get_contents($conf['settings_abs'].'/version'));
+if(file_exists(dirname(__FILE__).'/../settings/edition')) {
+    $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
+} else {
+    $edition = "classic";
+    $edition = "classic";
+}
 
 /*******************************************
 * URLPARAMETERS
@@ -462,7 +467,7 @@ if(isset($urlparams['shutdownafter'])) {
 
 // start the rfid service
 if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnon") {
-    $exec = "/usr/bin/sudo /bin/systemctl start rfid-reader.service";
+    $exec = "/usr/bin/sudo /bin/systemctl start phoniebox-rfid-reader.service";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
@@ -475,7 +480,7 @@ if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnon") {
 
 // stop the rfid service
 if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnoff") {
-    $exec = "/usr/bin/sudo /bin/systemctl stop rfid-reader.service";
+    $exec = "/usr/bin/sudo /bin/systemctl stop phoniebox-rfid-reader.service";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
@@ -488,7 +493,7 @@ if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnoff") {
 
 // start the gpio button service
 if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnon") {
-    $exec = "/usr/bin/sudo /bin/systemctl start gpio-buttons.service";
+    $exec = "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-buttons.service";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
@@ -501,7 +506,7 @@ if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnon") {
 
 // stop the gpio button service
 if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnoff") {
-    $exec = "/usr/bin/sudo /bin/systemctl stop gpio-buttons.service";
+    $exec = "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-buttons.service";
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 

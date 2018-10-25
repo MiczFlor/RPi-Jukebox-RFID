@@ -39,7 +39,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-         <i class='mdi mdi-settings'></i> <?php print $lang['globalSystem']; ?> <small><?php print $lang['globalVersion']; ?>: <?php echo $version; ?></small>
+         <i class='mdi mdi-settings'></i> <?php print $lang['globalSystem']; ?> 
       </h4>
     </div><!-- /.panel-heading -->
 
@@ -60,15 +60,36 @@ if($debug == "true") {
         <div class="row">	
           <label class="col-md-4 control-label" for=""><?php print $lang['infoOsCodename']; ?></label> 
           <div class="col-md-6"><?php echo trim($codename); ?></div>
-        </div>
-		<br>
+        </div>     
+	</div><!-- /.panel-body -->
+  </div><!-- /.panel panel-default-->
+</div><!-- /.panel-group -->
+
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+         <i class='mdi mdi-settings'></i> Phoniebox Setup
+      </h4>
+    </div><!-- /.panel-heading -->
+
+    <div class="panel-body">
+  
+        <div class="row">	
+          <label class="col-md-4 control-label" for=""><?php print $lang['globalVersion']; ?></label> 
+          <div class="col-md-6"><?php echo $version; ?></div>
+        </div><!-- / row -->
+        <div class="row">	
+          <label class="col-md-4 control-label" for=""><?php print $lang['globalEdition']; ?></label> 
+          <div class="col-md-6"><?php echo $lang[$edition]; ?></div>
+        </div><!-- / row -->
 		<div class="row">	
           <label class="col-md-4 control-label" for="">
 		  <?php
 		  if ($edition == "classic") {
 			  print $lang['infoMPDStatus']."</label> 
 		  <div id='mpdstatus'></div>";
-		  } elseif ($edition == "plus") {
+		  } elseif ($edition == "plusSpotify") {
 			  print $lang['infoMopidyStatus']."</label> 
 		  <div id='mopidystatus'></div>";
 		  }
@@ -79,6 +100,7 @@ if($debug == "true") {
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
+
 
 <?php
 if ($edition == "classic") {
@@ -91,7 +113,7 @@ $(document).ready(function() {
 });
 
 </script>";
-} elseif ($edition == "plus") {
+} elseif ($edition == "plusSpotify") {
 	print "<script>
 $(document).ready(function() {
     $('#mopidystatus').load('ajax.loadMopidyStatus.php');

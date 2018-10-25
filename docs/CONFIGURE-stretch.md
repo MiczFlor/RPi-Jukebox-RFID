@@ -102,10 +102,10 @@ This is the final tweak to the configuration: automatically start our Phoniebox 
 First copy the service config files to the correct directory:
 
 ```
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
 ```
 
 Now systemd has to be notified that there are new service files:
@@ -117,27 +117,27 @@ sudo systemctl daemon-reload
 The last step is to enable the service files:
 
 ```
-sudo systemctl enable rfid-reader
-sudo systemctl enable startup-sound
-sudo systemctl enable gpio-buttons (optional)
+sudo systemctl enable phoniebox-rfid-reader
+sudo systemctl enable phoniebox-startup-sound
+sudo systemctl enable phoniebox-gpio-buttons (optional)
 ```
 
 The newly installed service can be started either by rebooting the Phoniebox or
 with:
-```sudo systemctl start rfid-reader```
+```sudo systemctl start phoniebox-rfid-reader```
 
 To see if the reader process is running use the following command:
 ```
-sudo systemctl status rfid-reader
+sudo systemctl status phoniebox-rfid-reader
 ```
 This should produce an output like this:
 ```
 pi@Jukebox:~ $ systemctl status rfid-reader
- * rfid-reader.service - RFID-Reader Service
-   Loaded: loaded (/etc/systemd/system/rfid-reader.service; enabled; vendor pres
+ * phoniebox-rfid-reader.service - RFID-Reader Service
+   Loaded: loaded (/etc/systemd/system/phoniebox-rfid-reader.service; enabled; vendor pres
    Active: active (running) since Fri 2018-04-13 07:34:53 UTC; 5h 47min ago
  Main PID: 393 (python2)
-   CGroup: /system.slice/rfid-reader.service
+   CGroup: /system.slice/phoniebox-rfid-reader.service
            └─393 /usr/bin/python2 /home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_
 
 Apr 13 07:34:53 Jukebox systemd[1]: Started RFID-Reader Service.

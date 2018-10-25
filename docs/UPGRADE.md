@@ -82,9 +82,9 @@ sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/settings
 sudo chmod -R 777 /home/pi/RPi-Jukebox-RFID/settings
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
 sudo systemctl enable rfid-reader
 ~~~
 
@@ -122,14 +122,14 @@ As of version 1.0 there is a much simpler install procedure: copy and paste one 
 * Web app enhancements (audio level, display 'playing now')
 ~~~
 # services to launch after boot using systmed
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
-sudo chown root:root /etc/systemd/system/idle-watchdog.service
-sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chmod 644 /etc/systemd/system/phoniebox-idle-watchdog.service
 # the config file where you can add the minutes after which Phoniebox shuts down
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 # enable and start the service
-sudo systemctl enable idle-watchdog.service
-sudo systemctl start idle-watchdog.service
+sudo systemctl enable phoniebox-idle-watchdog.service
+sudo systemctl start phoniebox-idle-watchdog.service
 ~~~
 
 # Upgrade from 0.9.4 to 0.9.5
@@ -182,15 +182,15 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 # services to launch after boot using systmed
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chown root:root /etc/systemd/system/startup-sound.service
-sudo chown root:root /etc/systemd/system/gpio-buttons.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/startup-sound.service
-sudo chmod 644 /etc/systemd/system/gpio-buttons.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
+sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chmod 644 /etc/systemd/system/phoniebox-startup-sound.service
+sudo chmod 644 /etc/systemd/system/phoniebox-gpio-buttons.service
 # In case the older version of Phoniebox still uses crontab to start daemon script, UNDO the crontab changes
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.UNDO-default.sample /var/spool/cron/crontabs/pi
 sudo chown pi:crontab /var/spool/cron/crontabs/pi

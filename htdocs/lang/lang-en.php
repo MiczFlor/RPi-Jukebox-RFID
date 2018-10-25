@@ -62,10 +62,15 @@ $lang['globalReplay'] = "Replay";
 $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
 
-$lang['navBrand'] = "Phoniebox";
+// Edition (classic, +spotify)
+$lang['globalEdition'] = "Edition";
+$lang['classic'] = "Classic edition (barebones)";
+$lang['plusSpotify'] = "Plus edition (feat. Spotify integration)";
+
 $lang['navEditionClassic'] = "Classic";
 $lang['navEditionPlusSpotify'] = "+Spotify";
 
+$lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
 $lang['navSettings'] = "Settings";
 $lang['navInfo'] = "Info";
@@ -108,7 +113,7 @@ $lang['cardFormFolderLabel'] = "a) Link card to audio folder";
 $lang['cardFormFolderSelectDefault'] = "None (pulldown to select a folder)";
 $lang['cardFormStreamLabel'] = "b) ... or connect with Stream URL";
 $lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
-$lang['cardFormStreamPlaceholderPlus'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Select type";
 $lang['cardFormStreamTypeHelp'] = "Select the type you are adding";

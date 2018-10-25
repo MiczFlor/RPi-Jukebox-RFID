@@ -3,7 +3,7 @@
 	<div class="row">
 		<div class="col-xs-6">
 <?php
-$gpiostatus = exec("/bin/systemctl status gpio-buttons.service | grep running");
+$gpiostatus = exec("/bin/systemctl status phoniebox-gpio-buttons.service | grep running");
 if ($gpiostatus != "") {
 	print $lang['globalGpioButtons'].' <span class="label label-success">'.$lang['globalEnabled'].'</span>';
 	print '</div><!-- / .col-xs-6 -->';
@@ -25,7 +25,7 @@ else {
 	<div class="row">
 		<div class="col-xs-6">
 <?php
-$rfidstatus = exec("/bin/systemctl status rfid-reader.service | grep running");
+$rfidstatus = exec("/bin/systemctl status phoniebox-rfid-reader.service | grep running");
 if ($rfidstatus != "") {
 	print $lang['globalRfidReader'].' <span class="label label-success">'.$lang['globalEnabled'].'</span>';
 	print '</div><!-- / .col-xs-6 -->';
