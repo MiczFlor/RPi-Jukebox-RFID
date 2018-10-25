@@ -15,6 +15,8 @@ There is a file `settings/version` containing the version number.
 
 # Upgrade from Version 1.1.7 to 1.1.8-beta
 
+**NOTE**: version `1.1.8-beta` is only available for testing in the `develop` branch at the moment. If you are interested only in stable releases (well, that's what we call the excited late night releases which more often than not create mayhem during the following days), so if you want to wait for the tested, stable release, keep coming back here [2018-10-25].
+
 We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Classic" and "Phoniebox +Spotify".
 
 **This is a bugfix-version.** After release of "Phoniebox +Spotify" there were reported some problems, which are bugfixed now, hopefully. e.g. Improved loading time of local music **(please go to "Folders & Files" and scan your library ONCE after update and everytime you upload new files to your box!)**. To reduce the boot up time of Phoniebox, be sure you are using the newest version of mopidy-spotify. The upgrade is integrated into the following steps.
@@ -98,15 +100,15 @@ sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/settings
 sudo chmod -R 777 /home/pi/RPi-Jukebox-RFID/settings
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
 sudo systemctl enable rfid-reader
 ~~~
 
 # Upgrade from Version 1.0.0 to 1.1.1
 
-This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
+This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
 cd RPi-Jukebox-RFID
@@ -126,26 +128,26 @@ sudo service php7.0-fpm restart
 
 # Upgrade to Version 1.0
 
-As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall).
+As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
 
 # Upgrade from 0.9.5 to 0.9.7
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
 * Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
-* Adding auto shutdown when idle for longer than x minutes (see [manual](MANUAL.md#settings) for details)
-* Adding maximum volume percent to settings (see [manual](MANUAL.md#settings) for details)
+* Adding auto shutdown when idle for longer than x minutes (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
+* Adding maximum volume percent to settings (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
 * Fixing bug: settings volume for stereo audio iFace
 * Fixing bug: bash code compatible with all shells  
 * Web app enhancements (audio level, display 'playing now')
 ~~~
 # services to launch after boot using systmed
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
-sudo chown root:root /etc/systemd/system/idle-watchdog.service
-sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chmod 644 /etc/systemd/system/phoniebox-idle-watchdog.service
 # the config file where you can add the minutes after which Phoniebox shuts down
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 # enable and start the service
-sudo systemctl enable idle-watchdog.service
-sudo systemctl start idle-watchdog.service
+sudo systemctl enable phoniebox-idle-watchdog.service
+sudo systemctl start phoniebox-idle-watchdog.service
 ~~~
 
 # Upgrade from 0.9.4 to 0.9.5
@@ -198,15 +200,15 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/htdocs
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/htdocs
 # services to launch after boot using systmed
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chown root:root /etc/systemd/system/startup-sound.service
-sudo chown root:root /etc/systemd/system/gpio-buttons.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/startup-sound.service
-sudo chmod 644 /etc/systemd/system/gpio-buttons.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
+sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chmod 644 /etc/systemd/system/phoniebox-startup-sound.service
+sudo chmod 644 /etc/systemd/system/phoniebox-gpio-buttons.service
 # In case the older version of Phoniebox still uses crontab to start daemon script, UNDO the crontab changes
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/crontab-pi.UNDO-default.sample /var/spool/cron/crontabs/pi
 sudo chown pi:crontab /var/spool/cron/crontabs/pi

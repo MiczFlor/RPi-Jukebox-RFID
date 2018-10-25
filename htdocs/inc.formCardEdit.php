@@ -119,8 +119,8 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
               print $fpost['streamURL'];
           }
           ?>" id="streamURL" name="streamURL" placeholder="<?php 
-		  if ($edition == "plus") { 
-		  print $lang['cardFormStreamPlaceholderPlus']; 
+		  if ($edition == "plusSpotify") { 
+		  print $lang['cardFormStreamPlaceholderPlusSpotify']; 
 		  } elseif ($edition == "classic") { 
 		  print $lang['cardFormStreamPlaceholderClassic']; 
 		  } 
@@ -136,7 +136,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
             <select id="streamType" name="streamType" class="form-control">
               <option value="false"><?php print $lang['cardFormStreamTypeSelectDefault']; ?></option>
 			  <?php
-			  if ($edition == "plus") {
+			  if ($edition == "plusSpotify") {
 				print "<option value='spotify'";
 				if($fpost['streamType'] == "spotify") { print " selected=selected"; }
 				print ">Spotify</option>";

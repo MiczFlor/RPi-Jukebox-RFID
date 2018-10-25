@@ -5,7 +5,7 @@
 
 This is the documentation on how to integrate Spotify into your Phoniebox if you want to manually install it. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code.
 
-# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/INSTALL-stretch.md#one-line-install-command).
+# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
 
 ## Installing stretch on your Pi
 

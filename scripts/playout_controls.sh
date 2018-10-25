@@ -65,7 +65,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ $DEBUG == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 ##############################################
 # steps by which to change the audio output (vol up and down)
@@ -134,17 +134,17 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #    esac
 #done
 
-if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         
 case $COMMAND in 
     shutdown)
-        if [ $DEBUG == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
     	#remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-	sleep 1
+        sleep 1
         /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
         sleep 3
         sudo halt
@@ -300,7 +300,7 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
-        if [ $DEBUG == "true" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
@@ -362,8 +362,8 @@ case $COMMAND in
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
         # VALUE = name of playlist
-        if [ $DEBUG == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        if [ $DEBUG == "true" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
         # first clear playlist (and save position if resume play is on)
         $PATHDATA/resume_play.sh -c=savepos
@@ -372,13 +372,13 @@ case $COMMAND in
         # write latest folder played to settings file
         sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ $DEBUG == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        if [ $DEBUG == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
 		# call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
         mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/resume_play.sh -c=resume
-        if [ $DEBUG == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
-        if [ $DEBUG == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
 	;;
     playlistadd)
         # add to playlist, no autoplay
@@ -389,7 +389,7 @@ case $COMMAND in
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
         # restart service to apply the new value
-        sudo systemctl restart idle-watchdog.service &
+        sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
     getidletime)
         echo $IDLETIME

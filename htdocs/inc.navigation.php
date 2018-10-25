@@ -12,8 +12,8 @@
 	  <div class="navbar-brand" style="padding: 0px 15px 0px; margin-top: 19.5px; height: 0px; font-size: 13px; color: white;"><?php 
 	  if ($edition == "classic") { 
 		print $lang['navEditionClassic']; 
-	  } elseif ($edition == "plus") { 
-		print $lang['navEditionPlus'];
+	  } elseif ($edition == "plusSpotify") { 
+		print $lang['navEditionPlusSpotify'];
 	  }
 	  ?></div>
     </div>
@@ -27,7 +27,7 @@
         <li><a href='manageFilesFolders.php' class='mainMenu'><i class='mdi mdi-folder-upload'></i> <?php print $lang['manageFilesFoldersTitle']; ?></a></li>
 		<li><a href="cardRegisterNew.php" class="mainMenu"><i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCardShort']; ?></a></li>
 		<?php
-		if ($edition == "plus") {
+		if ($edition == "plusSpotify") {
 		print "<li><a href='http://".$conf['local_url'].":6680/iris' class='mainMenu' target='_blank'><i class='mdi mdi-spotify'></i>".$lang['Spotify']."</a></li>";
 		}
 		?>

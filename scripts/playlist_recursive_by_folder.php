@@ -21,7 +21,11 @@ include(dirname(__FILE__).'/../htdocs/func.php');
 
 // path to audiofolder
 $Audio_Folders_Path = trim(file_get_contents(dirname(__FILE__).'/../settings/Audio_Folders_Path'));
-$edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
+if(file_exists(dirname(__FILE__).'/../settings/edition')) {
+    $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
+} else {
+    $edition = "classic";
+}
 $version = trim(file_get_contents(dirname(__FILE__).'/../settings/version'));
 
 /*
@@ -166,7 +170,7 @@ foreach($folders as $folder) {
             * relative path from the $Audio_Folders_Path_Playlist folder
             * which is also set in the mpd.conf
             */
-			if ($edition == "plus") {
+			if ($edition == "plusSpotify") {
 				// M3U will contain local:track: path for mopidy
 				foreach ($folder_files as $key => $value) {
 					$folder_files[$key] = "local:track:".str_replace("%2F", "/", rawurlencode(str_replace($Audio_Folders_Path."/", "", $folder."/".$value)));
