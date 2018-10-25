@@ -64,7 +64,7 @@ $lang['globalLoop'] = "Loop";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navEditionClassic'] = "Classic";
-$lang['navEditionPlus'] = "+Spotify";
+$lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navHome'] = "Home";
 $lang['navSettings'] = "Settings";

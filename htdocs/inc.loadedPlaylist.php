@@ -49,7 +49,7 @@ $(document).ready(function() {
 		$('#infoWrapper').load('ajax.loadInfo.php?' + 1*new Date());
 		$('#timeWrapper').load('ajax.loadTime.php?' + 1*new Date());
 		$('#overalltimeWrapper').load('ajax.loadOverallTime.php?' + 1*new Date());
-	}, 1000);
+	}, 3000);
 });
 </script>
 <?php

@@ -87,7 +87,7 @@ $(document).ready(function() {
     $('#mpdstatus').load('ajax.loadMPDStatus.php');
     var refreshId = setInterval(function() {
         $('#mpdstatus').load('ajax.loadMPDStatus.php?' + 1*new Date());
-    }, 2000);
+    }, 5000);
 });
 
 </script>";
@@ -97,7 +97,7 @@ $(document).ready(function() {
     $('#mopidystatus').load('ajax.loadMopidyStatus.php');
     var refreshId = setInterval(function() {
         $('#mopidystatus').load('ajax.loadMopidyStatus.php?' + 1*new Date());
-    }, 2000);
+    }, 5000);
 });
 
 </script>";

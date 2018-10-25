@@ -13,7 +13,7 @@
 	  if ($edition == "classic") { 
 		print $lang['navEditionClassic']; 
 	  } elseif ($edition == "plus") { 
-		print $lang['navEditionPlus'];
+		print $lang['navEditionPlusSpotify'];
 	  }
 	  ?></div>
     </div>
