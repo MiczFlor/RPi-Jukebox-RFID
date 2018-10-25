@@ -1,9 +1,9 @@
 
 # Control Jukebox with buttons / GPIO
 
-(Other docs: [Installation](INSTALL-stretch.md) |
-[Configuration](CONFIGURE-stretch.md) |
-[Phoniebox manual](MANUAL.md))
+(Other docs: [Installation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) |
+[Configuration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch) |
+[Phoniebox manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL))
 
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
@@ -92,4 +92,4 @@ $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 **Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.
 
-To have this started automatically at boot. Please read the section on [autostarting the scripts](CONFIGURE-stretch.md#systemdautostart) in the configuration documentation [CONFIGURE-stretch.md](CONFIGURE-stretch.md#systemdautostart).
+To have this started automatically at boot. Please read the section on [autostarting the scripts](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart) in the [configuration documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart).

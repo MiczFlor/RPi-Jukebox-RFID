@@ -92,7 +92,7 @@ sudo systemctl enable rfid-reader
 
 # Upgrade from Version 1.0.0 to 1.1.1
 
-This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
+This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
 cd RPi-Jukebox-RFID
@@ -112,13 +112,13 @@ sudo service php7.0-fpm restart
 
 # Upgrade to Version 1.0
 
-As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](INSTALL-stretch.md#oneLineInstall).
+As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
 
 # Upgrade from 0.9.5 to 0.9.7
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
 * Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
-* Adding auto shutdown when idle for longer than x minutes (see [manual](MANUAL.md#settings) for details)
-* Adding maximum volume percent to settings (see [manual](MANUAL.md#settings) for details)
+* Adding auto shutdown when idle for longer than x minutes (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
+* Adding maximum volume percent to settings (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
 * Fixing bug: settings volume for stereo audio iFace
 * Fixing bug: bash code compatible with all shells  
 * Web app enhancements (audio level, display 'playing now')
