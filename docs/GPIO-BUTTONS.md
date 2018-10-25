@@ -46,7 +46,7 @@ You will be running wires from the RPi board to another board where the buttons 
 
 On the above image you can also see the pin numbering, in this case containing both: the RPi board numbering on the RPi3 and the Broadcom (BCM) pin numbering used for the code.
 
-The [script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) we are using originally been provided by Andreas aka [hailogugo](https://github.com/hailogugo). It's been modified since then and a [second script version](../misc/sampleconfigs/gpio-buttons.py.sample-2) now provides `pull_up=True` for all pins (not incl. shutdown).
+The [script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) we are using originally been provided by Andreas aka [hailogugo](https://github.com/hailogugo). It's been modified since then and now provides `pull_up=True` for all pins (not incl. shutdown). Read more in this thread [why we added `pull_up`](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259).
 
 Here is how to connect the buttons:
 
