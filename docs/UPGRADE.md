@@ -33,11 +33,27 @@ git reset --hard origin/develop
 git pull
 sudo systemctl stop mpd
 sudo systemctl stop mopidy
+
+USERNAME=$(sudo grep 'username' /etc/mopidy/mopidy.conf|sed 's/username = //g'|sed 's/"//g'|tr -d "\n")
+PASSWORD=$(sudo grep 'password' /etc/mopidy/mopidy.conf|sed 's/password = //g'|sed 's/"//g'|tr -d "\n")
+CLIENT_ID=$(sudo grep 'client_id' /etc/mopidy/mopidy.conf|sed 's/client_id = //g'|sed 's/"//g'|tr -d "\n")
+CLIENT_SECRET=$(sudo grep 'client_secret' /etc/mopidy/mopidy.conf|sed 's/client_secret = //g'|sed 's/"//g'|tr -d "\n")
+
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample /home/pi/.config/mopidy/mopidy.conf
+
+sudo sed -i 's/%spotify_username%/'"$USERNAME"'/' /etc/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_password%/'"$PASSWORD"'/' /etc/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_client_id%/'"$CLIENT_ID"'/' /etc/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_client_secret%/'"$CLIENT_SECRET"'/' /etc/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_username%/'"$USERNAME"'/' ~/.config/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_password%/'"$PASSWORD"'/' ~/.config/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_client_id%/'"$CLIENT_ID"'/' ~/.config/mopidy/mopidy.conf
+sudo sed -i 's/%spotify_client_secret%/'"$CLIENT_SECRET"'/' ~/.config/mopidy/mopidy.conf
+
 echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
-EDITION=$(grep 'SPOTinstall' /home/pi/PhonieboxInstall.conf|sed 's/SPOTinstall="//g'|sed 's/"//g'); if [ $EDITION == "YES" ]; then echo "plus"; else echo "classic"; fi > /home/pi/RPi-Jukebox-RFID/settings/edition
+EDITION=$(grep 'SPOTinstall' /home/pi/PhonieboxInstall.conf|sed 's/SPOTinstall="//g'|sed 's/"//g'); if [ $EDITION == "YES" ]; then echo "plusSpotify"; else echo "classic"; fi > /home/pi/RPi-Jukebox-RFID/settings/edition
 
 sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
 sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
