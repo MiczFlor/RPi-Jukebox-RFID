@@ -95,7 +95,7 @@ $lang['cardRegisterMessageSwipeNew'] = "Swipe another card, if you want to regis
 $lang['cardEditMessageInputNew'] = "Type another card ID pick one from the list on the <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterErrorTooMuch'] = "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamAndAudio'] = "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
-$lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
+$lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add an URL including stream type or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
 $lang['cardRegisterErrorExistingAndNew'] = "<p>This is too much! Either choose an existing folder or create a new one.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>A folder named with the same name already exists! Chose a different one.</p>";
 $lang['cardRegisterErrorSuggestFolder'] = "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
@@ -156,6 +156,10 @@ $lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, 
 $lang['settingsSecondSwipeRestart'] = "Re-start playlist";
 $lang['settingsSecondSwipePause'] = "Toggle pause / play";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only system commands";
+$lang['settingsWebInterface'] = "Web Interface";
+$lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";
+$lang['settingsShowCoverON'] = "Show cover";
+$lang['settingsShowCoverOFF'] = "Don't show cover";
 
 /*
 * System info
