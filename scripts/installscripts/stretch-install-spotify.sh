@@ -534,6 +534,7 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
+echo "ON" > /home/pi/RPi-Jukebox-RFID/settings/ShowCover
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
