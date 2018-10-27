@@ -140,6 +140,23 @@ include("inc.setWifi.php");
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">
+      <h4 class="panel-title"><a name="WebInterface"></a>
+        <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
+      </h4>
+    </div><!-- /.panel-heading -->
+    
+      <div class="panel-body">
+<?php
+include("inc.setWebUI.php");
+?>
+      </div><!-- /.panel-body -->
+    
+  </div><!-- /.panel -->
+</div><!-- /.panel-group -->
+
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
       <h4 class="panel-title"><a name="externalInterfaces"></a>
         <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
       </h4>
