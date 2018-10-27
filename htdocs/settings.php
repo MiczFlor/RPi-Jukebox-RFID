@@ -39,6 +39,9 @@ if($debug == "true") {
         <a href="#wifi" class="xbtn xbtn-default ">
         <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
         </a> | 
+        <a href="#webInterface" class="xbtn xbtn-default ">
+        <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
+        </a>  | 
         <a href="#externalInterfaces" class="xbtn xbtn-default ">
         <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
         </a>  | 
@@ -140,7 +143,7 @@ include("inc.setWifi.php");
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h4 class="panel-title"><a name="WebInterface"></a>
+      <h4 class="panel-title"><a name="webInterface"></a>
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
       </h4>
     </div><!-- /.panel-heading -->
