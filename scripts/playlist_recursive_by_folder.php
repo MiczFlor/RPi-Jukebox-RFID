@@ -158,6 +158,10 @@ foreach($folders as $folder) {
                 // drop cover files
                 if($folder."/".$value == $folder."/cover.jpg"){
                     unset($folder_files[$key]);
+                }
+				// drop title files
+                if($folder."/".$value == $folder."/title.txt"){
+                    unset($folder_files[$key]);
                 } 
             }  
             // some debugging info

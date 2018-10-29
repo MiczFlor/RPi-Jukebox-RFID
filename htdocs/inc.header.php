@@ -87,6 +87,7 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 $Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
 $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
 $Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
+$ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
 $version = trim(file_get_contents($conf['settings_abs'].'/version'));
 if(file_exists(dirname(__FILE__).'/../settings/edition')) {
     $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));

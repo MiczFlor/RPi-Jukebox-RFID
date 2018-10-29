@@ -52,6 +52,7 @@ foreach($subfolders as $key => $subfolder) {
             is_file($subfolderfile) 
             && basename($subfolderfile) != "folder.conf"
             && basename($subfolderfile) != "cover.jpg"
+            && basename($subfolderfile) != "title.txt"
             && basename($subfolderfile) != "lastplayed.dat" // this is legacy from june 2018
         ){
             // YES, we found a file
@@ -79,6 +80,30 @@ foreach($subfolders as $key => $subfolder) {
             $temp['type'] = "livestream";
         } elseif(file_exists($subfolder."/spotify.txt")){
             $temp['type'] = "spotify";
+			// get the cover and title from spotify
+			$check1 = $subfolder."/cover.jpg";
+			$check2 = $subfolder."/title.txt";
+
+			// this is for loading spotify informations!
+			$track = file_get_contents($subfolder."/spotify.txt");
+			$url = "https://open.spotify.com/oembed/?url=".trim($track)."&format=json";
+			
+			if (!file_exists($check1)) {
+				$str = file_get_contents($url);
+				$json  = json_decode($str, true);
+
+				$cover = $json['thumbnail_url'];
+				$coverdl = file_get_contents($cover);
+				file_put_contents($check1, $coverdl);
+			}
+			
+			if (!file_exists($check2)) {
+				$str = file_get_contents($url);
+				$json  = json_decode($str, true);
+
+				$title = $json['title'];
+				file_put_contents($check2, $title);
+			}
         } else {
             $temp['type'] = "generic";
         }
