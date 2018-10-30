@@ -5,7 +5,7 @@ Assuming that you use `git pull` to update the code base of your Phoniebox,
 every now and then you need to run some update scripts, like patches.
 To make this somewhat consistent, I started this page to document things that need to be done.
 
-If you still encounter problems after running the below upgrade snippets, check inside the folder `scripts/installscripts/` for scripts which contain the entire install process. 
+If you still encounter problems after running the below upgrade snippets, check inside the folder `scripts/installscripts/` for scripts which contain the entire install process.
 
 ## Which version am I on?
 
@@ -15,15 +15,15 @@ There is a file `settings/version` containing the version number.
 
 # Upgrade from Version 1.1.7 to 1.1.8-beta
 
-**NOTE**: version `1.1.8-beta` is only available for testing in the `develop` branch at the moment. If you are interested only in stable releases (well, that's what we call the excited late night releases which more often than not create mayhem during the following days), so if you want to wait for the tested, stable release, keep coming back here [2018-10-25].
+**NOTE**: version `1.1.8-beta` is the `master` branch but still in beta, meaning: we don't trust it fully ;) If you run into issues, please ask them on the "issues" board on GitHub. [2018-10-30].
 
-We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Classic" and "Phoniebox +Spotify".
+And in capital letters: **YOUR BEST CHOICE IS TO GET A NEW SD CARD AND DO A FRESH INSTALL FOR THE NEW 1.1.8 VERSION, BECAUSE A LOT HAS CHANGED AS YOU CAN SEE IN THE UPGRADE SCRIPT BELOW** (now you can't say you didn't know...)
+
+We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Classic" (out of the box, no Spotify) and "Phoniebox +Spotify" (Phoniebox with Spotify integration).
 
 **This is a bugfix-version.** After release of "Phoniebox +Spotify" there were reported some problems, which are bugfixed now, hopefully. e.g. Improved loading time of local music **(please go to "Folders & Files" and scan your library ONCE after update and everytime you upload new files to your box!)**. To reduce the boot up time of Phoniebox, be sure you are using the newest version of mopidy-spotify. The upgrade is integrated into the following steps.
 
 **Please use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature.**
-
-Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
 
 ~~~
 cd /home/pi/RPi-Jukebox-RFID
@@ -83,7 +83,6 @@ sudo systemctl enable phoniebox-idle-watchdog
 sudo systemctl enable phoniebox-rfid-reader
 sudo systemctl enable phoniebox-startup-sound
 sudo systemctl enable phoniebox-gpio-buttons
-
 
 echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 EDITION=$(grep 'SPOTinstall' /home/pi/PhonieboxInstall.conf|sed 's/SPOTinstall="//g'|sed 's/"//g'); if [ $EDITION == "YES" ]; then echo "plusSpotify"; else echo "classic"; fi > /home/pi/RPi-Jukebox-RFID/settings/edition
