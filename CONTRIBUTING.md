@@ -1,10 +1,10 @@
 # How to contribute
 
-Contributors are essential for keeping Phonie great.
-We want to keep it as easy as possible to contribute changes that
-get things working in your environment. There are a few guidelines that we
-need contributors to follow so that we can have a chance of keeping on
-top of things.
+Contributors have played a bigger role over time to keep Phoniebox on the endge of innovation :)
+
+We want to keep it as easy as possible to contribute changes that get things working in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
+
+Development is done on the git branch `develop`. How to move to that branch, see below.
 
 ## Getting Started
 
@@ -12,7 +12,19 @@ top of things.
 * Open an issue if one does not already exist.
   * Clearly describe the issue including steps to reproduce when it is a bug.
   * Make sure you fill in the earliest version that you know has the issue.
-* Fork the repository on GitHub.
+* Use the online line install script to get the box installed.
+* By default this will get you to the `master` branch. You will move to the `develop` branch, do this:
+
+~~~
+cd /home/pi/RPi-Jukebox-RFID
+git checkout develop
+git fetch origin
+git reset --hard origin/develop
+git pull
+~~~
+
+The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on the `develop` branch of your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
 
 ## Making Changes
 
