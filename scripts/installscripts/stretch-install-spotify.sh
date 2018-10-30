@@ -12,7 +12,7 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# including spotify support							#
+# +Spotify                                          #
 #                                                   #
 ##################################################### 
 
@@ -534,7 +534,7 @@ echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
 echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
 echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-echo "m3u8" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_File_Extension
+echo "ON" > /home/pi/RPi-Jukebox-RFID/settings/ShowCover
 
 # make sure bash scripts have the right settings
 sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
@@ -557,24 +557,36 @@ sudo service php7.0-fpm restart
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 # services to launch after boot using systemd
-# -rw-r--r-- 1 root root  304 Apr 30 10:07 rfid-reader.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/rfid-reader.service.stretch-default.sample /etc/systemd/system/rfid-reader.service 
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startup-sound.service.stretch-default.sample /etc/systemd/system/startup-sound.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.service.stretch-default.sample /etc/systemd/system/gpio-buttons.service
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/idle-watchdog.service.sample /etc/systemd/system/idle-watchdog.service
-sudo chown root:root /etc/systemd/system/rfid-reader.service
-sudo chown root:root /etc/systemd/system/startup-sound.service
-sudo chown root:root /etc/systemd/system/gpio-buttons.service
-sudo chown root:root /etc/systemd/system/idle-watchdog.service
-sudo chmod 644 /etc/systemd/system/rfid-reader.service
-sudo chmod 644 /etc/systemd/system/startup-sound.service
-sudo chmod 644 /etc/systemd/system/gpio-buttons.service
-sudo chmod 644 /etc/systemd/system/idle-watchdog.service
+# -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
+# 1. delete old services (this is legacy, might throw errors but is necessary. Valid for versions < 1.1.8-beta)
+echo "### Deleting older versions of service daemons. This might throw errors, ignore them"
+sudo systemctl disable idle-watchdog
+sudo systemctl disable rfid-reader
+sudo systemctl disable startup-sound
+sudo systemctl disable gpio-buttons
+sudo rm /etc/systemd/system/rfid-reader.service 
+sudo rm /etc/systemd/system/startup-sound.service
+sudo rm /etc/systemd/system/gpio-buttons.service
+sudo rm /etc/systemd/system/idle-watchdog.service
+echo "### Done with erasing old daemons. Stop ignoring errors!" 
+# 2. install new ones - this is version > 1.1.8-beta
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
+sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
+sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
+sudo chmod 644 /etc/systemd/system/phoniebox-startup-sound.service
+sudo chmod 644 /etc/systemd/system/phoniebox-gpio-buttons.service
+sudo chmod 644 /etc/systemd/system/phoniebox-idle-watchdog.service
 # enable the services needed
-# idle-watchdog.service is controlled via the web app
-sudo systemctl enable rfid-reader
-sudo systemctl enable startup-sound
-sudo systemctl enable gpio-buttons
+sudo systemctl enable phoniebox-idle-watchdog
+sudo systemctl enable phoniebox-rfid-reader
+sudo systemctl enable phoniebox-startup-sound
+sudo systemctl enable phoniebox-gpio-buttons
 
 # copy mp3s for startup and shutdown sound to the right folder
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
@@ -589,6 +601,7 @@ then
 	sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 	# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
 	sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+	echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 	sudo chown mpd:audio /etc/mpd.conf
 	sudo chmod 640 /etc/mpd.conf
 	# update mpc / mpd DB
@@ -606,6 +619,7 @@ then
 	sudo mkdir /home/pi/.config/mopidy
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+	echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
 	# Change vars to match install config
 	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
@@ -646,7 +660,6 @@ then
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
-
 fi
 
 # start DHCP

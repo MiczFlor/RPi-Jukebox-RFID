@@ -4,12 +4,13 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
-* **Phoniebox 1.1.7 released** [Adding **Spotify** to your Phoniebox](docs/SPOTIFY-INTEGRATION.md). See the next bulletpoint for information on how you can improve this new feature. (2018-10-18)
-* **Spotify integration needs you** I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
+* **Phoniebox 1.1.8-beta released** [One-line install script adding **Spotify** to your Phoniebox](wiki/INSTALL-stretch#one-line-install-command), a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. See the next bulletpoint for information on how you can help to improve the new Spotify version. (2018-10-30)
+* **Spotify integration needs you** I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) - which will soon move to the wiki, getting us to the next bulletpoint.
+* **Documentation moved to the wiki** The GitHub wiki for Phoniebox is active. And in the making. Not sure if this is the best way to go, but please try to add content in the wiki regarding special hardware, software tweaks and the like.
 * **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-10-18)
-* **One Line Install Script** As of version 1.x there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](docs/INSTALL-stretch.md#oneLineInstall). (2018-08-18)
-* **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](docs/MANUAL.md#podcasts) (2018-05-09)
-* **Bleeding edge: `develop` branch** The maintenance with a growing contributor team (kudos!) got complicated. I introduced the branch `develop` which is where all new stuff is happening before merged to `master`. (2018-08-30)
+* **One Line Install Script** As of version 1.x there is . Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#oneLineInstall). (2018-08-18)
+* **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#podcasts) (2018-05-09)
+* **Bleeding edge: `develop` branch** The maintenance with a growing contributor team (kudos!) got complicated. I introduced the branch `develop` which is where all new stuff is happening before merged to `master`. Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to contribute code](docs/CONTRIBUTE.md). (2018-08-30)
 ---
 
 <a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="docs/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>
@@ -43,32 +44,32 @@ The **web app** runs on any device and is mobile optimised. It provides:
 | --- | --- | --- | --- | --- | --- |
 | ![Caption](docs/img/gallery/Steph-20171215_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Elsa-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/hailogugo-20171222-h90-01.jpg "Caption") | 
 
-**See more innovation, upcycling and creativity in the [Phoniebox Gallery](docs/GALLERY.md) or visit and share the project's homepage at [phoniebox.de](http://phoniebox.de/). There is also an [english Phoniebox page](http://phoniebox.de/index.php?l=en).**
+**See more innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY) or visit and share the project's homepage at [phoniebox.de](http://phoniebox.de/). There is also an [english Phoniebox page](http://phoniebox.de/index.php?l=en).**
 
 ## <a name="install"></a>Installation
 
-* Installation instructions for Raspbian [Stretch](docs/INSTALL-stretch.md) are available in the `docs` folder.
-* You can also use the [headless installation over ssh](docs/INSTALL-stretch.md#ssh-install) straight from a fresh SD card.
+* Installation instructions for Raspbian [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) are available in the `docs` folder.
+* You can also use the [headless installation over ssh](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#ssh-install) straight from a fresh SD card.
 * For a quick install procedure, take a look at the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default.sh). This should get you started quickly.
-* If you choose the step by step installation, you need to walk through the configuration steps for [Stretch](docs/CONFIGURE-stretch.md).
-* Once everything has been installed and configured, read the manual to change settings, register RFID cards, add audio: [`MANUAL.md`](docs/MANUAL.md)
+* If you choose the step by step installation, you need to walk through the configuration steps for [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch).
+* Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
 
 ## Manual
 
-In [`MANUAL.md`](docs/MANUAL.md) you will learn:
+In the [Manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) you will learn:
 
-* [How to connect to the Phoniebox from any computer to add and edit audio files.](docs/MANUAL.md#connect)
-* [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](docs/MANUAL.md#registercards)
-* [How to add webradio stations and other streams to the playout files](docs/MANUAL.md#webstreams) - [and even mix web based and local files.](docs/MANUAL.md#mixwebstreams)
-* [Adding Podcasts the your Phoniebox](docs/MANUAL.md#podcasts)
-* [How to control the Phoniebox through the web app.](docs/MANUAL.md#webapp)
-* [How to assign cards specific tasks such as changing the volume level or shutting down the Phoniebox.](docs/MANUAL.md#cardcontrol)
+* [How to connect to the Phoniebox from any computer to add and edit audio files.](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connect)
+* [How to register new RFID cards, assign them a *human readable* shortcut and add audio files for each card.](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registercards)
+* [How to add webradio stations and other streams to the playout files](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webstreams) - [and even mix web based and local files.](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#mixwebstreams)
+* [Adding Podcasts the your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#podcasts)
+* [How to control the Phoniebox through the web app.](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp)
+* [How to assign cards specific tasks such as changing the volume level or shutting down the Phoniebox.](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#cardcontrol)
 
 ## Contributing improvements
 
-The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to contribute code](docs/CONTRIBUTE.md).
 
 ## Reporting bugs
 
@@ -78,7 +79,7 @@ If you find something that doesn't work. And you tried and tried again, but it s
 
 ## Troubleshooting
 
-There is a growing section of [troubleshooting](docs/MANUAL.md#faq) including:
+There is a growing section of [troubleshooting](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#faq) including:
 
 * I want to improve the onboard audio quality
 * I am moving, how do I get the Phoniebox into my new WiFi network?
@@ -124,4 +125,4 @@ Here is a list of equipment needed. Chances are that you will find most of it in
 These are links to additional items which are not needed, but might be what you want to make your dream of a Phoniebox come true:
 
 * [Drehregler / Rotary Encoder / Dial](https://amzn.to/2J34guF) for volume control. Read here for more information on how to [integrate the rotary dial](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/267) 
-* [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#hifiberry-dac-soundcard-details)
+* [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#hifiberry-dac-soundcard-details)

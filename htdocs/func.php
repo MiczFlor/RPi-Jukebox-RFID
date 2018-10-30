@@ -267,6 +267,12 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
 
     print "
             <h4>";
+	$conf['settings_abs'] = realpath(getcwd().'/../settings/');
+	$ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
+	if ($ShowCover == "ON" && file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
+	$cover = $contentTree[$key]['path_abs']."/cover.jpg";
+	print  "<img class='img-responsive img-thumbnail' src='data:image/jpg;base64,".base64_encode(file_get_contents("$cover"))."' alt='' style='float: right; max-width: 85px'/>";
+	}
     if($contentTree[$key]['count_files'] > 0) {
         print "
               <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
@@ -291,7 +297,11 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
               </span>";
 	} elseif (in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files'])) {
 		print '<i class="mdi mdi-spotify mdi-36px"></i> ';
+		if (file_exists($contentTree[$key]['path_abs']."/title.txt")) {
+		print file_get_contents($contentTree[$key]['path_abs']."/title.txt");
+		} else {
 		print $contentTree[$key]['basename'];
+		}
 	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
 		print "<i class='mdi mdi-podcast mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];

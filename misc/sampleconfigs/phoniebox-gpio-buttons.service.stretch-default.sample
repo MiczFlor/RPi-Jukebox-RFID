@@ -1,5 +1,5 @@
 [Unit]
-Description=GPIO Buttons Service
+Description=Phoniebox GPIO Buttons Service
 After=network.target iptables.service firewalld.service
 
 [Service]

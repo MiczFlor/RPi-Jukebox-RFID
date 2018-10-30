@@ -3,6 +3,10 @@ from gpiozero import Button
 from signal import pause
 from subprocess import check_call
 
+# 2018-10-15
+# this script has the `pull_up=True` for all pins. See the following link for additional info: 
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
+#
 # 2017-12-12
 # This script was copied from the following RPi forum post:
 # https://forum-raspberrypi.de/forum/thread/13144-projekt-jukebox4kids-jukebox-fuer-kinder/?postID=312257#post312257
@@ -31,12 +35,12 @@ def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 shut = Button(3, hold_time=2)
-vol0 = Button(13)    
+vol0 = Button(13,pull_up=True)
 volU = Button(16,pull_up=True)
 volD = Button(19,pull_up=True)
-next = Button(26)
-prev = Button(20)
-halt = Button(21)
+next = Button(26,pull_up=True)
+prev = Button(20,pull_up=True)
+halt = Button(21,pull_up=True)
 
 shut.when_held = def_shutdown
 vol0.when_pressed = def_vol0

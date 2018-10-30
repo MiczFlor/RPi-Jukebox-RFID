@@ -1,11 +1,11 @@
 
-# Spotify support for Phoniebox (this guide is for updaters)
+# Spotify support for Phoniebox (this guide is for all who want to manually update to +Spotify Edition)
 
 **Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 
 This is the documentation on how to integrate Spotify into your Phoniebox if you want to manually install it. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code.
 
-# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/INSTALL-stretch.md#one-line-install-command).
+# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
 
 ## Installing stretch on your Pi
 
@@ -151,10 +151,22 @@ config_file = /etc/mopidy/logging.conf
 debug_file = /var/log/mopidy/mopidy-debug.log
 
 [local]
-media_dir = /var/lib/mopidy/media
+enabled = true
+media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+excluded_file_extensions =
+  .conf
+  .jpg
+  .txt
+  placeholder
+
+[file]
+#enabled = true
+metadata_timeout = 1
 
 [m3u]
 playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
+default_encoding = UTF-8
+default_extension = .m3u
 
 [audio]
 output = alsasink
@@ -172,10 +184,10 @@ locale = de_DE
 
 [spotify]
 enabled = true
-username = spotify_username
-password = spotify_password
-client_id = spotify_client_id
-client_secret = spotify_client_secret
+username = %spotify_username%
+password = %spotify_password%
+client_id = %spotify_client_id%
+client_secret = %spotify_client_secret%
 #bitrate = 160
 #volume_normalization = true
 #private_session = false
@@ -299,8 +311,8 @@ hostname = 0.0.0.0
 [m3u]
 #enabled = true
 #base_dir = $XDG_MUSIC_DIR
-#default_encoding = latin-1
-#default_extension = .m3u8
+default_encoding = UTF-8
+default_extension = .m3u
 playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 
 [softwaremixer]
@@ -316,31 +328,33 @@ playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 #  .jpeg
 #show_dotfiles = false
 #follow_symlinks = false
-#metadata_timeout = 1000
+metadata_timeout = 1
 
 [local]
-#enabled = true
+enabled = true
 #library = json
-#media_dir = $XDG_MUSIC_DIR
+media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 #scan_timeout = 1000
 #scan_flush_threshold = 100
 #scan_follow_symlinks = false
-#excluded_file_extensions = 
+excluded_file_extensions = 
 #  .directory
 #  .html
 #  .jpeg
-#  .jpg
+  .jpg
 #  .log
 #  .nfo
 #  .png
-#  .txt
+  .txt
+  .conf
+  placeholder
 
 [spotify]
 enabled = true
-username = spotify_username
-password = spotify_password
-client_id = spotify_client_id
-client_secret = spotify_client_secret
+username = %spotify_username%
+password = %spotify_password%
+client_id = %spotify_client_id%
+client_secret = %spotify_client_secret%
 #bitrate = 160
 #volume_normalization = true
 #private_session = false
@@ -352,12 +366,11 @@ client_secret = spotify_client_secret
 #search_artist_count = 10
 #search_track_count = 50
 #toplist_countries =
-
 ~~~
 
 ## Install Phoniebox (if not done yet) - if you want to UPGRADE to spotify only, skip this step
 ~~~
-cd; rm stretch-install-default*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-default.sh; chmod +x stretch-install-default.sh; ./stretch-install-default.sh
+cd; rm stretch-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-spotify.sh; chmod +x stretch-install-spotify.sh; ./stretch-install-spotify.sh
 ~~~
 ## Change Playlists_Folders_Path to:
 ~~~

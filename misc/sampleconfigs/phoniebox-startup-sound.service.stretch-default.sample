@@ -1,5 +1,5 @@
 [Unit]  
-Description=Startup Sound
+Description=Phoniebox Startup Sound
 After=network.target iptables.service firewalld.service rfid-reader.service
 
 [Service]

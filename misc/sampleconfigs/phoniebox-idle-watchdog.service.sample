@@ -1,5 +1,5 @@
 [Unit]  
-Description=Idle Watchdog Service
+Description=Phoniebox Idle Watchdog Service
 After=network.target iptables.service firewalld.service
 
 [Service]

@@ -8,10 +8,22 @@ config_file = /etc/mopidy/logging.conf
 debug_file = /var/log/mopidy/mopidy-debug.log
 
 [local]
-media_dir = /var/lib/mopidy/media
+enabled = true
+media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+excluded_file_extensions =
+  .conf
+  .jpg
+  .txt
+  placeholder
+
+[file]
+#enabled = true
+metadata_timeout = 1
 
 [m3u]
 playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
+default_encoding = UTF-8
+default_extension = .m3u
 
 [audio]
 output = alsasink

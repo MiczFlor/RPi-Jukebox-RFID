@@ -1,6 +1,6 @@
 [Unit]  
-Description=RFID-Reader Service
-After=network.target iptables.service firewalld.service mopidy.service
+Description=Phoniebox RFID-Reader Service
+After=network.target iptables.service firewalld.service
 
 [Service]
 User=pi

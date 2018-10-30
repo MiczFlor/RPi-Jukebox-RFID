@@ -44,7 +44,7 @@ if($post['delete'] == "delete") {
     }
     
     // posted too little?
-    if(!isset($post['streamURL']) && !isset($post['audiofolder']) && !isset($post['YTstreamURL'])) {
+    if((!isset($post['streamURL']) || !isset($post['streamType'])) && !isset($post['audiofolder']) && !isset($post['YTstreamURL'])) {
         $messageAction .= $lang['cardRegisterErrorStreamOrAudio'];
     }
 

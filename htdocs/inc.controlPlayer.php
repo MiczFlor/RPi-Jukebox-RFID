@@ -8,6 +8,6 @@ $(document).ready(function() {
     var refreshId = setInterval(function() {
         $('#coverWrapper').load('ajax.loadCover.php?' + 1*new Date());
 		$('#controlWrapper').load('ajax.loadControls.php?' + 1*new Date());
-    }, 2000);
+    }, 5000);
 });
 </script> 

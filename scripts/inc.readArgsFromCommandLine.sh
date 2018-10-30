@@ -31,8 +31,8 @@ do
     esac
 done
 
-if [ $DEBUG == "true" ]; then echo "  ######### SCRIPT inc.readArgsFromCommandLine.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "  # VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "  # VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "  # VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "  # VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  ######### SCRIPT inc.readArgsFromCommandLine.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  # VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  # VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  # VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi

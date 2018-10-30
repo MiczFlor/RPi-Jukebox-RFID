@@ -118,7 +118,13 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           if (isset($fpost['streamURL'])) {
               print $fpost['streamURL'];
           }
-          ?>" id="streamURL" name="streamURL" placeholder="<?php print $lang['cardFormStreamPlaceholder']; ?>" class="form-control input-md" type="text">
+          ?>" id="streamURL" name="streamURL" placeholder="<?php 
+		  if ($edition == "plusSpotify") { 
+		  print $lang['cardFormStreamPlaceholderPlusSpotify']; 
+		  } elseif ($edition == "classic") { 
+		  print $lang['cardFormStreamPlaceholderClassic']; 
+		  } 
+		  ?>" class="form-control input-md" type="text">
           <span class="help-block"><?php print $lang['cardFormStreamHelp']; ?></span>  
           </div>
         </div>
@@ -129,9 +135,15 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           <div class="col-md-6">
             <select id="streamType" name="streamType" class="form-control">
               <option value="false"><?php print $lang['cardFormStreamTypeSelectDefault']; ?></option>
-			  <option value='spotify'<?php if($fpost['streamType'] == "spotify") { print " selected=selected"; } ?>>Spotify</option>
+			  <?php
+			  if ($edition == "plusSpotify") {
+				print "<option value='spotify'";
+				if($fpost['streamType'] == "spotify") { print " selected=selected"; }
+				print ">Spotify</option>";
+			  }
+			  ?>
               <option value='podcast'<?php if($fpost['streamType'] == "podcast") { print " selected=selected"; } ?>>Podcast</option>
-              <!-option value='youtube'<?php if($fpost['streamType'] == "youtube") { print " selected=selected"; } ?>>YouTube</option->
+              <!--option value='youtube'<?php if($fpost['streamType'] == "youtube") { print " selected=selected"; } ?>>YouTube</option-->
               <option value='livestream'<?php if($fpost['streamType'] == "livestream") { print " selected=selected"; } ?>>Web radio / live stream</option>
               <option value='other'<?php if($fpost['streamType'] == "other") { print " selected=selected"; } ?>>Other</option>
             </select>

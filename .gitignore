@@ -2,17 +2,24 @@
 settings/Audio_Folders_Path
 settings/Audio_Volume_Change_Step
 settings/Audio_iFace_Name
+settings/cover.jpg
+settings/edition
 settings/Idle_Time_Before_Shutdown
 settings/Latest_Folder_Played
+settings/Latest_Played_File
 settings/Latest_Playlist_Played
 settings/Latest_RFID
 settings/Max_Volume_Limit
 settings/Playlists_Folders_Path
 settings/rfid_trigger_play.conf
+settings/Second_Swipe
+settings/version
 htdocs/config.php
 scripts/gpio-buttons.py
 
 shared/*
 playlists/*
+logs/*
 .git*
 *~
+*.*~

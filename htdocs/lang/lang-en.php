@@ -62,6 +62,14 @@ $lang['globalReplay'] = "Replay";
 $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
 
+// Edition (classic, +spotify)
+$lang['globalEdition'] = "Edition";
+$lang['classic'] = "Classic edition (barebones)";
+$lang['plusSpotify'] = "Plus edition (feat. Spotify integration)";
+
+$lang['navEditionClassic'] = "Classic";
+$lang['navEditionPlusSpotify'] = "+Spotify";
+
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
 $lang['navSettings'] = "Settings";
@@ -87,7 +95,7 @@ $lang['cardRegisterMessageSwipeNew'] = "Swipe another card, if you want to regis
 $lang['cardEditMessageInputNew'] = "Type another card ID pick one from the list on the <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterErrorTooMuch'] = "<p>This is too much! Please select only one audiofolder. Make up your mind.</p>";
 $lang['cardRegisterErrorStreamAndAudio'] = "<p>This is too much! Either a stream or an audio folder. Make up your mind.</p>";
-$lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add a stream or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
+$lang['cardRegisterErrorStreamOrAudio'] = "<p>This is not enough! Add an URL including stream type or select an audio folder. Or 'Cancel' to go back to the home page.</p>";
 $lang['cardRegisterErrorExistingAndNew'] = "<p>This is too much! Either choose an existing folder or create a new one.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>A folder named with the same name already exists! Chose a different one.</p>";
 $lang['cardRegisterErrorSuggestFolder'] = "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
@@ -104,7 +112,8 @@ $lang['cardFormFolderLegend'] = "Audio Folder";
 $lang['cardFormFolderLabel'] = "a) Link card to audio folder";
 $lang['cardFormFolderSelectDefault'] = "None (pulldown to select a folder)";
 $lang['cardFormStreamLabel'] = "b) ... or connect with Stream URL";
-$lang['cardFormStreamPlaceholder'] = "Spotify: spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Select type";
 $lang['cardFormStreamTypeHelp'] = "Select the type you are adding";
@@ -147,6 +156,10 @@ $lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, 
 $lang['settingsSecondSwipeRestart'] = "Re-start playlist";
 $lang['settingsSecondSwipePause'] = "Toggle pause / play";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only system commands";
+$lang['settingsWebInterface'] = "Web Interface";
+$lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";
+$lang['settingsShowCoverON'] = "Show cover";
+$lang['settingsShowCoverOFF'] = "Don't show cover";
 
 /*
 * System info
@@ -154,6 +167,8 @@ $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only s
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
+$lang['infoMopidyStatus'] = "Mopidy Server Status";
+$lang['infoMPDStatus'] = "MPD Server Status";
 
 /*
 * Folder Management and File Upload
@@ -174,4 +189,10 @@ $lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>The parent folder does 
 $lang['manageFilesFoldersSuccessNewFolder'] = "New folder created: ";
 $lang['manageFilesFoldersSelectDefault'] = "Pull down to select a folder and/or create a new child folder below";
 
+$lang['manageFilesFoldersRenewDB'] = "Renew database";
+$lang['manageFilesFoldersLocalScan'] = "Scan Music Library";
+$lang['manageFilesFoldersRenewDBinfo'] = "Please scan your music library after you have uploaded new files or moved folders. The scan is not necessary to hear music, but it is necessary to see track information in the Web UI. Only new or moved files will be scanned. While the scan is running, mopidy will be stopped. After scan is complete, mopidy starts automatically. You can see the server status in the Info section.";
+
+
 ?>
+

@@ -57,13 +57,13 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
 # some debug info
-if [ $DEBUG == "true" ]; then echo "########### SCRIPT inc.writeFolderConfig.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
-if [ $DEBUG == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT inc.writeFolderConfig.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 
 
-if [ $DEBUG == "true" ]; then echo "CHECK FOLDER EXISTS: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "CHECK FOLDER EXISTS: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 # Only continue if $FOLDER exists
 if [ -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]
 then
@@ -72,7 +72,7 @@ then
     # set default vars, write file, exit
     if [ $COMMAND == "createDefaultFolderConf" ]
     then
-        if [ $DEBUG == "true" ]; then echo "  !!!setting default vars for raw create!!!" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "  !!!setting default vars for raw create!!!" >> $PATHDATA/../logs/debug.log; fi
         # set default vars
         CURRENTFILENAME="filename"
         ELAPSED="0"
@@ -85,10 +85,10 @@ then
     #########################################################
     # KEEP NEW VARS IN MIND
     # Go through all given vars - make copy with prefix if found
-    if [ $DEBUG == "true" ]; then echo "  KEEP NEW VARS IN MIND" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then echo "  KEEP NEW VARS IN MIND" >> $PATHDATA/../logs/debug.log; fi
     if [ "$CURRENTFILENAME" ]; then 
         NEWCURRENTFILENAME="$CURRENTFILENAME"; 
-        if [ $DEBUG == "true" ]; then echo "VAR NEWCURRENTFILENAME: $NEWCURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "VAR NEWCURRENTFILENAME: $NEWCURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
     fi
     if [ "$ELAPSED" ]; then NEWELAPSED="$ELAPSED"; fi
     if [ "$PLAYSTATUS" ]; then NEWPLAYSTATUS="$PLAYSTATUS"; fi
@@ -98,8 +98,8 @@ then
 
     # Read the current config file (include will execute == read)
     . "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
-    if [ $DEBUG == "true" ]; then echo "  content of ${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-    if [ $DEBUG == "true" ]; then cat "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then echo "  content of ${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then cat "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 
     #########################################################
     # RAW CONFIG FILE
@@ -118,10 +118,10 @@ then
     #########################################################
     # REPLACE VALUES FROM THE CONFIG FILE WITH NEW ONES
     # Walk through all vars and prefer new over existing to write to config
-    if [ $DEBUG == "true" ]; then echo "  REPLACE VALUES FROM THE CONFIG FILE WITH NEW ONES" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then echo "  REPLACE VALUES FROM THE CONFIG FILE WITH NEW ONES" >> $PATHDATA/../logs/debug.log; fi
     if [ "$NEWCURRENTFILENAME" ]; then 
         CURRENTFILENAME="$NEWCURRENTFILENAME"; 
-        if [ $DEBUG == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
+        if [ "$DEBUG" == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
     fi
     if [ "$NEWELAPSED" ]; then ELAPSED="$NEWELAPSED"; fi
     if [ "$NEWPLAYSTATUS" ]; then PLAYSTATUS="$NEWPLAYSTATUS"; fi
@@ -132,7 +132,7 @@ then
     #########################################################
     # WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG
     # for $CURRENTFILENAME using | as alternate regex delimiter because of the folder path slash 
-    if [ $DEBUG == "true" ]; then echo "  WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then echo "  WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG" >> $PATHDATA/../logs/debug.log; fi
     sudo sed -i 's|%CURRENTFILENAME%|'"$CURRENTFILENAME"'|' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%ELAPSED%/'"$ELAPSED"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%PLAYSTATUS%/'"$PLAYSTATUS"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
@@ -142,7 +142,7 @@ then
     sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
-    if [ $DEBUG == "true" ]; then echo "NOT FOUND: Full path to folder '${AUDIOFOLDERSPATH}/${FOLDER}'" >> $PATHDATA/../logs/debug.log; fi
+    if [ "$DEBUG" == "true" ]; then echo "NOT FOUND: Full path to folder '${AUDIOFOLDERSPATH}/${FOLDER}'" >> $PATHDATA/../logs/debug.log; fi
 fi
 
 

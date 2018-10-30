@@ -389,6 +389,14 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
         </div>
 
         </form>
+		<?php
+		if ($edition == "plusSpotify") {
+		print "
+		<legend><i class='mdi mdi-autorenew'></i> ".$lang['manageFilesFoldersRenewDB']."</legend>
+		<h4>".$lang['manageFilesFoldersRenewDBinfo']."</h4>
+		<a href='".$_SERVER['PHP_SELF']."?scan=true' class='btn btn-success'> ".$lang['manageFilesFoldersLocalScan']."</a>";
+		}
+		?>
 
         </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
@@ -417,4 +425,3 @@ if ($debug == "true") {
 ?>
 </body>
 </html>
-
