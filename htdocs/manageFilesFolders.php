@@ -111,7 +111,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         // hang on, does that folder exist already?
         if(!file_exists($Audio_Folders_Path . "/" . $moveFolder)) {
             // no, so create the folder
-            $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; chmod 775 "' . $moveFolder . '"';
+            $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; chmod 777 "' . $moveFolder . '"';
             exec($exec);   
             $messageAction .= "Will create new folder and move files to: '" . $moveFolder . "'";
         } else {
@@ -122,7 +122,7 @@ if ($_POST['ACTION'] == "fileUpload") {
     /*
     * see if any valid folder has been chosen
     */
-    print "if(".realpath($moveFolder)." == ".realpath($Audio_Folders_Path).") {";
+    //print "if(".realpath($moveFolder)." == ".realpath($Audio_Folders_Path).") {";
     if(realpath($moveFolder) == realpath($Audio_Folders_Path)) {
         $messageWarning .= $lang['manageFilesFoldersErrorNoNewFolder'];
     }
@@ -132,7 +132,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         // move files to folder
         foreach ($uFiles['ufile'] as $key => $values) {
             $targetName = $moveFolder . '/' . $values['name'];
-            $exec = 'mv "' . $values['tmp_name'] . '" "' . $targetName . '"; sudo chown -R pi:www-data "' . $targetName . '"; chmod 775 "' . $targetName . '"';
+            $exec = 'mv "' . $values['tmp_name'] . '" "' . $targetName . '"; chown -R pi:www-data "' . $targetName . '"; chmod 777 "' . $targetName . '"';
             exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
@@ -162,7 +162,7 @@ if ($_POST['ACTION'] == "folderCreateNew") {
         /*
         * create folder
         */        
-        $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chmod 775 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chown -R pi:www-data "' . $Audio_Folders_Path.'/'.$newDirPathRel . '"';
+        $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chmod 777 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chown -R pi:www-data "' . $Audio_Folders_Path.'/'.$newDirPathRel . '"';
         exec($exec);
         $messageSuccess = "<p>".$lang['manageFilesFoldersSuccessNewFolder']." '".$newDirPathRel."'</p>";
         
