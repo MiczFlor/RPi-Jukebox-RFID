@@ -3,6 +3,9 @@ from gpiozero import Button
 from signal import pause
 from subprocess import check_call
 
+# 2018-10-31
+# Added the function on holding volume + - buttons to change the volume in 0.3s interval
+#
 # 2018-10-15
 # this script has the `pull_up=True` for all pins. See the following link for additional info: 
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
@@ -36,8 +39,8 @@ def def_halt():
 
 shut = Button(3, hold_time=2)
 vol0 = Button(13,pull_up=True)
-volU = Button(16,pull_up=True)
-volD = Button(19,pull_up=True)
+volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
+volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
 next = Button(26,pull_up=True)
 prev = Button(20,pull_up=True)
 halt = Button(21,pull_up=True)
@@ -45,7 +48,11 @@ halt = Button(21,pull_up=True)
 shut.when_held = def_shutdown
 vol0.when_pressed = def_vol0
 volU.when_pressed = def_volU
+#When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
+volU.when_held = def_volU
 volD.when_pressed = def_volD
+#When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
+volD.when_held = def_volD
 next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
