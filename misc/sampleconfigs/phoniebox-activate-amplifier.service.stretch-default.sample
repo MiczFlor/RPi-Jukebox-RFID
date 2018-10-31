@@ -1,0 +1,11 @@
+[Unit]
+Description=Phoniebox Aplifier Activation Service
+After=network.target iptables.service firewalld.service
+
+[Service]
+Restart=always
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/activate-amplifier.py
+
+[Install]
+WantedBy=multi-user.target
