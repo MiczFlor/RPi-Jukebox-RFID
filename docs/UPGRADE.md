@@ -27,9 +27,9 @@ We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Cl
 
 ~~~
 cd /home/pi/RPi-Jukebox-RFID
-git checkout develop
+git checkout master
 git fetch origin
-git reset --hard origin/develop
+git reset --hard origin/master
 git pull
 sudo systemctl stop mpd
 sudo systemctl stop mopidy
