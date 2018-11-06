@@ -100,7 +100,7 @@ sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
 cd
 sudo rm -rf mopidy-spotify
-apt-get install git
+sudo apt-get install git
 git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 cd mopidy-spotify
 sudo python setup.py install
