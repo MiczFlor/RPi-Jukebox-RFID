@@ -555,6 +555,7 @@ sudo service php7.0-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 # services to launch after boot using systemd
 # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
