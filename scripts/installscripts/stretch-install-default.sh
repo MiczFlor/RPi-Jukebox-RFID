@@ -387,7 +387,7 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen
+sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
 sudo pip install "evdev == 0.7.0"
 sudo pip install youtube_dl
 
@@ -467,6 +467,7 @@ sudo service php7.0-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 # services to launch after boot using systemd
 # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
