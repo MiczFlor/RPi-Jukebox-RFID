@@ -3,15 +3,15 @@
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
 **IMPORTANT for users of +Spotify Edition:
-If you want to use this fantastic edition, you need a Spotify Premium subscription. Phoniebox will not work with Spotify Free, just Spotify Premium. You need a non-Facebook Spotify username and password. If you created your account through Facebook you'll need to create a "device password" to be able to use Phoniebox. Go to http://www.spotify.com/account/set-device-password/, login with your Facebook account, and follow the instructions. However, sometimes that process can fail for users with Facebook logins, in which case you can create an app-specific password on Facebook by going to facebook.com > Settings > Security > App passwords > Generate app passwords, and generate one to use with Phoniebox.
+If you want to use this fantastic edition, you need a Spotify Premium subscription. Phoniebox will not work with Spotify Free, just Spotify Premium. You need a non-Facebook Spotify username and password. If you created your account through Facebook you'll need to create a "device password" to be able to use Phoniebox. Go to http://www.spotify.com/account/set-device-password/, login with your Facebook account, and follow the instructions. However, sometimes that process can fail for users with Facebook logins, in which case you can create an app-specific password on Facebook by going to facebook.com > Settings > Security > App passwords > Generate app passwords, and generate one to use with Phoniebox.**
 
 **The next important thing is, that the MP3 (local music) handling has completely changed for the +Spotify Edition. The tracks  need to be indexed by Mopidy & Mopidy-Spotify (this is the part of Phoniebox, which gives you spotify support) and the created M3U files do have another structure than normal M3U files.
 You have to scan you library once (if you hadn't yet) and everytime you upload new local tracks to your Phoniebox.
-You can scan local files under "Folders & Files" (Top Navigation).
+You can scan local files under "Folders & Files" (Top Navigation).**
 
 For the future we try to integrate an automation for that.
 
-**If you open an issue on github, please provide as much informations as you can. What is you Edition (Classic or +Spotify)? Which version so you have? What is the problem and what did you try to solve this? And so on...
+**If you open an issue on github, please provide as much informations as you can. What is you Edition (Classic or +Spotify)? Which version so you have? What is the problem and what did you try to solve this? And so on...**
 
 
 *Important update news*
