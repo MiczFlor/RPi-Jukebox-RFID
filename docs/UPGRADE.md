@@ -98,6 +98,9 @@ git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxw
 cd mopidy-spotify
 sudo python setup.py install
 
+sudo sed -i '/level/s/\bINFO\b/WARNING/g' /etc/mopidy/logging.conf
+sudo rm /var/log/mopidy/mopidy.log
+
 sudo reboot
 ~~~
 
