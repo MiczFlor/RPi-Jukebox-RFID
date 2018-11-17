@@ -13,9 +13,9 @@ There is a file `settings/version` containing the version number.
 
 **Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
-# Upgrade from Version 1.1.7 to 1.1.8-beta
+# Upgrade from Version 1.1.7 to 1.1.8-rc2
 
-**NOTE**: version `1.1.8-beta` is the `master` branch but still in beta, meaning: we don't trust it fully ;) If you run into issues, please ask them on the "issues" board on GitHub. [2018-10-30].
+**NOTE**: version `1.1.8-rc2` is the `master` branch but still in beta, meaning: we don't trust it fully ;) If you run into issues, please ask them on the "issues" board on GitHub. [2018-10-30].
 
 And in capital letters: **YOUR BEST CHOICE IS TO GET A NEW SD CARD AND DO A FRESH INSTALL FOR THE NEW 1.1.8 VERSION, BECAUSE A LOT HAS CHANGED AS YOU CAN SEE IN THE UPGRADE SCRIPT BELOW** (now you can't say you didn't know...)
 
@@ -90,6 +90,8 @@ EDITION=$(grep 'SPOTinstall' /home/pi/PhonieboxInstall.conf|sed 's/SPOTinstall="
 sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
 sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+sudo rm -rf /usr/local/lib/python2.7/dist-packages/mopidy_spotify*
+sudo rm -rf /usr/local/lib/python2.7/dist-packages/Mopidy_Spotify-*
 cd
 sudo rm -rf mopidy-spotify
 git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
