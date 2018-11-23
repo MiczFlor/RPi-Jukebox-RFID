@@ -223,6 +223,9 @@ if [ "$CARDID" ]; then
         $DISABLEWIFI)
             $PATHDATA/playout_controls.sh -c=disablewifi
             ;;
+        $CMDPLAYCUSTOMPLS)
+            $PATHDATA/playout_controls.sh -c=playlistaddplay -v="PhonieCustomPLS" -d="PhonieCustomPLS"
+            ;;
         $STARTRECORD600)
             #start recorder for -v seconds
             $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
