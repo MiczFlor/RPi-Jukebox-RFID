@@ -4,8 +4,6 @@
 
 echo "####################################"
 echo "### PHONIEBOX INFO"
-echo " "
-
 echo "### version"; cat /home/pi/RPi-Jukebox-RFID/settings/version; echo " "
 echo "### edition"; cat /home/pi/RPi-Jukebox-RFID/settings/edition; echo " "
 echo "### Audio_iFace_Name"; cat /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name; echo " "
