@@ -450,10 +450,6 @@ echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
 echo "ON" > /home/pi/RPi-Jukebox-RFID/settings/ShowCover
 
-# make sure bash scripts have the right settings
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-
 # The new way of making the bash daemon is using the helperscripts 
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
@@ -470,6 +466,12 @@ sudo service php7.0-fpm restart
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+
+# make sure bash scripts have the right settings
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 
 # services to launch after boot using systemd
 # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
