@@ -65,7 +65,7 @@ case "$response" in
         # append variables to config file
         echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=GB" >> $PATHDATA/PhonieboxInstall.conf
+        echo "WIFIcountryCode=DE" >> $PATHDATA/PhonieboxInstall.conf
         ;;
     *)
     	WIFIconfig=YES
@@ -388,8 +388,10 @@ sudo iwconfig wlan0 power off
 # Install required packages
 sudo apt-get update
 sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
+sudo pip install -r requirements.txt
 sudo pip install "evdev == 0.7.0"
 sudo pip install youtube_dl
+sudo pip install pi-rc522
 
 # Get github code
 cd /home/pi/
@@ -541,10 +543,11 @@ then
     sudo chmod 664 /etc/dhcpcd.conf
     
     # WiFi SSID & Password
-    # -rw-r--r-- 1 root root 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs//wpa_supplicant.conf.stretch-default2.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo sed -i 's/%%WIFIcountryCode%%/'"$%WIFIcountryCode%"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
 

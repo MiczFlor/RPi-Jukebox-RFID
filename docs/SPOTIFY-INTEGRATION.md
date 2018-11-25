@@ -1,11 +1,33 @@
 
 # Spotify support for Phoniebox (this guide is for all who want to manually update to +Spotify Edition)
 
+**MUST READ**
+
+If you want to integrate Spotify:
+
+* You **must have** a Spotify Premium subscription. Phoniebox will not work with Spotify Free, just Spotify Premium. 
+* You need a non-Facebook Spotify username and password. 
+  * If you created your account through Facebook you'll need to create a "device password" to be able to use Phoniebox. Go to http://www.spotify.com/account/set-device-password/, login with your Facebook account, and follow the instructions. However, sometimes that process can fail for users with Facebook logins, in which case you can create an app-specific password on Facebook by going to facebook.com > Settings > Security > App passwords > Generate app passwords, and generate one to use with Phoniebox.
+* MP3 (local music) handling has completely changed for the +Spotify Edition. The tracks  need to be indexed by Mopidy & Mopidy-Spotify (this is the part of Phoniebox, which gives you spotify support) and the created M3U files do have another structure than normal M3U files.
+  * You have to scan you library once (if you hadn't yet) and everytime you upload new local tracks to your Phoniebox.
+  * You can scan local files under "Folders & Files" (Top Navigation).
+  * For the future we try to integrate an automation for that.
+
+## Bug reports and testers
+
 **Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 
-This is the documentation on how to integrate Spotify into your Phoniebox if you want to manually install it. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code.
+If you open an issue on github, please provide as much informations as you can. What is you Edition (Classic or +Spotify)? Which version so you have? What is the problem and what did you try to solve this? And so on..
 
-# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
+** END of MUST READ :) **
+
+## About this document
+
+You best start will be to start a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
+
+The one-line-install should detect an existing installation and ask you if you want to keep the content. That should work, no guarantee :) a backup won't hurt anyone.
+
+The below documentation might be out of date. The one-line-install script will be more up to date. But the below still exists, because it has more content about how the integration works - and that might help you to understand a problem if and when it occurs. Please add, edit and comment to this document while testing the code.
 
 ## Installing stretch on your Pi
 

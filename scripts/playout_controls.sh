@@ -53,6 +53,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setidletime
 # disablewifi
 # enablewifi
+# togglewifi
 # startrecord
 # stoprecord
 
@@ -401,6 +402,18 @@ case $COMMAND in
         # see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
         # as good as it gets
         rfkill block wifi
+        ;;
+    togglewifi)
+	# function to allow toggle the wifi state
+	# Build special for franzformator
+	if [[ $(rfkill list wifi | grep -i "Soft blocked: no")  > 0 ]]
+	then
+	    echo "Wifi will now be deactivated"
+	    rfkill block wifi
+	else
+            echo "Wifi will noow be activated"
+	    rfkill unblock wifi
+	fi
         ;;
     startrecord)	
 
