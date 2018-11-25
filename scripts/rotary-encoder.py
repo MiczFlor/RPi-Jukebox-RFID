@@ -40,33 +40,42 @@ import os, time
 from subprocess import check_call
 
 
-def rotaryChangeCW():
+def rotaryChangeCWVol():
    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
 
-def rotaryChangeCCW():
+def rotaryChangeCCWVol():
    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
 
-def switchPressed(dummy):
-   check_call("./scripts/playout_controls.sh -c=mute", shell=True)
+def rotaryChangeCWTrack():
+   check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+
+def rotaryChangeCCWTrack():
+   check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
 
 if __name__ == "__main__":
 
-   CLOCKPIN = 5
-   DATAPIN = 6
-   SWITCHPIN = 13
+   CLOCKPINVol = 27 
+   DATAPINVol = 17
+
+   CLOCKPINTrack = 22
+   DATAPINTrack = 23
 
    GPIO.setmode(GPIO.BCM)
 
-   ky040 = KY040(CLOCKPIN, DATAPIN, SWITCHPIN, rotaryChangeCW, rotaryChangeCCW, switchPressed)
+   ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol)
 
-   ky040.start()
+   ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack)
+
+   ky040Vol.start()
+   ky040Track.start()
 
    try:
       while True:
          time.sleep(0.2)
    finally:
-      ky040.stop()
+      ky040Vol.stop()
+      ky040Track.stop()
       GPIO.cleanup()
 
 
