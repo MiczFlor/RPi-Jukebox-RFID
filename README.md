@@ -79,6 +79,15 @@ Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to co
 
 ## Reporting bugs
 
+To make maintenance easier for everyone, please run the following script 
+and post the results when reporting a bug.
+(Note: the results contain some personal information like IP or SSID.
+You might want to erase some of it before sharing with the bug report.)
+~~~
+/home/pi/RPi-Jukebox-RFID/scripts/helperscripts/Analytics_AfterInstallScript.sh 
+~~~
+Just copy this line and paste it into your terminal on the pi.
+
 If you find something that doesn't work. And you tried and tried again, but it still doesn't work, please report your issue in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues). Make sure to include information about the system and hardware you are using, like: 
 
 *Raspberry ZERO, OS Jessie, Card reader lists as (insert here) when running scripts/RegisterDevice.py, installed Phoniebox version 0.9.3 (or: using latest master branch).*
