@@ -543,8 +543,8 @@ then
     sudo chmod 664 /etc/dhcpcd.conf
     
     # WiFi SSID & Password
-    # -rw-r--r-- 1 root root 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch-default2.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
