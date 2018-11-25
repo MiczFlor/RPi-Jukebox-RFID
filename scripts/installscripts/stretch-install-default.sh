@@ -549,7 +549,7 @@ then
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo sed -i 's/%%WIFIcountryCode%%/'"$%WIFIcountryCode%"'/' /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
 
