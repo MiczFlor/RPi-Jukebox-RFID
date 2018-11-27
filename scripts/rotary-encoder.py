@@ -1,24 +1,29 @@
 #!/usr/bin/python3
-# rotary volume knob
+# rotary volume and track knob
+# This script is compatible with any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
+# Please combine with corresponding gpio button script, which handels the button functionality of the encoder
+# RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
+
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
 # RPi-Jukebox-RFID/scripts/ky040.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
+# RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
 # See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
 
 #
-# circuit diagram
+# circuit diagram for one of two possible encoders (volume), use GPIOs from code below for the tracks
 # (capacitors are optionally)
 #
 #       .---------------.                      .---------------.
 #       |               |                      |               |
-#       |           CLK |------o---------------| GPIO 5        |
+#       |           CLK |------o---------------| GPIO 27       |
 #       |               |      |               |               |
-#       |           DT  |------)----o----------| GPIO 6        |
+#       |           DT  |------)----o----------| GPIO 17       |
 #       |               |      |    |          |               |
-#       |           SW  |------)----)----------| GPIO 13       |
+#       |           SW  |------)----)----------| GPIO 3        |
 #       |               |      |    |          |               |
-#       |           +   |------)----)----------| 5V            |
+#       |           +   |------)----)----------| 3.3V          |
 #       |               |      |    |          |               |
 #       |           GND |------)----)----------| GND           |
 #       |               |      |    |          |               |
