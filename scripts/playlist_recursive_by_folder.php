@@ -137,7 +137,7 @@ foreach($folders as $folder) {
             * ignore . and ..
             */
             #$folder_files = array_diff(scandir($folder), array('..', '.'));
-            $folder_files = array_preg_diff(scandir($folder), '/^\./'); # remove all files starting with "." meaning all files ".*" from array
+            $folder_files = arrayPregDiff(scandir($folder), '/^\./'); # remove all files starting with "." meaning all files ".*" from array
             $folder_files = arrayPregDiff($folder_files, '/^.*\.m3u$/i'); # remove all *.m3u files from array
             $folder_files = arrayPregDiff($folder_files, '/^.*\.png$/i'); # remove all *.png files from array
             // some debugging info
