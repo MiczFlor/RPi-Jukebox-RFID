@@ -1,0 +1,24 @@
+Date	Contributors
+Jan 17	1
+Feb 17	1
+Mrz 17	1
+Apr 17	1
+Mai 17	1
+Jun 17	1
+Jul 17	1
+Aug 17	1
+Sep 17	1
+Okt 17	1
+Nov 17	1
+Dez 17	1
+Jan 18	1
+Feb 18	1
+Mrz 18	2
+Apr 18	6
+Mai 18	8
+Jun 18	9
+Jul 18	12
+Aug 18	14
+Sep 18	20
+Okt 18	22
+Nov 18	25
