@@ -388,10 +388,6 @@ sudo iwconfig wlan0 power off
 # Install required packages
 sudo apt-get update
 sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
-sudo pip install -r requirements.txt
-sudo pip install "evdev == 0.7.0"
-sudo pip install youtube_dl
-sudo pip install pi-rc522
 
 # Get github code
 cd /home/pi/
@@ -399,6 +395,12 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
 git fetch
+
+# Install more required packages
+sudo pip install -r requirements.txt
+sudo pip install "evdev == 0.7.0"
+sudo pip install youtube_dl
+sudo pip install pi-rc522
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
