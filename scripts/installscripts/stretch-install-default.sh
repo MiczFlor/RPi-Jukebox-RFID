@@ -468,9 +468,9 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /hom
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 # make sure bash scripts have the right settings
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 
 # services to launch after boot using systemd
@@ -647,9 +647,9 @@ sudo chown pi:www-data "$DIRaudioFolders"
 sudo chmod 775 "$DIRaudioFolders"
 
 # make sure bash scripts have the right settings
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 
 # / Access settings
@@ -674,7 +674,7 @@ case "$response" in
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/
         python2 RegisterDevice.py
-        sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+        sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
 esac
