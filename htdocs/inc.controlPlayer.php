@@ -25,6 +25,6 @@ if($ShowCover == "ON") {
 ?>
 
 		$('#controlWrapper').load('ajax.loadControls.php?' + 1*new Date());
-    }, 5000);
+    }, 2000);
 });
 </script> 
