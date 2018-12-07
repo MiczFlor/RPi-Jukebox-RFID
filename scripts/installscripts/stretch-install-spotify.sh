@@ -759,6 +759,12 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/settings
 sudo chown pi:www-data "$DIRaudioFolders"
 sudo chmod 775 "$DIRaudioFolders"
 
+# make sure bash scripts have the right settings
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
+
 # / Access settings
 ##################################################### 
 
