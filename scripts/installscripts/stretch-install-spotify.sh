@@ -151,7 +151,7 @@ echo "#####################################################
     	    EXISTINGuse=NO
     	    echo "Phoniebox will be a fresh install. The existing version will be dropped."
     	    echo "Hit ENTER to proceed to the next step."
-            #rm -r RPi-Jukebox-RFID
+            sudo rm -rf RPi-Jukebox-RFID
             read INPUT
             ;;
         *)
