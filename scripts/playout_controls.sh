@@ -148,7 +148,7 @@ case $COMMAND in
         sleep 1
         /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
         sleep 3
-        sudo halt
+        sudo poweroff
         ;;
     shutdownsilent)
         # doesn't play a shutdown sound
@@ -156,7 +156,7 @@ case $COMMAND in
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-	sudo halt
+	sudo poweroff
         ;;
     shutdownafter)
         # remove shutdown times if existent
