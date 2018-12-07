@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from gpiozero import Button
+from gpiozero import Button, LED
 from signal import pause
 from subprocess import check_call
 
@@ -17,6 +17,7 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
+    led.off()
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
@@ -56,5 +57,9 @@ volD.when_held = def_volD
 next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
+
+# Startup led running all the time
+led = LED(2)
+led.on()
 
 pause()
