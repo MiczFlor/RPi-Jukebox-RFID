@@ -1,0 +1,12 @@
+[Unit]  
+Description=Phoniebox Idle Watchdog Countdown Service
+
+[Service]
+User=pi
+Group=pi
+Type=simple
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/idle-watchdog-countdown.sh
+
+[Install]
+WantedBy=multi-user.target
