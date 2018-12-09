@@ -480,7 +480,7 @@ echo "### Deleting older versions of service daemons. This might throw errors, i
 sudo systemctl disable idle-watchdog
 sudo systemctl disable rfid-reader
 sudo systemctl disable startup-sound
-sudo systemctl disable gpio-buttons
+sudo systemctl disable gpio
 sudo rm /etc/systemd/system/rfid-reader.service 
 sudo rm /etc/systemd/system/startup-sound.service
 sudo rm /etc/systemd/system/gpio.service
