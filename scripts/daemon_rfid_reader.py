@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import subprocess
 import os 
 from Reader import Reader

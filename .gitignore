@@ -13,8 +13,10 @@ settings/Max_Volume_Limit
 settings/Playlists_Folders_Path
 settings/rfid_trigger_play.conf
 settings/Second_Swipe
+settings/ShowCover
 settings/version
 htdocs/config.php
+scripts/deviceName.txt
 scripts/gpio-buttons.py
 
 shared/*
@@ -23,3 +25,5 @@ logs/*
 .git*
 *~
 *.*~
+*.pyc
+*.idea
