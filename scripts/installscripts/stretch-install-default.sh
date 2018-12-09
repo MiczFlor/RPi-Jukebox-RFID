@@ -483,7 +483,7 @@ sudo systemctl disable startup-sound
 sudo systemctl disable gpio-buttons
 sudo rm /etc/systemd/system/rfid-reader.service 
 sudo rm /etc/systemd/system/startup-sound.service
-sudo rm /etc/systemd/system/gpio-buttons.service
+sudo rm /etc/systemd/system/gpio.service
 sudo rm /etc/systemd/system/idle-watchdog.service
 echo "### Done with erasing old daemons. Stop ignoring errors!" 
 # 2. install new ones - this is version > 1.1.8-beta

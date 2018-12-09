@@ -17,7 +17,7 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
-    led.off()
+    pled.off()
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
@@ -39,6 +39,7 @@ def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 shut = Button(3, hold_time=2)
+pled = LED(2)
 vol0 = Button(13,pull_up=True)
 volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
 volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
@@ -58,8 +59,7 @@ next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
 
-# Startup led running all the time
-led = LED(2)
-led.on()
+# Power led running all the time
+pled.on()
 
 pause()
