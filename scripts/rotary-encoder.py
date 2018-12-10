@@ -17,9 +17,9 @@
 #
 #       .---------------.                      .---------------.
 #       |               |                      |               |
-#       |           CLK |------o---------------| GPIO 27       |
+#       |           CLK |------o---------------| GPIO 5       |
 #       |               |      |               |               |
-#       |           DT  |------)----o----------| GPIO 17       |
+#       |           DT  |------)----o----------| GPIO 6       |
 #       |               |      |    |          |               |
 #       |           SW  |------)----)----------| GPIO 3        |
 #       |               |      |    |          |               |
@@ -60,8 +60,8 @@ def rotaryChangeCCWTrack():
 
 if __name__ == "__main__":
 
-   CLOCKPINVol = 27 
-   DATAPINVol = 17
+   CLOCKPINVol = 5 
+   DATAPINVol = 6
 
    CLOCKPINTrack = 22
    DATAPINTrack = 23
