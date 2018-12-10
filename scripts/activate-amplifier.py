@@ -36,7 +36,7 @@ def toggle_amplifier():
 if __name__ == "__main__":
     try:
         set_amplifier(True)
-	pause()
+        pause()
     except KeyboardInterrupt:
         # turn the relay off
         set_amplifier(False)

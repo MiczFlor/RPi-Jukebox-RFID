@@ -151,7 +151,7 @@ echo "#####################################################
     	    EXISTINGuse=NO
     	    echo "Phoniebox will be a fresh install. The existing version will be dropped."
     	    echo "Hit ENTER to proceed to the next step."
-            #rm -r RPi-Jukebox-RFID
+            sudo rm -rf RPi-Jukebox-RFID
             read INPUT
             ;;
         *)
@@ -457,10 +457,6 @@ sudo iwconfig wlan0 power off
 # Install required packages
 sudo apt-get update
 sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
-sudo pip install -r requirements.txt
-sudo pip install "evdev == 0.7.0"
-sudo pip install youtube_dl
-sudo pip install pi-rc522
 
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
@@ -487,6 +483,12 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
 git fetch
+
+# Install more required packages
+sudo pip install -r requirements.txt
+sudo pip install "evdev == 0.7.0"
+sudo pip install youtube_dl
+sudo pip install pi-rc522
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
@@ -556,9 +558,9 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /hom
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 # make sure bash scripts have the right settings
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 
 # services to launch after boot using systemd
@@ -759,6 +761,12 @@ sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/settings
 sudo chown pi:www-data "$DIRaudioFolders"
 sudo chmod 775 "$DIRaudioFolders"
 
+# make sure bash scripts have the right settings
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
+sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
+
 # / Access settings
 ##################################################### 
 
@@ -781,7 +789,7 @@ case "$response" in
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/
         python2 RegisterDevice.py
-        sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
+        sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
 esac

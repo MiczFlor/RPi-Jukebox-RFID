@@ -177,8 +177,19 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
     </head>\n";
 }
 
-function startsWith($haystack, $needle)
-{
+function arrayPregDiff($a, $p) {
+    # added function to use regular expressions to remove multiple files 
+    # e.g. all of the same file type from the array forming the later playlist. 
+    # Idea originates from http://php.net/manual/en/function.array-diff.php#117219
+	foreach ($a as $key => $value) {
+		if (preg_match($p, $value)) {
+			unset($a[$key]);
+		}
+	}
+	return $a;
+}
+
+function startsWith($haystack, $needle) {
      $length = strlen($needle);
      return (substr($haystack, 0, $length) === $needle);
 }

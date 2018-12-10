@@ -28,9 +28,6 @@ echo "https://kinder.wdr.de/radio/kiraka/hoeren/podcast/baerenbude192.podcast" >
 mkdir $AUDIOFOLDERSPATH/PODCASTS/BR-Klaro-Nachrichten
 echo "https://feeds.br.de/klaro-nachrichten-fuer-kinder/feed.xml" > $AUDIOFOLDERSPATH/PODCASTS/BR-Klaro-Nachrichten/podcast.txt
 
-mkdir $AUDIOFOLDERSPATH/PODCASTS/BR-Klaro-Nachrichten
-echo "https://feeds.br.de/klaro-nachrichten-fuer-kinder/feed.xml" > $AUDIOFOLDERSPATH/PODCASTS/BR-Klaro-Nachrichten/podcast.txt
-
 mkdir $AUDIOFOLDERSPATH/PODCASTS/WDR-KiRaKa
 echo "https://kinder.wdr.de/radio/kiraka/hoeren/podcast/kinderhoerspiel-podcast-108.podcast" > $AUDIOFOLDERSPATH/PODCASTS/WDR-KiRaKa/podcast.txt
 
