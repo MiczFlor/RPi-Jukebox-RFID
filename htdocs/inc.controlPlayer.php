@@ -3,6 +3,7 @@ if($ShowCover == "ON") {
     print '<div class="playerWrapperCover" id="coverWrapper"></div>';
 }
 ?>
+
 <div id="controlWrapper"></div>
 
 <script>
@@ -13,6 +14,7 @@ if($ShowCover == "ON") {
     $('#coverWrapper').load('ajax.loadCover.php');";
 }
 ?>
+
 	$('#controlWrapper').load('ajax.loadControls.php');
     var refreshId = setInterval(function() {
 <?php
@@ -21,7 +23,8 @@ if($ShowCover == "ON") {
         $('#coverWrapper').load('ajax.loadCover.php?' + 1*new Date());";
 }
 ?>
+
 		$('#controlWrapper').load('ajax.loadControls.php?' + 1*new Date());
-    }, 5000);
+    }, 2000);
 });
 </script> 
