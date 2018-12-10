@@ -17,7 +17,7 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
-    pled.off()
+    pled.blink(0.5, 0.5)
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
