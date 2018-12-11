@@ -135,6 +135,3 @@ class Reader(object):
                     self.reader = UsbReader(device)
                 except IndexError:
                     sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
-
-    def readCard(self):
-        self.reader.readCard()

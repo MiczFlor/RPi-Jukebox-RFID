@@ -13,7 +13,7 @@ print dir_path
 
 while True:
         # reading the card id
-        cardid = reader.readCard()
+        cardid = reader.reader.readCard()
         try:
             # start the player script and pass on the cardid
             if cardid != None:
