@@ -20,9 +20,11 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
-    # Led blinks two times
+    # Power led blinks two times - Tell listener we're going down.
     pled.blink(on_time=0.3, off_time=0.3, n=2, background=False)
-    # Stays on until shutdown completes
+    # Power led stays on until shutdown completes (when blinking it might be
+    # accidently off because it blinks and then cannot be controlled anymore.
+    # Pi looks like off too early. To avoid this switch it back on.
     pled.on()
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
