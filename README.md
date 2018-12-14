@@ -6,7 +6,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
-* **Phoniebox 1.1.8-rc3 (release candidate 3) released** (2018-11-25)
+* **Phoniebox 1.1.8 released** (2018-12-10)
 * Two types of *one-line-install* scripts are now available. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)
@@ -129,26 +129,11 @@ I also want to link to two proprietary and commercial projects, because they als
 
 Here is a list of equipment needed. Chances are that you will find most of it in the back of your drawers or at the bottom of some shoe box. Well, most of it, possibly not the RFID reader itself.
 
-* Speaker cables
-* **obtained** sd card
-* **obtained** [raspberry pi 3 model b ](http://amzn.to/2ku0pu7) | you might be surprised how easy and affordable you can get an rpi second hand. think about the planet before you buy a new one.
-* **obtained** RFID Card Reader (USB): [Neuftech USB RFID Reader ID](https://www.ebay.de/sch/i.html?_from=R40&_trksid=m570.l1313&_nkw=Neuftech+USB+RFID+Reader+ID&_sacat=0) using 125 kHz - make sure to buy compatible cards, RFID stickers or key fobs working with the same frequency as the reader. **Important notice:** the hardware of the reader that I had linked here for a long times seems to have changed and suddenly created problems with the Phoniebox installation. The reader listed now has worked and was recommended by two Phoniebox makers (2018 Oct 4). I can not guarantee that this will not change and invite you to give [RFID Reader feedback in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/231).  
-* **obtained** JR45 socket for housing
-* **obtained** [USB Stereo Speaker Set (6 Watt, 3,5mm jack, USB-powered) black](https://www.notebooksbilliger.de/trust+leto+20+speaker+set+black/?nbb=pla.google_&wt_cc2=902-0001_Hardware_253868&gclid=EAIaIQobChMIzoaZ9J763gIVyqSaCh1hKAV1EAQYASABEgLAY_D_BwE) | This USB powered speaker set sounds good for its size, is good value for money and keeps this RPi project clean and without the need of a soldering iron :)
-* **obtained** Six push buttons (<https://www.reichelt.de/drucktaster-0-2a-60vdc-1x-ein-beleuchtet-gn-t-9146-gn-p44434.html?> and <https://www.reichelt.de/arcade-button-mit-mikroschalter-gelb-arc-button-ye-p225321.html?>)
-* **obtained** Electric resistor for led (<https://www.reichelt.de/duennschichtwiderstand-axial-0-6-w-75-ohm-1-vi-mbb02070c7509-p233774.html?>)
-* **obtained** 20 Jumper cables (<https://www.reichelt.de/entwicklerboards-steckbrueckenkabel-20-pole-m-m-f-f-f-m-25-debo-kabelset-p161046.html?>)
-* **obtained from old router** Short network cable internal
-* **waiting for delivery** Broadband speaker FR 10HM (<https://www.reichelt.de/breitbandlautsprecher-fr-10hm-20-w-8-ohm-vis-fr-10hm-8-p66815.html?>)
-* **waiting for delivery** Audio jack adapter, 3,5 mm, Stereo, 3-pol, terminal block (<https://www.reichelt.de/klinkenstecker-3-5-mm-stereo-3-pol-terminalblock-delock-65419-p127460.html?>)
-* **waiting for delivery** Audio amplifier, Stereo, 3,7 W, class D (<https://www.reichelt.de/entwicklerboards-audioverstaerker-stereo-3-7-w-klasse-d-debo-sound-amp2-p235507.html?>)
-* **waiting for delivery** Speaker cover (<https://www.reichelt.de/lueftergitter-90-x-90-x-5-5-mm-stahl-silber-rnd-460-00041-p223501.html?>)
-* **waiting for delivery** Power bank 
-* **included in RFID reader** Five RFID tags
-* **included in button** One led
-* **postponed** Switch to disconnect power consumers from power pack
-* **postponed** USB charging outlet
-* **postponed** Headphone connector?
+* [Raspberry Pi 3 Model B ](http://amzn.to/2ku0PU7) | You might be surprised how easy and affordable you can get an RPi second hand. Think about the planet before you buy a new one.
+* RFID Card Reader (USB): [Neuftech USB RFID Reader ID](https://amzn.to/2RrqScm) using 125 kHz - make sure to buy compatible cards, RFID stickers or key fobs working with the same frequency as the reader. **Important notice:** the hardware of the reader that I had linked here for a long times seems to have changed and suddenly created problems with the Phoniebox installation. The reader listed now has worked and was recommended by two Phoniebox makers (2018 Oct 4). I can not guarantee that this will not change and invite you to give [RFID Reader feedback in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/231).  
+* [USB Stereo Speaker Set (6 Watt, 3,5mm jack, USB-powered) black](http://amzn.to/2kXrard) | This USB powered speaker set sounds good for its size, is good value for money and keeps this RPi project clean and without the need of a soldering iron :)
+* [USB A Male to Female Extenstion Cable with Switch On/Off](http://amzn.to/2hHrvkG) | I placed this USB extension between the USB power adapter and the Phoniebox. This will allow you to switch the Phoniebox on and off easily.
+* [USB 2.0 Hub 4-port bus powered USB Adapter](http://amzn.to/2kXeErv) | Depending on your setup, you will need none, one or two of these. If you are using the external USB powered speakers, you need one to make sure the speakers get enough power. If you want to use the additional USB soundcard and have an older RPi, you might need a second one to make sure you can connect enough devices with the RPi.
 
 ### Special hardware
 
