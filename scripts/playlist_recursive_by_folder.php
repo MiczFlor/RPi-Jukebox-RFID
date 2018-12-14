@@ -140,6 +140,7 @@ foreach($folders as $folder) {
             $folder_files = arrayPregDiff(scandir($folder), '/^\./'); # remove all files starting with "." meaning all files ".*" from array
             $folder_files = arrayPregDiff($folder_files, '/^.*\.m3u$/i'); # remove all *.m3u files from array
             $folder_files = arrayPregDiff($folder_files, '/^.*\.png$/i'); # remove all *.png files from array
+	    $folder_files = arrayPregDiff($folder_files, '/Thumbs\.db/i'); # ignore windows file 'Thumbs.db'
             // some debugging info
             if($debug == "true") {
                 print "\$folder:".$folder."\n";
