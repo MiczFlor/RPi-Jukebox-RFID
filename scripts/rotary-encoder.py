@@ -1,24 +1,29 @@
 #!/usr/bin/python3
-# rotary volume knob
+# rotary volume and track knob
+# This script is compatible with any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
+# Please combine with corresponding gpio button script, which handels the button functionality of the encoder
+# RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
+
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
 # RPi-Jukebox-RFID/scripts/ky040.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
+# RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
 # See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
 
 #
-# circuit diagram
+# circuit diagram for one of two possible encoders (volume), use GPIOs from code below for the tracks
 # (capacitors are optionally)
 #
 #       .---------------.                      .---------------.
 #       |               |                      |               |
-#       |           CLK |------o---------------| GPIO 5        |
+#       |           CLK |------o---------------| GPIO 5       |
 #       |               |      |               |               |
-#       |           DT  |------)----o----------| GPIO 6        |
+#       |           DT  |------)----o----------| GPIO 6       |
 #       |               |      |    |          |               |
-#       |           SW  |------)----)----------| GPIO 13       |
+#       |           SW  |------)----)----------| GPIO 3        |
 #       |               |      |    |          |               |
-#       |           +   |------)----)----------| 5V            |
+#       |           +   |------)----)----------| 3.3V          |
 #       |               |      |    |          |               |
 #       |           GND |------)----)----------| GND           |
 #       |               |      |    |          |               |
@@ -40,33 +45,42 @@ import os, time
 from subprocess import check_call
 
 
-def rotaryChangeCW():
+def rotaryChangeCWVol():
    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
 
-def rotaryChangeCCW():
+def rotaryChangeCCWVol():
    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
 
-def switchPressed(dummy):
-   check_call("./scripts/playout_controls.sh -c=mute", shell=True)
+def rotaryChangeCWTrack():
+   check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+
+def rotaryChangeCCWTrack():
+   check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
 
 if __name__ == "__main__":
 
-   CLOCKPIN = 5
-   DATAPIN = 6
-   SWITCHPIN = 13
+   CLOCKPINVol = 5 
+   DATAPINVol = 6
+
+   CLOCKPINTrack = 22
+   DATAPINTrack = 23
 
    GPIO.setmode(GPIO.BCM)
 
-   ky040 = KY040(CLOCKPIN, DATAPIN, SWITCHPIN, rotaryChangeCW, rotaryChangeCCW, switchPressed)
+   ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol)
 
-   ky040.start()
+   ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack)
+
+   ky040Vol.start()
+   ky040Track.start()
 
    try:
       while True:
          time.sleep(0.2)
    finally:
-      ky040.stop()
+      ky040Vol.stop()
+      ky040Track.stop()
       GPIO.cleanup()
 
 

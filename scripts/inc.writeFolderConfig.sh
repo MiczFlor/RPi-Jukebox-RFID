@@ -36,7 +36,7 @@
 # VARIABLES
 
 # $DEBUG true|false
-DEBUG=true
+DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -139,6 +139,7 @@ then
     sudo sed -i 's/%RESUME%/'"$RESUME"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
