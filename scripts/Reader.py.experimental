@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 # Forked from Francisco Sahli's https://github.com/fsahli/music-cards/blob/master/Reader.py
 import os.path
 import sys
@@ -29,7 +31,7 @@ class UsbReader(object):
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
         self.dev = device
 
-    def read_card(self):
+    def readCard(self):
         from select import select
         stri = ''
         key = ''
@@ -46,7 +48,7 @@ class Mfrc522Reader(object):
     def __init__(self):
         self.device = pirc522.RFID()
 
-    def read_card(self):
+    def readCard(self):
         # Scan for cards
         self.device.wait_for_tag()
         (error, tag_type) = self.device.request()
@@ -78,7 +80,7 @@ class Rdm6300Reader:
             print(e)
             exit(1)
 
-    def read_card(self):
+    def readCard(self):
         byte_card_id = b''
 
         try:
@@ -118,7 +120,7 @@ class Reader(object):
     def __init__(self):
         path = os.path.dirname(os.path.realpath(__file__))
         if not os.path.isfile(path + '/deviceName.txt'):
-            sys.exit('Please run config.py first')
+            sys.exit('Please run RegisterDevice.py first')
         else:
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read()
