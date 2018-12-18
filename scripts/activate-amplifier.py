@@ -1,32 +1,27 @@
 #!/usr/bin/python
 
-# While running this script the PAM8403 gets a ON signal so amplifier has power. Else it is
-# switched of. This helps me
-# The application uses the GPIO Zero library (https://gpiozero.readthedocs.io/en/stable/)
-# The PAM8403 PIN 12 is connected to one of the Pi's GPIO ports, then is defined as an Output device
-# in GPIO Zero: https://gpiozero.readthedocs.io/en/stable/api_output.html#outputdevice
-
 import sys
 import time
 from signal import pause
-import gpiozero
+import RPi.GPIO as GPIO
 
-# change this value based on which GPIO port the PAM8403 PIN 12 is connected to
-PIN = 23
+# script to activate and deactivate an amplifier using a GPIO pin
 
-# create a relay object.
-# Triggered by the output pin going low: active_high=False.
-# Initially off: initial_value=False
-amplifier = gpiozero.OutputDevice(PIN, active_high=True, initial_value=False)
+# change this value based on which GPIO port the amplifier is connected to
+PIN = 26
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIN, GPIO.OUT)
 
 
 def set_amplifier(status):
     if status:
         print("Setting amplifier: ON")
-        amplifier.on()
+        GPIO.output(PIN, GPIO.HIGH)
     else:
         print("Setting amplifier: OFF")
-        amplifier.off()
+        GPIO.output(PIN, GPIO.LOW)
 
 
 def toggle_amplifier():
