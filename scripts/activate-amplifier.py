@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 import time
@@ -18,7 +18,6 @@ ampGPIO = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(ampGPIO, GPIO.OUT)
-
 
 def set_amplifier(status):
     if status:
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # turn the relay off
         set_amplifier(False)
-        print("\nExiting application\n")
+        print("\nExiting amplifier control\n")
         # exit the application
         sys.exit(0)
 

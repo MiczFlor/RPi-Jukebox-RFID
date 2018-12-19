@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # rotary volume and track knob
 # This script is compatible with any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
-# Please combine with corresponding gpio button script, which handels the button functionality of the encoder
+# Please combine with corresponding gpio button script, which handles the button functionality of the encoder
 # RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
 
 # these files belong all together:
@@ -57,9 +57,6 @@ def rotaryChangeCWTrack():
 def rotaryChangeCCWTrack():
    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
-
-if __name__ == "__main__":
-
    CLOCKPINVol = 5 
    DATAPINVol = 6
 
@@ -67,24 +64,20 @@ if __name__ == "__main__":
    DATAPINTrack = 23
 
    GPIO.setmode(GPIO.BCM)
+   
+if __name__ == "__main__":
 
-   ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol)
+    try:
+		ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol)
+		ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack)
 
-   ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack)
-
-   ky040Vol.start()
-   ky040Track.start()
-
-   try:
-      while True:
-         time.sleep(0.2)
-   finally:
-      ky040Vol.stop()
-      ky040Track.stop()
-      GPIO.cleanup()
-
-
-
-
-
-
+		ky040Vol.start()
+		ky040Track.start()
+        pause()
+    except KeyboardInterrupt:
+        ky040Vol.stop()
+        ky040Track.stop()
+		GPIO.cleanup()
+        print("\nExiting rotary encoder decoder\n")
+        # exit the application
+        sys.exit(0)
