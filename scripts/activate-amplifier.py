@@ -5,23 +5,26 @@ import time
 from signal import pause
 import RPi.GPIO as GPIO
 
-# script to activate and deactivate an amplifier using a GPIO pin
+# script to activate and deactivate an amplifier, power led, etc. using a GPIO pin on power up / down
 
 # change this value based on which GPIO port the amplifier is connected to
-PIN = 26
+# Flexible Pinout
+ampGPIO = 26
+# Classic Pinout
+# ampGPIO = 23
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIN, GPIO.OUT)
+GPIO.setup(ampGPIO, GPIO.OUT)
 
 
 def set_amplifier(status):
     if status:
         print("Setting amplifier: ON")
-        GPIO.output(PIN, GPIO.HIGH)
+        GPIO.output(ampGPIO, GPIO.HIGH)
     else:
         print("Setting amplifier: OFF")
-        GPIO.output(PIN, GPIO.LOW)
+        GPIO.output(ampGPIO, GPIO.LOW)
 
 
 def toggle_amplifier():
