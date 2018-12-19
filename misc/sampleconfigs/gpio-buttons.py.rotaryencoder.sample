@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import RPi.GPIO as GPIO
+import sys
 from signal import pause
 from subprocess import check_call
 
@@ -10,13 +11,14 @@ from subprocess import check_call
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
 
 
-def def_shutdown():
+def def_shutdown(channel):
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
-def def_halt():
+def def_halt(channel):
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 # Flexible Pinout
+# warning of physical pull up on GPIO 3 maybe ignored
 shutGPIO = 3
 haltGPIO = 27
 # Classic Pinout
@@ -28,14 +30,14 @@ GPIO.setup(shutGPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(haltGPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 if __name__ == "__main__":
-    try:
+	try:
 		GPIO.add_event_detect(shutGPIO, GPIO.FALLING, callback=def_shutdown, bouncetime=bouncetime)
 		GPIO.add_event_detect(haltGPIO, GPIO.FALLING, callback=def_halt, bouncetime=bouncetime)
-        pause()
-    except KeyboardInterrupt:
+		pause()
+	except KeyboardInterrupt:
 		GPIO.remove_event_detect(shutGPIO)
 		GPIO.remove_event_detect(haltGPIO)
 		GPIO.cleanup()
-        print("\nExiting button decoder\n")
-        # exit the application
-        sys.exit(0)
+		print("\nExiting button decoder\n")
+		# exit the application
+		sys.exit(0)

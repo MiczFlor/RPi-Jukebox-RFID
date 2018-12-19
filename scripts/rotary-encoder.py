@@ -41,7 +41,8 @@
 
 import RPi.GPIO as GPIO
 from ky040 import KY040
-import os, time
+import os, time, sys
+from signal import pause
 from subprocess import check_call
 
 
@@ -57,27 +58,27 @@ def rotaryChangeCWTrack():
 def rotaryChangeCCWTrack():
    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
-   CLOCKPINVol = 5 
-   DATAPINVol = 6
+CLOCKPINVol = 5 
+DATAPINVol = 6
 
-   CLOCKPINTrack = 22
-   DATAPINTrack = 23
+CLOCKPINTrack = 22
+DATAPINTrack = 23
 
-   GPIO.setmode(GPIO.BCM)
-   
+GPIO.setmode(GPIO.BCM)
+
 if __name__ == "__main__":
 
-    try:
+	try:
 		ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol)
 		ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack)
 
 		ky040Vol.start()
 		ky040Track.start()
-        pause()
-    except KeyboardInterrupt:
-        ky040Vol.stop()
-        ky040Track.stop()
+		pause()
+	except KeyboardInterrupt:
+		ky040Vol.stop()
+		ky040Track.stop()
 		GPIO.cleanup()
-        print("\nExiting rotary encoder decoder\n")
-        # exit the application
-        sys.exit(0)
+		print("\nExiting rotary encoder decoder\n")
+		# exit the application
+		sys.exit(0)
