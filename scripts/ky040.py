@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 
 class KY040:
 
-    def __init__(self, arg_clockPin, arg_dataPin, arg_rotaryCallbackCW=None, arg_rotaryCallbackCCW=None, arg_rotaryBouncetime=100, arg_switchBouncetime=100):
+    def __init__(self, arg_clockPin, arg_dataPin, arg_rotaryCallbackCW=None, arg_rotaryCallbackCCW=None, arg_rotaryBouncetime=100):
         # persist values
         self.clockPin = arg_clockPin
         self.dataPin = arg_dataPin
@@ -29,9 +29,16 @@ class KY040:
         GPIO.remove_event_detect(self.clockPin)
 
     def _clockCallback(self, pin):
-        if GPIO.input(self.clockPin) == 0:
+        if GPIO.input(self.clockPin) == 1:
+            data = GPIO.input(self.dataPin)
+            if data == 1:
+                self.rotaryCallbackCW()
+            else:
+                self.rotaryCallbackCCW()
+        else:
             data = GPIO.input(self.dataPin)
             if data == 1:
                 self.rotaryCallbackCCW()
             else:
                 self.rotaryCallbackCW()
+
