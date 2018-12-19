@@ -13,6 +13,8 @@ ampGPIO = 26
 # Classic Pinout
 # ampGPIO = 23
 
+# we do not cleanup the GPIO because we want the pin low = off after program exit
+# the resulting warning can be ignored
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(ampGPIO, GPIO.OUT)
