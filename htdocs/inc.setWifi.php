@@ -96,7 +96,7 @@ if($debug == "true") {
             if(isset($WIFIpass) && $WIFIpass != "") {
                 print $WIFIpass;
             }
-          ?>" id="WIFIpass" name="WIFIpass" placeholder="" class="form-control input-md" type="text" required="required">
+          ?>" id="WIFIpass" name="WIFIpass" placeholder="" class="form-control input-md" type="password" required="required">
           <span class="help-block"></span>  
           </div>
         </div>
