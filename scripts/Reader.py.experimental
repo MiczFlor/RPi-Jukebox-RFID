@@ -1,6 +1,10 @@
 #!/usr/bin/env python2
+# This script was meant to cover not only USB readers but more.
+# It can be used to replace Reader.py if you have readers such as
+# MFRC522 or RDM6300.
+# Please use the github issue threads to share bugs and improvements
+# or create pull requests.
 
-# Forked from Francisco Sahli's https://github.com/fsahli/music-cards/blob/master/Reader.py
 import os.path
 import sys
 import serial
