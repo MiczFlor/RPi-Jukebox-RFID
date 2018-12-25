@@ -6,12 +6,23 @@ import string
 import os.path
 import sys
 
-from evdev import InputDevice, categorize, ecodes, list_devices
+from evdev import InputDevice, categorize, ecodes, list_devices, ecodes
 from select import select
 class Reader:
+
+	def is_Keyboard(self, device):
+		device_key_list = device.capabilities()[ecodes.EV_KEY]
+
+		if self.mandatory_keys.issubset(device_key_list) and self.reserved_key.isdisjoint(device_key_list):
+			return True
+		else:
+			return False
+
 	def __init__(self):
 		path = os.path.dirname(os.path.realpath(__file__))
 		self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
+		self.mandatory_keys = {i for i in range(ecodes.KEY_ESC, ecodes.KEY_D)}
+		self.reserved_key = {0}
 		if not os.path.isfile(path + '/deviceName.txt'):
 			sys.exit('Please run RegisterDevice.py first')
 		else: 
@@ -19,7 +30,7 @@ class Reader:
 				deviceName = f.read()
 			devices = [InputDevice(fn) for fn in list_devices()]
 			for device in devices:
-				if device.name == deviceName:
+				if device.name == deviceName and self.is_Keyboard(device):
 					self.dev = device
 					break 		
 			try:
