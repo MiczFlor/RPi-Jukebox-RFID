@@ -137,8 +137,9 @@ Here is a list of equipment needed. Chances are that you will find most of it in
 
 ### Special hardware
 
-These are links to additional items which are not needed, but might be what you want to make your dream of a Phoniebox come true:
-
+These are links to additional items, which will add an individual flavour to your Phoniebox setup. Consult the issue threads to see if your idea has been realised already. 
+**Note: depending on individual projects, the hardware requirements vary.**
+ 
 * [Ground Loop Isolator / Entstörfilter Audio](https://amzn.to/2Kseo0L) this seems to [get rid off crackles in the audio out (a typical RPi problem)](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/341) 
 * [Drehregler / Rotary Encoder / Dial](https://amzn.to/2J34guF) for volume control. Read here for more information on how to [integrate the rotary dial](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/267) 
 * [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#hifiberry-dac-soundcard-details)
