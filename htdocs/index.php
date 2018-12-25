@@ -99,7 +99,7 @@ foreach($audiofolders as $audiofolder) {
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-12">
               <h4><?php print $lang['indexManageFilesChips']; ?></h4>
-                <a href="cardRegisterNew.php" class="btn btn-primary btn">
+                <a href="cardRegisterNew.php" class="btn btn-info btn">
                 <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
               </div>
@@ -119,13 +119,13 @@ foreach($audiofolders as $audiofolder) {
           </div>
           <div class="modal-body">
 <pre>
-<?php
+<!--?php
 print file_get_contents($conf['base_path'].'/shared/latestID.txt', true);
-?>
+?-->
 </pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><?php print $lang['globalClose']; ?></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><!--?php print $lang['globalClose']; ?--></button>
           </div>
     
         </div><!-- / .modal-content -->
