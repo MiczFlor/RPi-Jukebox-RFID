@@ -8,6 +8,8 @@ evdev==0.7.0
 git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube-dl
 serial
+spidev
+pi-rc522
 
 # Type checking for python
 # typing

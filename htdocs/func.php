@@ -193,6 +193,10 @@ function startsWith($haystack, $needle) {
      $length = strlen($needle);
      return (substr($haystack, 0, $length) === $needle);
 }
+function endsWith($haystack, $needle) {
+     $length = strlen($needle);
+     return (substr($haystack, ($length * -1), $length) === $needle);
+}
 
 function replaceUmlaute($string) {
     $searchreplace = array(
@@ -254,7 +258,21 @@ function index_folders_print($item, $key)
     global $contentTree;
     global $shortcuts;
     global $debugcol;
+    // get files from array
+    foreach($contentTree as $key => $values) { 
+        $files = $values['files']; 
+    } 
+    // get mp3 files from files list
+    $filesMp3 = array();
+    foreach($files as $file) {
+        if(endsWith($file, ".mp3")) {
+            //print "<br>this is:".$file." ";
+            $filesMp3[] = $file;
+        }
+    }
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
+    //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
+    //print "<pre>\nfilesMp3:"; print_r($filesMp3); print "</pre>"; //???
     //print "<pre>\nshortcuts:"; print_r($shortcuts); print "</pre>"; //???
     /*
     * Special style for level 0 (top level) panels
@@ -367,6 +385,12 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
             print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
         }
     }
+    // RSS link
+    if (count($filesMp3) > 0) {
+        print "<a href='rss-mp3.php?rss=".serialize($filesMp3)."' class='btn btn-info '>";
+		print "<i class='mdi mdi-rss'></i>Podcast RSS ";		
+        print "</a>";
+	}
     print "
             </div><!-- / settings buttons -->";
     

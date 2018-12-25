@@ -238,7 +238,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
             <button id="submit" name="submit" class="btn btn-success" value="submit"><?php print $lang['globalSubmit']; ?></button>
 <?php
 if($fdata['streamURL_ajax'] != "true") {
-    print '<button id="delete" name="delete" class="btn btn-warning" value="delete">'.$lang['cardFormRemoveCard'].'</button>';
+    //print '<button id="delete" name="delete" class="btn btn-warning" value="delete">'.$lang['cardFormRemoveCard'].'</button>';
 }
 ?>
             <a href="index.php" id="cancel" name="cancel" class="btn btn-danger"><?php print $lang['globalCancel']; ?></a>

@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 
 import os.path
-from evdev import InputDevice, list_devices
+from Reader import get_devices
 
-devices = [InputDevice(fn) for fn in list_devices()]
+devices = get_devices()
 path = os.path.dirname(os.path.realpath(__file__))
 i = 0
 print "Choose the reader from list"
