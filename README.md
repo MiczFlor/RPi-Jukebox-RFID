@@ -4,9 +4,15 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 **MUST READ for users of [Phoniebox +Spotify Edition](docs/SPOTIFY-INTEGRATION.md)**
 
+## The 2019 Phoniebox Calendar is out!
+![The 2019 Phoniebox Calendar](docs/2019-Phoniebox-Calendar.jpg "The 2019 Phoniebox Calendar")
+Celebrating all the great designs of 2018, I put together a calendar for 2019. The PDF is quite big (>50MB) and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all of the contributors, designers and makers. Have a good start into 2019 and keep up the good work!
+
+* [Download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
+
 *Important update news*
 
-* **Phoniebox 1.1.9-rc2 released** (2018-12-26)
+* **Phoniebox 1.1.9-rc3 released** (2018-12-27)
 * Two types of *one-line-install* scripts are now available. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)
