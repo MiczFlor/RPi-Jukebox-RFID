@@ -6,7 +6,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 *Important update news*
 
-* **Phoniebox 1.1.9-rc1 released** (2018-12-25)
+* **Phoniebox 1.1.9-rc2 released** (2018-12-26)
 * Two types of *one-line-install* scripts are now available. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)
