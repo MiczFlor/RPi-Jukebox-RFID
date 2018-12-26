@@ -17,14 +17,14 @@ Maximum Volume Select Form
                     <select id="maxvolume" name="maxvolume" class="selectpicker form-control">
                     <?php
                     $i = 100;
-                    while ($i >= 10) {
+                    while ($i >= 5) {
                         print "
                         <option value='".$i."'";
                         if($maxvalueselect == $i) {
                             print " selected";
                         }
                         print ">".$i."%</option>";
-                        $i = $i - 10;  
+                        $i = $i - 5;  
                     };
                     print "\n";
                     ?>
