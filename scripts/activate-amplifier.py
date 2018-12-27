@@ -7,12 +7,16 @@ import RPi.GPIO as GPIO
 
 # script to activate and deactivate an amplifier, power led, etc. using a GPIO pin on power up / down
 
-# change this value based on which GPIO port the amplifier is connected to
+# see for an example implementation with a PAM8403 digital amplifier (PAM pin 12 connected to GPIO 26)
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Hardware-Hack-PAM8403-Poweroff
+
+# change this value based on which GPIO port the amplifier or other devices are connected to
 # Flexible Pinout
 ampGPIO = 26
 # Classic Pinout
 # ampGPIO = 23
 
+# setup RPi lib to control output pin
 # we do not cleanup the GPIO because we want the pin low = off after program exit
 # the resulting warning can be ignored
 GPIO.setwarnings(False)
@@ -26,11 +30,6 @@ def set_amplifier(status):
     else:
         print("Setting amplifier: OFF")
         GPIO.output(ampGPIO, GPIO.LOW)
-
-
-def toggle_amplifier():
-    print("toggling amplifier")
-    amplifier.toggle()
 
 if __name__ == "__main__":
     try:
