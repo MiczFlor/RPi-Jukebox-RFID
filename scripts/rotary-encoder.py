@@ -69,7 +69,7 @@ GPIO.setmode(GPIO.BCM)
 if __name__ == "__main__":
 
 	try:
-		ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol, 100)
+		ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol, 200)
 		ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 500)
 
 		ky040Vol.start()
