@@ -23,7 +23,7 @@ class KY040:
         GPIO.setup(self.dataPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def start(self):
-        GPIO.add_event_detect(self.clockPin, GPIO.BOTH, callback=self._clockCallback, bouncetime=self.rotaryBouncetime)
+        GPIO.add_event_detect(self.clockPin, GPIO.FALLING, callback=self._clockCallback, bouncetime=self.rotaryBouncetime)
 
     def stop(self):
         GPIO.remove_event_detect(self.clockPin)
