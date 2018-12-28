@@ -5,11 +5,11 @@ Volume Select Form
         <?php
         $volumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getvolume");
         //$volumevalue = 73.6;//debug
-        $volumevalueselect = round(($volumevalue/10))*10;
+        $volumevalueselect = round(($volumevalue/5))*5;
         $volumevaluedisplay = round($volumevalue);
 		
         $maxvolumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getmaxvolume");
-        $maxvalueselect = round(($maxvolumevalue/10))*10;
+        $maxvalueselect = round(($maxvolumevalue/5))*5;
         $maxvaluedisplay = round($maxvolumevalue);
         ?>
         <div class="col-md-4 col-sm-6">
