@@ -5,7 +5,7 @@ Maximum Volume Select Form
         <?php
         $maxvolumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getmaxvolume");
         //$maxvolumevalue = 43.6;//debug
-        $maxvalueselect = round(($maxvolumevalue/10))*10;
+        $maxvalueselect = round(($maxvolumevalue/5))*5;
         $maxvaluedisplay = round($maxvolumevalue);
         ?>
         <div class="col-md-4 col-sm-6">
