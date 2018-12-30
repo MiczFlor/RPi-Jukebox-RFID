@@ -33,7 +33,8 @@ $replace = array("ae","oe","ue","Ae","Oe","Ue","ss", "");
 
 if(isset($_GET['rss'])) {
     $filesMp3 = unserialize($_GET['rss']);
-    phoniepodcastxml($filesMp3);
+    $title = urldecode($_GET['title']);
+    phoniepodcastxml($filesMp3, $title);
 } else {
     $file = realpath($_GET['file']);
     if(startsWith($file, $Audio_Folders_Path)) {
@@ -53,7 +54,7 @@ if(isset($_GET['rss'])) {
     }
 }
 
-function phoniepodcastxml($filesMp3) {
+function phoniepodcastxml($filesMp3, $title) {
   global $sortby;
   $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
   // get "now" time for timestamp in xml feed, because the publishing time will order the list e.g. on iOS Podcast
@@ -67,7 +68,7 @@ function phoniepodcastxml($filesMp3) {
   <rss xmlns:itunes='http://www.itunes.com/DTDs/Podcast-1.0.dtd' version='2.0'>";
   print "
   <channel>
-    <title>Phoniebox local podcast</title>
+    <title>".$title."</title>
     <link>".$conf['url_abs']."/rss-mp3.php?rss=".serialize($filesMp3)."</link>
     <itunes:author>Phoniebox</itunes:author>
   ";

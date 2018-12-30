@@ -298,12 +298,14 @@ function index_folders_print($item, $key)
 
     print "
             <h4>";
+/*
 	$conf['settings_abs'] = realpath(getcwd().'/../settings/');
 	$ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
 	if ($ShowCover == "ON" && file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
 	$cover = $contentTree[$key]['path_abs']."/cover.jpg";
 	print  "<img class='img-responsive img-thumbnail' src='data:image/jpg;base64,".base64_encode(file_get_contents("$cover"))."' alt='' style='float: right; max-width: 85px'/>";
 	}
+*/
     if($contentTree[$key]['count_files'] > 0) {
         print "
               <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
@@ -391,7 +393,7 @@ function index_folders_print($item, $key)
         }
         // RSS link
         if (count($filesMp3) > 0) {
-            print "<a href='rss-mp3.php?rss=".serialize($filesMp3)."' class='btn btn-info '>";
+            print "<a href='rss-mp3.php?title=".urlencode($contentTree[$key]['basename'])."&rss=".serialize($filesMp3)."' class='btn btn-info '>";
     		print "<i class='mdi mdi-rss'></i>Podcast RSS ";		
             print "</a>";
     	}
