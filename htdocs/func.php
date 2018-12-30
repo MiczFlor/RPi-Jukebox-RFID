@@ -347,52 +347,54 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
     /*
     * settings buttons
     */
-    print "
-            <div><!-- settings buttons -->";
-    // RESUME BUTTON
-    // do not show any if there is a live stream in the folder
-    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
-        $foundResume = "OFF";
-        if( 
-            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
-            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'RESUME="ON"') !== false
-        ) {
-            $foundResume = "ON";
-        } else {
+    if($contentTree[$key]['count_audioFiles'] > 0) {
+        print "
+                <div><!-- settings buttons -->";
+        // RESUME BUTTON
+        // do not show any if there is a live stream in the folder
+        if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+            $foundResume = "OFF";
+            if( 
+                file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+                && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'RESUME="ON"') !== false
+            ) {
+                $foundResume = "ON";
+            } else {
+            }
+            if( $foundResume == "OFF" ) {
+                // do stuff
+                print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            } elseif($foundResume == "ON") {
+                print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            }
         }
-        if( $foundResume == "OFF" ) {
-            // do stuff
-            print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
-        } elseif($foundResume == "ON") {
-            print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        
+        // SHUFFLE BUTTON
+        // do not show any if there is a live stream in the folder
+        if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+            $foundShuffle = "OFF";
+            if( 
+                file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+                && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SHUFFLE="ON"') !== false
+            ) {
+                $foundShuffle = "ON";
+            }
+            if( $foundShuffle == "OFF" ) {
+                // do stuff
+                print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            } elseif($foundShuffle == "ON") {
+                print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            }
         }
+        // RSS link
+        if (count($filesMp3) > 0) {
+            print "<a href='rss-mp3.php?rss=".serialize($filesMp3)."' class='btn btn-info '>";
+    		print "<i class='mdi mdi-rss'></i>Podcast RSS ";		
+            print "</a>";
+    	}
+        print "
+                </div><!-- / settings buttons -->";
     }
-    
-    // SHUFFLE BUTTON
-    // do not show any if there is a live stream in the folder
-    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
-        $foundShuffle = "OFF";
-        if( 
-            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
-            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SHUFFLE="ON"') !== false
-        ) {
-            $foundShuffle = "ON";
-        }
-        if( $foundShuffle == "OFF" ) {
-            // do stuff
-            print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
-        } elseif($foundShuffle == "ON") {
-            print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
-        }
-    }
-    // RSS link
-    if (count($filesMp3) > 0) {
-        print "<a href='rss-mp3.php?rss=".serialize($filesMp3)."' class='btn btn-info '>";
-		print "<i class='mdi mdi-rss'></i>Podcast RSS ";		
-        print "</a>";
-	}
-    print "
-            </div><!-- / settings buttons -->";
     
 
     // get all IDs that match this folder

@@ -31,12 +31,13 @@ foreach($subfolders as $key => $subfolder) {
     */
     $containingfolders = array();
     $containingfiles = array();
+    $containingaudiofiles = array();
     /*
     * Get all the folders 
     */
     $subfolderfolders = array_filter(glob($subfolder.'/*'), 'is_dir');
-    foreach($subfolderfolders as $subfolderfolder) {
-        if(count($subfolderfolders) > 0){
+    if(count($subfolderfolders) > 0){
+        foreach($subfolderfolders as $subfolderfolder) {
             // YES, we found at least one subfolder
             // take the relative path only
             $containingfolders[$subfolderfolder] = substr($subfolderfolder, strlen($Audio_Folders_Path) + 1, strlen($subfolderfolder));
@@ -58,6 +59,16 @@ foreach($subfolders as $key => $subfolder) {
             // YES, we found a file
             $containingfiles[$subfolderfile] = $subfolderfile;
             //$containingfiles[$subfolderfile] = substr($subfolderfile, strlen($Audio_Folders_Path) + 1, strlen($subfolderfile));
+            
+            // now see if the file we found is an audio file
+            if(
+                is_file($subfolderfile) 
+                && basename($subfolderfile) != "livestream.txt"
+                && basename($subfolderfile) != "podcast.txt"
+            ){
+                // YES, we found an audio file
+                $containingaudiofiles[$subfolderfile] = $subfolderfile;
+            }
         }
     }
     /*
@@ -119,6 +130,7 @@ foreach($subfolders as $key => $subfolder) {
         // information about the content
         $temp['count_subdirs'] = count($containingfolders);
         $temp['count_files'] = count($containingfiles);
+        $temp['count_audioFiles'] = count($containingaudiofiles);
         usort($containingfolders);
         $temp['subdirs'] = $containingfolders;
         usort($containingfiles, 'strnatcasecmp');
