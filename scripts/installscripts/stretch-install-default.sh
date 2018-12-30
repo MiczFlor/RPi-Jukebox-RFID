@@ -564,7 +564,6 @@ sudo systemctl enable dhcpcd
 # / WiFi settings (SSID password)
 ###############################
 
-
 # / INSTALLATION
 ##################################################### 
 
