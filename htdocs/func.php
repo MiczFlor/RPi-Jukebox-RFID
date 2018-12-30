@@ -258,18 +258,20 @@ function index_folders_print($item, $key)
     global $contentTree;
     global $shortcuts;
     global $debugcol;
+/**/
     // get files from array
-    foreach($contentTree as $key => $values) { 
-        $files = $values['files']; 
+    foreach($contentTree as $tempkey => $values) { 
+        $allFiles = $values['files']; 
     } 
     // get mp3 files from files list
     $filesMp3 = array();
-    foreach($files as $file) {
-        if(endsWith($file, ".mp3")) {
+    foreach($allFiles as $allFile) {
+        if(endsWith($allFile, ".mp3")) {
             //print "<br>this is:".$file." ";
-            $filesMp3[] = $file;
+            $filesMp3[] = $allFile;
         }
     }
+/**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
     //print "<pre>\nfilesMp3:"; print_r($filesMp3); print "</pre>"; //???
@@ -281,13 +283,13 @@ function index_folders_print($item, $key)
     if($contentTree[$key]['level'] == 0) {
         $panelStyle = "panel-default";
     }
-/*
-if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
-    print '<img class="img-playlist-item img-responsive" src="image.php?img='.$contentTree[$key]['path_abs'].'/cover.jpg" alt=""/>';
-} else {
-    print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
-}
-*/
+    /*
+    if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
+        print '<img class="img-playlist-item img-responsive" src="image.php?img='.$contentTree[$key]['path_abs'].'/cover.jpg" alt=""/>';
+    } else {
+        print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
+    }
+    */
     print "
       <div class='panel ".$panelStyle."'>";
 
@@ -347,9 +349,10 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
     /*
     * settings buttons
     */
-    if($contentTree[$key]['count_audioFiles'] > 0) {
-        print "
-                <div><!-- settings buttons -->";
+    // we show the buttons only if there are actual audio files in the folder
+    if($contentTree[$key]['count_audioFiles'] == 0) {
+    } else {
+        print "\n                <div><!-- settings buttons -->";
         // RESUME BUTTON
         // do not show any if there is a live stream in the folder
         if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
@@ -502,8 +505,4 @@ function printPlaylistHtml($files)
     }
     print "
             </ol>"; 
-}
-
-
-
-?>
+}?>
