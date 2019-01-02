@@ -21,6 +21,20 @@ def def_shutdown(channel):
 def def_halt(channel):
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
+# do not directly call halt, in case it was hit accedently
+# hat is only issued when the button remains pressed for all interations of the for loop
+def halt(channel):
+	status = False
+	for x in range(0, 2):
+		time.sleep(.05)
+		status = GPIO.input(haltGPIO)
+		if status:
+			break
+
+	if not status:
+		def_halt(channel)
+
+
 # function to provide user feedback (= flashing led) while the shutdown button is pressed
 # do not directly call shutdown, in case it was hit accedently
 # shutdown is only issued when the button remains pressed for all interations of the for loop
@@ -58,7 +72,7 @@ GPIO.setup(LEDGPIO, GPIO.OUT)
 if __name__ == "__main__":
 	try:
 		GPIO.add_event_detect(shutGPIO, GPIO.FALLING, callback=shutdown, bouncetime=bouncetime)
-		GPIO.add_event_detect(haltGPIO, GPIO.FALLING, callback=def_halt, bouncetime=bouncetime)
+		GPIO.add_event_detect(haltGPIO, GPIO.FALLING, callback=halt, bouncetime=bouncetime)
 		GPIO.output(LEDGPIO, GPIO.HIGH)
 		pause()
 	except KeyboardInterrupt:
