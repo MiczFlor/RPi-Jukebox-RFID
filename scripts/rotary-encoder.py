@@ -6,7 +6,7 @@
 
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
-# RPi-Jukebox-RFID/scripts/ky040.py
+# RPi-Jukebox-RFID/scripts/rotary_encoder_base.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
 # RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
 # See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
@@ -14,6 +14,7 @@
 #
 # circuit diagram for one of two possible encoders (volume), use GPIOs from code below for the tracks
 # (capacitors are optionally)
+# KY-040 is just one example, typically the pins are named A nd B instead of Clock and Data
 #
 #       .---------------.                      .---------------.
 #       |               |                      |               |
@@ -40,44 +41,44 @@
 #
 
 import RPi.GPIO as GPIO
-from ky040 import KY040
+from rotary_encoder_base import RotaryEncoder as enc
 import os, time, sys
 from signal import pause
 from subprocess import check_call
 
 
-def rotaryChangeCWVol():
-   check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
+def rotaryChangeCWVol(steps):
+   check_call("./scripts/playout_controls.sh -c=volumeup -v="+str(steps), shell=True)
 
-def rotaryChangeCCWVol():
-   check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
+def rotaryChangeCCWVol(steps):
+   check_call("./scripts/playout_controls.sh -c=volumedown -v="+str(steps), shell=True)
 
-def rotaryChangeCWTrack():
+def rotaryChangeCWTrack(steps):
    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
 
-def rotaryChangeCCWTrack():
+def rotaryChangeCCWTrack(steps):
    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
-CLOCKPINVol = 5 
-DATAPINVol = 6
+APinVol = 5 
+BPinVol = 6
 
-CLOCKPINTrack = 22
-DATAPINTrack = 23
+APinTrack = 22
+BPinTrack = 23
 
 GPIO.setmode(GPIO.BCM)
 
 if __name__ == "__main__":
 
 	try:
-		ky040Vol = KY040(CLOCKPINVol, DATAPINVol, rotaryChangeCWVol, rotaryChangeCCWVol, 200)
-		ky040Track = KY040(CLOCKPINTrack, DATAPINTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 500)
+		encVol = enc(APinVol, BPinVol, rotaryChangeCWVol, rotaryChangeCCWVol, 0.2)
+		encTrack = enc(APinTrack, BPinTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 0.05)
 
-		ky040Vol.start()
-		ky040Track.start()
+		encVol.start()
+		encTrack.start()
 		pause()
 	except KeyboardInterrupt:
-		ky040Vol.stop()
-		ky040Track.stop()
+		encVol.stop()
+		encTrack.stop()
 		GPIO.cleanup()
 		print("\nExiting rotary encoder decoder\n")
 		# exit the application

@@ -214,16 +214,19 @@ case $COMMAND in
         ;;
     volumeup)
         if [ ! -f $VOLFILE ]; then
+            if [ -z $VALUE ]; then
+		VALUE=1
+	    fi
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
             # increase by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} + ${VOLSTEP}` 
+            VOLPERCENT=`expr ${VOLPERCENT} + \( ${VOLSTEP} \* ${VALUE} \)` 
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $MAXVOL ];
             then
                 # set volume level in percent
-                echo -e volume +$VOLSTEP\\nclose | nc -w 1 localhost 6600
+                echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
             else
                 # if we are over the max volume limit, set the volume to maxvol
                 echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
@@ -238,16 +241,19 @@ case $COMMAND in
         ;;
     volumedown)
         if [ ! -f $VOLFILE ]; then
+            if [ -z $VALUE ]; then
+		VALUE=1
+	    fi
             # $VOLFILE does NOT exist == audio on
 			# read volume in percent
 			VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
 			# decrease by $VOLSTEP
-			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}` 
+                        VOLPERCENT=`expr ${VOLPERCENT} - \( ${VOLSTEP} \* ${VALUE} \)` 
 			#decrease volume only if VOLPERCENT is above the min volume limit
 			if [ $VOLPERCENT -ge $MINVOL ];
 			then
 				# set volume level in percent
-				echo -e volume -$VOLSTEP\\nclose | nc -w 1 localhost 6600
+				echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
 			else
 				# if we are below the min volume limit, set the volume to minvol
 				echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
