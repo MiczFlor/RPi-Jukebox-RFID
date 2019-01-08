@@ -27,6 +27,7 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 ---
 
 If you like Phoniebox [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+![Buy Micz Flor a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg "Buy Micz Flor a coffee")
 
 ---
 
@@ -148,6 +149,7 @@ I also want to link to two proprietary and commercial projects, because they als
 ---
 
 If you like Phoniebox [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+![Buy Micz Flor a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg "Buy Micz Flor a coffee")
 
 ---
 
