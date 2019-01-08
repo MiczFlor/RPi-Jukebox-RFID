@@ -26,6 +26,11 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 
 ---
 
+If you like Phoniebox [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+
+---
+
+
 <a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="docs/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>
 
 *See the Phoniebox code in action, watch this video and read the blog post from [iphone-ticker.de](https://www.iphone-ticker.de/wochenend-projekt-kontaktlose-musikbox-fuer-kinder-123063/)*
@@ -139,6 +144,12 @@ I also want to link to two proprietary and commercial projects, because they als
 
 * [tonies® - das neue Audiosystem für mehr Hör-Spiel-Spaß im Kinderzimmer. (German)](https://tonies.de/) You buy a plastic figure which then triggers the audiofile - which is served over the web.
 * [Hörbert - a MP3 player controlled by buttons](https://hoerbert.com) In Germany this has already become a *classic*. They also started selling a DIY kit.
+
+---
+
+If you like Phoniebox [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+
+---
 
 ## Shopping list
 
