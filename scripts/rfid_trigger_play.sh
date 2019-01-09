@@ -351,6 +351,10 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
                 sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
             fi
             if [ "$DEBUG" == "true" ]; then echo "Completed: toggle pause/play" >> $PATHDATA/../logs/debug.log; fi
+        elif [ $PLLENGTH -eq 0 ]
+        then
+	    # after a reboot we want to play the playlist once no matter what the setting is
+            if [ "$DEBUG" == "true" ]; then echo "Take second wipe as first after fresh boot" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "NOAUDIOPLAY" ]
         then
             # The following involves NOT playing the playlist, so we set: 

@@ -5,9 +5,7 @@ After=network.target iptables.service firewalld.service
 [Service]
 Restart=always
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
-ExecStart=/usr/bin/python2 /home/pi/RPi-Jukebox-RFID/scripts/rotary-encoder.py
-User=pi
-Group=pi
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/rotary-encoder.py
 
 [Install]
 WantedBy=multi-user.target
