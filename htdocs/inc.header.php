@@ -333,6 +333,12 @@ if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YT
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
     $post['submit'] = $_POST['submit'];
 }
+if(isset($_POST['delete']) && $_POST['delete'] == "delete") {
+    $post['delete'] = $_POST['delete'];
+}
+if(isset($_GET['delete']) && $_GET['delete'] == "delete") {
+    $post['delete'] = $_GET['delete'];
+}
 
 
 /*******************************************
