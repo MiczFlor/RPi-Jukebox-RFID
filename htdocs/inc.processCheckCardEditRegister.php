@@ -15,7 +15,13 @@ if($post['delete'] == "delete") {
         Else: Go <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> Home</a>.</p>";
     // remove $fileshortcuts to cardID file in shortcuts
     $exec = "rm ".$fileshortcuts;
-    exec($exec);
+    if($debug == "true") {
+        print "<pre>deleting shortcut:\n";
+        print $exec;
+        print "</pre>";
+    } else {
+        exec($exec);
+    }
 } elseif($post['submit'] == "submit") {
     /*
     * error check
@@ -61,14 +67,14 @@ if($post['delete'] == "delete") {
     // No streamFolderName entered
     if(isset($post['streamURL']) && !isset($post['streamFolderName'])) {
         $messageAction .= $lang['cardRegisterErrorSuggestFolder']." (error 005)";
-        // get rid of strange chars, prefixes and the like
+        // suggest folder name: get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     
     // streamFolderName not given
     if( ( isset($post['streamURL']) || isset($post['YTstreamURL']) ) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
         $messageAction .= $lang['cardRegisterErrorSuggestFolder']." (error 006)";
-        // get rid of strange chars, prefixes and the like
+        // suggest folder name: get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     
