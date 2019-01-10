@@ -47,7 +47,7 @@ def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 shut = Button(3, hold_time=2)
-pled = LED(2)
+pled = LED(7)
 vol0 = Button(13,pull_up=True)
 volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
 volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
