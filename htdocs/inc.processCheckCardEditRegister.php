@@ -15,7 +15,13 @@ if($post['delete'] == "delete") {
         Else: Go <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> Home</a>.</p>";
     // remove $fileshortcuts to cardID file in shortcuts
     $exec = "rm ".$fileshortcuts;
-    exec($exec);
+    if($debug == "true") {
+        print "<pre>deleting shortcut:\n";
+        print $exec;
+        print "</pre>";
+    } else {
+        exec($exec);
+    }
 } elseif($post['submit'] == "submit") {
     /*
     * error check
@@ -24,7 +30,7 @@ if($post['delete'] == "delete") {
     // So you may select the folder in any of both.
     // Check if two different audiofolders are selectied in the dropdowns
     if(isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
-        $messageAction .= $lang['cardRegisterErrorTooMuch'];
+        //$messageAction .= $lang['cardRegisterErrorTooMuch']." (error 007)";
     } elseif(!isset($post['audiofolder']) && isset($post['YTaudiofolder'])) {
         //set the audiofolder variable (if unset) to the YTaudiofolder variable. This makes the further handling easier.
         $post['audiofolder'] = $post['YTaudiofolder'];
@@ -32,7 +38,7 @@ if($post['delete'] == "delete") {
     // Like above: stream folder inputs are interchangeable.
     // Check if two different stream folder names are entered
     if(isset($post['streamFolderName']) && isset($post['YTstreamFolderName']) && $post['streamFolderName'] != $post['YTstreamFolderName']) {
-        $messageAction .= $lang['cardRegisterErrorTooMuch'];
+        $messageAction .= $lang['cardRegisterErrorTooMuch']." (error 008)";
     } elseif(!isset($post['streamFolderName']) && isset($post['YTstreamFolderName'])) {
         //set the streamFolderName variable (if unset) to the YTstreamFolderName variable. This makes the further handling easier.
         $post['streamFolderName'] = $post['YTstreamFolderName'];
@@ -40,35 +46,35 @@ if($post['delete'] == "delete") {
 
     // posted too much?
     if(isset($post['streamURL']) && isset($post['audiofolder'])) {
-        $messageAction .= $lang['cardRegisterErrorStreamAndAudio'];
+        $messageAction .= $lang['cardRegisterErrorStreamAndAudio']." (error 001)";
     }
     
     // posted too little?
     if((!isset($post['streamURL']) || !isset($post['streamType'])) && !isset($post['audiofolder']) && !isset($post['YTstreamURL'])) {
-        $messageAction .= $lang['cardRegisterErrorStreamOrAudio'];
+        $messageAction .= $lang['cardRegisterErrorStreamOrAudio']." (error 002)";
     }
 
     // posted streamFolderName and audiofolder
     if(isset($post['streamFolderName']) && isset($post['audiofolder'])) {
-        $messageAction .= $lang['cardRegisterErrorExistingAndNew'];
+        $messageAction .= $lang['cardRegisterErrorExistingAndNew']." (error 003)";
     }
     
     // streamFolderName already exists
     if(isset($post['streamFolderName']) && file_exists($Audio_Folders_Path.'/'.$post['streamFolderName'])) {
-        $messageAction .= $lang['cardRegisterErrorExistingFolder'];
+        $messageAction .= $lang['cardRegisterErrorExistingFolder']." (error 004)";
     }
     
     // No streamFolderName entered
     if(isset($post['streamURL']) && !isset($post['streamFolderName'])) {
-        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
-        // get rid of strange chars, prefixes and the like
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder']." (error 005)";
+        // suggest folder name: get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     
     // streamFolderName not given
     if( ( isset($post['streamURL']) || isset($post['YTstreamURL']) ) && !isset($post['audiofolder']) && !isset($post['streamFolderName'])) {
-        $messageAction .= $lang['cardRegisterErrorSuggestFolder'];
-        // get rid of strange chars, prefixes and the like
+        $messageAction .= $lang['cardRegisterErrorSuggestFolder']." (error 006)";
+        // suggest folder name: get rid of strange chars, prefixes and the like
         $post['streamFolderName'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
     

@@ -1,13 +1,16 @@
 # Library dependencies for the python code.  You need to install these with
-# `pip install -r requirements.txt` before you can run this.
+# `sudo pip install -r requirements.txt` before you can run this.
 
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
 
-# Neural net and related libraries.
+# related libraries.
 evdev==0.7.0
 git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
-youtube-dl
-serial
+youtube_dl
+pyserial
+spidev
+RPi.GPIO
+pi-rc522
 
 # Type checking for python
 # typing

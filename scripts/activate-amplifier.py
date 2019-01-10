@@ -1,37 +1,35 @@
-#!/usr/bin/python
-
-# While running this script the PAM8403 gets a ON signal so amplifier has power. Else it is
-# switched of. This helps me
-# The application uses the GPIO Zero library (https://gpiozero.readthedocs.io/en/stable/)
-# The PAM8403 PIN 12 is connected to one of the Pi's GPIO ports, then is defined as an Output device
-# in GPIO Zero: https://gpiozero.readthedocs.io/en/stable/api_output.html#outputdevice
+#!/usr/bin/python3
 
 import sys
 import time
 from signal import pause
-import gpiozero
+import RPi.GPIO as GPIO
 
-# change this value based on which GPIO port the PAM8403 PIN 12 is connected to
-PIN = 23
+# script to activate and deactivate an amplifier, power led, etc. using a GPIO pin on power up / down
 
-# create a relay object.
-# Triggered by the output pin going low: active_high=False.
-# Initially off: initial_value=False
-amplifier = gpiozero.OutputDevice(PIN, active_high=True, initial_value=False)
+# see for an example implementation with a PAM8403 digital amplifier (PAM pin 12 connected to GPIO 26)
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Hardware-Hack-PAM8403-Poweroff
 
+# change this value based on which GPIO port the amplifier or other devices are connected to
+# Flexible Pinout
+ampGPIO = 26
+# Classic Pinout
+# ampGPIO = 23
+
+# setup RPi lib to control output pin
+# we do not cleanup the GPIO because we want the pin low = off after program exit
+# the resulting warning can be ignored
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(ampGPIO, GPIO.OUT)
 
 def set_amplifier(status):
     if status:
         print("Setting amplifier: ON")
-        amplifier.on()
+        GPIO.output(ampGPIO, GPIO.HIGH)
     else:
         print("Setting amplifier: OFF")
-        amplifier.off()
-
-
-def toggle_amplifier():
-    print("toggling amplifier")
-    amplifier.toggle()
+        GPIO.output(ampGPIO, GPIO.LOW)
 
 if __name__ == "__main__":
     try:
@@ -40,7 +38,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         # turn the relay off
         set_amplifier(False)
-        print("\nExiting application\n")
+        print("\nExiting amplifier control\n")
         # exit the application
         sys.exit(0)
 

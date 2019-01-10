@@ -398,8 +398,16 @@ git fetch
 
 # Install more required packages
 sudo pip install -r requirements.txt
+
+# actually, for the time being most of the requirements are run here.
+# the requirements.txt version seems to throw errors. Help if you can to fix this:
+
 sudo pip install "evdev == 0.7.0"
-sudo pip install youtube_dl
+sudo pip install --upgrade youtube_dl
+sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
+sudo pip install pyserial
+sudo pip install spidev
+sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
 # Switch of WiFi power management
@@ -563,7 +571,6 @@ sudo systemctl enable dhcpcd
 
 # / WiFi settings (SSID password)
 ###############################
-
 
 # / INSTALLATION
 ##################################################### 

@@ -193,6 +193,10 @@ function startsWith($haystack, $needle) {
      $length = strlen($needle);
      return (substr($haystack, 0, $length) === $needle);
 }
+function endsWith($haystack, $needle) {
+     $length = strlen($needle);
+     return (substr($haystack, ($length * -1), $length) === $needle);
+}
 
 function replaceUmlaute($string) {
     $searchreplace = array(
@@ -254,7 +258,23 @@ function index_folders_print($item, $key)
     global $contentTree;
     global $shortcuts;
     global $debugcol;
+/**/
+    // get files from array
+    foreach($contentTree as $tempkey => $values) { 
+        $allFiles = $values['files']; 
+    } 
+    // get mp3 files from files list
+    $filesMp3 = array();
+    foreach($allFiles as $allFile) {
+        if(endsWith($allFile, ".mp3")) {
+            //print "<br>this is:".$file." ";
+            $filesMp3[] = $allFile;
+        }
+    }
+/**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
+    //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
+    //print "<pre>\nfilesMp3:"; print_r($filesMp3); print "</pre>"; //???
     //print "<pre>\nshortcuts:"; print_r($shortcuts); print "</pre>"; //???
     /*
     * Special style for level 0 (top level) panels
@@ -263,13 +283,13 @@ function index_folders_print($item, $key)
     if($contentTree[$key]['level'] == 0) {
         $panelStyle = "panel-default";
     }
-/*
-if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
-    print '<img class="img-playlist-item img-responsive" src="image.php?img='.$contentTree[$key]['path_abs'].'/cover.jpg" alt=""/>';
-} else {
-    print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
-}
-*/
+    /*
+    if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) { 
+        print '<img class="img-playlist-item img-responsive" src="image.php?img='.$contentTree[$key]['path_abs'].'/cover.jpg" alt=""/>';
+    } else {
+        print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
+    }
+    */
     print "
       <div class='panel ".$panelStyle."'>";
 
@@ -278,12 +298,14 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
 
     print "
             <h4>";
+/*
 	$conf['settings_abs'] = realpath(getcwd().'/../settings/');
 	$ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
 	if ($ShowCover == "ON" && file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
 	$cover = $contentTree[$key]['path_abs']."/cover.jpg";
 	print  "<img class='img-responsive img-thumbnail' src='data:image/jpg;base64,".base64_encode(file_get_contents("$cover"))."' alt='' style='float: right; max-width: 85px'/>";
 	}
+*/
     if($contentTree[$key]['count_files'] > 0) {
         print "
               <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
@@ -329,46 +351,55 @@ if(file_exists($contentTree[$key]['path_abs'].'/cover.jpg')) {
     /*
     * settings buttons
     */
-    print "
-            <div><!-- settings buttons -->";
-    // RESUME BUTTON
-    // do not show any if there is a live stream in the folder
-    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
-        $foundResume = "OFF";
-        if( 
-            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
-            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'RESUME="ON"') !== false
-        ) {
-            $foundResume = "ON";
-        } else {
+    // we show the buttons only if there are actual audio files in the folder
+    if($contentTree[$key]['count_audioFiles'] == 0) {
+    } else {
+        print "\n                <div><!-- settings buttons -->";
+        // RESUME BUTTON
+        // do not show any if there is a live stream in the folder
+        if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+            $foundResume = "OFF";
+            if( 
+                file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+                && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'RESUME="ON"') !== false
+            ) {
+                $foundResume = "ON";
+            } else {
+            }
+            if( $foundResume == "OFF" ) {
+                // do stuff
+                print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            } elseif($foundResume == "ON") {
+                print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            }
         }
-        if( $foundResume == "OFF" ) {
-            // do stuff
-            print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
-        } elseif($foundResume == "ON") {
-            print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        
+        // SHUFFLE BUTTON
+        // do not show any if there is a live stream in the folder
+        if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+            $foundShuffle = "OFF";
+            if( 
+                file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+                && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SHUFFLE="ON"') !== false
+            ) {
+                $foundShuffle = "ON";
+            }
+            if( $foundShuffle == "OFF" ) {
+                // do stuff
+                print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            } elseif($foundShuffle == "ON") {
+                print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            }
         }
+        // RSS link
+        if (count($filesMp3) > 0) {
+            print "<a href='rss-mp3.php?title=".urlencode($contentTree[$key]['basename'])."&rss=".serialize($filesMp3)."' class='btn btn-info '>";
+    		print "<i class='mdi mdi-rss'></i>Podcast RSS ";		
+            print "</a>";
+    	}
+        print "
+                </div><!-- / settings buttons -->";
     }
-    
-    // SHUFFLE BUTTON
-    // do not show any if there is a live stream in the folder
-    if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
-        $foundShuffle = "OFF";
-        if( 
-            file_exists($contentTree[$key]['path_abs']."/folder.conf") 
-            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SHUFFLE="ON"') !== false
-        ) {
-            $foundShuffle = "ON";
-        }
-        if( $foundShuffle == "OFF" ) {
-            // do stuff
-            print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
-        } elseif($foundShuffle == "ON") {
-            print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
-        }
-    }
-    print "
-            </div><!-- / settings buttons -->";
     
 
     // get all IDs that match this folder
@@ -476,8 +507,4 @@ function printPlaylistHtml($files)
     }
     print "
             </ol>"; 
-}
-
-
-
-?>
+}?>

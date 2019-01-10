@@ -1,7 +1,7 @@
 <?php
 $volumevalue = exec("/usr/bin/sudo ".realpath(getcwd().'/../scripts/')."/playout_controls.sh -c=getvolume");
 //$volumevalue = 73.6;//debug
-$volumevalueselect = round(($volumevalue/10))*10;
+$volumevalueselect = round(($volumevalue/5))*5;
 $volumevaluedisplay = round($volumevalue);
 ?>
 	  <div class="col-xs-6">
