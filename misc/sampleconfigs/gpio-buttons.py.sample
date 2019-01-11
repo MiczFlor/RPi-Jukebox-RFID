@@ -20,11 +20,14 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
-    # Power led blinks two times - Tell listener we're going down.
+    # Power led blinks two times which gives feedback to listener that the
+    # shutdown request was understood and the phoniebox is going down.
     pled.blink(on_time=0.3, off_time=0.3, n=2, background=False)
-    # Power led stays on until shutdown completes (when blinking it might be
-    # accidently off because it blinks and then cannot be controlled anymore.
-    # Pi looks like off too early. To avoid this switch it back on.
+    # After blinking two times the power led stays on until shutdown completes
+    # When the led continues blinking during shutdown it might go off caused
+    # by blinking and then the GPIO might be unable to be controlled anymore
+    # caused by shutdown. In that case the pi looks like it is already off - which it is not
+    # To avoid this switch it back on and it will stay on until pi shutdown is complete.
     pled.on()
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
@@ -47,6 +50,7 @@ def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
 shut = Button(3, hold_time=2)
+# GPIO 7 - Pin 26
 pled = LED(7)
 vol0 = Button(13,pull_up=True)
 volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
@@ -67,7 +71,7 @@ next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
 
-# Power led running all the time
+# Switch on power led after boot to indicate state "on" for phoniebox
 pled.on()
 
 pause()
