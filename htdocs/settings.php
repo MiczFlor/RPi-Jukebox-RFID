@@ -107,6 +107,14 @@ include("inc.setVolumeStep.php");
         <div class="row">
 
 <?php
+include("inc.setStoptimer.php");
+?>
+
+        </div><!-- / .row -->
+
+        <div class="row">
+
+<?php
 include("inc.setSleeptimer.php");
 ?>
 

@@ -269,6 +269,10 @@ if(isset($_POST['shutdownafter']) && trim($_POST['shutdownafter']) != "") {
     $urlparams['shutdownafter'] = trim($_POST['shutdownafter']);
 }
 
+if(isset($_POST['stopplayoutafter']) && trim($_POST['stopplayoutafter']) != "") {
+    $urlparams['stopplayoutafter'] = trim($_POST['stopplayoutafter']);
+}
+
 if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnon") {
     $urlparams['rfidstatus'] = trim($_POST['rfidstatus']);
 }
@@ -466,6 +470,19 @@ if(isset($urlparams['idletime'])) {
 // set shutdownafter time (sleeptimer)
 if(isset($urlparams['shutdownafter'])) {
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=".$urlparams['shutdownafter'];
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
+
+// set playerstopafter time (auto stop timer)
+if(isset($urlparams['stopplayoutafter'])) {
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=".$urlparams['stopplayoutafter'];
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
