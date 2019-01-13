@@ -228,10 +228,10 @@ if [ "$CARDID" ]; then
             ;;
         $STARTRECORD600)
             #start recorder for -v seconds
-            $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
+            $PATHDATA/playout_controls.sh -c=recordstart -v=600			             
             ;;
         $STOPRECORD)
-            $PATHDATA/playout_controls.sh -c=stoprecord
+            $PATHDATA/playout_controls.sh -c=recordstop
             ;;
         *)
             # We checked if the card was a special command, seems it wasn't.

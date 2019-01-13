@@ -40,14 +40,14 @@ def def_prev():
 def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
-def def_startrecord():
-    check_call("./scripts/playout_controls.sh -c=startrecord", shell=True)
+def def_recordstart():
+    check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
 
-def def_stoprecord():
-    check_call("./scripts/playout_controls.sh -c=stoprecord", shell=True)
+def def_recordstop():
+    check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
 
-def def_playback():
-    check_call("./scripts/playout_controls.sh -c=playback", shell=True)
+def def_recordplaylatest():
+    check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 
 shut = Button(3, hold_time=2)
 vol0 = Button(13,pull_up=True)
@@ -70,8 +70,8 @@ volD.when_held = def_volD
 next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
-#reco.when_pressed = def_startrecord
-#reco.when_released = def_stoprecord
-#play.when_pressed = def_playback
+#reco.when_pressed = def_recordstart
+#reco.when_released = def_recordstop
+#play.when_pressed = def_recordplaylatest
 
 pause()
