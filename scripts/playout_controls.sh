@@ -437,6 +437,8 @@ case $COMMAND in
     startrecord)	
 
 	#mkdir $AUDIOFOLDERSPATH/Recordings
+	#kill the potential current playback
+	sudo pkill aplay
 	#start recorder if not already started 
 	if ! pgrep -x "arecord" > /dev/null
 	then	
@@ -449,6 +451,12 @@ case $COMMAND in
     stoprecord)
 	#kill arecord instances
 	sudo pkill arecord
+	;;
+    playback)
+	#kill arecord and aplay instances
+	sudo pkill arecord
+	sudo pkill aplay
+	aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
 	;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
