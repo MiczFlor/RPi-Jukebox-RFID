@@ -94,6 +94,16 @@ MINVOL='1'
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 
+##############################################
+# Change volume during idle (or only change it during Play and in the WebApp)
+#TRUE=Change Volume during all Time (Default; FALSE=Change Volume only during "Play"; OnlyDown=It is possible to decrease Volume during Idle; OnlyUp=It is possible to increase Volume during Idle
+# 1. create a default if file does not exist (set default do TRUE - Volume Change is possible every time)
+if [ ! -f $PATHDATA/../settings/Change_Volume_Idle ]; then
+    echo "TRUE" > $PATHDATA/../settings/Change_Volume_Idle
+fi
+# 2. then|or read value from file
+VOLCHANGEIDLE=`cat $PATHDATA/../settings/Change_Volume_Idle`
+
 #################################
 # Idle time after the RPi will be shut down. 0=turn off feature.
 # 1. create a default if file does not exist
@@ -115,6 +125,7 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo $MAXVOL
+#echo $VOLCHANGEIDLE
 #echo `cat $VOLFILE`
 #echo $IDLETIME
 #echo $AUDIOFOLDERSPATH
@@ -213,6 +224,16 @@ case $COMMAND in
         fi
         ;;
     volumeup)
+        #check for volume change during idle
+	if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyDown" ];
+	then
+	    PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+		if [ "$PLAYSTATE" != "play" ]
+		then
+			#Volume change is not allowed - leave program
+			exit 1
+		fi
+	fi
         if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
 		VALUE=1
@@ -240,7 +261,17 @@ case $COMMAND in
         fi
         ;;
     volumedown)
-        if [ ! -f $VOLFILE ]; then
+        #check for volume change during idle
+	if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyUp" ];
+	then
+	    	PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+		if [ "$PLAYSTATE" != "play" ]
+		then
+			#Volume change is not allowed - leave program
+			exit 1
+		fi
+	fi
+	if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
 		VALUE=1
 	    fi
