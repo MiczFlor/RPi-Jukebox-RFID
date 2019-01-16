@@ -86,7 +86,14 @@ fi
 # 2. then|or read value from file
 MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
 
-MINVOL='1'
+##############################################
+# Min volume limit
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Min_Volume_Limit ]; then
+    echo "0" > $PATHDATA/../settings/Min_Volume_Limit
+fi
+# 2. then|or read value from file
+MINVOL=`cat $PATHDATA/../settings/Min_Volume_Limit`
 
 #################################
 # path to file storing the current volume level
@@ -125,6 +132,7 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo $MAXVOL
+#echo $MINVOL
 #echo $VOLCHANGEIDLE
 #echo `cat $VOLFILE`
 #echo $IDLETIME
@@ -213,14 +221,22 @@ case $COMMAND in
         fi
         ;;
     setvolume)
-        #increase volume only if VOLPERCENT is below the max volume limit
-        if [ $VALUE -le $MAXVOL ];
+        #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
+        if [ $VALUE -le $MAXVOL ] && [ $VALUE -ge $MINVOL ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
-            # if we are over the max volume limit, set the volume to maxvol
-            echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+            if [ $VALUE -gt $MAXVOL ];
+			then
+				# if we are over the max volume limit, set the volume to maxvol
+				echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+			fi
+			if [ $VALUE -lt $MINVOL ];
+			then
+				# if we are unter the min volume limit, set the volume to minvol
+				echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
+			fi
         fi
         ;;
     volumeup)
