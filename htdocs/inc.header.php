@@ -13,13 +13,6 @@
 */
 $debug = "false"; // true or false
 
-
-/*
-* load language strings
-*/
-include("inc.langLoad.php");
-
-
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
 * Configuration file
@@ -97,8 +90,14 @@ if(file_exists(dirname(__FILE__).'/../settings/edition')) {
     $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
 } else {
     $edition = "classic";
-    $edition = "classic";
 }
+/*
+* load language strings
+*/
+if(file_exists($conf['settings_abs'].'/Lang')) {
+    $conf['settings_lang'] = trim(file_get_contents($conf['settings_abs'].'/Lang'));
+}
+include("inc.langLoad.php");
 
 /*******************************************
 * URLPARAMETERS
