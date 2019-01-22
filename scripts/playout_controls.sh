@@ -54,8 +54,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # disablewifi
 # enablewifi
 # togglewifi
-# startrecord
-# stoprecord
+# recordstart
+# recordstop
+# recordplaylatest
 
 # SET VARIABLES
 # The variables can be changed in the ../settings dir.
@@ -434,9 +435,11 @@ case $COMMAND in
 	    rfkill unblock wifi
 	fi
         ;;
-    startrecord)	
+    recordstart)	
 
 	#mkdir $AUDIOFOLDERSPATH/Recordings
+	#kill the potential current playback
+	sudo pkill aplay
 	#start recorder if not already started 
 	if ! pgrep -x "arecord" > /dev/null
 	then	
@@ -446,9 +449,15 @@ case $COMMAND in
 	    echo "device is already recording"
 	fi
 	;;
-    stoprecord)
+    recordstop)
 	#kill arecord instances
 	sudo pkill arecord
+	;;
+    recordplaylatest)
+	#kill arecord and aplay instances
+	sudo pkill arecord
+	sudo pkill aplay
+	aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
 	;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE

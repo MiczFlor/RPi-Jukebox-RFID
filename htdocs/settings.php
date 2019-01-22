@@ -76,18 +76,14 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="volume"></a>
-         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
+         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalLang']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
     <div class="panel-body">
       <div class="row">
 <?php
-include("inc.setVolume.php");
-
-include("inc.setMaxVolume.php");
-
-include("inc.setVolumeStep.php");
+include("inc.setLanguage.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->
@@ -103,6 +99,14 @@ include("inc.setVolumeStep.php");
       </h4>
     </div><!-- /.panel-heading -->
     <div class="panel-body">
+
+        <div class="row">
+
+<?php
+include("inc.setStoptimer.php");
+?>
+
+        </div><!-- / .row -->
 
         <div class="row">
 

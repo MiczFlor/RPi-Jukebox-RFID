@@ -1,8 +1,6 @@
-
-
-
 <?php
 /*
+
 <div class="collapse" id="collapsePlaylist" aria-expanded="false" style="height: 0px;"> 
 <table class="table table-striped table-hover table-condensed"> 
     <!--thead> 
@@ -57,7 +55,7 @@ $(document).ready(function() {
 	$('#loadPlaylist').load('ajax.loadPlaylist.php');
 	var refreshId = setInterval(function() {
 		$('#loadPlaylist').load('ajax.loadPlaylist.php?' + 1*new Date());
-	}, 20000);
+	}, 3000);
 });
 </script>
 <?php

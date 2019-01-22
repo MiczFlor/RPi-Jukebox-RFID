@@ -13,13 +13,6 @@
 */
 $debug = "false"; // true or false
 
-
-/*
-* load language strings
-*/
-include("inc.langLoad.php");
-
-
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
 * Configuration file
@@ -97,8 +90,16 @@ if(file_exists(dirname(__FILE__).'/../settings/edition')) {
     $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
 } else {
     $edition = "classic";
-    $edition = "classic";
 }
+/*
+* load language strings
+*/
+if(file_exists($conf['settings_abs'].'/Lang')) {
+    $conf['settings_lang'] = trim(file_get_contents($conf['settings_abs'].'/Lang'));
+} else {
+    $conf['settings_lang'] = "en-UK";
+}
+include("inc.langLoad.php");
 
 /*******************************************
 * URLPARAMETERS
@@ -267,6 +268,10 @@ if(isset($_POST['idletime']) && trim($_POST['idletime']) != "") {
 
 if(isset($_POST['shutdownafter']) && trim($_POST['shutdownafter']) != "") {
     $urlparams['shutdownafter'] = trim($_POST['shutdownafter']);
+}
+
+if(isset($_POST['stopplayoutafter']) && trim($_POST['stopplayoutafter']) != "") {
+    $urlparams['stopplayoutafter'] = trim($_POST['stopplayoutafter']);
 }
 
 if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnon") {
@@ -466,6 +471,19 @@ if(isset($urlparams['idletime'])) {
 // set shutdownafter time (sleeptimer)
 if(isset($urlparams['shutdownafter'])) {
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=".$urlparams['shutdownafter'];
+    if($debug == "true") { 
+        print "Command: ".$exec; 
+    } else { 
+        exec($exec);
+        /* redirect to drop all the url parameters */
+        header("Location: ".$conf['url_abs']);
+        exit; 
+    }
+}
+
+// set playerstopafter time (auto stop timer)
+if(isset($urlparams['stopplayoutafter'])) {
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=".$urlparams['stopplayoutafter'];
     if($debug == "true") { 
         print "Command: ".$exec; 
     } else { 
