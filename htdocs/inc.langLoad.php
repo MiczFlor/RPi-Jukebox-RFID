@@ -1,4 +1,18 @@
 <?php
+/*
+* first see if we have something from the settings page form to do
+* values come from inc.setLanguage.php
+*/
+if(isset($_POST['lang']) && trim($_POST['lang']) != "") {
+    /*
+    * write posted value to settings file
+    */
+    file_put_contents($conf['settings_abs'].'/Lang', trim($_POST['lang']));
+    $conf['settings_lang'] = trim($_POST['lang']);
+    /*
+    * TODO: reload page
+    */
+}
 
 /*
 * Lang files default (the complete set)
