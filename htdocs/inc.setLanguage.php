@@ -15,17 +15,17 @@ if(
     && trim($_POST['lang']) != ""
     && trim($_POST['lang']) != "en-UK"
     ) {
-    /*
+    /**/
 
-    $filename = 'lang/lang-'.$_POST['lang'].'.php';
+    $filename = realpath('lang/lang-'.$_POST['lang'].'.php');
     
-    $langPHP = "<?php \n    \$lang = array();\n";
+    $langPHP = "<?php\n\$lang = array();\n";
     foreach($langDef as $langKey => $langVal) {
         //$langPHP .= "// ".$langKey." => ".$langVal."\n";
         if(isset($langCustom[$langKey])) {
-            $langPHP .= "\$lang['".$langKey."'] = \"".$langCustom[$langKey]."\"\n";
+            $langPHP .= "\$lang['".$langKey."'] = \"".str_replace('"', '\"', $langCustom[$langKey])."\";\n";
         } else {
-            $langPHP .= "\$lang['".$langKey."'] = \"".$langDef[$langKey]."\"\n";
+            $langPHP .= "\$lang['".$langKey."'] = \"".str_replace('"', '\"', $langDef[$langKey])."\";\n";
             $messageLangfileNewItems = $lang['settingsMessageLangfileNewItems'];
         }
     }
