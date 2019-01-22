@@ -96,6 +96,8 @@ if(file_exists(dirname(__FILE__).'/../settings/edition')) {
 */
 if(file_exists($conf['settings_abs'].'/Lang')) {
     $conf['settings_lang'] = trim(file_get_contents($conf['settings_abs'].'/Lang'));
+} else {
+    $conf['settings_lang'] = "en-UK";
 }
 include("inc.langLoad.php");
 

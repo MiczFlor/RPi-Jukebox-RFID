@@ -3,7 +3,7 @@
 /*
 * Lang files default (the complete set)
 */
-include("lang/lang-en.php");
+include("lang/lang-en-UK.php");
 $langDef = $lang;
 /*
 * see if we load a sepcific language file
@@ -11,6 +11,7 @@ $langDef = $lang;
 if(
     isset($conf['settings_lang'])
     && $conf['settings_lang'] != ""
+    && $conf['settings_lang'] != "en-UK"
     && file_exists('lang/lang-'.$conf['settings_lang'].'.php')
     ) {
     include('lang/lang-'.$conf['settings_lang'].'.php');
