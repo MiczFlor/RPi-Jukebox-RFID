@@ -3,6 +3,8 @@ Description=Phoniebox RFID-Reader Service
 After=network.target iptables.service firewalld.service
 
 [Service]
+User=pi
+Group=pi
 Restart=always
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
 ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py
