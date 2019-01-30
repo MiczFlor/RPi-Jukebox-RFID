@@ -8,8 +8,15 @@ foreach($plFile[1] AS $file) {
 			<div class="col-xs-1" style="width:8.3333333%;">
 				<a href="?playpos='.$i.'" class="btn btn-success"><i class="mdi mdi-play" aria-hidden="true"></i></a>
 			</div>
-			<div class="col-xs-7" style="width:81.6666667%; margin-left: 20px; margin-right: -20px;">
-				<strong>'.$plTitle['1'][$i].'</strong>
+			<div class="col-xs-7" style="width:81.6666667%; margin-left: 20px; margin-right: -20px;">';
+	if(trim($plTitle['1'][$i]) != "") {
+		print '
+				<strong>'.$plTitle['1'][$i].'</strong>';
+	} else {
+		print '
+				<strong>'.basename($file).'</strong>';
+	}
+	print '
 				<br><i>'.str_replace(";", " and ", $plArtist['1'][$i]).'</i>';
 				if (empty($plAlbum['1'][$i]) != true) {
 					print "<br><font color=#7d7d7d>".$plAlbum['1'][$i];
