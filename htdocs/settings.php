@@ -91,6 +91,23 @@ include("inc.setLanguage.php");
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title"><a name="volume"></a>
+         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
+      </h4>
+    </div><!-- /.panel-heading -->
+
+    <div class="panel-body">
+      <div class="row">
+<?php
+include("inc.setVolume.php");
+include("inc.setMaxVolume.php");
+include("inc.setVolumeStep.php");
+?>
+      </div><!-- / .row -->
+    </div><!-- /.panel-body -->
+
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -104,20 +121,7 @@ include("inc.setLanguage.php");
 
 <?php
 include("inc.setStoptimer.php");
-?>
-
-        </div><!-- / .row -->
-
-        <div class="row">
-
-<?php
 include("inc.setSleeptimer.php");
-?>
-
-        </div><!-- / .row -->
-
-        <div class="row">
-<?php
 include("inc.setIdleShutdown.php");
 ?>
         </div><!-- / .row -->
