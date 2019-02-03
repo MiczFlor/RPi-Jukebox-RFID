@@ -322,9 +322,9 @@ function index_folders_print($item, $key)
 		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
 		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
 
-    if($contentTree[$key]['count_subdirs'] > 0) {
-        print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
-    }
+        if($contentTree[$key]['count_subdirs'] > 0) {
+            print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
+        }
     print "            <span class='badge' title='Show files'><i class='mdi mdi-library-music'></i> ".$contentTree[$key]['count_files']."</span>";
     print "
               </span>";
