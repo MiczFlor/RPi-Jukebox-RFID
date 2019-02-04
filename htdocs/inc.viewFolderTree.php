@@ -27,6 +27,16 @@ $contentTree = array(); // this will be the tree we need for display
 */
 foreach($subfolders as $key => $subfolder) {
     /*
+    * Glob is not working when directory name with 
+    * special characters like square brackets “[ ]”.
+    * So temporarily escape them php style.
+    */
+    $tempsubfolder = $subfolder;
+    $subfolder = str_replace('[', '\[', $subfolder);
+    $subfolder = str_replace(']', '\]', $subfolder);
+    $subfolder = str_replace('\[', '[[]', $subfolder);
+    $subfolder = str_replace('\]', '[]]', $subfolder);
+    /*
     * collect containing files and folders
     */
     $containingfolders = array();
@@ -73,6 +83,13 @@ foreach($subfolders as $key => $subfolder) {
 /**/
         }
     }
+    /*
+    * Glob is not working when directory name with 
+    * special characters like square brackets “[ ]”.
+    * So we temporarily escaped them php style.
+    * Now let's take the original path.
+    */
+    $subfolder = $tempsubfolder;
     /*
     * Now we know if the folder is empty or not
     * if not, keep it

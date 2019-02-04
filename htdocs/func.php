@@ -263,11 +263,12 @@ function index_folders_print($item, $key)
     foreach($contentTree as $tempkey => $values) { 
         $allFiles = $values['files']; 
     } 
+    //print_r($contentTree);//???
     // get mp3 files from files list
     $filesMp3 = array();
     foreach($allFiles as $allFile) {
         if(endsWith($allFile, ".mp3")) {
-            //print "<br>this is:".$file." ";
+            //print "<br>this is:".$file." ";//???
             $filesMp3[] = $allFile;
         }
     }
