@@ -420,6 +420,7 @@ function index_folders_print($item, $key)
         </div><!-- ./ .panel-heading -->
         <div id='collapse".$contentTree[$key]['id']."' class='collapse' aria-labelledby='heading".$contentTree[$key]['id']."' data-parent='#accordion'>
           <div class='panel-body'>";
+    print $contentTree[$key]['id']; //???
                 
     printPlaylistHtml($contentTree[$key]['files']);
     
