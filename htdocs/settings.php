@@ -31,7 +31,7 @@ if($debug == "true") {
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRFIDCards']; ?>
         </a> | 
         <a href="#language" class="xbtn xbtn-default ">
-        <i class='mdi mdi-language-high'></i> <?php print $lang['globalLanguageSettings']; ?>
+        <i class='mdi mdi-emoticon'></i> <?php print $lang['globalLanguageSettings']; ?>
         </a> |
         <a href="#volume" class="xbtn xbtn-default ">
         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
@@ -79,7 +79,7 @@ if($debug == "true") {
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title"><a name="language"></a>
-         <i class='mdi mdi-language-high'></i> <?php print $lang['globalLanguageSettings']; ?>
+         <i class='mdi mdi-emoticon'></i> <?php print $lang['globalLanguageSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
 
