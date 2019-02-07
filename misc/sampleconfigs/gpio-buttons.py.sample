@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from gpiozero import Button, LED
+import RPi.GPIO as GPIO
 from signal import pause
 from subprocess import check_call
 
@@ -20,6 +20,9 @@ from subprocess import check_call
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 def def_shutdown():
+    
+    # TODO: Handle hold time and shutdown here
+    
     # Power led blinks two times which gives feedback to listener that the
     # shutdown request was understood and the phoniebox is going down.
     pled.blink(on_time=0.3, off_time=0.3, n=2, background=False)
@@ -28,7 +31,7 @@ def def_shutdown():
     # by blinking and then the GPIO might be unable to be controlled anymore
     # caused by shutdown. In that case the pi looks like it is already off - which it is not
     # To avoid this switch it back on and it will stay on until pi shutdown is complete.
-    pled.on()
+    GPIO.output(LEDGPIO, GPIO.HIGH)
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
@@ -58,34 +61,49 @@ def def_recordstop():
 def def_recordplaylatest():
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 
-shut = Button(3, hold_time=2)
-# GPIO 7 - Pin 26
-pled = LED(7)
-vol0 = Button(13,pull_up=True)
-volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
-volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
-next = Button(26,pull_up=True)
-prev = Button(20,pull_up=True)
-halt = Button(21,pull_up=True)
-#reco = Button(6, pull_up=True) # Choose GPIO to fit your hardware
-#play = Button(12,pull_up=True) # Choose GPIO to fit your hardware
+shut = 3
+pled = 7
+vol0 = 13
+volU = 16
+volD = 19
+next = 26
+prev = 20
+halt = 21
+#reco =
+#play =
 
-shut.when_held = def_shutdown
-vol0.when_pressed = def_vol0
-volU.when_pressed = def_volU
+GPIO.setmode(GPIO.BCM)
+bouncetime = 500
+
+GPIO.setup(shut, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# GPIO 7 - Pin 26
+GPIO.setup(7, GPIO.OUT)
+
+GPIO.setup(vol0, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(volU, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(volD, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(next, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(prev, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(halt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# TODO: 2s hold!
+GPIO.add_event_detect(shut, GPIO.FALLING, callback=def_shutdown, bouncetime=bouncetime)
+GPIO.add_event_detect(vol0, GPIO.FALLING, callback=def_vol0, bouncetime=bouncetime)
+GPIO.add_event_detect(volU, GPIO.FALLING, callback=def_volU, bouncetime=bouncetime)
 #When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
-volU.when_held = def_volU
-volD.when_pressed = def_volD
+# TODO: 0.3s hold!
+GPIO.add_event_detect(volU, GPIO.FALLING, callback=def_volU, bouncetime=bouncetime)
+# TODO: 0.3s hold!
+GPIO.add_event_detect(volD, GPIO.FALLING, callback=def_volD, bouncetime=bouncetime)
 #When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
-volD.when_held = def_volD
-next.when_pressed = def_next
-prev.when_pressed = def_prev
-halt.when_pressed = def_halt
+GPIO.add_event_detect(next, GPIO.FALLING, callback=def_next, bouncetime=bouncetime)
+GPIO.add_event_detect(prev, GPIO.FALLING, callback=def_prev, bouncetime=bouncetime)
+GPIO.add_event_detect(halt, GPIO.FALLING, callback=def_halt, bouncetime=bouncetime)
 #reco.when_pressed = def_recordstart
 #reco.when_released = def_recordstop
 #play.when_pressed = def_recordplaylatest
 
 # Switch on power led after boot to indicate state "on" for phoniebox
-pled.on()
+GPIO.output(LEDGPIO, GPIO.HIGH)
 
 pause()
