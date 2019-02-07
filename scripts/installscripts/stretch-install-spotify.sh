@@ -456,7 +456,7 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
+sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
 
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
@@ -464,8 +464,8 @@ then
 	wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 	sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/stretch.list
 	sudo apt-get update
-	sudo apt-get install mopidy
-	sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
+	sudo apt-get --yes --force-yes install mopidy
+	sudo apt-get --yes --force-yes install libspotify12 python-cffi python-ply python-pycparser python-spotify
 	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 	sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
 	cd
@@ -474,6 +474,9 @@ then
 	cd mopidy-spotify
 	sudo python setup.py install
 	cd
+	# should be removed, if Mopidy-Iris can be installed normally
+	# pylast >= 3.0.0 removed the python2 support
+	sudo pip install pylast==2.4.0
 	sudo pip install Mopidy-Iris
 fi
 

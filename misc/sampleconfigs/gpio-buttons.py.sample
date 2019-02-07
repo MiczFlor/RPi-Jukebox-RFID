@@ -49,6 +49,15 @@ def def_prev():
 def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
+def def_recordstart():
+    check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
+
+def def_recordstop():
+    check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
+
+def def_recordplaylatest():
+    check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
+
 shut = Button(3, hold_time=2)
 # GPIO 7 - Pin 26
 pled = LED(7)
@@ -58,6 +67,8 @@ volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
 next = Button(26,pull_up=True)
 prev = Button(20,pull_up=True)
 halt = Button(21,pull_up=True)
+#reco = Button(6, pull_up=True) # Choose GPIO to fit your hardware
+#play = Button(12,pull_up=True) # Choose GPIO to fit your hardware
 
 shut.when_held = def_shutdown
 vol0.when_pressed = def_vol0
@@ -70,6 +81,9 @@ volD.when_held = def_volD
 next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
+#reco.when_pressed = def_recordstart
+#reco.when_released = def_recordstop
+#play.when_pressed = def_recordplaylatest
 
 # Switch on power led after boot to indicate state "on" for phoniebox
 pled.on()

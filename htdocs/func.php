@@ -263,11 +263,12 @@ function index_folders_print($item, $key)
     foreach($contentTree as $tempkey => $values) { 
         $allFiles = $values['files']; 
     } 
+    //print_r($contentTree);//???
     // get mp3 files from files list
     $filesMp3 = array();
     foreach($allFiles as $allFile) {
         if(endsWith($allFile, ".mp3")) {
-            //print "<br>this is:".$file." ";
+            //print "<br>this is:".$file." ";//???
             $filesMp3[] = $allFile;
         }
     }
@@ -322,9 +323,9 @@ function index_folders_print($item, $key)
 		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
 		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
 
-    if($contentTree[$key]['count_subdirs'] > 0) {
-        print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
-    }
+        if($contentTree[$key]['count_subdirs'] > 0) {
+            print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
+        }
     print "            <span class='badge' title='Show files'><i class='mdi mdi-library-music'></i> ".$contentTree[$key]['count_files']."</span>";
     print "
               </span>";
@@ -420,6 +421,7 @@ function index_folders_print($item, $key)
         </div><!-- ./ .panel-heading -->
         <div id='collapse".$contentTree[$key]['id']."' class='collapse' aria-labelledby='heading".$contentTree[$key]['id']."' data-parent='#accordion'>
           <div class='panel-body'>";
+    //print $contentTree[$key]['id']; //???
                 
     printPlaylistHtml($contentTree[$key]['files']);
     

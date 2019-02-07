@@ -228,12 +228,31 @@ if [ "$CARDID" ]; then
             ;;
         $STARTRECORD600)
             #start recorder for -v seconds
-            $PATHDATA/playout_controls.sh -c=startrecord -v=600			             
+            $PATHDATA/playout_controls.sh -c=recordstart -v=600			             
             ;;
         $STOPRECORD)
-            $PATHDATA/playout_controls.sh -c=stoprecord
+            $PATHDATA/playout_controls.sh -c=recordstop
+            ;;
+        $RECORDSTART600)
+            #start recorder for -v seconds
+            $PATHDATA/playout_controls.sh -c=recordstart -v=600			             
+            ;;
+        $RECORDSTART60)
+            #start recorder for -v seconds
+            $PATHDATA/playout_controls.sh -c=recordstart -v=60			             
+            ;;
+        $RECORDSTART10)
+            #start recorder for -v seconds
+            $PATHDATA/playout_controls.sh -c=recordstart -v=10			             
+            ;;
+        $RECORDSTOP)
+            $PATHDATA/playout_controls.sh -c=recordstop
+            ;;
+        $RECORDPLAYBACKLATEST)
+            $PATHDATA/playout_controls.sh -c=recordplaybacklatest
             ;;
         *)
+
             # We checked if the card was a special command, seems it wasn't.
             # Now we expect it to be a trigger for one or more audio file(s).
             # Let's look at the ID, write a bit of log information and then try to play audio.

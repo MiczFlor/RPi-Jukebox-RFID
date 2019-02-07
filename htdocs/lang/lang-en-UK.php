@@ -42,7 +42,9 @@ $lang['globalMove'] = "Move";
 $lang['globalJumpTo'] = "Jump to";
 $lang['globalAutoShutdown'] = "Auto Shutdown";
 $lang['globalIdleShutdown'] = "Idle Shutdown";
-$lang['globalSleepTimer'] = "Sleep Timer";
+$lang['globalAutoStopPlayout'] = "Stop Playout Timer";
+$lang['globalStopTimer'] = "Stop Playout Timer";
+$lang['globalSleepTimer'] = "Shutdown Timer";
 $lang['globalExternalInterfaces'] = "External Devices & Interfaces";
 $lang['globalIdleTime'] = "Idle Time";
 $lang['globalNotIdle'] = "Not Idle";
@@ -61,6 +63,8 @@ $lang['globalShuffle'] = "Shuffle";
 $lang['globalReplay'] = "Replay";
 $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
+$lang['globalLang'] = "Language";
+$lang['globalLanguageSettings'] = "Language Settings";
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
@@ -103,7 +107,7 @@ $lang['cardRegisterStream2Card'] = "Stream is linked to Card ID.";
 $lang['cardRegisterFolder2Card'] = "Audio folder is now linked to Card.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube audio is downloading. This may take a couple of minutes. You may check the logfile \"youtube-dl.log\" in the shared folder.</p>";
 $lang['cardRegisterSwipeUpdates'] = "This will automatically update as you swipe a RFID card.";
-$lang['cardRegisterManualLinks'] = "<p>You can also connect cards to folders manually. The manual explains how to <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#connecting-to-the-phoniebox-to-add-files' target='–blank'>connect to the phoniebox</a> and <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/docs/MANUAL.md#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>register cards</a>.</p>";
+$lang['cardRegisterManualLinks'] = "<p>You can also connect cards to folders manually. The manual explains how to <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='–blank'>connect to the phoniebox</a> and <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>register cards</a>.</p>";
 
 /*
 * Card edit form
@@ -161,6 +165,7 @@ $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";
 $lang['settingsShowCoverON'] = "Show cover";
 $lang['settingsShowCoverOFF'] = "Don't show cover";
+$lang['settingsMessageLangfileNewItems'] = "There are new language items in the original <em>lang-en-UK.php</em> file. Your language file has been updated and now contains these (in English). You might want to update your language file and commit your changes to the Phoniebox code :)";
 
 /*
 * System info

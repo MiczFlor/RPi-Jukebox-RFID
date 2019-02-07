@@ -27,6 +27,16 @@ $contentTree = array(); // this will be the tree we need for display
 */
 foreach($subfolders as $key => $subfolder) {
     /*
+    * Glob is not working when directory name with 
+    * special characters like square brackets “[ ]”.
+    * So temporarily escape them php style.
+    */
+    $tempsubfolder = $subfolder;
+    $subfolder = str_replace('[', '\[', $subfolder);
+    $subfolder = str_replace(']', '\]', $subfolder);
+    $subfolder = str_replace('\[', '[[]', $subfolder);
+    $subfolder = str_replace('\]', '[]]', $subfolder);
+    /*
     * collect containing files and folders
     */
     $containingfolders = array();
@@ -73,6 +83,13 @@ foreach($subfolders as $key => $subfolder) {
 /**/
         }
     }
+    /*
+    * Glob is not working when directory name with 
+    * special characters like square brackets “[ ]”.
+    * So we temporarily escaped them php style.
+    * Now let's take the original path.
+    */
+    $subfolder = $tempsubfolder;
     /*
     * Now we know if the folder is empty or not
     * if not, keep it
@@ -126,6 +143,8 @@ foreach($subfolders as $key => $subfolder) {
         // some special version with no slashes or whitespaces for IDs on the panel collapse
         $temp['id'] = preg_replace('/\//', '---', $temp['path_rel']);
         $temp['id'] = preg_replace('/\ /', '-_-', $temp['id']);
+        $temp['id'] = preg_replace('/\[/', '_-', $temp['id']);
+        $temp['id'] = preg_replace('/\]/', '-_', $temp['id']);
         $temp['id'] = "ID".preg_replace('/\:/', '-+-', $temp['id']);
         // count the level depth in the tree by counting the slashes in the path
         $temp['level'] = substr_count($temp['path_rel'], '/');
