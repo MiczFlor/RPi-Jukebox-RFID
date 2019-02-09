@@ -77,28 +77,30 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 /*
 * Vars from the settings folder
 */
-$Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
+if(!file_exists($conf['settings_abs']."/global.conf")) {
+    // execute shell to create config file
+    // scripts/inc.writeGlobalConfig.sh
+    exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+    exec("chmod 777 ".$conf['settings_abs']."/global.conf");
+} 
+
+// read the global conf file
+$globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
+
+// assign the values from the global conf file to the vars in PHP
+$Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
+$Second_Swipe = $globalConf['SECONDSWIPE'];
+$ShowCover = $globalConf['SHOWCOVER'];
+$version = $globalConf['VERSION'];
+$edition = $globalConf['EDITION'];
+$conf['settings_lang'] = $globalConf['LANG'];
+
+// vars that must be read continuously and can't be in the global conf file
 $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
-$Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
-if(file_exists($conf['settings_abs'].'/ShowCover')) {
-    $ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
-} else {
-    $ShowCover = "ON";
-}
-$version = trim(file_get_contents($conf['settings_abs'].'/version'));
-if(file_exists(dirname(__FILE__).'/../settings/edition')) {
-    $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
-} else {
-    $edition = "classic";
-}
+
 /*
 * load language strings
 */
-if(file_exists($conf['settings_abs'].'/Lang')) {
-    $conf['settings_lang'] = trim(file_get_contents($conf['settings_abs'].'/Lang'));
-} else {
-    $conf['settings_lang'] = "en-UK";
-}
 include("inc.langLoad.php");
 
 /*******************************************

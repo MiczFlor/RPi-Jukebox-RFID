@@ -69,25 +69,19 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
-##############################################
-# steps by which to change the audio output (vol up and down)
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Volume_Change_Step ]; then
-    echo "3" > $PATHDATA/../settings/Audio_Volume_Change_Step
+###########################################################
+# Read global configuration file (and create is not exists) 
+# create the global configuration file from single files - if it does not exist
+if [ ! -f $PATHDATA/../settings/global.conf ]; then
+    . inc.writeGlobalConfig.sh
 fi
-# 2. then|or read value from file
-VOLSTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
-
-##############################################
-# Max volume limit
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Max_Volume_Limit ]; then
-    echo "100" > $PATHDATA/../settings/Max_Volume_Limit
-fi
-# 2. then|or read value from file
-MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
-
-MINVOL='1'
+. $PATHDATA/../settings/global.conf
+###########################################################
+#AUDIOVOLCHANGESTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
+#AUDIOVOLMAXLIMIT=`cat $PATHDATA/../settings/Max_Volume_Limit`
+#AUDIOVOLMINLIMIT='1'
+#IDLETIMESHUTDOWN=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
+#AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
 #################################
 # path to file storing the current volume level
@@ -95,29 +89,12 @@ MINVOL='1'
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 
-#################################
-# Idle time after the RPi will be shut down. 0=turn off feature.
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Idle_Time_Before_Shutdown ]; then
-    echo "0" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
-fi
-# 2. then|or read value from file
-IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
-
-##############################################
-# Path to folder containing audio / streams
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
-fi
-# 2. then|or read value from file
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
-
-#echo $VOLSTEP
+#echo $AUDIOVOLCHANGESTEP
 #echo $VOLFILE
-#echo $MAXVOL
+#echo $AUDIOVOLMAXLIMIT
+#echo $AUDIOVOLMAXLIMIT
 #echo `cat $VOLFILE`
-#echo $IDLETIME
+#echo $IDLETIMESHUTDOWN
 #echo $AUDIOFOLDERSPATH
 
 #############################################################
@@ -204,13 +181,13 @@ case $COMMAND in
         ;;
     setvolume)
         #increase volume only if VOLPERCENT is below the max volume limit
-        if [ $VALUE -le $MAXVOL ];
+        if [ $VALUE -le $AUDIOVOLMAXLIMIT ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
             # if we are over the max volume limit, set the volume to maxvol
-            echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+            echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
         fi
         ;;
     volumeup)
@@ -221,16 +198,16 @@ case $COMMAND in
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-            # increase by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} + \( ${VOLSTEP} \* ${VALUE} \)` 
+            # increase by $AUDIOVOLCHANGESTEP
+            VOLPERCENT=`expr ${VOLPERCENT} + \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
             #increase volume only if VOLPERCENT is below the max volume limit
-            if [ $VOLPERCENT -le $MAXVOL ];
+            if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
             then
                 # set volume level in percent
                 echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
             else
                 # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
             fi
         else
             # $VOLFILE DOES exist == audio off
@@ -248,16 +225,16 @@ case $COMMAND in
             # $VOLFILE does NOT exist == audio on
 			# read volume in percent
 			VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-			# decrease by $VOLSTEP
-                        VOLPERCENT=`expr ${VOLPERCENT} - \( ${VOLSTEP} \* ${VALUE} \)` 
+			# decrease by $AUDIOVOLCHANGESTEP
+                        VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
 			#decrease volume only if VOLPERCENT is above the min volume limit
-			if [ $VOLPERCENT -ge $MINVOL ];
+			if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
 			then
 				# set volume level in percent
 				echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
 			else
-				# if we are below the min volume limit, set the volume to minvol
-				echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
+				# if we are below the min volume limit, set the volume to AUDIOVOLMINLIMIT
+				echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
 			fi
         else
             # $VOLFILE DOES exist == audio off
@@ -281,17 +258,23 @@ case $COMMAND in
             echo -e setvol $VALUE | nc -w 1 localhost 6600
         fi
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
+        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit        
+        # crate global config file because individual setting got changed
+        . inc.writeGlobalConfig.sh
+
         ;;
     getmaxvolume)
-        echo $MAXVOL
+        echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
+        # crate global config file because individual setting got changed
+        . inc.writeGlobalConfig.sh
+
         ;;
     getvolstep)
-        echo $VOLSTEP
+        echo $AUDIOVOLCHANGESTEP
         ;;
     playerstop)
         # stop the player
@@ -409,11 +392,13 @@ case $COMMAND in
     setidletime)
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+        # crate global config file because individual setting got changed
+        . inc.writeGlobalConfig.sh
         # restart service to apply the new value
         sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
     getidletime)
-        echo $IDLETIME
+        echo $IDLETIMESHUTDOWN
         ;;
     enablewifi)
         rfkill unblock wifi

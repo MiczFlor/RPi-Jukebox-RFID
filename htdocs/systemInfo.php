@@ -15,14 +15,6 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 <?php
 include("inc.navigation.php");
 
-// get Phoniebox Version
-$exec = "cat ".$conf["base_path"]."/settings/version";
-if($debug == "true") { 
-		print "Command: ".$exec; 
-} else {
-		$version = exec($exec); 
-}
-
 // get System Information and parse into variables
 $exec = "lsb_release -a";
 if($debug == "true") { 

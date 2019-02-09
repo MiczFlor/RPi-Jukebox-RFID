@@ -20,7 +20,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT conf_create_global.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT inc.writeGlobalConf.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
@@ -91,6 +91,16 @@ fi
 AUDIOVOLMAXLIMIT=`cat $PATHDATA/../settings/Max_Volume_Limit`
 
 ##############################################
+# Min_Volume_Limit
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Min_Volume_Limit ]; then
+    echo "1" > $PATHDATA/../settings/Min_Volume_Limit
+    chmod 777 $PATHDATA/../settings/Min_Volume_Limit
+fi
+# 2. then|or read value from file
+AUDIOVOLMINLIMIT=`cat $PATHDATA/../settings/Min_Volume_Limit`
+
+##############################################
 # Idle_Time_Before_Shutdown
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Idle_Time_Before_Shutdown ]; then
@@ -120,15 +130,38 @@ fi
 # 2. then|or read value from file
 EDITION=`cat $PATHDATA/../settings/edition`
 
+##############################################
+# Lang
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Lang ]; then
+    echo "en-UK" > $PATHDATA/../settings/Lang
+    chmod 777 $PATHDATA/../settings/Lang
+fi
+# 2. then|or read value from file
+LANG=`cat $PATHDATA/../settings/Lang`
+
+##############################################
+# version
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/version ]; then
+    echo "unknown" > $PATHDATA/../settings/version
+    chmod 777 $PATHDATA/../settings/version
+fi
+# 2. then|or read value from file
+VERSION=`cat $PATHDATA/../settings/version`
+
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
 # SECONDSWIPE
 # AUDIOIFACENAME
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
+# AUDIOVOLMINLIMIT
 # IDLETIMESHUTDOWN
 # SHOWCOVER
 # EDITION
+# LANG
+# VERSION
 
 #########################################################
 # WRITE CONFIG FILE
@@ -139,6 +172,13 @@ echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
+
+# change the read/write so that later this might also be editable through the web app
+sudo chown -R pi:www-data ${PATHDATA}/../settings/global.conf
+sudo chmod -R 775 ${PATHDATA}/../settings/global.conf
