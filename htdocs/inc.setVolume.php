@@ -8,7 +8,7 @@ Volume Select Form
         $volumevalueselect = round(($volumevalue/5))*5;
         $volumevaluedisplay = round($volumevalue);
 		
-        $maxvolumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getmaxvolume");
+        //$maxvolumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getmaxvolume");
         $maxvalueselect = round(($maxvolumevalue/5))*5;
         $maxvaluedisplay = round($maxvolumevalue);
         ?>
@@ -27,11 +27,11 @@ Volume Select Form
                         if($volumevalueselect == $i) {
                             print " selected";
                         }
-			if($i > $maxvalueselect ) {
+                        if($i > $maxvalueselect ) {
                             print " disabled";
                         }
-			print ">".$i."%";
-			if($i == $maxvalueselect ) {
+                        print ">".$i."%";
+                        if($i == $maxvalueselect ) {
                             print " limit";
                         }
                         print "</option>";

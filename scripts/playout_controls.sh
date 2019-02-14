@@ -76,26 +76,27 @@ if [ ! -f $PATHDATA/../settings/global.conf ]; then
     . inc.writeGlobalConfig.sh
 fi
 . $PATHDATA/../settings/global.conf
+# contains:
+# AUDIOFOLDERSPATH
+# PLAYLISTSFOLDERPATH
+# SECONDSWIPE
+# AUDIOIFACENAME
+# AUDIOVOLCHANGESTEP
+# AUDIOVOLMAXLIMIT
+# AUDIOVOLMINLIMIT
+# VOLCHANGEIDLE
+# IDLETIMESHUTDOWN
+# SHOWCOVER
+# EDITION
+# LANG
+# VERSION
 ###########################################################
-#AUDIOVOLCHANGESTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
-#AUDIOVOLMAXLIMIT=`cat $PATHDATA/../settings/Max_Volume_Limit`
-#AUDIOVOLMINLIMIT='1'
-#IDLETIMESHUTDOWN=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
-#AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
 #################################
 # path to file storing the current volume level
 # this file does not need to exist
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
-
-#echo $AUDIOVOLCHANGESTEP
-#echo $VOLFILE
-#echo $AUDIOVOLMAXLIMIT
-#echo $AUDIOVOLMAXLIMIT
-#echo `cat $VOLFILE`
-#echo $IDLETIMESHUTDOWN
-#echo $AUDIOFOLDERSPATH
 
 #############################################################
 
@@ -122,7 +123,7 @@ case $COMMAND in
     shutdown)
         if [ "$DEBUG" == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
-    	#remove shuffle mode if active
+        #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sleep 1
@@ -136,7 +137,7 @@ case $COMMAND in
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-	sudo poweroff
+    sudo poweroff
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -161,8 +162,8 @@ case $COMMAND in
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sudo systemctl stop mopidy
-		sudo mopidyctl local scan
-		sudo systemctl start mopidy
+        sudo mopidyctl local scan
+        sudo systemctl start mopidy
         ;;
     mute)
         if [ ! -f $VOLFILE ]; then
@@ -180,21 +181,39 @@ case $COMMAND in
         fi
         ;;
     setvolume)
-        #increase volume only if VOLPERCENT is below the max volume limit
-        if [ $VALUE -le $AUDIOVOLMAXLIMIT ];
+        #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
+        if [ $VALUE -le $AUDIOVOLMAXLIMIT ] && [ $VALUE -ge $AUDIOVOLMINLIMIT ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
-            # if we are over the max volume limit, set the volume to maxvol
-            echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+            if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
+            then
+                # if we are over the max volume limit, set the volume to maxvol
+                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+            fi
+            if [ $VALUE -lt $AUDIOVOLMINLIMIT ];
+            then
+                # if we are unter the min volume limit, set the volume to minvol
+                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+            fi
         fi
         ;;
     volumeup)
+        #check for volume change during idle
+        if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyDown" ];
+        then
+            PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+            if [ "$PLAYSTATE" != "play" ]
+            then
+                #Volume change is not allowed - leave program
+                exit 1
+            fi
+        fi
         if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
-		VALUE=1
-	    fi
+                VALUE=1
+            fi
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
@@ -218,24 +237,34 @@ case $COMMAND in
         fi
         ;;
     volumedown)
+        #check for volume change during idle
+        if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyUp" ];
+        then
+            PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+            if [ "$PLAYSTATE" != "play" ]
+            then
+                #Volume change is not allowed - leave program
+                exit 1
+            fi
+        fi
         if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
-		VALUE=1
-	    fi
+                VALUE=1
+            fi
             # $VOLFILE does NOT exist == audio on
-			# read volume in percent
-			VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-			# decrease by $AUDIOVOLCHANGESTEP
-                        VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
-			#decrease volume only if VOLPERCENT is above the min volume limit
-			if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
-			then
-				# set volume level in percent
-				echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
-			else
-				# if we are below the min volume limit, set the volume to AUDIOVOLMINLIMIT
-				echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
-			fi
+            # read volume in percent
+            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+            # decrease by $AUDIOVOLCHANGESTEP
+            VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
+            #decrease volume only if VOLPERCENT is above the min volume limit
+            if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
+            then
+                # set volume level in percent
+                echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+            else
+                # if we are below the min volume limit, set the volume to minvol
+                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+            fi
         else
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
@@ -248,7 +277,7 @@ case $COMMAND in
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         echo $VOLPERCENT
-	;;
+    ;;
     setmaxvolume)
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
@@ -258,20 +287,18 @@ case $COMMAND in
             echo -e setvol $VALUE | nc -w 1 localhost 6600
         fi
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit        
+        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
         # crate global config file because individual setting got changed
         . inc.writeGlobalConfig.sh
-
         ;;
     getmaxvolume)
         echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
+        echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step       
         # crate global config file because individual setting got changed
         . inc.writeGlobalConfig.sh
-
         ;;
     getvolstep)
         echo $AUDIOVOLCHANGESTEP
@@ -335,7 +362,7 @@ case $COMMAND in
         # repeats a single track or a playlist. 
         # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
         # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
-        case $VALUE in 	
+        case $VALUE in     
             single)
                 mpc repeat on
                 mpc single on
@@ -355,12 +382,12 @@ case $COMMAND in
         # this is why a check if "random on" has to be done for shutdown and reboot
         # This command may be called with ./playout_controls.sh -c=playershuffle
         mpc shuffle
-	;;
+    ;;
     playlistclear)
         # clear playlist
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
-	;;
+    ;;
     playlistaddplay)
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
@@ -379,11 +406,11 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-		# call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
+        # call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
         mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
-	;;
+    ;;
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
@@ -392,7 +419,7 @@ case $COMMAND in
     setidletime)
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
-        # crate global config file because individual setting got changed
+        # create global config file because individual setting got changed
         . inc.writeGlobalConfig.sh
         # restart service to apply the new value
         sudo systemctl restart phoniebox-idle-watchdog.service &
@@ -409,42 +436,42 @@ case $COMMAND in
         rfkill block wifi
         ;;
     togglewifi)
-	# function to allow toggle the wifi state
-	# Build special for franzformator
-	if [[ $(rfkill list wifi | grep -i "Soft blocked: no")  > 0 ]]
-	then
-	    echo "Wifi will now be deactivated"
-	    rfkill block wifi
-	else
-            echo "Wifi will noow be activated"
-	    rfkill unblock wifi
-	fi
+        # function to allow toggle the wifi state
+        # Build special for franzformator
+        if [[ $(rfkill list wifi | grep -i "Soft blocked: no")  > 0 ]]
+        then
+            echo "Wifi will now be deactivated"
+            rfkill block wifi
+        else
+                echo "Wifi will now be activated"
+            rfkill unblock wifi
+        fi
         ;;
-    recordstart)	
-
-	#mkdir $AUDIOFOLDERSPATH/Recordings
-	#kill the potential current playback
-	sudo pkill aplay
-	#start recorder if not already started 
-	if ! pgrep -x "arecord" > /dev/null
-	then	
-	    echo "start recorder"	
-	    arecord -D plughw:1 --duration=$VALUE -f cd -vv $AUDIOFOLDERSPATH/Recordings/$(date +"%Y-%m-%d_%H-%M-%S").wav &
-	else
-	    echo "device is already recording"
-	fi
-	;;
+    recordstart)    
+        #mkdir $AUDIOFOLDERSPATH/Recordings
+        #kill the potential current playback
+        sudo pkill aplay
+        #start recorder if not already started 
+        if ! pgrep -x "arecord" > /dev/null
+        then    
+            echo "start recorder"    
+            arecord -D plughw:1 --duration=$VALUE -f cd -vv $AUDIOFOLDERSPATH/Recordings/$(date +"%Y-%m-%d_%H-%M-%S").wav &
+        else
+            echo "device is already recording"
+        fi
+        ;;
     recordstop)
-	#kill arecord instances
-	sudo pkill arecord
-	;;
-    recordplaylatest)
-	#kill arecord and aplay instances
-	sudo pkill arecord
-	sudo pkill aplay
-	aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
-	;;
+        #kill arecord instances
+        sudo pkill arecord
+        ;;
+        recordplaylatest)
+        #kill arecord and aplay instances
+        sudo pkill arecord
+        sudo pkill aplay
+        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
+        ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
+        if [ "$DEBUG" == "true" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> $PATHDATA/../logs/debug.log; fi
         ;;
 esac

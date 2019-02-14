@@ -86,6 +86,7 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
+//print "<pre>"; print_r($globalConf); print "</pre>"; //???
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
@@ -93,6 +94,7 @@ $Second_Swipe = $globalConf['SECONDSWIPE'];
 $ShowCover = $globalConf['SHOWCOVER'];
 $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
+$maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
 $conf['settings_lang'] = $globalConf['LANG'];
 
 // vars that must be read continuously and can't be in the global conf file
