@@ -87,13 +87,30 @@ fi
 # 2. then|or read value from file
 MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
 
-MINVOL='1'
+##############################################
+# Min volume limit
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Min_Volume_Limit ]; then
+    echo "0" > $PATHDATA/../settings/Min_Volume_Limit
+fi
+# 2. then|or read value from file
+MINVOL=`cat $PATHDATA/../settings/Min_Volume_Limit`
 
 #################################
 # path to file storing the current volume level
 # this file does not need to exist
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
+
+##############################################
+# Change volume during idle (or only change it during Play and in the WebApp)
+#TRUE=Change Volume during all Time (Default; FALSE=Change Volume only during "Play"; OnlyDown=It is possible to decrease Volume during Idle; OnlyUp=It is possible to increase Volume during Idle
+# 1. create a default if file does not exist (set default do TRUE - Volume Change is possible every time)
+if [ ! -f $PATHDATA/../settings/Change_Volume_Idle ]; then
+    echo "TRUE" > $PATHDATA/../settings/Change_Volume_Idle
+fi
+# 2. then|or read value from file
+VOLCHANGEIDLE=`cat $PATHDATA/../settings/Change_Volume_Idle`
 
 #################################
 # Idle time after the RPi will be shut down. 0=turn off feature.
@@ -116,6 +133,8 @@ AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 #echo $VOLSTEP
 #echo $VOLFILE
 #echo $MAXVOL
+#echo $MINVOL
+#echo $VOLCHANGEIDLE
 #echo `cat $VOLFILE`
 #echo $IDLETIME
 #echo $AUDIOFOLDERSPATH
@@ -203,17 +222,35 @@ case $COMMAND in
         fi
         ;;
     setvolume)
-        #increase volume only if VOLPERCENT is below the max volume limit
-        if [ $VALUE -le $MAXVOL ];
+        #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
+        if [ $VALUE -le $MAXVOL ] && [ $VALUE -ge $MINVOL ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
-            # if we are over the max volume limit, set the volume to maxvol
-            echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+            if [ $VALUE -gt $MAXVOL ];
+			then
+				# if we are over the max volume limit, set the volume to maxvol
+				echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+			fi
+			if [ $VALUE -lt $MINVOL ];
+			then
+				# if we are unter the min volume limit, set the volume to minvol
+				echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
+			fi
         fi
         ;;
     volumeup)
+        #check for volume change during idle
+	if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyDown" ];
+	then
+	    PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+		if [ "$PLAYSTATE" != "play" ]
+		then
+			#Volume change is not allowed - leave program
+			exit 1
+		fi
+	fi
         if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
 		VALUE=1
@@ -241,7 +278,17 @@ case $COMMAND in
         fi
         ;;
     volumedown)
-        if [ ! -f $VOLFILE ]; then
+        #check for volume change during idle
+	if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyUp" ];
+	then
+	    	PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+		if [ "$PLAYSTATE" != "play" ]
+		then
+			#Volume change is not allowed - leave program
+			exit 1
+		fi
+	fi
+	if [ ! -f $VOLFILE ]; then
             if [ -z $VALUE ]; then
 		VALUE=1
 	    fi

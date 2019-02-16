@@ -60,6 +60,25 @@ $(document).ready(function() {
 </script>
 <?php
 print '
+<table style="margin-bottom: 20px; width: 100%; border-collapse: collapse; border-top: 1px solid #444; border-bottom: 1px solid #444">
+    <tr>
+        <td style="padding: 10px 0; border-collapse: collapse;"><i class="mdi mdi-'. $playerStatus['state'] .'"></i> <span id="infoWrapper"></span></td>
+        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;"><div id="timeWrapper"></div></td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 0;border-collapse: collapse;"><i class="mdi mdi-playlist-play"></i> <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a></td>
+        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;"><div id="overalltimeWrapper"></div></td>
+    </tr>
+</table>
+<div id="collapse1" class="panel-collapse collapse" style="margin-bottom: 40px;">
+    <ul class="list-group">
+		<div id="loadPlaylist"></div>
+    </ul>
+</div>
+';
+
+/*
+print '
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -94,4 +113,5 @@ print '
             </div>
         </div>
 ';
+*/
 ?>

@@ -7,11 +7,11 @@ Stop Playout Timer Set Form
         /*
         * Values for pulldown form
         */
-        $sleeptimervals = array(2,5,10,15,20,30,45,60,120,180,240);
+        $stoptimervals = array(2,5,10,15,20,30,45,60,120,180,240);
         /*
         * Get sleeptimer value
         */
-        $stoptimervalue = exec("sudo atq -q t | awk '{print $5}'");
+        $stoptimervalue = exec("sudo atq -q s | awk '{print $5}'");
         if ($stoptimervalue != "") {
             $unixtime = time();
             /*
@@ -44,7 +44,7 @@ Stop Playout Timer Set Form
                     <select id="stopplayoutafter" name="stopplayoutafter" class="selectpicker form-control">
                         <option value='0'><?php print $lang['globalOff']; ?></option>
                     <?php
-                    foreach($sleeptimervals as $i) {
+                    foreach($stoptimervals as $i) {
                         print "
                         <option value='".$i."'";
                         print ">".$i."min</option>";
