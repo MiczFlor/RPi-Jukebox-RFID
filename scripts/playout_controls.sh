@@ -350,8 +350,13 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playerstopafter)
+        # remove playerstop timer if existent
+        for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
         # stop player after $VALUE minutes
-        echo "mpc stop" | at -q s now + $VALUE minute
+        if [ $VALUE -gt 0 ];
+        then
+            echo "mpc stop" | at -q s now + $VALUE minute
+        fi
         ;;
     playernext)
         # play next track in playlist (==folder)
