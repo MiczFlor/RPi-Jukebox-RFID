@@ -392,6 +392,25 @@ function index_folders_print($item, $key)
                 print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
             }
         }
+
+        // SINGLE TRACK PLAY BUTTON
+        // do not show any if there is a live stream in the folder
+        if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) ) {
+            $foundSinglePlay = "OFF";
+            if( 
+                file_exists($contentTree[$key]['path_abs']."/folder.conf") 
+                && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'SINGLE="ON"') !== false
+            ) {
+                $foundSinglePlay = "ON";
+            }
+            if( $foundSinglePlay == "OFF" ) {
+                // do stuff
+                print "<a href='?singleenable=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalSingle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            } elseif($foundSinglePlay == "ON") {
+                print "<a href='?singledisable=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalSingle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            }
+        }
+
         // RSS link
         if (count($filesMp3) > 0) {
             print "<a href='rss-mp3.php?title=".urlencode($contentTree[$key]['basename'])."&rss=".serialize($filesMp3)."' class='btn btn-info '>";
