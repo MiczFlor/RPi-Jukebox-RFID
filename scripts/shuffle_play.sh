@@ -83,7 +83,7 @@ case "$COMMAND" in
       
 shuffle_check)
     #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
-	if [ $SHUFFLE == "ON" ]
+	if [ $SHUFFLE == "ON" ];
 	then 
 		if [ "$DEBUG" == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
 		mpc shuffle
