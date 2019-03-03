@@ -277,7 +277,7 @@ case $COMMAND in
         fi
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
-        # crate global config file because individual setting got changed
+        # create global config file because individual setting got changed
         . inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
@@ -286,7 +286,7 @@ case $COMMAND in
     setvolstep)
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step       
-        # crate global config file because individual setting got changed
+        # create global config file because individual setting got changed
         . inc.writeGlobalConfig.sh
         ;;
     getvolstep)
