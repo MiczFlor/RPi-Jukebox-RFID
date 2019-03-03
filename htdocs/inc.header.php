@@ -169,6 +169,8 @@ $nonEmptyCommands = array(
     'disableresume',
     'enableshuffle',
     'disableshuffle',
+    'singleenable',
+    'singledisable',
 );
 foreach ($nonEmptyCommands as $command) {
     if(isset($_GET[$command]) && trim($_GET[$command]) != "") {
@@ -357,6 +359,22 @@ if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && 
     // pass folder to resume script
     // escape whitespaces with backslashes
     $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['disableshuffle']);
+    execAndRedirect($exec);
+}
+
+// enable single track play
+if(isset($urlparams['singleenable']) && $urlparams['singleenable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singleenable']))) {
+    // pass folder to single_play script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/single_play.sh -c=singleenable -d=".preg_replace('/\s+/', '\ ',$urlparams['singleenable']);
+    execAndRedirect($exec);
+}
+
+// disable single track play
+if(isset($urlparams['singledisable']) && $urlparams['singledisable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singledisable']))) {
+    // pass folder to single_play script
+    // escape whitespaces with backslashes
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/single_play.sh -c=singledisable -d=".preg_replace('/\s+/', '\ ',$urlparams['singledisable']);
     execAndRedirect($exec);
 }
 

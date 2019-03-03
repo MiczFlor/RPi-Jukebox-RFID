@@ -104,21 +104,10 @@ VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 # Read the args passed on by the command line
 # see following file for details:
 . $PATHDATA/inc.readArgsFromCommandLine.sh
-#for i in "$@"
-#do
-#    case $i in
-#        -c=*|--command=*)
-#        COMMAND="${i#*=}"
-#        ;;
-#        -v=*|--value=*)
-#        VALUE="${i#*=}"
-#        ;;
-#    esac
-#done
 
 if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        
+
 case $COMMAND in 
     shutdown)
         if [ "$DEBUG" == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
@@ -137,7 +126,7 @@ case $COMMAND in
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-    sudo poweroff
+        sudo poweroff
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -277,7 +266,7 @@ case $COMMAND in
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         echo $VOLPERCENT
-    ;;
+        ;;
     setmaxvolume)
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
@@ -341,6 +330,10 @@ case $COMMAND in
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
         # Another note: "mpc play 1" starts the first track (!)
+
+        # Change some settings according to current folder IF the folder.conf exists
+        . $PATHDATA/inc.settingsFolderSpecific.sh
+
         # No checking for resume if the audio is paused, just unpause it
         PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
         if [ "$PLAYSTATE" == "pause" ]
@@ -387,12 +380,12 @@ case $COMMAND in
         # this is why a check if "random on" has to be done for shutdown and reboot
         # This command may be called with ./playout_controls.sh -c=playershuffle
         mpc shuffle
-    ;;
+        ;;
     playlistclear)
         # clear playlist
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
-    ;;
+        ;;
     playlistaddplay)
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
@@ -401,7 +394,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-        # first clear playlist (and save position if resume play is on)
+        # first save position (if resume play is on) then clear playlist
         $PATHDATA/resume_play.sh -c=savepos
         mpc clear
 
@@ -411,11 +404,20 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-        # call shuffle_check HERE to enable/disable folder-based shuffeling (mpc shuffle is different to random, because when you shuffle before playing, you start your playlist with a different track EVERYTIME. With random you EVER has the first song and random from track 2.
-        mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/resume_play.sh -c=resume
+        # OLD VERSION (pre 20190302 - delete once the new version really seems to work): 
+        # call shuffle_check HERE to enable/disable folder-based shuffling 
+        # (mpc shuffle is different to random, because when you shuffle before playing, 
+        # you start your playlist with a different track EVERYTIME. With random you EVER 
+        # has the first song and random from track 2.
+        # mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/single_play.sh -c=single_check && $PATHDATA/resume_play.sh -c=resume
+        
+        # NEW VERSION:
+        # Change some settings according to current folder IF the folder.conf exists
+        . $PATHDATA/inc.settingsFolderSpecific.sh
+        # Now load and play
+        mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume
         if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "entering: shuffle_play.sh to execute shuffle_check" >> $PATHDATA/../logs/debug.log; fi
-    ;;
+        ;;
     playlistadd)
         # add to playlist, no autoplay
         # save playlist playing
@@ -448,7 +450,7 @@ case $COMMAND in
             echo "Wifi will now be deactivated"
             rfkill block wifi
         else
-                echo "Wifi will now be activated"
+            echo "Wifi will now be activated"
             rfkill unblock wifi
         fi
         ;;
