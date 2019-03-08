@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# This script saves or restores the SHUFFLE status in a playlist (=folder) and enables/disables shuffle mode according to the folder.conf of the current folder/playlist
-# Usage: 
-# Enable shuffle for folder: ./shuffle_play-sh -c=enableshuffle -v=foldername_in_audiofolders
-# Disable resume for folder: ./shuffle_play-sh -c=disableshuffle -v=foldername_in_audiofolders
+# This script saves or restores the SINGLE status in a playlist (=folder) and enables/disables 
+# single mode according to the folder.conf of the current folder/playlist
+# Usage:
+# Enable single mode for folder: ./single_play-sh -c=enablesingle -v=foldername_in_audiofolders
+# Disable single mode for folder: ./single_play-sh -c=disablesingle -v=foldername_in_audiofolders
 #
 # TODO: When to call this script?
 # Call this script with "playlistaddplay" (playout_controls.sh) everytime
@@ -40,13 +41,13 @@ if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../log
 if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-# Get folder name of currently played audio by extracting the playlist name 
+# Get folder name of currently played audio by extracting the playlist name
 # ONLY if none was passed on. The "pass on" is needed to save position
 # when starting a new playlist while an old is playing. In this case
 # mpc lsplaylists will get confused because it has more than one.
 # check if $FOLDER is empty / unset
 if [ -z "$FOLDER" ]
-then 
+then
     FOLDER=$(mpc lsplaylists)
     # actually, this should be the latest folder:
     FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
@@ -80,30 +81,30 @@ if [ "$DEBUG" == "true" ]; then echo "  Now doing what COMMAND wants: $COMMAND" 
 
 case "$COMMAND" in
 
-      
-shuffle_check)
-    #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
-	if [ $SHUFFLE == "ON" ];
-	then 
-		if [ "$DEBUG" == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-		mpc shuffle
-	else
-		if [ "$DEBUG" == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-		mpc random off
-	fi
+
+single_check)
+        #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
+        if [ $SINGLE == "ON" ]
+        then
+            if [ "$DEBUG" == "true" ]; then echo "  entering: single_check with value $SINGLE" >> $PATHDATA/../logs/debug.log; fi
+            mpc single on
+        else
+            if [ "$DEBUG" == "true" ]; then echo "  entering: single_check with value $SINGLE" >> $PATHDATA/../logs/debug.log; fi
+            mpc single off
+        fi
     ;;
-enableshuffle)
-        if [ "$DEBUG" == "true" ]; then echo "  entering: enableshuffle" >> $PATHDATA/../logs/debug.log; fi
+singleenable)
+        if [ "$DEBUG" == "true" ]; then echo "  entering: singleenable" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
-        SHUFFLE="ON"
+        SINGLE="ON"
         # now calling a script which will only replace these new vars in folder.conf
         # (see script for details)
         . $PATHDATA/inc.writeFolderConfig.sh
     ;;
-disableshuffle)
-        if [ "$DEBUG" == "true" ]; then echo "  entering: disableshuffle" >> $PATHDATA/../logs/debug.log; fi
+singledisable)
+        if [ "$DEBUG" == "true" ]; then echo "  entering: singledisable" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
-        SHUFFLE="OFF"
+        SINGLE="OFF"
         # now calling a script which will only replace these new vars in folder.conf
         # (see script for details)
         . $PATHDATA/inc.writeFolderConfig.sh
