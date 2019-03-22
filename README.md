@@ -97,7 +97,7 @@ In the [Manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) you wi
 
 ## Contributing improvements
 
-Read the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file for [more infos on how to contribute code](docs/CONTRIBUTING.md).
+Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for [more infos on how to contribute code](CONTRIBUTING.md).
 
 ## Reporting bugs
 
