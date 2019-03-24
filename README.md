@@ -12,7 +12,7 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 
 *Important update news*
 
-* **Phoniebox 1.1.9-rc3 released** (2018-12-27)
+* **Phoniebox 1.1.9 released** (2019-03-08)
 * Two types of *one-line-install* scripts are now available. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)

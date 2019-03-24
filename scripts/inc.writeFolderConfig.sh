@@ -80,6 +80,7 @@ then
         RESUME="OFF"
         SHUFFLE="OFF"
         LOOP="OFF"
+        SINGLE="OFF"
     fi
     
     #########################################################
@@ -95,6 +96,8 @@ then
     if [ "$RESUME" ]; then NEWRESUME="$RESUME"; fi
     if [ "$SHUFFLE" ]; then NEWSHUFFLE="$SHUFFLE"; fi
     if [ "$LOOP" ]; then NEWLOOP="$LOOP"; fi
+    if [ "$SINGLE" ]; then NEWSINGLE="$SINGLE"; fi
+    if [ "$DEBUG" == "true" ]; then echo "  KEEP SINGLE $SINGLE IN MIND" >> $PATHDATA/../logs/debug.log; fi
 
     # Read the current config file (include will execute == read)
     . "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
@@ -112,6 +115,7 @@ then
     echo "RESUME=\"%RESUME%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     echo "SHUFFLE=\"%SHUFFLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     echo "LOOP=\"%LOOP%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "SINGLE=\"%SINGLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
     # Let the juggle begin
     
@@ -128,6 +132,7 @@ then
     if [ "$NEWRESUME" ]; then RESUME="$NEWRESUME"; fi
     if [ "$NEWSHUFFLE" ]; then SHUFFLE="$NEWSHUFFLE"; fi
     if [ "$NEWLOOP" ]; then LOOP="$NEWLOOP"; fi
+    if [ "$NEWSINGLE" ]; then SINGLE="$NEWSINGLE"; fi
     
     #########################################################
     # WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG
@@ -139,6 +144,7 @@ then
     sudo sed -i 's/%RESUME%/'"$RESUME"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%SHUFFLE%/'"$SHUFFLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%SINGLE%/'"$SINGLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
