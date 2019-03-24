@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 from signal import pause
 from subprocess import check_call
+import time
 
 # This script will block any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
 # due to the assignment of GPIO 19 and 21 to a buttons
@@ -19,19 +20,28 @@ from subprocess import check_call
 # I have not yet had the time to test is, so I placed it in the misc folder.
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
+
+# function to provide user feedback (= flashing led) while the shutdown button is pressed
+# do not directly call shutdown, in case it was hit accedently
+# shutdown is only issued when the button remains pressed for all interations of the for loop
+def shutdown():
+    status = False
+    for x in range(0, 10):
+        GPIO.output(pled, x & 1)
+        time.sleep(.2)
+        status = GPIO.input(pled)
+        if status:
+            break
+
+    GPIO.output(pled, status)
+    if not status:
+        # trippel off period to indicate command accepted
+        time.sleep(.6)
+        GPIO.output(pled, GPIO.HIGH)
+        # leave it on for the moment, it will be off when the system is down
+        def_shutdown()
+
 def def_shutdown():
-    
-    # TODO: Handle hold time and shutdown here
-    
-    # Power led blinks two times which gives feedback to listener that the
-    # shutdown request was understood and the phoniebox is going down.
-    pled.blink(on_time=0.3, off_time=0.3, n=2, background=False)
-    # After blinking two times the power led stays on until shutdown completes
-    # When the led continues blinking during shutdown it might go off caused
-    # by blinking and then the GPIO might be unable to be controlled anymore
-    # caused by shutdown. In that case the pi looks like it is already off - which it is not
-    # To avoid this switch it back on and it will stay on until pi shutdown is complete.
-    GPIO.output(LEDGPIO, GPIO.HIGH)
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
 def def_volU():
@@ -86,8 +96,7 @@ GPIO.setup(next, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(prev, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(halt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# TODO: 2s hold!
-GPIO.add_event_detect(shut, GPIO.FALLING, callback=def_shutdown, bouncetime=bouncetime)
+GPIO.add_event_detect(shut, GPIO.FALLING, callback=shutdown, bouncetime=bouncetime)
 GPIO.add_event_detect(vol0, GPIO.FALLING, callback=def_vol0, bouncetime=bouncetime)
 GPIO.add_event_detect(volU, GPIO.FALLING, callback=def_volU, bouncetime=bouncetime)
 #When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
