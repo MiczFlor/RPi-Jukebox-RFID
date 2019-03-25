@@ -21,11 +21,11 @@ then
     if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     
     # SINGLE TRACK PLAY
-    if [ $SINGLE == "OFF" ]
+    if [ $SINGLE == "ON" ]
     then
-        mpc single off
-    else
         mpc single on
+    else
+        mpc single off
     fi
     
     # SHUFFLE FOLDER

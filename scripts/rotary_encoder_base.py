@@ -28,8 +28,8 @@ class Flags( ctypes.Union ):
 class RotaryEncoder:
 
     # select Enocder state bits
-    KeyIncr = 0b00000001
-    KeyDecr = 0b00000010
+    KeyIncr = 0b00000010
+    KeyDecr = 0b00000001
 
     tblEncoder = [
         0b00000011, 0b00000111, 0b00010011, 0b00000011,
