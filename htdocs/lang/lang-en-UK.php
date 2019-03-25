@@ -66,6 +66,20 @@ $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
 
+// Player title HTML
+$lang['playerSeekBack'] = "seek back";
+$lang['playerSeekAhead'] = "seek forward";
+$lang['playerSkipPrev'] = "previous track";
+$lang['playerSkipNext'] = "next track";
+$lang['playerPlayPause'] = "play / pause";
+$lang['playerReplay'] = "replay track";
+$lang['playerLoop'] = "loop";
+$lang['playerStop'] = "stop player";
+$lang['playerVolDown'] = "volume down";
+$lang['playerVolUp'] = "volume up";
+$lang['playerMute'] = "toggle mute";
+
+
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
 $lang['classic'] = "Classic edition (barebones)";
