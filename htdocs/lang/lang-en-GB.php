@@ -165,7 +165,7 @@ $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";
 $lang['settingsShowCoverON'] = "Show cover";
 $lang['settingsShowCoverOFF'] = "Don't show cover";
-$lang['settingsMessageLangfileNewItems'] = "There are new language items in the original <em>lang-en-UK.php</em> file. Your language file has been updated and now contains these (in English). You might want to update your language file and commit your changes to the Phoniebox code :)";
+$lang['settingsMessageLangfileNewItems'] = "There are new language items in the original <em>lang-en-GB.php</em> file. Your language file has been updated and now contains these (in English). You might want to update your language file and commit your changes to the Phoniebox code :)";
 
 /*
 * System info

@@ -165,7 +165,7 @@ $lang['settingsWebInterface'] = "Web-Oberfläche";
 $lang['settingsCoverInfo'] = "Willst du Cover neben den Alben und Playlisten auf der Hauptseite anzeigen?";
 $lang['settingsShowCoverON'] = "Cover anzeigen";
 $lang['settingsShowCoverOFF'] = "Kein Cover anzeigen";
-$lang['settingsMessageLangfileNewItems'] = "Es gibt neue Sprachelemente in der originalen Sprachdatei <em>lang-en-UK.php</em>. Möglicherweise möchtest du deine Sprachdatei aktualisieren und Ihre Änderungen in den Phoniebox-Code übernehmen? :)";
+$lang['settingsMessageLangfileNewItems'] = "Es gibt neue Sprachelemente in der originalen Sprachdatei <em>lang-en-GB.php</em>. Möglicherweise möchtest du deine Sprachdatei aktualisieren und Ihre Änderungen in den Phoniebox-Code übernehmen? :)";
 
 /*
 * System info

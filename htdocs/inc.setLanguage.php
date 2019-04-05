@@ -13,7 +13,7 @@ called in inc.header.php
 if(
     isset($_POST['lang']) 
     && trim($_POST['lang']) != ""
-    && trim($_POST['lang']) != "en-UK"
+    && trim($_POST['lang']) != "en-GB"
     ) {
     /**/
 

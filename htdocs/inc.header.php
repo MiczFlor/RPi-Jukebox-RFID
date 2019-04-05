@@ -113,7 +113,7 @@ $edition = fileGetContentOrDefault(dirname(__FILE__).'/../settings/edition', "cl
 /*
 * load language strings
 */
-$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-UK");
+$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-GB");
 include("inc.langLoad.php");
 
 /*******************************************
