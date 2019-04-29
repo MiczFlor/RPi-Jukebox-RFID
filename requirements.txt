@@ -4,7 +4,7 @@
 #### ESSENTIAL LIBRARIES FOR MAIN FUNCTIONALITY ####
 
 # related libraries.
-evdev==0.7.0
+evdev
 git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube_dl
 pyserial
