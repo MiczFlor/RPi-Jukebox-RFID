@@ -149,6 +149,7 @@ if [ "$CARDID" ]; then
         $CMDREWIND)
             # play the first track in playlist (==folder)
             sudo $PATHDATA/playout_controls.sh -c=playerrewind
+            ;;
         $CMDSEEKFORW)
             # jump 15 seconds ahead
             $PATHDATA/playout_controls.sh -c=playerseek -v=+15
