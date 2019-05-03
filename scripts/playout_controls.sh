@@ -318,6 +318,9 @@ case $COMMAND in
         # play previous track in playlist (==folder)
         mpc prev
         ;;
+    playerrewind)
+        # play the first track in playlist (==folder)
+	mpc play
     playerpause)
         # pause current track
         # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
