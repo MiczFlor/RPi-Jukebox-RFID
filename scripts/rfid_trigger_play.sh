@@ -146,6 +146,10 @@ if [ "$CARDID" ]; then
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
             ;;
+        $CMDREWIND)
+            # play the first track in playlist (==folder)
+            sudo $PATHDATA/playout_controls.sh -c=playerrewind
+            ;;
         $CMDSEEKFORW)
             # jump 15 seconds ahead
             $PATHDATA/playout_controls.sh -c=playerseek -v=+15
