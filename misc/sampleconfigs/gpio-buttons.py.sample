@@ -21,96 +21,117 @@ import time
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
 
-# function to provide user feedback (= flashing led) while the shutdown button is pressed
+# Function to provide user feedback (= flashing led) while the shutdown button is pressed
 # do not directly call shutdown, in case it was hit accedently
 # shutdown is only issued when the button remains pressed for all interations of the for loop
-def shutdown():
-    status = False
-    for x in range(0, 10):
-        GPIO.output(pled, x & 1)
-        time.sleep(.2)
-        status = GPIO.input(pled)
-        if status:
-            break
 
-    GPIO.output(pled, status)
-    if not status:
-        # trippel off period to indicate command accepted
-        time.sleep(.6)
-        GPIO.output(pled, GPIO.HIGH)
-        # leave it on for the moment, it will be off when the system is down
-        def_shutdown()
+# def shutdown():
+#     status = False
+#     for x in range(0, 10):
+#         GPIO.output(pled, x & 1)
+#         time.sleep(.2)
+#         status = GPIO.input(pled)
+#         if status:
+#             break
+# 
+#     GPIO.output(pled, status)
+#     if not status:
+#         # trippel off period to indicate command accepted
+#         time.sleep(.6)
+#         GPIO.output(pled, GPIO.HIGH)
+#         # leave it on for the moment, it will be off when the system is down
+#         shutdown_action()
 
-def def_shutdown():
+# This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
+# It checks if the GPIO is in the state since the function was called. If the state
+# changes it exits wihtout further action. If the time is over the function calls the action.
+def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState, actionRef):
+    # Get a reference start time (https://docs.python.org/3/library/time.html#time.perf_counter)
+    startTime = time.perf_counter()
+    # Continously check if time is not over
+    while(holdingTime <= (time.perf_counter() - startTime)):
+        # Return if state does not match holding state
+        if(gpioHoldingState != GPIO.input(channel)):
+           return
+        # Else: Wait
+    # Time is over call action
+    actionRef()
+
+# Actions that call other processes of the phoniebox
+def shutdown_action():
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
-
-def def_volU():
-    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
-
-def def_volD():
-    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
-
-def def_vol0():
+def vol0_action():
     check_call("./scripts/playout_controls.sh -c=mute", shell=True)
-
-def def_next():
+def volD_action():
+    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
+def volU_action():
+    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
+def next_action():
     check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
-
-def def_prev():
+def prev_action():
     check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
-
-def def_halt():
+def halt_action():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
-
-def def_recordstart():
+def recordstart_action():
     check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
-
-def def_recordstop():
+def recordstop_action():
     check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
-
-def def_recordplaylatest():
+def recordplaylatest_action():
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 
+# Handlers that handle special behavior of the push of a button
+# When the shutdown button was held for more than 2 seconds LED flashed and afterwards 
+def shutdown_handler():
+    # Detect holding of button
+    
+# When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
+def volU_handler():
+    # Detect holding of button
+    checkGpioStaysInState(volumeHoldTime, volU, GPIO.LOW, volU_action)
+# When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
+def volD_handler():
+    # Detect holding of button
+    checkGpioStaysInState(volumeHoldTime, volD, GPIO.LOW, volD_action)
+
+# Define the used pins of the raspberry board
 shut = 3
-pled = 7
 vol0 = 13
 volU = 16
 volD = 19
 next = 26
 prev = 20
 halt = 21
+pled = 7
 #reco =
 #play =
 
+# Set GPIO numbering to BCM instead of board numbering
 GPIO.setmode(GPIO.BCM)
+# Bounce tolerance time for buttons
 bouncetime = 500
+volumeHoldTime = 0.3 # Seconds
 
+# Set up GPIO pins and the power led
 GPIO.setup(shut, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# GPIO 7 - Pin 26
-GPIO.setup(7, GPIO.OUT)
-
 GPIO.setup(vol0, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(volU, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(volD, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(next, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(prev, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(halt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(pled, GPIO.OUT)
 
-GPIO.add_event_detect(shut, GPIO.FALLING, callback=shutdown, bouncetime=bouncetime)
-GPIO.add_event_detect(vol0, GPIO.FALLING, callback=def_vol0, bouncetime=bouncetime)
-GPIO.add_event_detect(volU, GPIO.FALLING, callback=def_volU, bouncetime=bouncetime)
-#When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
-# TODO: 0.3s hold!
-GPIO.add_event_detect(volU, GPIO.FALLING, callback=def_volU, bouncetime=bouncetime)
-# TODO: 0.3s hold!
-GPIO.add_event_detect(volD, GPIO.FALLING, callback=def_volD, bouncetime=bouncetime)
-#When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
-GPIO.add_event_detect(next, GPIO.FALLING, callback=def_next, bouncetime=bouncetime)
-GPIO.add_event_detect(prev, GPIO.FALLING, callback=def_prev, bouncetime=bouncetime)
-GPIO.add_event_detect(halt, GPIO.FALLING, callback=def_halt, bouncetime=bouncetime)
-#reco.when_pressed = def_recordstart
-#reco.when_released = def_recordstop
-#play.when_pressed = def_recordplaylatest
+# Set standard events for the buttons. Callback functions define the actions of the events (THey are defined above)
+GPIO.add_event_detect(shut, GPIO.FALLING, callback=shutdown_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(vol0, GPIO.FALLING, callback=vol0_action, bouncetime=bouncetime)
+GPIO.add_event_detect(volU, GPIO.FALLING, callback=volU_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(volD, GPIO.FALLING, callback=volD_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(next, GPIO.FALLING, callback=next_action, bouncetime=bouncetime)
+GPIO.add_event_detect(prev, GPIO.FALLING, callback=prev_action, bouncetime=bouncetime)
+GPIO.add_event_detect(halt, GPIO.FALLING, callback=halt_action, bouncetime=bouncetime)
+#reco.when_pressed = recordstart_action
+#reco.when_released = recordstop_action
+#play.when_pressed = recordplaylatest_action
 
 # Switch on power led after boot to indicate state "on" for phoniebox
 GPIO.output(LEDGPIO, GPIO.HIGH)
