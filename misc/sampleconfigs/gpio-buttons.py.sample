@@ -3,10 +3,15 @@ import RPi.GPIO as GPIO
 from signal import pause
 from subprocess import check_call
 import time
+from time import sleep
 
 # This script will block any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
 # due to the assignment of GPIO 19 and 21 to a buttons
 
+# 2019-05-14
+# * Rewrite using RPi.GPIO for Raspberry pi zero compatibility.
+# * Added power LED functionality
+#
 # 2018-10-31
 # Added the function on holding volume + - buttons to change the volume in 0.3s interval
 #
@@ -20,42 +25,19 @@ import time
 # I have not yet had the time to test is, so I placed it in the misc folder.
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
-
-# Function to provide user feedback (= flashing led) while the shutdown button is pressed
-# do not directly call shutdown, in case it was hit accedently
-# shutdown is only issued when the button remains pressed for all interations of the for loop
-
-# def shutdown():
-#     status = False
-#     for x in range(0, 10):
-#         GPIO.output(pled, x & 1)
-#         time.sleep(.2)
-#         status = GPIO.input(pled)
-#         if status:
-#             break
-# 
-#     GPIO.output(pled, status)
-#     if not status:
-#         # trippel off period to indicate command accepted
-#         time.sleep(.6)
-#         GPIO.output(pled, GPIO.HIGH)
-#         # leave it on for the moment, it will be off when the system is down
-#         shutdown_action()
-
 # This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
 # It checks if the GPIO is in the state since the function was called. If the state
-# changes it exits wihtout further action. If the time is over the function calls the action.
-def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState, actionRef):
+# changes it return False. If the time is over the function returns True.
+def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
     # Get a reference start time (https://docs.python.org/3/library/time.html#time.perf_counter)
     startTime = time.perf_counter()
     # Continously check if time is not over
     while(holdingTime <= (time.perf_counter() - startTime)):
         # Return if state does not match holding state
         if(gpioHoldingState != GPIO.input(channel)):
-           return
+           return False
         # Else: Wait
-    # Time is over call action
-    actionRef()
+    return True
 
 # Actions that call other processes of the phoniebox
 def shutdown_action():
@@ -83,15 +65,31 @@ def recordplaylatest_action():
 # When the shutdown button was held for more than 2 seconds LED flashed and afterwards 
 def shutdown_handler():
     # Detect holding of button
+    if True == checkGpioStaysInState(shutdownHoldTime, shut, GPIO.LOW):
+        # Blink LED
+        for x in range(0, 10):
+            GPIO.output(LEDGPIO, x & 1)
+            sleep(PledBlinkTime)
+        # Keep LED on until power off
+        GPIO.output(LEDGPIO, GPIO.HIGH)
+        # Shutdown afterwards
+        shutdown_action()
     
 # When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
 def volU_handler():
+    # Rise volume as requested
+    volU_action()
     # Detect holding of button
-    checkGpioStaysInState(volumeHoldTime, volU, GPIO.LOW, volU_action)
+    while checkGpioStaysInState(volumeHoldTime, volU, GPIO.LOW):
+        volU_action()
+
 # When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
 def volD_handler():
+    # Rise volume as requested
+    volD_action()
     # Detect holding of button
-    checkGpioStaysInState(volumeHoldTime, volD, GPIO.LOW, volD_action)
+    while checkGpioStaysInState(volumeHoldTime, volD, GPIO.LOW):
+        volD_action()
 
 # Define the used pins of the raspberry board
 shut = 3
@@ -110,6 +108,8 @@ GPIO.setmode(GPIO.BCM)
 # Bounce tolerance time for buttons
 bouncetime = 500
 volumeHoldTime = 0.3 # Seconds
+shutdownHoldTime = 2 # Seconds
+PledBlinkTime = 0.3  # Seconds
 
 # Set up GPIO pins and the power led
 GPIO.setup(shut, GPIO.IN, pull_up_down=GPIO.PUD_UP)
