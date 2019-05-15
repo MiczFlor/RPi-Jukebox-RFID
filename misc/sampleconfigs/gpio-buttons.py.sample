@@ -68,10 +68,10 @@ def shutdown_handler():
     if True == checkGpioStaysInState(shutdownHoldTime, shut, GPIO.LOW):
         # Blink LED
         for x in range(0, 10):
-            GPIO.output(LEDGPIO, x & 1)
+            GPIO.output(pled, x & 1)
             sleep(PledBlinkTime)
         # Keep LED on until power off
-        GPIO.output(LEDGPIO, GPIO.HIGH)
+        GPIO.output(pled, GPIO.HIGH)
         # Shutdown afterwards
         shutdown_action()
     
@@ -134,6 +134,6 @@ GPIO.add_event_detect(halt, GPIO.FALLING, callback=halt_action, bouncetime=bounc
 #play.when_pressed = recordplaylatest_action
 
 # Switch on power led after boot to indicate state "on" for phoniebox
-GPIO.output(LEDGPIO, GPIO.HIGH)
+GPIO.output(pled, GPIO.HIGH)
 
 pause()
