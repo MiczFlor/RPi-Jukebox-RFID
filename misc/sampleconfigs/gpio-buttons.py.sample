@@ -39,31 +39,31 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
         # Else: Wait
     return True
 
-# Actions that call other processes of the phoniebox
-def shutdown_action():
+# Actions that call other processes of the phoniebox (Channel Parameter needed by RPi.GPIO)
+def shutdown_action(channel):
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
-def vol0_action():
+def vol0_action(channel):
     check_call("./scripts/playout_controls.sh -c=mute", shell=True)
-def volD_action():
+def volD_action(channel):
     check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
-def volU_action():
+def volU_action(channel):
     check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
-def next_action():
+def next_action(channel):
     check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
-def prev_action():
+def prev_action(channel):
     check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
-def halt_action():
+def halt_action(channel):
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
-def recordstart_action():
+def recordstart_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
-def recordstop_action():
+def recordstop_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
-def recordplaylatest_action():
+def recordplaylatest_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 
 # Handlers that handle special behavior of the push of a button
 # When the shutdown button was held for more than 2 seconds LED flashed and afterwards 
-def shutdown_handler():
+def shutdown_handler(channel):
     # Detect holding of button
     if True == checkGpioStaysInState(shutdownHoldTime, shut, GPIO.LOW):
         # Blink LED
@@ -76,7 +76,7 @@ def shutdown_handler():
         shutdown_action()
     
 # When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
-def volU_handler():
+def volU_handler(channel):
     # Rise volume as requested
     volU_action()
     # Detect holding of button
@@ -84,7 +84,7 @@ def volU_handler():
         volU_action()
 
 # When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
-def volD_handler():
+def volD_handler(channel):
     # Rise volume as requested
     volD_action()
     # Detect holding of button
