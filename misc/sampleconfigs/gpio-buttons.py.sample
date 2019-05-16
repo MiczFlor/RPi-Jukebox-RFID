@@ -32,9 +32,9 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
     # Get a reference start time (https://docs.python.org/3/library/time.html#time.perf_counter)
     startTime = time.perf_counter()
     # Continously check if time is not over
-    while(holdingTime <= (time.perf_counter() - startTime)):
+    while(holdingTime >= (time.perf_counter() - startTime)):
         # Return if state does not match holding state
-        if(gpioHoldingState != GPIO.input(channel)):
+        if(gpioHoldingState != GPIO.input(gpioChannel)):
            return False
         # Else: Wait
     return True
@@ -73,23 +73,23 @@ def shutdown_handler(channel):
         # Keep LED on until power off
         GPIO.output(pled, GPIO.HIGH)
         # Shutdown afterwards
-        shutdown_action()
+        shutdown_action(channel)
     
 # When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
 def volU_handler(channel):
     # Rise volume as requested
-    volU_action()
+    volU_action(channel)
     # Detect holding of button
     while checkGpioStaysInState(volumeHoldTime, volU, GPIO.LOW):
-        volU_action()
+        volU_action(channel)
 
 # When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
 def volD_handler(channel):
     # Rise volume as requested
-    volD_action()
+    volD_action(channel)
     # Detect holding of button
     while checkGpioStaysInState(volumeHoldTime, volD, GPIO.LOW):
-        volD_action()
+        volD_action(channel)
 
 # Define the used pins of the raspberry board
 shut = 3
