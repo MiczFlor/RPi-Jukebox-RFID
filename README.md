@@ -27,8 +27,9 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 ---
 
 <a href="https://www.buymeacoffee.com/MiczFlor" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg"></a>
+<img src="https://yt3.ggpht.com/a/AGF-l7_m7an79KW5UfiqIh0QIbqKsoJ89W224PovWQ=s288-mo-c-c0xffffffff-rj-k-no">
 
-If you like your Phoniebox, consider to [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+If you like your Phoniebox, consider to [buy me a coffee](https://www.buymeacoffee.com/MiczFlor) or PayPal me privately at micz.flor@web.de 
 
 ---
 
