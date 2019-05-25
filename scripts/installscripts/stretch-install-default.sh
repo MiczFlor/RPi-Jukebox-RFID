@@ -272,7 +272,7 @@ case "$response" in
 esac
 # append variables to config file
 echo "AUDIOiFace=\"$AUDIOiFace\"" >> $PATHDATA/PhonieboxInstall.conf
-echo "Your iFace ist called'$AUDIOiFace'"
+echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
 read INPUT
 
