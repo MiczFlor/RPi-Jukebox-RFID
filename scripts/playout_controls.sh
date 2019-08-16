@@ -73,7 +73,7 @@ if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT playout_controls.sh ($N
 # Read global configuration file (and create is not exists) 
 # create the global configuration file from single files - if it does not exist
 if [ ! -f $PATHDATA/../settings/global.conf ]; then
-    . inc.writeGlobalConfig.sh
+    . $PATHDATA/inc.writeGlobalConfig.sh
 fi
 . $PATHDATA/../settings/global.conf
 # contains:
@@ -278,7 +278,7 @@ case $COMMAND in
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
         # create global config file because individual setting got changed
-        . inc.writeGlobalConfig.sh
+        . $PATHDATA/inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
         echo $AUDIOVOLMAXLIMIT
@@ -287,7 +287,7 @@ case $COMMAND in
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step       
         # create global config file because individual setting got changed
-        . inc.writeGlobalConfig.sh
+        . $PATHDATA/inc.writeGlobalConfig.sh
         ;;
     getvolstep)
         echo $AUDIOVOLCHANGESTEP
@@ -431,7 +431,7 @@ case $COMMAND in
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
         # create global config file because individual setting got changed
-        . inc.writeGlobalConfig.sh
+        . $PATHDATA/inc.writeGlobalConfig.sh
         # restart service to apply the new value
         sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
