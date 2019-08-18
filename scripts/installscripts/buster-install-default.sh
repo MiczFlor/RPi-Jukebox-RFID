@@ -546,10 +546,6 @@ mpc update
 # $WIFIipRouter
 if [ $WIFIconfig == "YES" ]
 then
-    # disable and stop NetworkManager
-    systemctl stop NetworkManager
-    systemctl disable NetworkManager
-
     # DHCP configuration settings
     #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample /etc/dhcpcd.conf
