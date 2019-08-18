@@ -438,10 +438,10 @@ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.buster-
 sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 # settings for php.ini to support upload
-# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/fpm/php.ini
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/fpm/php.ini
-sudo chown root:root /etc/php/7.3/fpm/php.ini
-sudo chmod 644 /etc/php/7.3/fpm/php.ini
+# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
+sudo chown root:root /etc/php/7.3/cgi/php.ini 
+sudo chmod 644 /etc/php/7.3/cgi/php.ini
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
