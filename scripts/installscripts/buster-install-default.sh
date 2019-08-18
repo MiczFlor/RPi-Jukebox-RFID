@@ -394,6 +394,8 @@ cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
+# we need to switch to the develop branch until this has been merged with master
+git checkout develop
 git fetch
 
 # Install more required packages
@@ -406,7 +408,8 @@ sudo pip install "evdev == 0.7.0"
 sudo pip install --upgrade youtube_dl
 sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 sudo pip install pyserial
-sudo pip install spidev
+# spidev is currently installed via apt-get
+#sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
