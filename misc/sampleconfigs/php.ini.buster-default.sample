@@ -845,7 +845,7 @@ file_uploads = On
 upload_max_filesize = 0
 
 ; Maximum number of files that can be uploaded via a single request
-max_file_uploads = 20
+max_file_uploads = 30
 
 ;;;;;;;;;;;;;;;;;;
 ; Fopen wrappers ;

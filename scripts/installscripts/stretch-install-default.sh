@@ -695,7 +695,7 @@ esac
 echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
-echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/docs/"
+echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 
 #####################################################
 # notes for things to do
