@@ -415,7 +415,7 @@ sudo iwconfig wlan0 power off
 
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
@@ -436,13 +436,13 @@ sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 # settings for php.ini to support upload
 # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/fpm/php.ini
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.3/fpm/php.ini
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/fpm/php.ini
 sudo chown root:root /etc/php/7.3/fpm/php.ini
 sudo chmod 644 /etc/php/7.3/fpm/php.ini
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sample /etc/sudoers
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
@@ -521,7 +521,7 @@ cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/p
 
 # MPD configuration
 # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
 # Change vars to match install config
 sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
@@ -545,7 +545,7 @@ if [ $WIFIconfig == "YES" ]
 then
     # DHCP configuration settings
     #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample /etc/dhcpcd.conf
     # Change IP for router and Phoniebox
     sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
     sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
@@ -556,7 +556,7 @@ then
     
     # WiFi SSID & Password
     # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/wpa_supplicant/wpa_supplicant.conf

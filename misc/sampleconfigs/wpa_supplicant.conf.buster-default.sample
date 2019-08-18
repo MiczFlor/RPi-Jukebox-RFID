@@ -1,9 +1,9 @@
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
-country=GB
+country=%WIFIcountryCode%
 
 network={
-	ssid="aaawlan"
-	psk="h1ne1nwl4n"
+	ssid="%WIFIssid%"
+	psk="%WIFIpass%"
 	key_mgmt=WPA-PSK
 }

@@ -11,14 +11,15 @@
 # be disabled and audio files will only be accepted over ipc socket (using
 # file:// protocol) or streaming files over an accepted protocol.
 #
-music_directory		"/var/lib/mpd/music"
+music_directory		"%DIRaudioFolders%"
 #
 # This setting sets the MPD internal playlist directory. The purpose of this
 # directory is storage for playlists created by MPD. The server will use
 # playlist files not created by the server but only if they are in the MPD
 # format. This setting defaults to playlist saving being disabled.
 #
-playlist_directory		"/var/lib/mpd/playlists"
+# playlists are inside the Phoniebox path:
+playlist_directory		"/home/pi/RPi-Jukebox-RFID/playlists"
 #
 # This setting sets the location of the MPD database. This file is used to
 # load the database at server start up and store the database while the
@@ -66,7 +67,7 @@ sticker_file                   "/var/lib/mpd/sticker.sql"
 # initialization. This setting is disabled by default and MPD is run as the
 # current user.
 #
-user				"mpd"
+user				"root"
 #
 # This setting specifies the group that MPD will run as. If not specified
 # primary group of user specified with "user" setting will be used (if set).
@@ -121,12 +122,12 @@ bind_to_address		"localhost"
 # This setting enables automatic update of MPD's database when files in
 # music_directory are changed.
 #
-#auto_update    "yes"
+auto_update    "yes"
 #
 # Limit the depth of the directories being watched, 0 means only watch
 # the music directory itself.  There is no limit by default.
 #
-#auto_update_depth "3"
+auto_update_depth "10"
 #
 ###############################################################################
 
@@ -242,7 +243,7 @@ audio_output {
 #	device		"hw:0,0"	# optional
 #	mixer_type      "hardware"      # optional
 #	mixer_device	"default"	# optional
-#	mixer_control	"PCM"		# optional
+	mixer_control	"%AUDIOiFace%"		# optional
 #	mixer_index	"0"		# optional
 }
 #

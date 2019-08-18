@@ -5,7 +5,7 @@ server.modules = (
  	"mod_redirect",
 )
 
-server.document-root        = "/var/www/html"
+server.document-root        = "/home/pi/RPi-Jukebox-RFID/htdocs"
 server.upload-dirs          = ( "/var/cache/lighttpd/uploads" )
 server.errorlog             = "/var/log/lighttpd/error.log"
 server.pid-file             = "/var/run/lighttpd.pid"
