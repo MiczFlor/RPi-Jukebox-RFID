@@ -76,9 +76,9 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 ## <a name="install"></a>Installation
 
-* Installation instructions for Raspbian [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) are available in the `docs` folder.
+* Installation instructions for Raspbian (https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
 * You can also use the [headless installation over ssh](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#ssh-install) straight from a fresh SD card.
-* For a quick install procedure, take a look at the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default.sh). This should get you started quickly.
+* For a quick install procedure, take a look at the [bash one line install script for stretch and buster](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command). This should get you started quickly.
 * If you choose the step by step installation, you need to walk through the configuration steps for [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch).
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 
