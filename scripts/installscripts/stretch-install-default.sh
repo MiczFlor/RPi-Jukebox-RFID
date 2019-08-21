@@ -450,6 +450,10 @@ sudo sh -c 'echo "opcache.file_update_protection = 0" >> /etc/php/7.0/fpm/conf.d
 sudo sh -c 'echo "opcache.file_cache = \"/home/pi/RPi-Jukebox-RFID/.php-opcache/\"" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
 sudo sh -c 'echo "opcache.preload = \"/home/pi/RPi-Jukebox-RFID/htdocs/index.php\"" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
 
+# disable PHP notice and warnings logging
+ sudo touch /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini
+ sudo sh -c 'echo "error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED & ~E_WARNING;" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini'
+
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sample /etc/sudoers
