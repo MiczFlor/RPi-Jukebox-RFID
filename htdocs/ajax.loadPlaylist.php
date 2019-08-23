@@ -34,7 +34,7 @@ foreach($plFile[1] AS $file) {
     if ( $plTime['1'][$i] > 0 && $plTime['1'][$i] < 3600 ) {
         print '<span class="badge" style="float: right; margin: 3px!important;">'.date("i:s",$plTime['1'][$i]).'</span>';
     } elseif ( $plTime['1'][$i] > 0 ) {
-        print '<span class="badge" style="float: right; margin: 3px!important;">'.date("H:i:s",$plTime['1'][$i]).'</span>';
+        print '<span class="badge" style="float: right; margin: 3px!important;">'.gmdate("H:i:s",$plTime['1'][$i]).'</span>';
     }
     print'
         </td>
@@ -76,7 +76,7 @@ foreach($plFile[1] AS $file) {
                 if ( $plTime['1'][$i] > 0 && $plTime['1'][$i] < 3600 ) {
                     print '<span class="badge" style="float: right">'.date("i:s",$plTime['1'][$i]).'</span>';
                 } elseif ( $plTime['1'][$i] > 0 ) {
-                    print '<span class="badge" style="float: right">'.date("H:i:s",$plTime['1'][$i]).'</span>';
+                    print '<span class="badge" style="float: right">'.gmdate("H:i:s",$plTime['1'][$i]).'</span>';
                 }
             print'
             </div>
