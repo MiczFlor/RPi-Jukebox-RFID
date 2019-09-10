@@ -28,8 +28,15 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # see following file for details:
 . $PATHDATA/inc.readArgsFromCommandLine.sh
 
-# path to audio folders
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
+###########################################################
+# Read global configuration file (and create is not exists) 
+# create the global configuration file from single files - if it does not exist
+if [ ! -f $PATHDATA/../settings/global.conf ]; then
+    . inc.writeGlobalConfig.sh
+fi
+. $PATHDATA/../settings/global.conf
+###########################################################
+
 
 if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi

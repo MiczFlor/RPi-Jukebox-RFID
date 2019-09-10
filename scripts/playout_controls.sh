@@ -69,75 +69,34 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
-##############################################
-# steps by which to change the audio output (vol up and down)
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Volume_Change_Step ]; then
-    echo "3" > $PATHDATA/../settings/Audio_Volume_Change_Step
+###########################################################
+# Read global configuration file (and create is not exists) 
+# create the global configuration file from single files - if it does not exist
+if [ ! -f $PATHDATA/../settings/global.conf ]; then
+    . $PATHDATA/inc.writeGlobalConfig.sh
 fi
-# 2. then|or read value from file
-VOLSTEP=`cat $PATHDATA/../settings/Audio_Volume_Change_Step`
-
-##############################################
-# Max volume limit
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Max_Volume_Limit ]; then
-    echo "100" > $PATHDATA/../settings/Max_Volume_Limit
-fi
-# 2. then|or read value from file
-MAXVOL=`cat $PATHDATA/../settings/Max_Volume_Limit`
-
-##############################################
-# Min volume limit
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Min_Volume_Limit ]; then
-    echo "0" > $PATHDATA/../settings/Min_Volume_Limit
-fi
-# 2. then|or read value from file
-MINVOL=`cat $PATHDATA/../settings/Min_Volume_Limit`
+. $PATHDATA/../settings/global.conf
+# contains:
+# AUDIOFOLDERSPATH
+# PLAYLISTSFOLDERPATH
+# SECONDSWIPE
+# AUDIOIFACENAME
+# AUDIOVOLCHANGESTEP
+# AUDIOVOLMAXLIMIT
+# AUDIOVOLMINLIMIT
+# VOLCHANGEIDLE
+# IDLETIMESHUTDOWN
+# SHOWCOVER
+# EDITION
+# LANG
+# VERSION
+###########################################################
 
 #################################
 # path to file storing the current volume level
 # this file does not need to exist
 # it will be created or deleted by this script
 VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
-
-##############################################
-# Change volume during idle (or only change it during Play and in the WebApp)
-#TRUE=Change Volume during all Time (Default; FALSE=Change Volume only during "Play"; OnlyDown=It is possible to decrease Volume during Idle; OnlyUp=It is possible to increase Volume during Idle
-# 1. create a default if file does not exist (set default do TRUE - Volume Change is possible every time)
-if [ ! -f $PATHDATA/../settings/Change_Volume_Idle ]; then
-    echo "TRUE" > $PATHDATA/../settings/Change_Volume_Idle
-fi
-# 2. then|or read value from file
-VOLCHANGEIDLE=`cat $PATHDATA/../settings/Change_Volume_Idle`
-
-#################################
-# Idle time after the RPi will be shut down. 0=turn off feature.
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Idle_Time_Before_Shutdown ]; then
-    echo "0" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
-fi
-# 2. then|or read value from file
-IDLETIME=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
-
-##############################################
-# Path to folder containing audio / streams
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
-fi
-# 2. then|or read value from file
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
-
-#echo $VOLSTEP
-#echo $VOLFILE
-#echo $MAXVOL
-#echo $MINVOL
-#echo $VOLCHANGEIDLE
-#echo `cat $VOLFILE`
-#echo $IDLETIME
-#echo $AUDIOFOLDERSPATH
 
 #############################################################
 
@@ -167,7 +126,7 @@ case $COMMAND in
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-    sudo poweroff
+        sudo poweroff
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -212,20 +171,20 @@ case $COMMAND in
         ;;
     setvolume)
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
-        if [ $VALUE -le $MAXVOL ] && [ $VALUE -ge $MINVOL ];
+        if [ $VALUE -le $AUDIOVOLMAXLIMIT ] && [ $VALUE -ge $AUDIOVOLMINLIMIT ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
-            if [ $VALUE -gt $MAXVOL ];
+            if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
             then
                 # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
             fi
-            if [ $VALUE -lt $MINVOL ];
+            if [ $VALUE -lt $AUDIOVOLMINLIMIT ];
             then
                 # if we are unter the min volume limit, set the volume to minvol
-                echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
+                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
             fi
         fi
         ;;
@@ -247,16 +206,16 @@ case $COMMAND in
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-            # increase by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} + \( ${VOLSTEP} \* ${VALUE} \)` 
+            # increase by $AUDIOVOLCHANGESTEP
+            VOLPERCENT=`expr ${VOLPERCENT} + \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
             #increase volume only if VOLPERCENT is below the max volume limit
-            if [ $VOLPERCENT -le $MAXVOL ];
+            if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
             then
                 # set volume level in percent
                 echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
             else
                 # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $MAXVOL\\nclose | nc -w 1 localhost 6600
+                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
             fi
         else
             # $VOLFILE DOES exist == audio off
@@ -284,16 +243,16 @@ case $COMMAND in
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-            # decrease by $VOLSTEP
-            VOLPERCENT=`expr ${VOLPERCENT} - \( ${VOLSTEP} \* ${VALUE} \)` 
+            # decrease by $AUDIOVOLCHANGESTEP
+            VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)` 
             #decrease volume only if VOLPERCENT is above the min volume limit
-            if [ $VOLPERCENT -ge $MINVOL ];
+            if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
             then
                 # set volume level in percent
                 echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
             else
                 # if we are below the min volume limit, set the volume to minvol
-                echo -e setvol $MINVOL\\nclose | nc -w 1 localhost 6600
+                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
             fi
         else
             # $VOLFILE DOES exist == audio off
@@ -317,17 +276,21 @@ case $COMMAND in
             echo -e setvol $VALUE | nc -w 1 localhost 6600
         fi
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit
+        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
+        # create global config file because individual setting got changed
+        . $PATHDATA/inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
-        echo $MAXVOL
+        echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step
+        echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step       
+        # create global config file because individual setting got changed
+        . $PATHDATA/inc.writeGlobalConfig.sh
         ;;
     getvolstep)
-        echo $VOLSTEP
+        echo $AUDIOVOLCHANGESTEP
         ;;
     playerstop)
         # stop the player
@@ -354,6 +317,10 @@ case $COMMAND in
     playerprev)
         # play previous track in playlist (==folder)
         mpc prev
+        ;;
+    playerrewind)
+        # play the first track in playlist (==folder)
+	mpc play 1
         ;;
     playerpause)
         # pause current track
@@ -441,7 +408,7 @@ case $COMMAND in
         if [ "$DEBUG" == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
 
-        # OLD VERSION: 
+        # OLD VERSION (pre 20190302 - delete once the new version really seems to work): 
         # call shuffle_check HERE to enable/disable folder-based shuffling 
         # (mpc shuffle is different to random, because when you shuffle before playing, 
         # you start your playlist with a different track EVERYTIME. With random you EVER 
@@ -463,11 +430,13 @@ case $COMMAND in
     setidletime)
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+        # create global config file because individual setting got changed
+        . $PATHDATA/inc.writeGlobalConfig.sh
         # restart service to apply the new value
         sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
     getidletime)
-        echo $IDLETIME
+        echo $IDLETIMESHUTDOWN
         ;;
     enablewifi)
         rfkill unblock wifi
@@ -485,7 +454,7 @@ case $COMMAND in
             echo "Wifi will now be deactivated"
             rfkill block wifi
         else
-                echo "Wifi will noow be activated"
+            echo "Wifi will now be activated"
             rfkill unblock wifi
         fi
         ;;
@@ -514,5 +483,6 @@ case $COMMAND in
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
+        if [ "$DEBUG" == "true" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> $PATHDATA/../logs/debug.log; fi
         ;;
 esac

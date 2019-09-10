@@ -9,6 +9,8 @@ if(isset($_POST['lang']) && trim($_POST['lang']) != "") {
     */
     file_put_contents($conf['settings_abs'].'/Lang', trim($_POST['lang']));
     $conf['settings_lang'] = trim($_POST['lang']);
+    // execute shell to create config file
+    exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
 }
 
 /*

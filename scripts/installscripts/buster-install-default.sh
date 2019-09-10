@@ -387,13 +387,15 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
+sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
+# we need to switch to the develop branch until this has been merged with master
+git checkout develop
 git fetch
 
 # Install more required packages
@@ -406,7 +408,8 @@ sudo pip install "evdev == 0.7.0"
 sudo pip install --upgrade youtube_dl
 sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 sudo pip install pyserial
-sudo pip install spidev
+# spidev is currently installed via apt-get
+#sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
@@ -415,7 +418,7 @@ sudo iwconfig wlan0 power off
 
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
@@ -425,24 +428,24 @@ sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
 
 # Web server configuration settings
 # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.stretch-default.sample /etc/lighttpd/lighttpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
 sudo chown root:root /etc/lighttpd/lighttpd.conf
 sudo chmod 644 /etc/lighttpd/lighttpd.conf
 
 # Web server PHP7 fastcgi conf
 # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.stretch-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 # settings for php.ini to support upload
-# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.0/fpm/php.ini
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.0/fpm/php.ini
-sudo chown root:root /etc/php/7.0/fpm/php.ini
-sudo chmod 644 /etc/php/7.0/fpm/php.ini
+# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
+sudo chown root:root /etc/php/7.3/cgi/php.ini 
+sudo chmod 644 /etc/php/7.3/cgi/php.ini
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sample /etc/sudoers
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
@@ -471,7 +474,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
 sudo service lighttpd force-reload
-sudo service php7.0-fpm restart
+sudo service php7.3-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
@@ -521,7 +524,7 @@ cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/p
 
 # MPD configuration
 # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
 # Change vars to match install config
 sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
@@ -545,7 +548,7 @@ if [ $WIFIconfig == "YES" ]
 then
     # DHCP configuration settings
     #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample /etc/dhcpcd.conf
     # Change IP for router and Phoniebox
     sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
     sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
@@ -556,7 +559,7 @@ then
     
     # WiFi SSID & Password
     # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/wpa_supplicant/wpa_supplicant.conf

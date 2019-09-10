@@ -14,13 +14,13 @@
 #
 # circuit diagram for one of two possible encoders (volume), use GPIOs from code below for the tracks
 # (capacitors are optionally)
-# KY-040 is just one example, typically the pins are named A nd B instead of Clock and Data
+# KY-040 is just one example, typically the pins are named A and B instead of Clock and Data
 #
 #       .---------------.                      .---------------.
 #       |               |                      |               |
-#       |           CLK |------o---------------| GPIO 5        |
+#       |        B / DT |------o---------------| GPIO 5        |
 #       |               |      |               |               |
-#       |           DT  |------)----o----------| GPIO 6        |
+#       |       A / CLK |------)----o----------| GPIO 6        |
 #       |               |      |    |          |               |
 #       |           SW  |------)----)----------| GPIO 3        |
 #       |               |      |    |          |               |
@@ -59,11 +59,11 @@ def rotaryChangeCWTrack(steps):
 def rotaryChangeCCWTrack(steps):
    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
-APinVol = 5 
-BPinVol = 6
+APinVol = 6
+BPinVol = 5
 
-APinTrack = 22
-BPinTrack = 23
+APinTrack = 23
+BPinTrack = 22
 
 GPIO.setmode(GPIO.BCM)
 

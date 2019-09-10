@@ -8,7 +8,7 @@ evdev==0.7.0
 git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube_dl
 pyserial
-spidev
+# spidev - currently installed via apt-get
 RPi.GPIO
 pi-rc522
 
