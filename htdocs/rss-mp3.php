@@ -56,7 +56,8 @@ if(isset($_GET['rss'])) {
 
 function phoniepodcastxml($filesMp3, $title) {
   global $sortby;
-  $conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+  $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+  $conf['url_abs']    = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
   // get "now" time for timestamp in xml feed, because the publishing time will order the list e.g. on iOS Podcast
   $now = time();
   header('Content-type: text/xml', true);
