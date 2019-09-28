@@ -65,6 +65,7 @@ $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
+$lang['globalPriority'] = "Priority";
 
 // Player title HTML
 $lang['playerSeekBack'] = "seek back";
@@ -169,6 +170,8 @@ $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
 $lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";
+$lang['settingsWifiPassHelp'] = "The password of your WiFi (8 characters at least)";
+$lang['settingsWifiPrioHelp'] = "Your WiFi's priority (0-100). If more than  one WiFi is found the box will connect to the one with the higher priority";
 $lang['settingsSecondSwipe'] = "Second Swipe";
 $lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, what happens? Start the playlist again? Toggle pause/play?";
 $lang['settingsSecondSwipeRestart'] = "Re-start playlist";
