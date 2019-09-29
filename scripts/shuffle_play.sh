@@ -49,7 +49,7 @@ if [ -z "$FOLDER" ]
 then 
     FOLDER=$(mpc lsplaylists)
     # actually, this should be the latest folder:
-    FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
+    FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
 fi
 
 # Some error checking: if folder.conf does not exist, create default
@@ -66,21 +66,13 @@ then
 fi
 # Read the current config file (include will execute == read)
 . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-if [ "$DEBUG" == "true" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "# found content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR PLAYSTATUS: $PLAYSTATUS" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR RESUME: $RESUME" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR SHUFFLE: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR LOOP: $LOOP" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR SINGLE: $SINGLE" >> $PATHDATA/../logs/debug.log; fi
 
 if [ "$DEBUG" == "true" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 
 case "$COMMAND" in
 
-      
 shuffle_check)
     #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
 	if [ $SHUFFLE == "ON" ];
@@ -114,3 +106,6 @@ disableshuffle)
     echo "Command unknown"
     ;;
 esac
+
+if [ "$DEBUG" == "true" ]; then echo "# new content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi

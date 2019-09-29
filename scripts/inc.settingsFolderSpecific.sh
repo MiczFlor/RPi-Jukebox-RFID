@@ -5,11 +5,14 @@
 # It then looks into the settings of the folder and changes
 # settings if need be, such as single track play or shuffle
 
+# $DEBUG true|false
+DEBUG=true
+
 NOW=`date +%Y-%m-%d.%H:%M:%S`
-if [ "$DEBUG" == "true" ]; then echo "  ######### SCRIPT inc.settingsFolderSpecific.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "  #START### SCRIPT inc.settingsFolderSpecific.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio 
-FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
+FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
 if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 if [ -e "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]
@@ -20,19 +23,29 @@ then
     if [ "$DEBUG" == "true" ]; then echo "  # Folder exists: ${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     
-    # SINGLE TRACK PLAY
+    # SINGLE TRACK PLAY (== shuffle can not be on, because single on will play one track after another)
+    if [ "$DEBUG" == "true" ]; then echo "  # SINGLE TRACK PLAY: $SINGLE" >> $PATHDATA/../logs/debug.log; fi
     if [ $SINGLE == "ON" ]
     then
+		if [ "$DEBUG" == "true" ]; then echo "  # # CHANGING: mpc single on" >> $PATHDATA/../logs/debug.log; fi
         mpc single on
+        mpc random off
     else
+		if [ "$DEBUG" == "true" ]; then echo "  # # CHANGING: mpc single off" >> $PATHDATA/../logs/debug.log; fi
         mpc single off
+        # only now we might shuffle
+        # SHUFFLE FOLDER
+        if [ "$DEBUG" == "true" ]; then echo "  # SHUFFLE FOLDER: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+        if [ $SHUFFLE == "ON" ]
+        then 
+		    if [ "$DEBUG" == "true" ]; then echo "  # # CHANGING: mpc shuffle" >> $PATHDATA/../logs/debug.log; fi
+            mpc shuffle
+        else
+		    if [ "$DEBUG" == "true" ]; then echo "  # # CHANGING: mpc random off" >> $PATHDATA/../logs/debug.log; fi
+            mpc random off
+        fi
     fi
     
-    # SHUFFLE FOLDER
-    if [ $SHUFFLE == "ON" ]
-    then 
-        mpc shuffle
-    else
-        mpc random off
-    fi
 fi
+
+if [ "$DEBUG" == "true" ]; then echo "  #END##### SCRIPT inc.settingsFolderSpecific.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi

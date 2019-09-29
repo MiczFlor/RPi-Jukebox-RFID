@@ -16,7 +16,7 @@
 
 #############################################################
 # $DEBUG true|false
-DEBUG=false
+DEBUG=true
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -38,14 +38,14 @@ fi
 ###########################################################
 
 
-if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "$DEBUG" == "true" ]; then echo "#START##### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio 
-FOLDER=`cat $PATHDATA/../settings/Latest_Folder_Played`
+FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
 if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Some error checking: if folder.conf does not exist, create default
@@ -165,3 +165,6 @@ disableresume)
     echo "Command unknown"
     ;;
 esac
+
+
+if [ "$DEBUG" == "true" ]; then echo "#END####### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
