@@ -342,6 +342,10 @@ case "$response" in
 esac
 # append variables to config file
 echo "SPOTinstall=\"$SPOTinstall\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIuser=\"$SPOTIuser\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIpass=\"$SPOTIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientid=\"$SPOTIclientid\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientsecret=\"$SPOTIclientsecret\"" >> $PATHDATA/PhonieboxInstall.conf
 
 if [ $SPOTinstall == "NO" ]; then
 ##################################################### 
@@ -688,7 +692,6 @@ sudo systemctl enable dhcpcd
 
 # / WiFi settings (SSID password)
 ###############################
-
 
 # / INSTALLATION
 ##################################################### 
