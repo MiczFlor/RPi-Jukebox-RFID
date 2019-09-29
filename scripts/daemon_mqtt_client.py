@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+
 import paho.mqtt.client as mqtt
 import os.path, subprocess, re, ssl, time, datetime
 
@@ -16,14 +17,14 @@ DEBUG=False
 mqttBaseTopic="phoniebox"				# MQTT base topic
 mqttClientId="phoniebox"				# MQTT client ID
 mqttHostname="openHAB"					# MQTT server hostname
-mqttPort=8883							# MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
-mqttUsername=""							# username for user/pass based authentication
-mqttPassword=""							# password for user/pass based authentication
-mqttCA="mqtt-ca.crt"					# path to server certificate for certificate-based authentication
-mqttCert="mqtt-client-phoniebox.crt"	# path to client certificate for certificate-based authentication
-mqttKey="mqtt-client-phoniebox.key"		# path to client keyfile for certificate-based authentication
+mqttPort=8883						# MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
+mqttUsername=""						# username for user/pass based authentication
+mqttPassword=""						# password for user/pass based authentication
+mqttCA="/home/pi/MQTT/mqtt-ca.crt"			# path to server certificate for certificate-based authentication
+mqttCert="/home/pi/MQTT/mqtt-client-phoniebox.crt"	# path to client certificate for certificate-based authentication
+mqttKey="/home/pi/MQTT/mqtt-client-phoniebox.key"	# path to client keyfile for certificate-based authentication
 mqttConnectionTimeout=60				# in seconds; timeout for MQTT connection
-refreshInterval=30						# in seconds; how often should the status be sent to MQTT
+refreshInterval=30					# in seconds; how often should the status be sent to MQTT
 
 
 
@@ -41,19 +42,19 @@ arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 
 def on_connect(client, userdata, flags, rc):
 	if rc==0:
 		print("Connection established.")
-		
+
 		# retrieve server version and edition
 		with open(path + "/../settings/version", "r") as f:
 			version = f.read()
-		
+
 		with open(path + "/../settings/edition", "r") as f:
 			edition = f.read()
-		
+
 		# publish general server info
 		client.publish(mqttBaseTopic + "/state", payload="online", qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/version", payload=version, qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/edition", payload=edition, qos=1, retain=True)
-		
+
 	else:
 		print("Connection could NOT be established. Return-Code:", rc)
 
@@ -78,7 +79,7 @@ def on_message(client, userdata, message):
 
 	elif message.topic == mqttBaseTopic + "/get":
 		processGet(message)
-	
+
 
 def processSet(message):
 	command = message.payload.decode("utf-8")
@@ -106,9 +107,8 @@ def processGet(message):
 	elif attribute in mpd_status:
 		client.publish(mqttBaseTopic + "/attribute/" + attribute, payload=mpd_status[attribute])
 		print(" --> Publishing response " + attribute + " = " + mpd_status[attribute])
-	
+
 	elif attribute == "last_card":
-		# retrieve last card ID
 		with open(path + "/../settings/Latest_RFID", "r") as f:
 			last_card = f.read()
 		client.publish(mqttBaseTopic + "/attribute/last_card", payload=last_card)
@@ -118,7 +118,7 @@ def processGet(message):
 		availableAttributes = ", ".join(arAvailableAttributes)
 		client.publish(mqttBaseTopic + "/available_attributes", payload=availableAttributes)
 		print(" --> Publishing response", availableAttributes)
-	
+
 	else:
 		print(" --> Could not retrieve attribute", attribute)
 
@@ -164,6 +164,9 @@ def fetchMPDStatus():
 		result["duration"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
 
 	return result
+
+
+
 
 
 
