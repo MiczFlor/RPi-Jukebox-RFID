@@ -63,7 +63,8 @@ sudo chgrp -R www-data htdocs/
 }
 include("config.php");
 
-$url_abs = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+$url_abs = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
 /**
  * @param $exec
@@ -104,8 +105,35 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 /*
 * Vars from the settings folder
 */
-$Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
+if(!file_exists($conf['settings_abs']."/global.conf")) {
+    // execute shell to create config file
+    // scripts/inc.writeGlobalConfig.sh
+    exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+    exec("chmod 777 ".$conf['settings_abs']."/global.conf");
+} 
+
+// read the global conf file
+$globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
+//print "<pre>"; print_r($globalConf); print "</pre>"; //???
+
+// assign the values from the global conf file to the vars in PHP
+$Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
+$Second_Swipe = $globalConf['SECONDSWIPE'];
+$ShowCover = $globalConf['SHOWCOVER'];
+$version = $globalConf['VERSION'];
+$edition = $globalConf['EDITION'];
+$maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
+$conf['settings_lang'] = $globalConf['LANG'];
+
+// vars that must be read continuously and can't be in the global conf file
 $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
+
+/*
+* load language strings
+*/
+include("inc.langLoad.php");
+//<<<<<<< HEAD
+/*=======
 $Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
 $ShowCover = fileGetContentOrDefault($conf['settings_abs'].'/ShowCover', "ON");
 $version = trim(file_get_contents($conf['settings_abs'].'/version'));
@@ -113,8 +141,8 @@ $edition = fileGetContentOrDefault(dirname(__FILE__).'/../settings/edition', "cl
 /*
 * load language strings
 */
-$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-UK");
-include("inc.langLoad.php");
+//$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-UK");
+//>>>>>>> 7ef4a568abfc0e0c97cd0ffd954fa3e5ce54b240
 
 /*******************************************
 * URLPARAMETERS

@@ -12,24 +12,25 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 
 *Important update news*
 
-* **Phoniebox 1.1.9 released** (2019-03-08)
-* Two types of *one-line-install* scripts are now available. 
+* **Phoniebox 2.0 released** (2019-09-29)
+* One line install script for Raspbian `buster` available
+  * This install script combines the two versions *Classic* and *+ Spotify*. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)
    [One-line install script adding **Spotify** to your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command), a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. See the next bulletpoint for information on how you can help to improve the new Spotify version. (2018-11-09)
-* **Phoniebox podcasts** ... sound like a big feature but all it is: if you have a folder with MP3 files on your Phoniebox, there is a new link with an RSS icon in the web app which allows to subscribe to this folder like a podcast in your mobile app. Why is this useful? Before I go travelling with my kid, I subscribe and locally download files to my phone for the journey. (2018-12-25)
+* A step by step guid to [enable Google Play Music GMusic](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Enable-Google-Play-Music-GMusic) on your Phoniebox.
 * **Documentation moved to the wiki** The [GitHub wiki for Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki) is active. And in the making. Not sure if this is the best way to go, but please try to add content in the wiki regarding special hardware, software tweaks and the like.
-* **Upgrade** if you are looking for *how to upgrade* please check out [UPGRADE.md](docs/UPGRADE.md) - and if you found out something that should go there, please create a pull request. (2018-10-18)
-* **One Line Install Script** As of version 1.x there is . Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#oneLineInstall). (2018-08-18)
 * **Podcasts!** More for myself than anybody else, I guess, I added the [podcast feature for Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#podcasts) (2018-05-09)
+* **Phoniebox podcasts** ... sound like a big feature but all it is: if you have a folder with MP3 files on your Phoniebox, there is a new link with an RSS icon in the web app which allows to subscribe to this folder like a podcast in your mobile app. Why is this useful? Before I go travelling with my kid, I subscribe and locally download files to my phone for the journey. (2018-12-25)
 * **Bleeding edge: `develop` branch** The maintenance with a growing contributor team (kudos!) got complicated. I introduced the branch `develop` which is where all new stuff is happening before merged to `master`. Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to contribute code](docs/CONTRIBUTE.md). (2018-08-30)
 
 ---
 
 <a href="https://www.buymeacoffee.com/MiczFlor" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg"></a>
-<img src="https://web4africa.com/wp-content/uploads/paypal.png" width="30px" height="30px">
+<img src="https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg" width="auto" height="30px">
 
-If you like your Phoniebox, consider to [buy me a coffee](https://www.buymeacoffee.com/MiczFlor) or PayPal me privately at micz.flor@web.de 
+If you like your Phoniebox, consider to [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
+or donate via [PayPal](https://www.paypal.com) to micz.flor@web.de using the *friends* option. 
 
 ---
 
@@ -77,9 +78,9 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 ## <a name="install"></a>Installation
 
-* Installation instructions for Raspbian [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) are available in the `docs` folder.
+* Installation instructions for Raspbian (https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
 * You can also use the [headless installation over ssh](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#ssh-install) straight from a fresh SD card.
-* For a quick install procedure, take a look at the [bash install script for Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/master/scripts/installscripts/stretch-install-default.sh). This should get you started quickly.
+* For a quick install procedure, take a look at the [bash one line install script for stretch and buster](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command). This should get you started quickly.
 * If you choose the step by step installation, you need to walk through the configuration steps for [Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch).
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 
@@ -98,7 +99,7 @@ In the [Manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) you wi
 
 ## Contributing improvements
 
-Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to contribute code](docs/CONTRIBUTE.md).
+Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for [more infos on how to contribute code](CONTRIBUTING.md).
 
 ## Reporting bugs
 
@@ -136,7 +137,7 @@ There are many, many, many inspiring suggestions and solutions on the web to bri
 * Thanks to Andreas aka [hailogugo](https://github.com/hailogugo) for writing and testing the script for the [GPIO buttons as controllers for the jukebox](docs/GPIO-BUTTONS.md).
 * [Francisco Sahli's Music Cards: RFID cards + Spotify + Raspberry Pi](https://fsahli.wordpress.com/2015/11/02/music-cards-rfid-cards-spotify-raspberry-pi/) written in python, playing songs from Spotify. The code [music-cards](https://github.com/fsahli/music-cards) is on GitHub.
 * [Jeremy Lightsmith's rpi-jukebox](https://github.com/jeremylightsmith/rpi-jukebox) written in Python, using the mpg123 player
-* [Marco Wiedemeyer's Raspberry Pi Jukebox für Kinder (German)](https://mwiedemeyer.de/blog/post/Raspberry-Pi-Jukebox-fur-Kinder) written in mono, using the MPD player
+* [Marco Wiedemeyer's Raspberry Pi Jukebox für Kinder (German)](https://blog.mwiedemeyer.de/post/Raspberry-Pi-Jukebox-fur-Kinder/) written in mono, using the MPD player
 * [Marcus Nasarek's Kindgerechter Audioplayer mit dem Raspberry Pi (German)](http://www.raspberry-pi-geek.de/Magazin/2014/03/Kindgerechter-Audioplayer-mit-dem-Raspberry-Pi) triggered by QR codes via a camera instead of RFID cards, written in bash and using the xmms2 media player
 * [Huy Do's jukebox4kids / Jukebox für Kinder](http://www.forum-raspberrypi.de/Thread-projekt-jukebox4kids-jukebox-fuer-kinder) written in Python, [the code is on github](https://github.com/hdo/jukebox4kids)
 * [Willem van der Jagt's How I built an audio book reader for my nearly blind grandfather](http://willemvanderjagt.com/2014/08/16/audio-book-reader/) written in python and using the MDP player.
@@ -167,9 +168,9 @@ Here is a list of equipment needed. Chances are that you will find most of it in
 * [USB A Male to Female Extenstion Cable with Switch On/Off](http://amzn.to/2hHrvkG) | I placed this USB extension between the USB power adapter and the Phoniebox. This will allow you to switch the Phoniebox on and off easily.
 * [USB 2.0 Hub 4-port bus powered USB Adapter](http://amzn.to/2kXeErv) | Depending on your setup, you will need none, one or two of these. If you are using the external USB powered speakers, you need one to make sure the speakers get enough power. If you want to use the additional USB soundcard and have an older RPi, you might need a second one to make sure you can connect enough devices with the RPi.
 * Arcade Buttons / Tasten / Schalter (one of these might suit you)
-* * [Arcade Buttons / Tasten / Schalter ](https://amzn.to/2QMxe9r) if you want buttons for the GPIO control.
-* * [Set: Arcade Buttons / Tasten / Schalter ](https://amzn.to/2T81JTZ) GPIO Extension Board Starter Kit including cables and breadboard.
-* * [Touch Sensor / Kapazitive Touch Tasten ](https://amzn.to/2Vc4ntx) these are not buttons to press but to touch as GPIO controls.
+    * [Arcade Buttons / Tasten / Schalter ](https://amzn.to/2QMxe9r) if you want buttons for the GPIO control.
+    * [Set: Arcade Buttons / Tasten / Schalter ](https://amzn.to/2T81JTZ) GPIO Extension Board Starter Kit including cables and breadboard.
+    * [Touch Sensor / Kapazitive Touch Tasten ](https://amzn.to/2Vc4ntx) these are not buttons to press but to touch as GPIO controls.
 
 ### Special hardware
 
@@ -178,3 +179,5 @@ These are links to additional items, which will add an individual flavour to you
 * [Ground Loop Isolator / Entstörfilter Audio](https://amzn.to/2Kseo0L) this seems to [get rid off crackles in the audio out (a typical RPi problem)](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/341) 
 * [Rotary Encoder / Drehregler / Dial](https://amzn.to/2J34guF) for volume control. Read here for more information on how to [integrate the rotary dial](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/267) 
 * [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#hifiberry-dac-soundcard-details)
+* [HDMI zu HDMI + Optisches SPDIF mit 3,5-mm-Stereo-HDMI Audio-Extractor | HDMI zu SPDIF Konverter](https://amzn.to/2N8KP8C) If you plan to use video, this might be the better solution than a USB soundcard or the hifiberry. If takes up some space, but will work with the HDMI audio out and split the signal to deliver audio through 3.5mm jack.
+

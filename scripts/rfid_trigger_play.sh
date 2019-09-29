@@ -45,35 +45,14 @@ if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
     sudo chmod -R 775 $PATHDATA/../settings/rfid_trigger_play.conf
 fi
 
-# Path to folder containing audio / streams
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
-    chmod 777 $PATHDATA/../settings/Audio_Folders_Path
+###########################################################
+# Read global configuration file (and create is not exists) 
+# create the global configuration file from single files - if it does not exist
+if [ ! -f $PATHDATA/../settings/global.conf ]; then
+    . inc.writeGlobalConfig.sh
 fi
-# 2. then|or read value from file
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
-
-# Path to folder containing playlists
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Playlists_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/playlists" > $PATHDATA/../settings/Playlists_Folders_Path
-    chmod 777 $PATHDATA/../settings/Playlists_Folders_Path
-fi
-# 2. then|or read value from file
-PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
-
-##############################################
-# Second swipe
-# What happens when the same card is swiped a second time?
-# RESTART => start the playlist again vs. PAUSE => toggle pause and play current
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Second_Swipe ]; then
-    echo "RESTART" > $PATHDATA/../settings/Second_Swipe
-    chmod 777 $PATHDATA/../settings/Second_Swipe
-fi
-# 2. then|or read value from file
-SECONDSWIPE=`cat $PATHDATA/../settings/Second_Swipe`
+. $PATHDATA/../settings/global.conf
+###########################################################
 
 # Read configuration file
 . $PATHDATA/../settings/rfid_trigger_play.conf
@@ -166,6 +145,10 @@ if [ "$CARDID" ]; then
             # echo "prev" | nc.openbsd -w 1 localhost 4212
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
+            ;;
+        $CMDREWIND)
+            # play the first track in playlist (==folder)
+            sudo $PATHDATA/playout_controls.sh -c=playerrewind
             ;;
         $CMDSEEKFORW)
             # jump 15 seconds ahead

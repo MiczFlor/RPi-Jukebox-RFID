@@ -65,6 +65,20 @@ $lang['globalRepeat'] = "Wiederholen";
 $lang['globalLoop'] = "Schleife";
 $lang['globalLang'] = "Sprache";
 $lang['globalLanguageSettings'] = "Spracheinstellungen";
+$lang['globalPriority'] = "Priorität";
+
+// Player title HTML
+$lang['playerSeekBack'] = "seek back";
+$lang['playerSeekAhead'] = "seek forward";
+$lang['playerSkipPrev'] = "previous track";
+$lang['playerSkipNext'] = "next track";
+$lang['playerPlayPause'] = "play / pause";
+$lang['playerReplay'] = "replay track";
+$lang['playerLoop'] = "loop";
+$lang['playerStop'] = "stop player";
+$lang['playerVolDown'] = "volume down";
+$lang['playerVolUp'] = "volume up";
+$lang['playerMute'] = "toggle mute";
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
@@ -155,6 +169,8 @@ $lang['settingsMaxVol'] = "Max. Lautstärke";
 $lang['settingsWifiRestart'] = "Die Änderungen an der WiFi-Verbindung erfordern einen Neustart, um wirksam zu werden";
 $lang['settingsWifiSsidPlaceholder'] = "z.B. PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "Der Name, unter dem dein WiFi als 'verfügbares Netzwerk' angezeigt wird";
+$lang['settingsWifiPassHelp'] = "Das Passwort für dein WiFi (mindestens 8 Zeichen)";
+$lang['settingsWifiPrioHelp'] = "Die Priorität deines WiFi (0-100). Wenn mehr als ein WiFi gefunden wird, verbindet sich die Box mit dem, das die höhere Priorität hat";
 $lang['settingsSecondSwipe'] = "Erneute Aktivierung";
 $lang['settingsSecondSwipeInfo'] = "Aktion, wenn dieselbe Karte ein weiteres Mal aktiviert wird:";
 $lang['settingsSecondSwipeRestart'] = "Wiedergabeliste neu starten";

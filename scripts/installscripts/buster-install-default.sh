@@ -12,7 +12,6 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# +Spotify                                          #
 #                                                   #
 ##################################################### 
 
@@ -66,7 +65,7 @@ case "$response" in
         # append variables to config file
         echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=GB" >> $PATHDATA/PhonieboxInstall.conf
+        echo "WIFIcountryCode=DE" >> $PATHDATA/PhonieboxInstall.conf
         ;;
     *)
     	WIFIconfig=YES
@@ -273,7 +272,7 @@ case "$response" in
 esac
 # append variables to config file
 echo "AUDIOiFace=\"$AUDIOiFace\"" >> $PATHDATA/PhonieboxInstall.conf
-echo "Your iFace ist called'$AUDIOiFace'"
+echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
 read INPUT
 
@@ -284,13 +283,22 @@ clear
 
 echo "#####################################################
 #
-# OPTIONAL: INCLUDE SPOTIFY SUPPORT
+# OPTIONAL: INCLUDE SPOTIFY
 #
-# Spotify uses Mopidy for audio output and must
-# be configured. Do it now, or never.
-# (Note: To add this later, you must re-install phoniebox)
+# Note: if this is your first time installing a phoniebox
+# it might be best to do a test install without Spotify 
+# to make sure all your hardware works.
+#
+# If you want to include Spotify, MUST have your 
+# credentials ready:
+#
+# * username
+# * passoword
+# * client_id
+# * client_secret
+
 "
-read -r -p "Do you want to install Mopidy? [Y/n] " response
+read -r -p "Do you want to enable Spotify? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
     	SPOTinstall=NO
@@ -301,12 +309,11 @@ case "$response" in
     *)
     	SPOTinstall=YES
 		clear
-    	echo "This was a great decision! Mopidy will be set up."
 		echo "#####################################################
 #
-# CONFIGURE MOPIDY
+# CREDENTIALS for Spotify
 #
-# Requires spotify username, password, client_id and client_secret 
+# Requires Spotify username, password, client_id and client_secret 
 # to get connection to Spotify.
 #
 # (Note: You need a device with browser to generate ID and SECRET)
@@ -347,6 +354,7 @@ echo "SPOTIpass=\"$SPOTIpass\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "SPOTIclientid=\"$SPOTIclientid\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "SPOTIclientsecret=\"$SPOTIclientsecret\"" >> $PATHDATA/PhonieboxInstall.conf
 
+# MPD config here is not necessary if mopidy is installed
 if [ $SPOTinstall == "NO" ]; then
 ##################################################### 
 # Configure MPD
@@ -363,18 +371,18 @@ echo "#####################################################
 "
 read -r -p "Do you want to configure MPD? [Y/n] " response
 case "$response" in
-	[nN][oO]|[nN])
-		MPDconfig=NO
-		echo "You want to configure MPD later."
-		echo "Hit ENTER to proceed to the next step."
-		read INPUT
-		;;
-	*)
-		MPDconfig=YES
-		echo "MPD will be set up with default values."
-		echo "Hit ENTER to proceed to the next step."
-		read INPUT
-		;;
+    [nN][oO]|[nN])
+    	MPDconfig=NO
+    	echo "You want to configure MPD later."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
+    *)
+    	MPDconfig=YES
+    	echo "MPD will be set up with default values."
+    	echo "Hit ENTER to proceed to the next step."
+        read INPUT
+        ;;
 esac
 # append variables to config file
 echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
@@ -460,7 +468,7 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
+sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
@@ -489,19 +497,22 @@ cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 # the following three lines are needed as long as this is not the master branch:
 cd RPi-Jukebox-RFID
+# we need to switch to the develop branch until this has been merged with master
+git checkout develop
 git fetch
 
 # Install more required packages
 sudo pip install -r requirements.txt
 
-# actually, for the time being most of the requirements are run here (again).
+# actually, for the time being most of the requirements are run here.
 # the requirements.txt version seems to throw errors. Help if you can to fix this:
 
 sudo pip install "evdev == 0.7.0"
 sudo pip install --upgrade youtube_dl
 sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 sudo pip install pyserial
-sudo pip install spidev
+# spidev is currently installed via apt-get
+#sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
@@ -510,7 +521,7 @@ sudo iwconfig wlan0 power off
 
 # Samba configuration settings
 # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.stretch-default2.sample /etc/samba/smb.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
 # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
@@ -520,24 +531,24 @@ sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
 
 # Web server configuration settings
 # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.stretch-default.sample /etc/lighttpd/lighttpd.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
 sudo chown root:root /etc/lighttpd/lighttpd.conf
 sudo chmod 644 /etc/lighttpd/lighttpd.conf
 
 # Web server PHP7 fastcgi conf
 # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.stretch-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
 sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 # settings for php.ini to support upload
-# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.0/fpm/php.ini
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.stretch-default.sample /etc/php/7.0/fpm/php.ini
-sudo chown root:root /etc/php/7.0/fpm/php.ini
-sudo chmod 644 /etc/php/7.0/fpm/php.ini
+# -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
+sudo chown root:root /etc/php/7.3/cgi/php.ini 
+sudo chmod 644 /etc/php/7.3/cgi/php.ini
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.stretch-default.sample /etc/sudoers
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
 sudo chown root:root /etc/sudoers
 sudo chmod 440 /etc/sudoers
 
@@ -566,7 +577,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
 sudo service lighttpd force-reload
-sudo service php7.0-fpm restart
+sudo service php7.3-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
@@ -614,22 +625,7 @@ sudo systemctl enable phoniebox-gpio-buttons
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
 
-if [ $SPOTinstall == "NO" ]
-then
-	# MPD configuration
-	# -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.sample /etc/mpd.conf
-	# Change vars to match install config
-	sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
-	# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
-	sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
-	echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
-	sudo chown mpd:audio /etc/mpd.conf
-	sudo chmod 640 /etc/mpd.conf
-	# update mpc / mpd DB
-	mpc update
-fi
-
+# Spotify ELSE MPD config
 if [ $SPOTinstall == "YES" ]
 then
 	sudo systemctl disable mpd
@@ -652,7 +648,21 @@ then
 	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
+else
+    # MPD configuration
+    # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
+    # Change vars to match install config
+    sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
+    echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
+    sudo chown mpd:audio /etc/mpd.conf
+    sudo chmod 640 /etc/mpd.conf
 fi
+
+# update mpc / mpd DB
+mpc update
 
 ###############################
 # WiFi settings (SSID password)
@@ -667,23 +677,24 @@ if [ $WIFIconfig == "YES" ]
 then
     # DHCP configuration settings
     #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.stretch-default2-noHotspot.sample /etc/dhcpcd.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample /etc/dhcpcd.conf
     # Change IP for router and Phoniebox
     sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' /etc/dhcpcd.conf
     sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' /etc/dhcpcd.conf
     sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/dhcpcd.conf
     # Change user:group and access mod
     sudo chown root:netdev /etc/dhcpcd.conf
-    sudo chmod 664 /etc/dhcpcd.conf 
-       
+    sudo chmod 664 /etc/dhcpcd.conf
+    
     # WiFi SSID & Password
     # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch.sample /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
+
 fi
 
 # start DHCP
@@ -817,25 +828,20 @@ echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
-echo ""
 
 #####################################################
-
-read -r -p "Reboot now? [Y/n] " response
-case "$response" in
-    [nN][oO]|[nN])
-    	echo "You have to reboot manually!"
-        ;;
-    *)
-    	sudo reboot
-        ;;
-esac
-
 # notes for things to do
 
 # Soundcard
 # PCM is currently set
 # This needs to be done for mpd and in settings folder
+
+
+
+#Ask if Spotify config
+#If Spotify
+#Ask for user
+#Ask for password
 
 #Ask ssh password
 
