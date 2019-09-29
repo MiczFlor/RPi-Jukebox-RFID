@@ -13,7 +13,7 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 *Important update news*
 
 * **Phoniebox 2.0 released** (2019-09-29)
-* One line install script for Raspbian `buster` available
+* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command) for Raspbian `buster` available
   * This install script combines the two versions *Classic* and *+ Spotify*. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * *Phoniebox +Spotify* supports everything *Classic* does PLUS Spotify. However: the local audio management has changed for the *+Spotify* edition. [More about the changes in the +Spotify edition here.](docs/SPOTIFY-INTEGRATION.md)
@@ -27,7 +27,7 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 ---
 
 <a href="https://www.buymeacoffee.com/MiczFlor" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg"></a>
-<img src="https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg" width="auto" height="30px">
+<!--a href="https://www.paypal.com" target="_blank"><img src="https://www.paypalobjects.com/digitalassets/c/website/logo/full-text/pp_fc_hl.svg" width="auto" height="30px"></a-->
 
 If you like your Phoniebox, consider to [buy me a coffee](https://www.buymeacoffee.com/MiczFlor)
 or donate via [PayPal](https://www.paypal.com) to micz.flor@web.de using the *friends* option. 
