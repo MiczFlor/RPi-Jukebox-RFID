@@ -405,22 +405,22 @@ case $COMMAND in
         # Read the current config file (include will execute == read)
         . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
         
-    # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
-    if [ $SINGLE == "ON" ]
-    then
-        # keep in mind what we just played
-        FOLDERCURRENT=${FOLDER}
-        FOLDERLAST=$(cat $PATHDATA/../settings/Latest_Folder_Played)
-        if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
-        then 
-            if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
-            if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERLAST: $FOLDERLAST" >> $PATHDATA/../logs/debug.log; fi
+        # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
+        if [ $SINGLE == "ON" ]
+        then
+            # keep in mind what we just played
+            FOLDERCURRENT=${FOLDER}
+            FOLDERLAST=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+            if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
+            then 
+                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
+                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERLAST: $FOLDERLAST" >> $PATHDATA/../logs/debug.log; fi
+            else
+                mpc clear
+            fi
         else
             mpc clear
         fi
-    else
-        mpc clear
-    fi
         
         # Change some settings according to current folder IF the folder.conf exists
         mpc load "${VALUE//\//SLASH}"
