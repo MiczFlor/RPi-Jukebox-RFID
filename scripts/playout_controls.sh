@@ -400,8 +400,37 @@ case $COMMAND in
 
         # first save position (if resume play is on) then clear playlist
         $PATHDATA/resume_play.sh -c=savepos
-        mpc clear
-
+        
+        # NEW VERSION:
+        # Read the current config file (include will execute == read)
+        . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+        
+        # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
+        if [ $SINGLE == "ON" ]
+        then
+            # keep in mind what we just played
+            FOLDERCURRENT=${FOLDER}
+            FOLDERLAST=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+            if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
+            then 
+                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
+                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERLAST: $FOLDERLAST" >> $PATHDATA/../logs/debug.log; fi
+            else
+                mpc clear
+            fi
+        else
+            mpc clear
+        fi
+        
+        # Change some settings according to current folder IF the folder.conf exists
+        mpc load "${VALUE//\//SLASH}"
+        # Change some settings according to current folder IF the folder.conf exists
+        . $PATHDATA/inc.settingsFolderSpecific.sh
+        
+        # Now load and play
+        $PATHDATA/resume_play.sh -c=resume
+        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
+        
         # write latest folder played to settings file
         sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
@@ -413,14 +442,9 @@ case $COMMAND in
         # (mpc shuffle is different to random, because when you shuffle before playing, 
         # you start your playlist with a different track EVERYTIME. With random you EVER 
         # has the first song and random from track 2.
-        # mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/single_play.sh -c=single_check && $PATHDATA/resume_play.sh -c=resume
+        #mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/single_play.sh -c=single_check && $PATHDATA/resume_play.sh -c=resume
+        #mpc load "${VALUE//\//SLASH}" && $PATHDATA/single_play.sh -c=single_check  && $PATHDATA/resume_play.sh -c=resume
         
-        # NEW VERSION:
-        # Change some settings according to current folder IF the folder.conf exists
-        . $PATHDATA/inc.settingsFolderSpecific.sh
-        # Now load and play
-        mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playlistadd)
         # add to playlist, no autoplay
