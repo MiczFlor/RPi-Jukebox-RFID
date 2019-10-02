@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import paho.mqtt.client as mqtt
-import os.path, subprocess, re, ssl, time, datetime
+import os, subprocess, re, ssl, time, datetime
 
 
 # ----------------------------------------------------------
@@ -52,10 +52,15 @@ def on_connect(client, userdata, flags, rc):
 		version = readfile(path + "/../settings/version")
 		edition = readfile(path + "/../settings/edition")
 
+		# check disk space
+		disk_total, disk_avail = disk_stats()
+
 		# publish general server info
 		client.publish(mqttBaseTopic + "/state", payload="online", qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/version", payload=version, qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/edition", payload=edition, qos=1, retain=True)
+		client.publish(mqttBaseTopic + "/disk_total", payload=disk_total, qos=1, retain=True)
+		client.publish(mqttBaseTopic + "/disk_avail", payload=disk_avail, qos=1, retain=True)
 
 	else:
 		print("Connection could NOT be established. Return-Code:", rc)
@@ -171,6 +176,15 @@ def processGet(attribute):
 	# we don't know this attribute
 	else:
 		print(" --> Could not retrieve attribute", attribute)
+
+
+def disk_stats():
+	statvfs = os.statvfs('/home/pi')
+	size_total = statvfs.f_frsize * statvfs.f_blocks	# total
+	#size_avail = statvfs.f_frsize * statvfs.f_bfree	# actual free
+	size_avail = statvfs.f_frsize * statvfs.f_bavail	# free for non-root
+
+	return round(size_total/1073741824, 1), round(size_avail/1073741824, 1)
 
 
 def readfile(filepath):
