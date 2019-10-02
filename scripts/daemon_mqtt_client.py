@@ -103,7 +103,6 @@ def processCmd(command, parameter):
 		parameter = parameter.lower()
 		if parameter == "start" or parameter == "stop":
 			subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-rfid-reader.service"], shell=True)
-			processGet("rfid")
 		else:
 			print(" --> Expecting parameter start or stop")
 
@@ -112,7 +111,6 @@ def processCmd(command, parameter):
 		parameter = parameter.lower()
 		if parameter == "start" or parameter == "stop":
 			subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-buttons.service"], shell=True)
-			processGet("gpio")
 		else:
 			print(" --> Expecting parameter start or stop")
 
@@ -144,6 +142,10 @@ def processCmd(command, parameter):
 	# we don't know this command
 	else:
 		print(" --> Unknown command", command)
+		return
+
+	# this was a known command => refresh all attributes as they might have changed
+	client.publish(mqttBaseTopic + "/get/all", payload="")
 
 
 def processGet(attribute):
