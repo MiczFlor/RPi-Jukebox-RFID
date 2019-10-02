@@ -40,7 +40,7 @@ refreshInterval = refreshIntervalPlaying
 
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
-arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio']
+arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
 arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio']
 
 
@@ -115,6 +115,21 @@ def processCmd(command, parameter):
 			processGet("gpio")
 		else:
 			print(" --> Expecting parameter start or stop")
+
+	# virtually swipe a RFID card
+	elif command == "swipecard":
+		print(" --> Virtually swiping card with ID", parameter)
+		subprocess.call([path + "/rfid_trigger_play.sh -i=" + parameter], shell=True)
+
+	# play folder
+	elif command == "playfolder":
+		print(" --> Playing folder", parameter)
+		subprocess.call([path + "/rfid_trigger_play.sh -d='" + parameter + "'"], shell=True)
+
+	# play folder (recursive)
+	elif command == "playfolderrecursive":
+		print(" --> Playing folder " + parameter + " (recursive)")
+		subprocess.call([path + "/rfid_trigger_play.sh -d='" + parameter + "' -v=recursive"], shell=True)
 
 	# all the other known commands w/o param
 	elif command in arAvailableCommands:
