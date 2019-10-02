@@ -210,6 +210,14 @@ def normalizeTrueFalse(s):
 		return "true"
 
 
+def regex(needle, hay, exception = "-"):
+	regex_extract = re.search(needle, hay)
+	if regex_extract:
+		return regex_extract.group(1)
+	else:
+		return exception
+
+
 def fetchData():
 	# use global refreshInterval as this function is run as a thread through the paho-mqtt loop
 	global refreshInterval
@@ -222,10 +230,10 @@ def fetchData():
 	status = subprocess.run(cmd, stdout=subprocess.PIPE, input=input).stdout.decode('utf-8')
 
 	# interpret status
-	result["state"] = re.search('\nstate: (.*)\n', status).group(1).lower()
-	result["volume"] = re.search('\nvolume: (.*)\n', status).group(1)
-	result["repeat"] = normalizeTrueFalse(re.search('\nrepeat: (.*)\n', status).group(1))
-	result["random"] = normalizeTrueFalse(re.search('\nrandom: (.*)\n', status).group(1))
+	result["state"] = regex('\nstate: (.*)\n', status).lower()
+	result["volume"] = regex('\nvolume: (.*)\n', status)
+	result["repeat"] = normalizeTrueFalse(regex('\nrepeat: (.*)\n', status))
+	result["random"] = normalizeTrueFalse(regex('\nrandom: (.*)\n', status))
 
 	# interpret mute state based on volume
 	if result["volume"] == "0":
@@ -236,20 +244,23 @@ def fetchData():
 	# interpret metadata when in play/pause mode
 	if result["state"] != "stop":
 
-		result["file"] = re.search('\nfile: (.*)\n', status).group(1)
-		result["artist"] = re.search('\nArtist: (.*)\n', status).group(1)
-		result["albumartist"] = re.search('\nAlbumArtist: (.*)\n', status).group(1)
-		result["title"] = re.search('\nTitle: (.*)\n', status).group(1)
-		result["album"] = re.search('\nAlbum: (.*)\n', status).group(1)
-		result["track"] = re.search('\nTrack: (.*)\n', status).group(1)
-		result["trackdate"] = re.search('\nDate: (.*)\n', status).group(1)
+		result["file"] = regex('\nfile: (.*)\n', status)
+		result["artist"] = regex('\nArtist: (.*)\n', status)
+		result["albumartist"] = regex('\nAlbumArtist: (.*)\n', status)
+		result["title"] = regex('\nTitle: (.*)\n', status)
+		result["album"] = regex('\nAlbum: (.*)\n', status)
+		result["track"] = regex('\nTrack: (.*)\n', status, "0")
+		result["trackdate"] = regex('\nDate: (.*)\n', status)
 
-		elapsed = int(float(re.search('\nelapsed: (.*)\n', status).group(1)))
+		if result["title"] == "-":
+			result["title"] = result["file"]
+
+		elapsed = int(float(regex('\nelapsed: (.*)\n', status, "0")))
 		hours, remainder = divmod(elapsed, 3600)
 		minutes, seconds = divmod(remainder, 60)
 		result["elapsed"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
 
-		duration = int(float(re.search('\nduration: (.*)\n', status).group(1)))
+		duration = int(float(regex('\nduration: (.*)\n', status, "0")))
 		hours, remainder = divmod(duration, 3600)
 		minutes, seconds = divmod(remainder, 60)
 		result["duration"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
