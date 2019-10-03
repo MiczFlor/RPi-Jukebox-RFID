@@ -41,7 +41,7 @@ refreshInterval = refreshIntervalPlaying
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
 arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle']
 
 
 def on_connect(client, userdata, flags, rc):
@@ -203,6 +203,24 @@ def isServiceRunning(svc):
 		return "false"
 
 
+def linux_job_remaining(job_name):
+	cmd = ['sudo', 'atq', '-q', job_name]
+	dtQueue = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+
+	regex = re.search('(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)', dtQueue)
+	if regex:
+		dtNow = datetime.datetime.now()
+		dtQueue = datetime.datetime.strptime(dtNow.strftime("%d.%m.%Y") + " " + regex.group(5), "%d.%m.%Y %H:%M:%S")
+
+		# subtract 1 day if queued for the next day
+		if dtNow > dtQueue:
+			dtNow = dtNow - datetime.timedelta(days=1)
+
+		return int(round((dtQueue.timestamp() - dtNow.timestamp()) / 60, 0))
+	else:
+		return 0
+
+
 def normalizeTrueFalse(s):
 	if s == "0":
 		return "false"
@@ -276,6 +294,11 @@ def fetchData():
 	# fetch service states
 	result["rfid"] = isServiceRunning("phoniebox-rfid-reader.service")
 	result["gpio"] = isServiceRunning("phoniebox-gpio-buttons.service")
+
+	# fetch linux jobs
+	result["remaining_stopafter"] = str(linux_job_remaining("s"))
+	result["remaining_shutdownafter"] = str(linux_job_remaining("t"))
+	result["remaining_idle"] = str(linux_job_remaining("i"))
 
 	# modify refresh rate depending on play state
 	if result["state"] == "play":
