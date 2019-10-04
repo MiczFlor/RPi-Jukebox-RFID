@@ -284,9 +284,9 @@ def fetchData():
 		result["duration"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
 
 	# fetch some more data from global.conf (via playout_controls.sh)
-	result["maxvolume"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getmaxvolume'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
-	result["volstep"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getvolstep'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
-	result["idletime"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getidletime'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["maxvolume"] = subprocess.run([path + "/playout_controls.sh", "-c=getmaxvolume"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["volstep"] = subprocess.run([path + "/playout_controls.sh", "-c=getvolstep"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["idletime"] = subprocess.run([path + "/playout_controls.sh", "-c=getidletime"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
 
 	# fetch last card
 	result["last_card"] = readfile(path + "/../settings/Latest_RFID")
