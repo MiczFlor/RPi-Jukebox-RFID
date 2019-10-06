@@ -352,5 +352,5 @@ client.subscribe(mqttBaseTopic + "/get/#")
 # start endless loop
 client.loop_start()
 while True:
-	client.publish(mqttBaseTopic + "/get/all", payload="")
+	processGet("all")
 	time.sleep(refreshInterval)
