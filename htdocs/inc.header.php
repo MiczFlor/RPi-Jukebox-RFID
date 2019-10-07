@@ -304,7 +304,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
         print "Command: ".$exec;
     } else {
     // pass folder to resume script
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".$urlparams['enableresume'].'"';
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -316,7 +316,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
 // disable resume
 if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir($Audio_Folders_Path."/".urldecode($urlparams['disableresume']))) {
     // pass folder to resume script
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".$urlparams['disableresume'].'"';
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=disableresume -d="'.$urlparams['disableresume'].'"';
     execAndRedirect($exec);
 }
 
