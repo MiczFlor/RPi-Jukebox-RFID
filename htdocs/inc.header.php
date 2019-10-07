@@ -304,23 +304,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
         print "Command: ".$exec;
     } else {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    // SC added the following lines to make resume work again, changes affect the folder_string $urlparams['enableresume']
-    // Note: This will allow normal function of the resume button in the webinterface for folder s with brackets in their name.
-    // Brackets of type "(", ")", "[", "]" are supported as album names often apear in form of "albumname - (year) - albumtitle"
-    if($debug == "true") {
-        print "original_enableresume=".$urlparams['enableresume'] . PHP_EOL;
-    }
-    $modified_enableresume = preg_replace('/\s+/', '\ ',$urlparams['enableresume']); // replace whitespaces with " "
-    $modified_enableresume = preg_replace('/\(/', '\(',$modified_enableresume); // replace "(" with with "\("
-    $modified_enableresume = preg_replace('/\)/', '\)',$modified_enableresume); // replace "(" with with "\)"
-    $modified_enableresume = preg_replace('/\[/', '\[',$modified_enableresume); // replace "(" with with "\["
-    $modified_enableresume = preg_replace('/\]/', '\]',$modified_enableresume); // replace "(" with with "\]"
-    if($debug == "true") {
-        print "modified_enableresume=".$modified_enableresume . PHP_EOL;
-    }
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".$modified_enableresume; // new and modified call of resume_play.sh
-    //$exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['enableresume']); // original call of resume_play.sh
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".$urlparams['enableresume'].'"';
     exec($exec);
 
     /* redirect to drop all the url parameters */
@@ -332,25 +316,14 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
 // disable resume
 if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir($Audio_Folders_Path."/".urldecode($urlparams['disableresume']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    // SC added the following lines to make resume work again, changes affect the folder_string $urlparams['enableresume']
-    // Note: This will allow normal function of the resume button in the webinterface for folder s with brackets in their name.
-    // Brackets of type "(", ")", "[", "]" are supported as album names often apear in form of "albumname - (year) - albumtitle"
-    $modified_disableresume = preg_replace('/\s+/', '\ ',$urlparams['disableresume']); // replace whitespaces with " "
-    $modified_disableresume = preg_replace('/\(/', '\(',$modified_disableresume); // replace "(" with with "\("
-    $modified_disableresume = preg_replace('/\)/', '\)',$modified_disableresume); // replace "(" with with "\)"
-    $modified_disableresume = preg_replace('/\[/', '\[',$modified_disableresume); // replace "(" with with "\["
-    $modified_disableresume = preg_replace('/\]/', '\]',$modified_disableresume); // replace "(" with with "\]"
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".$modified_disableresume; // new and modified call of resume_play.sh
-    //$exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['disableresume']); // original call of resume_play.sh
+    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".$urlparams['disableresume'].'"';
     execAndRedirect($exec);
 }
 
 // enable shuffle
 if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableshuffle']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['enableshuffle']);
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/shuffle_play.sh -c=enableshuffle -d="'.$urlparams['enableshuffle'].'"';
 
     execAndRedirect($exec);
 }
@@ -358,32 +331,27 @@ if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is
 // disable shuffle
 if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['disableshuffle']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['disableshuffle']);
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/shuffle_play.sh -c=disableshuffle -d="'.$urlparams['disableshuffle'].'"';
     execAndRedirect($exec);
 }
 
 // enable single track play
 if(isset($urlparams['singleenable']) && $urlparams['singleenable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singleenable']))) {
     // pass folder to single_play script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/single_play.sh -c=singleenable -d=".preg_replace('/\s+/', '\ ',$urlparams['singleenable']);
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/single_play.sh -c=singleenable -d="'.$urlparams['singleenable'].'"';
     execAndRedirect($exec);
 }
 
 // disable single track play
 if(isset($urlparams['singledisable']) && $urlparams['singledisable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singledisable']))) {
     // pass folder to single_play script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/single_play.sh -c=singledisable -d=".preg_replace('/\s+/', '\ ',$urlparams['singledisable']);
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/single_play.sh -c=singledisable -d="'.$urlparams['singledisable'].'"';
     execAndRedirect($exec);
 }
 
 // play folder audio files
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['play']))) {
     // pass folder to playout script
-    // escape whitespaces with backslashes
-    #$exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.preg_replace('/\s+/', '\ ',$urlparams['play']).'"';
     $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.$urlparams['play'].'"';
     if($urlparams['recursive'] == "true") {
         $exec .= ' -v="recursive"';
