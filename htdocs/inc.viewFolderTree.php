@@ -145,6 +145,7 @@ foreach($subfolders as $key => $subfolder) {
         $temp['id'] = preg_replace('/\ /', '-_-', $temp['id']);
         $temp['id'] = preg_replace('/\[/', '_-', $temp['id']);
         $temp['id'] = preg_replace('/\]/', '-_', $temp['id']);
+        $temp['id'] = preg_replace('/&/', 'and', $temp['id']);
         $temp['id'] = "ID".preg_replace('/\:/', '-+-', $temp['id']);
         // count the level depth in the tree by counting the slashes in the path
         $temp['level'] = substr_count($temp['path_rel'], '/');

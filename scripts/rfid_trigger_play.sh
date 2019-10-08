@@ -306,15 +306,15 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         # replace subfolder slashes with " % "
         PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
         PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
-        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
-        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" list='recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
+        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     else
         # set path to playlist
         # replace subfolder slashes with " % "
         PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
         PLAYLISTNAME="${FOLDER//\//\ %\ }"
-        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" > "${PLAYLISTPATH}"
-        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" > "${PLAYLISTPATH}"
+        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     fi
 
     # Second Swipe value
@@ -396,7 +396,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         # - with this new logic, there are no more SPECIALFORMAT playlists. Live streams and podcasts
         #   are now all unfolded into the playlist
         # - creating the playlist is now done in the php script with parameters:
-        #   $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive'
+        #   $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive'
 
         if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ "$DEBUG" == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi

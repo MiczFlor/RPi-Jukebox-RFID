@@ -309,11 +309,11 @@ function index_folders_print($item, $key)
 */
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
+              <a href='?play=".urlencode($contentTree[$key]['path_rel'])."' class='btn-panel-big btn-panel-col' title='Play folder'><i class='mdi mdi-play-box-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a href='?play=".$contentTree[$key]['path_rel']."&recursive=true' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a href='?play=".urlencode($contentTree[$key]['path_rel'])."&recursive=true' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
 	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
 		print "
@@ -369,9 +369,9 @@ function index_folders_print($item, $key)
             }
             if( $foundResume == "OFF" ) {
                 // do stuff
-                print "<a href='?enableresume=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+                print "<a href='?enableresume=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-warning '>".$lang['globalResume'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
             } elseif($foundResume == "ON") {
-                print "<a href='?disableresume=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+                print "<a href='?disableresume=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-success '>".$lang['globalResume'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
             }
         }
         
@@ -387,9 +387,9 @@ function index_folders_print($item, $key)
             }
             if( $foundShuffle == "OFF" ) {
                 // do stuff
-                print "<a href='?enableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+                print "<a href='?enableshuffle=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-warning '>".$lang['globalShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
             } elseif($foundShuffle == "ON") {
-                print "<a href='?disableshuffle=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+                print "<a href='?disableshuffle=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-success '>".$lang['globalShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
             }
         }
 
@@ -405,9 +405,9 @@ function index_folders_print($item, $key)
             }
             if( $foundSinglePlay == "OFF" ) {
                 // do stuff
-                print "<a href='?singleenable=".$contentTree[$key]['path_rel']."' class='btn btn-warning '>".$lang['globalSingle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+                print "<a href='?singleenable=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-warning '>".$lang['globalSingle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
             } elseif($foundSinglePlay == "ON") {
-                print "<a href='?singledisable=".$contentTree[$key]['path_rel']."' class='btn btn-success '>".$lang['globalSingle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+                print "<a href='?singledisable=".urlencode($contentTree[$key]['path_rel'])."' class='btn btn-success '>".$lang['globalSingle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
             }
         }
 
