@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import paho.mqtt.client as mqtt
-import os.path, subprocess, re, ssl, time, datetime
+import os, subprocess, re, ssl, time, datetime
 
 
 # ----------------------------------------------------------
@@ -40,8 +40,8 @@ refreshInterval = refreshIntervalPlaying
 
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
-arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio']
+arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle']
 
 
 def on_connect(client, userdata, flags, rc):
@@ -52,10 +52,15 @@ def on_connect(client, userdata, flags, rc):
 		version = readfile(path + "/../settings/version")
 		edition = readfile(path + "/../settings/edition")
 
+		# check disk space
+		disk_total, disk_avail = disk_stats()
+
 		# publish general server info
 		client.publish(mqttBaseTopic + "/state", payload="online", qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/version", payload=version, qos=1, retain=True)
 		client.publish(mqttBaseTopic + "/edition", payload=edition, qos=1, retain=True)
+		client.publish(mqttBaseTopic + "/disk_total", payload=disk_total, qos=1, retain=True)
+		client.publish(mqttBaseTopic + "/disk_avail", payload=disk_avail, qos=1, retain=True)
 
 	else:
 		print("Connection could NOT be established. Return-Code:", rc)
@@ -103,7 +108,6 @@ def processCmd(command, parameter):
 		parameter = parameter.lower()
 		if parameter == "start" or parameter == "stop":
 			subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-rfid-reader.service"], shell=True)
-			processGet("rfid")
 		else:
 			print(" --> Expecting parameter start or stop")
 
@@ -112,9 +116,23 @@ def processCmd(command, parameter):
 		parameter = parameter.lower()
 		if parameter == "start" or parameter == "stop":
 			subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-buttons.service"], shell=True)
-			processGet("gpio")
 		else:
 			print(" --> Expecting parameter start or stop")
+
+	# virtually swipe a RFID card
+	elif command == "swipecard":
+		print(" --> Virtually swiping card with ID", parameter)
+		subprocess.call([path + "/rfid_trigger_play.sh -i=" + parameter], shell=True)
+
+	# play folder
+	elif command == "playfolder":
+		print(" --> Playing folder", parameter)
+		subprocess.call([path + "/rfid_trigger_play.sh -d='" + parameter + "'"], shell=True)
+
+	# play folder (recursive)
+	elif command == "playfolderrecursive":
+		print(" --> Playing folder " + parameter + " (recursive)")
+		subprocess.call([path + "/rfid_trigger_play.sh -d='" + parameter + "' -v=recursive"], shell=True)
 
 	# all the other known commands w/o param
 	elif command in arAvailableCommands:
@@ -129,6 +147,10 @@ def processCmd(command, parameter):
 	# we don't know this command
 	else:
 		print(" --> Unknown command", command)
+		return
+
+	# this was a known command => refresh all attributes as they might have changed
+	client.publish(mqttBaseTopic + "/get/all", payload="")
 
 
 def processGet(attribute):
@@ -156,6 +178,15 @@ def processGet(attribute):
 		print(" --> Could not retrieve attribute", attribute)
 
 
+def disk_stats():
+	statvfs = os.statvfs('/home/pi')
+	size_total = statvfs.f_frsize * statvfs.f_blocks	# total
+	#size_avail = statvfs.f_frsize * statvfs.f_bfree	# actual free
+	size_avail = statvfs.f_frsize * statvfs.f_bavail	# free for non-root
+
+	return round(size_total/1073741824, 1), round(size_avail/1073741824, 1)
+
+
 def readfile(filepath):
 	result = ""
 	with open(filepath, "r") as f:
@@ -172,11 +203,37 @@ def isServiceRunning(svc):
 		return "false"
 
 
+def linux_job_remaining(job_name):
+	cmd = ['sudo', 'atq', '-q', job_name]
+	dtQueue = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+
+	regex = re.search('(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)', dtQueue)
+	if regex:
+		dtNow = datetime.datetime.now()
+		dtQueue = datetime.datetime.strptime(dtNow.strftime("%d.%m.%Y") + " " + regex.group(5), "%d.%m.%Y %H:%M:%S")
+
+		# subtract 1 day if queued for the next day
+		if dtNow > dtQueue:
+			dtNow = dtNow - datetime.timedelta(days=1)
+
+		return int(round((dtQueue.timestamp() - dtNow.timestamp()) / 60, 0))
+	else:
+		return 0
+
+
 def normalizeTrueFalse(s):
 	if s == "0":
 		return "false"
 	else:
 		return "true"
+
+
+def regex(needle, hay, exception = "-"):
+	regex_extract = re.search(needle, hay)
+	if regex_extract:
+		return regex_extract.group(1)
+	else:
+		return exception
 
 
 def fetchData():
@@ -191,10 +248,10 @@ def fetchData():
 	status = subprocess.run(cmd, stdout=subprocess.PIPE, input=input).stdout.decode('utf-8')
 
 	# interpret status
-	result["state"] = re.search('\nstate: (.*)\n', status).group(1).lower()
-	result["volume"] = re.search('\nvolume: (.*)\n', status).group(1)
-	result["repeat"] = normalizeTrueFalse(re.search('\nrepeat: (.*)\n', status).group(1))
-	result["random"] = normalizeTrueFalse(re.search('\nrandom: (.*)\n', status).group(1))
+	result["state"] = regex('\nstate: (.*)\n', status).lower()
+	result["volume"] = regex('\nvolume: (.*)\n', status)
+	result["repeat"] = normalizeTrueFalse(regex('\nrepeat: (.*)\n', status))
+	result["random"] = normalizeTrueFalse(regex('\nrandom: (.*)\n', status))
 
 	# interpret mute state based on volume
 	if result["volume"] == "0":
@@ -205,28 +262,31 @@ def fetchData():
 	# interpret metadata when in play/pause mode
 	if result["state"] != "stop":
 
-		result["file"] = re.search('\nfile: (.*)\n', status).group(1)
-		result["artist"] = re.search('\nArtist: (.*)\n', status).group(1)
-		result["albumartist"] = re.search('\nAlbumArtist: (.*)\n', status).group(1)
-		result["title"] = re.search('\nTitle: (.*)\n', status).group(1)
-		result["album"] = re.search('\nAlbum: (.*)\n', status).group(1)
-		result["track"] = re.search('\nTrack: (.*)\n', status).group(1)
-		result["trackdate"] = re.search('\nDate: (.*)\n', status).group(1)
+		result["file"] = regex('\nfile: (.*)\n', status)
+		result["artist"] = regex('\nArtist: (.*)\n', status)
+		result["albumartist"] = regex('\nAlbumArtist: (.*)\n', status)
+		result["title"] = regex('\nTitle: (.*)\n', status)
+		result["album"] = regex('\nAlbum: (.*)\n', status)
+		result["track"] = regex('\nTrack: (.*)\n', status, "0")
+		result["trackdate"] = regex('\nDate: (.*)\n', status)
 
-		elapsed = int(float(re.search('\nelapsed: (.*)\n', status).group(1)))
+		if result["title"] == "-":
+			result["title"] = result["file"]
+
+		elapsed = int(float(regex('\nelapsed: (.*)\n', status, "0")))
 		hours, remainder = divmod(elapsed, 3600)
 		minutes, seconds = divmod(remainder, 60)
 		result["elapsed"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
 
-		duration = int(float(re.search('\nduration: (.*)\n', status).group(1)))
+		duration = int(float(regex('\nduration: (.*)\n', status, "0")))
 		hours, remainder = divmod(duration, 3600)
 		minutes, seconds = divmod(remainder, 60)
 		result["duration"] = '{:02}:{:02}:{:02}'.format(int(hours), int(minutes), int(seconds))
 
 	# fetch some more data from global.conf (via playout_controls.sh)
-	result["maxvolume"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getmaxvolume'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
-	result["volstep"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getvolstep'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
-	result["idletime"] = subprocess.run(['../scripts/playout_controls.sh', '-c=getidletime'], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["maxvolume"] = subprocess.run([path + "/playout_controls.sh", "-c=getmaxvolume"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["volstep"] = subprocess.run([path + "/playout_controls.sh", "-c=getvolstep"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
+	result["idletime"] = subprocess.run([path + "/playout_controls.sh", "-c=getidletime"], stdout=subprocess.PIPE).stdout.decode('utf-8').rstrip()
 
 	# fetch last card
 	result["last_card"] = readfile(path + "/../settings/Latest_RFID")
@@ -234,6 +294,11 @@ def fetchData():
 	# fetch service states
 	result["rfid"] = isServiceRunning("phoniebox-rfid-reader.service")
 	result["gpio"] = isServiceRunning("phoniebox-gpio-buttons.service")
+
+	# fetch linux jobs
+	result["remaining_stopafter"] = str(linux_job_remaining("s"))
+	result["remaining_shutdownafter"] = str(linux_job_remaining("t"))
+	result["remaining_idle"] = str(linux_job_remaining("i"))
 
 	# modify refresh rate depending on play state
 	if result["state"] == "play":
@@ -287,5 +352,5 @@ client.subscribe(mqttBaseTopic + "/get/#")
 # start endless loop
 client.loop_start()
 while True:
-	client.publish(mqttBaseTopic + "/get/all", payload="")
+	processGet("all")
 	time.sleep(refreshInterval)
