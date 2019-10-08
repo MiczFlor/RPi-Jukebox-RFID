@@ -31,7 +31,7 @@ $version = trim(file_get_contents(dirname(__FILE__).'/../settings/version'));
 /*
 * Get vars passed on from command line
 */
-parse_str(implode('&', array_slice($argv, 1)), $_GET);
+$_GET = getopt(null, ["folder:", "list::"]);
 
 
 /*
