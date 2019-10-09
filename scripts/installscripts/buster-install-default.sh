@@ -773,7 +773,7 @@ fi
 # Folders and Access Settings
 
 # create playlists folder
-mdkir /home/pi/RPi-Jukebox-RFID/playlists
+mkdir /home/pi/RPi-Jukebox-RFID/playlists
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 

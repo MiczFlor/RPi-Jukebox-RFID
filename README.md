@@ -12,7 +12,7 @@ Celebrating all the great designs of 2018, I put together a calendar for 2019. T
 
 *Important update news*
 
-* **Phoniebox 2.0 released** release candidate `2.0 rc2` (2019-08-10)
+* **Phoniebox 2.0 released** release candidate `2.0 rc3` (2019-10-09)
 * [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command) for Raspbian `buster` available
   * This install script combines the two versions *Classic* and *+ Spotify*. 
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
