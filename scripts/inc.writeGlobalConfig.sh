@@ -133,12 +133,15 @@ SHOWCOVER=`cat $PATHDATA/../settings/ShowCover`
 
 ##############################################
 # edition
+# read this always, do not write default
+
 # 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/edition ]; then
-    echo "classic" > $PATHDATA/../settings/edition
-    chmod 777 $PATHDATA/../settings/edition
-fi
+#if [ ! -f $PATHDATA/../settings/edition ]; then
+#    echo "classic" > $PATHDATA/../settings/edition
+#    chmod 777 $PATHDATA/../settings/edition
+#fi
 # 2. then|or read value from file
+chmod 777 $PATHDATA/../settings/edition
 EDITION=`cat $PATHDATA/../settings/edition`
 
 ##############################################
