@@ -841,13 +841,6 @@ echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 # PCM is currently set
 # This needs to be done for mpd and in settings folder
 
-
-
-#Ask if Spotify config
-#If Spotify
-#Ask for user
-#Ask for password
-
 #Ask ssh password
 
 # get existing install
