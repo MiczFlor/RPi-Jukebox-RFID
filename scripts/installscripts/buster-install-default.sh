@@ -354,8 +354,6 @@ echo "SPOTIpass=\"$SPOTIpass\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "SPOTIclientid=\"$SPOTIclientid\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "SPOTIclientsecret=\"$SPOTIclientsecret\"" >> $PATHDATA/PhonieboxInstall.conf
 
-# MPD config here is not necessary if mopidy is installed
-if [ $SPOTinstall == "NO" ]; then
 ##################################################### 
 # Configure MPD
 
@@ -386,7 +384,6 @@ case "$response" in
 esac
 # append variables to config file
 echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
-fi
 
 ##################################################### 
 # Folder path for audio files 
@@ -625,7 +622,7 @@ sudo systemctl enable phoniebox-gpio-buttons
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
 
-# Spotify ELSE MPD config
+# Spotify config
 if [ $SPOTinstall == "YES" ]
 then
 	sudo systemctl disable mpd
@@ -648,7 +645,9 @@ then
 	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
-else
+fi
+
+if [ $MPDconfig == "YES" ]
     # MPD configuration
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
@@ -694,7 +693,6 @@ then
     sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
     sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
-
 fi
 
 # start DHCP
