@@ -635,7 +635,6 @@ then
 	sudo mkdir /home/pi/.config/mopidy
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
 	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
-	echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
 	# Change vars to match install config
 	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
 	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
@@ -656,9 +655,16 @@ then
     sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
-    echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
     sudo chown mpd:audio /etc/mpd.conf
     sudo chmod 640 /etc/mpd.conf
+fi
+
+# set which version has been installed
+if [ $SPOTinstall == "YES" ]
+then
+	echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
+else
+    echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 fi
 
 # update mpc / mpd DB
@@ -800,6 +806,11 @@ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 # set audio volume to 100%
 # see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
 sudo amixer cset numid=1 100%
+
+# delete the global.conf file, in case somebody manually copied stuff back and forth
+# this will be created the first time the Phoniebox is put to use
+# by web app or RFID
+rm /home/pi/RPi-Jukebox-RFID/settings/global.conf
 
 # / Access settings
 ##################################################### 
