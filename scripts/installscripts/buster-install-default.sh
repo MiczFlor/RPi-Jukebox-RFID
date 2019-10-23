@@ -807,6 +807,11 @@ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 # see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
 sudo amixer cset numid=1 100%
 
+# delete the global.conf file, in case somebody manually copied stuff back and forth
+# this will be created the first time the Phoniebox is put to use
+# by web app or RFID
+rm /home/pi/RPi-Jukebox-RFID/settings/global.conf
+
 # / Access settings
 ##################################################### 
 
