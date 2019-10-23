@@ -648,6 +648,7 @@ then
 fi
 
 if [ $MPDconfig == "YES" ]
+then
     # MPD configuration
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
