@@ -297,6 +297,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     # playlist, we have to keep track of it via the Latest_Folder_Played file
     LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
     LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
+    echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
     if [ "$DEBUG" == "true" ]; then echo "Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "$DEBUG" == "true" ]; then echo "Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi    
     if [ "$DEBUG" == "true" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi

@@ -1,30 +1,13 @@
 <?php
 if($ShowCover == "ON") {
-    print '<div class="playerWrapperCover" id="coverWrapper"></div>';
+    echo '<div class="playerWrapperCover" id="coverWrapper">';
+    include('inc.loadCover.php');
+    echo '</div>';
 }
 ?>
 
-<div id="controlWrapper"></div>
-
-<script>
-$(document).ready(function() {
+<div id="controlWrapper">
 <?php
-if($ShowCover == "ON") {
-    print "
-    $('#coverWrapper').load('ajax.loadCover.php');";
-}
+    include('inc.loadControls.php');
 ?>
-
-	$('#controlWrapper').load('ajax.loadControls.php');
-    var refreshId = setInterval(function() {
-<?php
-if($ShowCover == "ON") {
-    print "
-        $('#coverWrapper').load('ajax.loadCover.php?' + 1*new Date());";
-}
-?>
-
-		$('#controlWrapper').load('ajax.loadControls.php?' + 1*new Date());
-    }, 2000);
-});
-</script> 
+</div>
