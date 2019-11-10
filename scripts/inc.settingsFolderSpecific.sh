@@ -12,8 +12,12 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 if [ "$DEBUG" == "true" ]; then echo "  #START### SCRIPT inc.settingsFolderSpecific.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio 
-FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
-if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "x${FOLDER}" == "x" ]
+then
+  FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+
+  if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+fi
 
 if [ -e "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]
 then
