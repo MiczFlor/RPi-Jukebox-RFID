@@ -87,7 +87,7 @@ $(document).ready(function() {
         }
         if(track.Album != null) {
             result += `<br><font color=#7d7d7d>${track.Album}`;
-            if(track.Date.trim() !== "") {
+            if(track.Date != null) {
                 result += ` (${track.Date})`;
             }
             result += "</font>";

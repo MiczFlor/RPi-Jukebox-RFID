@@ -272,7 +272,7 @@ function index_folders_print($item, $key)
             $filesMp3[] = $allFile;
         }
     }
-    $playlist = urlencode($contentTree[$key]['path_rel']);
+    $playlist = $contentTree[$key]['path_rel'];
 /**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
@@ -314,7 +314,7 @@ function index_folders_print($item, $key)
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a href='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
 	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
 		print "
