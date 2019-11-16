@@ -293,7 +293,7 @@ echo "#####################################################
 # credentials ready:
 #
 # * username
-# * passoword
+# * password
 # * client_id
 # * client_secret
 
