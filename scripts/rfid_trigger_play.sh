@@ -82,6 +82,38 @@ if [ "$CARDID" ]; then
             # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
             ;;
+        $CMDMAXVOL30)
+            # limit volume to 30%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=30
+            ;;
+        $CMDMAXVOL50)
+            # limit volume to 50%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=50
+            ;;
+        $CMDMAXVOL75)
+            # limit volume to 75%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=75
+            ;;
+        $CMDMAXVOL80)
+            # limit volume to 80%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=80
+            ;;
+        $CMDMAXVOL85)
+            # limit volume to 85%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=85
+            ;;
+        $CMDMAXVOL90)
+            # limit volume to 90%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=90
+            ;;
+        $CMDMAXVOL95)
+            # limit volume to 95%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=95
+            ;;
+        $CMDMAXVOL100)
+            # limit volume to 100%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=100
+            ;;
         $CMDMUTE)
             # amixer sset 'PCM' 0%
             $PATHDATA/playout_controls.sh -c=mute
@@ -97,6 +129,10 @@ if [ "$CARDID" ]; then
         $CMDVOL75)
             # amixer sset 'PCM' 75%
             $PATHDATA/playout_controls.sh -c=setvolume -v=75
+            ;;
+        $CMDVOL80)
+            # amixer sset 'PCM' 80%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=80
             ;;
         $CMDVOL85)
             # amixer sset 'PCM' 85%
