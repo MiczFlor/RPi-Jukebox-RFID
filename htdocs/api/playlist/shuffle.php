@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox\Api;
+
 /**
  * Enables or disabled shuffle for a playlist.
  */
@@ -11,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $playlist = $json['playlist'];
         $shuffle = $json['shuffle'];
         if ($shuffle === 'true') {
-            execScript("shuffle_play.sh -c=enableshuffle -d={$playlist}");
+            execScript("shuffle_play.sh -c=enableshuffle -d='{$playlist}'");
         } else {
-            execScript("shuffle_play.sh -c=disableshuffle -d={$playlist}");
+            execScript("shuffle_play.sh -c=disableshuffle -d='{$playlist}'");
         }
     }
 } else {

@@ -1,4 +1,5 @@
 <?php
+namespace JukeBox\Api;
 
 function execAndEcho($command) {
     $output = execScript($command);
@@ -25,5 +26,4 @@ function execSuccessfully($command) {
     }
     return $output;
 }
-
 ?>

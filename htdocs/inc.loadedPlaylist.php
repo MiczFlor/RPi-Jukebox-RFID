@@ -26,33 +26,51 @@ $(document).ready(function() {
         }
     }
 
-    function createSongInformation(songId) {
-        const tracks = JUKEBOX.playlistInfo.filter(track => track.Id === songId);
-        if (tracks.length > 0) {
-            const track = tracks[0];
-            if (track.Title != null) {
-                const title = `<strong>${track.Title}</strong>`;
-                const artist = '<br><i>' + track.Artist.replace(';', ' and ') + '</i>';
-                const album = track.Album != null ? `<br>${track.Album}` : '';
-                const date = track.Date != null ? `<br>${track.Date}` : '';
-                return [title, artist, album, date].join('');
+    function createSongInformation(song) {
+        var songInfo = '';
+        if (song) {
+            const playerInfo = JUKEBOX.playerInfo;
+            if (playerInfo.title != null) {
+                const title = `<strong>${playerInfo.title}</strong>`;
+
+                var artist = (playerInfo.artist) ? '<br><i>' + playerInfo.artist.replace(';', ' and ') + '</i>' : '';
+                if (!artist && playerInfo.name) {
+                    artist = '<br><i>' + playerInfo.name + '</i>';
+                }
+                const album = playerInfo.album != null ? `<br>${playerInfo.album}` : '';
+                const date = playerInfo.date != null ? `<br>${playerInfo.date}` : '';
+                songInfo = [title, artist, album, date].join('');
             } else {
-                return `<strong>${track.file}</strong>`;
+                songInfo = `<strong>${playerInfo.file}</strong>`;
             }
         }
-        return '';
+        return songInfo;
     }
 
     function createOverallTimePlayed(song) {
-        if (song && JUKEBOX.playlistInfo.length > 0) {
-            const songInt = parseInt(song);
-            const elapsedInt = typeof JUKEBOX.playerInfo.elapsed !== 'undefined' ? JUKEBOX.playerInfo.elapsed : 0;
-            const elapsed = JUKEBOX.playlistInfo.filter(track => parseInt(track.Pos) < songInt).map(track => parseInt(track.Time)).reduce(sum, 0) + Math.ceil(parseInt(elapsedInt));
-            const total = JUKEBOX.playlistInfo.map(track => parseInt(track.Time)).reduce(sum, 0);
-            return formatTimeElapsedTotal(elapsed, total);
-        } else {
-            return '';
+        var overallTime = "";
+        const tracks = JUKEBOX.playlistInfo.tracks;
+        const playerInfo = JUKEBOX.playerInfo;
+        if (song && typeof tracks != "undefined" && tracks.length > 0) {
+            const countTracksWithTime = tracks
+                .filter(track => typeof track.time != "undefined")
+                .length;
+            if (countTracksWithTime) {
+                const songInt = parseInt(song);
+                const elapsedInt = typeof playerInfo.elapsed !== 'undefined' ? playerInfo.elapsed : 0;
+                const elapsed = tracks
+                    .filter(track => parseInt(track.pos) < songInt)
+                    .filter(track => typeof track.time != "undefined")
+                    .map(track => parseInt(track.time))
+                    .reduce(sum, 0) + Math.ceil(parseInt(elapsedInt));
+                const total = tracks
+                    .filter(track => typeof track.time != "undefined")
+                    .map(track => parseInt(track.time))
+                    .reduce(sum, 0);
+                overallTime = formatTimeElapsedTotal(elapsed, total);
+            }
         }
+        return overallTime;
     }
 
     function sum(a, b) {
@@ -60,41 +78,46 @@ $(document).ready(function() {
     }
 
     function updatePlaylistData(playlistData) {
-        $("#playlistTable").empty();
-        $('#overalltimeWrapper').html('<span class="badge" style="float: right">' + createOverallTimePlayed(JUKEBOX.playerInfo.song) + '</span>');
-        $("#playlistTable").html(playlistData.map(track => createPlaylistTrack(track)).reduce((a, b) => a + b, ''));
-        if (playlistData.length > 0) {
-            updateSongInfo(JUKEBOX.playerInfo.Id);
-            $("#showPlaylistToggle").css('display', 'initial');
-        } else {
-            $("#showPlaylistToggle").css('display', 'none');
+        $playListToggle  = $("#showPlaylistToggle");
+        $playListToggle.hide();
+        $playlistTable = $("#playlistTable");
+        $playlistTable.empty();
+
+        if (typeof playlistData != "undefined" && playlistData.tracks.length > 0) {
+            $playlistTable.html(playlistData.tracks
+                .map(track => createPlaylistTrack(track))
+                .reduce((a, b) => a + b, ''));
+            $('#overalltimeWrapper').html('<span class="badge" style="float: right">' + createOverallTimePlayed(JUKEBOX.playerInfo.song) + '</span>');
+
+            updateSongInfo(JUKEBOX.playerInfo.id);
+            $playListToggle.show();
         }
     }
 
     function createPlaylistTrack(track) {
         var result = '<tr style="border-bottom: 1px solid #444;"> ' +
             '<td style="width: 70px!important; border-collapse: collapse;"> ' +
-            '    <a onclick="playSongInPlaylist(' + track.Pos + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
+            '    <a onclick="playSongInPlaylist(' + track.pos + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
             '</td> ' +
             '<td style="border-collapse: collapse;">';
-        if (track.Title != null) {
-            result += `<strong>${track.Title}</strong>`;
+        if (track.title != null) {
+            result += `<strong>${track.title}</strong>`;
         } else {
-            result += `<strong>${track.File}</strong>`;
+            result += `<strong>${track.file}</strong>`;
         }
-        if (track.Artist != null) {
-            result += '<br><i>' + track.Artist.replace(";", " and ",) + '</i>';
+        if (track.artist != null) {
+            result += '<br><i>' + track.artist.replace(";", " and ",) + '</i>';
         }
-        if(track.Album != null) {
-            result += `<br><font color=#7d7d7d>${track.Album}`;
-            if(track.Date != null) {
-                result += ` (${track.Date})`;
+        if(track.album != null) {
+            result += `<br><font color=#7d7d7d>${track.album}`;
+            if(track.date != null) {
+                result += ` (${track.date})`;
             }
             result += "</font>";
         }
         result += '</td><td style="width: 20px; border-collapse: collapse;">';
         // Livestreams and podcasts have no time length, check to suppress badge
-        const time = track.Time;
+        const time = track.time;
         if ( time > 0 && time < 3600 ) {
             result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeMinutes(time) + '</span>';
         } else if ( time >= 3600 ) {
@@ -131,7 +154,7 @@ $(document).ready(function() {
     </tr>
 </table>
 <div id="collapse1" class="panel-collapse collapse" style="margin-bottom: 40px;">
-    <ul class="list-group">
+    <ul class="list-group" style="list-style: none;">
         <li>
             <div id="loadPlaylist">
                 <table style="width: 100%; border-collapse: collapse; border-top: 1px solid #444;" id="playlistTable">

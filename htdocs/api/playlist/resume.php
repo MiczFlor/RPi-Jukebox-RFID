@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox\Api;
+
 /**
  * Enables or disabled resume for a playlist.
  */
@@ -11,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $playlist = $json['playlist'];
         $resume = $json['resume'];
         if ($resume === 'true') {
-            execScript("resume_play.sh -c=enableresume -d={$playlist}");
+            execScript("resume_play.sh -c=enableresume -d='{$playlist}'");
         } else {
-            execScript("resume_play.sh -c=disableresume -d={$playlist}");
+            execScript("resume_play.sh -c=disableresume -d='{$playlist}'");
         }
     }
 } else {

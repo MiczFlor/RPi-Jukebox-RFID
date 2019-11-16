@@ -1,4 +1,5 @@
 <?php
+namespace JukeBox\Api;
 
 /***
  * Starts to play a playlist for a put request.
@@ -15,29 +16,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 function handleGet() {
-    $statusCommand = "echo 'playlist\nclose' | nc -w 1 localhost 6600";
-    $execResult = execSuccessfully($statusCommand);
-    $result = array();
-    $currentEntry = array();
-    $index = -1;
-    forEach($execResult as $value) {
-        $exploded = explode(' ', $value, 2);
-        if (count($exploded) >= 2) {
-            $key = substr(trim($exploded[0]), 0, -1);
-            $value = $exploded[1];
-            if ($key === 'file') {
-                // next track
-                if ($index != -1) {
-                    $result[$index] = $currentEntry;
+    $statusCommand = "echo 'playlistinfo\nclose' | nc -w 1 localhost 6600";
+    $playListInfoResponse = execSuccessfully($statusCommand);
+    $playList = array();
+    $albumLength = 0;
+    $track = array();
+    forEach($playListInfoResponse as $index => $record ) {
+        preg_match("/(?P<key>.+?): (?P<value>.*)/", $record, $match);
+        if ($match) {
+            $key = strtolower($match['key']);
+            $value = $match['value'];
+            if ("file" == $key) {
+                if ($track && $track['file'] != $value) {
+                    $playList['tracks'][] = $track;
                 }
-                $index++;
-                $currentEntry = array();
+                $track = array();
+                $track[$key] = $value;
+
+            } else {
+                $track[$key] = $value;
+                $albumLength += ("time" == $key) ? $value : 0;
             }
-            $currentEntry[$key] = $value;
+        }
+        if ($index == array_key_last($playListInfoResponse) && !empty($track)) {
+            $playList['tracks'][] = $track;
+            $playList['albumLength'] = $albumLength;
         }
     }
+
+
     header('Content-Type: application/json');
-    echo json_encode($result);
+    echo json_encode($playList);
 }
 
 function handlePut() {
@@ -46,9 +55,9 @@ function handlePut() {
     if (validateRequest($json)) {
         $playlist = $json['playlist'];
         if($json['recursive'] === "true") {
-            execScript("rfid_trigger_play.sh -d={$playlist} -v=\"recursive\"");
+            execScript("rfid_trigger_play.sh -d='{$playlist}' -v='recursive'");
         } else {
-            execScript("rfid_trigger_play.sh -d={$playlist}");
+            execScript("rfid_trigger_play.sh -d='{$playlist}'");
         }
     }
 }
