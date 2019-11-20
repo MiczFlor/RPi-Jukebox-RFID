@@ -94,6 +94,10 @@ if [ "$CARDID" ]; then
             # limit volume to 75%
             $PATHDATA/playout_controls.sh -c=setmaxvolume -v=75
             ;;
+        $CMDMAXVOL80)
+            # limit volume to 80%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=80
+            ;;
         $CMDMAXVOL85)
             # limit volume to 85%
             $PATHDATA/playout_controls.sh -c=setmaxvolume -v=85
@@ -125,6 +129,10 @@ if [ "$CARDID" ]; then
         $CMDVOL75)
             # amixer sset 'PCM' 75%
             $PATHDATA/playout_controls.sh -c=setvolume -v=75
+            ;;
+        $CMDVOL80)
+            # amixer sset 'PCM' 80%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=80
             ;;
         $CMDVOL85)
             # amixer sset 'PCM' 85%
