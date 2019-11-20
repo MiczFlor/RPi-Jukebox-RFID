@@ -13,10 +13,6 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
   <div class="container">
 
 <?php
-include("inc.playerStatus.php");
-?>
-
-<?php
 include("inc.navigation.php");
 ?>
 
@@ -30,6 +26,7 @@ if(isset($warning)) {
     print '<div class="alert alert-warning">'.$warning.'</div>';
 }
 
+print '<div id="api-alert" class="alert alert-warning" style="display: none"></div>';
 include("inc.controlPlayer.php");
 
 ?>
@@ -40,7 +37,6 @@ include("inc.controlPlayer.php");
 <?php
 // show currently played track
 
-if (isset($playerStatus['file'])) {
     print '
     <div class="row">
         <div class="col-lg-12">';
@@ -48,7 +44,6 @@ include("inc.loadedPlaylist.php");
     print '
         </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->';
-}
 ?>
     <div class="row">
       <div class="col-lg-12">
@@ -87,7 +82,6 @@ foreach($audiofolders as $audiofolder) {
     $idcounter++;
     
     include('inc.viewFolderTree.php');
-    //include('inc.viewFolderWell.php');
     
 }
 
@@ -136,4 +130,10 @@ print file_get_contents($conf['base_path'].'/shared/latestID.txt', true);
   </div><!-- /.container -->
 
 </body>
+
+<script src="js/jukebox.js">
+</script>
+<script>
+	JUKEBOX.lang = <?php echo json_encode($lang );?>
+</script>
 </html>
