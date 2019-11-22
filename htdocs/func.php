@@ -273,6 +273,7 @@ function index_folders_print($item, $key)
         }
     }
     $playlist = $contentTree[$key]['path_rel'];
+    $id = str_replace(",", "", $contentTree[$key]['id']);
 /**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
@@ -296,7 +297,7 @@ function index_folders_print($item, $key)
       <div class='panel ".$panelStyle."'>";
 
     print "
-        <div class='panel-heading' id='heading".$contentTree[$key]['id']."'>";
+        <div class='panel-heading' id='heading".$id."'>";
 
     print "
             <h4>";
@@ -317,8 +318,9 @@ function index_folders_print($item, $key)
               <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
 	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
-		print "
-				  <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$contentTree[$key]['id']."' aria-expanded='true' aria-controls='collapse".$contentTree[$key]['id']."' style='cursor:pointer;' title='Show contents'>";
+
+	    print "
+				  <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$id."' aria-expanded='true' aria-controls='collapse".$id."' style='cursor:pointer;' title='Show contents'>";
 		print "<i class='mdi mdi-folder-outline mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
@@ -440,9 +442,9 @@ function index_folders_print($item, $key)
     }
     print "
         </div><!-- ./ .panel-heading -->
-        <div id='collapse".$contentTree[$key]['id']."' class='collapse' aria-labelledby='heading".$contentTree[$key]['id']."' data-parent='#accordion'>
+        <div id='collapse".$id."' class='collapse' aria-labelledby='heading".$id."' data-parent='#accordion'>
           <div class='panel-body'>";
-    //print $contentTree[$key]['id']; //???
+    //print $id; //???
 
     printPlaylistHtml($contentTree[$key]['files']);
 

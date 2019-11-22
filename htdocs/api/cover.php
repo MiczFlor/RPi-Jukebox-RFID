@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox\Api;
+
 /**
  * Returns the cover of the currently played folder.
  */

@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox\Api;
+
 /**
  * Returns the latest played file, folder and playlist.
  */

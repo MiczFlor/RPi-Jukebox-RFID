@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox\Api;
+
 /**
  * Enables or disabled single for a playlist.
  */
@@ -11,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $playlist = $json['playlist'];
         $shuffle = $json['single'];
         if ($shuffle === 'true') {
-            execScript("single_play.sh -c=singleenable -d={$playlist}");
+            execScript("single_play.sh -c=singleenable -d='{$playlist}'");
         } else {
-            execScript("single_play.sh -c=singledisable -d={$playlist}");
+            execScript("single_play.sh -c=singledisable -d='{$playlist}'");
         }
     }
 } else {

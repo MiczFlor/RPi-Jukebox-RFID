@@ -1,4 +1,5 @@
 <?php
+namespace JukeBox\Api;
 
 /***
  * Allows to control the player by sending a command via PUT like 'play' or 'pause'.
@@ -29,17 +30,18 @@ function handlePut() {
 }
 
 function handleGet() {
-    $statusCommand = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
-    $execResult = execSuccessfully($statusCommand);
-    $result = array();
-    forEach($execResult as $value) {
-        $exploded = explode(' ', $value);
-        if (count($exploded) == 2) {
-            $result[substr(trim($exploded[0]), 0, -1)] = $exploded[1];
+    $statusCommand   = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
+    $commandResponseList = execSuccessfully($statusCommand);
+    $responseList = array();
+    forEach($commandResponseList as $commandResponse) {
+        preg_match("/(?P<key>.+?): (?P<value>.*)/", $commandResponse, $match);
+        if ($match) {
+            $responseList[strtolower($match['key'])] = $match['value'];
         }
     }
+
     header('Content-Type: application/json');
-    echo json_encode($result);
+    echo json_encode($responseList);
 }
 
 function determineCommand($body) {

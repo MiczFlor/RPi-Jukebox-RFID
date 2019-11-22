@@ -31,8 +31,7 @@ $version = trim(file_get_contents(dirname(__FILE__).'/../settings/version'));
 /*
 * Get vars passed on from command line
 */
-$_GET = getopt(null, ["folder:", "list::"]);
-
+$_GET = getopt(null, ["folder:", "list:"]);
 
 /*
 * Create path to folder we want to get a list from
@@ -43,6 +42,7 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
     /*
     * now we look recursively only if list=recursive was given when calling this script
     */
+
     if(isset($_GET['list']) && $_GET['list'] == "recursive") {
         $folders = dir_list_recursively($Audio_Folders_Path_Playlist);
     } else {

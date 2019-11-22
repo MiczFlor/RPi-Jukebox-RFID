@@ -52,10 +52,10 @@ function notifyOnDataChange(data) {
 
     if (data.playlist !== oldPlayerInfo.playlist) {
         notify(JUKEBOX.playlistChangedListener, data.playlist);
-    } else {
-        if (data.songid !== oldPlayerInfo.songid) {
-            notify(JUKEBOX.songChangedListener, data.songid);
-        }
+    }
+
+    if (data.songid !== oldPlayerInfo.songid) {
+        notify(JUKEBOX.songChangedListener, data.songid);
     }
 
     if (data.volume !== oldPlayerInfo.volume) {
@@ -196,19 +196,22 @@ function capitalizeFirstLetter(string) {
 }
 
 function formatTimeElapsedTotal(elapsedInSeconds, totalInSeconds) {
-    const elapsedInSecondsInt = parseInt(elapsedInSeconds);
-    const totalInSecondsInt = parseInt(totalInSeconds);
-    if (totalInSecondsInt === 0) {
-        if (elapsedInSecondsInt >= 3600) {
-            return formatTimeHours(elapsedInSecondsInt);
-        } else {
-            return formatTimeMinutes(elapsedInSecondsInt);
+    if (!isNaN(elapsedInSeconds) || !isNaN(totalInSeconds)) {
+
+        const elapsedInSecondsInt = parseInt(elapsedInSeconds);
+        const totalInSecondsInt = parseInt(totalInSeconds);
+        if (totalInSecondsInt === 0) {
+            if (elapsedInSecondsInt >= 3600) {
+                return formatTimeHours(elapsedInSecondsInt);
+            } else {
+                return formatTimeMinutes(elapsedInSecondsInt);
+            }
         }
-    }
-    if (totalInSecondsInt >= 3600) {
-        return formatTimeHours(elapsedInSecondsInt) + ' / ' + formatTimeHours(totalInSecondsInt);
-    } else {
-        return formatTimeMinutes(elapsedInSecondsInt) + ' / ' + formatTimeMinutes(totalInSecondsInt);
+        if (totalInSecondsInt >= 3600) {
+            return formatTimeHours(elapsedInSecondsInt) + ' / ' + formatTimeHours(totalInSecondsInt);
+        } else {
+            return formatTimeMinutes(elapsedInSecondsInt) + ' / ' + formatTimeMinutes(totalInSecondsInt);
+        }
     }
 }
 
