@@ -35,7 +35,7 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <script src=\"".$url_absolute."_assets/bootstrap-3/js/collapse.js\"></script>
         <script src=\"".$url_absolute."_assets/bootstrap-3/js/transition.js\"></script>
 
-        <link rel='stylesheet' href='".$url_absolute."_assets/font-awesome/css/font-awesome.min.css'>
+        <!--link rel='stylesheet' href='".$url_absolute."_assets/font-awesome/css/font-awesome.min.css'-->
         <link href='".$url_absolute."_assets/MaterialDesign-Webfont-master/css/materialdesignicons.min.css' media='all' rel='stylesheet' type='text/css' />
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -45,12 +45,12 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         <![endif]-->
 
 
-<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-<link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload.css'>
-<link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui.css'>
-<!-- CSS adjustments for browsers with JavaScript disabled -->
-<noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-noscript.css'></noscript>
-<noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui-noscript.css'></noscript>
+        <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+        <link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload.css'>
+        <link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui.css'>
+        <!-- CSS adjustments for browsers with JavaScript disabled -->
+        <noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-noscript.css'></noscript>
+        <noscript><link rel='stylesheet' href='".$url_absolute."_assets/jQuery-File-Upload-9.22.0/css/jquery.fileupload-ui-noscript.css'></noscript>
 
         <link rel=\"apple-touch-icon\" sizes=\"57x57\" href=\"".$url_absolute."_assets/icons/apple-icon-57x57.png\">
         <link rel=\"apple-touch-icon\" sizes=\"60x60\" href=\"".$url_absolute."_assets/icons/apple-icon-60x60.png\">
@@ -172,6 +172,15 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             float: left;
             margin-right: 1em
         }
+        /* anchor behaviour */
+        
+        /* flash briefly on click */
+        .panel-heading a.btn-panel-big:active {
+            color: #fff!important;
+        }
+        .panel-heading a.btn-panel-big {
+            cursor: pointer;
+        } 
         </style>
 
     </head>\n";

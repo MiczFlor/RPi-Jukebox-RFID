@@ -45,6 +45,28 @@ function handleGet() {
     }
 
 
+    /* sample array, uncomment for checking frontend *
+    $playList = array(
+        "tracks" => array(
+            "0" => array(
+                "pos" => "0",
+                "title" => "Title Track 0",
+                "artist" => "Artist Name",
+                "album" => "Album Name"
+            ),
+            "1" => array(
+                "pos" => "1",
+                "file" => "File 1 Name.mp3"
+            ),
+            "2" => array(
+                "pos" => "2",
+                "title" => "Title Track 2",
+                "artist" => "Artist Name",
+                "album" => "Album Name"
+            ),
+        ),
+    );
+    /**/
     header('Content-Type: application/json');
     echo json_encode($playList);
 }
