@@ -78,7 +78,7 @@ $(document).ready(function() {
     }
 
     function updatePlaylistData(playlistData) {
-        console.debug(playlistData);
+        //console.debug(playlistData);
         $playListToggle  = $("#showPlaylistToggle");
         $playListToggle.hide();
         $playlistTable = $("#playlistTable");
