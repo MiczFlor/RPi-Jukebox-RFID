@@ -84,7 +84,7 @@ $(document).ready(function() {
         $playlistTable = $("#playlistTable");
         $playlistTable.empty();
 
-        if (typeof playlistData != "undefined" && playlistData.tracks.length > 0) {
+        if (typeof playlistData != "undefined" && typeof playlistData.tracks != "undefined" && playlistData.tracks.length > 0) {
             $playlistTable.html(playlistData.tracks
                 .map(track => createPlaylistTrack(track))
                 .reduce((a, b) => a + b, ''));
