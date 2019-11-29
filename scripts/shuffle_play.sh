@@ -7,12 +7,18 @@
 #
 # TODO: When to call this script?
 # Call this script with "playlistaddplay" (playout_controls.sh) everytime
-#############################################################
-# $DEBUG true|false
-DEBUG=false
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
+
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+#############################################################
+# $DEBUG TRUE|FALSE
+# Read debug logging configuration file
+. $PATHDATA/../settings/debugLogging.conf
 
 for i in "$@"
 do
@@ -34,11 +40,11 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # path to audio folders
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
-if [ "$DEBUG" == "true" ]; then echo "## SCRIPT shuffle_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "## SCRIPT shuffle_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Get folder name of currently played audio by extracting the playlist name 
 # ONLY if none was passed on. The "pass on" is needed to save position
@@ -60,16 +66,16 @@ then
     # (see script for details)
     # the $FOLDER would not need to be passed on, because it is already set in this script
     # see inc.writeFolderConfig.sh for details
-    if [ "$DEBUG" == "true" ]; then echo "  - calling inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=\$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  - calling inc.writeFolderConfig.sh -c=createDefaultFolderConf -d=\$FOLDER" >> $PATHDATA/../logs/debug.log; fi
     . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
-    if [ "$DEBUG" == "true" ]; then echo "  - back from inc.writeFolderConfig.sh" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  - back from inc.writeFolderConfig.sh" >> $PATHDATA/../logs/debug.log; fi
 fi
 # Read the current config file (include will execute == read)
 . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-if [ "$DEBUG" == "true" ]; then echo "# found content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "# found content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 
-if [ "$DEBUG" == "true" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 
 case "$COMMAND" in
 
@@ -77,15 +83,15 @@ shuffle_check)
     #Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
 	if [ $SHUFFLE == "ON" ];
 	then 
-		if [ "$DEBUG" == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+		if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
 		mpc shuffle
 	else
-		if [ "$DEBUG" == "true" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
+		if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  entering: shuffle_check with value $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
 		mpc random off
 	fi
     ;;
 enableshuffle)
-        if [ "$DEBUG" == "true" ]; then echo "  entering: enableshuffle" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  entering: enableshuffle" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
         SHUFFLE="ON"
         # now calling a script which will only replace these new vars in folder.conf
@@ -93,7 +99,7 @@ enableshuffle)
         . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 disableshuffle)
-        if [ "$DEBUG" == "true" ]; then echo "  entering: disableshuffle" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "  entering: disableshuffle" >> $PATHDATA/../logs/debug.log; fi
         # set the vars we need to change
         SHUFFLE="OFF"
         # now calling a script which will only replace these new vars in folder.conf
@@ -107,5 +113,5 @@ disableshuffle)
     ;;
 esac
 
-if [ "$DEBUG" == "true" ]; then echo "# new content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "# new content in folder.conf:" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi

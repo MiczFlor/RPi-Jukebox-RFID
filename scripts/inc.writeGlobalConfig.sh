@@ -10,17 +10,22 @@
 # 3. a new feature to be implemented: manually triggered
 #    in the web UI
 
-#############################################################
-# $DEBUG true|false
-DEBUG=false
-
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT inc.writeGlobalConf.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+
+#############################################################
+# $DEBUG TRUE|FALSE
+# Read debug logging configuration file
+. $PATHDATA/../settings/debugLogging.conf
+
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ "${DEBUG_inc_writeGlobalConfig_sh}" == "TRUE" ]; then echo "########### SCRIPT inc.writeGlobalConf.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
