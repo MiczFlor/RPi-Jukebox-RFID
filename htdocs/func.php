@@ -186,6 +186,12 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
     </head>\n";
 }
 
+function tailShell($filepath, $lines = 1) {
+	ob_start();
+	passthru('tail -'  . $lines . ' ' . escapeshellarg($filepath));
+	return trim(ob_get_clean());
+}
+	
 function arrayPregDiff($a, $p) {
     # added function to use regular expressions to remove multiple files
     # e.g. all of the same file type from the array forming the later playlist.
@@ -541,4 +547,7 @@ function printPlaylistHtml($files)
     }
     print "
             </ol>";
-}?>
+}
+
+
+?>

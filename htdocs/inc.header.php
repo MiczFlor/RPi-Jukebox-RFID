@@ -6,13 +6,6 @@
 * If you want to change the paths, edit config.php
 ***************************************************/
 
-/*
-* DEBUGGING
-* for debugging, set following var to true.
-* This will only print the executable strings, not execute them
-*/
-$debug = "false"; // true or false
-
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
 * Configuration file
@@ -63,6 +56,46 @@ sudo chgrp -R www-data htdocs/
 }
 include("config.php");
 
+/*
+* Config for debug logging
+* this file is read by shell scripts and php
+*/
+$debugAvail = array(
+"DEBUG_WebApp", 
+"DEBUG_inc_readArgsFromCommandLine_sh",
+"DEBUG_inc_settingsFolderSpecific_sh",
+"DEBUG_inc_writeFolderConfig_sh",
+"DEBUG_inc_writeGlobalConfig_sh",
+"DEBUG_playlist_recursive_by_folder_php",
+"DEBUG_playout_controls_sh",
+"DEBUG_resume_play_sh",
+"DEBUG_rfid_trigger_play_sh",
+"DEBUG_shuffle_play_sh",
+"DEBUG_single_play_sh",
+);
+$debugOptions = array("TRUE", "FALSE");
+
+if(!file_exists("../settings/debugLogging.conf")) {
+    // create file
+    $debugLoggingConf = "";
+    foreach($debugAvail as $debugItem) {
+        $debugLoggingConf .= $debugItem."=\"FALSE\"\n";
+    }
+    file_put_contents("../settings/debugLogging.conf", $debugLoggingConf);
+}
+// read file
+$debugLoggingConf = parse_ini_file("../settings/debugLogging.conf");
+/*
+* DEBUGGING
+* for debugging, set following var to true.
+* This will only print the executable strings, not execute them
+*/
+if($debugLoggingConf['DEBUG_WebApp'] == "TRUE") {
+    $debug = "true"; // true or false
+}
+
+
+
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 $url_abs = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
@@ -79,9 +112,13 @@ function execAndRedirect($exec)
     }
 
     if ($debug == "true") {
-        print "Command: " . $exec;
+        print "Command in execAndRedirect: " . $exec;
     } else {
-        exec($exec);
+        $res = exec($exec);
+        //if ($debug == "true") {
+            print "Command in execAndRedirect: " . $exec;
+            print "Result: " . $res;
+        //}
         /* redirect to drop all the url parameters */
         header("Location: " . $url_abs);
         exit;
@@ -172,6 +209,7 @@ $nonEmptyCommands = array(
     'disableshuffle',
     'singleenable',
     'singledisable',
+    'DebugLogClear',
 );
 foreach ($nonEmptyCommands as $command) {
     if(isset($_GET[$command]) && trim($_GET[$command]) != "") {
@@ -197,6 +235,11 @@ foreach ($commandsWithAllowedValues as $command => $allowedValues) {
     if(isset($_POST[$command]) && in_array(trim($_POST[$command]), $allowedValues)) {
         $urlparams[$command] = trim($_POST[$command]);
     }
+}
+
+if ($debug == "true") {
+    print "urlparams: ";
+    print "<pre>"; print_r($urlparams); print "</pre>";
 }
 
 /*******************************************
@@ -254,6 +297,7 @@ $commandToAction = array(
     'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
     'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
     'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
+    'DebugLogClear' => "rm ../logs/debug.log; touch ../logs/debug.log",
     'scan' => array(
         'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &"   // scan the library
     ),

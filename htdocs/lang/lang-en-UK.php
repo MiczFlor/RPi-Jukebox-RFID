@@ -192,6 +192,9 @@ $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoDebugLogTail'] = "<b>DEBUG log file</b>: Last 40 lines";
+$lang['infoDebugLogClear'] = "Clear all content from debug.log";
+$lang['infoDebugLogSettings'] = "Debug Log Settings";
 
 /*
 * Folder Management and File Upload
