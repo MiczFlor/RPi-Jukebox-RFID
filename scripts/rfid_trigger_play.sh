@@ -343,8 +343,8 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     if [ "$VALUE" == "recursive" ]; then
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%"
         $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     else
@@ -453,8 +453,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
        
-        # load new playlist and play
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playernext" >> $PATHDATA/../logs/debug.log; fi
 		# play playlist
         # the variable passed on to play is NOT the folder name, but the playlist name
         # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
