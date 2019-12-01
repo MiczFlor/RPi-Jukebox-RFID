@@ -16,8 +16,13 @@ function execScriptWithoutCheck($command) {
     exec($absoluteCommand);
 }
 
-function execSuccessfully($command) {
-    exec($command, $output, $rc);
+function execSuccessfully($command) {    
+    global $debugLoggingConf;
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function execSuccessfully: " . $command , FILE_APPEND | LOCK_EX);
+    }
+
+    exec("sudo ".$command, $output, $rc);
     if ($rc != 0) {
         $formattedOutput = implode('\n', $output);
         echo "Execution failed\nCommand: {$command}\nOutput: {$formattedOutput}\nRC: .${rc}";

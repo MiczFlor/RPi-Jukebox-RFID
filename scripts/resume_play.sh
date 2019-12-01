@@ -45,9 +45,6 @@ if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >>
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-# Get folder name of currently played audio 
-FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
-if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
 # Some error checking: if folder.conf does not exist, create default
 if [ ! -e "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" ]
@@ -61,28 +58,32 @@ then
     . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="$FOLDER"
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  - back from inc.writeFolderConfig.sh" >> $PATHDATA/../logs/debug.log; fi
 fi
-# Read the current config file (include will execute == read)
-. "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  content of $AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
-
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 
 case "$COMMAND" in
 
 savepos)
+    # Get folder name of currently played audio 
+    FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+    # Read the current config file (include will execute == read)
+    . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     # Check if "folder.conf" exists
     if [ $RESUME == "ON" ];
     then
         # Get the elapsed time of the currently played audio file from mpd
         ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+        if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos ELAPSED: $ELAPSED" >> $PATHDATA/../logs/debug.log; fi
         # mpd reports an elapsed time only if the audio is playing or is paused. Check if we got an elapsed time
         if [ ! -z $ELAPSED ]; # Why does -n not work here?
         then
             #Get the filename of the currently played audio
             CURRENTFILENAME=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=file: ).*')
-            # Save filename and time to folder.conf. 
+            if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos CURRENTFILENAME: $CURRENTFILENAME" >> $PATHDATA/../logs/debug.log; fi 
             # "Stopped" for signaling -c=resume that there was a stopping event
             # (this is done to get a proper resume on the first track if the playlist has ended before)
             
@@ -95,14 +96,17 @@ savepos)
             . $PATHDATA/inc.writeFolderConfig.sh
         fi
     fi
+    if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/folder.conf" >> $PATHDATA/../logs/debug.log; fi
     ;;
 resume)
+    # Read the current config file (include will execute == read)
+    # read vars from folder.conf
+    . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+    if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  entering: resume with value $RESUME" >> $PATHDATA/../logs/debug.log; fi
     # Check if RESUME is switched on
     if [ $RESUME == "ON" ];
     then
-        # read vars from folder.conf
-        . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
         # will generate variables:
         #CURRENTFILENAME
         #ELAPSED
@@ -166,6 +170,5 @@ disableresume)
     echo "Command unknown"
     ;;
 esac
-
 
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "#END####### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi

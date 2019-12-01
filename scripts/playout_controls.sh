@@ -297,10 +297,10 @@ case $COMMAND in
     playerstop)
         # stop the player
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
-        if [ -e $AUDIOFOLDERSPATH/playing.txt ]
-        then
-            sudo rm $AUDIOFOLDERSPATH/playing.txt
-        fi
+        #if [ -e $AUDIOFOLDERSPATH/playing.txt ]
+        #then
+        #    sudo rm $AUDIOFOLDERSPATH/playing.txt
+        #fi
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playerstopafter)
@@ -397,22 +397,18 @@ case $COMMAND in
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
         # VALUE = name of playlist
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-        # first save position (if resume play is on) then clear playlist
-        $PATHDATA/resume_play.sh -c=savepos
-        
         # NEW VERSION:
         # Read the current config file (include will execute == read)
         . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-        
+
         # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
         if [ $SINGLE == "ON" ]
         then
             # keep in mind what we just played
             FOLDERCURRENT=${FOLDER}
-            FOLDERLAST=$(cat $PATHDATA/../settings/Latest_Folder_Played)
             if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
             then 
                 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
@@ -426,18 +422,21 @@ case $COMMAND in
         
         # Change some settings according to current folder IF the folder.conf exists
         mpc load "${VALUE//\//SLASH}"
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> $PATHDATA/../logs/debug.log; fi
         # Change some settings according to current folder IF the folder.conf exists
-        . $PATHDATA/inc.settingsFolderSpecific.sh
+        #. $PATHDATA/inc.settingsFolderSpecific.sh
         
         # Now load and play
-        $PATHDATA/resume_play.sh -c=resume
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
+        #PLAYSTATUS="Stopped"
+        $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"" >> $PATHDATA/../logs/debug.log; fi
         
         # write latest folder played to settings file
         sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> $PATHDATA/../logs/debug.log; fi
 
         # OLD VERSION (pre 20190302 - delete once the new version really seems to work): 
         # call shuffle_check HERE to enable/disable folder-based shuffling 

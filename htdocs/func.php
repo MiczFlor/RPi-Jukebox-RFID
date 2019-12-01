@@ -431,11 +431,13 @@ function index_folders_print($item, $key)
         }
 
         // RSS link
+/*
         if (count($filesMp3) > 0) {
             print "<a href='rss-mp3.php?title=".urlencode($contentTree[$key]['basename'])."&rss=".serialize($filesMp3)."' class='btn btn-info '>";
             print "<i class='mdi mdi-rss'></i>Podcast RSS ";
             print "</a>";
         }
+*/
         print "
                 </div><!-- / settings buttons -->";
     }

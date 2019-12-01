@@ -62,6 +62,7 @@ include("config.php");
 */
 $debugAvail = array(
 "DEBUG_WebApp", 
+"DEBUG_WebApp_API", 
 "DEBUG_inc_readArgsFromCommandLine_sh",
 "DEBUG_inc_settingsFolderSpecific_sh",
 "DEBUG_inc_writeFolderConfig_sh",
@@ -297,7 +298,7 @@ $commandToAction = array(
     'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
     'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
     'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
-    'DebugLogClear' => "rm ../logs/debug.log; touch ../logs/debug.log",
+    'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",
     'scan' => array(
         'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &"   // scan the library
     ),

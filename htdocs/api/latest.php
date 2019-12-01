@@ -1,6 +1,16 @@
 <?php
 namespace JukeBox\Api;
 
+/*
+* debug? Conf file line:
+* DEBUG_WebApp_API="TRUE"
+*/
+$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+}
+
 /**
  * Returns the latest played file, folder and playlist.
  */

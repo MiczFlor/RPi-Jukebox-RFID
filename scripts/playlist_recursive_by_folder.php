@@ -13,6 +13,17 @@
 * ./rfid_trigger_play.sh -d="ZZZ SubMaster Whitespaces" -v=recursive
 */
 
+/*
+* debug? Conf file line:
+* DEBUG_playlist_recursive_by_folder_php="TRUE"
+echo getcwd();
+$debugLoggingConf = parse_ini_file(getcwd()."/../settings/debugLogging.conf");
+if($debugLoggingConf['DEBUG_playlist_recursive_by_folder_php'] == "TRUE") {
+    file_put_contents(getcwd()."../logs/debug.log", "\n# DEBUG_playlist_recursive_by_folder_php # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents(getcwd()."/../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+}
+*/
+
 $debug = "false";
 
 // get path of this file

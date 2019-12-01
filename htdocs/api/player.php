@@ -7,17 +7,41 @@ namespace JukeBox\Api;
  */
 include 'common.php';
 
+/*
+* debug? Conf file line:
+* DEBUG_WebApp_API="TRUE"
+*/
+$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+    }
     handlePut();
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+/* this is called regularly via ajax, so uncomment if you need this in the log file
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+    }
+/**/
     handleGet();
 } else {
     http_response_code(405);
 }
 
 function handlePut() {
+    global $debugLoggingConf;
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handlePut() " , FILE_APPEND | LOCK_EX);
+    }
+
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:".$json['command'] , FILE_APPEND | LOCK_EX);
+    }
     $inputCommand = $json['command'];
     if ($inputCommand != null) {
         $controlsCommand = determineCommand($inputCommand);
@@ -30,6 +54,12 @@ function handlePut() {
 }
 
 function handleGet() {
+    global $debugLoggingConf;
+/* this is called regularly via ajax, so uncomment if you need this in the log file
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
+    }
+/**/
     $statusCommand   = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
     $commandResponseList = execSuccessfully($statusCommand);
     $responseList = array();

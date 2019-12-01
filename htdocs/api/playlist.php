@@ -1,6 +1,16 @@
 <?php
 namespace JukeBox\Api;
 
+/*
+* debug? Conf file line:
+* DEBUG_WebApp_API="TRUE"
+*/
+$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+}
+
 /***
  * Starts to play a playlist for a put request.
  * Retrieves information about a playlist for a GET request.
@@ -72,10 +82,17 @@ function handleGet() {
 }
 
 function handlePut() {
+    global $debugLoggingConf;
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handlePut() " , FILE_APPEND | LOCK_EX);
+    }
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
     if (validateRequest($json)) {
         $playlist = $json['playlist'];
+        if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+            file_put_contents("../../logs/debug.log", "\n  # \$playlist:" . $playlist , FILE_APPEND | LOCK_EX);
+        }
         if($json['recursive'] === "true") {
             execScript("rfid_trigger_play.sh -d='{$playlist}' -v='recursive'");
         } else {
