@@ -1,6 +1,6 @@
 [Unit]  
 Description=Phoniebox Startup Sound
-After=network.target iptables.service firewalld.service rfid-reader.service
+After=default.target
 
 [Service]
 User=pi

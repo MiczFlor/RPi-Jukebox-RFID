@@ -172,6 +172,30 @@ $exec = "df -H -B K / ";
 			</div><!-- /.panel-body -->
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
+
+<!-- debug.log -->
+
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogTail']; ?>
+        <br><br>
+        <a href="systemInfo.php?DebugLogClear=true" class="btn btn-info"><?php print $lang['infoDebugLogClear']; ?></a>
+      </h4>
+    </div><!-- /.panel-heading -->
+
+    <div class="panel-body">
+    
+        <?php
+        $res = tailShell("../logs/debug.log", 40);
+        print "<pre>\n".$res."\n</pre>";
+        ?>
+    
+	</div><!-- /.panel-body -->
+  </div><!-- /.panel -->
+</div><!-- /.panel-group -->
+
 </div><!-- /.container -->
 
 </body>

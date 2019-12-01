@@ -7,10 +7,6 @@
 # makes further development and potential replacement of 
 # the playout player easier.
 
-# $DEBUG true|false
-# prints $COMMAND in the terminal and/or log file
-DEBUG=false
-
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
@@ -67,7 +63,13 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+
+#############################################################
+# $DEBUG TRUE|FALSE
+# Read debug logging configuration file
+. $PATHDATA/../settings/debugLogging.conf
+
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 ###########################################################
 # Read global configuration file (and create is not exists) 
@@ -105,12 +107,12 @@ VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
 # see following file for details:
 . $PATHDATA/inc.readArgsFromCommandLine.sh
 
-if [ "$DEBUG" == "true" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
 case $COMMAND in 
     shutdown)
-        if [ "$DEBUG" == "true" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -295,11 +297,11 @@ case $COMMAND in
     playerstop)
         # stop the player
         $PATHDATA/resume_play.sh -c=savepos && mpc stop
-        if [ -e $AUDIOFOLDERSPATH/playing.txt ]
-        then
-            sudo rm $AUDIOFOLDERSPATH/playing.txt
-        fi
-        if [ "$DEBUG" == "true" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
+        #if [ -e $AUDIOFOLDERSPATH/playing.txt ]
+        #then
+        #    sudo rm $AUDIOFOLDERSPATH/playing.txt
+        #fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
         ;;
     playerstopafter)
         # remove playerstop timer if existent
@@ -329,7 +331,7 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
-        if [ "$DEBUG" == "true" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
@@ -344,7 +346,8 @@ case $COMMAND in
         then
             echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
         else
-            $PATHDATA/resume_play.sh -c=resume -v=$VALUE
+            #$PATHDATA/resume_play.sh -c=resume -v=$VALUE
+            mpc play $VALUE
         fi
         ;;
     playerseek)
@@ -395,47 +398,37 @@ case $COMMAND in
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
         # VALUE = name of playlist
-        if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
 
-        # first save position (if resume play is on) then clear playlist
-        $PATHDATA/resume_play.sh -c=savepos
-        
         # NEW VERSION:
         # Read the current config file (include will execute == read)
         . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-        
-        # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
-        if [ $SINGLE == "ON" ]
-        then
-            # keep in mind what we just played
-            FOLDERCURRENT=${FOLDER}
-            FOLDERLAST=$(cat $PATHDATA/../settings/Latest_Folder_Played)
-            if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
-            then 
-                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
-                if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDERLAST: $FOLDERLAST" >> $PATHDATA/../logs/debug.log; fi
-            else
-                mpc clear
-            fi
-        else
-            mpc clear
-        fi
-        
-        # Change some settings according to current folder IF the folder.conf exists
+
+        # load playlist
+        mpc clear
         mpc load "${VALUE//\//SLASH}"
-        # Change some settings according to current folder IF the folder.conf exists
-        . $PATHDATA/inc.settingsFolderSpecific.sh
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> $PATHDATA/../logs/debug.log; fi
         
+        # Change some settings according to current folder IF the folder.conf exists
+        #. $PATHDATA/inc.settingsFolderSpecific.sh
+        
+        # check if we switch to single file playout
+        $PATHDATA/single_play.sh -c=single_check -d="${FOLDER}"
+
+        # check if we shuffle the playlist
+        $PATHDATA/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
+
         # Now load and play
-        $PATHDATA/resume_play.sh -c=resume
-        if [ "$DEBUG" == "true" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume" >> $PATHDATA/../logs/debug.log; fi
+        $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"" >> $PATHDATA/../logs/debug.log; fi
         
         # write latest folder played to settings file
         sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ "$DEBUG" == "true" ]; then echo "echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "VAR Latest_Folder_Played: $Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> $PATHDATA/../logs/debug.log; fi
 
         # OLD VERSION (pre 20190302 - delete once the new version really seems to work): 
         # call shuffle_check HERE to enable/disable folder-based shuffling 
@@ -507,6 +500,6 @@ case $COMMAND in
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
-        if [ "$DEBUG" == "true" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> $PATHDATA/../logs/debug.log; fi
         ;;
 esac

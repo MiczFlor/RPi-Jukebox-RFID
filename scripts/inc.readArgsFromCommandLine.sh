@@ -13,6 +13,15 @@
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
+# The absolute path to the folder whjch contains all the scripts.
+# Unless you are working with symlinks, leave the following line untouched.
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+#############################################################
+# $DEBUG TRUE|FALSE
+# Read debug logging configuration file
+. $PATHDATA/../settings/debugLogging.conf
+
 for i in "$@"
 do
     case $i in
@@ -31,8 +40,8 @@ do
     esac
 done
 
-if [ "$DEBUG" == "true" ]; then echo "  ######### SCRIPT inc.readArgsFromCommandLine.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "  # VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "  # VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "  # VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "  # VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_inc_readArgsFromCommandLine_sh}" == "TRUE" ]; then echo "  ######### SCRIPT inc.readArgsFromCommandLine.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_inc_readArgsFromCommandLine_sh}" == "TRUE" ]; then echo "  # VAR CARDID: $CARDID" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_inc_readArgsFromCommandLine_sh}" == "TRUE" ]; then echo "  # VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_inc_readArgsFromCommandLine_sh}" == "TRUE" ]; then echo "  # VAR FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_inc_readArgsFromCommandLine_sh}" == "TRUE" ]; then echo "  # VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi

@@ -293,7 +293,7 @@ echo "#####################################################
 # credentials ready:
 #
 # * username
-# * passoword
+# * password
 # * client_id
 # * client_secret
 
@@ -492,11 +492,9 @@ fi
 # Get github code
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-# the following three lines are needed as long as this is not the master branch:
+
+move into the Phoniebox dir
 cd RPi-Jukebox-RFID
-# we need to switch to the develop branch until this has been merged with master
-git checkout develop
-git fetch
 
 # Install more required packages
 sudo pip install -r requirements.txt
