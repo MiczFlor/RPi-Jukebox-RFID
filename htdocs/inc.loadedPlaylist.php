@@ -96,9 +96,10 @@ $(document).ready(function() {
     }
 
     function createPlaylistTrack(track) {
+        var trackPosTemp = parseInt(track.pos, 10) + 1;
         var result = '<tr style="border-bottom: 1px solid #444;"> ' +
             '<td style="width: 70px!important; border-collapse: collapse;"> ' +
-            '    <a onclick="playSongInPlaylist(' + track.pos + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
+            '    <a onclick="playSongInPlaylist(' + trackPosTemp + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
             '</td> ' +
             '<td style="border-collapse: collapse;">';
         if (track.title != null) {

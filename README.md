@@ -14,15 +14,16 @@ The PDF is quite big (>50MB) and will print well on A2 paper size, but it should
 
 * [Download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
 
-*Important updates / news*
+## Important updates / news
 
 * **Phoniebox 2.0 rc5 released in time for the the first day of the Advent** release candidate `2.0 rc4` (2019-12-01)
 
 * **What's new?**
-    * Integrate your Phoniebox in your Smart Home.
-    * Smoother web app UI running on ajax.
+    * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
+    * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
     * The **one-line install script** handles both: **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
-    * Control logging for debugging in the web app (switch on/off for individual scripts and web app)
+    * Control the debug logs in the web app (individual scripts switched on/off, empty log file).
+    * Set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards.
  
 * **What's still hot?**
     * Control via [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) from your phone, tablet or PC. You can play, upload, move files, assign new RFID cards, control playout, settings, etc.

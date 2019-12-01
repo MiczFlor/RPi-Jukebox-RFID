@@ -73,7 +73,7 @@ savepos)
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR FOLDER from settings/Latest_Folder_Played: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     # Check if "folder.conf" exists
-    if [ $RESUME == "ON" ];
+    if [ $RESUME == "ON" ] || [ $SINGLE == "ON" ];
     then
         # Get the elapsed time of the currently played audio file from mpd
         ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
@@ -104,8 +104,9 @@ resume)
     . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  savepos FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  entering: resume with value $RESUME" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "  entering: single with value $SINGLE" >> $PATHDATA/../logs/debug.log; fi
     # Check if RESUME is switched on
-    if [ $RESUME == "ON" ];
+    if [ $RESUME == "ON" ] || [ $SINGLE == "ON" ];
     then
         # will generate variables:
         #CURRENTFILENAME
@@ -146,7 +147,7 @@ resume)
             echo -e "play $VALUE" | nc -w 1 localhost 6600
         fi
     else
-        # if no lastplayed.dat exists (resume play disabled), we play the playlist from the beginning or the given playlist position
+        # if no last played data exists (resume play disabled), we play the playlist from the beginning or the given playlist position
         echo -e "play $VALUE" | nc -w 1 localhost 6600
     fi
     ;;

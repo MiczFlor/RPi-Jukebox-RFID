@@ -40,7 +40,7 @@ if [ "${DEBUG_shuffle_play_sh}" == "TRUE" ]; then echo "VAR FOLDER: $FOLDER" >> 
 # check if $FOLDER is empty / unset
 if [ -z "$FOLDER" ]
 then 
-    FOLDER=$(mpc lsplaylists)
+    # this is old: FOLDER=$(mpc lsplaylists)
     # actually, this should be the latest folder:
     FOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
 fi

@@ -346,7 +346,8 @@ case $COMMAND in
         then
             echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
         else
-            $PATHDATA/resume_play.sh -c=resume -v=$VALUE
+            #$PATHDATA/resume_play.sh -c=resume -v=$VALUE
+            mpc play $VALUE
         fi
         ;;
     playerseek)
@@ -404,30 +405,21 @@ case $COMMAND in
         # Read the current config file (include will execute == read)
         . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
 
-        # SINGLE TRACK PLAY (== if the same list is played, do NOT mpc clear)
-        if [ $SINGLE == "ON" ]
-        then
-            # keep in mind what we just played
-            FOLDERCURRENT=${FOLDER}
-            if [ "$FOLDERCURRENT" == "$FOLDERLAST" ]
-            then 
-                if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # VAR FOLDERCURRENT: $FOLDERCURRENT" >> $PATHDATA/../logs/debug.log; fi
-                if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # VAR FOLDERLAST: $FOLDERLAST" >> $PATHDATA/../logs/debug.log; fi
-            else
-                mpc clear
-            fi
-        else
-            mpc clear
-        fi
-        
-        # Change some settings according to current folder IF the folder.conf exists
+        # load playlist
+        mpc clear
         mpc load "${VALUE//\//SLASH}"
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> $PATHDATA/../logs/debug.log; fi
+        
         # Change some settings according to current folder IF the folder.conf exists
         #. $PATHDATA/inc.settingsFolderSpecific.sh
         
+        # check if we switch to single file playout
+        $PATHDATA/single_play.sh -c=single_check -d="${FOLDER}"
+
+        # check if we shuffle the playlist
+        $PATHDATA/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
+
         # Now load and play
-        #PLAYSTATUS="Stopped"
         $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"" >> $PATHDATA/../logs/debug.log; fi
         

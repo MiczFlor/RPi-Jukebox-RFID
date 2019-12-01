@@ -21,27 +21,14 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . $PATHDATA/../settings/debugLogging.conf
 
-for i in "$@"
-do
-case $i in
-    -c=*|--command=*)
-    COMMAND="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-    -d=*|--dir=*)
-    FOLDER="${i#*=}"
-    ;;
-esac
-done
-
-PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Get args from command line (see Usage above)
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
 
 # path to audio folders
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
 
-if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "## SCRIPT shuffle_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "## SCRIPT single_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
@@ -78,7 +65,6 @@ if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then cat "$AUDIOFOLDERSPATH/$FOLDER/
 if [ "${DEBUG_single_play_sh}" == "TRUE" ]; then echo "  Now doing what COMMAND wants: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
 
 case "$COMMAND" in
-
 
 single_check)
         #Check if SINGLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
