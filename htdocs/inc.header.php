@@ -344,16 +344,16 @@ foreach ($urlparams as $paramKey => $paramValue) {
 
 // enable resume
 if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableresume']))) {
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
     if($debug == "true") {
         print "Command: ".$exec;
     } else {
-    // pass folder to resume script
-    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
-    exec($exec);
-
-    /* redirect to drop all the url parameters */
-    header("Location: ".$url_abs);
-    exit;
+        // pass folder to resume script
+        exec($exec);
+    
+        /* redirect to drop all the url parameters */
+        header("Location: ".$url_abs);
+        exit;
     }
 }
 
@@ -368,7 +368,6 @@ if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is
 if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableshuffle']))) {
     // pass folder to resume script
     $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/shuffle_play.sh -c=enableshuffle -d="'.$urlparams['enableshuffle'].'"';
-
     execAndRedirect($exec);
 }
 

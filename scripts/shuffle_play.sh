@@ -20,22 +20,9 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . $PATHDATA/../settings/debugLogging.conf
 
-for i in "$@"
-do
-case $i in
-    -c=*|--command=*)
-    COMMAND="${i#*=}"
-    ;;
-    -v=*|--value=*)
-    VALUE="${i#*=}"
-    ;;
-    -d=*|--dir=*)
-    FOLDER="${i#*=}"
-    ;;
-esac
-done
-
-PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Read the args passed on by the command line
+# see following file for details:
+. $PATHDATA/inc.readArgsFromCommandLine.sh
 
 # path to audio folders
 AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`

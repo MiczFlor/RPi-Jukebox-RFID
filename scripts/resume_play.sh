@@ -39,7 +39,6 @@ fi
 . $PATHDATA/../settings/global.conf
 ###########################################################
 
-
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "#START##### SCRIPT resume_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR AUDIOFOLDERSPATH: $AUDIOFOLDERSPATH" >> $PATHDATA/../logs/debug.log; fi
 if [ "${DEBUG_resume_play_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
@@ -116,7 +115,7 @@ resume)
             # Get the playlist position of the file from mpd
             # Alternative approach: "mpc searchplay xx && mpc seek yy" 
             PLAYLISTPOS=$(echo -e playlistfind filename \"$CURRENTFILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
-
+            
             # If the file is found, it is played from ELAPSED, otherwise start playlist from beginning. If we got a playlist position
             # play from that position, not the saved one.
             if [ ! -z $PLAYLISTPOS ] && [ -z $VALUE ] ;

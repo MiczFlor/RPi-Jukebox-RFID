@@ -156,6 +156,8 @@ function toggleShuffle(element) {
 }
 
 function toggleResume(element) {
+    console.log("toggle resume");
+    console.log(element);
     togglePlaylistCommand(element, 'resume')
 }
 
