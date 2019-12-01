@@ -326,7 +326,7 @@ function index_folders_print($item, $key)
 */
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "

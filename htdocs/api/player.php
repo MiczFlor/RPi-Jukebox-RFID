@@ -20,12 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     handlePut();
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-/* this is called regularly via ajax, so uncomment if you need this in the log file
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
-        file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
-    }
-/**/
     handleGet();
 } else {
     http_response_code(405);
