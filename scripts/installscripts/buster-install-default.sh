@@ -842,6 +842,16 @@ echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 
+echo "Reboot is needed to activate all settings"
+read -r -p "Would you like to reboot now? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+        ;;
+    *)
+        sudo shutdown -r now
+        ;;
+esac
+
 #####################################################
 # notes for things to do
 
