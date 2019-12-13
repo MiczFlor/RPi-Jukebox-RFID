@@ -493,7 +493,7 @@ fi
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
-move into the Phoniebox dir
+# Jump into the Phoniebox dir
 cd RPi-Jukebox-RFID
 
 # Install more required packages
@@ -841,6 +841,16 @@ echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+
+echo "Reboot is needed to activate all settings"
+read -r -p "Would you like to reboot now? [Y/n] " response
+case "$response" in
+    [nN][oO]|[nN])
+        ;;
+    *)
+        sudo shutdown -r now
+        ;;
+esac
 
 #####################################################
 # notes for things to do
