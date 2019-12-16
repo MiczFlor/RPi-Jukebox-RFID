@@ -6,7 +6,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 Celebrating all the great designs of 2019, I put together a calendar for 2020. If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
 
-The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all of the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
+The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
 ![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
 
 * [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
