@@ -38,6 +38,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playernext
 # playerprev
 # playerpause
+# playerpauseforce
 # playerplay
 # playerreplay
 # playerrepeat
@@ -325,9 +326,14 @@ case $COMMAND in
 	mpc play 1
         ;;
     playerpause)
-        # pause current track
+        # toggle current track
         # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
+        # Why on earth has this been called pause instead of toggle? :-)
         mpc toggle
+        ;;
+    playerpauseforce)
+        # pause current track
+        mpc pause
         ;;
     playerplay)
         # play / resume current track

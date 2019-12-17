@@ -5,7 +5,10 @@ from subprocess import check_call
 
 # This script will block any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
 # due to the assignment of GPIO 19 and 21 to a buttons
-
+#
+# 2019-12-17
+# Added support to detect RFID tag removal.
+#
 # 2018-10-31
 # Added the function on holding volume + - buttons to change the volume in 0.3s interval
 #
@@ -37,6 +40,9 @@ def def_next():
 def def_prev():
     check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
+def def_rfidoff():
+    check_call("./scripts/playout_controls.sh -c=playerpauseforce", shell=True)
+
 def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
@@ -56,6 +62,7 @@ volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
 next = Button(26,pull_up=True)
 prev = Button(20,pull_up=True)
 halt = Button(21,pull_up=True)
+#rfidoff = Button(12,pull_up=True)
 #reco = Button(6, pull_up=True) # Choose GPIO to fit your hardware
 #play = Button(12,pull_up=True) # Choose GPIO to fit your hardware
 
@@ -70,6 +77,7 @@ volD.when_held = def_volD
 next.when_pressed = def_next
 prev.when_pressed = def_prev
 halt.when_pressed = def_halt
+#rfidoff.when_pressed = def_rfidoff
 #reco.when_pressed = def_recordstart
 #reco.when_released = def_recordstop
 #play.when_pressed = def_recordplaylatest
