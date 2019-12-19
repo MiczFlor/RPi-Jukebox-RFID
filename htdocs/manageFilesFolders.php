@@ -200,11 +200,11 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
   <label for="collapsible" class="lbl-toggle">Are you having trouble with uploading files?</label>
   <div class="collapsible-content">
     <div class="content-inner">
-    <p>If the upload does not work, make sure that you adjust these variables in <code>/etc/php/7.0/fpm/php.ini</code>:<br>
-        <code>file_uploads = On</code><br>
-        <code>upload_max_filesize = 0</code><br>
-        <code>max_file_uploads = 20</code><br>
-        <code>post_max_size = 0</code><br>
+    <p>If the upload does not work, make sure that you adjust these variables in <code>' . php_ini_loaded_file() . '</code>:<br>
+        <code>file_uploads = On</code> (current: ' . (ini_get("file_uploads")?"On":"Off") . ')<br>
+        <code>upload_max_filesize = 0</code> (current: ' . ini_get("upload_max_filesize") . ')<br>
+        <code>max_file_uploads = 20</code> (current: ' . ini_get("max_file_uploads") . ')<br>
+        <code>post_max_size = 0</code> (current: ' . ini_get("post_max_size") . ')<br>
         And restart the webserver.
         </p>
     </div>

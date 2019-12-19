@@ -2,21 +2,20 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
-## The 2020 Phoniebox Calendar coming soon!
+## The 2020 Phoniebox Calendar is out!
 
-Celebrating all the great designs of 2019, I will put together a calendar for 2019. Make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639). I am starting to work on the new calendar. 
+Celebrating all the great designs of 2019, I put together a calendar for 2020. If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
 
-This was last years:
+The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
+![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
 
-### The 2019 Phoniebox Calendar is out!
-The PDF is quite big (>50MB) and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all of the contributors, designers and makers. Have a good start into 2019 and keep up the good work!
-![The 2019 Phoniebox Calendar](docs/2019-Phoniebox-Calendar.jpg "The 2019 Phoniebox Calendar")
+* [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
 
-* [Download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
+In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
 
 ## Important updates / news
 
-* **Phoniebox 2.0 rc5 released in time for the the first day of the Advent** release candidate `2.0 rc4` (2019-12-01)
+* **Phoniebox 2.0 rc7 released (2019-12-17)
 
 * **What's new?**
     * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
