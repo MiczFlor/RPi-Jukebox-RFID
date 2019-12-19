@@ -493,7 +493,7 @@ fi
 cd /home/pi/
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
-move into the Phoniebox dir
+# Move into the Phoniebox dir
 cd RPi-Jukebox-RFID
 
 # Install more required packages
