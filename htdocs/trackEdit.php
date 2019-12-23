@@ -1,6 +1,12 @@
 <?php
+namespace JukeBox;
+
 
 include("inc.header.php");
+require_once 'utils/Files.php';
+require_once 'utils/Strings.php';
+use JukeBox\Utils\Files;
+use JukeBox\Utils\Strings;
 
 /**************************************************
 * VARIABLES
@@ -167,18 +173,25 @@ $messageSuccess = "";
 * Move file to different dir
 */
 if($_POST['ACTION'] == "trackMove") {
-    if(
-    trim($_POST['folderNew']) != "" 
-    && file_exists($Audio_Folders_Path."/".$_POST['folderNew'])
-    && is_dir($Audio_Folders_Path."/".$_POST['folderNew'])
-    // check if new folder is different from current
-    && $_POST['folderNew'] != basename($post['folder'])
-    ) {
-        // rename($post['folder']."/".$post['filename'], $Audio_Folders_Path."/".$_POST['folderNew']."/".$post['filename']);
-        $exec = "mv ".$post['folder']."/".$post['filename']." ".$Audio_Folders_Path."/".$_POST['folderNew']."/";
-        exec($exec);
-        // set new location for form that is being displayed
-        $post['folder'] = $Audio_Folders_Path."/".$_POST['folderNew'];
+    $sourceFolder = $post['folder'];
+    $targetFolder = trim($_POST['folderNew']);
+    $fileName = trim($_POST['filename']);
+
+    $sourceFile = Files::buildPath($sourceFolder, $fileName);
+    $targetFile = Files::buildPath($targetFolder, $fileName);
+
+    if (!empty($targetFolder) && is_dir($targetFolder)
+            && $sourceFolder != $targetFolder
+            && Strings::startsWith($targetFile, $Audio_Folders_Path) && Strings::startsWith($sourceFile, $Audio_Folders_Path)) {
+        $result = rename($sourceFile, $targetFile);
+        if ($result) {
+            $post['folder'] = $targetFolder;
+        } else {
+            error_log('Move track failed!' . var_export(array("sourceFile" => $sourceFile, 'targetFile' => $targetFile), true), 0);
+        }
+    }
+    else {
+        error_log('Move track failed!' . var_export(array("sourceFile" => $sourceFile, 'targetFile' => $targetFile), true), 0);
     }
 }
 
