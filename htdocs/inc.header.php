@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox;
+
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
@@ -93,6 +95,8 @@ $debugLoggingConf = parse_ini_file("../settings/debugLogging.conf");
 */
 if($debugLoggingConf['DEBUG_WebApp'] == "TRUE") {
     $debug = "true"; // true or false
+} else {
+    $debug = "false";
 }
 
 
