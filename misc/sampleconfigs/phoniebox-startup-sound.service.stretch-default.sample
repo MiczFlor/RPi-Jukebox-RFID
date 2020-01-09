@@ -1,6 +1,6 @@
 [Unit]  
 Description=Phoniebox Startup Sound
-After=default.target
+After=alsa-state.service
 
 [Service]
 User=pi

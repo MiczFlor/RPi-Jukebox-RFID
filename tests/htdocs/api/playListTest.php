@@ -9,15 +9,24 @@ class PlayListTest extends TestCase {
     use PHPMock;
 
     public function setUp(): void {
+        $parse_ini_file = $this->getFunctionMock(__NAMESPACE__, 'parse_ini_file');
+        $parse_ini_file->expects($this->atLeastOnce())->willReturn(
+            array(
+                "DEBUG_WebApp" => "FALSE",
+                "DEBUG_WebApp_API" => "FALSE"
+            ));
         $_SERVER['REQUEST_METHOD'] = '';
         require_once 'htdocs/api/playlist.php';
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testReturnHandleGet() {
         $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
         $exec->expects($this->once())->willReturnCallback(
             function ($command, &$output, &$returnValue) {
-                $this->assertEquals(addslashes("echo 'playlistinfo\nclose' | nc -w 1 localhost 6600"),addslashes($command));
+                $this->assertEquals(addslashes("sudo echo 'playlistinfo\nclose' | nc -w 1 localhost 6600"),addslashes($command));
                 $output = array(
                     "OK MPD 0.21.4",
                     "file: First track",
@@ -40,6 +49,9 @@ class PlayListTest extends TestCase {
         handleGet();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testHandlePutFails() {
         $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
         $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue(null));
@@ -48,6 +60,9 @@ class PlayListTest extends TestCase {
         handlePut();
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testHandlePutSuccess() {
         $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
         $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue('{"playlist":"The playlist I want to hear", "recursive":"true"}'));
@@ -59,7 +74,6 @@ class PlayListTest extends TestCase {
                 $returnValue = 0;
             }
         );
-
 
         $this->expectOutputString('');
         handlePut();
