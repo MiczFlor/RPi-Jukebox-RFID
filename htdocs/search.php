@@ -63,15 +63,16 @@ include("inc.navigation.php");
                 print "<ol class='list-group'>";
 
 		foreach ($files as $file) {
-		  if (preg_match("/".$post_value."/i", $file)) {
+		  if (preg_match("/".$post_value."/i", basename($file))) {
 
-		    // Option 1: regular links
+		    // Option 1: regular links (dirty)
 //		    print "<a href=\"playsinglefile.php?file=$file\"><strong>" . basename($file) . "</strong></a><br>";
 
-		    // Option 2: php-call with arrow (not working)
-//                    print "<li class='list-group-item'>" . 
+		    // Option 2: php-call with arrow (not nice)
+//                    print "<li class='list-group-item'>" .
 //		    "<a onclick='api/playlist/playsinglefile.php?file=$file' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'>
 
+		    // Option 3: with small arrow file using java-functions
                     print "<li class='list-group-item'>" . 
 		    "<a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'>
 		    <i class='mdi mdi-play-circle-outline'></i></a>
