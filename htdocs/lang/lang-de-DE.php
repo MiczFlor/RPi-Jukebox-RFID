@@ -219,8 +219,8 @@ $lang['manageFilesFoldersRenewDBinfo'] = "Bitte scanne deine Musikbibliothek, na
 /*
 * File search
 */
-$lang['searchTitle'] = "Search for audiofiles";
+$lang['searchTitle'] = "Audiodateien suchen";
 $lang['searchExample'] = "z.B. Moonlight";
-$lang['searchSend'] = "Search";
-$lang['searchResult'] = "Search-Results:";
+$lang['searchSend'] = "Suchen";
+$lang['searchResult'] = "Suchergebnisse:";
 ?>
