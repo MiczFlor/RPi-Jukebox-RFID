@@ -475,8 +475,8 @@ then
 	sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 	sudo apt-get update
 
-  sudo apt-get install libspotify-dev --yes
-  sudo apt-get install mopidy=2.3.1-1 --yes
+  sudo apt-get install --yes libspotify-dev
+  sudo apt-get install --yes mopidy=2.3.1-1
 	sudo python2.7 -m pip install Mopidy==2.3.*
 
 	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
