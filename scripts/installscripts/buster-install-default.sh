@@ -464,6 +464,8 @@ esac
 sudo iwconfig wlan0 power off
 
 # Install required packages
+sudo locale-gen $LANG
+
 sudo apt-get update
 sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
