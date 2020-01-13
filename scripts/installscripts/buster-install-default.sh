@@ -491,6 +491,7 @@ then
 	# should be removed, if Mopidy-Iris can be installed normally
 	# pylast >= 3.0.0 removed the python2 support
 	sudo pip install pylast==2.4.0
+	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
   sudo pip install 'tornado==5.0'
 	sudo pip install Mopidy-Iris
 fi
