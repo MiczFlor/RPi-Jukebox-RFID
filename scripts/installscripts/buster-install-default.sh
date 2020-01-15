@@ -480,7 +480,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
-  sudo apt-get install --yes mopidy=2.3.1-1
+    sudo apt-get install --yes mopidy=2.3.1-1
 	sudo python2.7 -m pip install Mopidy==2.3.*
 
 	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
@@ -496,7 +496,7 @@ then
 	# pylast >= 3.0.0 removed the python2 support
 	sudo pip install pylast==2.4.0
 	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
-  sudo pip install 'tornado==5.0'
+    sudo pip install 'tornado==5.0'
 	sudo pip install Mopidy-Iris
 fi
 
