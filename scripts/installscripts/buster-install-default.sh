@@ -492,7 +492,7 @@ then
 	# pylast >= 3.0.0 removed the python2 support
 	sudo pip install pylast==2.4.0
 	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
-  sudo pip install 'tornado==5.0'
+  	sudo pip install 'tornado==5.0'
 	sudo pip install Mopidy-Iris
 fi
 
@@ -839,7 +839,7 @@ case "$response" in
         ;;
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/
-        python3 RegisterDevice.py
+        python2 RegisterDevice.py
         sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
