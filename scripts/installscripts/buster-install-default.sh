@@ -472,15 +472,16 @@ wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 
 sudo apt-get update
+sudo apt-get --yes upgrade
 sudo apt-get install --yes libspotify-dev
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https samba samba-common-bin python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https samba samba-common-bin python3 python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
-  sudo apt-get install --yes mopidy=2.3.1-1
+	sudo apt-get install --yes mopidy=2.3.1-1
 	sudo python2.7 -m pip install Mopidy==2.3.*
 
 	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
@@ -490,7 +491,7 @@ then
 	sudo rm -rf mopidy-spotify
 	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
 	cd mopidy-spotify
-	sudo python setup.py install
+	sudo python2 setup.py install
 	cd
 	# should be removed, if Mopidy-Iris can be installed normally
 	# pylast >= 3.0.0 removed the python2 support
@@ -502,8 +503,9 @@ fi
 
 # Get github code
 cd /home/pi/
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
+# Must be changed to the correct branch!!!
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch develop
 
 # Jump into the Phoniebox dir
 cd RPi-Jukebox-RFID
@@ -792,6 +794,9 @@ mkdir /home/pi/RPi-Jukebox-RFID/playlists
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
+
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
@@ -843,7 +848,7 @@ case "$response" in
         ;;
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/
-        python2 RegisterDevice.py
+        python3 RegisterDevice.py
         sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
