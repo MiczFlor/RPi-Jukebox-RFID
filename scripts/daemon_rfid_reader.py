@@ -9,10 +9,13 @@ reader = Reader()
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+print(dir_path)
+
 # vars for ensuring delay between same-card-swipes
 same_id_delay = 0
 previous_id = ""
 previous_time = time.time()
+
 
 while True:
         # reading the card id
@@ -32,4 +35,4 @@ while True:
                 previous_time = time.time()
 
         except OSError as e:
-            print("Execution failed:")
+            print("Execution failed:") 
