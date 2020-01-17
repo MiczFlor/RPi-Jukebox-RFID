@@ -515,7 +515,7 @@ sudo rm RegisterDevice.py
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
 
 # Jump into the Phoniebox dir
-cd RPi-Jukebox-RFID
+cd /home/Pi/RPi-Jukebox-RFID
 
 # Install more required packages
 sudo pip install -r requirements.txt
