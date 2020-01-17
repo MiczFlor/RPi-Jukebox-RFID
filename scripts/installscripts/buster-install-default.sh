@@ -506,7 +506,13 @@ cd /home/pi/
 
 # Must be changed to the correct branch!!!
 # Change to master when merging develop with master!!!
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch develop
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git #--branch develop
+cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/
+sudo rm phoniebox-rfid-reader.service.stretch-default.sample
+wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+cd /home/pi/RPi-Jukebox-RFID/scripts/
+sudo rm RegisterDevice.py
+wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
 
 # Jump into the Phoniebox dir
 cd RPi-Jukebox-RFID
