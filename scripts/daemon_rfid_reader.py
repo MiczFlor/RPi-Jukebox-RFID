@@ -32,4 +32,4 @@ while True:
                 previous_time = time.time()
 
         except OSError as e:
-            print "Execution failed:"
+            print("Execution failed:")
