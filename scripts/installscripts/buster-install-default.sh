@@ -505,6 +505,7 @@ fi
 cd /home/pi/
 
 # Must be changed to the correct branch!!!
+# Change to master when merging develop with master!!!
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch develop
 
 # Jump into the Phoniebox dir
