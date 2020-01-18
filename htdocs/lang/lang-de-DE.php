@@ -50,6 +50,7 @@ $lang['globalIdleTime'] = "Leerlaufzeit";
 $lang['globalNotIdle'] = "Nicht im Leerlauf";
 $lang['globalGpioButtons'] = "GPIO Buttons";
 $lang['globalRfidReader'] = "RFID Reader";
+$lang['globalRotaryKnob'] = "Drehknopf";
 $lang['globalEnabled'] = "Aktiviert";
 $lang['globalDisabled'] = "Deaktiviert";
 $lang['globalSwitchOn'] = "Switch ON";
