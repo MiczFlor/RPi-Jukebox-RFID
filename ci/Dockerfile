@@ -19,7 +19,7 @@ RUN apt-get update ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 RUN apt-get update ;\
-  apt-get -y install python3-pip wget build-essential git iw ;\
+  apt-get -y install python3-pip wget build-essential git iw locales ;\
   apt-get clean ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
