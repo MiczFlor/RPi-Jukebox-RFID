@@ -19,7 +19,7 @@ This is a work in progress so expect things to fail or being flaky.
 * login to your RPi
 * clone this repo and cd into its local clone:
       git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-      cd RPi-Jukebox-RFID/
+      cd /home/pi/RPi-Jukebox-RFID/
 * build the docker image:
       docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile .
 * get something to drink or eat
@@ -39,7 +39,7 @@ rebuild the image after each code-change you can 'mount' the RPi's code version 
 container:
 
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-    cd RPi-Jukebox-RFID/
+    cd /home/pi/RPi-Jukebox-RFID/
     docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile .
     docker run --rm -ti -v $PWD:/code rpi-jukebox-rfid:latest /bin/bash
 
