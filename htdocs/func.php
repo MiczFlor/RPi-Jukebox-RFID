@@ -539,6 +539,7 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li class='list-group-item'>".$counter++." :
+                <a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
                     <strong>".basename($file)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"

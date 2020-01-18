@@ -49,6 +49,7 @@ $lang['globalExternalInterfaces'] = "External Devices & Interfaces";
 $lang['globalIdleTime'] = "Idle Time";
 $lang['globalNotIdle'] = "Not Idle";
 $lang['globalGpioButtons'] = "GPIO Buttons";
+$lang['globalRotaryKnob'] = "Rotary Knob";
 $lang['globalRfidReader'] = "RFID Reader";
 $lang['globalEnabled'] = "Enabled";
 $lang['globalDisabled'] = "Disabled";
@@ -91,6 +92,7 @@ $lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
+$lang['navSearch'] = "Search";
 $lang['navSettings'] = "Settings";
 $lang['navInfo'] = "Info";
 $lang['navShutdown'] = "Shutdown";
@@ -219,6 +221,12 @@ $lang['manageFilesFoldersRenewDB'] = "Renew database";
 $lang['manageFilesFoldersLocalScan'] = "Scan Music Library";
 $lang['manageFilesFoldersRenewDBinfo'] = "Please scan your music library after you have uploaded new files or moved folders. The scan is not necessary to hear music, but it is necessary to see track information in the Web UI. Only new or moved files will be scanned. While the scan is running, mopidy will be stopped. After scan is complete, mopidy starts automatically. You can see the server status in the Info section.";
 
-
+/*
+* File search
+*/
+$lang['searchTitle'] = "Search for audiofiles";
+$lang['searchExample'] = "z.B. Moonlight";
+$lang['searchSend'] = "Search";
+$lang['searchResult'] = "Search-Results:";
 ?>
 

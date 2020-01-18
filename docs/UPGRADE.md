@@ -148,7 +148,7 @@ sudo systemctl enable rfid-reader
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
-cd RPi-Jukebox-RFID
+cd /home/pi/RPi-Jukebox-RFID
 git fetch
 git checkout master
 git pull

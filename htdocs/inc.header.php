@@ -1,4 +1,6 @@
 <?php
+namespace JukeBox;
+
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
@@ -93,6 +95,8 @@ $debugLoggingConf = parse_ini_file("../settings/debugLogging.conf");
 */
 if($debugLoggingConf['DEBUG_WebApp'] == "TRUE") {
     $debug = "true"; // true or false
+} else {
+    $debug = "false";
 }
 
 
@@ -228,6 +232,7 @@ $commandsWithAllowedValues = array(
     'volumedown' => array('true'),
     'rfidstatus' => array('turnon', 'turnoff'),
     'gpiostatus' => array('turnon', 'turnoff'),
+    'rotarystatus' => array('turnon', 'turnoff')
 );
 foreach ($commandsWithAllowedValues as $command => $allowedValues) {
     if(isset($_GET[$command]) && in_array(trim($_GET[$command]), $allowedValues)) {
@@ -318,6 +323,10 @@ $commandToAction = array(
     'gpiostatus' => array(
         'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-buttons.service",                    // start the gpio button service
         'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-buttons.service"                     // stop the gpio button service
+    ),
+    'rotarystatus' => array(
+        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-rotary-encoder.service",                    // start the rotary encoder service
+        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-rotary-encoder.service"                     // stop the rotary encoder service
     ),
     // control player through web interface
     'player' => array(
