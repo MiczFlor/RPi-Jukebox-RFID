@@ -77,6 +77,7 @@ $lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
+$lang['navSearch'] = "Zoeken";
 $lang['navSettings'] = "Instellingen";
 $lang['navInfo'] = "Info";
 $lang['navShutdown'] = "Afsluiten";
@@ -200,6 +201,9 @@ $lang['manageFilesFoldersRenewDB'] = "Database vernieuwen";
 $lang['manageFilesFoldersLocalScan'] = "Scan muziekbibliotheek";
 $lang['manageFilesFoldersRenewDBinfo'] = "Scan uw muziekbibliotheek na het uploaden van nieuwe bestanden of het verplaatsen van mappen. De scan is niet nodig om muziek te horen, maar het is noodzakelijk om nummerinformatie te zien in de Web UI. Alleen nieuwe of verplaatste bestanden worden gescand. Terwijl de scan wordt uitgevoerd, wordt mopidy gestopt. Nadat de scan is voltooid, start de mopidy automatisch. U kunt de serverstatus zien in het gedeelte Info.";
 
-
+$lang['searchTitle'] = "Zoeken naar audiobestanden";
+$lang['searchExample'] = "z.B. Moonlight";
+$lang['searchSend'] = "Zoeken";
+$lang['searchResult'] = "Zoekresultaten:";
 ?>
 
