@@ -485,7 +485,7 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
 
 # Jump into the Phoniebox dir
-cd RPi-Jukebox-RFID
+cd /home/pi/RPi-Jukebox-RFID
 
 # Install more required packages
 sudo pip install -r requirements.txt
