@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # This alternative Reader.py script was meant to fixes issues with 
 # KKMOON RFID Reader which appears twice in the devices list as HID 413d:2107
 # and this required to check "if" the device is a keyboard.
