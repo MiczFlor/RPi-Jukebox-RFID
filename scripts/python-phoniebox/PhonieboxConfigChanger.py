@@ -69,7 +69,7 @@ class PhonieboxConfigChanger(Phoniebox):
             parser.set(section,key,value)
             self.debug("Set {} = {} in section {}".format(key,value,section))
         except configparser.NoSectionError as e:
-            raise configparser.NoSectionError, e
+            raise(configparser.NoSectionError, e)
         # write to file
 #        with open(config_file, 'w') as f:
 #            parser.write(f)
