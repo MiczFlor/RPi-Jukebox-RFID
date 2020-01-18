@@ -27,7 +27,7 @@ All these are optional and can also be done later
 manually.
 
 If you are ready, hit ENTER"
-read -r INPUT
+read INPUT
 
 ##################################################### 
 # CONFIG FILE
@@ -40,7 +40,7 @@ read -r INPUT
 rm PhonieboxInstall.conf
 # Create empty config file
 touch PhonieboxInstall.conf
-echo "# Phoniebox config" > "${PATHDATA}/PhonieboxInstall.conf"
+echo "# Phoniebox config" > $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Ask if wifi config
@@ -61,33 +61,33 @@ case "$response" in
     	WIFIconfig=NO
     	echo "You want to configure WiFi later."
     	echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
+        read INPUT
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIconfig=$WIFIconfig" >> $PATHDATA/PhonieboxInstall.conf
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=DE" >> $PATHDATA/PhonieboxInstall.conf
         ;;
     *)
     	WIFIconfig=YES
         #Ask for ssid
         echo "* Type SSID name"
-        read -r INPUT
+        read INPUT
         WIFIssid="$INPUT"
         #Ask for wifi country code
         echo "* WiFi Country Code (e.g. DE, GB, CZ or US)"
-        read -r INPUT
+        read INPUT
         WIFIcountryCode="$INPUT"
         #Ask for password
         echo "* Type password"
-        read -r INPUT
+        read INPUT
         WIFIpass="$INPUT"
         #Ask for IP
         echo "* Static IP (e.g. 192.168.1.199)"
-        read -r INPUT
+        read INPUT
         WIFIip="$INPUT"
         #Ask for Router IP
         echo "* Router IP (e.g. 192.168.1.1)"
-        read -r INPUT
+        read INPUT
         WIFIipRouter="$INPUT"
         echo "Your WiFi config:"
         echo "SSID      : $WIFIssid"
@@ -100,16 +100,16 @@ case "$response" in
             [nN][oO]|[nN])
             	echo "The values are incorrect."
             	echo "Hit ENTER to exit and start over."
-                read -r INPUT; exit
+                read INPUT; exit
                 ;;
             *)
                 # append variables to config file
-                echo "WIFIconfig=\"$WIFIconfig\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-                echo "WIFIcountryCode=\"$WIFIcountryCode\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-                echo "WIFIssid=\"$WIFIssid\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-                echo "WIFIpass=\"$WIFIpass\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-                echo "WIFIip=\"$WIFIip\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-                echo "WIFIipRouter=\"$WIFIipRouter\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "WIFIconfig=\"$WIFIconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIcountryCode=\"$WIFIcountryCode\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIssid=\"$WIFIssid\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIpass=\"$WIFIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIip=\"$WIFIip\"" >> $PATHDATA/PhonieboxInstall.conf
+                echo "WIFIipRouter=\"$WIFIipRouter\"" >> $PATHDATA/PhonieboxInstall.conf
                 ;;
         esac
         ;;
@@ -124,7 +124,7 @@ EXISTINGuse=NO
 
 # The install will be in the home dir of user pi
 # Move to home directory now to check
-cd ~ || exit
+cd
 if [ -d /home/pi/RPi-Jukebox-RFID ]; then
     # Houston, we found something!
     clear
@@ -151,7 +151,7 @@ echo "#####################################################
     	    echo "Phoniebox will be a fresh install. The existing version will be dropped."
     	    echo "Hit ENTER to proceed to the next step."
             sudo rm -rf RPi-Jukebox-RFID
-            read -r INPUT
+            read INPUT
             ;;
         *)
     	    EXISTINGuse=YES
@@ -183,7 +183,7 @@ echo "#####################################################
                     ;;
             esac
             # append variables to config file
-            echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${PATHDATA}/PhonieboxInstall.conf"
+            echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> $PATHDATA/PhonieboxInstall.conf
 
             read -r -p "RFID shortcuts to play audio folders? [Y/n] " response
             case "$response" in
@@ -195,7 +195,7 @@ echo "#####################################################
                     ;;
             esac
             # append variables to config file
-            echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${PATHDATA}/PhonieboxInstall.conf"
+            echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> $PATHDATA/PhonieboxInstall.conf
 
             read -r -p "Audio folders: use existing? [Y/n] " response
             case "$response" in
@@ -207,7 +207,7 @@ echo "#####################################################
                     ;;
             esac
             # append variables to config file
-            echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${PATHDATA}/PhonieboxInstall.conf"
+            echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> $PATHDATA/PhonieboxInstall.conf
 
             read -r -p "GPIO: use existing file? [Y/n] " response
             case "$response" in
@@ -219,7 +219,7 @@ echo "#####################################################
                     ;;
             esac
             # append variables to config file
-            echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${PATHDATA}/PhonieboxInstall.conf"
+            echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> $PATHDATA/PhonieboxInstall.conf
 
             read -r -p "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
             case "$response" in
@@ -231,17 +231,17 @@ echo "#####################################################
                     ;;
             esac
             # append variables to config file
-            echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${PATHDATA}/PhonieboxInstall.conf"
+            echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> $PATHDATA/PhonieboxInstall.conf
 
             echo "Thanks. Got it."
             echo "The existing install can be found in the BACKUP directory."
             echo "Hit ENTER to proceed to the next step."
-            read -r INPUT
+            read INPUT
             ;;
     esac
 fi
 # append variables to config file
-echo "EXISTINGuse=$EXISTINGuse" >> "${PATHDATA}/PhonieboxInstall.conf"
+echo "EXISTINGuse=$EXISTINGuse" >> $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Audio iFace
@@ -263,7 +263,7 @@ read -r -p "Use PCM as iFace? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
     	echo "Type the iFace name you want to use:"
-        read -r INPUT
+        read INPUT
         AUDIOiFace="$INPUT"
         ;;
     *)
@@ -271,10 +271,10 @@ case "$response" in
         ;;
 esac
 # append variables to config file
-echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+echo "AUDIOiFace=\"$AUDIOiFace\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
-read -r INPUT
+read INPUT
 
 ##################################################### 
 # Configure spotify
@@ -304,7 +304,7 @@ case "$response" in
     	SPOTinstall=NO
     	echo "You don't want spotify support."
     	echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
+        read INPUT
         ;;
     *)
     	SPOTinstall=YES
@@ -328,34 +328,31 @@ case "$response" in
 "
 		echo ""
     	echo "Type your Spotify username:"
-        read -r INPUT
+        read INPUT
         SPOTIuser="$INPUT"
 		echo ""
     	echo "Type your Spotify password:"
-        read -r INPUT
+        read INPUT
         SPOTIpass="$INPUT"
 		echo ""
     	echo "Type your client_id:"
-        read -r INPUT
+        read INPUT
         SPOTIclientid="$INPUT"
 		echo ""
     	echo "Type your client_secret:"
-        read -r INPUT
+        read INPUT
         SPOTIclientsecret="$INPUT"
 		echo ""
     	echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
+        read INPUT
         ;;
 esac
 # append variables to config file
-{
-  echo "SPOTinstall=\"$SPOTinstall\"";
-  echo "SPOTIuser=\"$SPOTIuser\"";
-  echo "SPOTIpass=\"$SPOTIpass\"";
-  echo "SPOTIclientid=\"$SPOTIclientid\"";
-  echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
-} >> "${PATHDATA}/PhonieboxInstall.conf"
-
+echo "SPOTinstall=\"$SPOTinstall\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIuser=\"$SPOTIuser\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIpass=\"$SPOTIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientid=\"$SPOTIclientid\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientsecret=\"$SPOTIclientsecret\"" >> $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Configure MPD
@@ -376,17 +373,17 @@ case "$response" in
     	MPDconfig=NO
     	echo "You want to configure MPD later."
     	echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
+        read INPUT
         ;;
     *)
     	MPDconfig=YES
     	echo "MPD will be set up with default values."
     	echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
+        read INPUT
         ;;
 esac
 # append variables to config file
-echo "MPDconfig=\"$MPDconfig\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+echo "MPDconfig=\"$MPDconfig\"" >> $PATHDATA/PhonieboxInstall.conf
 
 ##################################################### 
 # Folder path for audio files 
@@ -414,7 +411,7 @@ case "$response" in
     	echo "Please type the absolute path here (no trailing slash)."
     	echo "Default would be for example:"
     	echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
-        read -r INPUT
+        read INPUT
         DIRaudioFolders="$INPUT"
         ;;
     *)
@@ -422,11 +419,11 @@ case "$response" in
         ;;
 esac
 # append variables to config file
-echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> $PATHDATA/PhonieboxInstall.conf
 echo "Your audio folders live in this dir:"
 echo $DIRaudioFolders
 echo "Hit ENTER to proceed to the next step."
-read -r INPUT
+read INPUT
 
 clear
 
@@ -449,7 +446,7 @@ case "$response" in
     [nN][oO]|[nN])
     	echo "Exiting the installation."
     	echo "Your configuration data was saved in this file:"
-    	echo "${PATHDATA}/PhonieboxInstall.conf"
+    	echo $PATHDATA/PhonieboxInstall.conf
     	echo
         exit
         ;;
@@ -461,65 +458,34 @@ esac
 # Read install config as written so far
 # (this might look stupid so far, but makes sense once
 # the option to install from config file is introduced.)
-# shellcheck source=scripts/installscripts/tests/ShellCheck/PhonieboxInstall.conf
-. "${PATHDATA}/PhonieboxInstall.conf"
+. $PATHDATA/PhonieboxInstall.conf
 
 # power management of wifi: switch off to avoid disconnecting
 sudo iwconfig wlan0 power off
 
-# Generate locales
-sudo locale-gen $LANG
-
 # Install required packages
-
-wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
-sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
-
 sudo apt-get update
-sudo apt-get --yes upgrade
-sudo apt-get install --yes libspotify-dev
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https samba samba-common-bin python3 python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
-	sudo apt-get install --yes mopidy=2.3.1-1
-	sudo python2.7 -m pip install Mopidy==2.3.*
-
+	wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+	sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
+	sudo apt-get update
+	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
 	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
-	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
-	sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
-	cd
-	sudo rm -rf mopidy-spotify
-	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
-	cd mopidy-spotify
-	sudo python2 setup.py install
-	cd
-	# should be removed, if Mopidy-Iris can be installed normally
-	# pylast >= 3.0.0 removed the python2 support
-	sudo pip install pylast==2.4.0
-	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
- 	sudo pip install 'tornado==5.0'
-	sudo pip install Mopidy-Iris
 fi
 
 # Get github code
-cd /home/pi/ || exit
+cd /home/pi/
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 
-# Must be changed to the correct branch!!!
-# Change to master when merging develop with master!!!
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git #--branch develop
-cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/
-sudo rm phoniebox-rfid-reader.service.stretch-default.sample
-wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-cd /home/pi/RPi-Jukebox-RFID/scripts/
-sudo rm RegisterDevice.py
-wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
 
 # Jump into the Phoniebox dir
-cd /home/pi/RPi-Jukebox-RFID || exit
+cd /home/pi/RPi-Jukebox-RFID
 
 # Install more required packages
 sudo pip install -r requirements.txt
@@ -749,13 +715,13 @@ then
         
         # Read the existing RFID config file line by line and use
         # only lines which are separated (IFS) by '='.
-        while IFS='=' read -r key val ; do
+        while IFS== read -r key val ; do
             # $var should be stripped of possible leading or trailing "
             val=${val%\"}
             val=${val#\"} 
             key=${key}
             # Additional error check: key should not start with a hash and not be empty.
-            if [ ! "${key:0:1}" == '#' ] && [ -n "$key" ]
+            if ([ ! ${key:0:1} == '#' ] && [ ! -z "$key" ])
             then
                 # Replace the matching value in the newly created conf file
                 sed -i 's/%'"$key"'%/'"$val"'/' /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
@@ -802,9 +768,6 @@ fi
 
 # create playlists folder
 mkdir /home/pi/RPi-Jukebox-RFID/playlists
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
-
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 
@@ -858,8 +821,8 @@ case "$response" in
     [nN][oO]|[nN])
         ;;
     *)
-        cd /home/pi/RPi-Jukebox-RFID/scripts/ || exit
-        python3 RegisterDevice.py
+        cd /home/pi/RPi-Jukebox-RFID/scripts/
+        python2 RegisterDevice.py
         sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
