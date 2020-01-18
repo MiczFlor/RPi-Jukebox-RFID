@@ -252,7 +252,7 @@ function dir_list_recursively($rootdir = "") {
   */
 
   $iter = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS),
+    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS + RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
     RecursiveIteratorIterator::SELF_FIRST,
     RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
   );
