@@ -13,19 +13,19 @@ import os, subprocess, re, ssl, time, datetime
 # ----------------------------------------------------------
 #  SETTINGS
 # ----------------------------------------------------------
-DEBUG=False
-mqttBaseTopic="phoniebox"				# MQTT base topic
-mqttClientId="phoniebox"				# MQTT client ID
-mqttHostname="openHAB"					# MQTT server hostname
-mqttPort=8883						# MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
-mqttUsername=""						# username for user/pass based authentication
-mqttPassword=""						# password for user/pass based authentication
-mqttCA="/home/pi/MQTT/mqtt-ca.crt"			# path to server certificate for certificate-based authentication
-mqttCert="/home/pi/MQTT/mqtt-client-phoniebox.crt"	# path to client certificate for certificate-based authentication
-mqttKey="/home/pi/MQTT/mqtt-client-phoniebox.key"	# path to client keyfile for certificate-based authentication
-mqttConnectionTimeout=60				# in seconds; timeout for MQTT connection
-refreshIntervalPlaying=5				# in seconds; how often should the status be sent to MQTT (while playing)
-refreshIntervalIdle=30					# in seconds; how often should the status be sent to MQTT (when NOT playing)
+DEBUG = False
+mqttBaseTopic = "phoniebox"				# MQTT base topic
+mqttClientId = "phoniebox"				# MQTT client ID
+mqttHostname = "openHAB"					# MQTT server hostname
+mqttPort = 8883						# MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
+mqttUsername = ""						# username for user/pass based authentication
+mqttPassword = ""						# password for user/pass based authentication
+mqttCA = "/home/pi/MQTT/mqtt-ca.crt"			# path to server certificate for certificate-based authentication
+mqttCert = "/home/pi/MQTT/mqtt-client-phoniebox.crt"  # path to client certificate for certificate-based authentication
+mqttKey = "/home/pi/MQTT/mqtt-client-phoniebox.key"  # path to client keyfile for certificate-based authentication
+mqttConnectionTimeout = 60				# in seconds; timeout for MQTT connection
+refreshIntervalPlaying = 5				# in seconds; how often should the status be sent to MQTT (while playing)
+refreshIntervalIdle = 30					# in seconds; how often should the status be sent to MQTT (when NOT playing)
 
 
 # ----------------------------------------------------------
@@ -41,7 +41,7 @@ refreshInterval = refreshIntervalPlaying
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
 arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist' , 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle']
 
 
 def on_connect(client, userdata, flags, rc):
