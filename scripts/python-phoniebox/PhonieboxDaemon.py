@@ -119,7 +119,7 @@ class PhonieboxDaemon(Phoniebox):
                         self.log("Card with ID {} not mapped yet.".format(cardid), 1)
 
             except OSError as e:
-                print("Execution failed:")
+                print("Execution failed:", e)
 
             # check if it is time for the next update of the cardAssignments and do it
             # Note: this is purely time-based and not clever at all. Find a
