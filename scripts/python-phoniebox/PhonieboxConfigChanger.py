@@ -95,7 +95,7 @@ class PhonieboxConfigChanger(Phoniebox):
         print("Usage: {} set ".format(sys.argv[0]))
 
 
-if __name__ == "__main__":
+def main(self):
 
     cmdlist = ["assigncard", "removecard", "set", "get"]
 
@@ -137,3 +137,7 @@ if __name__ == "__main__":
                 print("supported commands are {} and {}".format(", ".join(cmdlist[:-1]), cmdlist[-1]))
         except:
             self.print_usage()
+
+
+if __name__ == "__main__":
+    main()
