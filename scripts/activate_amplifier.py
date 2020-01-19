@@ -24,6 +24,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(AMP_GPIO, GPIO.OUT)
 
+
 def set_amplifier(status):
     if status:
         print("Setting amplifier: ON")
@@ -31,6 +32,7 @@ def set_amplifier(status):
     else:
         print("Setting amplifier: OFF")
         GPIO.output(AMP_GPIO, GPIO.LOW)
+
 
 if __name__ == "__main__":
     try:

@@ -21,6 +21,7 @@ except ImportError:
     def_pin_irq = "P9_15"
     def_pin_mode = None
 
+
 class RFID(object):
     pin_rst = 22
     pin_ce = 0
@@ -93,7 +94,7 @@ class RFID(object):
         self.dev_write(0x2C, 0)
         self.dev_write(0x15, 0x40)
         self.dev_write(0x11, 0x3D)
-        self.dev_write(0x26, (self.antenna_gain<<4))
+        self.dev_write(0x26, (self.antenna_gain << 4))
         self.set_antenna(True)
 
     def spi_transfer(self, data):
@@ -119,7 +120,7 @@ class RFID(object):
         self.dev_write(address, current & (~mask))
 
     def set_antenna(self, state):
-        if state == True:
+        if state is True:
             current = self.dev_read(self.reg_tx_control)
             if ~(current & 0x03):
                 self.set_bitmask(self.reg_tx_control, 0x03)

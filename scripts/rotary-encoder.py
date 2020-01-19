@@ -42,22 +42,26 @@
 
 import RPi.GPIO as GPIO
 from rotary_encoder_base import RotaryEncoder as enc
-import os, time, sys
+import sys
 from signal import pause
 from subprocess import check_call
 
 
 def rotaryChangeCWVol(steps):
-   check_call("./scripts/playout_controls.sh -c=volumeup -v="+str(steps), shell=True)
+    check_call("./scripts/playout_controls.sh -c=volumeup -v="+str(steps), shell=True)
+
 
 def rotaryChangeCCWVol(steps):
-   check_call("./scripts/playout_controls.sh -c=volumedown -v="+str(steps), shell=True)
+    check_call("./scripts/playout_controls.sh -c=volumedown -v="+str(steps), shell=True)
+
 
 def rotaryChangeCWTrack(steps):
-   check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+
 
 def rotaryChangeCCWTrack(steps):
-   check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
+
 
 APinVol = 6
 BPinVol = 5
@@ -69,17 +73,18 @@ GPIO.setmode(GPIO.BCM)
 
 if __name__ == "__main__":
 
-	try:
-		encVol = enc(APinVol, BPinVol, rotaryChangeCWVol, rotaryChangeCCWVol, 0.2)
-		encTrack = enc(APinTrack, BPinTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 0.05)
+    try:
+        encVol = enc(APinVol, BPinVol, rotaryChangeCWVol, rotaryChangeCCWVol, 0.2)
+        encTrack = enc(APinTrack, BPinTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 0.05)
 
-		encVol.start()
-		encTrack.start()
-		pause()
-	except KeyboardInterrupt:
-		encVol.stop()
-		encTrack.stop()
-		GPIO.cleanup()
-		print("\nExiting rotary encoder decoder\n")
-		# exit the application
-		sys.exit(0)
+        encVol.start()
+        encTrack.start()
+        pause()
+    except KeyboardInterrupt:
+        encVol.stop()
+        encTrack.stop()
+        GPIO.cleanup()
+        print("\nExiting rotary encoder decoder\n")
+        # exit the application
+
+    sys.exit(0)
