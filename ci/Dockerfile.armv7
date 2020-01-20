@@ -10,7 +10,7 @@ RUN groupadd --gid 1000 pi ;\
 
 RUN apt-get update ;\
   apt-get -y install curl gnupg sudo ;\
-  echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list ;\
+  echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' >> /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ buster main' > /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
   curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - ;\
