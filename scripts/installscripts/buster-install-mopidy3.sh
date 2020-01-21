@@ -463,7 +463,7 @@ esac
 . "${PATHDATA}/PhonieboxInstall.conf"
 
 # power management of wifi: switch off to avoid disconnecting
-sudo iwconfig wlan0 power off
+sudo iw dev wlan0 set power_save off
 
 # Install required packages
 sudo apt-get update
