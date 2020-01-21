@@ -21,7 +21,10 @@ This is a work in progress so expect things to fail or being flaky.
       git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
       cd /home/pi/RPi-Jukebox-RFID/
 * build the docker image:
-      docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile .
+      # on normal PCs:
+      docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile.amd64 .
+      # on a raspberry pi:
+      docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile.armv7 .
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
       docker run --rm -ti rpi-jukebox-rfid:latest /bin/bash
