@@ -467,7 +467,14 @@ sudo iw dev wlan0 set power_save off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc raspberrypi-kernel-headers lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+
+# some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
+if [[ $(uname -m) =~ ^armv.+$ ]]
+then
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages raspberrypi-kernel-headers
+fi
+
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
