@@ -74,8 +74,8 @@ class PhonieboxConfigChanger(Phoniebox):
         except configparser.NoSectionError as e:
             raise(configparser.NoSectionError, e)
         # write to file
-#        with open(config_file, 'w') as f:
-#            parser.write(f)
+        # with open(config_file, 'w') as f:
+        #     parser.write(f)
 
     def get(self, section, t="ini"):
         try:
