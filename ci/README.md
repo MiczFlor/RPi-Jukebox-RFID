@@ -8,7 +8,7 @@ This is a work in progress so expect things to fail or being flaky.
 ## Howto
 
 * First you need a raspberry pi with some decent performance (RPi 3 or 4 would be recommended)
-* Flash its sd card with raspbian buster lite
+* Flash its sd card with **raspbian buster lite**
 * use raspi-config to resize the filesystem to the whole sd card (menu: 7 -> A1)
 * install some tools and reboot:
       sudo apt-get update
@@ -22,12 +22,14 @@ This is a work in progress so expect things to fail or being flaky.
       cd /home/pi/RPi-Jukebox-RFID/
 * build the docker image:
       # on normal PCs:
-      docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile.amd64 .
+      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.amd64 .
+      docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.amd64 .
       # on a raspberry pi:
-      docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile.armv7 .
+      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.armv7 .
+      docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.armv7 .
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
-      docker run --rm -ti rpi-jukebox-rfid:latest /bin/bash
+      docker run --rm -ti jukebox-rfid-buster:latest /bin/bash
       ./scripts/installscripts/buster-install-default.sh
 
 
@@ -43,8 +45,8 @@ container:
 
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
     cd /home/pi/RPi-Jukebox-RFID/
-    docker build -t rpi-jukebox-rfid:latest -f ci/Dockerfile .
-    docker run --rm -ti -v $PWD:/code rpi-jukebox-rfid:latest /bin/bash
+    docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile .
+    docker run --rm -ti -v $PWD:/code rpi-jukebox-rfid-buster:latest /bin/bash
 
 In that way every change to the code in the container will be available on the RPi as well
 as vice versa.
