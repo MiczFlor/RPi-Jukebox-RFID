@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#import json
-import os,sys,signal
-#from mpd import MPDClient
+# import json
+import os, sys, signal
+# from mpd import MPDClient
 import configparser
-#from RawConfigParserExtended import RawConfigParserExtended
+# from RawConfigParserExtended import RawConfigParserExtended
 from Phoniebox import Phoniebox
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
-defaultconfigFilePath = os.path.join(dir_path,'./phoniebox.conf')
+defaultconfigFilePath = os.path.join(dir_path, './phoniebox.conf')
+
 
 def is_int(s):
     """ return True if string is an int """
@@ -20,9 +21,11 @@ def is_int(s):
     except ValueError:
         return False
 
+
 def str2bool(s):
     """ convert string to a python boolean """
     return s.lower() in ("yes", "true", "t", "1")
+
 
 def str2num(s):
     """ convert string to an int or a float """
@@ -34,21 +37,21 @@ def str2num(s):
 
 class PhonieboxConfigChanger(Phoniebox):
 
-    def __init__(self,configFilePath=defaultconfigFilePath):
-        Phoniebox.__init__(self,configFilePath)
+    def __init__(self, configFilePath=defaultconfigFilePath):
+        Phoniebox.__init__(self, configFilePath)
 
-    def assigncard(self,cardid,uri):
+    def assigncard(self, cardid, uri):
         section = cardid
         # set uri and cardid for card (section = cardid)
         if not section in self.cardAssignments.sections():
             self.cardAssignments.add_section(section)
-        self.cardAssignments.set(section,"cardid",cardid) 
-        self.cardAssignments.set(section,"uri",uri)
+        self.cardAssignments.set(section, "cardid", cardid)
+        self.cardAssignments.set(section, "uri", uri)
         # write updated assignments to file
         with open(self.config['card_assignments_file'], 'w') as cardAssignmentsFile:
             self.cardAssignments.write(cardAssignmentsFile)
 
-    def removecard(self,cardid):
+    def removecard(self, cardid):
         section = cardid
         if section in self.cardAssignments.sections():
             self.cardAssignments.remove_section(section)
@@ -56,25 +59,25 @@ class PhonieboxConfigChanger(Phoniebox):
         with open(self.config['card_assignments_file'], 'w') as f:
             self.cardAssignments.write(f)
 
-    def set(self,section,key,value):
+    def set(self, section, key, value):
         try:
             num = int(section)
             parser = self.cardAssignments
-            config_file = self.config.get("phoniebox","card_assignments_file")
+            config_file = self.config.get("phoniebox", "card_assignments_file")
         except ValueError:
             parser = self.config
             config_file = configFilePath
         # update value
         try:
-            parser.set(section,key,value)
-            self.debug("Set {} = {} in section {}".format(key,value,section))
+            parser.set(section, key, value)
+            self.debug("Set {} = {} in section {}".format(key, value, section))
         except configparser.NoSectionError as e:
             raise(configparser.NoSectionError, e)
         # write to file
-#        with open(config_file, 'w') as f:
-#            parser.write(f)
+        # with open(config_file, 'w') as f:
+        #     parser.write(f)
 
-    def get(self,section,t="ini"):
+    def get(self, section, t="ini"):
         try:
             num = int(section)
             parser = self.cardAssignments
@@ -91,9 +94,10 @@ class PhonieboxConfigChanger(Phoniebox):
     def print_usage(self):
         print("Usage: {} set ".format(sys.argv[0]))
 
-if __name__ == "__main__":
 
-    cmdlist = ["assigncard","removecard","set","get"]
+def main(self):
+
+    cmdlist = ["assigncard", "removecard", "set", "get"]
 
     if len(sys.argv) < 1:
         sys.exit()
@@ -112,7 +116,7 @@ if __name__ == "__main__":
             if cmd == "assigncard":
                 cardid = sys.argv[2+shift]
                 uri = sys.argv[3+shift]
-                ConfigChanger.assigncard(cardid,uri)
+                ConfigChanger.assigncard(cardid, uri)
             elif cmd == "removecard":
                 cardid = sys.argv[2+shift]
                 ConfigChanger.removecard(cardid)
@@ -120,16 +124,20 @@ if __name__ == "__main__":
                 section = sys.argv[2+shift]
                 key = sys.argv[3+shift]
                 value = sys.argv[4+shift]
-                ConfigChanger.set(section,key,value)
+                ConfigChanger.set(section, key, value)
             elif cmd == "get":
                 section = sys.argv[2+shift]
                 try:
                     t = sys.argv[3+shift]
                 except:
                     t = "ini"
-                ConfigChanger.get(section,t)
+                ConfigChanger.get(section, t)
             else:
                 # will never be reached
-                print("supported commands are {} and {}".format(", ".join(cmdlist[:-1]),cmdlist[-1]))
+                print("supported commands are {} and {}".format(", ".join(cmdlist[:-1]), cmdlist[-1]))
         except:
             self.print_usage()
+
+
+if __name__ == "__main__":
+    main()

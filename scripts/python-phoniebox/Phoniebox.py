@@ -132,13 +132,13 @@ class Phoniebox(object):
                             'noaudioplay': self.do_pass,
                             'skipnext':    self.do_next,
                             }
-       setting_key = "second_swipe"
-       map_key = self.config.get("phoniebox",setting_key)
-       try:
-           second_swipe_map[map_key]()
-       except KeyError as e:
-           self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key,map_key,setting_key),5)
-           second_swipe_map['default']()
+        setting_key = "second_swipe"
+        map_key = self.config.get("phoniebox",setting_key)
+        try:
+            second_swipe_map[map_key]()
+        except KeyError as e:
+            self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key,map_key,setting_key),5)
+            second_swipe_map['default']()
 
     def do_restart_playlist(self):
         """ restart the same playlist from the beginning """
