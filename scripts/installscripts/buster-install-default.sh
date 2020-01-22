@@ -58,9 +58,9 @@ echo "#####################################################
 read -r -p "Do you want to configure your WiFi? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	WIFIconfig=NO
-    	echo "You want to configure WiFi later."
-    	echo "Hit ENTER to proceed to the next step."
+        WIFIconfig=NO
+        echo "You want to configure WiFi later."
+        echo "Hit ENTER to proceed to the next step."
         read -r INPUT
         # append variables to config file
         echo "WIFIconfig=$WIFIconfig" >> "${PATHDATA}/PhonieboxInstall.conf"
@@ -68,7 +68,7 @@ case "$response" in
         echo "WIFIcountryCode=DE" >> "${PATHDATA}/PhonieboxInstall.conf"
         ;;
     *)
-    	WIFIconfig=YES
+        WIFIconfig=YES
         #Ask for ssid
         echo "* Type SSID name"
         read -r INPUT
@@ -98,8 +98,8 @@ case "$response" in
         read -r -p "Are these values correct? [Y/n] " response
         case "$response" in
             [nN][oO]|[nN])
-            	echo "The values are incorrect."
-            	echo "Hit ENTER to exit and start over."
+                echo "The values are incorrect."
+                echo "Hit ENTER to exit and start over."
                 read -r INPUT; exit
                 ;;
             *)
@@ -147,14 +147,14 @@ echo "#####################################################
     read -r -p "Re-use config, audio and RFID codes for the new install? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
-    	    EXISTINGuse=NO
-    	    echo "Phoniebox will be a fresh install. The existing version will be dropped."
-    	    echo "Hit ENTER to proceed to the next step."
+            EXISTINGuse=NO
+            echo "Phoniebox will be a fresh install. The existing version will be dropped."
+            echo "Hit ENTER to proceed to the next step."
             sudo rm -rf RPi-Jukebox-RFID
             read -r INPUT
             ;;
         *)
-    	    EXISTINGuse=YES
+            EXISTINGuse=YES
             # CREATE BACKUP
             # delete existing BACKUP dir if exists
             if [ -d BACKUP ]; then
@@ -176,10 +176,10 @@ echo "#####################################################
             read -r -p "RFID config for system control (e.g. 'volume up' etc.)? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
-                	EXISTINGuseRfidConf=NO
+                    EXISTINGuseRfidConf=NO
                     ;;
                 *)
-                	EXISTINGuseRfidConf=YES
+                    EXISTINGuseRfidConf=YES
                     ;;
             esac
             # append variables to config file
@@ -188,10 +188,10 @@ echo "#####################################################
             read -r -p "RFID shortcuts to play audio folders? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
-                	EXISTINGuseRfidLinks=NO
+                    EXISTINGuseRfidLinks=NO
                     ;;
                 *)
-                	EXISTINGuseRfidLinks=YES
+                    EXISTINGuseRfidLinks=YES
                     ;;
             esac
             # append variables to config file
@@ -200,10 +200,10 @@ echo "#####################################################
             read -r -p "Audio folders: use existing? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
-                	EXISTINGuseAudio=NO
+                    EXISTINGuseAudio=NO
                     ;;
                 *)
-                	EXISTINGuseAudio=YES
+                    EXISTINGuseAudio=YES
                     ;;
             esac
             # append variables to config file
@@ -212,10 +212,10 @@ echo "#####################################################
             read -r -p "GPIO: use existing file? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
-                	EXISTINGuseGpio=NO
+                    EXISTINGuseGpio=NO
                     ;;
                 *)
-                	EXISTINGuseGpio=YES
+                    EXISTINGuseGpio=YES
                     ;;
             esac
             # append variables to config file
@@ -224,10 +224,10 @@ echo "#####################################################
             read -r -p "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
             case "$response" in
                 [nN][oO]|[nN])
-                	EXISTINGuseSounds=NO
+                    EXISTINGuseSounds=NO
                     ;;
                 *)
-                	EXISTINGuseSounds=YES
+                    EXISTINGuseSounds=YES
                     ;;
             esac
             # append variables to config file
@@ -262,12 +262,12 @@ echo "#####################################################
 read -r -p "Use PCM as iFace? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	echo "Type the iFace name you want to use:"
+        echo "Type the iFace name you want to use:"
         read -r INPUT
         AUDIOiFace="$INPUT"
         ;;
     *)
-    	AUDIOiFace="PCM"
+        AUDIOiFace="PCM"
         ;;
 esac
 # append variables to config file
@@ -301,15 +301,15 @@ echo "#####################################################
 read -r -p "Do you want to enable Spotify? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	SPOTinstall=NO
-    	echo "You don't want spotify support."
-    	echo "Hit ENTER to proceed to the next step."
+        SPOTinstall=NO
+        echo "You don't want spotify support."
+        echo "Hit ENTER to proceed to the next step."
         read -r INPUT
         ;;
     *)
-    	SPOTinstall=YES
-		clear
-		echo "#####################################################
+        SPOTinstall=YES
+        clear
+        echo "#####################################################
 #
 # CREDENTIALS for Spotify
 #
@@ -326,34 +326,34 @@ case "$response" in
 # Please note your client_id and client_secret!
 #
 "
-		echo ""
-    	echo "Type your Spotify username:"
+        echo ""
+        echo "Type your Spotify username:"
         read -r INPUT
         SPOTIuser="$INPUT"
-		echo ""
-    	echo "Type your Spotify password:"
+        echo ""
+        echo "Type your Spotify password:"
         read -r INPUT
         SPOTIpass="$INPUT"
-		echo ""
-    	echo "Type your client_id:"
+        echo ""
+        echo "Type your client_id:"
         read -r INPUT
         SPOTIclientid="$INPUT"
-		echo ""
-    	echo "Type your client_secret:"
+        echo ""
+        echo "Type your client_secret:"
         read -r INPUT
         SPOTIclientsecret="$INPUT"
-		echo ""
-    	echo "Hit ENTER to proceed to the next step."
+        echo ""
+        echo "Hit ENTER to proceed to the next step."
         read -r INPUT
         ;;
 esac
 # append variables to config file
 {
-  echo "SPOTinstall=\"$SPOTinstall\"";
-  echo "SPOTIuser=\"$SPOTIuser\"";
-  echo "SPOTIpass=\"$SPOTIpass\"";
-  echo "SPOTIclientid=\"$SPOTIclientid\"";
-  echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+    echo "SPOTinstall=\"$SPOTinstall\"";
+    echo "SPOTIuser=\"$SPOTIuser\"";
+    echo "SPOTIpass=\"$SPOTIpass\"";
+    echo "SPOTIclientid=\"$SPOTIclientid\"";
+    echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
 } >> "${PATHDATA}/PhonieboxInstall.conf"
 
 
@@ -373,15 +373,15 @@ echo "#####################################################
 read -r -p "Do you want to configure MPD? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	MPDconfig=NO
-    	echo "You want to configure MPD later."
-    	echo "Hit ENTER to proceed to the next step."
+        MPDconfig=NO
+        echo "You want to configure MPD later."
+        echo "Hit ENTER to proceed to the next step."
         read -r INPUT
         ;;
     *)
-    	MPDconfig=YES
-    	echo "MPD will be set up with default values."
-    	echo "Hit ENTER to proceed to the next step."
+        MPDconfig=YES
+        echo "MPD will be set up with default values."
+        echo "Hit ENTER to proceed to the next step."
         read -r INPUT
         ;;
 esac
@@ -411,14 +411,14 @@ echo "#####################################################
 read -r -p "Do you want to use the default location? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	echo "Please type the absolute path here (no trailing slash)."
-    	echo "Default would be for example:"
-    	echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
+        echo "Please type the absolute path here (no trailing slash)."
+        echo "Default would be for example:"
+        echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
         read -r INPUT
         DIRaudioFolders="$INPUT"
         ;;
     *)
-    	DIRaudioFolders="/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
+        DIRaudioFolders="/home/pi/RPi-Jukebox-RFID/shared/audiofolders"
         ;;
 esac
 # append variables to config file
@@ -447,10 +447,10 @@ echo "#####################################################
 read -r -p "Do you want to start the installation? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	echo "Exiting the installation."
-    	echo "Your configuration data was saved in this file:"
-    	echo "${PATHDATA}/PhonieboxInstall.conf"
-    	echo
+        echo "Exiting the installation."
+        echo "Your configuration data was saved in this file:"
+        echo "${PATHDATA}/PhonieboxInstall.conf"
+        echo
         exit
         ;;
 esac
@@ -468,7 +468,7 @@ esac
 sudo iwconfig wlan0 power off
 
 # Generate locales
-sudo locale-gen $LANG
+sudo locale-gen "${LANG}"
 
 # Install required packages
 
@@ -485,24 +485,24 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
-	sudo apt-get install --yes mopidy=2.3.1-1
-	sudo python2.7 -m pip install Mopidy==2.3.*
+    sudo apt-get install --yes mopidy=2.3.1-1
+    sudo python2.7 -m pip install Mopidy==2.3.*
 
-	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
-	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
-	sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
-	cd
-	sudo rm -rf mopidy-spotify
-	git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
-	cd mopidy-spotify
-	sudo python2 setup.py install
-	cd
-	# should be removed, if Mopidy-Iris can be installed normally
-	# pylast >= 3.0.0 removed the python2 support
-	sudo pip install pylast==2.4.0
-	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
- 	sudo pip install 'tornado==5.0'
-	sudo pip install Mopidy-Iris
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
+    sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
+    sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
+    cd || exit
+    sudo rm -rf mopidy-spotify
+    git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
+    cd mopidy-spotify || exit
+    sudo python2 setup.py install
+    cd || exit
+    # should be removed, if Mopidy-Iris can be installed normally
+    # pylast >= 3.0.0 removed the python2 support
+    sudo pip install pylast==2.4.0
+    # not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
+     sudo pip install 'tornado==5.0'
+    sudo pip install Mopidy-Iris
 fi
 
 # Get github code
@@ -511,10 +511,10 @@ cd /home/pi/ || exit
 # Must be changed to the correct branch!!!
 # Change to master when merging develop with master!!!
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git #--branch develop
-cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/
+cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-cd /home/pi/RPi-Jukebox-RFID/scripts/
+cd /home/pi/RPi-Jukebox-RFID/scripts/ || exit
 sudo rm RegisterDevice.py
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
 
@@ -652,25 +652,25 @@ cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/p
 # Spotify config
 if [ $SPOTinstall == "YES" ]
 then
-	sudo systemctl disable mpd
-	sudo systemctl enable mopidy
-	# Install Config Files
-	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
-	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.sample /etc/default/locale
-	sudo locale-gen
-	sudo mkdir /home/pi/.config
-	sudo mkdir /home/pi/.config/mopidy
-	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
-	sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
-	# Change vars to match install config
-	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' /etc/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' /etc/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ~/.config/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
-	sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
+    sudo systemctl disable mpd
+    sudo systemctl enable mopidy
+    # Install Config Files
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.sample /etc/default/locale
+    sudo locale-gen
+    sudo mkdir /home/pi/.config
+    sudo mkdir /home/pi/.config/mopidy
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
+    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+    # Change vars to match install config
+    sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' /etc/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' /etc/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ~/.config/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
+    sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
 fi
 
 if [ $MPDconfig == "YES" ]
@@ -689,7 +689,7 @@ fi
 # set which version has been installed
 if [ $SPOTinstall == "YES" ]
 then
-	echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
+    echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
 else
     echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
 fi
