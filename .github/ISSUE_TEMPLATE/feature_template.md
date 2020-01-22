@@ -18,4 +18,4 @@ i.e. `In the mornings when I stumble to the bathroom, I want the phoniebox to re
 
 ### Further information that might help
 
-i.e. `the stove is operated with cooking gas, so the implemenation has to take care the stove is handled with the greatest possible care`
+i.e. `the stove is operated with cooking gas, so the implemenation has to make sure the stove is handled with the greatest possible care`
