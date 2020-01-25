@@ -474,7 +474,7 @@ sudo cp /etc/resolv.conf /etc/resolv.conf.orig
 sudo locale-gen "${LANG}"
 
 # Install required packages
-
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https
 wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 
@@ -488,7 +488,7 @@ then
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install raspberrypi-kernel-headers
 fi
 
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https samba samba-common-bin python3 python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install samba samba-common-bin python3 python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
 
 # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
 sudo cp /etc/resolv.conf.orig /etc/resolv.conf
