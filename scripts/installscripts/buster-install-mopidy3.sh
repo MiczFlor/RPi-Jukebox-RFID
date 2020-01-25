@@ -477,10 +477,14 @@ then
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install raspberrypi-kernel-headers
 fi
 
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
 
 # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
 sudo cp /etc/resolv.conf.orig /etc/resolv.conf
+
+# prepare python2 and python3
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python-dev python-pip python-mutagen python-gpiozero python-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
