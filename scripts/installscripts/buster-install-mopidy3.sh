@@ -465,6 +465,9 @@ esac
 # power management of wifi: switch off to avoid disconnecting
 sudo iw dev wlan0 set power_save off
 
+# create backup of /etc/resolv.conf
+sudo cp /etc/resolv.conf /etc/resolv.conf.orig
+
 # Install required packages
 sudo apt-get update
 
@@ -475,6 +478,9 @@ then
 fi
 
 sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+
+# restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
+sudo cp /etc/resolv.conf.orig /etc/resolv.conf
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
