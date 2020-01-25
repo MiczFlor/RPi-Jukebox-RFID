@@ -507,9 +507,9 @@ sudo pip install -r requirements.txt
 
 sudo pip install "evdev == 0.7.0"
 sudo pip install --upgrade youtube_dl
+sudo pip install spidev
 sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 sudo pip install pyserial
-sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
