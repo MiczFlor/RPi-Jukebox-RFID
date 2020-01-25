@@ -30,7 +30,9 @@ This is a work in progress so expect things to fail or being flaky.
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
       docker run --rm -ti rpi-jukebox-rfid-buster:latest /bin/bash
-      ./scripts/installscripts/buster-install-default.sh
+      cd /home/pi/
+      cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
+      bash buster-install-default.sh
 
 
     NOTE: Get familiar with docker and its flags - `--rm` for example will remove the
@@ -46,7 +48,10 @@ container:
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
     cd /home/pi/RPi-Jukebox-RFID/
     docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile .
-    docker run --rm -ti -v $PWD:/code rpi-jukebox-rfid-buster:latest /bin/bash
+    docker run --rm -ti -w /code -v $PWD:/code rpi-jukebox-rfid-buster:latest /bin/bash
+    cd /home/pi/
+    cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
+    bash buster-install-default.sh
 
 In that way every change to the code in the container will be available on the RPi as well
 as vice versa.
