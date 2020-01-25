@@ -29,7 +29,7 @@ This is a work in progress so expect things to fail or being flaky.
       docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.armv7 .
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
-      docker run --rm -ti jukebox-rfid-buster:latest /bin/bash
+      docker run --rm -ti rpi-jukebox-rfid-buster:latest /bin/bash
       ./scripts/installscripts/buster-install-default.sh
 
 
