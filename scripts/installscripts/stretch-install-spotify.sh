@@ -508,6 +508,8 @@ sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
+sudo python3 -m pip install "evdev == 0.7.0"
+
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
 
