@@ -477,7 +477,8 @@ then
     sudo apt-get update
     sudo apt-get --yes --force-yes install mopidy
     sudo apt-get --yes --force-yes install libspotify12 python-cffi python-ply python-pycparser python-spotify
-    sudo apt-get --yes --force-yes install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+    sudo apt-get --yes --force-yes install libspotify12 python3-cffi python3-ply python3-pycparser
+    sudo python3 -m pip install spotify
     sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
     sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
     cd || exit
