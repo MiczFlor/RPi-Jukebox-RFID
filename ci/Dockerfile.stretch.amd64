@@ -22,6 +22,7 @@ RUN apt-get update ;\
   apt-get -y dist-upgrade --auto-remove --purge ;\
   apt-get -y install wget build-essential git iw locales wpasupplicant;\
   apt-get clean ;\
+  touch /boot/cmdline.txt /etc/sysctl.conf ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 USER pi

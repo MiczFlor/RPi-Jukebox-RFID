@@ -49,6 +49,7 @@ container:
     cd /home/pi/RPi-Jukebox-RFID/
     docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile .
     docker run --rm -ti -w /code -v $PWD:/code rpi-jukebox-rfid-buster:latest /bin/bash
+
     cd /home/pi/
     cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
     bash buster-install-default.sh
