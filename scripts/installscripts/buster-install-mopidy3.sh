@@ -5,6 +5,7 @@
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GIT_BRANCH=${GIT_BRANCH:-master}
 
 clear
 echo "#####################################################
@@ -500,7 +501,7 @@ fi
 
 # Get github code
 cd /home/pi/ || exit
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 
 # Jump into the Phoniebox dir

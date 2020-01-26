@@ -5,6 +5,7 @@
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GIT_BRANCH=${GIT_BRANCH:-master}
 
 clear
 echo "#####################################################
@@ -396,7 +397,8 @@ sudo apt-get --yes --force-yes install python3-dev python3-pip python3-mutagen p
 
 # Get github code
 cd /home/pi/ || exit
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+
 # the following three lines are needed as long as this is not the master branch:
 cd /home/pi/RPi-Jukebox-RFID || exit
 git fetch

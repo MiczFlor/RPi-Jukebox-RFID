@@ -5,6 +5,7 @@
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GIT_BRANCH=${GIT_BRANCH:-master}
 
 clear
 echo "#####################################################
@@ -527,7 +528,8 @@ cd /home/pi/ || exit
 
 # Must be changed to the correct branch!!!
 # Change to master when merging develop with master!!!
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git #--branch develop
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
