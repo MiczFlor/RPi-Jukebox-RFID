@@ -1,4 +1,6 @@
 import threading
+import logging
+logger = logging.getLogger(__name__)
 
 RASPBERRY = object()
 BEAGLEBONE = object()
@@ -177,7 +179,7 @@ class RFID(object):
                 error = False
 
                 if n & irq & 0x01:
-                    print("E1")
+                    logger.error("E1")
                     error = True
 
                 if command == self.mode_transrec:
@@ -197,7 +199,7 @@ class RFID(object):
                     for i in range(n):
                         back_data.append(self.dev_read(0x09))
             else:
-                print("E2")
+                logger.error("E2")
                 error = True
 
         return (error, back_data, back_length)
@@ -389,19 +391,24 @@ class RFID(object):
 
     def wait_for_tag(self):
         # enable IRQ on detect
-        self.init()
-        self.irq.clear()
-        self.dev_write(0x04, 0x00)
-        self.dev_write(0x02, 0xA0)
-        # wait for it
         waiting = True
         while waiting:
-            self.dev_write(0x09, 0x26)
-            self.dev_write(0x01, 0x0C)
-            self.dev_write(0x0D, 0x87)
-            waiting = not self.irq.wait(0.1)
-        self.irq.clear()
-        self.init()
+            logger.debug('wait for tag')
+            self.init()
+            self.irq.clear()
+            self.dev_write(0x04, 0x00)
+            self.dev_write(0x02, 0xA0)
+            # wait for it
+            waiting = True
+            i =0
+            while waiting and i <3:
+                self.dev_write(0x09, 0x26)
+                self.dev_write(0x01, 0x0C)
+                self.dev_write(0x0D, 0x87)
+                waiting = not self.irq.wait(0.1)
+                i+=1
+            self.irq.clear()
+            self.init()
 
     def reset(self):
         authed = False
