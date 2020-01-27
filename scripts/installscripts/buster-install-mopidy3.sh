@@ -5,20 +5,21 @@
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GIT_BRANCH=${GIT_BRANCH:-master}
 
 clear
-echo "##################################################### 
+echo "#####################################################
 #    ___  __ ______  _  __________ ____   __  _  _  #
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
 #                                                   #
-##################################################### 
+#####################################################
 
 Welcome to the installation script.
 
 This script will install Phoniebox on your Raspberry Pi.
-To do so, you must be online. The install script can 
+To do so, you must be online. The install script can
 automatically configure:
 
 * WiFi settings (SSID, password and static IP)
@@ -29,7 +30,7 @@ manually.
 If you are ready, hit ENTER"
 read -r INPUT
 
-##################################################### 
+#####################################################
 # CONFIG FILE
 # This file will contain all the data given in the
 # following dialogue
@@ -42,7 +43,7 @@ rm PhonieboxInstall.conf
 touch PhonieboxInstall.conf
 echo "# Phoniebox config" > "$PATHDATA/PhonieboxInstall.conf"
 
-##################################################### 
+#####################################################
 # Ask if wifi config
 
 clear
@@ -51,7 +52,7 @@ echo "#####################################################
 #
 # CONFIGURE WIFI
 #
-# Requires SSID, WiFi password and the static IP you want 
+# Requires SSID, WiFi password and the static IP you want
 # to assign to your Phoniebox.
 # (Note: can be done manually later, if you are unsure.)
 "
@@ -115,10 +116,10 @@ case "$response" in
         ;;
 esac
 
-##################################################### 
+#####################################################
 # Check for existing Phoniebox
 #
-# In case there is no existing install, 
+# In case there is no existing install,
 # set the var now for later use:
 EXISTINGuse=NO
 
@@ -131,9 +132,9 @@ if [ -d /home/pi/RPi-Jukebox-RFID ]; then
 echo "#####################################################
 #
 # . . . * alert * alert * alert * alert * . . .
-# 
+#
 # WARNING: an existing Phoniebox installation was found.
-# 
+#
 "
     # check if we find the version number
     if [ -f /home/pi/RPi-Jukebox-RFID/settings/version ]; then
@@ -169,7 +170,7 @@ echo "#####################################################
             # delete placeholder files so moving the folder content back later will not create git pull conflicts
             rm BACKUP/shared/audiofolders/placeholder
             rm BACKUP/shared/shortcuts/placeholder
-            
+
             # ask for things to use
             echo "Ok. You want to use stuff from the existing installation."
             echo "What would you want to keep? Answer now."
@@ -243,7 +244,7 @@ fi
 # append variables to config file
 echo "EXISTINGuse=$EXISTINGuse" >> "$PATHDATA/PhonieboxInstall.conf"
 
-##################################################### 
+#####################################################
 # Audio iFace
 
 clear
@@ -252,10 +253,10 @@ echo "#####################################################
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# By default for the RPi the audio interface would be 'PCM'. 
+# By default for the RPi the audio interface would be 'PCM'.
 # But this does not work for every setup, alternatives are
-# 'Master' or 'Speaker'. Other external sound cards might 
-# use different interface names. 
+# 'Master' or 'Speaker'. Other external sound cards might
+# use different interface names.
 # To list all available iFace names, type 'amixer scontrols'
 # in the terminal.
 "
@@ -276,7 +277,7 @@ echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
 read -r INPUT
 
-##################################################### 
+#####################################################
 # Configure spotify
 
 clear
@@ -286,10 +287,10 @@ echo "#####################################################
 # OPTIONAL: INCLUDE SPOTIFY
 #
 # Note: if this is your first time installing a phoniebox
-# it might be best to do a test install without Spotify 
+# it might be best to do a test install without Spotify
 # to make sure all your hardware works.
 #
-# If you want to include Spotify, MUST have your 
+# If you want to include Spotify, MUST have your
 # credentials ready:
 #
 # * username
@@ -313,7 +314,7 @@ case "$response" in
 #
 # CREDENTIALS for Spotify
 #
-# Requires Spotify username, password, client_id and client_secret 
+# Requires Spotify username, password, client_id and client_secret
 # to get connection to Spotify.
 #
 # (Note: You need a device with browser to generate ID and SECRET)
@@ -355,7 +356,7 @@ esac
     echo "SPOTIclientid=\"$SPOTIclientid\"";
     echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
 } >> "$PATHDATA/PhonieboxInstall.conf"
-##################################################### 
+#####################################################
 # Configure MPD
 
 clear
@@ -386,8 +387,8 @@ esac
 # append variables to config file
 echo "MPDconfig=\"$MPDconfig\"" >> "$PATHDATA/PhonieboxInstall.conf"
 
-##################################################### 
-# Folder path for audio files 
+#####################################################
+# Folder path for audio files
 # default: /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 
 clear
@@ -435,8 +436,8 @@ echo "#####################################################
 # Good news: you completed the input.
 # Let the install begin.
 #
-# Get yourself a cup of something. The install takes 
-# between 15 minutes to half an hour, depending on 
+# Get yourself a cup of something. The install takes
+# between 15 minutes to half an hour, depending on
 # your Raspberry Pi and Internet connectivity.
 #
 # You will be prompted later to complete the installation.
@@ -453,7 +454,7 @@ case "$response" in
         ;;
 esac
 
-##################################################### 
+#####################################################
 # INSTALLATION
 
 # Read install config as written so far
@@ -465,16 +466,26 @@ esac
 # power management of wifi: switch off to avoid disconnecting
 sudo iw dev wlan0 set power_save off
 
+# create backup of /etc/resolv.conf
+sudo cp /etc/resolv.conf /etc/resolv.conf.orig
+
 # Install required packages
 sudo apt-get update
 
 # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
 if [[ $(uname -m) =~ ^armv.+$ ]]
 then
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages raspberrypi-kernel-headers
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install raspberrypi-kernel-headers
 fi
 
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify-dev apt-transport-https samba samba-common-bin python-dev python-pip gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero resolvconf spi-tools python-spidev python3-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 php7.3-fpm at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
+
+# restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
+sudo cp /etc/resolv.conf.orig /etc/resolv.conf
+
+# prepare python2 and python3
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python-dev python-pip python-mutagen python-gpiozero python-spidev
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -490,7 +501,7 @@ fi
 
 # Get github code
 cd /home/pi/ || exit
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 
 # Jump into the Phoniebox dir
@@ -506,8 +517,6 @@ sudo pip install "evdev == 0.7.0"
 sudo pip install --upgrade youtube_dl
 sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 sudo pip install pyserial
-# spidev is currently installed via apt-get
-#sudo pip install spidev
 sudo pip install RPi.GPIO
 sudo pip install pi-rc522
 
@@ -519,7 +528,7 @@ sudo iwconfig wlan0 power off
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
 sudo chown root:root /etc/samba/smb.conf
 sudo chmod 644 /etc/samba/smb.conf
-# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+# for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
 sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
 # Samba: create user 'pi' with password 'raspberry'
 (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
@@ -538,7 +547,7 @@ sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
 # settings for php.ini to support upload
 # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
-sudo chown root:root /etc/php/7.3/cgi/php.ini 
+sudo chown root:root /etc/php/7.3/cgi/php.ini
 sudo chmod 644 /etc/php/7.3/cgi/php.ini
 
 # SUDO users (adding web server here)
@@ -561,7 +570,7 @@ echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
 echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
 echo "ON" > /home/pi/RPi-Jukebox-RFID/settings/ShowCover
 
-# The new way of making the bash daemon is using the helperscripts 
+# The new way of making the bash daemon is using the helperscripts
 # creating the shortcuts and script from a CSV file.
 # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
@@ -592,13 +601,13 @@ sudo systemctl disable idle-watchdog
 sudo systemctl disable rfid-reader
 sudo systemctl disable startup-sound
 sudo systemctl disable gpio-buttons
-sudo rm /etc/systemd/system/rfid-reader.service 
+sudo rm /etc/systemd/system/rfid-reader.service
 sudo rm /etc/systemd/system/startup-sound.service
 sudo rm /etc/systemd/system/gpio-buttons.service
 sudo rm /etc/systemd/system/idle-watchdog.service
-echo "### Done with erasing old daemons. Stop ignoring errors!" 
+echo "### Done with erasing old daemons. Stop ignoring errors!"
 # 2. install new ones - this is version > 1.1.8-beta
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service 
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
@@ -651,7 +660,7 @@ then
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
     # Change vars to match install config
     sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
-    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash 
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
     sudo chown mpd:audio /etc/mpd.conf
     sudo chmod 640 /etc/mpd.conf
@@ -672,7 +681,7 @@ mpc update
 # WiFi settings (SSID password)
 #
 # https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
-# 
+#
 # $WIFIssid
 # $WIFIpass
 # $WIFIip
@@ -689,7 +698,7 @@ then
     # Change user:group and access mod
     sudo chown root:netdev /etc/dhcpcd.conf
     sudo chmod 664 /etc/dhcpcd.conf
-    
+
     # WiFi SSID & Password
     # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
     sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample /etc/wpa_supplicant/wpa_supplicant.conf
@@ -708,26 +717,26 @@ sudo systemctl enable dhcpcd
 ###############################
 
 # / INSTALLATION
-##################################################### 
+#####################################################
 
-##################################################### 
+#####################################################
 # EXISTING ASSETS TO USE FROM EXISTING INSTALL
 
 if [ $EXISTINGuse == "YES" ]
 then
-    
+
     # RFID config for system control
     if [ $EXISTINGuseRfidConf == "YES" ]
     then
         # read old values and write them into new file (copied above already)
         # do not overwrite but use 'sed' in case there are new vars in new version installed
-        
+
         # Read the existing RFID config file line by line and use
         # only lines which are separated (IFS) by '='.
         while IFS='=' read -r key val ; do
             # $var should be stripped of possible leading or trailing "
             val=${val%\"}
-            val=${val#\"} 
+            val=${val#\"}
             key=${key}
             # Additional error check: key should not start with a hash and not be empty.
             if [ ! "${key:0:1}" == '#' ] && [ -n "$key" ]
@@ -737,28 +746,28 @@ then
             fi
         done </home/pi/BACKUP/settings/rfid_trigger_play.conf
     fi
-    
+
     # RFID shortcuts for audio folders
     if [ $EXISTINGuseRfidLinks == "YES" ]
     then
         # copy from backup to new install
         mv /home/pi/BACKUP/shared/shortcuts/* /home/pi/RPi-Jukebox-RFID/shared/shortcuts/
     fi
-    
+
     # Audio folders: use existing
     if [ $EXISTINGuseAudio == "YES" ]
     then
         # copy from backup to new install
         mv /home/pi/BACKUP/shared/audiofolders/* "$DIRaudioFolders/"
     fi
-    
+
     # GPIO: use existing file
     if [ $EXISTINGuseGpio == "YES" ]
     then
         # copy from backup to new install
         mv /home/pi/BACKUP/scripts/gpio-buttons.py /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
     fi
-    
+
     # Sound effects: use existing startup / shutdown sounds
     if [ $EXISTINGuseSounds == "YES" ]
     then
@@ -770,9 +779,9 @@ then
 fi
 
 # / EXISTING ASSETS TO USE FROM EXISTING INSTALL
-##################################################### 
+#####################################################
 
-##################################################### 
+#####################################################
 # Folders and Access Settings
 
 # create playlists folder
@@ -811,7 +820,7 @@ sudo amixer cset numid=1 100%
 rm /home/pi/RPi-Jukebox-RFID/settings/global.conf
 
 # / Access settings
-##################################################### 
+#####################################################
 
 echo "
 #
@@ -820,7 +829,7 @@ echo "
 #####################################################
 "
 
-##################################################### 
+#####################################################
 # Register external device(s)
 
 echo "If you are using an USB RFID reader, connect it to your RPi."
