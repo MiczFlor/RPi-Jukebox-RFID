@@ -164,11 +164,12 @@ disableresume)
         # set the vars we need to change
         RESUME="OFF"
         # now calling a script which will only replace these new vars in folder.conf
+
         # (see script for details)
         . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 *)
-    echo "Command unknown"
+    echo "Command unknown", $COMMAND
     ;;
 esac
 
