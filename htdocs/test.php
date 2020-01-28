@@ -16,7 +16,8 @@ if(file_exists("config.php")) {
     print "File 'config.php' not found.\n";
 }
 
-$conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+$conf['url_abs']    = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
 print "\nVariable \$conf['url_abs'] = ".$conf['url_abs']."\n";
 

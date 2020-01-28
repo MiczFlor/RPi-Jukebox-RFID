@@ -11,6 +11,14 @@
 # CMDMUTE="1234567890"
 # Leave everything untouched where you do not use a card.
 CMDMUTE="%CMDMUTE%"
+CMDMAXVOL30="%CMDMAXVOL30%"
+CMDMAXVOL50="%CMDMAXVOL50%"
+CMDMAXVOL75="%CMDMAXVOL75%"
+CMDMAXVOL80="%CMDMAXVOL80%"
+CMDMAXVOL85="%CMDMAXVOL85%"
+CMDMAXVOL90="%CMDMAXVOL90%"
+CMDMAXVOL95="%CMDMAXVOL95%"
+CMDMAXVOL100="%CMDMAXVOL100%"
 CMDVOL30="%CMDVOL30%"
 CMDVOL50="%CMDVOL50%"
 CMDVOL75="%CMDVOL75%"
@@ -28,6 +36,8 @@ CMDREBOOT="%CMDREBOOT%"
 # next and prev play the preivous or next track in the playlist (== folder & spotify)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
+# The following command restarts the playlist from the beginning
+CMDREWIND="%CMDREWIND%"
 # seek ahead or back 15 seconds
 CMDSEEKFORW="%CMDSEEKFORW%"
 CMDSEEKBACK="%CMDSEEKBACK%"

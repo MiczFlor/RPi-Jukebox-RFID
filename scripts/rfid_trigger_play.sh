@@ -11,12 +11,12 @@
 # ./rfid_trigger_play.sh --cardid=1234567890
 #
 # For folder names:
-# ./rfid_trigger_play.sh -d=foldername
+# ./rfid_trigger_play.sh -d='foldername'
 # or
-# ./rfid_trigger_play.sh --dir=foldername
+# ./rfid_trigger_play.sh --dir='foldername'
 #
 # or for recursive play of sudfolders
-# ./rfid_trigger_play.sh -d=foldername -v=recursive
+# ./rfid_trigger_play.sh -d='foldername' -v=recursive
 
 # ADD / EDIT RFID CARDS TO CONTROL THE PHONIEBOX
 # All controls are assigned to RFID cards in this 
@@ -25,17 +25,19 @@
 # Please consult this file for more information.
 # Do NOT edit anything in this file.
 
-#############################################################
-# $DEBUG true|false
-DEBUG=false
-
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [ "$DEBUG" == "true" ]; then echo "########### SCRIPT rfid_trigger_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+
+#############################################################
+# $DEBUG TRUE|FALSE
+# Read debug logging configuration file
+. $PATHDATA/../settings/debugLogging.conf
+
+if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "########### SCRIPT rfid_trigger_play.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
 
 # create the configuration file from sample - if it does not exist
 if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
@@ -45,35 +47,14 @@ if [ ! -f $PATHDATA/../settings/rfid_trigger_play.conf ]; then
     sudo chmod -R 775 $PATHDATA/../settings/rfid_trigger_play.conf
 fi
 
-# Path to folder containing audio / streams
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Audio_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/shared/audiofolders" > $PATHDATA/../settings/Audio_Folders_Path
-    chmod 777 $PATHDATA/../settings/Audio_Folders_Path
+###########################################################
+# Read global configuration file (and create is not exists) 
+# create the global configuration file from single files - if it does not exist
+if [ ! -f $PATHDATA/../settings/global.conf ]; then
+    . inc.writeGlobalConfig.sh
 fi
-# 2. then|or read value from file
-AUDIOFOLDERSPATH=`cat $PATHDATA/../settings/Audio_Folders_Path`
-
-# Path to folder containing playlists
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Playlists_Folders_Path ]; then
-    echo "/home/pi/RPi-Jukebox-RFID/playlists" > $PATHDATA/../settings/Playlists_Folders_Path
-    chmod 777 $PATHDATA/../settings/Playlists_Folders_Path
-fi
-# 2. then|or read value from file
-PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
-
-##############################################
-# Second swipe
-# What happens when the same card is swiped a second time?
-# RESTART => start the playlist again vs. PAUSE => toggle pause and play current
-# 1. create a default if file does not exist
-if [ ! -f $PATHDATA/../settings/Second_Swipe ]; then
-    echo "RESTART" > $PATHDATA/../settings/Second_Swipe
-    chmod 777 $PATHDATA/../settings/Second_Swipe
-fi
-# 2. then|or read value from file
-SECONDSWIPE=`cat $PATHDATA/../settings/Second_Swipe`
+. $PATHDATA/../settings/global.conf
+###########################################################
 
 # Read configuration file
 . $PATHDATA/../settings/rfid_trigger_play.conf
@@ -93,7 +74,7 @@ if [ "$CARDID" ]; then
     # Add info into the log, making it easer to monitor cards 
     echo "Card ID '$CARDID' was used at '$NOW'." > $PATHDATA/../shared/latestID.txt
     echo "$CARDID" > $PATHDATA/../settings/Latest_RFID
-    if [ "$DEBUG" == "true" ]; then echo "Card ID '$CARDID' was used" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Card ID '$CARDID' was used" >> $PATHDATA/../logs/debug.log; fi
 
     # If the input is of 'special' use, don't treat it like a trigger to play audio.
     # Special uses are for example volume changes, skipping, muting sound.
@@ -102,6 +83,38 @@ if [ "$CARDID" ]; then
 	    $CMDSHUFFLE)
             # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
+            ;;
+        $CMDMAXVOL30)
+            # limit volume to 30%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=30
+            ;;
+        $CMDMAXVOL50)
+            # limit volume to 50%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=50
+            ;;
+        $CMDMAXVOL75)
+            # limit volume to 75%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=75
+            ;;
+        $CMDMAXVOL80)
+            # limit volume to 80%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=80
+            ;;
+        $CMDMAXVOL85)
+            # limit volume to 85%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=85
+            ;;
+        $CMDMAXVOL90)
+            # limit volume to 90%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=90
+            ;;
+        $CMDMAXVOL95)
+            # limit volume to 95%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=95
+            ;;
+        $CMDMAXVOL100)
+            # limit volume to 100%
+            $PATHDATA/playout_controls.sh -c=setmaxvolume -v=100
             ;;
         $CMDMUTE)
             # amixer sset 'PCM' 0%
@@ -118,6 +131,10 @@ if [ "$CARDID" ]; then
         $CMDVOL75)
             # amixer sset 'PCM' 75%
             $PATHDATA/playout_controls.sh -c=setvolume -v=75
+            ;;
+        $CMDVOL80)
+            # amixer sset 'PCM' 80%
+            $PATHDATA/playout_controls.sh -c=setvolume -v=80
             ;;
         $CMDVOL85)
             # amixer sset 'PCM' 85%
@@ -158,14 +175,18 @@ if [ "$CARDID" ]; then
             $PATHDATA/playout_controls.sh -c=reboot
             ;;
         $CMDNEXT)
-            # play next track in playlist (==folder)
+            # play next track in playlist
             $PATHDATA/playout_controls.sh -c=playernext
             ;;
         $CMDPREV)
-            # play previous track in playlist (==folder)
+            # play previous track in playlist
             # echo "prev" | nc.openbsd -w 1 localhost 4212
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
+            ;;
+        $CMDREWIND)
+            # play the first track in playlist
+            sudo $PATHDATA/playout_controls.sh -c=playerrewind
             ;;
         $CMDSEEKFORW)
             # jump 15 seconds ahead
@@ -265,7 +286,7 @@ if [ "$CARDID" ]; then
                 FOLDER=`cat $PATHDATA/../shared/shortcuts/$CARDID`
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID has been used before." >> $PATHDATA/../shared/latestID.txt
-                if [ "$DEBUG" == "true" ]; then echo "This ID has been used before."   >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "This ID has been used before."   >> $PATHDATA/../logs/debug.log; fi
             else
                 # Human readable shortcut does not exists, so create one with the content $CARDID
                 # this file can later be edited manually over the samba network
@@ -273,11 +294,11 @@ if [ "$CARDID" ]; then
                 FOLDER=$CARDID
                 # Add info into the log, making it easer to monitor cards
                 echo "This ID was used for the first time." >> $PATHDATA/../shared/latestID.txt
-                if [ "$DEBUG" == "true" ]; then echo "This ID was used for the first time."   >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "This ID was used for the first time."   >> $PATHDATA/../logs/debug.log; fi
             fi
             # Add info into the log, making it easer to monitor cards
             echo "The shortcut points to audiofolder '$FOLDER'." >> $PATHDATA/../shared/latestID.txt
-            if [ "$DEBUG" == "true" ]; then echo "The shortcut points to audiofolder '$FOLDER'." >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "The shortcut points to audiofolder '$FOLDER'." >> $PATHDATA/../logs/debug.log; fi
             ;;
     esac
 fi
@@ -287,8 +308,8 @@ fi
 # Either from prompt of from the card ID processing above
 # Sloppy error check, because we assume the best.
 
-if [ "$DEBUG" == "true" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
-if [ "$DEBUG" == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Attempting to play: $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
 # check if 
 # - $FOLDER is not empty (! -z "$FOLDER") 
@@ -298,7 +319,7 @@ if [ "$DEBUG" == "true" ]; then echo "# Type of play \$VALUE: $VALUE" >> $PATHDA
 # - and points to existing directory (-d "${AUDIOFOLDERSPATH}/${FOLDER}")
 if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
-    if [ "$DEBUG" == "true" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
     if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
@@ -314,30 +335,34 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     # playlist, we have to keep track of it via the Latest_Folder_Played file
     LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
     LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
-    if [ "$DEBUG" == "true" ]; then echo "Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
-    if [ "$DEBUG" == "true" ]; then echo "Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi    
-    if [ "$DEBUG" == "true" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+    # this might need to go? resume not working... echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi    
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
     if [ "$VALUE" == "recursive" ]; then
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ } %RCRSV%.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ } %RCRSV%"
-        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive' > "${PLAYLISTPATH}"
-        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" list='recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%"
+        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     else
         # set path to playlist
         # replace subfolder slashes with " % "
         PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
         PLAYLISTNAME="${FOLDER//\//\ %\ }"
-        $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" > "${PLAYLISTPATH}"
-        if [ "$DEBUG" == "true" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php folder=\"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" > "${PLAYLISTPATH}"
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     fi
 
     # Second Swipe value
-    if [ "$DEBUG" == "true" ]; then echo "Var \$SECONDSWIPE: ${SECONDSWIPE}"   >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$SECONDSWIPE: ${SECONDSWIPE}"   >> $PATHDATA/../logs/debug.log; fi
     # Playlist name
-    if [ "$DEBUG" == "true" ]; then echo "Var \$PLAYLISTNAME: ${PLAYLISTNAME}"   >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$PLAYLISTNAME: ${PLAYLISTNAME}"   >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTPLAYLIST: ${LASTPLAYLIST}"   >> $PATHDATA/../logs/debug.log; fi
     
     # Setting a VAR to start "play playlist from start"
     # This will be changed in the following checks "if this is the second swipe"
@@ -347,7 +372,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     # - The same playlist is cued up ("$LASTPLAYLIST" == "$PLAYLISTNAME")
     if [ "$LASTPLAYLIST" == "$PLAYLISTNAME" ]
     then
-        if [ "$DEBUG" == "true" ]; then echo "Second Swipe DID happen: \$LASTPLAYLIST == \$PLAYLISTNAME"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Second Swipe DID happen: \$LASTPLAYLIST == \$PLAYLISTNAME"   >> $PATHDATA/../logs/debug.log; fi
         
         # check if 
         # - $SECONDSWIPE is set to toggle pause/play ("$SECONDSWIPE" == "PAUSE") 
@@ -358,7 +383,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         if [ $PLLENGTH -eq 0 ]
         then
             # after a reboot we want to play the playlist once no matter what the setting is
-            if [ "$DEBUG" == "true" ]; then echo "Take second wipe as first after fresh boot" >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Take second wipe as first after fresh boot" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "PAUSE" -a $PLLENGTH -gt 0 ]
         then
             # The following involves NOT playing the playlist, so we set: 
@@ -367,13 +392,13 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             STATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
             if [ $STATE == "play" ]
             then
-                if [ "$DEBUG" == "true" ]; then echo "MPD playing, pausing the player" >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  MPD playing, pausing the player" >> $PATHDATA/../logs/debug.log; fi
                 sudo $PATHDATA/playout_controls.sh -c=playerpause &>/dev/null
             else
-                if [ "$DEBUG" == "true" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "MPD not playing, start playing" >> $PATHDATA/../logs/debug.log; fi
                 sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
             fi
-            if [ "$DEBUG" == "true" ]; then echo "Completed: toggle pause/play" >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: toggle pause/play" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "NOAUDIOPLAY" ]
         then
             # The following involves NOT playing the playlist, so we set: 
@@ -383,18 +408,18 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             # "$LASTPLAYLIST" == "$PLAYLISTNAME" => same playlist triggered again 
             # => do nothing
             # echo "do nothing" > /dev/null 2>&1
-            if [ "$DEBUG" == "true" ]; then echo "Completed: do nothing" >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: do nothing" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "SKIPNEXT" ]
         then
             # We will not play the playlist but skip to the next track: 
             PLAYPLAYLIST=skipnext
-            if [ "$DEBUG" == "true" ]; then echo "Completed: skip next track" >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: skip next track" >> $PATHDATA/../logs/debug.log; fi
         fi
     fi
     # now we check if we are still on for playing what we got passed on:
     if [ "$PLAYPLAYLIST" == "yes" ]
     then
-        if [ "$DEBUG" == "true" ]; then echo "We must play the playlist no matter what: \$PLAYPLAYLIST == yes"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "We must play the playlist no matter what: \$PLAYPLAYLIST == yes"   >> $PATHDATA/../logs/debug.log; fi
 
         # Above we already checked if the folder exists -d "$AUDIOFOLDERSPATH/$FOLDER" 
         #
@@ -413,33 +438,32 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         # - with this new logic, there are no more SPECIALFORMAT playlists. Live streams and podcasts
         #   are now all unfolded into the playlist
         # - creating the playlist is now done in the php script with parameters:
-        #   $PATHDATA/playlist_recursive_by_folder.php folder="${FOLDER}" list='recursive'
+        #   $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive'
 
-        if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
        
-        # load new playlist and play
-        if [ "$DEBUG" == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
+		# save position of current playing list "stop"
+		$PATHDATA/playout_controls.sh -c=playerstop
 		# play playlist
-        # the variable passed on to play is NOT the folder name, but the playlist name
+        # the variable passed on to play is the playlist name -v (NOT the folder name) 
         # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
+        # load new playlist and play
         $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
+        # save latest playlist not to file
+        sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
     fi
     if [ "$PLAYPLAYLIST" == "skipnext" ]
     then
-        if [ "$DEBUG" == "true" ]; then echo "Skip to the next track in the playlist: \$PLAYPLAYLIST == skipnext"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "$DEBUG" == "true" ]; then echo "VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Skip to the next track in the playlist: \$PLAYPLAYLIST == skipnext"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
        
-        # load new playlist and play
-        if [ "$DEBUG" == "true" ]; then echo "Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
-		# play playlist
-        # the variable passed on to play is NOT the folder name, but the playlist name
-        # because (see above) a folder can be played recursively (including subfolders) or flat (only containing files)        
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Command: $PATHDATA/playout_controls.sh -c=playernext" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/playout_controls.sh -c=playernext
     fi
-    sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
-    sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
 else
-    if [ "$DEBUG" == "true" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Path not found $AUDIOFOLDERSPATH/$FOLDER" >> $PATHDATA/../logs/debug.log; fi
 fi

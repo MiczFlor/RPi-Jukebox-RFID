@@ -1,117 +1,167 @@
-<?php
-/*
-
-<div class="collapse" id="collapsePlaylist" aria-expanded="false" style="height: 0px;"> 
-<table class="table table-striped table-hover table-condensed"> 
-    <!--thead> 
-        <tr> 
-            <th></th> 
-        </tr> 
-    </thead--> 
-    <tbody style="a {color:black;}; a:hover {color:white;}"> 
-        <tr> 
-            <td><a href="?playpos='.$i.'" class="btn btn-success btn-xs"><i class="mdi mdi-play" aria-hidden="true"></i></a></td> 
-            <th scope=row>1</th> 
-            <td>The title of the track - it could be long</td> 
-            <td>03:12</td> 
-        </tr>  
-        <tr> 
-            <td><a href="?playpos='.$i.'" class="btn btn-xs" style="color:black;"><i class="mdi mdi-play" aria-hidden="true"></i></a></td>  
-            <th scope=row>2</th> 
-            <td class="text">
-                <span>
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                This is the tenth album by 
-                </span>
-            </td> 
-            <td>23:42</td> 
-        </tr>  
-    </tbody> 
-</table>
-</div> 
-
-*/
-?>
 <script>
+
 $(document).ready(function() {
-	$('#infoWrapper').load('ajax.loadInfo.php');
-	$('#timeWrapper').load('ajax.loadTime.php');
-	$('#overalltimeWrapper').load('ajax.loadOverallTime.php');
-	var refreshId = setInterval(function() {
-		$('#infoWrapper').load('ajax.loadInfo.php?' + 1*new Date());
-		$('#timeWrapper').load('ajax.loadTime.php?' + 1*new Date());
-		$('#overalltimeWrapper').load('ajax.loadOverallTime.php?' + 1*new Date());
-	}, 3000);
+
+    function updateSongTime(time) {
+        if (time) {
+            const splitted = time.split(':');
+            if (splitted.length == 2) {
+                $('#elapsedTime').html(formatTimeElapsedTotal(splitted[0], splitted[1]));
+            }
+        } else {
+            $('#elapsedTime').html('');
+        }
+        updateOverallTime();
+    }
+
+    function updateSongInfo(song) {
+        $('#infoWrapper').html(createSongInformation(song));
+        updateOverallTime();
+    }
+
+    function updateOverallTime() {
+        const song = JUKEBOX.playerInfo.song;
+        if (song) {
+            $('#overalltimeWrapper').html('<span class="badge" style="float: right">' + createOverallTimePlayed(song) + '</span>');
+        }
+    }
+
+    function createSongInformation(song) {
+        var songInfo = '';
+        if (song) {
+            const playerInfo = JUKEBOX.playerInfo;
+            if (playerInfo.title != null) {
+                const title = `<strong>${playerInfo.title}</strong>`;
+
+                var artist = (playerInfo.artist) ? '<br><i>' + playerInfo.artist.replace(';', ' and ') + '</i>' : '';
+                if (!artist && playerInfo.name) {
+                    artist = '<br><i>' + playerInfo.name + '</i>';
+                }
+                const album = playerInfo.album != null ? `<br>${playerInfo.album}` : '';
+                const date = playerInfo.date != null ? `<br>${playerInfo.date}` : '';
+                songInfo = [title, artist, album, date].join('');
+            } else {
+                songInfo = `<strong>${playerInfo.file}</strong>`;
+            }
+        }
+        return songInfo;
+    }
+
+    function createOverallTimePlayed(song) {
+        var overallTime = "";
+        const tracks = JUKEBOX.playlistInfo.tracks;
+        const playerInfo = JUKEBOX.playerInfo;
+        if (song && typeof tracks != "undefined" && tracks.length > 0) {
+            const countTracksWithTime = tracks
+                .filter(track => typeof track.time != "undefined")
+                .length;
+            if (countTracksWithTime) {
+                const songInt = parseInt(song);
+                const elapsedInt = typeof playerInfo.elapsed !== 'undefined' ? playerInfo.elapsed : 0;
+                const elapsed = tracks
+                    .filter(track => parseInt(track.pos) < songInt)
+                    .filter(track => typeof track.time != "undefined")
+                    .map(track => parseInt(track.time))
+                    .reduce(sum, 0) + Math.ceil(parseInt(elapsedInt));
+                const total = tracks
+                    .filter(track => typeof track.time != "undefined")
+                    .map(track => parseInt(track.time))
+                    .reduce(sum, 0);
+                overallTime = formatTimeElapsedTotal(elapsed, total);
+            }
+        }
+        return overallTime;
+    }
+
+    function sum(a, b) {
+        return a + b
+    }
+
+    function updatePlaylistData(playlistData) {
+        //console.debug(playlistData);
+        $playListToggle  = $("#showPlaylistToggle");
+        $playListToggle.hide();
+        $playlistTable = $("#playlistTable");
+        $playlistTable.empty();
+
+        if (typeof playlistData != "undefined" && typeof playlistData.tracks != "undefined" && playlistData.tracks.length > 0) {
+            $playlistTable.html(playlistData.tracks
+                .map(track => createPlaylistTrack(track))
+                .reduce((a, b) => a + b, ''));
+            $('#overalltimeWrapper').html('<span class="badge" style="float: right">' + createOverallTimePlayed(JUKEBOX.playerInfo.song) + '</span>');
+
+            updateSongInfo(JUKEBOX.playerInfo.id);
+            $playListToggle.show();
+        }
+    }
+
+    function createPlaylistTrack(track) {
+        var trackPosTemp = parseInt(track.pos, 10) + 1;
+        var result = '<tr style="border-bottom: 1px solid #444;"> ' +
+            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
+            '    <a onclick="playSongInPlaylist(' + trackPosTemp + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
+            '</td> ' +
+            '<td style="border-collapse: collapse;">';
+        if (track.title != null) {
+            result += `<strong>${track.title}</strong>`;
+        } else {
+            result += `<strong>${track.file}</strong>`;
+        }
+        if (track.artist != null) {
+            result += '<br><i>' + track.artist.replace(";", " and ",) + '</i>';
+        }
+        if(track.album != null) {
+            result += `<br><font color=#7d7d7d>${track.album}`;
+            if(track.date != null) {
+                result += ` (${track.date})`;
+            }
+            result += "</font>";
+        }
+        result += '</td><td style="width: 20px; border-collapse: collapse;">';
+        // Livestreams and podcasts have no time length, check to suppress badge
+        const time = track.time;
+        if ( time > 0 && time < 3600 ) {
+            result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeMinutes(time) + '</span>';
+        } else if ( time >= 3600 ) {
+            result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeHours(time) + '</span>';
+        }
+        result += '</td></tr>';
+        return result;
+    }
+
+    $(document).ready(() => {
+        JUKEBOX.timeListener.push(updateSongTime);
+        JUKEBOX.songChangedListener.push(updateSongInfo);
+        JUKEBOX.playlistDataChangedListener.push(updatePlaylistData);
+    });
 });
 </script>
-<script>
-$(document).ready(function() {
-	$('#loadPlaylist').load('ajax.loadPlaylist.php');
-	var refreshId = setInterval(function() {
-		$('#loadPlaylist').load('ajax.loadPlaylist.php?' + 1*new Date());
-	}, 3000);
-});
-</script>
-<?php
-print '
+
 <table style="margin-bottom: 20px; width: 100%; border-collapse: collapse; border-top: 1px solid #444; border-bottom: 1px solid #444">
     <tr>
-        <td style="padding: 10px 0; border-collapse: collapse;"><i class="mdi mdi-'. $playerStatus['state'] .'"></i> <span id="infoWrapper"></span></td>
-        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;"><div id="timeWrapper"></div></td>
+        <td style="padding: 10px 0; border-collapse: collapse;"><i class="mdi"></i>
+            <span id="infoWrapper">
+
+            </span>
+        </td>
+        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;">
+            <div id="timeWrapper">
+                <span id="elapsedTime" class="badge" style="float: right"></span>
+            </div>
+        </td>
     </tr>
     <tr>
-        <td style="padding: 10px 0;border-collapse: collapse;"><i class="mdi mdi-playlist-play"></i> <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a></td>
+        <td style="padding: 10px 0;border-collapse: collapse;"><div id="showPlaylistToggle" style="display: none"><i class="mdi mdi-playlist-play"></i> <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a></div></td>
         <td style="padding: 10px 0;width: 50px; border-collapse: collapse;"><div id="overalltimeWrapper"></div></td>
     </tr>
 </table>
 <div id="collapse1" class="panel-collapse collapse" style="margin-bottom: 40px;">
-    <ul class="list-group">
-		<div id="loadPlaylist"></div>
+    <ul class="list-group" style="list-style: none;">
+        <li>
+            <div id="loadPlaylist">
+                <table style="width: 100%; border-collapse: collapse; border-top: 1px solid #444;" id="playlistTable">
+                </table>
+            </div>
+        </li>
     </ul>
 </div>
-';
-
-/*
-print '
-        <div class="panel-group">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <div class="row" style="margin-bottom:1em;">
-                            <div class="col-xs-1" style="width:8.3333333%;">
-                                <i class="mdi mdi-'. $playerStatus['state'] .'"></i>
-                            </div>
-                            <div class="col-xs-7" style="width:81.6666667%; margin-left: 20px; margin-right: -20px;" id="infoWrapper"></div> 
-                            <div class="col-xs-4" style="width:10%;">
-                                <span class="badge" style="float: right">
-									<div id="timeWrapper"></div>
-								</span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-1" style="width:8.3333333%;">
-                                <i class="mdi mdi-playlist-play"></i>
-                            </div>
-                            <div class="col-xs-7" style="width:81.6666667%; margin-left: 20px; margin-right: -20px;">
-                                <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a>
-                            </div>
-                            <div class="col-xs-4" style="width:10%;" id="overalltimeWrapper"></div>
-                        </div>
-                    </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse">
-                    <ul class="list-group">
-						<div id="loadPlaylist"></div>
-                    </ul>
-                </div>
-            </div>
-        </div>
-';
-*/
-?>

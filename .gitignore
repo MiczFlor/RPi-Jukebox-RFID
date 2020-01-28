@@ -1,4 +1,4 @@
-# these files are created automatically or on individua purpose of the user. they shall not be push to the repository
+# These files are created automatically or on individual purpose of the user. They shall not be push to the repository
 settings/Audio_Folders_Path
 settings/Audio_Volume_Change_Step
 settings/Audio_iFace_Name
@@ -22,8 +22,27 @@ scripts/gpio-buttons.py
 shared/*
 playlists/*
 logs/*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
 .git*
 *~
 *.*~
 *.pyc
 *.idea
+
+
+# Created by https://www.gitignore.io/api/composer
+# Edit at https://www.gitignore.io/?templates=composer
+
+### Composer ###
+composer.phar
+/vendor/
+
+# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock
+
+# End of https://www.gitignore.io/api/composer

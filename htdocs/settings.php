@@ -29,28 +29,32 @@ if($debug == "true") {
   <strong><?php print $lang['globalJumpTo']; ?>:</strong>
         <a href="#RFID" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRFIDCards']; ?>
-        </a> | 
+        </a> |
         <a href="#language" class="xbtn xbtn-default ">
         <i class='mdi mdi-emoticon'></i> <?php print $lang['globalLanguageSettings']; ?>
         </a> |
         <a href="#volume" class="xbtn xbtn-default ">
         <i class='mdi mdi-volume-high'></i> <?php print $lang['globalVolumeSettings']; ?>
-        </a> | 
+        </a> |
         <a href="#autoShutdown" class="xbtn xbtn-default ">
         <i class='mdi mdi-clock-end'></i> <?php print $lang['globalIdleShutdown']." / ".$lang['globalSleepTimer']; ?>
-        </a> | 
+        </a> |
         <a href="#wifi" class="xbtn xbtn-default ">
         <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
-        </a> | 
+        </a> |
         <a href="#webInterface" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
-        </a>  | 
+        </a>  |
         <a href="#externalInterfaces" class="xbtn xbtn-default ">
         <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
-        </a>  | 
+        </a>  |
         <a href="#secondSwipe" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
-        </a> 
+        </a> | 
+        <a href="#DebugLogSettings" class="xbtn xbtn-default ">
+        <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogSettings']; ?>
+        </a>
+
   </div>
 </div>
         <br/>
@@ -134,7 +138,7 @@ include("inc.setIdleShutdown.php");
         </div><!-- / .row -->
 
     </div><!-- /.panel-body -->
-    
+
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
@@ -145,13 +149,13 @@ include("inc.setIdleShutdown.php");
         <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
       </h4>
     </div><!-- /.panel-heading -->
-    
+
       <div class="panel-body">
 <?php
 include("inc.setWifi.php");
 ?>
       </div><!-- /.panel-body -->
-    
+
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
@@ -162,13 +166,13 @@ include("inc.setWifi.php");
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
       </h4>
     </div><!-- /.panel-heading -->
-    
+
       <div class="panel-body">
 <?php
 include("inc.setWebUI.php");
 ?>
       </div><!-- /.panel-body -->
-    
+
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
@@ -179,13 +183,13 @@ include("inc.setWebUI.php");
         <i class='mdi mdi-usb'></i> <?php print $lang['globalExternalInterfaces']; ?>
       </h4>
     </div><!-- /.panel-heading -->
-    
+
       <div class="panel-body">
 <?php
 include("inc.setInputDevices.php");
 ?>
       </div><!-- /.panel-body -->
-    
+
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
@@ -196,17 +200,21 @@ include("inc.setInputDevices.php");
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
       </h4>
     </div><!-- /.panel-heading -->
-    
+
       <div class="panel-body">
 <?php
 include("inc.setSecondSwipe.php");
 ?>
       </div><!-- /.panel-body -->
-    
+
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
+
+<?php include("inc.setDebugLogConf.php"); ?>
 
 </div><!-- /.container -->
 
 </body>
+<script src="js/jukebox.js">
+</script>
 </html>

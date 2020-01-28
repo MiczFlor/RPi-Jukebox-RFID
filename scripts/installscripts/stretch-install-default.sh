@@ -272,7 +272,7 @@ case "$response" in
 esac
 # append variables to config file
 echo "AUDIOiFace=\"$AUDIOiFace\"" >> $PATHDATA/PhonieboxInstall.conf
-echo "Your iFace ist called'$AUDIOiFace'"
+echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
 read INPUT
 
@@ -638,7 +638,12 @@ fi
 ##################################################### 
 
 ##################################################### 
-# Access settings
+# Folders and Access Settings
+
+# create playlists folder
+mkdir /home/pi/RPi-Jukebox-RFID/playlists
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
@@ -660,6 +665,10 @@ sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
+
+# set audio volume to 100%
+# see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
+sudo amixer cset numid=1 100%
 
 # / Access settings
 ##################################################### 
@@ -691,7 +700,7 @@ esac
 echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
-echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/docs/"
+echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 
 #####################################################
 # notes for things to do

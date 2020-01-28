@@ -342,6 +342,10 @@ case "$response" in
 esac
 # append variables to config file
 echo "SPOTinstall=\"$SPOTinstall\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIuser=\"$SPOTIuser\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIpass=\"$SPOTIpass\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientid=\"$SPOTIclientid\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "SPOTIclientsecret=\"$SPOTIclientsecret\"" >> $PATHDATA/PhonieboxInstall.conf
 
 if [ $SPOTinstall == "NO" ]; then
 ##################################################### 
@@ -689,7 +693,6 @@ sudo systemctl enable dhcpcd
 # / WiFi settings (SSID password)
 ###############################
 
-
 # / INSTALLATION
 ##################################################### 
 
@@ -756,7 +759,12 @@ fi
 ##################################################### 
 
 ##################################################### 
-# Access settings
+# Folders and Access Settings
+
+# create playlists folder
+mkdir /home/pi/RPi-Jukebox-RFID/playlists
+sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
+sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
@@ -778,6 +786,10 @@ sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
 sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
+
+# set audio volume to 100%
+# see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
+sudo amixer cset numid=1 100%
 
 # / Access settings
 ##################################################### 
@@ -809,7 +821,7 @@ esac
 echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
-echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/docs/"
+echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 echo ""
 
 #####################################################

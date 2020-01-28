@@ -65,6 +65,21 @@ $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
+$lang['globalPriority'] = "Priority";
+
+// Player title HTML
+$lang['playerSeekBack'] = "seek back";
+$lang['playerSeekAhead'] = "seek forward";
+$lang['playerSkipPrev'] = "previous track";
+$lang['playerSkipNext'] = "next track";
+$lang['playerPlayPause'] = "play / pause";
+$lang['playerReplay'] = "replay track";
+$lang['playerLoop'] = "loop";
+$lang['playerStop'] = "stop player";
+$lang['playerVolDown'] = "volume down";
+$lang['playerVolUp'] = "volume up";
+$lang['playerMute'] = "toggle mute";
+
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
@@ -155,6 +170,8 @@ $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
 $lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";
+$lang['settingsWifiPassHelp'] = "The password of your WiFi (8 characters at least)";
+$lang['settingsWifiPrioHelp'] = "Your WiFi's priority (0-100). If more than  one WiFi is found the box will connect to the one with the higher priority";
 $lang['settingsSecondSwipe'] = "Second Swipe";
 $lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, what happens? Start the playlist again? Toggle pause/play?";
 $lang['settingsSecondSwipeRestart'] = "Re-start playlist";
@@ -175,6 +192,9 @@ $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Storage usage";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoDebugLogTail'] = "<b>DEBUG log file</b>: Last 40 lines";
+$lang['infoDebugLogClear'] = "Clear all content from debug.log";
+$lang['infoDebugLogSettings'] = "Debug Log Settings";
 
 /*
 * Folder Management and File Upload
