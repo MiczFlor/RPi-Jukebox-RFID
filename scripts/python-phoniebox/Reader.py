@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # This alternative Reader.py script was meant to cover not only USB readers but more.
 # It can be used to replace Reader.py if you have readers such as
 # MFRC522 or RDM6300.
@@ -12,8 +12,9 @@ import string
 import RPi.GPIO as GPIO
 
 from evdev import InputDevice, categorize, ecodes, list_devices
-#import MFRC522
+# import MFRC522
 import pirc522
+
 
 def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
@@ -57,13 +58,13 @@ class Mfrc522Reader(object):
         (error, tag_type) = self.device.request()
 
         if not error:
-            print "Card detected."
+            print("Card detected.")
             # Perform anti-collision detection to find card uid
             (error, uid) = self.device.anticoll()
             if not error:
                 return ''.join((str(x) for x in uid))
 
-        print "No Device ID found."
+        print("No Device ID found.")
         return None
 
     @staticmethod

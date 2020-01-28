@@ -38,6 +38,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playernext
 # playerprev
 # playerpause
+# playerpauseforce
 # playerplay
 # playerreplay
 # playerrepeat
@@ -45,6 +46,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playlistclear
 # playlistaddplay
 # playlistadd
+# playsinglefile
 # getidletime
 # setidletime
 # disablewifi
@@ -325,9 +327,14 @@ case $COMMAND in
 	mpc play 1
         ;;
     playerpause)
-        # pause current track
+        # toggle current track
         # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
+        # Why on earth has this been called pause instead of toggle? :-)
         mpc toggle
+        ;;
+    playerpauseforce)
+        # pause current track
+        mpc pause
         ;;
     playerplay)
         # play / resume current track
@@ -443,6 +450,13 @@ case $COMMAND in
         # add to playlist, no autoplay
         # save playlist playing
         mpc load "${VALUE}"
+        ;;
+    playsinglefile)
+        mpc clear
+        mpc add "${VALUE}"
+        mpc repeat off
+        mpc single on
+        mpc play
         ;;
     setidletime)
         # write new value to file

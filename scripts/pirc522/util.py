@@ -86,7 +86,7 @@ class RFIDUtil(object):
                 print("Not calling card_auth - already authed")
             return False
 
-    def write_trailer(self, sector, key_a=(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF), auth_bits=(0xFF, 0x07, 0x80), 
+    def write_trailer(self, sector, key_a=(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF), auth_bits=(0xFF, 0x07, 0x80),
                       user_data=0x69, key_b=(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF)):
         """
         Writes sector trailer of specified sector. Tag and auth must be set - does auth.

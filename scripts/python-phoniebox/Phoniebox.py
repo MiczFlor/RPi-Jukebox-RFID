@@ -1,19 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 __name__ = "Phoniebox"
 
-import configparser # needed only for the exception types ?!
+import configparser  # needed only for the exception types ?!
 from ConfigParserExtended import ConfigParserExtended
 import codecs
-import subprocess # needed for aplay call
-import os,sys
+import subprocess  # needed for aplay call
+import os, sys
 from time import sleep
 from mpd import MPDClient
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
-defaultconfigFilePath = os.path.join(dir_path,'./phoniebox.conf')
+defaultconfigFilePath = os.path.join(dir_path, './phoniebox.conf')
+
 
 # TODO: externalize helper functions for the package. How?
 def is_int(s):
@@ -24,9 +25,11 @@ def is_int(s):
     except ValueError:
         return False
 
+
 def str2bool(s):
     """ convert string to a python boolean """
     return s.lower() in ("yes", "true", "t", "1")
+
 
 def str2num(s):
     """ convert string to an int or a float """
@@ -35,17 +38,19 @@ def str2num(s):
     except ValueError:
         return float(s)
 
-def find_modified_files(path,since):
+
+def find_modified_files(path, since):
     modified_files = []
     for root, dirs, files in os.walk(path):
         for basename in files:
             filename = os.path.join(path, basename)
             status = os.stat(filename)
             if status.st_mtime > since:
-               modified_files.append(filename)
-    return  modified_files
+                modified_files.append(filename)
+    return modified_files
 
-def file_modified(filename,since):
+
+def file_modified(filename, since):
     if os.stat(filename).st_mtime > since:
         return True
     else:
@@ -54,35 +59,33 @@ def file_modified(filename,since):
 
 class Phoniebox(object):
 
-    def __init__(self,configFilePath=defaultconfigFilePath):
+    def __init__(self, configFilePath=defaultconfigFilePath):
         print("Using configuration file {}".format(configFilePath))
         self.read_config(configFilePath)
         # read cardAssignments from given card assignments file
-        card_assignments_file = self.get_setting("phoniebox","card_assignments_file")
+        card_assignments_file = self.get_setting("phoniebox", "card_assignments_file")
         self.cardAssignments = self.read_cardAssignments()
-        if self.get_setting("phoniebox","translate_legacy_cardassignments","bool") == True:
-            self.log("Translating legacy cardAssignment config from folder.conf files.",3)
+        if self.get_setting("phoniebox", "translate_legacy_cardassignments", "bool") == True:
+            self.log("Translating legacy cardAssignment config from folder.conf files.", 3)
             legacy_cardAssignments = self.translate_legacy_cardAssignments()
             self.update_cardAssignments(legacy_cardAssignments)
 
-
-    def log(self,msg,level=3):
+    def log(self, msg, level=3):
         """ level based logging to stdout """
-        log_level_map = {0:None,1:"error",2:"warning",3:"info",4:"extended",5:"debug"}
-        log_level = int(self.get_setting("phoniebox","log_level"))
+        log_level_map = {0: None, 1: "error", 2: "warning", 3: "info", 4: "extended", 5: "debug"}
+        log_level = int(self.get_setting("phoniebox", "log_level"))
         if log_level >= level and log_level != -1:
-            print("{}: {}".format(log_level_map[level].upper(),msg))
-
+            print("{}: {}".format(log_level_map[level].upper(), msg))
 
     def mpd_init_connection(self):
         """ connect to mpd """
-        host = self.get_setting("mpd","host")
+        host = self.get_setting("mpd", "host")
         if host == -1:
             host = "localhost"
-        port = self.get_setting("mpd","port")
+        port = self.get_setting("mpd", "port")
         if port == -1:
             port = 6600
-        timeout = self.get_setting("mpd","timeout")
+        timeout = self.get_setting("mpd", "timeout")
         if timeout == -1:
             timeout = 3
 
@@ -91,11 +94,11 @@ class Phoniebox(object):
         self.client.port = port
         self.client.timeout = timeout
 
-        #ret = self.mpd_connect_timeout()
+        # ret = self.mpd_connect_timeout()
         if self.mpd_connect_timeout() != 0:
             sys.exit()
         else:
-            self.log("connected to MPD with settings host = {}, port = {}, timeout = {}".format(host,port,timeout),3)
+            self.log("connected to MPD with settings host = {}, port = {}, timeout = {}".format(host, port, timeout), 3)
 
     def mpd_connect_timeout(self):
         """ establishes the connection to MPD when disconnected """
@@ -107,36 +110,35 @@ class Phoniebox(object):
             pass
         while success != True and runtime <= self.client.timeout:
             try:
-                self.client.connect(self.client.host,self.client.port)
+                self.client.connect(self.client.host, self.client.port)
                 success = True
-                self.log("Connected to MPD at {} on port {}.".format(self.client.host,self.client.port),5)
+                self.log("Connected to MPD at {} on port {}.".format(self.client.host, self.client.port), 5)
                 return 0
             except:
-                self.log("Could not connect to MPD, retrying.",5)
+                self.log("Could not connect to MPD, retrying.", 5)
             sleep(0.2)
             runtime += 0.2
             if runtime >= self.client.timeout:
-                self.log("Could not connect to MPD for {}s, giving up.".format(self.client.timeout),2)
+                self.log("Could not connect to MPD for {}s, giving up.".format(self.client.timeout), 2)
                 return 1
 
-
     def do_second_swipe(self):
-       """ react to the second swipe of the same card according to settings"""
-       second_swipe_map = { 'default':     self.do_restart_playlist,
+        """ react to the second swipe of the same card according to settings"""
+        second_swipe_map = {'default':     self.do_restart_playlist,
                             'restart':     self.do_restart_playlist,
-                            'restart_track':self.do_restart_track,
+                            'restart_track': self.do_restart_track,
                             'stop':        self.do_stop,
                             'pause':       self.do_toggle,
                             'noaudioplay': self.do_pass,
                             'skipnext':    self.do_next,
-       }
-       setting_key = "second_swipe"
-       map_key = self.config.get("phoniebox",setting_key)
-       try:
-           second_swipe_map[map_key]()
-       except KeyError as e:
-           self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key,map_key,setting_key),5)
-           second_swipe_map['default']()
+                            }
+        setting_key = "second_swipe"
+        map_key = self.config.get("phoniebox",setting_key)
+        try:
+            second_swipe_map[map_key]()
+        except KeyError as e:
+            self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key,map_key,setting_key),5)
+            second_swipe_map['default']()
 
     def do_restart_playlist(self):
         """ restart the same playlist from the beginning """
@@ -145,7 +147,7 @@ class Phoniebox(object):
         self.set_mpd_playmode(self.lastplayedID)
         self.play_mpd(self.get_cardsetting(self.lastplayedID,"uri"))
 
-    def do_restart_track():
+    def do_restart_track(self):
         """ restart currently playing track """
         self.mpd_connect_timeout()
         mpd_status = self.client.status()
