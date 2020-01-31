@@ -395,6 +395,8 @@ sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bi
 sudo apt-get --yes --force-yes install python-dev python-pip python-mutagen python-gpiozero python-spidev
 sudo apt-get --yes --force-yes install python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
+# use python3.5 as default
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
 # Get github code
 cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
