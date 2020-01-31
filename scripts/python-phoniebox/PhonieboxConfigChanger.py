@@ -66,7 +66,7 @@ class PhonieboxConfigChanger(Phoniebox):
             config_file = self.config.get("phoniebox", "card_assignments_file")
         except ValueError:
             parser = self.config
-            config_file = configFilePath
+            config_file = self.configFilePath
         # update value
         try:
             parser.set(section, key, value)
