@@ -503,6 +503,9 @@ fi
 cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
+# check, which branch was cloned
+git status
+
 
 # Jump into the Phoniebox dir
 cd /home/pi/RPi-Jukebox-RFID || exit
