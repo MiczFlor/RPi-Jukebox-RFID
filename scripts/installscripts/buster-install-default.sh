@@ -511,8 +511,8 @@ cd /home/pi/
 
 # Must be changed to the correct branch!!!
 # Change to master when merging develop with master!!!
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git 
-#--branch develop
+# this needs to be replaced on develop
+git clone --branch master https://github.com/MiczFlor/RPi-Jukebox-RFID.git
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/
 
 # The following lines are just for development.
