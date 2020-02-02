@@ -1,238 +1,125 @@
-'''
-From https://github.com/gpiozero/gpiozero/pull/482/files
-'''
-from gpiozero import Device, CompositeDevice
-from gpiozero.input_devices import DigitalInputDevice, Button
+#!/usr/bin/python3
+# rotary volume knob
+# these files belong all together:
+# RPi-Jukebox-RFID/scripts/rotary-encoder.py
+# RPi-Jukebox-RFID/scripts/RotaryEncoder.py
+# RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
+# See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
+
+import RPi.GPIO as GPIO
+from timeit import default_timer as timer
+import ctypes
+import logging
+
+logger = logging.getLogger(__name__)
+
+c_uint8 = ctypes.c_uint8
 
 
-def getRotaryEncoderFunction(functionCallNegativ, functionCallPositiv):
-    def function(step=None):
-        if step > 0:
-            return functionCallPositiv(step)
-        elif step < 0:
-            return functionCallNegativ(step)
-        return None
-    return function
+class Flags_bits(ctypes.LittleEndianStructure):
+    _fields_ = [
+        ("A", c_uint8, 1),  # asByte & 1
+        ("B", c_uint8, 1),  # asByte & 2
+    ]
 
 
-class RotaryEncoder(Device):
-    """
-    Decode mechanical rotary encoder pulses.
-    Connect the extrems pins of the rotary encoder (left and right pins) to any GPIO
-    and the middle pin to a ground pin. Alternatively, connect the middle pin to the
-    3V3 pin, then set *pull_up* to ``False`` in the :class:`RotaryEncoder` constructor.
-    The following example will print a Rotary Encoder change direction::
-        from gpiozero import RotaryEncoder
-        def change(value):
-            if value > 0:
-                print("clockwise")
-            else:
-                print("counterclockwise")
-        rotary = RotaryEncoder(13, 19)
-        rotary.when_rotated = change
-    Based in Pigpio implementation `Pigpio implementation <http://abyz.co.uk/rpi/pigpio/examples.html#Python_rotary_encoder_py>`_
-    and `Paul Stoffregen implementation <https://github.com/PaulStoffregen/Encoder>`_
-    :param int pin_a:
-        An extreme GPIO pin which the RotaryEncoder is attached to. See :ref:`pin_numbering`
-        for valid pin numbers.
-    :param int pin_b:
-        The another extreme GPIO pin which the RotaryEncoder is attached to. See :ref:`pin_numbering`
-        for valid pin numbers.
-    :param bool pull_up:
-        If ``True`` (the default), the GPIO pins will be pulled high by default.
-        In this case, connect the middle GPIO pin to ground. If ``False``,
-        the GPIO pins will be pulled low by default. In this case,
-        connect the middle pin of the RotaryEncoder to 3V3.
-    """
+class Flags(ctypes.Union):
+    _anonymous_ = ("bit",)
+    _fields_ = [
+        ("bit", Flags_bits),
+        ("asByte", c_uint8)
+    ]
 
-    def __init__(self, pin_a, pin_b, pull_up=True):
-        self.when_rotated = lambda *args: None
 
-        self.pin_a = DigitalInputDevice(pin=pin_a, pull_up=pull_up)
-        self.pin_b = DigitalInputDevice(pin=pin_b, pull_up=pull_up)
+class RotaryEncoder:
+    # select Enocder state bits
+    KeyIncr = 0b00000010
+    KeyDecr = 0b00000001
 
-        self.pin_a.when_activated = self._pulse
-        self.pin_a.when_deactivated = self._pulse
+    tblEncoder = [
+        0b00000011, 0b00000111, 0b00010011, 0b00000011,
+        0b00001011, 0b00000111, 0b00000011, 0b00000011,
+        0b00001011, 0b00000111, 0b00001111, 0b00000011,
+        0b00001011, 0b00000011, 0b00001111, 0b00000001,
+        0b00010111, 0b00000011, 0b00010011, 0b00000011,
+        0b00010111, 0b00011011, 0b00010011, 0b00000011,
+        0b00010111, 0b00011011, 0b00000011, 0b00000010]
 
-        self.pin_b.when_activated = self._pulse
-        self.pin_b.when_deactivated = self._pulse
+    def __init__(self, pinA, pinB, functionCallIncr=None, functionCallDecr=None, timeBase=0.1,
+                 name=None):
+        logger.debug('Initialize {name} RotaryEncoder({arg_Apin}, {arg_Bpin})'.format(
+            arg_Apin=pinA,
+            arg_Bpin=pinB,
+            name=name if name is not None else ''
+        ))
+        self.name = name
+        # persist values
+        self.pinA = pinA
+        self.pinB = pinB
+        self.functionCallbackIncr = functionCallIncr
+        self.functionCallbackDecr = functionCallDecr
+        self.timeBase = timeBase
 
-        self._old_a_value = self.pin_a.is_active
-        self._old_b_value = self.pin_b.is_active
+        self.encoderState = Flags()  # stores the encoder state machine state
+        self.startTime = timer()
 
-    def _pulse(self):
-        """
-        Calls when_rotated callback if detected changes
-        """
-        new_b_value = self.pin_b.is_active
-        new_a_value = self.pin_a.is_active
+        # setup pins
+        GPIO.setup(self.pinA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.pinB, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self._is_active = False
 
-        value = TableValues.value(new_b_value, new_a_value, self._old_b_value, self._old_a_value)
+    def __repr__(self):
+        repr_str = '<{class_name}{object_name} on pin_a {pin_a},' + \
+                   ' pin_b {pin_b},timBase {time_base} is_active={is_active}%s>'
+        return repr_str.format(
+            class_name=self.__class__.__name__,
+            object_name=':{}'.format(self.name) if self.name is not None else '',
+            pin_a=self.pinA,
+            pin_b=self.pinB,
+            time_base=self.timeBase,
+            is_active=self.is_active)
 
-        self._old_b_value = new_b_value
-        self._old_a_value = new_a_value
+    def start(self):
+        logger.debug('Start Event Detection on {} and {}'.format(self.pinA, self.pinB))
+        self._is_active = True
+        GPIO.add_event_detect(self.pinA, GPIO.BOTH, callback=self._Callback)
+        GPIO.add_event_detect(self.pinB, GPIO.BOTH, callback=self._Callback)
 
-        if value != 0:
-            self.when_rotated(value)
-
-    def close(self):
-        self.pin_a.close()
-        self.pin_b.close()
-
-    @property
-    def closed(self):
-        return self.pin_a.closed and self.pin_b.closed
+    def stop(self):
+        logger.debug('Stop Event Detection on {} and {}'.format(self.pinA, self.pinB))
+        GPIO.remove_event_detect(self.pinA)
+        GPIO.remove_event_detect(self.pinB)
+        self._is_active = False
 
     @property
     def is_active(self):
-        return not self.closed
+        return self._is_active
 
-    @property
-    def value(self):
-        return None
+    def _StepSize(self):
+        end = timer()
+        duration = end - self.startTime
+        self.startTime = end
+        return int(self.timeBase / duration) + 1
 
-    def __repr__(self):
-        return "<gpiozero.%s object on pin_a %r, pin_b %r, pull_up=%s, is_active=%s>" % (
-                self.__class__.__name__, self.pin_a.pin, self.pin_b.pin, self.pin_a.pull_up, self.is_active)
+    def _Callback(self, pin):
+        logger.debug('EventDetection Called')
+        # construct new state machine input from encoder state and old state
+        self.encoderState.A = GPIO.input(self.pinA)
+        self.encoderState.B = GPIO.input(self.pinB)
+        logger.debug('new encoderState: "{}" -> {}'.format(
+            self.encoderState.asByte,
+            self.tblEncoder[self.encoderState.asByte]
+        ))
+        current_state = self.encoderState.asByte
+        self.encoderState.asByte = self.tblEncoder[current_state]
 
-
-class TableValues:
-    """
-    Decodes a :class:`RotaryEncoder` pulse.
-               +---------+         +---------+      1
-               |         |         |         |
-     A         |         |         |         |
-               |         |         |         |
-     +---------+         +---------+         +----- 0
-         +---------+         +---------+            1
-         |         |         |         |
-     B   |         |         |         |
-         |         |         |         |
-     ----+         +---------+         +---------+  0
-    Addapted for `Paul Stoffregen table <https://github.com/PaulStoffregen/Encoder/blob/dd19b612b8050687563323777c946888f450d73c/Encoder.h#L137-L160>`_.
-    """
-
-    # The commented values are middle changes
-    _values = {
-        0: +0,
-        1: +1,
-        2: -1,
-        3: +2,
-        # 4: -1,
-        5: +0,
-        6: -2,
-        # 7: +1,
-        # 8: +1,
-        9: -2,
-        10: +0,
-        # 11: -1,
-        12: +2,
-        13: -1,
-        14: +1,
-        15: +0
-    }
-
-    @staticmethod
-    def value(new_b_value, new_a_value, old_b_value, old_a_value):
-        index = TableValues.calculate_index(new_b_value, new_a_value, old_b_value, old_a_value)
-        try:
-            return TableValues._values[index]
-        except KeyError:
-            return 0
-
-    @staticmethod
-    def calculate_index(new_b_value, new_a_value, old_b_value, old_a_value):
-        value = 0
-        if new_b_value:
-            value += 8
-        if new_a_value:
-            value += 4
-        if old_b_value:
-            value += 2
-        if old_a_value:
-            value += 1
-
-        return value
-
-
-class RotaryEncoderClickable(CompositeDevice):
-    """
-    Extends :class:`CompositeDevice` and represents a :class:`RotaryEncoder` with a
-    :class:`Button`.
-    The following example will print a Rotary Encoder change direction and Button pressed::
-        from gpiozero import RotaryEncoderClickable
-        def change(value):
-            if value > 0:
-                print("clockwise")
-            else:
-                print("counterclockwise")
-        def pressed():
-            print("pressed")
-        rotary = RotaryEncoderClickable(pin_a=13, pin_b=19, button_pin=15)
-        rotary.when_rotated = change
-    :param int pin_a:
-        An extreme GPIO pin which the RotaryEncoder is attached to. See :ref:`pin_numbering`
-        for valid pin numbers.
-    :param int pin_b:
-        The another extreme GPIO pin which the RotaryEncoder is attached to. See :ref:`pin_numbering`
-        for valid pin numbers.
-    :param int button_pin:
-        The GPIO pin which the button is attached to. See :ref:`pin_numbering`
-        for valid pin numbers.
-    :param bool encoder_pull_up:
-        If ``True`` (the default), the GPIO pins will be pulled high by default.
-        In this case, connect the middle GPIO pin to ground. If ``False``,
-        the GPIO pins will be pulled low by default. In this case,
-        connect the middle pin of the RotaryEncoder to 3V3.
-    :param bool button_pull_up:
-        If ``True`` (the default), the GPIO pin will be pulled high by default.
-        In this case, connect the other side of the button to ground. If
-        ``False``, the GPIO pin will be pulled low by default. In this case,
-        connect the other side of the button to 3V3.
-    """
-    def __init__(self, pin_a, pin_b, button_pin, encoder_pull_up=True, button_pull_up=True):
-        self.rotary_encoder = RotaryEncoder(pin_a, pin_b, encoder_pull_up)
-        self.button = Button(button_pin, button_pull_up)
-
-    @property
-    def when_rotated(self):
-        return self.rotary_encoder.when_rotated
-
-    @when_rotated.setter
-    def when_rotated(self, action):
-        self.rotary_encoder.when_rotated = action
-
-    @property
-    def when_pressed(self):
-        return self.button.when_pressed
-
-    @when_pressed.setter
-    def when_pressed(self, action):
-        self.button.when_pressed = action
-
-    def close(self):
-        self.rotary_encoder.close()
-        self.button.close()
-
-    @property
-    def closed(self):
-        return self.rotary_encoder.closed and self.button.closed
-
-    @property
-    def is_active(self):
-        return not self.closed
-
-    @property
-    def value(self):
-        self.button.value
-
-    def __repr__(self):
-        return "<gpiozero.%s object on pin_a %r, pin_b %r, button_pin %r, encoder_pull_up=%s, button_pull_up=%s, is_active=%s>" % (
-                self.__class__.__name__,
-                self.rotary_encoder.pin_a.pin,
-                self.rotary_encoder.pin_b.pin,
-                self.button.pin,
-                self.rotary_encoder.pin_a.pull_up,
-                self.button.pull_up,
-                self.is_active
-        )
+        if self.KeyIncr == self.encoderState.asByte:
+            steps = self._StepSize()
+            logger.debug('Calling functionIncr {steps}'.format(steps=steps))
+            self.functionCallbackIncr(steps)
+        elif self.KeyDecr == self.encoderState.asByte:
+            steps = self._StepSize()
+            logger.debug('Calling functionDecr {steps}'.format(steps=steps))
+            self.functionCallbackDecr(steps)
+        else:
+            logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
