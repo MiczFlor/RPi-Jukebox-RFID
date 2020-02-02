@@ -1,14 +1,14 @@
 import configparser
 import logging
 
-import mock
-
-
 from scripts.helperscripts import function_calls
-from scripts.helperscripts.function_calls import getFunctionCall
+from scripts.helperscripts.function_calls import
 from scripts.RotaryEncoder import RotaryEncoder
 
 logger = logging.getLogger(__name__)
+
+def getFunctionCall(function_name):
+    return getattr(function_calls, function_name)
 
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCallBothPressed=None):
@@ -105,9 +105,9 @@ class VolumeControl:
             return TwoButtonControl(
                 config.getint('pinUp'),
                 config.getint('pinDown'),
-                getattr(function_calls,config.get('functionCallUp')),
-                getattr(function_calls,config.get('functionCallDown')),
-                functionCallTwoBtns=getattr(function_calls,config.get('functionCallTwoButtons')),
+                getFunctionCall(config.get('functionCallUp')),
+                getFunctionCall(config.get('functionCallDown')),
+                functionCallTwoBtns=getFunctionCall(config.get('functionCallTwoButtons')),
                 pull_up=config.getboolean('pull_up', fallback=True),
                 hold_repeat=config.getboolean('hold_repeat', fallback=True),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
@@ -117,21 +117,11 @@ class VolumeControl:
             return RotaryEncoder(
                 config.getint('pinUp'),
                 config.getint('pinDown'),
-                getattr(function_calls,config.get('functionCallUp')),
-                getattr(function_calls,config.get('functionCallDown')),
-                config.getfloat('timeBase',fallback=0.1))
-        elif config.get('Type') == 'RotaryEncoderClickable':
-            encoder = RotaryEncoderClickable(
-                pin_a = config.getint('pinUp'),
-                pin_b = config.getint('pinDown'),
-                button_pin = config.getint('pinClick'),
-                encoder_pull_up =config.getboolean('pull_up', fallback=True),
-                button_pull_up =config.getboolean('pull_up', fallback=True))
-            encoder.when_rotated = getRotaryEncoderFunction(getattr(function_calls,config.get('functionCallUp')),
-                getattr(function_calls,config.get('functionCallDown')),
-                )
-            encoder.when_pressed = getattr(function_calls, config.get('functionCallButton')),
-            return encoder
+                getFunctionCall(config.get('functionCallUp')),
+                getFunctionCall(config.get('functionCallDown')),
+                config.getfloat('timeBase',fallback=0.1),
+                name='RotaryVolumeControl')
+
 
 
 
