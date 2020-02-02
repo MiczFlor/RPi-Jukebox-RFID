@@ -17,7 +17,7 @@ MockRPi.GPIO.BOTH = 33
 MockRPi.GPIO.HIGH = 1
 MockRPi.GPIO.LOW = 0
 
-from scripts.gpio_control import functionCallTwoButtons, TwoButtonControl
+from scripts.TwoButtonControl import functionCallTwoButtons, TwoButtonControl
 
 
 @pytest.fixture

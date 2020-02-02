@@ -17,6 +17,10 @@ def parse_edge_key(edge):
     return edge
 
 
+
+# This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
+# It checks if the GPIO is in the state since the function was called. If the state
+# changes it return False. If the time is over the function returns True.
 def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
     # Get a reference start time (https://docs.python.org/3/library/time.html#time.perf_counter)
     startTime = time.perf_counter()
