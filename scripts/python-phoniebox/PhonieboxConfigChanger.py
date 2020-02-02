@@ -66,16 +66,12 @@ class PhonieboxConfigChanger(Phoniebox):
             config_file = self.config.get("phoniebox", "card_assignments_file")
         except ValueError:
             parser = self.config
-            config_file = self.configFilePath
         # update value
         try:
             parser.set(section, key, value)
             self.debug("Set {} = {} in section {}".format(key, value, section))
         except configparser.NoSectionError as e:
-            raise(configparser.NoSectionError, e)
-        # write to file
-        # with open(config_file, 'w') as f:
-        #     parser.write(f)
+            raise e
 
     def get(self, section, t="ini"):
         try:
