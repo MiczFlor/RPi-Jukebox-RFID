@@ -1,3 +1,5 @@
+import configparser
+
 import mock
 from mock import patch, MagicMock
 
@@ -18,6 +20,8 @@ MockRPi.GPIO.HIGH = 1
 MockRPi.GPIO.LOW = 0
 
 from scripts.TwoButtonControl import functionCallTwoButtons, TwoButtonControl
+
+from gpio_control import get_all_devices
 
 
 @pytest.fixture
@@ -55,6 +59,7 @@ def test_functionCallTwoButtonsOnlyBtn1Pressed(btn1Mock,
     func = functionCallTwoButtons(btn1Mock,
                                   btn2Mock,
                                   functionCall1Mock,
+                                  functionCall2Mock,
                                   functionCallBothPressed=functionCallBothPressedMock)
     func()
     functionCall1Mock.assert_called_once_with()
@@ -81,7 +86,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedExists(btn1
                                                                             functionCallBothPressedMock):
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
-    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock,
+    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock,functionCall2Mock,
                                   functionCallBothPressed=functionCallBothPressedMock)
     func()
     functionCall1Mock.assert_not_called()
@@ -95,7 +100,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedIsNone(btn1
                                                                             functionCall2Mock):
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
-    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock,
+    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock,functionCall2Mock,
                                   functionCallBothPressed=None)
     func()
     functionCall1Mock.assert_not_called()
@@ -106,6 +111,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedIsNone(btn1
 mockedFunction1 = MagicMock()
 mockedFunction2 = MagicMock()
 mockedFunction3 = MagicMock()
+two_button_control
 class TestTwoButtonControl:
     def test_init(self):
         TwoButtonControl(bcmPin1=1,
@@ -117,3 +123,10 @@ class TestTwoButtonControl:
                  hold_repeat=False,
                  hold_time=0.3,
                  name='TwoButtonControl')
+
+    def test_btn1_pressed(self, two_button_control):
+
+def testMain():
+    config = configparser.ConfigParser()
+    config.read('../../settings/gpio_settings.ini')
+    devices =get_all_devices(config)

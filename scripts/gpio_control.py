@@ -1,9 +1,9 @@
 import configparser
 import logging
-from scripts.TwoButtonControl import TwoButtonControl
-from scripts.helperscripts import function_calls
+from TwoButtonControl import TwoButtonControl
+from helperscripts import function_calls
 
-from scripts.RotaryEncoder import RotaryEncoder
+from RotaryEncoder import RotaryEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -44,16 +44,21 @@ def generate_device(config, deviceName):
     if deviceName == 'VolumeControl':
         return VolumeControl(config[deviceName])
     else:
+
         print('cannot find {}'.format(deviceName))
+
+
+def get_all_devices(config):
+    devices = []
+    for section in config.sections():
+        if config.get(section, 'enabled', fallback=False):
+            logger.info('adding GPIO-Device, {}'.format(section))
+            devices.append(generate_device(config, section))
+    for dev in devices:
+        print(dev)
 
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read('../settings/gpio_settings.ini')
-    devices = []
-    for section in config.sections():
-        if config.get(section, 'enabled', fallback=False):
-            logger.info('adding GPIO-Device')
-            devices.append(generate_device(config, section))
-    for dev in devices:
-        print(dev)
+    get_all_devices(config)
