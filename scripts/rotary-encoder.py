@@ -6,7 +6,7 @@
 
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
-# RPi-Jukebox-RFID/scripts/rotary_encoder_base.py
+# RPi-Jukebox-RFID/scripts/RotaryEncoder.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
 # RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.rotaryencoder.sample
 # See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
@@ -41,28 +41,21 @@
 #
 
 import RPi.GPIO as GPIO
-from rotary_encoder_base import RotaryEncoder as enc
 import sys
 from signal import pause
 from subprocess import check_call
 
+from scripts.RotaryEncoder import RotaryEncoder
 
-def rotaryChangeCWVol(steps):
-    check_call("./scripts/playout_controls.sh -c=volumeup -v="+str(steps), shell=True)
+from scripts.helperscripts import function_calls
 
+import logging
+logger = logging.getLogger(__name__)
 
-def rotaryChangeCCWVol(steps):
-    check_call("./scripts/playout_controls.sh -c=volumedown -v="+str(steps), shell=True)
-
-
-def rotaryChangeCWTrack(steps):
-    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
-
-
-def rotaryChangeCCWTrack(steps):
-    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
-
-
+encVol = None
+encTrack = None
+useVolume = True
+useTrack = False
 APinVol = 6
 BPinVol = 5
 
@@ -72,19 +65,34 @@ BPinTrack = 22
 GPIO.setmode(GPIO.BCM)
 
 if __name__ == "__main__":
-
+    logging.basicConfig(level='INFO')
     try:
-        encVol = enc(APinVol, BPinVol, rotaryChangeCWVol, rotaryChangeCCWVol, 0.2)
-        encTrack = enc(APinTrack, BPinTrack, rotaryChangeCWTrack, rotaryChangeCCWTrack, 0.05)
-
-        encVol.start()
-        encTrack.start()
+        if useVolume:
+            logger.info('Starting RotaryEncoder for VolumeControl')
+            encVol = RotaryEncoder(APinVol,
+                                   BPinVol,
+                                   getattr(function_calls, 'functionCallVolU'),
+                                   getattr(function_calls, 'functionCallVolD'),
+                                   timeBase=0.2,
+                                   name='VolumeControl')
+            encVol.start()
+        if useTrack:
+            logger.info('Starting RotaryEncoder for TrackControl')
+            encTrack = RotaryEncoder(APinTrack,
+                                     BPinTrack,
+                                     getattr(function_calls, 'functionCallPlayerNext'),
+                                     getattr(function_calls, 'functionCallPlayerPrev'),
+                                     timeBase=0.05,
+                                     name='TrackControl')
+            encTrack.start()
         pause()
     except KeyboardInterrupt:
-        encVol.stop()
-        encTrack.stop()
+        if encVol:
+            encVol.stop()
+        if encTrack:
+            encTrack.stop()
         GPIO.cleanup()
-        print("\nExiting rotary encoder decoder\n")
+        logger.info("\nExiting rotary encoder decoder\n")
         # exit the application
 
     sys.exit(0)
