@@ -1,8 +1,9 @@
 import configparser
 import logging
-
+import RPi.GPIO as GPIO
+from scripts.SimpleButton import SimpleButton
 from scripts.helperscripts import function_calls
-from scripts.helperscripts.function_calls import
+
 from scripts.RotaryEncoder import RotaryEncoder
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ def getFunctionCall(function_name):
 
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCallBothPressed=None):
-    def functionCallTwoButtons(args):
+    def functionCallTwoButtons(*args):
         if btn1.is_pressed and btn2.is_pressed:
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:
@@ -30,37 +31,10 @@ def functionCallTwoButtons(btn1, btn2, functionCall1, functionCallBothPressed=No
 
     return functionCallTwoButtons
 
-def parse_edge_key(edge):
-        if edge in [GPIO.FALLING, GPIO.RAISING, GPIO.BOTH]:
-            edge
-        elif edge.lower() == 'falling':
-            edge = GPIO.FALLING
-        elif edge.lower() == 'raising':
-            edge = GPIO.RAISING
-        elif edge.lower() == 'both':
-            edge = GPIO.BOTH
-        else:
-            raise KeyError('Unknown Edge type {edge}'.format(edge=edge))
-        return edge
 
-
-class Button:
-    def __init__(self, pin, callbackFunction=lambda *args: None, name=None, bouncetime = 500, edge=GPIO.FALLING):
-        edge = parse_edge_key(edge)
-
-        self.pin = pin
-        self.name = name
-        self.bouncetime = bouncetime
-        GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        self.callbackFunction = callbackFunction
-        GPIO.add_event_detect(channel=self.pin, edge=edge, callback=self.callbackFunction, bouncetime=self.bouncetime)
-
-    def __del__(self):
-        GPIO.remove_event_detect(self.pin)
-
-    @property
-    def is_pressed(self):
-        return GPIO.input(self.pin)
+# This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
+# It checks if the GPIO is in the state since the function was called. If the state
+# changes it return False. If the time is over the function returns True.
 
 class TwoButtonControl:
     def __init__(self,
@@ -78,11 +52,13 @@ class TwoButtonControl:
         self.functionCallTwoBtns = functionCallTwoBtns
         self.bcmPin1 = bcmPin1
         self.bcmPin2 = bcmPin2
-        self.btn1 = Button(
-            pin=bcmPin1, callbackFunction=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING
-            bcmPin1, pull_up=pull_up, hold_time=hold_time, hold_repeat=hold_repeat)
+        self.btn1 = SimpleButton(
+            pin=bcmPin1,
+            callbackFunction=lambda *args: None,
+            name=name+'Btn2', bouncetime=500, edge=GPIO.FALLING, hold_time=hold_time, hold_repeat=hold_repeat)
 
-        self.btn2 = Button(bcmPin2, pull_up=pull_up, hold_time=hold_time, hold_repeat=hold_repeat)
+        self.btn2 = SimpleButton(bcmPin2, pull_up=pull_up, hold_time=hold_time, hold_repeat=hold_repeat,
+                                 name=name+'Btn2', bouncetime=500, edge=GPIO.FALLING)
         generatedTwoButtonFunctionCallBtn1 = functionCallTwoButtons(self.btn1,
                                                                 self.btn2,
                                                                 self.functionCallBtn1,
