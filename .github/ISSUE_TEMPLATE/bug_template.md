@@ -1,7 +1,7 @@
 ---
 name: bug report
 about: use this template to report bugs
-title: ":bug: [BUG SUMMARY]"
+title: "\U0001F41B | BUG SUMMARY"
 labels: bug, needs triage
 assignees: MiczFlor
 ---
