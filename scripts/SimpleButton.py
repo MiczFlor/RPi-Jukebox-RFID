@@ -56,18 +56,18 @@ class SimpleButton:
         self.bouncetime = bouncetime
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.when_pressed = action
-        GPIO.add_event_detect(channel=self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
+        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
 
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
-    def holdAndRepeatHandler(self, channel):
+    def holdAndRepeatHandler(self, *args):
         # Rise volume as requested
-        self.when_pressed(channel)
+        self.when_pressed(*args)
         # Detect holding of button
         while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
-            self.when_pressed(channel)
+            self.when_pressed(*args)
 
     def __del__(self):
         GPIO.remove_event_detect(self.pin)
