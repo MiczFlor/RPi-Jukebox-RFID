@@ -48,5 +48,5 @@ class TestButton:
         simple_button.hold_time = 0
         simple_button.hold_repeat = True
         calls = mockedAction.call_count
-        simple_button.callbackFunctionHandler()(simple_button.pin)
+        simple_button.callbackFunctionHandler(simple_button.pin)
         assert mockedAction.call_count - calls == 4
