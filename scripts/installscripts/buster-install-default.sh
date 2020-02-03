@@ -530,6 +530,9 @@ cd /home/pi/ || exit
 # Change to master when merging develop with master!!!
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
+# check, which branch was cloned
+git status
+
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample

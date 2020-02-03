@@ -500,6 +500,9 @@ fi
 cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
+# check, which branch was cloned
+git status
+
 # the following three lines are needed as long as this is not the master branch:
 cd /home/pi/RPi-Jukebox-RFID || exit
 git fetch
