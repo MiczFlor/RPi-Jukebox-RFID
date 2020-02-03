@@ -1,7 +1,9 @@
-from scripts.SimpleButton import SimpleButton
+from SimpleButton import SimpleButton
 from RPi import GPIO
 import logging
 logger = logging.getLogger(__name__)
+
+GPIO.setmode(GPIO.BCM)
 
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCallBothPressed=None):
