@@ -8,20 +8,23 @@ GPIO.setmode(GPIO.BCM)
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCallBothPressed=None):
     def functionCallTwoButtons(*args):
-        if btn1.is_pressed and btn2.is_pressed:
+        btn1_pressed = btn1.is_pressed
+        btn2_pressed = btn2.is_pressed
+        print('Btn1 {}, Btn2 {}'.format(btn1_pressed,btn2_pressed))
+        if btn1_pressed and btn2_pressed:
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:
                 logger.debug("Both Btns are pressed, action: functionCallBothPressed")
                 return functionCallBothPressed(*args)
             logger.debug('No two button pressed action defined')
-        elif btn1.is_pressed:
+        elif btn1_pressed:
             logger.debug("Btn1 is pressed, secondary Btn not pressed, action: functionCall1")
             return functionCall1(*args)
-        elif btn2.is_pressed:
+        elif btn2_pressed:
             logger.debug("Btn2 is not pressed, action: functionCall2")
             return functionCall2(*args)
         else:
-            logger.error("Error: Could not analyse two button action")
+            logger.debug("No Button Pressed: no action")
             return None
 
     return functionCallTwoButtons
@@ -65,11 +68,26 @@ class TwoButtonControl:
                                                                 self.functionCallBtn2,
                                                                 self.functionCallTwoBtns
                                                                 )
+        self.action = generatedTwoButtonFunctionCall
 
-        self.btn1.action = generatedTwoButtonFunctionCall
-        self.btn2.action = generatedTwoButtonFunctionCall
+        self.btn1.when_pressed = generatedTwoButtonFunctionCall
+        self.btn2.when_pressed = generatedTwoButtonFunctionCall
         self.name = name
 
     def __repr__(self):
         two_btns_action = self.functionCallTwoBtns is not None
         return f'<TwoBtnControl-{self.name}({self.bcmPin1}, {self.bcmPin2},two_buttons_action={two_btns_action})>'
+    
+
+if __name__ == "__main__":
+    logging.basicConfig(level='DEBUG')
+    pin1 = int(input('please enter first pin'))
+    pin2 = int(input('please enter second pin'))
+    func1 = lambda *args: print('Function Btn1 executed with {}'.format(args))
+    func2 = lambda *args: print('Function Btn2 executed with {}'.format(args))
+    func3 = lambda *args: print('Function BothBtns executed with {}'.format(args))
+    two_btn_control = TwoButtonControl(pin1,pin2,func1,func2,func3)
+
+    print('running')
+    while True:
+        pass
