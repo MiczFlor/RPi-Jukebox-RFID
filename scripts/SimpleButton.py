@@ -1,15 +1,16 @@
 import time
 
 import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 
 
 def parse_edge_key(edge):
-    if edge in [GPIO.FALLING, GPIO.RAISING, GPIO.BOTH]:
+    if edge in [GPIO.FALLING, GPIO.RISING, GPIO.BOTH]:
         edge
     elif edge.lower() == 'falling':
         edge = GPIO.FALLING
     elif edge.lower() == 'raising':
-        edge = GPIO.RAISING
+        edge = GPIO.RISING
     elif edge.lower() == 'both':
         edge = GPIO.BOTH
     else:
@@ -40,16 +41,17 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class SimpleButton:
-    def callbackFunctionHandler(self):
+    def callbackFunctionHandler(self, *args):
         if self.hold_repeat:
-            return self.holdAndRepeatHandler
-        return self.when_pressed
+            return self.holdAndRepeatHandler(*args)
+        return self.when_pressed(*args)
 
     def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING,
                  hold_time=.1, hold_repeat=False):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_repeat = hold_repeat
+        self.pull_up = True
 
         self.pin = pin
         self.name = name
@@ -74,4 +76,14 @@ class SimpleButton:
 
     @property
     def is_pressed(self):
+        if self.pull_up:
+            return not GPIO.input(self.pin)
         return GPIO.input(self.pin)
+
+if __name__ == "__main__":
+    print('please enter pin no to test')
+    pin = int(input())
+    func = lambda *args: print('FunctionCall with {}'.format(args))
+    btn = SimpleButton(pin=pin, action=func, hold_repeat=True)
+    while True:
+        pass
