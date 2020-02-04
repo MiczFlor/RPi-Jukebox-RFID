@@ -80,6 +80,12 @@ class SimpleButton:
             return not GPIO.input(self.pin)
         return GPIO.input(self.pin)
 
+    def __repr__(self):
+        return '<SimpleButton-{}(pin {},hold_repeat={},hold_time={})>'.format(
+            self.name, self.pin, self.hold_repeat, self.hold_time
+        )
+
+
 if __name__ == "__main__":
     print('please enter pin no to test')
     pin = int(input())
