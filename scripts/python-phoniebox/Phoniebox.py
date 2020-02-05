@@ -256,7 +256,7 @@ class Phoniebox(object):
         if max_volume < init_volume:
             self.log("init_volume cannot exceed max_volume.",2)
             init_volume = max_volume # do not exceed max_volume
-        if mpd_status["volume"] > max_volume:
+        if int(mpd_status["volume"]) > max_volume:
             self.client.setvol(init_volume)
             
     def set_mpd_playmode(self,cardid):
@@ -311,8 +311,9 @@ class Phoniebox(object):
         card_assignments_file = self.config.get("phoniebox","card_assignments_file")
         parser = ConfigParserExtended(allow_no_value=True)
         dataset = parser.read(card_assignments_file)
-        if len(dataset) != 1:
-            raise ValueError("Config file {} not found!".format(card_assignments_file))
+        # TODO uncomment again and fix!
+        #if len(dataset) != 1:
+        #    raise ValueError("Config file {} not found!".format(card_assignments_file))
         return parser
 
     def update_cardAssignments(self,static_cardAssignments):
