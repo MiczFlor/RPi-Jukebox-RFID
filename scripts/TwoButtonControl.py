@@ -21,7 +21,7 @@ def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCal
             logger.debug("Btn1 is pressed, secondary Btn not pressed, action: functionCall1")
             return functionCall1(*args)
         elif btn2_pressed:
-            logger.debug("Btn2 is not pressed, action: functionCall2")
+            logger.debug("Btn2 is pressed, action: functionCall2")
             return functionCall2(*args)
         else:
             logger.debug("No Button Pressed: no action")
