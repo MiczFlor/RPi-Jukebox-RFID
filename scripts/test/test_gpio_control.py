@@ -146,7 +146,7 @@ class TestTwoButtonControl:
     def test_btn1_pressed(self, two_button_control):
         pinA = two_button_control.bcmPin1
         pinB = two_button_control.bcmPin2
-        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: True, pinB: False}[pin]
+        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: True}[pin]
         two_button_control.action()
         mockedFunction1.assert_called_once()
         mockedFunction2.assert_not_called()
@@ -157,7 +157,7 @@ class TestTwoButtonControl:
     def test_btn2_pressed(self, two_button_control):
         pinA = two_button_control.bcmPin1
         pinB = two_button_control.bcmPin2
-        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: True}[pin]
+        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: True, pinB: False}[pin]
         two_button_control.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_called_once()
@@ -168,7 +168,7 @@ class TestTwoButtonControl:
     def test_btn1_and_btn2_pressed(self, two_button_control):
         pinA = two_button_control.bcmPin1
         pinB = two_button_control.bcmPin2
-        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: True, pinB: True}[pin]
+        MockRPi.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: False}[pin]
         two_button_control.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_not_called()
