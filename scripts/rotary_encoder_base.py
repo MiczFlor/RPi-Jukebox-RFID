@@ -14,7 +14,7 @@ c_uint8 = ctypes.c_uint8
 
 
 class Flags_bits(ctypes.LittleEndianStructure):
-    fields_ = [
+    _fields_ = [
                  ("A", c_uint8, 1),  # asByte & 1
                  ("B", c_uint8, 1),  # asByte & 2
                 ]
