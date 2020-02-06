@@ -133,11 +133,11 @@ class Phoniebox(object):
                             'skipnext':    self.do_next,
                             }
         setting_key = "second_swipe"
-        map_key = self.config.get("phoniebox",setting_key)
+        map_key = self.config.get("phoniebox", setting_key)
         try:
             second_swipe_map[map_key]()
         except KeyError as e:
-            self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key,map_key,setting_key),5)
+            self.log("Unknown setting \"{} = {}\", using \"{} = default\".".format(setting_key, map_key, setting_key), 5)
             second_swipe_map['default']()
 
     def do_restart_playlist(self):
@@ -145,7 +145,7 @@ class Phoniebox(object):
         # TODO: Any reason not to just start the first item in the current playlist?
         self.mpd_connect_timeout()
         self.set_mpd_playmode(self.lastplayedID)
-        self.play_mpd(self.get_cardsetting(self.lastplayedID,"uri"))
+        self.play_mpd(self.get_cardsetting(self.lastplayedID, "uri"))
 
     def do_restart_track(self):
         """ restart currently playing track """
@@ -155,15 +155,15 @@ class Phoniebox(object):
         # restart current track
         self.client.play(mpd_status['song'])
 
-    def do_start_playlist(self,cardid):
+    def do_start_playlist(self, cardid):
         """ restart the same playlist, eventually resume """
-        if self.get_cardsetting(self.lastplayedID,"resume"):
-            self.resume(self.lastplayedID,"save")
+        if self.get_cardsetting(self.lastplayedID, "resume"):
+            self.resume(self.lastplayedID, "save")
         self.mpd_connect_timeout()
         self.set_mpd_playmode(cardid)
-        self.play_mpd(self.get_cardsetting(cardid,"uri"))
-        if self.get_cardsetting(cardid,"resume"):
-            self.resume(cardid,"resume")
+        self.play_mpd(self.get_cardsetting(cardid, "uri"))
+        if self.get_cardsetting(cardid, "resume"):
+            self.resume(cardid, "resume")
         self.lastplayedID = cardid
 
     def do_toggle(self):
@@ -184,7 +184,7 @@ class Phoniebox(object):
         self.mpd_connect_timeout()
         status = self.client.status()
         # start playlist if in stop state or there is only one song in the playlist (virtually loop)
-        if (status["state"] ==  "stop") or (status["playlistlength"] == "1"):
+        if (status["state"] == "stop") or (status["playlistlength"] == "1"):
             self.do_restart_playlist()
         else:
             self.client.next()
@@ -194,7 +194,7 @@ class Phoniebox(object):
         self.mpd_connect_timeout()
         self.client.stop()
 
-    def play_alsa(self,audiofile):
+    def play_alsa(self, audiofile):
         """ pause mpd and play file on alsa player """
         self.mpd_connect_timeout()
         self.client.pause()
@@ -202,17 +202,17 @@ class Phoniebox(object):
         subprocess.call(["aplay -q -Dsysdefault:CARD=sndrpijustboomd " + audiofile], shell=True)
         subprocess.call(["aplay -q -Dsysdefault " + audiofile], shell=True)
 
-    def play_mpd(self,uri):
+    def play_mpd(self, uri):
         """ play uri in mpd """
         self.mpd_connect_timeout()
         self.client.clear()
         self.client.add(uri)
         self.client.play()
-        self.log("phoniebox: playing {}".format(uri.encode('utf-8')),3)
+        self.log("phoniebox: playing {}".format(uri.encode('utf-8')), 3)
 
 
     # TODO: is there a better way to check for "value not present" than to return -1?
-    def get_setting(self,section,key,opt_type="string"):
+    def get_setting(self, section, key, opt_type="string"):
         """ get a setting from configFile file or cardAssignmentsFile
             if not present, return -1
         """
@@ -221,11 +221,11 @@ class Phoniebox(object):
             parser = self.cardAssignments
         except ValueError:
             parser = self.config
-        
+
         try:
-            opt = parser.get(section,key)
+            opt = parser.get(section, key)
         except configparser.NoOptionError:
-            print("No option {} in section {}".format(key,section))
+            print("No option {} in section {}".format(key, section))
             return -1
         except configparser.NoSectionError:
             print("No section {}".format(section))
@@ -238,69 +238,69 @@ class Phoniebox(object):
             except ValueError:
                 return opt
 
-    def get_cardsetting(self,cardid,key,opt_type="string"):
+    def get_cardsetting(self, cardid, key, opt_type="string"):
         """ catches Errors """
-        return self.get_setting(cardid,key,opt_type)
+        return self.get_setting(cardid, key, opt_type)
 
     def mpd_init_settings(self):
         """ set initial mpd state:
             max_volume
             initial_volume """
         mpd_status = self.client.status()
-        max_volume = self.get_setting("phoniebox","max_volume")
-        init_volume = self.get_setting("phoniebox","init_volume")
+        max_volume = self.get_setting("phoniebox", "max_volume")
+        init_volume = self.get_setting("phoniebox", "init_volume")
         if max_volume == -1:
-            max_volume = 100 # the absolute max_volume is 100%
+            max_volume = 100  # the absolute max_volume is 100%
         if init_volume == -1:
-            init_volume = 0 # to be able to compare
+            init_volume = 0  # to be able to compare
         if max_volume < init_volume:
-            self.log("init_volume cannot exceed max_volume.",2)
-            init_volume = max_volume # do not exceed max_volume
+            self.log("init_volume cannot exceed max_volume.", 2)
+            init_volume = max_volume  # do not exceed max_volume
         if mpd_status["volume"] > max_volume:
             self.client.setvol(init_volume)
-            
-    def set_mpd_playmode(self,cardid):
+
+    def set_mpd_playmode(self, cardid):
         """ set playmode in mpd according to card settings """
-        playmode_defaults_map = {"repeat":0,"random":0,"single":0,"consume":0}
-        set_playmode_map = { "repeat":self.client.repeat,
-                             "random":self.client.random,
-                             "single":self.client.single,
-                             "consume":self.client.consume }
+        playmode_defaults_map = {"repeat": 0, "random": 0, "single": 0, "consume": 0}
+        set_playmode_map = {"repeat": self.client.repeat,
+                             "random": self.client.random,
+                             "single": self.client.single,
+                             "consume": self.client.consume}
         for key in set_playmode_map.keys():
             # option is set if config file contains "option = 1" or just "option" without value.
-            playmode_setting = self.get_cardsetting(cardid,key)
+            playmode_setting = self.get_cardsetting(cardid, key)
             if playmode_setting == -1 or playmode_setting == 1:
                 playmode_setting = 1
             else:
                 playmode_setting = playmode_defaults_map[key]
             # set value
             set_playmode_map[key](playmode_setting)
-            self.log("setting mpd {} = {}".format(key,playmode_setting),5)
+            self.log("setting mpd {} = {}".format(key, playmode_setting), 5)
 
-    def resume(self,cardid,action="resume"):
-        """ seek to saved position if resume is activated """ 
+    def resume(self, cardid, action="resume"):
+        """ seek to saved position if resume is activated """
         self.mpd_connect_timeout()
         mpd_status = self.client.status()
         print(mpd_status)
-        if action in ["resume","restore"]:
-            opt_resume = self.get_cardsetting(cardid,"resume")
+        if action in ["resume", "restore"]:
+            opt_resume = self.get_cardsetting(cardid, "resume")
             if opt_resume == -1 or opt_resume == 1:
-                resume_elapsed = self.get_cardsetting(cardid,"resume_elapsed")
-                resume_song = self.get_cardsetting(cardid,"resume_song")
+                resume_elapsed = self.get_cardsetting(cardid, "resume_elapsed")
+                resume_song = self.get_cardsetting(cardid, "resume_song")
                 if resume_song == -1:
                     resume_song = 0
                 if resume_elapsed != -1 and resume_elapsed != 0:
                     self.log("{}: resume song {} at time {}s".format(cardid,
-                            self.get_cardsetting(cardid,"resume_song"),
-                            self.get_cardsetting(cardid,"resume_elapsed")),5)
-                    self.client.seek(resume_song,resume_elapsed)
-        elif action in ["save","store"]:
+                            self.get_cardsetting(cardid, "resume_song"),
+                            self.get_cardsetting(cardid, "resume_elapsed")), 5)
+                    self.client.seek(resume_song, resume_elapsed)
+        elif action in ["save", "store"]:
             try:
                 self.log("{}: save state, song {} at time {}s".format(cardid,
-                            mpd_status["song"],mpd_status["elapsed"]),5)
-                self.cardAssignments.set(cardid,"resume_elapsed",
+                            mpd_status["song"], mpd_status["elapsed"]), 5)
+                self.cardAssignments.set(cardid, "resume_elapsed",
                                             mpd_status["elapsed"])
-                self.cardAssignments.set(cardid,"resume_song",
+                self.cardAssignments.set(cardid, "resume_song",
                                             mpd_status["song"])
             except KeyError as e:
                 print("KeyError: {}".format(e))
@@ -308,14 +308,14 @@ class Phoniebox(object):
                 print("ValueError: {}".format(e))
 
     def read_cardAssignments(self):
-        card_assignments_file = self.config.get("phoniebox","card_assignments_file")
+        card_assignments_file = self.config.get("phoniebox", "card_assignments_file")
         parser = ConfigParserExtended(allow_no_value=True)
         dataset = parser.read(card_assignments_file)
         if len(dataset) != 1:
             raise ValueError("Config file {} not found!".format(card_assignments_file))
         return parser
 
-    def update_cardAssignments(self,static_cardAssignments):
+    def update_cardAssignments(self, static_cardAssignments):
         """card_assignments_file = self.config.get("phoniebox","card_assignments_file")
         parser = ConfigParserExtended(allow_no_value=True)
         dataset = parser.read(card_assignments_file)
@@ -326,87 +326,85 @@ class Phoniebox(object):
         if hasattr(self, 'cardAssignments'):
             self.debug("cardAssignments already set, updating data in memory with new data from file {}".format(card_assignments_file))
             static_cardAssignments = parser"""
-        self.log("Updating changes in cardAssignments from disk.",3)
-        keep_cardsettings = ["resume_song","resume_elapsed"]
+        self.log("Updating changes in cardAssignments from disk.", 3)
+        keep_cardsettings = ["resume_song", "resume_elapsed"]
         common_sections = list(set(static_cardAssignments.sections()).intersection(self.cardAssignments.sections()))
         for section in common_sections:
             for option in keep_cardsettings:
-                if self.cardAssignments.has_option(section,option):
-                    value = self.cardAssignments.get(section,option)
-                    static_cardAssignments.set(section,option,value)
-                    self.log("Updating cardid {} with \"{} = {}\".".format(section,option,value),5)
+                if self.cardAssignments.has_option(section, option):
+                    value = self.cardAssignments.get(section, option)
+                    static_cardAssignments.set(section, option, value)
+                    self.log("Updating cardid {} with \"{} = {}\".".format(section, option, value), 5)
         # finally assign new values
         self.cardAssignments = static_cardAssignments
 
- 
-    def read_config(self,configFilePath=defaultconfigFilePath):
+    def read_config(self, configFilePath=defaultconfigFilePath):
         """ read config variables from file """
-        configParser = ConfigParserExtended(allow_no_value=True,interpolation=configparser.BasicInterpolation()) 
+        configParser = ConfigParserExtended(allow_no_value=True, interpolation=configparser.BasicInterpolation())
         dataset = configParser.read(configFilePath)
         if len(dataset) != 1:
             raise ValueError("Config file {} not found!".format(configFilePath))
         self.config = configParser
 
-    def translate_legacy_cardAssignments(self,last_translate_legacy_cardAssignments=0):
+    def translate_legacy_cardAssignments(self, last_translate_legacy_cardAssignments=0):
         """ reads the card settings data from the old scheme an translates them """
-        shortcuts_path = self.get_setting("phoniebox","shortcuts_path")
-        audiofolders_path = self.get_setting("phoniebox","audiofolders_path")
+        shortcuts_path = self.get_setting("phoniebox", "shortcuts_path")
+        audiofolders_path = self.get_setting("phoniebox", "audiofolders_path")
         if shortcuts_path != -1:
             configParser = ConfigParserExtended()
-            shortcut_files = [f for f in os.listdir(shortcuts_path) if os.path.isfile(os.path.join(shortcuts_path,f)) and is_int(f)]
+            shortcut_files = [f for f in os.listdir(shortcuts_path) if os.path.isfile(os.path.join(shortcuts_path, f)) and is_int(f)]
 
             # filename is the cardid
             for filename in shortcut_files:
-                with open(os.path.join(shortcuts_path,filename)) as f:
+                with open(os.path.join(shortcuts_path, filename)) as f:
                     uri = f.readline().strip().decode('utf-8')
-                
+
                 # add default settings
                 if not filename in configParser.sections():
-                    self.log("Adding section {} to cardAssignments".format(filename),5)
+                    self.log("Adding section {} to cardAssignments".format(filename), 5)
                     configParser.add_section(filename)
                 configParser[filename] = self.config["default_cardsettings"]
-                configParser.set(filename,"cardid",filename)
-                configParser.set(filename,"uri",uri)
+                configParser.set(filename, "cardid", filename)
+                configParser.set(filename, "uri", uri)
                 # translate and add folder.conf settings if they contradict default_cardsettings
-                cardsettings_map = {"CURRENTFILENAME":None,
-                                    "ELAPSED":"resume_elapsed",
-                                    "PLAYSTATUS":None,
-                                    "RESUME":"resume",
-                                    "SHUFFLE":"random",
-                                    "LOOP":"repeat"}
-                folderconf = os.path.join(audiofolders_path,uri,"folder.conf")
-                if os.path.isfile(folderconf) and file_modified(folderconf,last_translate_legacy_cardAssignments):
+                cardsettings_map = {"CURRENTFILENAME": None,
+                                    "ELAPSED": "resume_elapsed",
+                                    "PLAYSTATUS": None,
+                                    "RESUME": "resume",
+                                    "SHUFFLE": "random",
+                                    "LOOP": "repeat"}
+                folderconf = os.path.join(audiofolders_path, uri, "folder.conf")
+                if os.path.isfile(folderconf) and file_modified(folderconf, last_translate_legacy_cardAssignments):
                     with open(folderconf) as f:
                         lines = f.readlines()
-                    cardsettings_old = dict([l.strip().replace('"','').split("=") for l in lines])
+                    cardsettings_old = dict([l.strip().replace('"', '').split("=") for l in lines])
                     for key in cardsettings_old.keys():
                         if cardsettings_map[key] != None:
-                        # ignore 0 and OFF values, drop settings that have None in cardsettings_map
+                        #  ignore 0 and OFF values, drop settings that have None in cardsettings_map
                             if key != "ELAPSED":
                                 if cardsettings_old[key] != "0" and cardsettings_old[key] != "OFF":
-                                    configParser.set(filename,cardsettings_map[key],"1")
+                                    configParser.set(filename, cardsettings_map[key], "1")
                                 else:
-                                    configParser.set(filename,cardsettings_map[key],"0")
+                                    configParser.set(filename, cardsettings_map[key], "0")
                             else:
                                 try:
                                     elapsed_val = float(cardsettings_old[key])
                                 except ValueError:
                                     elaped_val = 0
-                                configParser.set(filename,cardsettings_map[key],str(elapsed_val))
+                                configParser.set(filename, cardsettings_map[key], str(elapsed_val))
         return configParser
 
     def write_new_cardAssignments(self):
         """ updates the cardsettings with according to playstate """
-        card_assignments_file = self.config.get("phoniebox","card_assignments_file")
-        self.log("Write new card assignments to file {}.".format(card_assignments_file),3)
-        with codecs.open(card_assignments_file,'w','utf-8') as f:
+        card_assignments_file = self.config.get("phoniebox", "card_assignments_file")
+        self.log("Write new card assignments to file {}.".format(card_assignments_file), 3)
+        with codecs.open(card_assignments_file, 'w', 'utf-8') as f:
             self.cardAssignments.write(f)
 
-    def print_to_file(self,filename,string):
+    def print_to_file(self, filename, string):
         """ simple function to write a string to a file """
-        with codecs.open(filename,'w','utf-8') as f:
+        with codecs.open(filename, 'w', 'utf-8') as f:
             f.write(string)
-        
 
 
 if __name__ == "__main__":

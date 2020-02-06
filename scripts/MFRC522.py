@@ -5,7 +5,8 @@ import RPi.GPIO as GPIO
 import spi
 import signal
 import time
-  
+
+ 
 class MFRC522:
   NRSTPD = 22
   

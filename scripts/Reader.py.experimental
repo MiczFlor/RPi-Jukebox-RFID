@@ -18,6 +18,8 @@ import pirc522
 
 
 logger = logging.getLogger(__name__)
+
+
 def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
     devices.append(NonUsbDevice('MFRC522'))
