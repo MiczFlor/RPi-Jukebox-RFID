@@ -14,19 +14,18 @@ import os, subprocess, re, ssl, time, datetime
 #  SETTINGS
 # ----------------------------------------------------------
 DEBUG = False
-mqttBaseTopic = "phoniebox"                # MQTT base topic
-mqttClientId = "phoniebox"                # MQTT client ID
-mqttHostname = "openHAB"                    # MQTT server hostname
-mqttPort = 8883                        # MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
-mqttUsername = ""                        # username for user/pass based authentication
-mqttPassword = ""                        # password for user/pass based authentication
-mqttCA = "/home/pi/MQTT/mqtt-ca.crt"            # path to server certificate for certificate-based authentication
-mqttCert = "/home/pi/MQTT/mqtt-client-phoniebox.crt"  # path to client certificate for certificate-based authentication
-mqttKey = "/home/pi/MQTT/mqtt-client-phoniebox.key"  # path to client keyfile for certificate-based authentication
-mqttConnectionTimeout = 60                # in seconds; timeout for MQTT connection
-refreshIntervalPlaying = 5                # in seconds; how often should the status be sent to MQTT (while playing)
-refreshIntervalIdle = 30                    # in seconds; how often should the status be sent to MQTT (when NOT playing)
-
+mqttBaseTopic = "phoniebox"             # MQTT base topic
+mqttClientId = "phoniebox"              # MQTT client ID
+mqttHostname = "openHAB"                # MQTT server hostname
+mqttPort = 8883                         # MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
+mqttUsername = ""                       # username for user/pass based authentication
+mqttPassword = ""                       # password for user/pass based authentication
+mqttCA = "/home/pi/MQTT/mqtt-ca.crt"    # path to server certificate for certificate-based authentication
+mqttCert = "/home/pi/MQTT/mqtt-client-phoniebox.crt"    # path to client certificate for certificate-based authentication
+mqttKey = "/home/pi/MQTT/mqtt-client-phoniebox.key"     # path to client keyfile for certificate-based authentication
+mqttConnectionTimeout = 60              # in seconds; timeout for MQTT connection
+refreshIntervalPlaying = 5              # in seconds; how often should the status be sent to MQTT (while playing)
+refreshIntervalIdle = 30                # in seconds; how often should the status be sent to MQTT (when NOT playing)
 
 # ----------------------------------------------------------
 #  DO NOT CHANGE BELOW
