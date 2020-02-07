@@ -65,7 +65,7 @@ class Phoniebox(object):
         # read cardAssignments from given card assignments file
         card_assignments_file = self.get_setting("phoniebox", "card_assignments_file")
         self.cardAssignments = self.read_cardAssignments()
-        if self.get_setting("phoniebox", "translate_legacy_cardassignments", "bool") == True:
+        if self.get_setting("phoniebox", "translate_legacy_cardassignments", "bool") is True:
             self.log("Translating legacy cardAssignment config from folder.conf files.", 3)
             legacy_cardAssignments = self.translate_legacy_cardAssignments()
             self.update_cardAssignments(legacy_cardAssignments)
@@ -108,7 +108,7 @@ class Phoniebox(object):
             self.client.disconnect()
         except:
             pass
-        while success != True and runtime <= self.client.timeout:
+        while success is not True and runtime <= self.client.timeout:
             try:
                 self.client.connect(self.client.host, self.client.port)
                 success = True
@@ -209,7 +209,6 @@ class Phoniebox(object):
         self.client.add(uri)
         self.client.play()
         self.log("phoniebox: playing {}".format(uri.encode('utf-8')), 3)
-
 
     # TODO: is there a better way to check for "value not present" than to return -1?
     def get_setting(self, section, key, opt_type="string"):
@@ -360,7 +359,7 @@ class Phoniebox(object):
                     uri = f.readline().strip().decode('utf-8')
 
                 # add default settings
-                if not filename in configParser.sections():
+                if filename not in configParser.sections():
                     self.log("Adding section {} to cardAssignments".format(filename), 5)
                     configParser.add_section(filename)
                 configParser[filename] = self.config["default_cardsettings"]
@@ -379,8 +378,8 @@ class Phoniebox(object):
                         lines = f.readlines()
                     cardsettings_old = dict([l.strip().replace('"', '').split("=") for l in lines])
                     for key in cardsettings_old.keys():
-                        if cardsettings_map[key] != None:
-                        #  ignore 0 and OFF values, drop settings that have None in cardsettings_map
+                        if cardsettings_map[key] is not None:
+                            #  ignore 0 and OFF values, drop settings that have None in cardsettings_map
                             if key != "ELAPSED":
                                 if cardsettings_old[key] != "0" and cardsettings_old[key] != "OFF":
                                     configParser.set(filename, cardsettings_map[key], "1")
