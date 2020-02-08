@@ -1,6 +1,6 @@
 # How to contribute
 
-Contributors have played a bigger role over time to keep Phoniebox on the endge of innovation :)
+Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
 We want to keep it as easy as possible to contribute changes that get things working in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
@@ -91,6 +91,10 @@ The original contributor will be notified of the revert.
 
 * Changes resulting in test failures will be reverted if they cannot
   be resolved within one business day.
+
+## Guidelines ##
+* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**. Some existing code may still be Python 2, but new code has to be compatible with Python 3.5 and old code that is changed should then be ported to Python 3.5.
+* For GPIO all code should work with RPi.GPIO. gpiozero is currently not intended to use.
 
 ## Additional Resources
 

@@ -1,7 +1,7 @@
 ---
 name: feature request
 about: use this template to propose new features
-title: ":bulb: [FEATURE SUMMARY]"
+title: "\U0001F680 | FEATURE SUMMARY"
 labels: enhancement
 assignees: MiczFlor
 ---
