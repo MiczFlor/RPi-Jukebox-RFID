@@ -1,11 +1,11 @@
 import configparser
 import logging
 
-from SimpleButton import SimpleButton
-from TwoButtonControl import TwoButtonControl
+from components.gpio_control.SimpleButton import SimpleButton
+from components.gpio_control.TwoButtonControl import TwoButtonControl
 from helperscripts import function_calls
 
-from RotaryEncoder import RotaryEncoder
+from components.gpio_control.RotaryEncoder import RotaryEncoder
 
 logger = logging.getLogger(__name__)
 

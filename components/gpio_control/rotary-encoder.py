@@ -43,9 +43,8 @@
 import RPi.GPIO as GPIO
 import sys
 from signal import pause
-from subprocess import check_call
 
-from scripts.RotaryEncoder import RotaryEncoder
+from components.gpio_control.RotaryEncoder import RotaryEncoder
 
 from scripts.helperscripts import function_calls
 

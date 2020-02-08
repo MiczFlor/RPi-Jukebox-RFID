@@ -1,4 +1,3 @@
-import mock
 from mock import patch, MagicMock
 import pytest
 
@@ -11,7 +10,7 @@ patcher = patch.dict("sys.modules", modules)
 patcher.start()
 
 import RPi.GPIO as GPIO
-from scripts.SimpleButton import SimpleButton
+from components.gpio_control.SimpleButton import SimpleButton
 
 pin = 1
 mockedAction = MagicMock()

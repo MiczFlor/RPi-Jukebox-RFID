@@ -3,7 +3,7 @@ import logging
 
 from mock import patch, MagicMock
 
-from test.test_TwoButtonControl import mockedFunction1, mockedFunction2, mockedFunction3
+from components.gpio_control.test import mockedFunction1, mockedFunction2, mockedFunction3
 
 MockRPi = MagicMock()
 modules = {
@@ -19,7 +19,7 @@ MockRPi.GPIO.BOTH = 33
 MockRPi.GPIO.HIGH = 1
 MockRPi.GPIO.LOW = 0
 
-from gpio_control import get_all_devices
+from components.gpio_control.gpio_control import get_all_devices
 
 # def test_functionCallTwoButtonsOnlyBtn2Pressed(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
 #                                                functionCallBothPressedMock):

@@ -2,8 +2,8 @@ import mock
 import pytest
 from mock import MagicMock
 
+from components.gpio_control import TwoButtonControl
 
-import TwoButtonControl
 
 @pytest.fixture
 def btn1Mock():
@@ -38,10 +38,10 @@ def test_functionCallTwoButtonsOnlyBtn1Pressed(btn1Mock,
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = False
     func = TwoButtonControl.functionCallTwoButtons(btn1Mock,
-                                  btn2Mock,
-                                  functionCall1Mock,
-                                  functionCall2Mock,
-                                  functionCallBothPressed=functionCallBothPressedMock)
+                                                   btn2Mock,
+                                                   functionCall1Mock,
+                                                   functionCall2Mock,
+                                                   functionCallBothPressed=functionCallBothPressedMock)
     func()
     functionCall1Mock.assert_called_once_with()
     functionCall2Mock.assert_not_called()
@@ -56,7 +56,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedExists(btn1
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
     func = TwoButtonControl.functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
-                                  functionCallBothPressed=functionCallBothPressedMock)
+                                                   functionCallBothPressed=functionCallBothPressedMock)
     func()
     functionCall1Mock.assert_not_called()
     functionCall2Mock.assert_not_called()
@@ -70,7 +70,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedIsNone(btn1
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
     func = TwoButtonControl.functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
-                                  functionCallBothPressed=None)
+                                                   functionCallBothPressed=None)
     func()
     functionCall1Mock.assert_not_called()
     functionCall2Mock.assert_not_called()
@@ -87,27 +87,27 @@ def two_button_control():
     mockedFunction2.reset_mock()
     mockedFunction3.reset_mock()
     return TwoButtonControl.TwoButtonControl(bcmPin1=1,
-                            bcmPin2=2,
-                            functionCallBtn1=mockedFunction1,
-                            functionCallBtn2=mockedFunction2,
-                            functionCallTwoBtns=mockedFunction3,
-                            pull_up=True,
-                            hold_repeat=False,
-                            hold_time=0.3,
-                            name='TwoButtonControl')
+                                             bcmPin2=2,
+                                             functionCallBtn1=mockedFunction1,
+                                             functionCallBtn2=mockedFunction2,
+                                             functionCallTwoBtns=mockedFunction3,
+                                             pull_up=True,
+                                             hold_repeat=False,
+                                             hold_time=0.3,
+                                             name='TwoButtonControl')
 
 
 class TestTwoButtonControl:
     def test_init(self):
         TwoButtonControl.TwoButtonControl(bcmPin1=1,
-                         bcmPin2=2,
-                         functionCallBtn1=mockedFunction1,
-                         functionCallBtn2=mockedFunction2,
-                         functionCallTwoBtns=mockedFunction3,
-                         pull_up=True,
-                         hold_repeat=False,
-                         hold_time=0.3,
-                         name='TwoButtonControl')
+                                          bcmPin2=2,
+                                          functionCallBtn1=mockedFunction1,
+                                          functionCallBtn2=mockedFunction2,
+                                          functionCallTwoBtns=mockedFunction3,
+                                          pull_up=True,
+                                          hold_repeat=False,
+                                          hold_time=0.3,
+                                          name='TwoButtonControl')
 
     def test_btn1_pressed(self, two_button_control):
         pinA = two_button_control.bcmPin1
