@@ -2,7 +2,7 @@
 # rotary volume knob
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
-# RPi-Jukebox-RFID/scripts/RotaryEncoder.py
+# RPi-Jukebox-RFID/scripts/rotary_encoder.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
 # See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
 

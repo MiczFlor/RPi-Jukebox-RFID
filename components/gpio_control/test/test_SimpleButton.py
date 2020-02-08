@@ -10,7 +10,7 @@ patcher = patch.dict("sys.modules", modules)
 patcher.start()
 
 import RPi.GPIO as GPIO
-from components.gpio_control.SimpleButton import SimpleButton
+from components.gpio_control.simple_button import SimpleButton
 
 pin = 1
 mockedAction = MagicMock()

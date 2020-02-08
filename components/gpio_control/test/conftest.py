@@ -14,5 +14,3 @@ MockRPi.GPIO.HIGH = 1
 MockRPi.GPIO.LOW = 0
 patcher = patch.dict("sys.modules", modules)
 patcher.start()
-import RPi.GPIO
-GPIO = RPi.GPIO
