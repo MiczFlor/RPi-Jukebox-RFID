@@ -76,7 +76,12 @@ class TwoButtonControl:
 
     def __repr__(self):
         two_btns_action = self.functionCallTwoBtns is not None
-        return f'<TwoBtnControl-{self.name}({self.bcmPin1}, {self.bcmPin2},two_buttons_action={two_btns_action})>'
+        return '<TwoBtnControl-{name}({bcmPin1}, {bcmPin2},two_buttons_action={two_btns_action})>'.format(
+            name=self.name,
+            bcmPin1=self.bcmPin1,
+            bcmPin2=self.bcmPin2,
+            two_btns_action=two_btns_action
+        )
 
 
 if __name__ == "__main__":
