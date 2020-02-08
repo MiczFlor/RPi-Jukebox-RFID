@@ -1,7 +1,6 @@
 import mock
 import pytest
 from mock import MagicMock
-from test.mockedGPIO import GPIO
 
 
 import TwoButtonControl

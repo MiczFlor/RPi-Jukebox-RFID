@@ -1,5 +1,6 @@
 from mock import MagicMock, patch
 
+
 MockRPi = MagicMock()
 modules = {
     "RPi": MockRPi,
