@@ -49,6 +49,7 @@ $lang['globalExternalInterfaces'] = "Externe apparaten en interfaces";
 $lang['globalIdleTime'] = "inactieve tijd";
 $lang['globalNotIdle'] = "niet inactief";
 $lang['globalGpioButtons'] = "GPIO knoppen";
+$lang['globalRotaryKnob'] = "Draaiknop";
 $lang['globalRfidReader'] = "RFID lezer";
 $lang['globalEnabled'] = "Ingeschakeld";
 $lang['globalDisabled'] = "Uitgeschakeld";

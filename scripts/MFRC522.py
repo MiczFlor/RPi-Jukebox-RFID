@@ -1,16 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
 import RPi.GPIO as GPIO
 import spi
 import signal
 import time
-  
+
+
 class MFRC522:
   NRSTPD = 22
-  
+
   MAX_LEN = 16
-  
+
   PCD_IDLE       = 0x00
   PCD_AUTHENT    = 0x0E
   PCD_RECEIVE    = 0x08
@@ -18,7 +19,7 @@ class MFRC522:
   PCD_TRANSCEIVE = 0x0C
   PCD_RESETPHASE = 0x0F
   PCD_CALCCRC    = 0x03
-  
+
   PICC_REQIDL    = 0x26
   PICC_REQALL    = 0x52
   PICC_ANTICOLL  = 0x93
@@ -32,11 +33,11 @@ class MFRC522:
   PICC_RESTORE   = 0xC2
   PICC_TRANSFER  = 0xB0
   PICC_HALT      = 0x50
-  
+
   MI_OK       = 0
   MI_NOTAGERR = 1
   MI_ERR      = 2
-  
+
   Reserved00     = 0x00
   CommandReg     = 0x01
   CommIEnReg     = 0x02
@@ -53,7 +54,7 @@ class MFRC522:
   BitFramingReg  = 0x0D
   CollReg        = 0x0E
   Reserved01     = 0x0F
-  
+
   Reserved10     = 0x10
   ModeReg        = 0x11
   TxModeReg      = 0x12
@@ -287,7 +288,7 @@ class MFRC522:
     (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, buf)
     
     if (status == self.MI_OK) and (backLen == 0x18):
-      print "Size: " + str(backData[0])
+      print("Size: " + str(backData[0]))
       return    backData[0]
     else:
       return 0
@@ -318,9 +319,9 @@ class MFRC522:
 
     # Check if an error occurred
     if not(status == self.MI_OK):
-      print "AUTH ERROR!!"
+      print("AUTH ERROR!!")
     if not (self.Read_MFRC522(self.Status2Reg) & 0x08) != 0:
-      print "AUTH ERROR(status2reg & 0x08) != 0"
+      print("AUTH ERROR(status2reg & 0x08) != 0")
 
     # Return the status
     return status
@@ -337,10 +338,10 @@ class MFRC522:
     recvData.append(pOut[1])
     (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE, recvData)
     if not(status == self.MI_OK):
-      print "Error while reading!"
+      print("Error while reading!")
     i = 0
     if len(backData) == 16:
-      print "Sector "+str(blockAddr)+" "+str(backData)
+      print("Sector "+str(blockAddr)+" "+str(backData))
   
   def MFRC522_Write(self, blockAddr, writeData):
     buff = []
@@ -353,7 +354,7 @@ class MFRC522:
     if not(status == self.MI_OK) or not(backLen == 4) or not((backData[0] & 0x0F) == 0x0A):
         status = self.MI_ERR
     
-    print str(backLen)+" backdata &0x0F == 0x0A "+str(backData[0]&0x0F)
+    print(str(backLen)+" backdata &0x0F == 0x0A "+str(backData[0]&0x0F))
     if status == self.MI_OK:
         i = 0
         buf = []
@@ -365,9 +366,9 @@ class MFRC522:
         buf.append(crc[1])
         (status, backData, backLen) = self.MFRC522_ToCard(self.PCD_TRANSCEIVE,buf)
         if not(status == self.MI_OK) or not(backLen == 4) or not((backData[0] & 0x0F) == 0x0A):
-            print "Error while writing"
+            print("Error while writing")
         if status == self.MI_OK:
-            print "Data written"
+            print("Data written")
 
   def MFRC522_DumpClassic1K(self, key, uid):
     i = 0
@@ -377,7 +378,7 @@ class MFRC522:
         if status == self.MI_OK:
             self.MFRC522_Read(i)
         else:
-            print "Authentication error"
+            print("Authentication error")
         i = i+1
 
   def MFRC522_Init(self):

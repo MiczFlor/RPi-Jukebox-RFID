@@ -27,7 +27,7 @@ logs/*
 __pycache__/
 *.py[cod]
 
-.git*
+.git
 *~
 *.*~
 *.pyc

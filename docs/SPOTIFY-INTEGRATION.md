@@ -117,7 +117,7 @@ Finally, you need to set a couple of config values, and then you’re ready to r
 
 To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
-sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
+sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify libffi-dev
 sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
 sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
 cd

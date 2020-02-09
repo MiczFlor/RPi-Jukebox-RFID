@@ -12,18 +12,21 @@ import ctypes
 
 c_uint8 = ctypes.c_uint8
 
-class Flags_bits( ctypes.LittleEndianStructure ):
-     _fields_ = [
-                 ("A", c_uint8, 1 ),  # asByte & 1
-                 ("B", c_uint8, 1 ),  # asByte & 2
+
+class Flags_bits(ctypes.LittleEndianStructure):
+    _fields_ = [
+                 ("A", c_uint8, 1),  # asByte & 1
+                 ("B", c_uint8, 1),  # asByte & 2
                 ]
- 
-class Flags( ctypes.Union ):
-     _anonymous_ = ("bit",)
-     _fields_ = [
-                 ("bit",    Flags_bits ),
-                 ("asByte", c_uint8    )
+
+
+class Flags(ctypes.Union):
+    _anonymous_ = ("bit",)
+    _fields_ = [
+                 ("bit",    Flags_bits),
+                 ("asByte", c_uint8)
                 ]
+
 
 class RotaryEncoder:
 
@@ -48,7 +51,7 @@ class RotaryEncoder:
         self.rotaryCallbackCCW = arg_rotaryCallbackCCW
         self.TimeBase = arg_TimeBase
 
-        self.EncoderState = Flags()	# stores the encoder state machine state
+        self.EncoderState = Flags()  # stores the encoder state machine state
         self.StartTime = timer()
 
         # setup pins

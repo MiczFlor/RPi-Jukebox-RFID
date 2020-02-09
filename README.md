@@ -15,11 +15,12 @@ In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://d
 
 ## Important updates / news
 
-* **Phoniebox 2.0 rc7 released (2019-12-17)
+* **Phoniebox 2.0 rc8 released (2020-01-18 ... getting closer to the actual release...)
 
 * **What's new?**
     * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
     * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
+    * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
     * The **one-line install script** handles both: **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
     * Control the debug logs in the web app (individual scripts switched on/off, empty log file).
     * Set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards.
