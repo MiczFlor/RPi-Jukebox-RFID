@@ -6,12 +6,12 @@ import spi
 import signal
 import time
 
- 
+
 class MFRC522:
   NRSTPD = 22
-  
+
   MAX_LEN = 16
-  
+
   PCD_IDLE       = 0x00
   PCD_AUTHENT    = 0x0E
   PCD_RECEIVE    = 0x08
@@ -19,7 +19,7 @@ class MFRC522:
   PCD_TRANSCEIVE = 0x0C
   PCD_RESETPHASE = 0x0F
   PCD_CALCCRC    = 0x03
-  
+
   PICC_REQIDL    = 0x26
   PICC_REQALL    = 0x52
   PICC_ANTICOLL  = 0x93
@@ -33,11 +33,11 @@ class MFRC522:
   PICC_RESTORE   = 0xC2
   PICC_TRANSFER  = 0xB0
   PICC_HALT      = 0x50
-  
+
   MI_OK       = 0
   MI_NOTAGERR = 1
   MI_ERR      = 2
-  
+
   Reserved00     = 0x00
   CommandReg     = 0x01
   CommIEnReg     = 0x02
@@ -54,7 +54,7 @@ class MFRC522:
   BitFramingReg  = 0x0D
   CollReg        = 0x0E
   Reserved01     = 0x0F
-  
+
   Reserved10     = 0x10
   ModeReg        = 0x11
   TxModeReg      = 0x12

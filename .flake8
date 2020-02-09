@@ -1,0 +1,7 @@
+[flake8]
+max-line-length = 120
+ignore =
+    # continuation line over-indented for visual indent
+    E127,
+    # continuation line under-indented for visual indent
+    E128
