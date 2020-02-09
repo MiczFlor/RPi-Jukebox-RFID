@@ -2,7 +2,7 @@
 namespace JukeBox\Api;
 
 /**
- * Starts to play a single song in a new playlist.
+ * Appends a given file to the current playlist (and starts playing)
  */
 include('../common.php');
 
