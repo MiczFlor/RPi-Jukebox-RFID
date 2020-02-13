@@ -97,7 +97,7 @@ class PhonieboxDaemon(Phoniebox):
 #            sleep(debounce_time)
             try:
                 # start the player script and pass on the cardid
-                if cardid != None:
+                if cardid is not None:
                     print("Card ID: {}".format(int(cardid)))
                     filename = self.get_setting("phoniebox", "Latest_RFID_file")
                     if filename != -1:
@@ -154,18 +154,18 @@ class PhonieboxDaemon(Phoniebox):
 
 if __name__ == "__main__":
 
-        # if called directly, launch Phoniebox.py as rfid-reader daemon
-        # treat the first argument as defaultconfigFilePath if given
-        if len(sys.argv) <= 1:
-            configFilePath = defaultconfigFilePath
-        else:
-            configFilePath = sys.argv[1]
+    # if called directly, launch Phoniebox.py as rfid-reader daemon
+    # treat the first argument as defaultconfigFilePath if given
+    if len(sys.argv) <= 1:
+        configFilePath = defaultconfigFilePath
+    else:
+        configFilePath = sys.argv[1]
 
-        daemon = PhonieboxDaemon(configFilePath)
+    daemon = PhonieboxDaemon(configFilePath)
 
-        # setup the signal listeners
-        signal.signal(signal.SIGINT, daemon.exit_gracefully)
-        signal.signal(signal.SIGTERM, daemon.exit_gracefully)
+    # setup the signal listeners
+    signal.signal(signal.SIGINT, daemon.exit_gracefully)
+    signal.signal(signal.SIGTERM, daemon.exit_gracefully)
 
-        # start the daemon (blocking)
-        daemon.run()
+    # start the daemon (blocking)
+    daemon.run()

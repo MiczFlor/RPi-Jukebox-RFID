@@ -227,7 +227,7 @@ def normalizeTrueFalse(s):
         return "true"
 
 
-def regex(needle, hay, exception = "-"):
+def regex(needle, hay, exception="-"):
     regex_extract = re.search(needle, hay)
     if regex_extract:
         return regex_extract.group(1)
@@ -327,7 +327,7 @@ elif mqttCA != "":
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 client.on_message = on_message
-if DEBUG == True:
+if DEBUG is True:
     client.on_log = on_log
 
 # define last will

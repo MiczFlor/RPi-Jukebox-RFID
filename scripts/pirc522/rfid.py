@@ -62,7 +62,7 @@ class RFID(object):
     irq = threading.Event()
 
     def __init__(self, bus=0, device=0, speed=1000000, pin_rst=def_pin_rst,
-            pin_ce=0, pin_irq=def_pin_irq, pin_mode = def_pin_mode):
+            pin_ce=0, pin_irq=def_pin_irq, pin_mode=def_pin_mode):
         self.pin_rst = pin_rst
         self.pin_ce = pin_ce
         self.pin_irq = pin_irq
