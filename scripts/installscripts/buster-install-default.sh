@@ -485,8 +485,8 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
-	sudo apt-get install --yes mopidy=2.3.1-1
-	sudo python2.7 -m pip install Mopidy==2.3.*
+	sudo apt-get install --yes mopidy=2.2.2-1
+	sudo python2.7 -m pip install Mopidy==2.2.*
 
 	sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
 	sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
