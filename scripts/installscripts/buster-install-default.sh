@@ -503,7 +503,7 @@ then
 	 sudo python2.7 -m pip install pylast==2.4.0
 	# not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
  	sudo python2.7 -m pip install 'tornado==5.0'
-	sudo python2.7 -m pip install Mopidy-Iris
+	sudo python2.7 -m pip install Mopidy-Iris==3.43.0
 fi
 
 # Get github code
