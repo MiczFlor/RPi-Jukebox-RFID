@@ -7,7 +7,7 @@ User=pi
 Group=pi
 Restart=always
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
-ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/rotary-encoder.py
+ExecStart=/usr/bin/python3 /home/pi/RPi-Jukebox-RFID/scripts/rotary-encoder.py
 
 [Install]
 WantedBy=multi-user.target

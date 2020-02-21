@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # There are a variety of RFID readers out there, USB and non-USB variants.
 # This might create problems in recognizing the reader you are using.
 # We haven't found the silver bullet yet. If you can contribute to this 
