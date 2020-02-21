@@ -843,7 +843,7 @@ case "$response" in
         ;;
     *)
         cd /home/pi/RPi-Jukebox-RFID/scripts/ || exit
-        python2 RegisterDevice.py
+        python3 RegisterDevice.py
         sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         sudo chmod 644 /home/pi/RPi-Jukebox-RFID/scripts/deviceName.txt
         ;;
