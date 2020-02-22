@@ -501,6 +501,8 @@ then
     # not sure, if really necessary
     sudo python3 -m pip install mopidy-mpd
     sudo python3 -m pip install mopidy-local
+    
+    sudo python3 -m pip install Mopidy-Iris
 fi
 
 # Get github code
