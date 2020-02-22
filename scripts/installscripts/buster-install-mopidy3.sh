@@ -497,6 +497,10 @@ then
     sudo apt-get update
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+    
+    # not sure, if really necessary
+    sudo python3 -m pip install mopidy-mpd
+    sudo python3 -m pip install mopidy-local
 fi
 
 # Get github code
