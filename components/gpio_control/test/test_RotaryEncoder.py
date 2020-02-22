@@ -1,8 +1,8 @@
 import pytest
 from mock import MagicMock
 
-from test.mockedGPIO import GPIO
-from scripts.RotaryEncoder import RotaryEncoder
+from components.gpio_control.rotary_encoder import RotaryEncoder
+from RPi import GPIO
 
 
 pinA = 1

@@ -60,7 +60,7 @@ def functionCallToggleWifi():
 
 
 def getFunctionCall(functionName):
-    logger.error(f'Get FunctionCall: {functionName} {functionName in locals()}')
+    logger.error('Get FunctionCall: {} {}'.format(functionName,functionName in locals()))
     getattr(sys.modules[__name__], str)
     return locals().get(functionName, None)
 
