@@ -10,7 +10,7 @@ def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCal
     def functionCallTwoButtons(*args):
         btn1_pressed = btn1.is_pressed
         btn2_pressed = btn2.is_pressed
-        print('Btn1 {}, Btn2 {}'.format(btn1_pressed,btn2_pressed))
+        logger.debug('Btn1 {}, Btn2 {}'.format(btn1_pressed,btn2_pressed))
         if btn1_pressed and btn2_pressed:
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:
