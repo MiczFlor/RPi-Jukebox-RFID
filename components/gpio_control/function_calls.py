@@ -4,58 +4,64 @@ from subprocess import check_call
 
 logger = logging.getLogger(__name__)
 
-def functionCallShutdown():
-    check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
+playout_control = "../../scripts/playout_controls.sh "
+
+def functionCallShutdown(*args):
+    check_call("{command}-c=shutdown".format(command=playout_control), shell=True)
 
 
 def functionCallVolU(steps=None):
     if steps is None:
-        check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
+        check_call("{command}-c=volumeup".format(command=playout_control), shell=True)
     else:
-        check_call("./scripts/playout_controls.sh -c=volumeup -v={steps}".format(steps), shell=True)
+        check_call("{command}-c=volumeup -v={steps}".format(steps=steps,
+            command=playout_control),
+                shell=True)
 
 
 def functionCallVolD(steps=None):
     if steps is None:
-        check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
+        check_call("{command}-c=volumedown".format(command=playout_control), shell=True)
     else:
-        check_call("./scripts/playout_controls.sh -c=volumedown -v={steps}".format(steps), shell=True)
+        check_call("{command}-c=volumedown -v={steps}".format(steps=steps,
+            command=playout_control),
+                shell=True)
 
 
-def functionCallVol0():
-    check_call("./scripts/playout_controls.sh -c=mute", shell=True)
+def functionCallVol0(*args):
+    check_call("{command}-c=mute".format(command=playout_control), shell=True)
 
 
 def functionCallPlayerNext():
-    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+    check_call("{command}-c=playernext".format(command=playout_control), shell=True)
 
 
 def functionCallPlayerPrev():
-    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
+    check_call("{command}-c=playerprev".format(command=playout_control), shell=True)
 
 
 def functionCallPlayerPauseForce():
-    check_call("./scripts/playout_controls.sh -c=playerpauseforce", shell=True)
+    check_call("{command}-c=playerpauseforce".format(command=playout_control), shell=True)
 
 
-def functionCallPlayerPause():
-    check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
+def functionCallPlayerPause(*args):
+    check_call("{command}-c=playerpause".format(command=playout_control), shell=True)
 
 
 def functionCallRecordStart():
-    check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
+    check_call("{command}-c=recordstart".format(command=playout_control), shell=True)
 
 
 def functionCallRecordStop():
-    check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
+    check_call("{command}-c=recordstop".format(command=playout_control), shell=True)
 
 
 def functionCallRecordPlayLatest():
-    check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
+    check_call("{command}-c=recordplaylatest".format(command=playout_control), shell=True)
 
 
 def functionCallToggleWifi():
-    check_call("./scripts/playout_controls.sh -c=togglewifi", shell=True)
+    check_call("{command}-c=togglewifi".format(command=playout_control), shell=True)
 
 
 
