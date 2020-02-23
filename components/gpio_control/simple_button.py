@@ -61,6 +61,7 @@ class SimpleButton:
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
 
+
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
@@ -72,6 +73,7 @@ class SimpleButton:
             self.when_pressed(*args)
 
     def __del__(self):
+        logger.debug('remove event detection')
         GPIO.remove_event_detect(self.pin)
 
     @property
@@ -91,5 +93,4 @@ if __name__ == "__main__":
     pin = int(input())
     func = lambda *args: print('FunctionCall with {}'.format(args))
     btn = SimpleButton(pin=pin, action=func, hold_repeat=True)
-    while True:
-        pass
+    pause()
