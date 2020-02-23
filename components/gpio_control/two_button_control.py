@@ -85,7 +85,7 @@ class TwoButtonControl:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level='DEBUG')
+    logging.basicConfig(level='INFO')
     pin1 = int(input('please enter first pin'))
     pin2 = int(input('please enter second pin'))
     func1 = lambda *args: print('Function Btn1 executed with {}'.format(args))
