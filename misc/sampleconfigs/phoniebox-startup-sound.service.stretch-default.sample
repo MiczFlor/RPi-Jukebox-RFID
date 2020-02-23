@@ -1,4 +1,4 @@
-[Unit]  
+[Unit]
 Description=Phoniebox Startup Sound
 After=alsa-state.service
 

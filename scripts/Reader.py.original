@@ -39,13 +39,13 @@ class Reader:
         path = os.path.dirname(os.path.realpath(__file__))
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
         deviceNameFile = os.path.join(path, 'deviceName.txt')
-        if not os.path.isfile(fileName):
-            logger.error(f'deviceName not set in {deviceNameFile}')
+        if not os.path.isfile(deviceNameFile):
+            logger.error('deviceName not set in {deviceNameFile}'.format(deviceNameFile=deviceNameFile))
             sys.exit('Please run RegisterDevice.py first')
         else:
             with open(deviceNameFile, 'r') as f:
                 deviceName = f.read()
-                logging.debug(f'DeviceName {deviceName}')
+                logging.debug('DeviceName {deviceName}'.format(deviceName=deviceName))
             devices = get_devices()
             for device in devices:
                 if device.name == deviceName:
