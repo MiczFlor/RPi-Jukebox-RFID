@@ -493,7 +493,7 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 if [ $SPOTinstall == "YES" ]
 then
     # keep major verson 3 of mopidy
-    sudo echo "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" > /etc/apt/preferences.d/mopidy
+    echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
     
     wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
