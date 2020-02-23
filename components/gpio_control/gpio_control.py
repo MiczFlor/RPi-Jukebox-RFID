@@ -1,4 +1,5 @@
 import configparser
+import os
 import logging
 
 from simple_button import SimpleButton
@@ -40,10 +41,6 @@ class VolumeControl:
                 getFunctionCall(config.get('functionCallDown')),
                 config.getfloat('timeBase',fallback=0.1),
                 name='RotaryVolumeControl')
-
-
-
-
 
 
 def generate_device(config, deviceName):
@@ -89,16 +86,24 @@ def get_all_devices(config):
             logger.info('Device {} not enabled'.format(section))
     for dev in devices:
         print(dev)
+    return devices
 
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level='DEBUG')
+    logging.basicConfig(level='INFO')
     logger = logging.getLogger()
-    logger.setLevel('DEBUG')
+    logger.setLevel('INFO')
 
     config = configparser.ConfigParser()
-    config.read('../../settings/gpio_settings.ini')
+    config_path = os.path.expanduser('~/.config/phoniebox/gpio_settings.ini')
+    config.read(config_path)
+
     devices = get_all_devices(config)
     print(devices)
-    pause()
+    logger.info('Ready for taking actions')
+    try:
+        pause()
+    except KeyboardInterrupt:
+        pass
+    logger.info('Exiting GPIO Control')
