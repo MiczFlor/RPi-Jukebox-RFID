@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 from timeit import default_timer as timer
 import ctypes
 import logging
+from signal import pause
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,7 @@ class RotaryEncoder:
         GPIO.setup(self.pinA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.pinB, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self._is_active = False
+        self.start()
 
     def __repr__(self):
         repr_str = '<{class_name}{object_name} on pin_a {pin_a},' + \
@@ -104,11 +106,14 @@ class RotaryEncoder:
     def _Callback(self, pin):
         logger.debug('EventDetection Called')
         # construct new state machine input from encoder state and old state
-        self.encoderState.A = GPIO.input(self.pinA)
-        self.encoderState.B = GPIO.input(self.pinB)
-        logger.debug('new encoderState: "{}" -> {}'.format(
+        statusA =  GPIO.input(self.pinA)
+        statusB =  GPIO.input(self.pinB)
+
+        self.encoderState.A = statusA
+        self.encoderState.B = statusB
+        logger.debug('new encoderState: "{}" -> {}, {},{}'.format(
             self.encoderState.asByte,
-            self.tblEncoder[self.encoderState.asByte]
+            self.tblEncoder[self.encoderState.asByte],statusA,statusB
         ))
         current_state = self.encoderState.asByte
         self.encoderState.asByte = self.tblEncoder[current_state]
@@ -123,3 +128,15 @@ class RotaryEncoder:
             self.functionCallbackDecr(steps)
         else:
             logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
+
+if __name__ == "__main__":
+    logging.basicConfig(level='INFO')
+    GPIO.setmode(GPIO.BCM)
+    pin1 = int(input('please enter first pin'))
+    pin2 = int(input('please enter second pin'))
+    func1 = lambda *args: print('Function Incr executed with {}'.format(args))
+    func2 = lambda *args: print('Function Decr executed with {}'.format(args))
+    rotarty_encoder = RotaryEncoder(pin1,pin2,func1,func2)
+
+    print('running')
+    pause()

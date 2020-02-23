@@ -1,11 +1,11 @@
 import configparser
 import logging
 
-from components.gpio_control.simple_button import SimpleButton
-from components.gpio_control.two_button_control import TwoButtonControl
-from helperscripts import function_calls
-
-from components.gpio_control.rotary_encoder import RotaryEncoder
+from simple_button import SimpleButton
+from two_button_control import TwoButtonControl
+import  function_calls
+from signal import pause
+from rotary_encoder import RotaryEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,7 @@ def generate_device(config, deviceName):
 
 def get_all_devices(config):
     devices = []
+    logger.info(config.sections())
     for section in config.sections():
         if config.getboolean(section, 'enabled', fallback=False):
             logger.info('adding GPIO-Device, {}'.format(section))
@@ -91,6 +92,13 @@ def get_all_devices(config):
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(level='DEBUG')
+    logger = logging.getLogger()
+    logger.setLevel('DEBUG')
+
     config = configparser.ConfigParser()
-    config.read('../settings/gpio_settings_test.ini')
-    get_all_devices(config)
+    config.read('../../settings/gpio_settings.ini')
+    devices = get_all_devices(config)
+    print(devices)
+    pause()
