@@ -47,7 +47,7 @@ class RotaryEncoder:
         0b00010111, 0b00011011, 0b00000011, 0b00000010]
 
     def __init__(self, pinA, pinB, functionCallIncr=None, functionCallDecr=None, timeBase=0.1,
-                 name=None):
+                 name='RotaryEncoder'):
         logger.debug('Initialize {name} RotaryEncoder({arg_Apin}, {arg_Bpin})'.format(
             arg_Apin=pinA,
             arg_Bpin=pinB,
@@ -93,6 +93,10 @@ class RotaryEncoder:
         GPIO.remove_event_detect(self.pinB)
         self._is_active = False
 
+    def __del__(self):
+        if self.is_active:
+            self.stop()
+
     @property
     def is_active(self):
         return self._is_active
@@ -120,11 +124,13 @@ class RotaryEncoder:
 
         if self.KeyIncr == self.encoderState.asByte:
             steps = self._StepSize()
-            logger.debug('Calling functionIncr {steps}'.format(steps=steps))
+            logger.info('{name}: Calling functionIncr {steps}'.format(
+                name=self.name,steps=steps))
             self.functionCallbackIncr(steps)
         elif self.KeyDecr == self.encoderState.asByte:
             steps = self._StepSize()
-            logger.debug('Calling functionDecr {steps}'.format(steps=steps))
+            logger.info('{name}: Calling functionDecr {steps}'.format(
+                name=self.name, steps=steps))
             self.functionCallbackDecr(steps)
         else:
             logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
