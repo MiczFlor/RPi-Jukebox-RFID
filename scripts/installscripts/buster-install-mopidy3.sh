@@ -492,11 +492,21 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
+    # keep major verson 3 of mopidy
+    echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
+
     wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
     sudo apt-get update
+    sudo apt-get upgrade
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+
+    # shouldn't be necessary, already installed via apt
+    #sudo python3 -m pip install mopidy-mpd
+    #sudo python3 -m pip install mopidy-local
+
+    sudo python3 -m pip install Mopidy-Iris
 fi
 
 # Get github code
@@ -504,7 +514,7 @@ cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 # check, which branch was cloned
-git status
+git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
 
 
 # Jump into the Phoniebox dir
