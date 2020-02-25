@@ -2,11 +2,14 @@ import configparser
 import os
 import logging
 
-from simple_button import SimpleButton
-from two_button_control import TwoButtonControl
-import  function_calls
+from .simple_button import SimpleButton
+from .two_button_control import TwoButtonControl
+from . import  function_calls
 from signal import pause
-from rotary_encoder import RotaryEncoder
+from .rotary_encoder import RotaryEncoder
+from RPi import GPIO
+
+GPIO.setmode(GPIO.BCM)
 
 logger = logging.getLogger(__name__)
 

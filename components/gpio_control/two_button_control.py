@@ -1,4 +1,4 @@
-from simple_button import SimpleButton
+from .simple_button import SimpleButton
 from RPi import GPIO
 import logging
 logger = logging.getLogger(__name__)

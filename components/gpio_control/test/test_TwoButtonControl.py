@@ -3,6 +3,7 @@ import pytest
 from mock import MagicMock
 
 from components.gpio_control import two_button_control
+from components.gpio_control.two_button_control import functionCallTwoButtons, TwoButtonControl
 
 
 @pytest.fixture
@@ -37,7 +38,7 @@ def test_functionCallTwoButtonsOnlyBtn1Pressed(btn1Mock,
                                                functionCallBothPressedMock):
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = False
-    func = two_button_control.functionCallTwoButtons(btn1Mock,
+    func = functionCallTwoButtons(btn1Mock,
                                                      btn2Mock,
                                                      functionCall1Mock,
                                                      functionCall2Mock,
@@ -55,7 +56,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedExists(btn1
                                                                             functionCallBothPressedMock):
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
-    func = two_button_control.functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
+    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
                                                      functionCallBothPressed=functionCallBothPressedMock)
     func()
     functionCall1Mock.assert_not_called()
@@ -69,7 +70,7 @@ def test_functionCallTwoButtonsBothBtnsPressedFunctionCallBothPressedIsNone(btn1
                                                                             functionCall2Mock):
     btn1Mock.is_pressed = True
     btn2Mock.is_pressed = True
-    func = two_button_control.functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
+    func = functionCallTwoButtons(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
                                                      functionCallBothPressed=None)
     func()
     functionCall1Mock.assert_not_called()
@@ -82,11 +83,11 @@ mockedFunction3 = MagicMock()
 
 
 @pytest.fixture
-def two_button_control():
+def two_button_controller():
     mockedFunction1.reset_mock()
     mockedFunction2.reset_mock()
     mockedFunction3.reset_mock()
-    return two_button_control.TwoButtonControl(bcmPin1=1,
+    return TwoButtonControl(bcmPin1=1,
                                                bcmPin2=2,
                                                functionCallBtn1=mockedFunction1,
                                                functionCallBtn2=mockedFunction2,
@@ -99,7 +100,7 @@ def two_button_control():
 
 class TestTwoButtonControl:
     def test_init(self):
-        two_button_control.TwoButtonControl(bcmPin1=1,
+        TwoButtonControl(bcmPin1=1,
                                             bcmPin2=2,
                                             functionCallBtn1=mockedFunction1,
                                             functionCallBtn2=mockedFunction2,
@@ -109,9 +110,9 @@ class TestTwoButtonControl:
                                             hold_time=0.3,
                                             name='TwoButtonControl')
 
-    def test_btn1_pressed(self, two_button_control):
-        pinA = two_button_control.bcmPin1
-        pinB = two_button_control.bcmPin2
+    def test_btn1_pressed(self, two_button_controller):
+        pinA = two_button_controller.bcmPin1
+        pinB = two_button_controller.bcmPin2
         def func(pin):
             values = {pinA: False, pinB: True}
             if pin in values:
@@ -120,35 +121,35 @@ class TestTwoButtonControl:
                 print('Cannot find pin {} in values: {}'.format(pin,values))
                 return None
         two_button_control.GPIO.input.side_effect = func
-        two_button_control.action()
+        two_button_controller.action()
         mockedFunction1.assert_called_once()
         mockedFunction2.assert_not_called()
         mockedFunction3.assert_not_called()
-        two_button_control.action()
+        two_button_controller.action()
         assert mockedFunction1.call_count == 2
 
-    def test_btn2_pressed(self, two_button_control):
-        pinA = two_button_control.bcmPin1
-        pinB = two_button_control.bcmPin2
+    def test_btn2_pressed(self, two_button_controller):
+        pinA = two_button_controller.bcmPin1
+        pinB = two_button_controller.bcmPin2
         two_button_control.GPIO.input.side_effect = lambda pin: {pinA: True, pinB: False}[pin]
-        two_button_control.action()
+        two_button_controller.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_called_once()
         mockedFunction3.assert_not_called()
-        two_button_control.action()
+        two_button_controller.action()
         assert mockedFunction2.call_count == 2
 
-    def test_btn1_and_btn2_pressed(self, two_button_control):
-        pinA = two_button_control.bcmPin1
-        pinB = two_button_control.bcmPin2
+    def test_btn1_and_btn2_pressed(self, two_button_controller):
+        pinA = two_button_controller.bcmPin1
+        pinB = two_button_controller.bcmPin2
         two_button_control.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: False}[pin]
-        two_button_control.action()
+        two_button_controller.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_not_called()
         mockedFunction3.assert_called_once()
-        two_button_control.action()
+        two_button_controller.action()
         assert mockedFunction3.call_count == 2
 
-    def test_repr(self, two_button_control):
+    def test_repr(self, two_button_controller):
         expected = "<TwoBtnControl-TwoButtonControl(1, 2,two_buttons_action=True)>"
-        assert repr(two_button_control) == expected
+        assert repr(two_button_controller) == expected
