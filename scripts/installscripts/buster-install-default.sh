@@ -531,7 +531,7 @@ cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 # check, which branch was cloned
-git status
+git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
 
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
