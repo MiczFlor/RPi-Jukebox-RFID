@@ -43,15 +43,12 @@ class TestRotaryEncoder:
                       name=None)
 
     def test_repr(self, rotaryEncoder):
-        expected = "<RotaryEncoder:MockedGPIOInteraction on pin_a 1, pin_b 2,timBase 0.1 is_active=False%s>"
+        expected = "<RotaryEncoder:MockedGPIOInteraction on pin_a 1, pin_b 2,timBase 0.1 is_active=True%s>"
         assert repr(rotaryEncoder) == expected
 
     def test_start_stop(self, rotaryEncoder):
-        assert rotaryEncoder.is_active is False
-        GPIO.add_event_detect.assert_not_called()
-        rotaryEncoder.start()
+        calls = GPIO.add_event_detect.call_count
         assert rotaryEncoder.is_active is True
-        assert GPIO.add_event_detect.call_count == 2
         GPIO.remove_event_detect.assert_not_called()
         rotaryEncoder.stop()
         assert GPIO.remove_event_detect.call_count == 2
