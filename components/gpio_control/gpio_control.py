@@ -2,9 +2,7 @@ import configparser
 import os
 import logging
 
-from .GPIODevices.simple_button import SimpleButton
-from .GPIODevices.two_button_control import TwoButtonControl
-from .GPIODevices.rotary_encoder import RotaryEncoder
+from .GPIODevices import *
 from . import  function_calls
 from signal import pause
 
