@@ -142,7 +142,7 @@ if __name__ == "__main__":
     pin2 = int(input('please enter second pin'))
     func1 = lambda *args: print('Function Incr executed with {}'.format(args))
     func2 = lambda *args: print('Function Decr executed with {}'.format(args))
-    rotarty_encoder = RotaryEncoder(pin1,pin2,func1,func2)
+    rotarty_encoder = RotaryEncoder(pin1, pin2, func1, func2)
 
     print('running')
     pause()

@@ -2,7 +2,7 @@ import math
 import time
 from RPi import GPIO
 import logging
-from components.gpio_control.simple_button import SimpleButton
+from .simple_button import SimpleButton
 
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ import pytest
 from mock import Mock, patch
 import mock
 
-from components.gpio_control.shutdown_button import ShutdownButton, GPIO
+from ..GPIODevices.shutdown_button import ShutdownButton, GPIO
 
 mock_time = Mock()
 

@@ -1,8 +1,10 @@
 import time
-
+from signal import pause
+import logging
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
+logger = logging.getLogger(__name__)
 
 def parse_edge_key(edge):
     if edge in [GPIO.FALLING, GPIO.RISING, GPIO.BOTH]:

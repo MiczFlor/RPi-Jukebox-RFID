@@ -1,7 +1,7 @@
 import pytest
 from mock import MagicMock
 
-from components.gpio_control.rotary_encoder import RotaryEncoder
+from ..GPIODevices.rotary_encoder import RotaryEncoder
 from RPi import GPIO
 
 
