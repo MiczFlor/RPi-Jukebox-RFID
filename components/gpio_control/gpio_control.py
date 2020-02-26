@@ -2,8 +2,8 @@ import configparser
 import os
 import logging
 
-from .GPIODevices import *
-from . import  function_calls
+from GPIODevices import *
+import  function_calls
 from signal import pause
 
 from RPi import GPIO
@@ -24,6 +24,7 @@ def getFunctionCall(function_name):
 class VolumeControl:
     def __new__(self, config):
         if config.get('Type') == 'TwoButtonControl':
+            logger.info('VolumeControl as TwoButtonControl')
             return TwoButtonControl(
                 config.getint('pinUp'),
                 config.getint('pinDown'),
@@ -51,6 +52,7 @@ def generate_device(config, deviceName):
     if deviceName.lower() == 'VolumeControl'.lower():
         return VolumeControl(config)
     elif device_type == 'TwoButtonControl':
+        logger.info('adding TwoButtonControl')
         return TwoButtonControl(
             config.getint('Pin1'),
             config.getint('Pin2'),

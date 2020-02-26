@@ -32,15 +32,15 @@ def functionCallVol0(*args):
     check_call("{command}-c=mute".format(command=playout_control), shell=True)
 
 
-def functionCallPlayerNext():
+def functionCallPlayerNext(*args):
     check_call("{command}-c=playernext".format(command=playout_control), shell=True)
 
 
-def functionCallPlayerPrev():
+def functionCallPlayerPrev(*args):
     check_call("{command}-c=playerprev".format(command=playout_control), shell=True)
 
 
-def functionCallPlayerPauseForce():
+def functionCallPlayerPauseForce(*args):
     check_call("{command}-c=playerpauseforce".format(command=playout_control), shell=True)
 
 
@@ -48,19 +48,19 @@ def functionCallPlayerPause(*args):
     check_call("{command}-c=playerpause".format(command=playout_control), shell=True)
 
 
-def functionCallRecordStart():
+def functionCallRecordStart(*args):
     check_call("{command}-c=recordstart".format(command=playout_control), shell=True)
 
 
-def functionCallRecordStop():
+def functionCallRecordStop(*args):
     check_call("{command}-c=recordstop".format(command=playout_control), shell=True)
 
 
-def functionCallRecordPlayLatest():
+def functionCallRecordPlayLatest(*args):
     check_call("{command}-c=recordplaylatest".format(command=playout_control), shell=True)
 
 
-def functionCallToggleWifi():
+def functionCallToggleWifi(*args):
     check_call("{command}-c=togglewifi".format(command=playout_control), shell=True)
 
 

@@ -43,11 +43,6 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class SimpleButton:
-    def callbackFunctionHandler(self, *args):
-        if self.hold_repeat:
-            return self.holdAndRepeatHandler(*args)
-        return self.when_pressed(*args)
-
     def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING,
                  hold_time=.1, hold_repeat=False):
         self.edge = parse_edge_key(edge)
@@ -59,15 +54,39 @@ class SimpleButton:
         self.name = name
         self.bouncetime = bouncetime
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        self.when_pressed = action
+        self._action = action
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
 
+    def callbackFunctionHandler(self, *args):
+        if self.hold_repeat:
+            return self.holdAndRepeatHandler(*args)
+        logger.info('{}: executre callback'.format(self.name))
+        return self.when_pressed(*args)
 
+
+    @property
+    def when_pressed(self):
+        logger.info('{}: action'.format(self.name))
+        return self._action             
+
+    @when_pressed.setter
+    def when_pressed(self, func):
+        logger.info('{}: set when_pressed')
+        self._action = func
+
+        GPIO.remove_event_detect(self.pin)
+        self._action =  func
+        logger.info('add new action')
+        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
+
+
+                                        
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
     def holdAndRepeatHandler(self, *args):
+        logger.info('{}: holdAndRepeatHandler'.format(self.name))
         # Rise volume as requested
         self.when_pressed(*args)
         # Detect holding of button

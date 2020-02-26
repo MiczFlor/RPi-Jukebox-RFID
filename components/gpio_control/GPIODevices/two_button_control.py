@@ -1,4 +1,7 @@
-from .simple_button import SimpleButton
+try:
+    from simple_button import SimpleButton
+except ImportError:
+    from .simple_button import SimpleButton
 from RPi import GPIO
 import logging
 logger = logging.getLogger(__name__)
@@ -15,13 +18,16 @@ def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCal
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:
                 logger.debug("Both Btns are pressed, action: functionCallBothPressed")
+                logger.info('functionCallBoth')
                 return functionCallBothPressed(*args)
             logger.debug('No two button pressed action defined')
         elif btn1_pressed:
             logger.debug("Btn1 is pressed, secondary Btn not pressed, action: functionCall1")
+            logger.info('functionCall1')
             return functionCall1(*args)
         elif btn2_pressed:
             logger.debug("Btn2 is pressed, action: functionCall2")
+            logger.info('functionCall2')
             return functionCall2(*args)
         else:
             logger.debug("No Button Pressed: no action")
@@ -69,7 +75,7 @@ class TwoButtonControl:
                                                                 self.functionCallTwoBtns
                                                                 )
         self.action = generatedTwoButtonFunctionCall
-
+        logger.info('adding new action')
         self.btn1.when_pressed = generatedTwoButtonFunctionCall
         self.btn2.when_pressed = generatedTwoButtonFunctionCall
         self.name = name
