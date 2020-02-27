@@ -864,7 +864,7 @@ sudo amixer cset numid=1 100%
 GLOBAL_CONF=/home/pi/RFID/settings/global.conf
 if [ -f $GLOBAL_CONF ]
 then
-   echo "global.conf need to be deleted."
+   echo "global.conf needs to be deleted."
    rm $GLOBAL_CONF
 fi
 
