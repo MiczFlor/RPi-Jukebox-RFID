@@ -820,7 +820,13 @@ sudo amixer cset numid=1 100%
 # delete the global.conf file, in case somebody manually copied stuff back and forth
 # this will be created the first time the Phoniebox is put to use
 # by web app or RFID
-rm /home/pi/RPi-Jukebox-RFID/settings/global.conf
+
+GLOBAL_CONF=/home/pi/RFID/settings/global.conf
+if [ -f $GLOBAL_CONF ]
+then
+   echo "global.conf need to be deleted."
+   rm $GLOBAL_CONF
+fi
 
 # / Access settings
 #####################################################
