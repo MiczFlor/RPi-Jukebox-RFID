@@ -25,4 +25,6 @@ RUN apt-get update ;\
   touch /boot/cmdline.txt /etc/sysctl.conf ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
+ENTRYPOINT ["cd ./code && pytest"]
+
 USER pi
