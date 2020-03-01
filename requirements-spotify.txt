@@ -1,0 +1,3 @@
+# Spotify related requirements
+ # You need to install these with `sudo pip install -r requirements-spotify.txt`
+ Mopidy-Iris==3.45.0
