@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # This alternative Reader.py script was meant to cover not only USB readers but more.
 # It can be used to replace Reader.py if you have readers such as
-# MFRC522 or RDM6300.
+# MFRC522, RDM6300 or PN532.
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
 
@@ -16,6 +16,10 @@ from evdev import InputDevice, categorize, ecodes, list_devices
 # import MFRC522
 import pirc522
 
+lib_path = os.path.abspath('pn532')
+sys.path.append(lib_path)
+from py532lib.i2c import *
+from py532lib.mifare import *
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +28,7 @@ def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
     devices.append(NonUsbDevice('MFRC522'))
     devices.append(NonUsbDevice('RDM6300'))
+    devices.append(NonUsbDevice('PN532'))
     return devices
 
 
@@ -125,6 +130,21 @@ class Rdm6300Reader:
         self.rfid_serial.close()
 
 
+class Pn532Reader:
+    def __init__(self):
+        pn532 = Pn532_i2c()
+        self.device = Mifare()
+        self.device.SAMconfigure()
+        self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
+
+    def readCard(self):
+        return str(+int('0x' + self.device.scan_field().hex(),0))
+
+    def cleanup(self):
+        #TODO
+        logger.debug("PN532Reader clean up.")
+
+
 class Reader(object):
     def __init__(self):
         path = os.path.dirname(os.path.realpath(__file__))
@@ -138,6 +158,8 @@ class Reader(object):
                 self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
                 self.reader = Rdm6300Reader()
+            elif device_name == 'PN532':
+                self.reader = Pn532Reader()
             else:
                 try:
                     device = [device for device in get_devices() if device.name == device_name][0]
