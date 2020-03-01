@@ -502,11 +502,8 @@ then
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
-    # shouldn't be necessary, already installed via apt
-    #sudo python3 -m pip install mopidy-mpd
-    #sudo python3 -m pip install mopidy-local
-
-    sudo python3 -m pip install Mopidy-Iris
+    # Install necessary Python packages
+    sudo python3 -m pip install -r requirements-spotify.txt
 fi
 
 # Get github code
@@ -521,17 +518,7 @@ git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.g
 cd /home/pi/RPi-Jukebox-RFID || exit
 
 # Install more required packages
-sudo pip install -r requirements.txt
-
-# actually, for the time being most of the requirements are run here.
-# the requirements.txt version seems to throw errors. Help if you can to fix this:
-
-sudo pip install "evdev == 0.7.0"
-sudo pip install --upgrade youtube_dl
-sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
-sudo pip install pyserial
-sudo pip install RPi.GPIO
-sudo pip install pi-rc522
+sudo python3 -m pip install -r requirements.txt
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
