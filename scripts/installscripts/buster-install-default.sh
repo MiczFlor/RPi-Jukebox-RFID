@@ -533,6 +533,10 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANC
 # check, which branch was cloned
 git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
 
+# add git commit hash to version file
+COMMIT_NO="$(git describe --always)"
+sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' /home/pi/RPi-Jukebox-RFID/settings/version
+
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
 wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
