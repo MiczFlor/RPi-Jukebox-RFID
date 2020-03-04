@@ -509,6 +509,7 @@ git fetch
 
 # Install more required packages
 sudo pip install -r requirements.txt
+sudo pip3 install -r /home/pi/RPi-Jukebox-RFID/components/rfid-reader/rfid-reader-PN532/requirements-pn532.txt
 
 # actually, for the time being most of the requirements are run here (again).
 # the requirements.txt version seems to throw errors. Help if you can to fix this:

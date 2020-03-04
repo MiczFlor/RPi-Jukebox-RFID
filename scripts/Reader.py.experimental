@@ -15,9 +15,6 @@ import logging
 from evdev import InputDevice, categorize, ecodes, list_devices
 # import MFRC522
 import pirc522
-
-lib_path = os.path.abspath('pn532')
-sys.path.append(lib_path)
 from py532lib.i2c import *
 from py532lib.mifare import *
 
