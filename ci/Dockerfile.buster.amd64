@@ -9,7 +9,7 @@ RUN groupadd --gid 1000 pi ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh
 
 RUN apt-get update ;\
-  apt-get -y install curl gnupg sudo nano;\
+  apt-get -y install curl gnupg sudo nano python3-pytest ;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ buster main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
@@ -24,5 +24,7 @@ RUN apt-get update ;\
   apt-get clean ;\
   touch /boot/cmdline.txt /etc/sysctl.conf ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+
+ENTRYPOINT pytest-3
 
 USER pi
