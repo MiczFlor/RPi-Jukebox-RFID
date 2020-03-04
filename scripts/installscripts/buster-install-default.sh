@@ -139,6 +139,8 @@ echo "#####################################################
     # check if we find the version number
     if [ -f /home/pi/RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
+
+        # todo git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git | awk "/develop/ {print \$1}"
     fi
     echo "IMPORTANT: you can use the existing content and configuration files for your new install."
     echo "Whatever you chose to keep will be moved to the new install."
