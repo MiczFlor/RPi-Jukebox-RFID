@@ -537,7 +537,7 @@ cd /home/pi/RPi-Jukebox-RFID || exit
 
 # Install more required packages
 sudo python3 -m pip install -r requirements.txt
-sudo pip3 install -r /home/pi/RPi-Jukebox-RFID/components/rfid-reader/rfid-reader-PN532/requirements-pn532.txt
+sudo pip3 install -r /home/pi/RPi-Jukebox-RFID/components/rfid-reader/PN532/requirements.txt
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off

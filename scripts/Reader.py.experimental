@@ -138,7 +138,7 @@ class Pn532Reader:
         return str(+int('0x' + self.device.scan_field().hex(),0))
 
     def cleanup(self):
-        #TODO
+        #Not sure if something needs to be done here.
         logger.debug("PN532Reader clean up.")
 
 
