@@ -500,38 +500,30 @@ sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-he
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-# Install required spotify packages
-if [ $SPOTinstall == "YES" ]
-then
-    sudo apt-get install --yes mopidy=2.2.2-1
-    sudo python2.7 -m pip install Mopidy==2.2.*
-
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python-cffi python-ply python-pycparser python-spotify
-    sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
-    sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
-    cd || exit
-    sudo rm -rf mopidy-spotify
-    git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
-    cd mopidy-spotify || exit
-    sudo python2 setup.py install
-    cd || exit
-    # should be removed, if Mopidy-Iris can be installed normally
-    # pylast >= 3.0.0 removed the python2 support
-    sudo pip install pylast==2.4.0
-    # not sure tornado still needs to be downgraded now that Mopidy 3 is not installed and tornado seems to be 5.1
-     sudo pip install 'tornado==5.0'
-    sudo pip install Mopidy-Iris
-fi
 
 # Get github code
 cd /home/pi/ || exit
-
-# Must be changed to the correct branch!!!
-# Change to master when merging develop with master!!!
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 # check, which branch was cloned
 git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
+
+# Install required spotify packages
+if [ $SPOTinstall == "YES" ]
+then
+    # keep major verson 3 of mopidy
+    echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
+
+    wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+    sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
+    sudo apt-get update
+    sudo apt-get upgrade --yes
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
+    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+
+    # Install necessary Python packages
+    sudo python3 -m pip install -r requirements-spotify.txt
+fi
 
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
@@ -544,18 +536,7 @@ wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts
 cd /home/pi/RPi-Jukebox-RFID || exit
 
 # Install more required packages
-sudo pip install -r requirements.txt
-
-# actually, for the time being most of the requirements are run here.
-# the requirements.txt version seems to throw errors. Help if you can to fix this:
-
-sudo pip install "evdev == 0.7.0"
-sudo pip3 install "evdev == 0.7.0"
-sudo pip install --upgrade youtube_dl
-sudo pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
-sudo pip install pyserial
-sudo pip install RPi.GPIO
-sudo pip install pi-rc522
+sudo python3 -m pip install -r requirements.txt
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
