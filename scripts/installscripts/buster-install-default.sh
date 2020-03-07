@@ -500,6 +500,14 @@ sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-he
 
 # use python3.7 as default
 sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+
+# Get github code
+cd /home/pi/ || exit
+git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+
+# check, which branch was cloned
+git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
+
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
 then
@@ -516,13 +524,6 @@ then
     # Install necessary Python packages
     sudo python3 -m pip install -r requirements-spotify.txt
 fi
-
-# Get github code
-cd /home/pi/ || exit
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
-
-# check, which branch was cloned
-git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
 
 cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
 sudo rm phoniebox-rfid-reader.service.stretch-default.sample
