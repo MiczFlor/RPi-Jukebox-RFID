@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #import json
@@ -69,7 +69,7 @@ class PhonieboxConfigChanger(Phoniebox):
             parser.set(section,key,value)
             self.debug("Set {} = {} in section {}".format(key,value,section))
         except configparser.NoSectionError as e:
-            raise configparser.NoSectionError, e
+            raise configparser.NoSectionError(e)
         # write to file
 #        with open(config_file, 'w') as f:
 #            parser.write(f)
@@ -91,7 +91,7 @@ class PhonieboxConfigChanger(Phoniebox):
     def print_usage(self):
         print("Usage: {} set ".format(sys.argv[0]))
 
-if __name__ == "__main__":
+def main(self):
 
     cmdlist = ["assigncard","removecard","set","get"]
 
@@ -133,3 +133,6 @@ if __name__ == "__main__":
                 print("supported commands are {} and {}".format(", ".join(cmdlist[:-1]),cmdlist[-1]))
         except:
             self.print_usage()
+
+if __name__ == "__main__":
+    main()

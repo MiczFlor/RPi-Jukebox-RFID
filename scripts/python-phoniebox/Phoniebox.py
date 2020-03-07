@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 __name__ = "Phoniebox"
@@ -145,7 +145,7 @@ class Phoniebox(object):
         self.set_mpd_playmode(self.lastplayedID)
         self.play_mpd(self.get_cardsetting(self.lastplayedID,"uri"))
 
-    def do_restart_track():
+    def do_restart_track(self):
         """ restart currently playing track """
         self.mpd_connect_timeout()
         mpd_status = self.client.status()
