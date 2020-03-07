@@ -15,6 +15,8 @@ In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://d
 
 ## Important updates / news
 
+* **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
+
 * **Phoniebox 2.0 rc8 released (2020-01-18 ... getting closer to the actual release...)
 
 * **What's new?**
@@ -201,4 +203,3 @@ These are links to additional items, which will add an individual flavour to you
 * [Rotary Encoder / Drehregler / Dial](https://amzn.to/2J34guF) for volume control. Read here for more information on how to [integrate the rotary dial](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/267) 
 * [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#hifiberry-dac-soundcard-details)
 * [HDMI zu HDMI + Optisches SPDIF mit 3,5-mm-Stereo-HDMI Audio-Extractor | HDMI zu SPDIF Konverter](https://amzn.to/2N8KP8C) If you plan to use video, this might be the better solution than a USB soundcard or the hifiberry. If takes up some space, but will work with the HDMI audio out and split the signal to deliver audio through 3.5mm jack.
-
