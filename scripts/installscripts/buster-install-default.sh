@@ -522,6 +522,7 @@ then
     sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
     # Install necessary Python packages
+    cd /home/pi/RPi-Jukebox-RFID/ || exit
     sudo python3 -m pip install -r requirements-spotify.txt
 fi
 
