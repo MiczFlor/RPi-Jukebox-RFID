@@ -526,19 +526,19 @@ cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/
 cd /home/pi/RPi-Jukebox-RFID
 
 # Install more required packages
-sudo python2.7 -m pip install -r requirements.txt
+sudo python3 -m pip install -r requirements.txt
 
 # actually, for the time being most of the requirements are run here.
 # the requirements.txt version seems to throw errors. Help if you can to fix this:
 
-sudo python2.7 -m pip install "evdev == 0.7.0"
-sudo python2.7 -m pip install --upgrade youtube_dl
-sudo python2.7 -m pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
-sudo python2.7 -m pip install pyserial
+sudo python3 -m pip install "evdev == 0.7.0"
+sudo python3 -m pip install --upgrade youtube_dl
+sudo python3 -m pip install git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
+sudo python3 -m pip install pyserial
 # spidev is currently installed via apt-get
 #sudo pip install spidev
-sudo python2.7 -m pip install RPi.GPIO
-sudo python2.7 -m pip install pi-rc522
+sudo python3 -m pip install RPi.GPIO
+sudo python3 -m pip install pi-rc522
 
 # Switch of WiFi power management
 sudo iwconfig wlan0 power off
