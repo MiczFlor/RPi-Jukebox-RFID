@@ -464,7 +464,7 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm at mpd mpc mpg123 git ffmpeg
+sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 at mpd mpc mpg123 git ffmpeg
 
 # prepare for python2 and python3
 sudo apt-get --yes --force-yes install python-dev python-pip python-mutagen python-gpiozero python-spidev
