@@ -494,8 +494,7 @@ sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-he
 # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
 sudo cp /etc/resolv.conf.orig /etc/resolv.conf
 
-# prepare python2 and python3
-sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python-dev python-pip python-mutagen python-gpiozero python-spidev
+# prepare python3
 sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
 # use python3.7 as default
