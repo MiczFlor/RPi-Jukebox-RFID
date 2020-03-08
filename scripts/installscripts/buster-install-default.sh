@@ -600,7 +600,6 @@ sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-
 sudo lighttpd-enable-mod fastcgi
 sudo lighttpd-enable-mod fastcgi-php
 sudo service lighttpd force-reload
-sudo service php7.3-fpm restart
 
 # create copy of GPIO script
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
