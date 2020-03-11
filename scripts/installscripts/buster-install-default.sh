@@ -498,7 +498,10 @@ esac
 # Start logging here
 Log_Open
 
-# ToDo: write information of configfile into logfile
+# Add conffile into logfile for better debugging
+echo "################################################"
+grep -v -e "SPOTI" -e "WIFIpass" "${PATHDATA}/PhonieboxInstall.conf"
+echo "################################################"
 
 #####################################################
 # INSTALLATION
