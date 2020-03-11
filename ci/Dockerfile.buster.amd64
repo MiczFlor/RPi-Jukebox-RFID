@@ -8,8 +8,6 @@ RUN groupadd --gid 1000 pi ;\
   chown -R 1000:1000 /code /home/pi ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-
 RUN apt-get update ;\
   apt-get -y install curl gnupg sudo nano;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
