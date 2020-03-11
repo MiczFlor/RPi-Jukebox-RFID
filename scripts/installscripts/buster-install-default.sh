@@ -15,6 +15,7 @@ SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 # Setup logger functions
+# Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
 function Log_Open() {
         [[ -d ${LOGDIR} ]] || mkdir -p ${LOGDIR}
         PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
@@ -25,8 +26,6 @@ function Log_Open() {
         TEEPID=$!
         exec 1>${PIPE} 2>&1
         PIPE_OPENED=1
-        # enotify Logging to ${LOGFILE}  # (*)
-        # [ ${SUDO_USER} ] && enotify "Sudo user: ${SUDO_USER}" #(*)
 }
  
 function Log_Close() {
@@ -35,7 +34,7 @@ function Log_Close() {
                 sleep 0.2
                 ps --pid ${TEEPID} >/dev/null
                 if [ $? -eq 0 ] ; then
-                        # a wait $teepid whould be better but some
+                        # a wait ${TEEPID} whould be better but some
                         # commands leave file descriptors open
                         sleep 1
                         kill  ${TEEPID}
