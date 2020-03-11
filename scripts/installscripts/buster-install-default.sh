@@ -7,6 +7,49 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
+LOGDIR=${PATHDATA}/logfiles
+DATE=$(date +"%Y%m%d")
+DATETIME=$(date +"%Y%m%d_%H%M%S")
+ 
+SCRIPTNAME="$(basename $0)"
+JOB="${SCRIPTNAME}"
+
+# Setup logger functions
+function Log_Open() {
+        if [ $NO_JOB_LOGGING ] ; then
+                einfo "Not logging to a logfile because -Z option specified." #(*)
+        else
+                [[ -d $LOGDIR ]] || mkdir -p $LOGDIR
+                PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
+                mkfifo -m 700 $PIPE
+                LOGFILE=${LOGDIR}/${JOB}_${DATETIME}.log
+                exec 3>&1
+                tee ${LOGFILE} <$PIPE >&3 &
+                TEEPID=$!
+                exec 1>$PIPE
+                PIPE_OPENED=1
+                enotify Logging to $LOGFILE  # (*)
+                [ $SUDO_USER ] && enotify "Sudo user: $SUDO_USER" #(*)
+        fi
+}
+ 
+function Log_Close() {
+        if [ ${PIPE_OPENED} ] ; then
+                exec 1<&3
+                sleep 0.2
+                ps --pid ${TEEPID} >/dev/null
+                if [ $? -eq 0 ] ; then
+                        # a wait $teepid whould be better but some
+                        # commands leave file descriptors open
+                        sleep 1
+                        kill  ${TEEPID}
+                fi
+                rm ${PIPE}
+                unset PIPE_OPENED
+        fi
+}
+
+
 clear
 echo "#####################################################
 #    ___  __ ______  _  __________ ____   __  _  _  #
