@@ -16,21 +16,17 @@ JOB="${SCRIPTNAME}"
 
 # Setup logger functions
 function Log_Open() {
-        if [ $NO_JOB_LOGGING ] ; then
-                einfo "Not logging to a logfile because -Z option specified." #(*)
-        else
-                [[ -d $LOGDIR ]] || mkdir -p $LOGDIR
-                PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
-                mkfifo -m 700 $PIPE
-                LOGFILE=${LOGDIR}/${JOB}_${DATETIME}.log
-                exec 3>&1
-                tee ${LOGFILE} <$PIPE >&3 &
-                TEEPID=$!
-                exec 1>$PIPE
-                PIPE_OPENED=1
-                enotify Logging to $LOGFILE  # (*)
-                [ $SUDO_USER ] && enotify "Sudo user: $SUDO_USER" #(*)
-        fi
+        [[ -d ${LOGDIR} ]] || mkdir -p ${LOGDIR}
+        PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
+        mkfifo -m 700 ${PIPE}
+        LOGFILE=${LOGDIR}/${JOB}_${DATETIME}.log
+        exec 3>&1
+        tee ${LOGFILE} <${PIPE} >&3 &
+        TEEPID=$!
+        exec 1>${PIPE} 2>&1
+        PIPE_OPENED=1
+        # enotify Logging to ${LOGFILE}  # (*)
+        # [ ${SUDO_USER} ] && enotify "Sudo user: ${SUDO_USER}" #(*)
 }
  
 function Log_Close() {
@@ -499,6 +495,11 @@ case "$response" in
         ;;
 esac
 
+# Start logging here
+Log_Open
+
+# ToDo: write information of configfile into logfile
+
 #####################################################
 # INSTALLATION
 
@@ -906,7 +907,8 @@ echo "
 
 echo "If you are using an USB RFID reader, connect it to your RPi."
 echo "(In case your RFID reader required soldering, consult the manual.)"
-read -r -p "Have you connected your USB Reader? [Y/n] " response
+# Use -e to display response of user in the logfile
+read -e -r -p "Have you connected your USB Reader? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
         ;;
@@ -924,11 +926,16 @@ echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 
 echo "Reboot is needed to activate all settings"
-read -r -p "Would you like to reboot now? [Y/n] " response
+# Use -e to display response of user in the logfile
+read -e -r -p "Would you like to reboot now? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
+	# Close logging
+	Log_Close
         ;;
     *)
+	# Close logging
+	Log_Close
         sudo shutdown -r now
         ;;
 esac
