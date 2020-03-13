@@ -48,15 +48,14 @@ info_at_lines_play [3] = 'track_time_and_number' #  <-- Choose your favorite    
 info_at_lines_pause [0] = 'date_and_time' #  <-- Choose your favorite                   ##
 info_at_lines_pause [1] = 'artist' #  <-- Choose your favorite                          ##
 info_at_lines_pause [2] = 'title' #  <-- Choose your favorite                           ##
-info_at_lines_pause [3] = 'track_time_and_number' #  <-- Choose your favorite           ##
+info_at_lines_pause [3] = 'pause_string' #  <-- Choose your favorite                    ##
 ##                                                                                      ##
 ##  Choose infos while state is "stop"                                                  ##
 ##                                                                                      ##
 info_at_lines_stop [0] = 'date_and_time' #  <-- Choose your favorite                    ##
-info_at_lines_stop [1] = 'stop_string' #  <-- Choose your favorite                      ##
-info_at_lines_stop [2] = 'date_and_time' #  <-- Choose your favorite                    ##
-info_at_lines_stop [3] = 'nothing' #  <-- Choose your favorite                          ##
-
+info_at_lines_stop [1] = 'nothing' #  <-- Choose your favorite                          ##
+info_at_lines_stop [2] = 'nothing' #  <-- Choose your favorite                          ##
+info_at_lines_stop [3] = 'stop_string' #  <-- Choose your favorite                      ##
 ##                                                                                      ##
 ##  Choose infos while state is "not_running"                                           ##
 ##                                                                                      ##
