@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Original code found at:
 # https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
