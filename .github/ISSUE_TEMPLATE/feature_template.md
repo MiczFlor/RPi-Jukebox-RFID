@@ -3,7 +3,6 @@ name: feature request
 about: use this template to propose new features
 title: "\U0001F680 | FEATURE SUMMARY"
 labels: enhancement
-assignees: MiczFlor
 ---
 
 ## Feature Description

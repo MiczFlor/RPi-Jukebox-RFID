@@ -8,7 +8,8 @@ RUN groupadd --gid 1000 pi ;\
   chown -R 1000:1000 /code /home/pi ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh
 
-RUN apt-get update ;\
+RUN export DEBIAN_FRONTEND=noninteractive ;\
+  apt-get update ;\
   apt-get -y install curl gnupg sudo nano;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ buster main' >> /etc/apt/sources.list.d/raspi.list ;\
@@ -18,7 +19,8 @@ RUN apt-get update ;\
   apt-get clean ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
-RUN apt-get update ;\
+RUN export DEBIAN_FRONTEND=noninteractive ;\
+  apt-get update ;\
   apt-get -y dist-upgrade --auto-remove --purge ;\
   apt-get -y install wget build-essential git iw locales wpasupplicant;\
   apt-get clean ;\
