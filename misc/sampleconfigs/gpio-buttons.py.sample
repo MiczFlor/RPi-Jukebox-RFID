@@ -108,6 +108,7 @@ btn_next = 26
 btn_prev = 20
 btn_halt = 21
 led_power = 12
+# btn_rfidoff = 
 #reco =
 #play =
 
@@ -127,9 +128,9 @@ GPIO.setup(btn_volD       , GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(btn_next       , GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(btn_prev       , GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(btn_halt       , GPIO.IN, pull_up_down=GPIO.PUD_UP)
-#GPIO.setup(btn_rfidoff, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+#GPIO.setup(btn_rfidoff    , GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(led_power      , GPIO.OUT)
-# btn_rfidoff = Button(12,pull_up=True)
+
 
 # Set standard events for the buttons. Callback functions define the actions of the events (THey are defined above)
 GPIO.add_event_detect(btn_shut, GPIO.FALLING, callback=shutdown_handler, bouncetime=bouncetime)
@@ -139,10 +140,11 @@ GPIO.add_event_detect(btn_volD, GPIO.FALLING, callback=volD_handler, bouncetime=
 GPIO.add_event_detect(btn_next, GPIO.FALLING, callback=next_action, bouncetime=bouncetime)
 GPIO.add_event_detect(btn_prev, GPIO.FALLING, callback=prev_action, bouncetime=bouncetime)
 GPIO.add_event_detect(btn_halt, GPIO.FALLING, callback=halt_action, bouncetime=bouncetime)
+#GPIO.add_event_detect(btn_rfidoff, GPIO.FALLING, callback=rfidoff_action, bouncetime=bouncetime)
 #reco.when_pressed = recordstart_action
 #reco.when_released = recordstop_action
 #play.when_pressed = recordplaylatest_action
-#GPIO.add_event_detect(btn_rfidoff, GPIO.FALLING, callback=rfidoff_action, bouncetime=bouncetime)
+
 
 # Switch on power led after boot to indicate state "on" for phoniebox
 GPIO.output(led_power, GPIO.HIGH)
