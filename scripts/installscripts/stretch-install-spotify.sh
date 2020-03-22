@@ -13,7 +13,6 @@ echo "#####################################################
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# +Spotify                                          #
 #                                                   #
 #####################################################
 
@@ -67,7 +66,7 @@ case "$response" in
         # append variables to config file
         echo "WIFIconfig=$WIFIconfig" >> "${PATHDATA}/PhonieboxInstall.conf"
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=GB" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=DE" >> "${PATHDATA}/PhonieboxInstall.conf"
         ;;
     *)
         WIFIconfig=YES
@@ -274,7 +273,7 @@ case "$response" in
 esac
 # append variables to config file
 echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${PATHDATA}/PhonieboxInstall.conf"
-echo "Your iFace ist called'$AUDIOiFace'"
+echo "Your iFace is called'$AUDIOiFace'"
 echo "Hit ENTER to proceed to the next step."
 read -r INPUT
 
