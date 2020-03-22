@@ -14,12 +14,12 @@ installed, make sure to disable the phoniebox-rfid-reader service first (`sudo s
 
 1. Connect the PN532 RFID reader to the GPIO pins
 
-    | PN532 | Raspberry |
-    | ----- | --------- |
-    | 5V    | 5V        |
-    | GND   | GND       |
-    | SDA   | SDA0      |
-    | SCL   | SCL0      |
+    | PN532 | Raspberry    | Raspi Pins |
+    | ----- | ------------ | ---------- |
+    | 5V    | 5V           |     4      |
+    | GND   | GND          |     6      |
+    | SDA   | GPIO 2 (SDA) |     3      |
+    | SCL   | GPIO 3 (SCL) |     5      |
 
 2.  Activate the I2C interface of the Raspberry Pi
     - `sudo raspi-config`
