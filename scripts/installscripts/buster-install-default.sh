@@ -7,6 +7,44 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
+LOGDIR=${PATHDATA}/logfiles
+DATE=$(date +"%Y%m%d")
+DATETIME=$(date +"%Y%m%d_%H%M%S")
+ 
+SCRIPTNAME="$(basename $0)"
+JOB="${SCRIPTNAME}"
+
+# Setup logger functions
+# Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
+function Log_Open() {
+        [[ -d ${LOGDIR} ]] || mkdir -p ${LOGDIR}
+        PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
+        mkfifo -m 700 ${PIPE}
+        LOGFILE=${LOGDIR}/${JOB}_${DATETIME}.log
+        exec 3>&1
+        tee ${LOGFILE} <${PIPE} >&3 &
+        TEEPID=$!
+        exec 1>${PIPE} 2>&1
+        PIPE_OPENED=1
+}
+ 
+function Log_Close() {
+        if [ ${PIPE_OPENED} ] ; then
+                exec 1<&3
+                sleep 0.2
+                ps --pid ${TEEPID} >/dev/null
+                if [ $? -eq 0 ] ; then
+                        # a wait ${TEEPID} whould be better but some
+                        # commands leave file descriptors open
+                        sleep 1
+                        kill  ${TEEPID}
+                fi
+                rm ${PIPE}
+                unset PIPE_OPENED
+        fi
+}
+
+
 clear
 echo "#####################################################
 #    ___  __ ______  _  __________ ____   __  _  _  #
@@ -456,6 +494,14 @@ case "$response" in
         ;;
 esac
 
+# Start logging here
+Log_Open
+
+# Add conffile into logfile for better debugging
+echo "################################################"
+grep -v -e "SPOTI" -e "WIFIpass" "${PATHDATA}/PhonieboxInstall.conf"
+echo "################################################"
+
 #####################################################
 # INSTALLATION
 
@@ -864,7 +910,8 @@ echo "
 
 echo "If you are using an USB RFID reader, connect it to your RPi."
 echo "(In case your RFID reader required soldering, consult the manual.)"
-read -r -p "Have you connected your USB Reader? [Y/n] " response
+# Use -e to display response of user in the logfile
+read -e -r -p "Have you connected your USB Reader? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
         ;;
@@ -882,11 +929,16 @@ echo "Find more information and documentation on the github account:"
 echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
 
 echo "Reboot is needed to activate all settings"
-read -r -p "Would you like to reboot now? [Y/n] " response
+# Use -e to display response of user in the logfile
+read -e -r -p "Would you like to reboot now? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
+	# Close logging
+	Log_Close
         ;;
     *)
+	# Close logging
+	Log_Close
         sudo shutdown -r now
         ;;
 esac
