@@ -177,6 +177,9 @@ echo "#####################################################
     # check if we find the version number
     if [ -f /home/pi/RPi-Jukebox-RFID/settings/version ]; then
         echo "The version of your installation is: $(cat RPi-Jukebox-RFID/settings/version)"
+
+        # get the current short commit hash of the repo
+        CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
     fi
     echo "IMPORTANT: you can use the existing content and configuration files for your new install."
     echo "Whatever you chose to keep will be moved to the new install."
@@ -552,6 +555,10 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANC
 
 # check, which branch was cloned
 git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
+
+# add git commit hash to version file
+COMMIT_NO="$(git describe --always)"
+sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' /home/pi/RPi-Jukebox-RFID/settings/version
 
 # Install required spotify packages
 if [ $SPOTinstall == "YES" ]
