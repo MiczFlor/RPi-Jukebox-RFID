@@ -112,7 +112,7 @@ Sending empty payload to `phoniebox/cmd/help` will be responded by a list of all
 Install missing python packages for MQTT:
 
 ~~~
-pip3 install paho-mqtt
+sudo pip3 install paho-mqtt
 ~~~
 
 All relevant files can be found in the folder:
