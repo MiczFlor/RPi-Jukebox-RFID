@@ -864,9 +864,6 @@ mkdir /home/pi/RPi-Jukebox-RFID/playlists
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
 
-sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/playlists
-sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/playlists
-
 # make sure the shared folder is accessible by the web server
 sudo chown -R pi:www-data /home/pi/RPi-Jukebox-RFID/shared
 sudo chmod -R 775 /home/pi/RPi-Jukebox-RFID/shared
