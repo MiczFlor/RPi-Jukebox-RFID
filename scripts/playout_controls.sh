@@ -127,14 +127,14 @@ case $COMMAND in
                 break
             fi
         done
-	if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sleep 1
-	/usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
-	sleep 3
+        /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
+        sleep 3
         sudo poweroff
         ;;
     shutdownsilent)
