@@ -112,14 +112,32 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >
 
 case $COMMAND in 
     shutdown)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
+        while :
+        do
+            apt=1
+            sudo lsof /var/lib/apt/lists/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/lib/dpkg/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/cache/apt/archives/lock > /dev/null
+            apt=$(($apt * $?))
+            if [ $apt -eq 0 ]; then
+                sleep 5
+            else
+                break
+            fi
+        done
+	if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sleep 1
-        /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
-        sleep 3
+	/usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
+	sleep 3
+        sudo poweroff
+        ;;
+    shutdownsilent)
         while :
         do
             apt=1
@@ -135,29 +153,11 @@ case $COMMAND in
                 break
             fi
         done
-        sudo poweroff
-        ;;
-    shutdownsilent)
         # doesn't play a shutdown sound
         $PATHDATA/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-        while :
-        do
-            apt=1
-            sudo lsof /var/lib/apt/lists/lock > /dev/null
-            apt=$(($apt * $?))
-            sudo lsof /var/lib/dpkg/lock > /dev/null
-            apt=$(($apt * $?))
-            sudo lsof /var/cache/apt/archives/lock > /dev/null
-            apt=$(($apt * $?))
-            if [ $apt -eq 0 ]; then
-                sleep 5
-            else
-                break
-            fi
-        done
         sudo poweroff
         ;;
     shutdownafter)
