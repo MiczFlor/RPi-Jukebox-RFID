@@ -117,18 +117,18 @@ foreach($subfolders as $key => $subfolder) {
 			// this is for loading spotify informations!
 			$track = file_get_contents($subfolder."/spotify.txt");
 			$url = "https://open.spotify.com/oembed/?url=".trim($track)."&format=json";
-			
+            $context = stream_context_create(array());
+            
 			if (!file_exists($check1)) {
-				$str = file_get_contents($url);
+				$str = file_get_contents($url, false, $context);
 				$json  = json_decode($str, true);
 
 				$cover = $json['thumbnail_url'];
 				$coverdl = file_get_contents($cover);
 				file_put_contents($check1, $coverdl);
 			}
-			
 			if (!file_exists($check2)) {
-				$str = file_get_contents($url);
+				$str = file_get_contents($url, false, $context);
 				$json  = json_decode($str, true);
 
 				$title = $json['title'];
