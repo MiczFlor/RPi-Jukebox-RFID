@@ -460,6 +460,7 @@ config_audio_folder() {
 }
 
 main_install() {
+    local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
 
@@ -520,24 +521,24 @@ main_install() {
     ${apt_get} ${allow_downgrades} install apt-transport-https
     wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
-    
+
     ${apt_get} update
     ${apt_get} upgrade
     ${apt_get} install libspotify-dev
-    
+
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
-    
+
     ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
-    
+
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
 
     # prepare python3
     ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
-    
+
     # use python3.7 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
@@ -546,12 +547,12 @@ main_install() {
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
     # add used git branch and commit hash to version file
-    USED_BRANCH="$(git --git-dir=/home/pi/RPi-Jukebox-RFID/.git rev-parse --abbrev-ref HEAD)"
-    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' /home/pi/RPi-Jukebox-RFID/settings/version
+    USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
+    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' ${jukebox_dir}/settings/version
 
     # add git commit hash to version file
-    COMMIT_NO="$(git --git-dir=/home/pi/RPi-Jukebox-RFID/.git describe --always)"
-    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' /home/pi/RPi-Jukebox-RFID/settings/version
+    COMMIT_NO="$(git --git-dir=${jukebox_dir}/.git describe --always)"
+    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' ${jukebox_dir}/settings/version
 
     # Install required spotify packages
     if [ $SPOTinstall == "YES" ]; then
@@ -564,32 +565,32 @@ main_install() {
         ${apt_get} upgrade
         ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
-    
+
         # Install necessary Python packages
-        cd /home/pi/RPi-Jukebox-RFID/ || exit
+        cd ${jukebox_dir}/ || exit
         sudo python3 -m pip install -r requirements-spotify.txt
     fi
 
-    cd /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/ || exit
+    cd ${jukebox_dir}/misc/sampleconfigs/ || exit
     sudo rm phoniebox-rfid-reader.service.stretch-default.sample
     wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    cd /home/pi/RPi-Jukebox-RFID/scripts/ || exit
+    cd ${jukebox_dir}/scripts/ || exit
     sudo rm RegisterDevice.py
     wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
 
     # Jump into the Phoniebox dir
-    cd /home/pi/RPi-Jukebox-RFID || exit
+    cd ${jukebox_dir} || exit
 
     # Install more required packages
     sudo python3 -m pip install -r requirements.txt
-    sudo pip3 install -r /home/pi/RPi-Jukebox-RFID/components/rfid-reader/PN532/requirements.txt
+    sudo pip3 install -r ${jukebox_dir}/components/rfid-reader/PN532/requirements.txt
 
     # Switch of WiFi power management
     sudo iwconfig wlan0 power off
 
     # Samba configuration settings
     # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
     sudo chown root:root /etc/samba/smb.conf
     sudo chmod 644 /etc/samba/smb.conf
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
@@ -599,47 +600,47 @@ main_install() {
 
     # Web server configuration settings
     # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
+    sudo cp /${jukebox_dir}/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
     sudo chown root:root /etc/lighttpd/lighttpd.conf
     sudo chmod 644 /etc/lighttpd/lighttpd.conf
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
     sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
     sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
     # settings for php.ini to support upload
     # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
     sudo chown root:root /etc/php/7.3/cgi/php.ini
     sudo chmod 644 /etc/php/7.3/cgi/php.ini
 
     # SUDO users (adding web server here)
     # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
     sudo chown root:root /etc/sudoers
     sudo chmod 440 /etc/sudoers
 
     # copy shell script for player
-    cp /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf.sample /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
+    cp ${jukebox_dir}/settings/rfid_trigger_play.conf.sample ${jukebox_dir}/settings/rfid_trigger_play.conf
 
     # creating files containing editable values for configuration
     # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
-    echo "$AUDIOiFace" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
-    echo "$DIRaudioFolders" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Folders_Path
-    echo "3" > /home/pi/RPi-Jukebox-RFID/settings/Audio_Volume_Change_Step
-    echo "100" > /home/pi/RPi-Jukebox-RFID/settings/Max_Volume_Limit
-    echo "0" > /home/pi/RPi-Jukebox-RFID/settings/Idle_Time_Before_Shutdown
-    echo "RESTART" > /home/pi/RPi-Jukebox-RFID/settings/Second_Swipe
-    echo "/home/pi/RPi-Jukebox-RFID/playlists" > /home/pi/RPi-Jukebox-RFID/settings/Playlists_Folders_Path
-    echo "ON" > /home/pi/RPi-Jukebox-RFID/settings/ShowCover
+    echo "$AUDIOiFace" > ${jukebox_dir}/settings/Audio_iFace_Name
+    echo "$DIRaudioFolders" > ${jukebox_dir}/settings/Audio_Folders_Path
+    echo "3" > ${jukebox_dir}/settings/Audio_Volume_Change_Step
+    echo "100" > ${jukebox_dir}/settings/Max_Volume_Limit
+    echo "0" > ${jukebox_dir}/settings/Idle_Time_Before_Shutdown
+    echo "RESTART" > ${jukebox_dir}/settings/Second_Swipe
+    echo "${jukebox_dir}/playlists" > ${jukebox_dir}/settings/Playlists_Folders_Path
+    echo "ON" > ${jukebox_dir}/settings/ShowCover
 
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
     # create config file for web app from sample
-    sudo cp /home/pi/RPi-Jukebox-RFID/htdocs/config.php.sample /home/pi/RPi-Jukebox-RFID/htdocs/config.php
+    sudo cp ${jukebox_dir}/htdocs/config.php.sample ${jukebox_dir}/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
@@ -647,14 +648,14 @@ main_install() {
     sudo service lighttpd force-reload
 
     # create copy of GPIO script
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
-    sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/gpio-buttons.py.sample ${jukebox_dir}/scripts/gpio-buttons.py
+    sudo chmod +x ${jukebox_dir}/scripts/gpio-buttons.py
 
     # make sure bash scripts have the right settings
-    sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-    sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.sh
-    sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
-    sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
+    sudo chown pi:www-data ${jukebox_dir}/scripts/*.sh
+    sudo chmod +x ${jukebox_dir}/scripts/*.sh
+    sudo chown pi:www-data ${jukebox_dir}/scripts/*.py
+    sudo chmod +x ${jukebox_dir}/scripts/*.py
 
     # services to launch after boot using systemd
     # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
@@ -670,11 +671,11 @@ main_install() {
     sudo rm /etc/systemd/system/idle-watchdog.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample /etc/systemd/system/phoniebox-rotary-encoder.service
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample /etc/systemd/system/phoniebox-rotary-encoder.service
     sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
     sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
     sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
@@ -693,21 +694,21 @@ main_install() {
     sudo systemctl enable phoniebox-rotary-encoder.service
 
     # copy mp3s for startup and shutdown sound to the right folder
-    cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/startupsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
-    cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/shutdownsound.mp3.sample /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
+    cp ${jukebox_dir}/misc/sampleconfigs/startupsound.mp3.sample ${jukebox_dir}/shared/startupsound.mp3
+    cp ${jukebox_dir}/misc/sampleconfigs/shutdownsound.mp3.sample ${jukebox_dir}/shared/shutdownsound.mp3
 
     # Spotify config
     if [ $SPOTinstall == "YES" ]; then
         sudo systemctl disable mpd
         sudo systemctl enable mopidy
         # Install Config Files
-        sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
-        sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/locale.sample /etc/default/locale
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
         sudo mkdir /home/pi/.config
         sudo mkdir /home/pi/.config/mopidy
-        sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
-        sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
         # Change vars to match install config
         sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
         sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
@@ -722,7 +723,7 @@ main_install() {
     if [ $MPDconfig == "YES" ]; then
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
         # Change vars to match install config
         sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
@@ -733,9 +734,9 @@ main_install() {
 
     # set which version has been installed
     if [ $SPOTinstall == "YES" ]; then
-        echo "plusSpotify" > /home/pi/RPi-Jukebox-RFID/settings/edition
+        echo "plusSpotify" > ${jukebox_dir}/settings/edition
     else
-        echo "classic" > /home/pi/RPi-Jukebox-RFID/settings/edition
+        echo "classic" > ${jukebox_dir}/settings/edition
     fi
 
     # update mpc / mpd DB
@@ -964,7 +965,7 @@ main() {
     config_spotify
     config_mpd
     config_audio_folder "${JUKEBOX_HOME_DIR}"
-    main_install
+    main_install "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
