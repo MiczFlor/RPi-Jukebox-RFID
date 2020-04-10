@@ -557,7 +557,7 @@ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANC
 git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
 
 # add git commit hash to version file
-COMMIT_NO="$(git describe --always)"
+COMMIT_NO="$(git --git-dir=/home/pi/RPi-Jukebox-RFID/.git describe --always)"
 sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' /home/pi/RPi-Jukebox-RFID/settings/version
 
 # Install required spotify packages
