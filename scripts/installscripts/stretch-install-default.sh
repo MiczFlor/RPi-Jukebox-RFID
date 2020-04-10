@@ -387,7 +387,7 @@ sudo iwconfig wlan0 power off
 
 # Install required packages
 sudo apt-get update
-sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-fpm php7.0-mbstring php7.0-opcache at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
+sudo apt-get --yes --force-yes install apt-transport-https samba samba-common-bin python-dev python-pip gcc linux-headers-4.9 lighttpd php7.0-common php7.0-cgi php7.0 php7.0-mbstring php7.0-opcache at mpd mpc mpg123 git ffmpeg python-mutagen python3-gpiozero
 
 # Get github code
 cd /home/pi/
@@ -444,15 +444,15 @@ sudo chmod 644 /etc/php/7.0/fpm/php.ini
 # we cache to memory and disk (level 2) for faster upstart
 sudo mkdir /home/pi/RPi-Jukebox-RFID/.php-opcache/
 sudo chmod 1777 /home/pi/RPi-Jukebox-RFID/.php-opcache/
-sudo touch /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini
-sudo sh -c 'echo "opcache.validate_timestamps = 0" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
-sudo sh -c 'echo "opcache.file_update_protection = 0" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
-sudo sh -c 'echo "opcache.file_cache = \"/home/pi/RPi-Jukebox-RFID/.php-opcache/\"" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
-sudo sh -c 'echo "opcache.preload = \"/home/pi/RPi-Jukebox-RFID/htdocs/index.php\"" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID.ini'
+sudo touch /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID.ini
+sudo sh -c 'echo "opcache.validate_timestamps = 0" >> /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID.ini'
+sudo sh -c 'echo "opcache.file_update_protection = 0" >> /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID.ini'
+sudo sh -c 'echo "opcache.file_cache = \"/home/pi/RPi-Jukebox-RFID/.php-opcache/\"" >> /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID.ini'
+sudo sh -c 'echo "opcache.preload = \"/home/pi/RPi-Jukebox-RFID/htdocs/index.php\"" >> /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID.ini'
 
 # disable PHP notice and warnings logging
- sudo touch /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini
- sudo sh -c 'echo "error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED & ~E_WARNING;" >> /etc/php/7.0/fpm/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini'
+ sudo touch /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini
+ sudo sh -c 'echo "error_reporting = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED & ~E_WARNING;" >> /etc/php/7.0/cgi/conf.d/999-RPi-Jukebox-RFID_noPHPWarnings.ini'
 
 # SUDO users (adding web server here)
 # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
