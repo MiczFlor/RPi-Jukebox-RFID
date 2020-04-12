@@ -1,0 +1,3 @@
+# Google Music related requirements (in addition to requirements-spotify.txt)
+# You need to install these with `sudo pip install -r requirements-gmusic.txt`
+Mopidy-Gmusic
