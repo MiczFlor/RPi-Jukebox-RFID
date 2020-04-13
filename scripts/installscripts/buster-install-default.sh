@@ -487,6 +487,9 @@ config_audio_folder() {
 }
 
 main_install() {
+    local apt_get="sudo apt-get -qq --yes"
+    local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
+
     clear
     
     echo "#####################################################
@@ -541,26 +544,26 @@ main_install() {
     sudo locale-gen "${LANG}"
     
     # Install required packages
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install apt-transport-https
+    ${apt_get} ${allow_downgrades} install apt-transport-https
     wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
     
-    sudo apt-get update
-    sudo apt-get --yes upgrade
-    sudo apt-get install --yes libspotify-dev
+    ${apt_get} update
+    ${apt_get} upgrade
+    ${apt_get} install libspotify-dev
     
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
-        sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install raspberrypi-kernel-headers
+        ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
     
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
     
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
     
     # prepare python3
-    sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
+    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
     
     # use python3.7 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -584,10 +587,10 @@ main_install() {
     
         wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
-        sudo apt-get update
-        sudo apt-get upgrade --yes
-        sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
-        sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+        ${apt_get} update
+        ${apt_get} upgrade
+        ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
+        ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
     
         # Install necessary Python packages
         cd /home/pi/RPi-Jukebox-RFID/ || exit
@@ -982,7 +985,15 @@ main() {
     finish_installation
 }
 
+start=`date +%s`
+
 main
+
+end=`date +%s`
+runtime=$((end-start))
+((m=(${runtime}%3600)/60))
+((s=${runtime}%60))
+echo "Done (in ${m}m ${s}s)."
 
 #####################################################
 # notes for things to do
