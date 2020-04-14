@@ -459,7 +459,53 @@ config_audio_folder() {
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
-main_install() {
+samba_config() {
+    local smb_conf="/etc/samba/smb.conf"
+    echo "Configuring Samba..."
+    # Samba configuration settings
+    # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/smb.conf.buster-default.sample ${smb_conf}
+    sudo chown root:root ${smb_conf}
+    sudo chmod 644 ${smb_conf}
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' ${smb_conf}
+    # Samba: create user 'pi' with password 'raspberry'
+    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
+}
+
+web_server_config() {
+    local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
+    local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
+    local php_ini="/etc/php/7.3/cgi/php.ini"
+    local sudoers="/etc/sudoers"
+
+    echo "Configuring web server..."
+    # Web server configuration settings
+    # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/lighttpd.conf.buster-default.sample ${lighthttpd_conf}
+    sudo chown root:root ${lighthttpd_conf}
+    sudo chmod 644 ${lighthttpd_conf}
+
+    # Web server PHP7 fastcgi conf
+    # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample ${fastcgi_php_conf}
+    sudo chown root:root ${fastcgi_php_conf}
+    sudo chmod 644 ${fastcgi_php_conf}
+
+    # settings for php.ini to support upload
+    # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/php.ini.buster-default.sample ${php_ini}
+    sudo chown root:root ${php_ini}
+    sudo chmod 644 ${php_ini}
+
+    # SUDO users (adding web server here)
+    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
+    sudo cp ${jukebox_dir}/misc/sampleconfigs/sudoers.buster-default.sample ${sudoers}
+    sudo chown root:root ${sudoers}
+    sudo chmod 440 ${sudoers}
+}
+
+install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
@@ -585,41 +631,12 @@ main_install() {
     sudo python3 -m pip install -r requirements.txt
     sudo pip3 install -r ${jukebox_dir}/components/rfid-reader/PN532/requirements.txt
 
+    samba_config
+
     # Switch of WiFi power management
     sudo iwconfig wlan0 power off
 
-    # Samba configuration settings
-    # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
-    sudo chown root:root /etc/samba/smb.conf
-    sudo chmod 644 /etc/samba/smb.conf
-    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
-    # Samba: create user 'pi' with password 'raspberry'
-    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
-
-    # Web server configuration settings
-    # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-    sudo cp /${jukebox_dir}/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
-    sudo chown root:root /etc/lighttpd/lighttpd.conf
-    sudo chmod 644 /etc/lighttpd/lighttpd.conf
-
-    # Web server PHP7 fastcgi conf
-    # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    # settings for php.ini to support upload
-    # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
-    sudo chown root:root /etc/php/7.3/cgi/php.ini
-    sudo chmod 644 /etc/php/7.3/cgi/php.ini
-
-    # SUDO users (adding web server here)
-    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
-    sudo chown root:root /etc/sudoers
-    sudo chmod 440 /etc/sudoers
+    web_server_config
 
     # copy shell script for player
     cp ${jukebox_dir}/settings/rfid_trigger_play.conf.sample ${jukebox_dir}/settings/rfid_trigger_play.conf
@@ -965,7 +982,7 @@ main() {
     config_spotify
     config_mpd
     config_audio_folder "${JUKEBOX_HOME_DIR}"
-    main_install "${JUKEBOX_HOME_DIR}"
+    install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
