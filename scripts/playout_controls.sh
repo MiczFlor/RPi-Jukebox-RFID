@@ -46,6 +46,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playlistclear
 # playlistaddplay
 # playlistadd
+# playlistappend
 # playsinglefile
 # getidletime
 # setidletime
@@ -450,6 +451,10 @@ case $COMMAND in
         # add to playlist, no autoplay
         # save playlist playing
         mpc load "${VALUE}"
+        ;;
+    playlistappend)
+        mpc add "${VALUE}"
+        mpc play
         ;;
     playsinglefile)
         mpc clear

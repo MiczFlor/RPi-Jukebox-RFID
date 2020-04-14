@@ -76,6 +76,8 @@ include("inc.navigation.php");
                     print "<li class='list-group-item'>" . 
 		    "<a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'>
 		    <i class='mdi mdi-play-circle-outline'></i></a>
+                    <a onclick='appendFileToPlaylist(\"$file\");' class='btn-panel-small btn-panel-col' title='Append song to playlist'
+                    style='cursor: pointer'> <i class='mdi mdi-plus-circle-outline'></i></a>
                     <strong>".basename($file)."</strong>";
                     print "&nbsp;&nbsp; <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-text'></i> Edit</a>";
                     print "</li>";
