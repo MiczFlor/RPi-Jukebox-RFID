@@ -553,11 +553,11 @@ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 cd /home/pi/ || exit
 git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
-# check, which branch was cloned
-git --work-tree=/home/pi/RPi-Jukebox-RFID --git-dir=/home/pi/RPi-Jukebox-RFID/.git status | head -2
+# add used git branch and commit hash to version file
+USED_BRANCH="$(git --git-dir=/home/pi/RPi-Jukebox-RFID/.git rev-parse --abbrev-ref HEAD)"
+sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' /home/pi/RPi-Jukebox-RFID/settings/version
 
-# add git commit hash to version file
-COMMIT_NO="$(git describe --always)"
+COMMIT_NO="$(git --git-dir=/home/pi/RPi-Jukebox-RFID/.git describe --always)"
 sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' /home/pi/RPi-Jukebox-RFID/settings/version
 
 # Install required spotify packages
