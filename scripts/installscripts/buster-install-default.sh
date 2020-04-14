@@ -613,22 +613,17 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        cd ${jukebox_dir}/ || exit
-        sudo python3 -m pip install -r requirements-spotify.txt
+        sudo python3 -m pip install -r ${jukebox_dir}/requirements-spotify.txt
     fi
 
-    cd ${jukebox_dir}/misc/sampleconfigs/ || exit
-    sudo rm phoniebox-rfid-reader.service.stretch-default.sample
-    wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    cd ${jukebox_dir}/scripts/ || exit
-    sudo rm RegisterDevice.py
-    wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
-
-    # Jump into the Phoniebox dir
-    cd ${jukebox_dir} || exit
+    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
+    sudo rm ${jukebox_dir}/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    wget -P ${jukebox_dir}/misc/sampleconfigs/ ${raw_github}/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    sudo rm ${jukebox_dir}/scripts/RegisterDevice.py
+    wget -P ${jukebox_dir}/scripts/ ${raw_github}/develop/scripts/RegisterDevice.py
 
     # Install more required packages
-    sudo python3 -m pip install -r requirements.txt
+    sudo python3 -m pip install -r ${jukebox_dir}/requirements.txt
     sudo pip3 install -r ${jukebox_dir}/components/rfid-reader/PN532/requirements.txt
 
     samba_config
@@ -693,16 +688,8 @@ install_main() {
     sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
     sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
     sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample /etc/systemd/system/phoniebox-rotary-encoder.service
-    sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
-    sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo chown root:root /etc/systemd/system/phoniebox-rotary-encoder.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-startup-sound.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-rotary-encoder.service
+    sudo chown root:root /etc/systemd/system/phoniebox-*.service
+    sudo chmod 644 /etc/systemd/system/phoniebox-*.service
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
@@ -716,37 +703,39 @@ install_main() {
 
     # Spotify config
     if [ $SPOTinstall == "YES" ]; then
+        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
+        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
         sudo systemctl disable mpd
         sudo systemctl enable mopidy
         # Install Config Files
         sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
         sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
-        sudo mkdir /home/pi/.config
-        sudo mkdir /home/pi/.config/mopidy
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+        sudo mkdir -p /home/pi/.config/mopidy
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy-etc.sample ${etc_mopidy_conf}
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy.sample ${mopidy_conf}
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
+        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ${etc_mopidy_conf}
+        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ${etc_mopidy_conf}
+        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ${etc_mopidy_conf}
+        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ${etc_mopidy_conf}
+        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ${mopidy_conf}
+        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ${mopidy_conf}
+        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ${mopidy_conf}
+        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ${mopidy_conf}
     fi
 
     if [ $MPDconfig == "YES" ]; then
+        local mpd_conf="/etc/mpd.conf"
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
+        sudo cp ${jukebox_dir}/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
         # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
+        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' ${mpd_conf}
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
-        sudo chown mpd:audio /etc/mpd.conf
-        sudo chmod 640 /etc/mpd.conf
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' ${mpd_conf}
+        sudo chown mpd:audio ${mpd_conf}
+        sudo chmod 640 ${mpd_conf}
     fi
 
     # set which version has been installed
@@ -989,11 +978,11 @@ main() {
     finish_installation "${JUKEBOX_HOME_DIR}"
 }
 
-start=`date +%s`
+start=$(date +%s)
 
 main
 
-end=`date +%s`
+end=$(date +%s)
 runtime=$((end-start))
 ((m=(${runtime}%3600)/60))
 ((s=${runtime}%60))

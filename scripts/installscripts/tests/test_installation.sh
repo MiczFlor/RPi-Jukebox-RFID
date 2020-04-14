@@ -226,7 +226,7 @@ verify_systemd_services() {
 
 verify_spotify_config() {
     local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-    local mopidy_conf="$HOME/.config/mopidy/mopidy.conf"
+    local mopidy_conf="${home_dir}/.config/mopidy/mopidy.conf"
 
     printf "\nTESTING spotify config...\n\n"
 
