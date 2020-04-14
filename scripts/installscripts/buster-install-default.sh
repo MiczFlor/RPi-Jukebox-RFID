@@ -628,9 +628,6 @@ install_main() {
 
     samba_config
 
-    # Switch of WiFi power management
-    sudo iwconfig wlan0 power off
-
     web_server_config
 
     # copy shell script for player
