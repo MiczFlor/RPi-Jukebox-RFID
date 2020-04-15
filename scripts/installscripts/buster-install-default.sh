@@ -14,8 +14,10 @@ DATETIME=$(date +"%Y%m%d_%H%M%S")
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-JUKEBOX_HOME_DIR="/home/pi/RPi-Jukebox-RFID"
-JUKEBOX_BACKUP_DIR="/home/pi/BACKUP"
+HOME_DIR="/home/pi"
+
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 # Setup logger functions
 # Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
@@ -589,7 +591,7 @@ install_main() {
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
     # Get github code
-    cd /home/pi/ || exit
+    cd ${HOME_DIR} || exit
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
     # add used git branch and commit hash to version file
@@ -708,7 +710,7 @@ install_main() {
         sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
         sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
-        sudo mkdir -p /home/pi/.config/mopidy
+        mkdir -p ${HOME_DIR}/.config/mopidy
         sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy-etc.sample ${etc_mopidy_conf}
         sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy.sample ${mopidy_conf}
         # Change vars to match install config
