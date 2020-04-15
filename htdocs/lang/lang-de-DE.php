@@ -49,8 +49,8 @@ $lang['globalExternalInterfaces'] = "Externe Geräte & Schnittstellen";
 $lang['globalIdleTime'] = "Leerlaufzeit";
 $lang['globalNotIdle'] = "Nicht im Leerlauf";
 $lang['globalGpioButtons'] = "GPIO Buttons";
-$lang['globalRfidReader'] = "RFID Reader";
 $lang['globalRotaryKnob'] = "Drehknopf";
+$lang['globalRfidReader'] = "RFID Reader";
 $lang['globalEnabled'] = "Aktiviert";
 $lang['globalDisabled'] = "Deaktiviert";
 $lang['globalSwitchOn'] = "Switch ON";
@@ -193,6 +193,9 @@ $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Speicherverbrauch";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoDebugLogTail'] = "<b>DEBUG Logdatei</b>: Letzte 40 Zeilen";
+$lang['infoDebugLogClear'] = "Lösche Inhalt von debug.log";
+$lang['infoDebugLogSettings'] = "Debug Log Einstellungen";
 
 /*
 * Folder Management and File Upload
