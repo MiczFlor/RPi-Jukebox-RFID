@@ -38,7 +38,7 @@ check_file_contains_string() {
     local file="$2"
 
     # sudo is required for checking /etc/mopidy/mopidy.conf
-    if [[ ! $(sudo grep -i "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
         echo "  ERROR: '${string}' not found in ${file}"
         ((failed_tests++))
     fi
@@ -76,15 +76,15 @@ verify_conf_file() {
     # check that PhonieboxInstall.conf exists and is not empty
 
     # check if config file exists
-    if [[ ! -f ${install_conf} ]]; then
+    if [[ ! -f "${install_conf}" ]]; then
         echo "  ERROR: ${install_conf} does not exist!"
         exit 1
     fi
 
     # Source config file
     if [[ -f "${install_conf}" ]]; then
-        source ${install_conf}
-        cat ${install_conf}
+        source "${install_conf}"
+        cat "${install_conf}"
         echo ""
     fi
 
@@ -230,15 +230,15 @@ verify_spotify_config() {
 
     printf "\nTESTING spotify config...\n\n"
 
-    check_file_contains_string "username = ${spotify_username}" "${etc_mopidy_conf}"
-    check_file_contains_string "password = ${spotify_password}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_id = ${spotify_client_id}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_secret = ${spotify_client_secret}" "${etc_mopidy_conf}"
+    check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
+    check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
+    check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
+    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
 
-    check_file_contains_string "username = ${spotify_username}" "${mopidy_conf}"
-    check_file_contains_string "password = ${spotify_password}" "${mopidy_conf}"
-    check_file_contains_string "client_id = ${spotify_client_id}" "${mopidy_conf}"
-    check_file_contains_string "client_secret = ${spotify_client_secret}" "${mopidy_conf}"
+    check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
+    check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
+    check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
+    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
 
     # check that mopidy service is enabled
     check_service_enablement mopidy enabled
@@ -309,6 +309,6 @@ if [[ "${failed_tests}" -gt 0 ]]; then
     echo "${failed_tests} Test(s) failed (of ${tests} tests) (in ${m}m ${s}s)."
     exit 1
 else
-    echo "{tests} tests done in ${m}m ${s}s."
+    echo "${tests} tests done in ${m}m ${s}s."
 fi
 
