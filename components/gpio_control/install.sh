@@ -1,3 +1,5 @@
+echo 'Install all required python modules'
+pip install -r requirements.txt
 
 echo 'Installing GPIO_Control service'
 echo
