@@ -9,8 +9,8 @@ from signal import pause
 
 from RPi import GPIO
 
-from GPIODevices.VolumeControl import VolumeControl
-from GPIODevices.led import LED, MPDStatusLED
+#from GPIODevices.VolumeControl import VolumeControl
+#from GPIODevices.led import LED, MPDStatusLED
 
 GPIO.setmode(GPIO.BCM)
 

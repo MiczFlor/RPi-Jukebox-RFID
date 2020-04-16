@@ -20,11 +20,11 @@ class LED:
 
 
     def on(self):
-        logger.debug('Set Output of {}}(pin={}) to on'.format(self.name, self.pin))
+        logger.debug('Set Output of {}(pin={}) to on'.format(self.name, self.pin))
         GPIO.output(self.pin, GPIO.HIGH)
 
     def off(self):
-        logger.debug('Set Output of {}}(pin={}) to off'.format(self.name, self.pin))
+        logger.debug('Set Output of {}(pin={}) to off'.format(self.name, self.pin))
         GPIO.output(self.pin, GPIO.LOW)
 
     def status(self):
@@ -39,16 +39,20 @@ class MPDStatusLED(LED):
         self.mpc = mpd.MPDClient()
         self.host = host
         self.port = port
-        self.logger.info('Waiting for MPD Connection')
+        self.logger.info('Waiting for MPD Connection on {}:{}'.format(
+            self.host,self.port))
         while not self.has_mpd_connection():
             self.logger.debug('No MPD Connection yet established')
             time.sleep(1)
+        self.logger.info('Connection to MPD server on host {}:{} established'.format(self.host,self.port))
         self.on()
 
     def has_mpd_connection(self):
         self.mpc.disconnect()
         try:
             self.mpc.connect(self.host, self.port)
+            self.mpc.ping()
+            self.mpc.disconnect()
             return True
         except ConnectionError:
             return False
