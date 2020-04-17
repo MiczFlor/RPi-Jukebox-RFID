@@ -56,6 +56,19 @@ else
     echo "systemctl enable phoniebox_gpio_control.service"
     systemctl enable phoniebox_gpio_control.service
 fi
+SERVICE_STATUS="$(systemctl is-active phoniebox_gpio_control.service)"
+if [ "${SERVICE_STATUS}" = "active" ]; then
+    echo "Phoniebox GPIO Service started correctly ....."
+else
+    echo " Service not running, please check functionallity by running gpio_control.py "
+    echo " in the directory ~/RPi-Jukebox-RFID/components: "
+    echo "$ cd ~/RPi-Jukebox-RFID/components"
+    echo "$ python gpio_control.py"
+    echo " or check output of journaclctl by:"
+    echo "$ journalctl -u phoniebox_gpio_control.service -f"
+    exit 1
+fi
+systemctl is-active --quiet phoniebox_gpio_control.service
 systemctl status phoniebox_gpio_control.service
 
 
