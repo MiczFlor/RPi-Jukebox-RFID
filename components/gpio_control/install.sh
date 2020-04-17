@@ -4,6 +4,10 @@ pip install -r requirements.txt
 echo 'Installing GPIO_Control service'
 echo
 
+if [!-d $HOME/.config/phoniebox/]; then
+    mkdir -p $HOME/.config/phoniebox/ ;
+fi;
+
 FILE=$HOME/.config/phoniebox/gpio_settings.ini
 if test -f "$FILE"; then
     echo "$FILE exist"
