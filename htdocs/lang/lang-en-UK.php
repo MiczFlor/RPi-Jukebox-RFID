@@ -81,7 +81,6 @@ $lang['playerVolDown'] = "volume down";
 $lang['playerVolUp'] = "volume up";
 $lang['playerMute'] = "toggle mute";
 
-
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
 $lang['classic'] = "Classic edition (barebones)";
