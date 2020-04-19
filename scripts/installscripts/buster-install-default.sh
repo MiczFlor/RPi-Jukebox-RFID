@@ -714,17 +714,17 @@ install_main() {
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
         mkdir -p "${HOME_DIR}"/.config/mopidy
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample ${etc_mopidy_conf}
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample ${mopidy_conf}
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample "${etc_mopidy_conf}"
+        cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample "${mopidy_conf}"
         # Change vars to match install config
         sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
+        sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
     fi
 
     if [ "${MPDconfig}" == "YES" ]; then
