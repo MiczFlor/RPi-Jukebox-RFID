@@ -987,9 +987,10 @@ main
 
 end=$(date +%s)
 runtime=$((end-start))
+((h=${runtime}/3600))
 ((m=(${runtime}%3600)/60))
 ((s=${runtime}%60))
-echo "Done (in ${m}m ${s}s)."
+echo "Done (in ${h}h ${m}m ${s}s)."
 
 #####################################################
 # notes for things to do

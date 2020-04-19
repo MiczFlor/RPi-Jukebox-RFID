@@ -302,13 +302,14 @@ main
 end=$(date +%s)
 
 runtime=$((end-start))
+((h=${runtime}/3600))
 ((m=($runtime%3600)/60))
 ((s=$runtime%60))
  
 if [[ "${failed_tests}" -gt 0 ]]; then
-    echo "${failed_tests} Test(s) failed (of ${tests} tests) (in ${m}m ${s}s)."
+    echo "${failed_tests} Test(s) failed (of ${tests} tests) (in ${h}h ${m}m ${s}s)."
     exit 1
 else
-    echo "${tests} tests done in ${m}m ${s}s."
+    echo "${tests} tests done in ${h}h ${m}m ${s}s."
 fi
 
