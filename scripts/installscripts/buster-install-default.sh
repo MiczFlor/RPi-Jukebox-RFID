@@ -603,6 +603,7 @@ install_main() {
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Installing dependencies for Spotify support..."
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
@@ -614,7 +615,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
@@ -624,8 +625,9 @@ install_main() {
     wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
 
     # Install more required packages
-    sudo python3 -m pip install -r "${jukebox_dir}"/requirements.txt
-    sudo pip3 install -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
+    echo "Installing additional Python packages..."
+    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo pip3 install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
 
     samba_config
 
@@ -670,24 +672,25 @@ install_main() {
     # services to launch after boot using systemd
     # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
     # 1. delete old services (this is legacy, might throw errors but is necessary. Valid for versions < 1.1.8-beta)
+    local systemd_dir="/etc/systemd/system"
     echo "### Deleting older versions of service daemons. This might throw errors, ignore them"
     sudo systemctl disable idle-watchdog
     sudo systemctl disable rfid-reader
     sudo systemctl disable startup-sound
     sudo systemctl disable gpio-buttons
-    sudo rm /etc/systemd/system/rfid-reader.service
-    sudo rm /etc/systemd/system/startup-sound.service
-    sudo rm /etc/systemd/system/gpio-buttons.service
-    sudo rm /etc/systemd/system/idle-watchdog.service
+    sudo rm "${systemd_dir}"/rfid-reader.service
+    sudo rm "${systemd_dir}"/startup-sound.service
+    sudo rm "${systemd_dir}"/gpio-buttons.service
+    sudo rm "${systemd_dir}"/idle-watchdog.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample /etc/systemd/system/phoniebox-rotary-encoder.service
-    sudo chown root:root /etc/systemd/system/phoniebox-*.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-*.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
+    sudo chown root:root "${systemd_dir}"/phoniebox-*.service
+    sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
@@ -703,6 +706,7 @@ install_main() {
     if [ "${SPOTinstall}" == "YES" ]; then
         local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
         local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        echo "Configuring Spotify support..."
         sudo systemctl disable mpd
         sudo systemctl enable mopidy
         # Install Config Files
@@ -725,6 +729,7 @@ install_main() {
 
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
+        echo "Configuring MPD..."
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
