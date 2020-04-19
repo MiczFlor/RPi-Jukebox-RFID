@@ -18,6 +18,28 @@ HOME_DIR="/home/pi"
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
+INTERACTIVE=true
+
+usage() {
+    printf "Usage: ${SCRIPTNAME} [-a] [-h]\n"
+    printf " -a\tautomatic/non-interactive mode\n"
+    printf " -h\thelp\n"
+    exit 0
+}
+
+while getopts ":ah" opt;
+do
+  case ${opt} in
+    a ) INTERACTIVE=false
+      ;;
+    h ) usage
+      ;;
+    \? ) usage
+      ;;
+  esac
+done
+
+
 # Setup logger functions
 # Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
 log_open() {
@@ -460,6 +482,64 @@ config_audio_folder() {
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
+check_variable() {
+  local variable=${1}
+  # check if variable exist and if it's empty
+  test -z "${!variable+x}" && echo "ERROR: \$${variable} is missing!" && fail=true && return
+  test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
+}
+
+check_config_file() {
+    local install_conf="${PATHDATA}/PhonieboxInstall.conf"
+    echo "Checking PhonieboxInstall.conf..."
+    # check that PhonieboxInstall.conf exists and is not empty
+
+    # check if config file exists
+    if [[ -f "${install_conf}" ]]; then
+        # Source config file
+        source "${install_conf}"
+        cat "${install_conf}"
+        echo ""
+    else
+        echo "ERROR: ${install_conf} does not exist!"
+        exit 1
+    fi
+
+    fail=false
+    if [[ -z "${WIFIconfig+x}" ]]; then
+        echo "ERROR: \$WIFIconfig is missing or not set!" && fail=true
+    else
+        if [[ "$WIFIconfig" == "YES" ]]; then
+            check_variable "WIFIcountryCode"
+            check_variable "WIFIssid"
+            check_variable "WIFIpass"
+            check_variable "WIFIip"
+            check_variable "WIFIipRouter"
+        fi
+    fi
+    check_variable "EXISTINGuse"
+    check_variable "AUDIOiFace"
+
+    if [[ -z "${SPOTinstall+x}" ]]; then
+        echo "ERROR: \$SPOTinstall is missing or not set!" && fail=true
+    else
+        if [ "$SPOTinstall" == "YES" ]; then
+            check_variable "SPOTIuser"
+            check_variable "SPOTIpass"
+            check_variable "SPOTIclientid"
+            check_variable "SPOTIclientsecret"
+        fi
+    fi
+    check_variable "MPDconfig"
+    check_variable "DIRaudioFolders"
+
+    if [ "${fail}" == "true" ]; then
+      exit 1
+    fi
+
+    echo ""
+}
+
 samba_config() {
     local smb_conf="/etc/samba/smb.conf"
     echo "Configuring Samba..."
@@ -527,16 +607,18 @@ install_main() {
 # You will be prompted later to complete the installation.
 "
 
-    read -rp "Do you want to start the installation? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            echo "Exiting the installation."
-            echo "Your configuration data was saved in this file:"
-            echo "${PATHDATA}/PhonieboxInstall.conf"
-            echo
-            exit
-            ;;
-    esac
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        read -rp "Do you want to start the installation? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                echo "Exiting the installation."
+                echo "Your configuration data was saved in this file:"
+                echo "${PATHDATA}/PhonieboxInstall.conf"
+                echo
+                exit
+                ;;
+        esac
+    fi
 
     # Start logging here
     log_open
@@ -972,19 +1054,31 @@ finish_installation() {
 # Main #
 ########
 main() {
-    welcome
-    reset_install_config_file
-    config_wifi
-    check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
-    config_audio_interface
-    config_spotify
-    config_mpd
-    config_audio_folder "${JUKEBOX_HOME_DIR}"
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        welcome
+        reset_install_config_file
+        config_wifi
+        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
+        config_audio_interface
+        config_spotify
+        config_mpd
+        config_audio_folder "${JUKEBOX_HOME_DIR}"
+    else
+        echo "Non-interactive installation!"
+        check_config_file
+        # Skip interactive Samba WINS config dialog
+        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+    fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
-    finish_installation "${JUKEBOX_HOME_DIR}"
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        finish_installation "${JUKEBOX_HOME_DIR}"
+    else
+        echo "Skipping USB device setup..."
+        echo "Reboot is required to activate all settings!"
+    fi
 }
 
 start=$(date +%s)
