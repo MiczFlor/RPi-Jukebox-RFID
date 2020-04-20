@@ -7,42 +7,43 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
-LOGDIR=${PATHDATA}/logfiles
-DATE=$(date +"%Y%m%d")
+LOGDIR="${PATHDATA}"/logfiles
 DATETIME=$(date +"%Y%m%d_%H%M%S")
  
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-JUKEBOX_HOME_DIR="/home/pi/RPi-Jukebox-RFID"
-JUKEBOX_BACKUP_DIR="/home/pi/BACKUP"
+HOME_DIR="/home/pi"
+
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 # Setup logger functions
 # Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
 log_open() {
-    [[ -d ${LOGDIR} ]] || mkdir -p ${LOGDIR}
-    PIPE=${LOGDIR}/${JOB}_${DATETIME}.pipe
-    mkfifo -m 700 ${PIPE}
-    LOGFILE=${LOGDIR}/${JOB}_${DATETIME}.log
+    [[ -d "${LOGDIR}" ]] || mkdir -p "${LOGDIR}"
+    PIPE="${LOGDIR}"/"${JOB}"_"${DATETIME}".pipe
+    mkfifo -m 700 "${PIPE}"
+    LOGFILE="${LOGDIR}"/"${JOB}"_"${DATETIME}".log
     exec 3>&1
-    tee ${LOGFILE} <${PIPE} >&3 &
+    tee "${LOGFILE}" <"${PIPE}" >&3 &
     TEEPID=$!
-    exec 1>${PIPE} 2>&1
+    exec 1>"${PIPE}" 2>&1
     PIPE_OPENED=1
 }
  
 log_close() {
-    if [ ${PIPE_OPENED} ]; then
+    if [ "${PIPE_OPENED}" ]; then
         exec 1<&3
         sleep 0.2
-        ps --pid ${TEEPID} >/dev/null
+        ps --pid "${TEEPID}" >/dev/null
         if [ $? -eq 0 ] ; then
             # a wait ${TEEPID} whould be better but some
             # commands leave file descriptors open
             sleep 1
-            kill  ${TEEPID}
+            kill  "${TEEPID}"
         fi
-        rm ${PIPE}
+        rm "${PIPE}"
         unset PIPE_OPENED
     fi
 }
@@ -170,7 +171,7 @@ check_existing() {
     # The install will be in the home dir of user pi
     # Move to home directory now to check
     cd ~ || exit
-    if [ -d ${jukebox_dir} ]; then
+    if [ -d "${jukebox_dir}" ]; then
         # Houston, we found something!
         clear
         echo "#####################################################
@@ -181,7 +182,7 @@ check_existing() {
 #
 "
         # check if we find the version number
-        if [ -f ${jukebox_dir}/settings/version ]; then
+        if [ -f "${jukebox_dir}"/settings/version ]; then
             echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
@@ -197,25 +198,25 @@ check_existing() {
             [nN][oO]|[nN])
                 EXISTINGuse=NO
                 echo "Phoniebox will be a fresh install. The existing version will be dropped."
-                sudo rm -rf ${jukebox_dir}
+                sudo rm -rf "${jukebox_dir}"
                 read -rp "Hit ENTER to proceed to the next step." INPUT
                 ;;
             *)
                 EXISTINGuse=YES
                 # CREATE BACKUP
                 # delete existing BACKUP dir if exists
-                if [ -d ${backup_dir} ]; then
-                    sudo rm -r ${backup_dir}
+                if [ -d "${backup_dir}" ]; then
+                    sudo rm -r "${backup_dir}"
                 fi
                 # move install to BACKUP dir
-                mv ${jukebox_dir} ${backup_dir}
+                mv "${jukebox_dir}" "${backup_dir}"
                 # delete .git dir
-                if [ -d ${backup_dir}/.git ]; then
-                    sudo rm -r ${backup_dir}/.git
+                if [ -d "${backup_dir}"/.git ]; then
+                    sudo rm -r "${backup_dir}"/.git
                 fi
                 # delete placeholder files so moving the folder content back later will not create git pull conflicts
-                rm ${backup_dir}/shared/audiofolders/placeholder
-                rm ${backup_dir}/shared/shortcuts/placeholder
+                rm "${backup_dir}"/shared/audiofolders/placeholder
+                rm "${backup_dir}"/shared/shortcuts/placeholder
 
                 # ask for things to use
                 echo "Ok. You want to use stuff from the existing installation."
@@ -455,11 +456,57 @@ config_audio_folder() {
     # append variables to config file
     echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${PATHDATA}/PhonieboxInstall.conf"
     echo "Your audio folders live in this dir:"
-    echo $DIRaudioFolders
+    echo "${DIRaudioFolders}"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
-main_install() {
+samba_config() {
+    local smb_conf="/etc/samba/smb.conf"
+    echo "Configuring Samba..."
+    # Samba configuration settings
+    # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/smb.conf.buster-default.sample ${smb_conf}
+    sudo chown root:root "${smb_conf}"
+    sudo chmod 644 "${smb_conf}"
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
+    # Samba: create user 'pi' with password 'raspberry'
+    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
+}
+
+web_server_config() {
+    local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
+    local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
+    local php_ini="/etc/php/7.3/cgi/php.ini"
+    local sudoers="/etc/sudoers"
+
+    echo "Configuring web server..."
+    # Web server configuration settings
+    # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
+    sudo chown root:root "${lighthttpd_conf}"
+    sudo chmod 644 "${lighthttpd_conf}"
+
+    # Web server PHP7 fastcgi conf
+    # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample ${fastcgi_php_conf}
+    sudo chown root:root "${fastcgi_php_conf}"
+    sudo chmod 644 "${fastcgi_php_conf}"
+
+    # settings for php.ini to support upload
+    # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/php.ini.buster-default.sample ${php_ini}
+    sudo chown root:root "${php_ini}"
+    sudo chmod 644 "${php_ini}"
+
+    # SUDO users (adding web server here)
+    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/sudoers.buster-default.sample ${sudoers}
+    sudo chown root:root "${sudoers}"
+    sudo chmod 440 "${sudoers}"
+}
+
+install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
@@ -543,19 +590,20 @@ main_install() {
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
     # Get github code
-    cd /home/pi/ || exit
+    cd "${HOME_DIR}" || exit
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
     # add used git branch and commit hash to version file
     USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
-    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' ${jukebox_dir}/settings/version
+    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' "${jukebox_dir}"/settings/version
 
     # add git commit hash to version file
     COMMIT_NO="$(git --git-dir=${jukebox_dir}/.git describe --always)"
-    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' ${jukebox_dir}/settings/version
+    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' "${jukebox_dir}"/settings/version
 
     # Install required spotify packages
-    if [ $SPOTinstall == "YES" ]; then
+    if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Installing dependencies for Spotify support..."
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
@@ -567,80 +615,44 @@ main_install() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        cd ${jukebox_dir}/ || exit
-        sudo python3 -m pip install -r requirements-spotify.txt
+        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
-    cd ${jukebox_dir}/misc/sampleconfigs/ || exit
-    sudo rm phoniebox-rfid-reader.service.stretch-default.sample
-    wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    cd ${jukebox_dir}/scripts/ || exit
-    sudo rm RegisterDevice.py
-    wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/develop/scripts/RegisterDevice.py
-
-    # Jump into the Phoniebox dir
-    cd ${jukebox_dir} || exit
+    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
+    sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
+    wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
 
     # Install more required packages
-    sudo python3 -m pip install -r requirements.txt
-    sudo pip3 install -r ${jukebox_dir}/components/rfid-reader/PN532/requirements.txt
+    echo "Installing additional Python packages..."
+    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo pip3 install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
 
-    # Switch of WiFi power management
-    sudo iwconfig wlan0 power off
+    samba_config
 
-    # Samba configuration settings
-    # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/smb.conf.buster-default.sample /etc/samba/smb.conf
-    sudo chown root:root /etc/samba/smb.conf
-    sudo chmod 644 /etc/samba/smb.conf
-    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/samba/smb.conf
-    # Samba: create user 'pi' with password 'raspberry'
-    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
-
-    # Web server configuration settings
-    # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-    sudo cp /${jukebox_dir}/misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
-    sudo chown root:root /etc/lighttpd/lighttpd.conf
-    sudo chmod 644 /etc/lighttpd/lighttpd.conf
-
-    # Web server PHP7 fastcgi conf
-    # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo chown root:root /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo chmod 644 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    # settings for php.ini to support upload
-    # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
-    sudo chown root:root /etc/php/7.3/cgi/php.ini
-    sudo chmod 644 /etc/php/7.3/cgi/php.ini
-
-    # SUDO users (adding web server here)
-    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/sudoers.buster-default.sample /etc/sudoers
-    sudo chown root:root /etc/sudoers
-    sudo chmod 440 /etc/sudoers
+    web_server_config
 
     # copy shell script for player
-    cp ${jukebox_dir}/settings/rfid_trigger_play.conf.sample ${jukebox_dir}/settings/rfid_trigger_play.conf
+    cp "${jukebox_dir}"/settings/rfid_trigger_play.conf.sample "${jukebox_dir}"/settings/rfid_trigger_play.conf
 
     # creating files containing editable values for configuration
     # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
-    echo "$AUDIOiFace" > ${jukebox_dir}/settings/Audio_iFace_Name
-    echo "$DIRaudioFolders" > ${jukebox_dir}/settings/Audio_Folders_Path
-    echo "3" > ${jukebox_dir}/settings/Audio_Volume_Change_Step
-    echo "100" > ${jukebox_dir}/settings/Max_Volume_Limit
-    echo "0" > ${jukebox_dir}/settings/Idle_Time_Before_Shutdown
-    echo "RESTART" > ${jukebox_dir}/settings/Second_Swipe
-    echo "${jukebox_dir}/playlists" > ${jukebox_dir}/settings/Playlists_Folders_Path
-    echo "ON" > ${jukebox_dir}/settings/ShowCover
+    echo "$AUDIOiFace" > "${jukebox_dir}"/settings/Audio_iFace_Name
+    echo "$DIRaudioFolders" > "${jukebox_dir}"/settings/Audio_Folders_Path
+    echo "3" > "${jukebox_dir}"/settings/Audio_Volume_Change_Step
+    echo "100" > "${jukebox_dir}"/settings/Max_Volume_Limit
+    echo "0" > "${jukebox_dir}"/settings/Idle_Time_Before_Shutdown
+    echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
+    echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
+    echo "ON" > "${jukebox_dir}"/settings/ShowCover
 
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
 
     # create config file for web app from sample
-    sudo cp ${jukebox_dir}/htdocs/config.php.sample ${jukebox_dir}/htdocs/config.php
+    sudo cp "${jukebox_dir}"/htdocs/config.php.sample "${jukebox_dir}"/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
@@ -648,44 +660,37 @@ main_install() {
     sudo service lighttpd force-reload
 
     # create copy of GPIO script
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/gpio-buttons.py.sample ${jukebox_dir}/scripts/gpio-buttons.py
-    sudo chmod +x ${jukebox_dir}/scripts/gpio-buttons.py
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/gpio-buttons.py.sample "${jukebox_dir}"/scripts/gpio-buttons.py
+    sudo chmod +x "${jukebox_dir}"/scripts/gpio-buttons.py
 
     # make sure bash scripts have the right settings
-    sudo chown pi:www-data ${jukebox_dir}/scripts/*.sh
-    sudo chmod +x ${jukebox_dir}/scripts/*.sh
-    sudo chown pi:www-data ${jukebox_dir}/scripts/*.py
-    sudo chmod +x ${jukebox_dir}/scripts/*.py
+    sudo chown pi:www-data "${jukebox_dir}"/scripts/*.sh
+    sudo chmod +x "${jukebox_dir}"/scripts/*.sh
+    sudo chown pi:www-data "${jukebox_dir}"/scripts/*.py
+    sudo chmod +x "${jukebox_dir}"/scripts/*.py
 
     # services to launch after boot using systemd
     # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
     # 1. delete old services (this is legacy, might throw errors but is necessary. Valid for versions < 1.1.8-beta)
+    local systemd_dir="/etc/systemd/system"
     echo "### Deleting older versions of service daemons. This might throw errors, ignore them"
     sudo systemctl disable idle-watchdog
     sudo systemctl disable rfid-reader
     sudo systemctl disable startup-sound
     sudo systemctl disable gpio-buttons
-    sudo rm /etc/systemd/system/rfid-reader.service
-    sudo rm /etc/systemd/system/startup-sound.service
-    sudo rm /etc/systemd/system/gpio-buttons.service
-    sudo rm /etc/systemd/system/idle-watchdog.service
+    sudo rm "${systemd_dir}"/rfid-reader.service
+    sudo rm "${systemd_dir}"/startup-sound.service
+    sudo rm "${systemd_dir}"/gpio-buttons.service
+    sudo rm "${systemd_dir}"/idle-watchdog.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample /etc/systemd/system/phoniebox-startup-sound.service
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo cp ${jukebox_dir}/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample /etc/systemd/system/phoniebox-rotary-encoder.service
-    sudo chown root:root /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo chown root:root /etc/systemd/system/phoniebox-startup-sound.service
-    sudo chown root:root /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo chown root:root /etc/systemd/system/phoniebox-rotary-encoder.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-startup-sound.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-gpio-buttons.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-idle-watchdog.service
-    sudo chmod 644 /etc/systemd/system/phoniebox-rotary-encoder.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
+    sudo chown root:root "${systemd_dir}"/phoniebox-*.service
+    sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
@@ -694,49 +699,53 @@ main_install() {
     sudo systemctl enable phoniebox-rotary-encoder.service
 
     # copy mp3s for startup and shutdown sound to the right folder
-    cp ${jukebox_dir}/misc/sampleconfigs/startupsound.mp3.sample ${jukebox_dir}/shared/startupsound.mp3
-    cp ${jukebox_dir}/misc/sampleconfigs/shutdownsound.mp3.sample ${jukebox_dir}/shared/shutdownsound.mp3
+    cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
+    cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
     # Spotify config
-    if [ $SPOTinstall == "YES" ]; then
+    if [ "${SPOTinstall}" == "YES" ]; then
+        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
+        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        echo "Configuring Spotify support..."
         sudo systemctl disable mpd
         sudo systemctl enable mopidy
         # Install Config Files
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/locale.sample /etc/default/locale
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
-        sudo mkdir /home/pi/.config
-        sudo mkdir /home/pi/.config/mopidy
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy-etc.sample /etc/mopidy/mopidy.conf
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mopidy.sample ~/.config/mopidy/mopidy.conf
+        mkdir -p "${HOME_DIR}"/.config/mopidy
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample "${etc_mopidy_conf}"
+        cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' /etc/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' ~/.config/mopidy/mopidy.conf
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' ~/.config/mopidy/mopidy.conf
+        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
+        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
+        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
+        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
+        sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
+        sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
     fi
 
-    if [ $MPDconfig == "YES" ]; then
+    if [ "${MPDconfig}" == "YES" ]; then
+        local mpd_conf="/etc/mpd.conf"
+        echo "Configuring MPD..."
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp ${jukebox_dir}/misc/sampleconfigs/mpd.conf.buster-default.sample /etc/mpd.conf
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
         # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' /etc/mpd.conf
+        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' /etc/mpd.conf
-        sudo chown mpd:audio /etc/mpd.conf
-        sudo chmod 640 /etc/mpd.conf
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+        sudo chown mpd:audio "${mpd_conf}"
+        sudo chmod 640 "${mpd_conf}"
     fi
 
     # set which version has been installed
-    if [ $SPOTinstall == "YES" ]; then
-        echo "plusSpotify" > ${jukebox_dir}/settings/edition
+    if [ "${SPOTinstall}" == "YES" ]; then
+        echo "plusSpotify" > "${jukebox_dir}"/settings/edition
     else
-        echo "classic" > ${jukebox_dir}/settings/edition
+        echo "classic" > "${jukebox_dir}"/settings/edition
     fi
 
     # update mpc / mpd DB
@@ -760,28 +769,28 @@ wifi_settings() {
     # $WIFIpass
     # $WIFIip
     # $WIFIipRouter
-    if [ $WIFIconfig == "YES" ]; then
+    if [ "${WIFIconfig}" == "YES" ]; then
         # DHCP configuration settings
         echo "Setting ${dhcpcd_conf}..."
         #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-        sudo cp ${sample_configs_dir}/dhcpcd.conf.buster-default-noHotspot.sample ${dhcpcd_conf}
+        sudo cp "${sample_configs_dir}"/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
         # Change IP for router and Phoniebox
-        sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' ${dhcpcd_conf}
-        sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' ${dhcpcd_conf}
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' ${dhcpcd_conf}
+        sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
+        sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
+        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
         # Change user:group and access mod
-        sudo chown root:netdev ${dhcpcd_conf}
-        sudo chmod 664 ${dhcpcd_conf}
+        sudo chown root:netdev "${dhcpcd_conf}"
+        sudo chmod 664 "${dhcpcd_conf}"
 
         # WiFi SSID & Password
         echo "Setting ${wpa_supplicant_conf}..."
         # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-        sudo cp ${sample_configs_dir}/wpa_supplicant.conf.buster-default.sample ${wpa_supplicant_conf}
-        sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' ${wpa_supplicant_conf}
-        sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' ${wpa_supplicant_conf}
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' ${wpa_supplicant_conf}
-        sudo chown root:netdev ${wpa_supplicant_conf}
-        sudo chmod 664 ${wpa_supplicant_conf}
+        sudo cp "${sample_configs_dir}"/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
+        sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' "${wpa_supplicant_conf}"
+        sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' "${wpa_supplicant_conf}"
+        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
+        sudo chown root:netdev "${wpa_supplicant_conf}"
+        sudo chmod 664 "${wpa_supplicant_conf}"
     fi
 
     # start DHCP
@@ -800,9 +809,9 @@ existing_assets() {
     #####################################################
     # EXISTING ASSETS TO USE FROM EXISTING INSTALL
 
-    if [ $EXISTINGuse == "YES" ]; then
+    if [ "${EXISTINGuse}" == "YES" ]; then
         # RFID config for system control
-        if [ $EXISTINGuseRfidConf == "YES" ]; then
+        if [ "${EXISTINGuseRfidConf}" == "YES" ]; then
             # read old values and write them into new file (copied above already)
             # do not overwrite but use 'sed' in case there are new vars in new version installed
 
@@ -816,34 +825,34 @@ existing_assets() {
                 # Additional error check: key should not start with a hash and not be empty.
                 if [ ! "${key:0:1}" == '#' ] && [ -n "$key" ]; then
                     # Replace the matching value in the newly created conf file
-                    sed -i 's/%'"$key"'%/'"$val"'/' ${jukebox_dir}/settings/rfid_trigger_play.conf
+                    sed -i 's/%'"$key"'%/'"$val"'/' "${jukebox_dir}"/settings/rfid_trigger_play.conf
                 fi
-            done <${backup_dir}/settings/rfid_trigger_play.conf
+            done <"${backup_dir}"/settings/rfid_trigger_play.conf
         fi
 
         # RFID shortcuts for audio folders
-        if [ $EXISTINGuseRfidLinks == "YES" ]; then
+        if [ "${EXISTINGuseRfidLinks}" == "YES" ]; then
             # copy from backup to new install
-            cp -R ${backup_dir}/shared/shortcuts/* ${jukebox_dir}/shared/shortcuts/
+            cp -R "${backup_dir}"/shared/shortcuts/* "${jukebox_dir}"/shared/shortcuts/
         fi
 
         # Audio folders: use existing
-        if [ $EXISTINGuseAudio == "YES" ]; then
+        if [ "${EXISTINGuseAudio}" == "YES" ]; then
             # copy from backup to new install
-            cp -R ${backup_dir}/shared/audiofolders/* "$DIRaudioFolders/"
+            cp -R "${backup_dir}"/shared/audiofolders/* "$DIRaudioFolders/"
         fi
 
         # GPIO: use existing file
-        if [ $EXISTINGuseGpio == "YES" ]; then
+        if [ "${EXISTINGuseGpio}" == "YES" ]; then
             # copy from backup to new install
-            cp ${backup_dir}/scripts/gpio-buttons.py ${jukebox_dir}/scripts/gpio-buttons.py
+            cp "${backup_dir}"/scripts/gpio-buttons.py "${jukebox_dir}"/scripts/gpio-buttons.py
         fi
 
         # Sound effects: use existing startup / shutdown sounds
-        if [ $EXISTINGuseSounds == "YES" ]; then
+        if [ "${EXISTINGuseSounds}" == "YES" ]; then
             # copy from backup to new install
-            cp ${backup_dir}/shared/startupsound.mp3 ${jukebox_dir}/shared/startupsound.mp3
-            cp ${backup_dir}/shared/shutdownsound.mp3 ${jukebox_dir}/shared/shutdownsound.mp3
+            cp "${backup_dir}"/shared/startupsound.mp3 "${jukebox_dir}"/shared/startupsound.mp3
+            cp "${backup_dir}"/shared/shutdownsound.mp3 "${jukebox_dir}"/shared/shutdownsound.mp3
         fi
 
     fi
@@ -864,30 +873,30 @@ folder_access() {
     echo "Setting owner and permissions for directories..."
 
     # create playlists folder
-    mkdir -p ${jukebox_dir}/playlists
-    sudo chown -R ${user_group} ${jukebox_dir}/playlists
-    sudo chmod -R ${mod} ${jukebox_dir}/playlists
+    mkdir -p "${jukebox_dir}"/playlists
+    sudo chown -R "${user_group}" "${jukebox_dir}"/playlists
+    sudo chmod -R "${mod}" "${jukebox_dir}"/playlists
 
     # make sure the shared folder is accessible by the web server
-    sudo chown -R ${user_group} ${jukebox_dir}/shared
-    sudo chmod -R ${mod} ${jukebox_dir}/shared
+    sudo chown -R "${user_group}" "${jukebox_dir}"/shared
+    sudo chmod -R "${mod}" "${jukebox_dir}"/shared
 
     # make sure the htdocs folder can be changed by the web server
-    sudo chown -R ${user_group} ${jukebox_dir}/htdocs
-    sudo chmod -R ${mod} ${jukebox_dir}/htdocs
+    sudo chown -R "${user_group}" "${jukebox_dir}"/htdocs
+    sudo chmod -R "${mod}" "${jukebox_dir}"/htdocs
 
-    sudo chown -R ${user_group} ${jukebox_dir}/settings
-    sudo chmod -R ${mod} ${jukebox_dir}/settings
+    sudo chown -R "${user_group}" "${jukebox_dir}"/settings
+    sudo chmod -R "${mod}" "${jukebox_dir}"/settings
 
     # audio folders might be somewhere else, so treat them separately
-    sudo chown ${user_group} "${DIRaudioFolders}"
-    sudo chmod ${mod} "${DIRaudioFolders}"
+    sudo chown "${user_group}" "${DIRaudioFolders}"
+    sudo chmod "${mod}" "${DIRaudioFolders}"
 
     # make sure bash scripts have the right settings
-    sudo chown ${user_group} ${jukebox_dir}/scripts/*.sh
-    sudo chmod +x ${jukebox_dir}/scripts/*.sh
-    sudo chown ${user_group} ${jukebox_dir}/scripts/*.py
-    sudo chmod +x ${jukebox_dir}/scripts/*.py
+    sudo chown "${user_group}" "${jukebox_dir}"/scripts/*.sh
+    sudo chmod +x "${jukebox_dir}"/scripts/*.sh
+    sudo chown "${user_group}" "${jukebox_dir}"/scripts/*.py
+    sudo chmod +x "${jukebox_dir}"/scripts/*.py
 
     # set audio volume to 100%
     # see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
@@ -895,10 +904,10 @@ folder_access() {
 
     # delete the global.conf file, in case somebody manually copied stuff back and forth
     # this will be created the first time the Phoniebox is put to use by web app or RFID
-    GLOBAL_CONF=${jukebox_dir}/settings/global.conf
-    if [ -f $GLOBAL_CONF ]; then
+    GLOBAL_CONF="${jukebox_dir}"/settings/global.conf
+    if [ -f "${GLOBAL_CONF}" ]; then
         echo "global.conf needs to be deleted."
-        rm $GLOBAL_CONF
+        rm "${GLOBAL_CONF}"
     fi
 
     # / Access settings
@@ -925,10 +934,10 @@ finish_installation() {
         [nN][oO]|[nN])
             ;;
         *)
-            cd ${jukebox_dir}/scripts/ || exit
+            cd "${jukebox_dir}"/scripts/ || exit
             python3 RegisterDevice.py
-            sudo chown pi:www-data ${jukebox_dir}/scripts/deviceName.txt
-            sudo chmod 644 ${jukebox_dir}/scripts/deviceName.txt
+            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
             ;;
     esac
 
@@ -965,22 +974,23 @@ main() {
     config_spotify
     config_mpd
     config_audio_folder "${JUKEBOX_HOME_DIR}"
-    main_install "${JUKEBOX_HOME_DIR}"
+    install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
     finish_installation "${JUKEBOX_HOME_DIR}"
 }
 
-start=`date +%s`
+start=$(date +%s)
 
 main
 
-end=`date +%s`
+end=$(date +%s)
 runtime=$((end-start))
+((h=${runtime}/3600))
 ((m=(${runtime}%3600)/60))
 ((s=${runtime}%60))
-echo "Done (in ${m}m ${s}s)."
+echo "Done (in ${h}h ${m}m ${s}s)."
 
 #####################################################
 # notes for things to do
