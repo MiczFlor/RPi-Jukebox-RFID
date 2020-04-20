@@ -64,6 +64,10 @@ def functionCallToggleWifi(*args):
     function_call("{command} -c=togglewifi".format(command=playout_control), shell=True)
 
 
+def functionCallPlayerStop(*args):
+    function_call("{command} -c=playerstop".format(command=playout_control),
+            shell=True)
+
 
 def getFunctionCall(functionName):
     logger.error('Get FunctionCall: {} {}'.format(functionName,functionName in locals()))
