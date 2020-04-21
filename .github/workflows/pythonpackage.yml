@@ -29,6 +29,7 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --filename=*.py,*.py.*
     - name: Test with pytest
+      working-directory: ./components/gpio_control
       run: |
         pip install pytest mock
         pytest
