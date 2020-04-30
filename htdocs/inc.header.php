@@ -162,6 +162,8 @@ $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sect
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
 $ShowCover = $globalConf['SHOWCOVER'];
+$WlanIpMailYN = $globalConf['MAILWLANIPYN'];
+$WlanIpMailAddr = $globalConf['MAILWLANIPADDR'];
 $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
 $maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
@@ -231,6 +233,7 @@ $commandsWithAllowedValues = array(
     'volumeup' => array('true'),
     'volumedown' => array('true'),
     'rfidstatus' => array('turnon', 'turnoff'),
+    'WlanIpMailYN' => array('turnon', 'turnoff'),
     'gpiostatus' => array('turnon', 'turnoff'),
     'rotarystatus' => array('turnon', 'turnoff')
 );

@@ -137,6 +137,26 @@ fi
 SHOWCOVER=`cat $PATHDATA/../settings/ShowCover`
 
 ##############################################
+# Mail Wlan Ip Address
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/WlanIpMailAddr ]; then
+    echo "" > $PATHDATA/../settings/WlanIpMailAddr
+    chmod 777 $PATHDATA/../settings/WlanIpMailAddr
+fi
+# 2. then|or read value from file
+MAILWLANIPADDR=`cat $PATHDATA/../settings/WlanIpMailAddr`
+
+##############################################
+# Mail Wlan Ip Email Address
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/MailWlanIpYN ]; then
+    echo "OFF" > $PATHDATA/../settings/MailWlanIpYN
+    chmod 777 $PATHDATA/../settings/MailWlanIpYN
+fi
+# 2. then|or read value from file
+MAILWLANIPYN=`cat $PATHDATA/../settings/WlanIpMailYN`
+
+##############################################
 # edition
 # read this always, do not write default
 
@@ -179,6 +199,8 @@ VERSION=`cat $PATHDATA/../settings/version`
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # SHOWCOVER
+# MAILWLANIPYN
+# MAILWLANIPADDR
 # EDITION
 # LANG
 # VERSION
@@ -196,6 +218,8 @@ echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/glob
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "MAILWLANIPYN=\"${MAILWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "MAILWLANIPADDR=\"${MAILWLANIPADDR}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
