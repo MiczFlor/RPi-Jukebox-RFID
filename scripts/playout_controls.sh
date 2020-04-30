@@ -312,10 +312,15 @@ case $COMMAND in
         # create global config file because individual setting got changed
         . $PATHDATA/inc.writeGlobalConfig.sh
         ;;
-        getstartupvolume)
+    getstartupvolume)
         echo $AUDIOVOLSTARTUP
         ;;
     setvolumetostartup)
+        # check if startup-volume is disabled
+        if [ $AUDIOVOLSTARTUP == 0];
+        then
+            exit 1;
+        fi
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
         if [ $VALUE -le $AUDIOVOLMAXLIMIT ] && [ $VALUE -ge $AUDIOVOLMINLIMIT ];
         then
