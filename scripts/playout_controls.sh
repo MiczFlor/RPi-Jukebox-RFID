@@ -284,6 +284,12 @@ case $COMMAND in
         then
             echo -e setvol $VALUE | nc -w 1 localhost 6600
         fi
+        # if startupvolume is greater than wanted maxvolume, set startupvolume to maxvolume
+        if [ $AUDIOVOLSTARTUP -gt $VALUE ];
+        then
+            # write new value to file
+            echo "$VALUE" > $PATHDATA/../settings/Startup_Volume
+        fi
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
         # create global config file because individual setting got changed
