@@ -305,7 +305,7 @@ case $COMMAND in
         # if value is greater than wanted maxvolume, set value to maxvolume 
         if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
         then
-            $VALUE=$AUDIOVOLMAXLIMIT;
+            VALUE=$AUDIOVOLMAXLIMIT;
         fi
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Startup_Volume       
@@ -317,27 +317,12 @@ case $COMMAND in
         ;;
     setvolumetostartup)
         # check if startup-volume is disabled
-        if [ $AUDIOVOLSTARTUP == 0];
+        if [ "$AUDIOVOLSTARTUP" == 0 ];
         then
             exit 1;
         fi
-        #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
-        if [ $VALUE -le $AUDIOVOLMAXLIMIT ] && [ $VALUE -ge $AUDIOVOLMINLIMIT ];
-        then
-            # set volume level in percent
-            echo -e setvol $AUDIOVOLSTARTUP\\nclose | nc -w 1 localhost 6600
-        else
-            if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
-            then
-                # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
-            fi
-            if [ $VALUE -lt $AUDIOVOLMINLIMIT ];
-            then
-                # if we are unter the min volume limit, set the volume to minvol
-                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
-            fi
-        fi
+        # set volume level in percent
+        echo -e setvol $AUDIOVOLSTARTUP\\nclose | nc -w 1 localhost 6600
         ;;
     playerstop)
         # stop the player
