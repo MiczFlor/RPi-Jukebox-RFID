@@ -186,6 +186,7 @@ VERSION=`cat $PATHDATA/../settings/version`
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
+# AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # SHOWCOVER
@@ -203,6 +204,7 @@ echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.c
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
