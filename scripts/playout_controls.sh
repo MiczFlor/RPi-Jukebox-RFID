@@ -28,6 +28,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setvolume
 # setmaxvolume
 # setstartupvolume
+# getstartupvolume
 # setvolumetostartup
 # volumeup
 # volumedown
@@ -301,17 +302,18 @@ case $COMMAND in
         echo $AUDIOVOLCHANGESTEP
         ;;
     setstartupvolume)
-        # read volume in percent
-        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-        # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
-        if [ $VOLPERCENT -gt $VALUE ];
+        # if value is greater than wanted maxvolume, set value to maxvolume 
+        if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
         then
-            echo -e setvol $VALUE | nc -w 1 localhost 6600
+            $VALUE=$AUDIOVOLMAXLIMIT;
         fi
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Startup_Volume       
         # create global config file because individual setting got changed
         . $PATHDATA/inc.writeGlobalConfig.sh
+        ;;
+        getstartupvolume)
+        echo $AUDIOVOLSTARTUP
         ;;
     setvolumetostartup)
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
