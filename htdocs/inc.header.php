@@ -22,7 +22,7 @@ if(!file_exists("config.php")) {
         // no config nor sample config found. die.
         print "<h1>Configuration file not found</h1>
             <p>The files 'config.php' and 'config.php.sample' were not found in the
-            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the 
+            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the
             <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
             copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
         die;
@@ -42,7 +42,7 @@ sudo chmod -R 775 htdocs/
 sudo chgrp -R www-data htdocs/
                 </pre>
                 </p>
-                Alternatively, download 'htdocs/config.php.sample' from the 
+                Alternatively, download 'htdocs/config.php.sample' from the
                 <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
                 copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
             die;
@@ -63,8 +63,8 @@ include("config.php");
 * this file is read by shell scripts and php
 */
 $debugAvail = array(
-"DEBUG_WebApp", 
-"DEBUG_WebApp_API", 
+"DEBUG_WebApp",
+"DEBUG_WebApp_API",
 "DEBUG_inc_readArgsFromCommandLine_sh",
 "DEBUG_inc_settingsFolderSpecific_sh",
 "DEBUG_inc_writeFolderConfig_sh",
@@ -152,7 +152,7 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
     // scripts/inc.writeGlobalConfig.sh
     exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
     exec("chmod 777 ".$conf['settings_abs']."/global.conf");
-} 
+}
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
@@ -165,6 +165,7 @@ $ShowCover = $globalConf['SHOWCOVER'];
 $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
 $maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
+$startupvolumevalue = $globalConf['AUDIOVOLSTARTUP'];
 $conf['settings_lang'] = $globalConf['LANG'];
 
 // vars that must be read continuously and can't be in the global conf file
@@ -201,6 +202,7 @@ $nonEmptyCommands = array(
     'stop',
     'volume',
     'maxvolume',
+    'startupvolume',
     'volstep',
     'shutdown',
     'reboot',
@@ -295,6 +297,7 @@ if(isset($_GET['delete']) && $_GET['delete'] == "delete") {
 $commandToAction = array(
     'volume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=%s",            // change volume
     'maxvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=%s",      // change max volume
+    'startupvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setstartupvolume -v=%s",      // change startup volume
     'volstep' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolstep -v=%s",          // change volume step
     'mute' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute",                         // volume mute (toggle)
     'volumeup' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumeup",                 // volume up
@@ -360,7 +363,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
     } else {
         // pass folder to resume script
         exec($exec);
-    
+
         /* redirect to drop all the url parameters */
         header("Location: ".$url_abs);
         exit;
