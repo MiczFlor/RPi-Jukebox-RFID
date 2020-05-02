@@ -27,6 +27,6 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   touch /boot/cmdline.txt /etc/sysctl.conf ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
-ENTRYPOINT pytest-3
+ENTRYPOINT /code/scripts/installscripts/tests/test_installation.sh
 
 USER pi
