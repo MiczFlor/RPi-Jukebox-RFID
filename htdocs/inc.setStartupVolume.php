@@ -15,6 +15,11 @@ Startup Volume Select Form
                 <form name='startupvolume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
                     <select id="startupvolume" name="startupvolume" class="selectpicker form-control">
+                      <option value='0'<?php
+                          if($startupvolumevalue == 0) {
+                              print " selected";
+                          }
+                      ?>><?php print $lang['globalOff']; ?></option>
                     <?php
                     $i = $maxvalueselect;
                     while ($i >= 5) {
@@ -38,7 +43,13 @@ Startup Volume Select Form
 
               <div class="col-xs-6">
                   <div class="c100 p<?php print $startupvaluedisplay; ?>">
-                    <span><?php print $startupvaluedisplay; ?>%</span>
+                    <span><?php
+                        if ($startupvolumevalue == 0) {
+                            print $lang['globalOff'];
+                        } else {
+                            print $startupvolumevalue."%";
+                        }
+                    ?></span>
                     <div class="slice">
                         <div class="bar"></div>
                         <div class="fill"></div>
