@@ -67,6 +67,7 @@ $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
 $lang['globalPriority'] = "Priority";
+$lang['globalEmail'] = "Email address";
 
 // Player title HTML
 $lang['playerSeekBack'] = "seek back";
@@ -80,6 +81,7 @@ $lang['playerStop'] = "stop player";
 $lang['playerVolDown'] = "volume down";
 $lang['playerVolUp'] = "volume up";
 $lang['playerMute'] = "toggle mute";
+
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
@@ -185,6 +187,19 @@ $lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and p
 $lang['settingsShowCoverON'] = "Show cover";
 $lang['settingsShowCoverOFF'] = "Don't show cover";
 $lang['settingsMessageLangfileNewItems'] = "There are new language items in the original <em>lang-en-UK.php</em> file. Your language file has been updated and now contains these (in English). You might want to update your language file and commit your changes to the Phoniebox code :)";
+$lang['settingsWlanSendNav'] = "Mail Wlan IP";
+$lang['settingsWlanSendInfo'] = "Send Wlan IP over email on boot? (useful if you hook your Phoniebox into a new Wlan networt with dynamic IP)";
+$lang['settingsWlanSendQuest'] = "Send Wlan IP?";
+$lang['settingsWlanSendEmail'] = "email addr.";
+$lang['settingsWlanSendON'] = "Yes, send email.";
+$lang['settingsWlanSendOFF'] = "No, do not send email.";
+
+
+$lang['settingsWlanReadNav'] = "Read Wlan IP";
+$lang['settingsWlanReadInfo'] = "Read IP address of wlan (wifi) each time after booting? (useful if you hook your Phoniebox into a new wlan networt with dynamic IP)";
+$lang['settingsWlanReadQuest'] = "Read wlan IP?";
+$lang['settingsWlanReadON'] = "Yes, read wlan IP.";
+$lang['settingsWlanReadOFF'] = "No, do not read wlan IP.";
 
 /*
 * System info
