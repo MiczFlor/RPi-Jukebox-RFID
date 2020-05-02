@@ -181,6 +181,7 @@ $lang['settingsSecondSwipeInfo'] = "When you swipe the same RFID a second time, 
 $lang['settingsSecondSwipeRestart'] = "Re-start playlist";
 $lang['settingsSecondSwipeSkipnext'] = "Skip to next track";
 $lang['settingsSecondSwipePause'] = "Toggle pause / play";
+$lang['settingsSecondSwipePause'] = "Resume playback";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only system commands";
 $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";

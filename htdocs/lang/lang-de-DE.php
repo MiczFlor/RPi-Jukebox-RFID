@@ -179,6 +179,7 @@ $lang['settingsSecondSwipeInfo'] = "Aktion, wenn dieselbe Karte ein weiteres Mal
 $lang['settingsSecondSwipeRestart'] = "Wiedergabeliste neu starten";
 $lang['settingsSecondSwipeSkipnext'] = "Zum nächsten Track springen";
 $lang['settingsSecondSwipePause'] = "Pause / Wiedergabe umschalten";
+$lang['settingsSecondSwipePlay'] = "Wiedergabe fortsetzen";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Nur Systembefehle mehrfach ausführen";
 $lang['settingsWebInterface'] = "Web-Oberfläche";
 $lang['settingsCoverInfo'] = "Willst du Cover neben den Alben und Playlisten auf der Hauptseite anzeigen?";
