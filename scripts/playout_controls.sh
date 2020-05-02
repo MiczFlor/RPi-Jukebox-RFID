@@ -27,6 +27,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # mute
 # setvolume
 # setmaxvolume
+# setstartupvolume
+# getstartupvolume
+# setvolumetostartup
 # volumeup
 # volumedown
 # getvolume
@@ -89,6 +92,7 @@ fi
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
+# AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # SHOWCOVER
@@ -280,6 +284,12 @@ case $COMMAND in
         then
             echo -e setvol $VALUE | nc -w 1 localhost 6600
         fi
+        # if startupvolume is greater than wanted maxvolume, set startupvolume to maxvolume
+        if [ $AUDIOVOLSTARTUP -gt $VALUE ];
+        then
+            # write new value to file
+            echo "$VALUE" > $PATHDATA/../settings/Startup_Volume
+        fi
         # write new value to file
         echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
         # create global config file because individual setting got changed
@@ -296,6 +306,29 @@ case $COMMAND in
         ;;
     getvolstep)
         echo $AUDIOVOLCHANGESTEP
+        ;;
+    setstartupvolume)
+        # if value is greater than wanted maxvolume, set value to maxvolume 
+        if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
+        then
+            VALUE=$AUDIOVOLMAXLIMIT;
+        fi
+        # write new value to file
+        echo "$VALUE" > $PATHDATA/../settings/Startup_Volume       
+        # create global config file because individual setting got changed
+        . $PATHDATA/inc.writeGlobalConfig.sh
+        ;;
+    getstartupvolume)
+        echo $AUDIOVOLSTARTUP
+        ;;
+    setvolumetostartup)
+        # check if startup-volume is disabled
+        if [ "$AUDIOVOLSTARTUP" == 0 ];
+        then
+            exit 1;
+        fi
+        # set volume level in percent
+        echo -e setvol $AUDIOVOLSTARTUP\\nclose | nc -w 1 localhost 6600
         ;;
     playerstop)
         # stop the player

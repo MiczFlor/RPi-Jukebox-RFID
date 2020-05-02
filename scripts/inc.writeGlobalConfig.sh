@@ -106,6 +106,16 @@ fi
 AUDIOVOLMINLIMIT=`cat $PATHDATA/../settings/Min_Volume_Limit`
 
 ##############################################
+# Startup_Volume
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Startup_Volume ]; then
+    echo "0" > $PATHDATA/../settings/Startup_Volume
+    chmod 777 $PATHDATA/../settings/Startup_Volume
+fi
+# 2. then|or read value from file
+AUDIOVOLSTARTUP=`cat $PATHDATA/../settings/Startup_Volume`
+
+##############################################
 # Change_Volume_Idle
 # Change volume during idle (or only change it during Play and in the WebApp)
 #TRUE=Change Volume during all Time (Default; FALSE=Change Volume only during "Play"; OnlyDown=It is possible to decrease Volume during Idle; OnlyUp=It is possible to increase Volume during Idle
@@ -206,6 +216,7 @@ VERSION=`cat $PATHDATA/../settings/version`
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
+# AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # SHOWCOVER
@@ -226,6 +237,7 @@ echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.c
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"

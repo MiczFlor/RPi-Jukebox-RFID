@@ -56,7 +56,7 @@ if($debug == "true") {
         </a>  |
         <a href="#secondSwipe" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
-        </a> | 
+        </a> |
         <a href="#DebugLogSettings" class="xbtn xbtn-default ">
         <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogSettings']; ?>
         </a>
@@ -118,6 +118,7 @@ include("inc.setLanguage.php");
 include("inc.setVolume.php");
 include("inc.setMaxVolume.php");
 include("inc.setVolumeStep.php");
+include("inc.setStartupVolume.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->
