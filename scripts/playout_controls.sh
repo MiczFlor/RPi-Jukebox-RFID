@@ -73,17 +73,17 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #############################################################
 # $DEBUG TRUE|FALSE
 # Read debug logging configuration file
-. $PATHDATA/../settings/debugLogging.conf
+. ${PATHDATA}/../settings/debugLogging.conf
 
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> ${PATHDATA}/../logs/debug.log; fi
 
 ###########################################################
 # Read global configuration file (and create is not exists) 
 # create the global configuration file from single files - if it does not exist
-if [ ! -f $PATHDATA/../settings/global.conf ]; then
-    . $PATHDATA/inc.writeGlobalConfig.sh
+if [ ! -f ${PATHDATA}/../settings/global.conf ]; then
+    . ${PATHDATA}/inc.writeGlobalConfig.sh
 fi
-. $PATHDATA/../settings/global.conf
+. ${PATHDATA}/../settings/global.conf
 # contains:
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
@@ -105,33 +105,33 @@ fi
 # path to file storing the current volume level
 # this file does not need to exist
 # it will be created or deleted by this script
-VOLFILE=$PATHDATA/../settings/Audio_Volume_Level
+VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 
 #############################################################
 
 # Get args from command line (see Usage above)
 # Read the args passed on by the command line
 # see following file for details:
-. $PATHDATA/inc.readArgsFromCommandLine.sh
+. ${PATHDATA}/inc.readArgsFromCommandLine.sh
 
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> $PATHDATA/../logs/debug.log; fi
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> ${PATHDATA}/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
 
 case $COMMAND in 
     shutdown)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> $PATHDATA/../logs/debug.log; fi
-        $PATHDATA/resume_play.sh -c=savepos && mpc clear
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> ${PATHDATA}/../logs/debug.log; fi
+        ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sleep 1
-        /usr/bin/mpg123 $PATHDATA/../shared/shutdownsound.mp3 
+        /usr/bin/mpg123 ${PATHDATA}/../shared/shutdownsound.mp3 
         sleep 3
         sudo poweroff
         ;;
     shutdownsilent)
         # doesn't play a shutdown sound
-        $PATHDATA/resume_play.sh -c=savepos && mpc clear
+        ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
@@ -141,21 +141,21 @@ case $COMMAND in
         # remove shutdown times if existent
         for i in `sudo atq -q t | awk '{print $1}'`;do sudo atrm $i;done
         # -c=shutdownafter -v=0 is to remove the shutdown timer
-        if [ $VALUE -gt 0 ];
+        if [ ${VALUE} -gt 0 ];
         then
-            # shutdown pi after $VALUE minutes
-            echo "$PATHDATA/playout_controls.sh -c=shutdownsilent" | at -q t now + $VALUE minute
+            # shutdown pi after ${VALUE} minutes
+            echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
         fi 
         ;;
     reboot)
-        $PATHDATA/resume_play.sh -c=savepos && mpc clear
+        ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
         sudo reboot
         ;;
     scan)
-        $PATHDATA/resume_play.sh -c=savepos && mpc clear
+        ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
@@ -180,17 +180,17 @@ case $COMMAND in
         ;;
     setvolume)
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
-        if [ $VALUE -le $AUDIOVOLMAXLIMIT ] && [ $VALUE -ge $AUDIOVOLMINLIMIT ];
+        if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
         else
-            if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
+            if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
             then
                 # if we are over the max volume limit, set the volume to maxvol
                 echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
             fi
-            if [ $VALUE -lt $AUDIOVOLMINLIMIT ];
+            if [ ${VALUE} -lt $AUDIOVOLMINLIMIT ];
             then
                 # if we are unter the min volume limit, set the volume to minvol
                 echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
@@ -209,7 +209,7 @@ case $COMMAND in
             fi
         fi
         if [ ! -f $VOLFILE ]; then
-            if [ -z $VALUE ]; then
+            if [ -z ${VALUE} ]; then
                 VALUE=1
             fi
             # $VOLFILE does NOT exist == audio on
@@ -246,7 +246,7 @@ case $COMMAND in
             fi
         fi
         if [ ! -f $VOLFILE ]; then
-            if [ -z $VALUE ]; then
+            if [ -z ${VALUE} ]; then
                 VALUE=1
             fi
             # $VOLFILE does NOT exist == audio on
@@ -280,72 +280,72 @@ case $COMMAND in
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
-        if [ $VOLPERCENT -gt $VALUE ];
+        if [ $VOLPERCENT -gt ${VALUE} ];
         then
-            echo -e setvol $VALUE | nc -w 1 localhost 6600
+            echo -e setvol ${VALUE} | nc -w 1 localhost 6600
         fi
         # if startupvolume is greater than wanted maxvolume, set startupvolume to maxvolume
-        if [ $AUDIOVOLSTARTUP -gt $VALUE ];
+        if [ ${AUDIOVOLSTARTUP} -gt ${VALUE} ];
         then
             # write new value to file
-            echo "$VALUE" > $PATHDATA/../settings/Startup_Volume
+            echo "$VALUE" > ${PATHDATA}/../settings/Startup_Volume
         fi
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Max_Volume_Limit       
+        echo "$VALUE" > ${PATHDATA}/../settings/Max_Volume_Limit       
         # create global config file because individual setting got changed
-        . $PATHDATA/inc.writeGlobalConfig.sh
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
         echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Audio_Volume_Change_Step       
+        echo "$VALUE" > ${PATHDATA}/../settings/Audio_Volume_Change_Step       
         # create global config file because individual setting got changed
-        . $PATHDATA/inc.writeGlobalConfig.sh
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getvolstep)
         echo $AUDIOVOLCHANGESTEP
         ;;
     setstartupvolume)
         # if value is greater than wanted maxvolume, set value to maxvolume 
-        if [ $VALUE -gt $AUDIOVOLMAXLIMIT ];
+        if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
         then
             VALUE=$AUDIOVOLMAXLIMIT;
         fi
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Startup_Volume       
+        echo "$VALUE" > ${PATHDATA}/../settings/Startup_Volume       
         # create global config file because individual setting got changed
-        . $PATHDATA/inc.writeGlobalConfig.sh
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getstartupvolume)
-        echo $AUDIOVOLSTARTUP
+        echo ${AUDIOVOLSTARTUP}
         ;;
     setvolumetostartup)
         # check if startup-volume is disabled
-        if [ "$AUDIOVOLSTARTUP" == 0 ];
-        then
-            exit 1;
+        if [ "${AUDIOVOLSTARTUP}" == 0 ]; then
+            exit 1
+        else
+            # set volume level in percent
+            echo -e setvol ${AUDIOVOLSTARTUP}\\nclose | nc -w 1 localhost 6600
         fi
-        # set volume level in percent
-        echo -e setvol $AUDIOVOLSTARTUP\\nclose | nc -w 1 localhost 6600
         ;;
     playerstop)
         # stop the player
-        $PATHDATA/resume_play.sh -c=savepos && mpc stop
+        ${PATHDATA}/resume_play.sh -c=savepos && mpc stop
         #if [ -e $AUDIOFOLDERSPATH/playing.txt ]
         #then
         #    sudo rm $AUDIOFOLDERSPATH/playing.txt
         #fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> ${PATHDATA}/../logs/debug.log; fi
         ;;
     playerstopafter)
         # remove playerstop timer if existent
         for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
-        # stop player after $VALUE minutes
-        if [ $VALUE -gt 0 ];
+        # stop player after ${VALUE} minutes
+        if [ ${VALUE} -gt 0 ];
         then
-            echo "mpc stop" | at -q s now + $VALUE minute
+            echo "mpc stop" | at -q s now + ${VALUE} minute
         fi
         ;;
     playernext)
@@ -372,14 +372,14 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to play: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to play: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
         # Another note: "mpc play 1" starts the first track (!)
 
         # Change some settings according to current folder IF the folder.conf exists
-        . $PATHDATA/inc.settingsFolderSpecific.sh
+        . ${PATHDATA}/inc.settingsFolderSpecific.sh
 
         # No checking for resume if the audio is paused, just unpause it
         PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
@@ -387,7 +387,7 @@ case $COMMAND in
         then
             echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
         else
-            #$PATHDATA/resume_play.sh -c=resume -v=$VALUE
+            #${PATHDATA}/resume_play.sh -c=resume -v=$VALUE
             mpc play $VALUE
         fi
         ;;
@@ -408,7 +408,7 @@ case $COMMAND in
         # repeats a single track or a playlist. 
         # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
         # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
-        case $VALUE in     
+        case ${VALUE} in     
             single)
                 mpc repeat on
                 mpc single on
@@ -431,7 +431,7 @@ case $COMMAND in
         ;;
     playlistclear)
         # clear playlist
-        $PATHDATA/resume_play.sh -c=savepos
+        ${PATHDATA}/resume_play.sh -c=savepos
         mpc clear
         ;;
     playlistaddplay)
@@ -439,8 +439,8 @@ case $COMMAND in
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
         # VALUE = name of playlist
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> ${PATHDATA}/../logs/debug.log; fi
 
         # NEW VERSION:
         # Read the current config file (include will execute == read)
@@ -449,35 +449,35 @@ case $COMMAND in
         # load playlist
         mpc clear
         mpc load "${VALUE//\//SLASH}"
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> ${PATHDATA}/../logs/debug.log; fi
         
         # Change some settings according to current folder IF the folder.conf exists
-        #. $PATHDATA/inc.settingsFolderSpecific.sh
+        #. ${PATHDATA}/inc.settingsFolderSpecific.sh
         
         # check if we switch to single file playout
-        $PATHDATA/single_play.sh -c=single_check -d="${FOLDER}"
+        ${PATHDATA}/single_play.sh -c=single_check -d="${FOLDER}"
 
         # check if we shuffle the playlist
-        $PATHDATA/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
+        ${PATHDATA}/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
 
         # Now load and play
-        $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && $PATHDATA/resume_play.sh -c=resume -d="${FOLDER}"" >> $PATHDATA/../logs/debug.log; fi
+        ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
         
         # write latest folder played to settings file
-        sudo echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
-        sudo chmod 777 $PATHDATA/../settings/Latest_Folder_Played
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played" >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> $PATHDATA/../logs/debug.log; fi
+        sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
+        sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> ${PATHDATA}/../logs/debug.log; fi
 
         # OLD VERSION (pre 20190302 - delete once the new version really seems to work): 
         # call shuffle_check HERE to enable/disable folder-based shuffling 
         # (mpc shuffle is different to random, because when you shuffle before playing, 
         # you start your playlist with a different track EVERYTIME. With random you EVER 
         # has the first song and random from track 2.
-        #mpc load "${VALUE//\//SLASH}" && $PATHDATA/shuffle_play.sh -c=shuffle_check && $PATHDATA/single_play.sh -c=single_check && $PATHDATA/resume_play.sh -c=resume
-        #mpc load "${VALUE//\//SLASH}" && $PATHDATA/single_play.sh -c=single_check  && $PATHDATA/resume_play.sh -c=resume
+        #mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/shuffle_play.sh -c=shuffle_check && ${PATHDATA}/single_play.sh -c=single_check && ${PATHDATA}/resume_play.sh -c=resume
+        #mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/single_play.sh -c=single_check  && ${PATHDATA}/resume_play.sh -c=resume
         
         ;;
     playlistadd)
@@ -498,9 +498,9 @@ case $COMMAND in
         ;;
     setidletime)
         # write new value to file
-        echo "$VALUE" > $PATHDATA/../settings/Idle_Time_Before_Shutdown
+        echo "$VALUE" > ${PATHDATA}/../settings/Idle_Time_Before_Shutdown
         # create global config file because individual setting got changed
-        . $PATHDATA/inc.writeGlobalConfig.sh
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
         # restart service to apply the new value
         sudo systemctl restart phoniebox-idle-watchdog.service &
         ;;
@@ -535,7 +535,7 @@ case $COMMAND in
         if ! pgrep -x "arecord" > /dev/null
         then    
             echo "start recorder"    
-            arecord -D plughw:1 --duration=$VALUE -f cd -vv $AUDIOFOLDERSPATH/Recordings/$(date +"%Y-%m-%d_%H-%M-%S").wav &
+            arecord -D plughw:1 --duration=${VALUE} -f cd -vv $AUDIOFOLDERSPATH/Recordings/$(date +"%Y-%m-%d_%H-%M-%S").wav &
         else
             echo "device is already recording"
         fi
@@ -552,6 +552,6 @@ case $COMMAND in
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         ;;
 esac

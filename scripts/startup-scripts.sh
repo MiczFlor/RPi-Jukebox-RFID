@@ -4,10 +4,6 @@
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# sleep a little to make sure the boot process is complete
-# sometimes the startup sound gets cut off a bit
-sleep 4
-
 ###########################################################
 # Read global configuration file (and create is not exists) 
 # create the global configuration file from single files - if it does not exist
@@ -17,13 +13,26 @@ fi
 . $PATHDATA/../settings/global.conf
 ###########################################################
 
+cat $PATHDATA/../settings/global.conf
+
+echo
+echo ${AUDIOVOLSTARTUP}
+
+####################################
+# check if and set volume on startup
+/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
+
 ####################
 # play startup sound
+# after some sleep
+/bin/sleep 2
 /usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 #######################
 # read out wifi config?
 if [ "${READWLANIPYN}" == "ON" ]; then
     cd /home/pi/RPi-Jukebox-RFID/misc/
+    # delete older mp3 (in case process was interrupted)
+    sudo rm WifiIp.mp3
     /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/helperscripts/cli_ReadWifiIp.php
 fi

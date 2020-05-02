@@ -1,6 +1,6 @@
 [Unit]
-Description=Phoniebox Startup Sound
-After=alsa-state.service
+Description=Phoniebox Startup
+After=mpd.service
 
 [Service]
 User=pi
