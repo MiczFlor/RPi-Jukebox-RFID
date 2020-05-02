@@ -619,10 +619,12 @@ install_main() {
     fi
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
-    sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
-    wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
+    # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
+    # Back then the master install script needed develop branch files. I think this is from that time...?    
+    #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
+    #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
+    #wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
 
     # Install more required packages
     echo "Installing additional Python packages..."
