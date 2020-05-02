@@ -11,7 +11,7 @@ pyserial
 # spidev - currently installed via apt-get
 RPi.GPIO
 # pi-rc522 use latest version from Github
-git+git://github.com/ondryaso/pi-rc522.git@#egg=pi-rc522
+git+git://github.com/ondryaso/pi-rc522.git#egg=pi-rc522
 # Type checking for python
 # typing
 
