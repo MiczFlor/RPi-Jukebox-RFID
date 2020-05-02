@@ -193,6 +193,13 @@ $lang['settingsWlanSendEmail'] = "email addr.";
 $lang['settingsWlanSendON'] = "Yes, send email.";
 $lang['settingsWlanSendOFF'] = "No, do not send email.";
 
+
+$lang['settingsWlanReadNav'] = "Read Wlan IP";
+$lang['settingsWlanReadInfo'] = "Read IP address of wlan (wifi) each time after booting? (useful if you hook your Phoniebox into a new wlan networt with dynamic IP)";
+$lang['settingsWlanReadQuest'] = "Read wlan IP?";
+$lang['settingsWlanReadON'] = "Yes, read wlan IP.";
+$lang['settingsWlanReadOFF'] = "No, do not read wlan IP.";
+
 /*
 * System info
 */

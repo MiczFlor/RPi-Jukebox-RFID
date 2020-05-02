@@ -150,8 +150,8 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 if(!file_exists($conf['settings_abs']."/global.conf")) {
     // execute shell to create config file
     // scripts/inc.writeGlobalConfig.sh
-    exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
-    exec("chmod 777 ".$conf['settings_abs']."/global.conf");
+    exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+    exec("sudo chmod 777 ".$conf['settings_abs']."/global.conf");
 } 
 
 // read the global conf file
@@ -162,6 +162,7 @@ $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sect
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
 $ShowCover = $globalConf['SHOWCOVER'];
+$WlanIpReadYN = $globalConf['READWLANIPYN'];
 $WlanIpMailYN = $globalConf['MAILWLANIPYN'];
 $WlanIpMailAddr = $globalConf['MAILWLANIPADDR'];
 $version = $globalConf['VERSION'];

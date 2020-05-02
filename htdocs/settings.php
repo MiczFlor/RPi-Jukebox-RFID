@@ -45,6 +45,9 @@ if($debug == "true") {
         <!--a href="#wlanIpEmail" class="xbtn xbtn-default ">
         <i class='mdi mdi-wifi'></i> <?php print $lang['settingsWlanSendNav']; ?>
         </a>  |-->
+        <a href="#wlanIpRead" class="xbtn xbtn-default ">
+        <i class='mdi mdi-wifi'></i> <?php print $lang['settingsWlanReadNav']; ?>
+        </a>  |
         <a href="#webInterface" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
         </a>  |
@@ -170,7 +173,7 @@ include("inc.setWifi.php");
 * Useful if you move your Phoniebox into a new Wifi which
 * assigns a dynmamic IP.
 */
-// include("inc.setWlanIpMail.php");
+include("inc.setWlanIpRead.php");
 ?>
 
 <div class="panel-group">

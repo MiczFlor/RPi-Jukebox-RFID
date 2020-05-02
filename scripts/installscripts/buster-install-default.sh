@@ -676,7 +676,7 @@ install_main() {
     echo "### Deleting older versions of service daemons. This might throw errors, ignore them"
     sudo systemctl disable idle-watchdog
     sudo systemctl disable rfid-reader
-    sudo systemctl disable startup-sound
+    sudo systemctl disable phoniebox-startup-sound
     sudo systemctl disable gpio-buttons
     sudo rm "${systemd_dir}"/rfid-reader.service
     sudo rm "${systemd_dir}"/startup-sound.service
@@ -685,7 +685,9 @@ install_main() {
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    #startup sound now part of phoniebox-startup-scripts
+    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
@@ -694,7 +696,9 @@ install_main() {
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
-    sudo systemctl enable phoniebox-startup-sound
+    #startup sound now part of phoniebox-startup-scripts
+    #sudo systemctl enable phoniebox-startup-sound
+    sudo systemctl enable phoniebox-startup-scripts
     sudo systemctl enable phoniebox-gpio-buttons
     sudo systemctl enable phoniebox-rotary-encoder.service
 

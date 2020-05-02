@@ -157,6 +157,16 @@ fi
 MAILWLANIPYN=`cat $PATHDATA/../settings/WlanIpMailYN`
 
 ##############################################
+# Read IP address of Wlan after boot?
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/WlanIpReadYN ]; then
+    echo "OFF" > $PATHDATA/../settings/WlanIpReadYN
+    chmod 777 $PATHDATA/../settings/WlanIpReadYN
+fi
+# 2. then|or read value from file
+READWLANIPYN=`cat $PATHDATA/../settings/WlanIpReadYN`
+
+##############################################
 # edition
 # read this always, do not write default
 
@@ -201,6 +211,7 @@ VERSION=`cat $PATHDATA/../settings/version`
 # SHOWCOVER
 # MAILWLANIPYN
 # MAILWLANIPADDR
+# READWLANIPYN
 # EDITION
 # LANG
 # VERSION
@@ -220,6 +231,7 @@ echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/glob
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "MAILWLANIPYN=\"${MAILWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "MAILWLANIPADDR=\"${MAILWLANIPADDR}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
