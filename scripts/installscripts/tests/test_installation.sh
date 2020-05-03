@@ -76,7 +76,7 @@ check_variable() {
 # Verify functions
 
 verify_conf_file() {
-    local install_conf="${PATHDATA}/PhonieboxInstall.conf"
+    local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
     printf "\nTESTING PhonieboxInstall.conf file...\n\n"
     # check that PhonieboxInstall.conf exists and is not empty
 
