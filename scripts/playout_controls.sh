@@ -100,6 +100,21 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}"
 case $COMMAND in 
     shutdown)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        while :
+        do
+            apt=1
+            sudo lsof /var/lib/apt/lists/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/lib/dpkg/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/cache/apt/archives/lock > /dev/null
+            apt=$(($apt * $?))
+            if [ $apt -eq 0 ]; then
+                sleep 5
+            else
+                break
+            fi
+        done
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -110,7 +125,22 @@ case $COMMAND in
         sudo poweroff
         ;;
     shutdownsilent)
-        # doesn't play a shutdown sound
+        # doesn't play a shutdown sound        
+        while :
+        do
+            apt=1
+            sudo lsof /var/lib/apt/lists/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/lib/dpkg/lock > /dev/null
+            apt=$(($apt * $?))
+            sudo lsof /var/cache/apt/archives/lock > /dev/null
+            apt=$(($apt * $?))
+            if [ $apt -eq 0 ]; then
+                sleep 5
+            else
+                break
+            fi
+        done
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
