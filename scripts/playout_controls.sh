@@ -59,7 +59,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordstart
 # recordstop
 # recordplaylatest
-# readwifiip
+# readwifiipoverspeaker
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -558,8 +558,9 @@ case $COMMAND in
         sudo pkill aplay
         aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
         ;;
-    readwifiip)
-        # will read out the IP address over the Pi's speaker
+    readwifiipoverspeaker)
+        # will read out the IP address over the Pi's speaker.
+        # Why? Imagine to go to a new wifi, hook up and not know where to point your browser
         cd /home/pi/RPi-Jukebox-RFID/misc/
         # delete older mp3 (in case process was interrupted)
         sudo rm WifiIp.mp3

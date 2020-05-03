@@ -31,8 +31,5 @@ echo ${AUDIOVOLSTARTUP}
 #######################
 # read out wifi config?
 if [ "${READWLANIPYN}" == "ON" ]; then
-    cd /home/pi/RPi-Jukebox-RFID/misc/
-    # delete older mp3 (in case process was interrupted)
-    sudo rm WifiIp.mp3
-    /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/helperscripts/cli_ReadWifiIp.php
+    /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
 fi
