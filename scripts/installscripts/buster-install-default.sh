@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 #
 # see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
-# Especially the docs folder for documentation
+#
+# NOTE: Running automated install (without interaction):
+# Each install creates a file called PhonieboxInstall.conf
+# in the folder /home/pi/
+# You can install the Phoniebox using such a config file
+# which means you don't need to run the interactive install:
+#
+# 1. download the install file from github
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    (note: currently only works for buster and newer OS)
+# 2. make the file executable: chmod +x
+# 3. place the PhonieboxInstall.conf in the folder /home/pi/
+# 4. run the installscript with option -a like this: 
+#    buster-install-default.sh -a
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -81,19 +94,26 @@ welcome() {
 #                                                   #
 #####################################################
 
-Welcome to the installation script.
+You are turning your Raspberry Pi into a Phoniebox. Good choice.
+This INTERACTIVE INSTALL script requires you to be online and 
+will guide you through the configuration.
 
-This script will install Phoniebox on your Raspberry Pi.
-To do so, you must be online. The install script can
-automatically configure:
-
-* WiFi settings (SSID, password and static IP)
-
-All these are optional and can also be done later
-manually.
-
-If you are ready, hit ENTER"
-    read -r INPUT
+If you want to run the AUTOMATED INSTALL (non-interactive) from 
+an existing configuration file, do the following:
+1. exit this install script (press n)
+2. place your PhonieboxInstall.conf in the folder /home/pi/
+3. run the installscript with option -a. For example like this: 
+   ./home/pi/buster-install-default.sh -a
+   "
+    read -rp "Continue interactive installation? [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+            exit
+            ;;
+        *)
+            echo "Installation continues..."
+            ;;
+    esac
 }
 
 reset_install_config_file() {
@@ -1077,6 +1097,9 @@ main() {
         finish_installation "${JUKEBOX_HOME_DIR}"
     else
         echo "Skipping USB device setup..."
+        echo "For manual registration of a USB card reader type:"
+        echo "python3 /home/pi/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo " "
         echo "Reboot is required to activate all settings!"
     fi
 }
@@ -1095,14 +1118,6 @@ echo "Done (in ${h}h ${m}m ${s}s)."
 #####################################################
 # notes for things to do
 
-# Soundcard
-# PCM is currently set
-# This needs to be done for mpd and in settings folder
-
-#Ask ssh password
-
-# get existing install
-# new config should be done with sed using existing conf and user input
-
 # CLEANUP
 ## remove dir BACKUP (possibly not, because we do this at the beginning after user confirms for latest config)
+#####################################################
