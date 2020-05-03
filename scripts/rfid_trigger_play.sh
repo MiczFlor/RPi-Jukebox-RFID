@@ -247,13 +247,6 @@ if [ "$CARDID" ]; then
         $CMDPLAYCUSTOMPLS)
             $PATHDATA/playout_controls.sh -c=playlistaddplay -v="PhonieCustomPLS" -d="PhonieCustomPLS"
             ;;
-        $STARTRECORD600)
-            #start recorder for -v seconds
-            $PATHDATA/playout_controls.sh -c=recordstart -v=600			             
-            ;;
-        $STOPRECORD)
-            $PATHDATA/playout_controls.sh -c=recordstop
-            ;;
         $RECORDSTART600)
             #start recorder for -v seconds
             $PATHDATA/playout_controls.sh -c=recordstart -v=600			             
