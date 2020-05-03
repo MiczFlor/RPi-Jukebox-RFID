@@ -396,10 +396,8 @@ case $COMMAND in
         ;;
     playerpauseforce)
         # pause current track with additional delay
-        if [ -z ${VALUE} ];
+        if [ -n ${VALUE} ];
         then
-           : 
-        else
 	       /bin/sleep $VALUE
         fi
         mpc pause
