@@ -3,15 +3,12 @@
 # Test to verify that the installation script works as expected.
 # This script needs to be adapted, if new packages, etc are added to the install script
 
-printf "\nTesting installation:\n"
+# The absolute path to the folder which contains this script
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HOME_DIR="/home/pi"
 
 tests=0
 failed_tests=0
-
-home_dir="/home/pi"
-
-jukebox_dir="${home_dir}/RPi-Jukebox-RFID"
-install_conf="${home_dir}/PhonieboxInstall.conf"
 
 # Tool functions
 
@@ -69,53 +66,66 @@ check_service_enablement() {
     ((tests++))
 }
 
+check_variable() {
+  local variable=${1}
+  # check if variable exist and if it's empty
+  test -z "${!variable+x}" && echo "ERROR: \$${variable} is missing!" && fail=true && return
+  test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
+}
+
 # Verify functions
 
 verify_conf_file() {
+    local install_conf="${PATHDATA}/PhonieboxInstall.conf"
     printf "\nTESTING PhonieboxInstall.conf file...\n\n"
     # check that PhonieboxInstall.conf exists and is not empty
 
     # check if config file exists
-    if [[ ! -f "${install_conf}" ]]; then
-        echo "  ERROR: ${install_conf} does not exist!"
-        exit 1
-    fi
-
-    # Source config file
     if [[ -f "${install_conf}" ]]; then
+        # Source config file
         source "${install_conf}"
         cat "${install_conf}"
         echo ""
+    else
+        echo "ERROR: ${install_conf} does not exist!"
+        exit 1
     fi
 
+    fail=false
     if [[ -z "${WIFIconfig+x}" ]]; then
-        echo "  ERROR: \$WIFIconfig is unset"
+        echo "  ERROR: \$WIFIconfig is missing or not set!" && fail=true
     else
         echo "\$WIFIconfig is set to '$WIFIconfig'"
         if [[ "$WIFIconfig" == "YES" ]]; then
-            test -z "${WIFIcountryCode+x}" && echo "  ERROR: \$WIFIcountryCode is missing!"
-            test -z "${WIFIssid+x}" && echo "  ERROR: \$WIFIssid is missing!"
-            test -z "${WIFIpass+x}" && echo "  ERROR: \$WIFIpass is missing!"
-            test -z "${WIFIip+x}" && echo "  ERROR: \$WIFIip is missing!"
-            test -z "${WIFIipRouter+x}" && echo "  ERROR: \$WIFIipRouter is missing!"
+            check_variable "WIFIcountryCode"
+            check_variable "WIFIssid"
+            check_variable "WIFIpass"
+            check_variable "WIFIip"
+            check_variable "WIFIipRouter"
         fi
     fi
-    test -z "${EXISTINGuse+x}" && echo "  ERROR: \$EXISTINGuse is missing!"
-    test -z "${AUDIOiFace+x}" && echo "  ERROR: \$AUDIOiFace is missing!"
+    check_variable "EXISTINGuse"
+    check_variable "AUDIOiFace"
 
     if [[ -z "${SPOTinstall+x}" ]]; then
-        echo "  ERROR: \$SPOTinstall is unset"
+        echo "  ERROR: \$SPOTinstall is missing or not set!" && fail=true
     else
         echo "\$SPOTinstall is set to '$SPOTinstall'"
         if [ "$SPOTinstall" == "YES" ]; then
-            test -z "${SPOTIuser+x}" && echo "  ERROR: \$SPOTIuser is missing!"
-            test -z "${SPOTIpass+x}" && echo "  ERROR: \$SPOTIpass is missing!"
-            test -z "${SPOTIclientid+x}" && echo "  ERROR: \$SPOTIclientid is missing!"
-            test -z "${SPOTIclientsecret+x}" && echo "  ERROR: \$SPOTIclientsecret is missing!"
+            check_variable "SPOTIuser"
+            check_variable "SPOTIpass"
+            check_variable "SPOTIclientid"
+            check_variable "SPOTIclientsecret"
         fi
     fi
-    test -z "${MPDconfig+x}" && echo "  ERROR: \$MPDconfig is missing!"
-    test -z "${DIRaudioFolders+x}" && echo "  ERROR: \$DIRaudioFolders is missing!"
+    check_variable "MPDconfig"
+    check_variable "DIRaudioFolders"
+
+    if [ "${fail}" == "true" ]; then
+      exit 1
+    fi
+
+    echo ""
 }
 
 verify_wifi_settings() {
@@ -219,14 +229,14 @@ verify_systemd_services() {
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
     check_service_enablement phoniebox-rfid-reader enabled
-    check_service_enablement phoniebox-startup-sound enabled
+    check_service_enablement phoniebox-startup-scripts enabled
     check_service_enablement phoniebox-gpio-buttons enabled
     check_service_enablement phoniebox-rotary-encoder enabled
 }
 
 verify_spotify_config() {
     local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-    local mopidy_conf="${home_dir}/.config/mopidy/mopidy.conf"
+    local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
 
     printf "\nTESTING spotify config...\n\n"
 
@@ -263,6 +273,7 @@ verify_mpd_config() {
 }
 
 verify_folder_access() {
+    local jukebox_dir="${HOME_DIR}/RPi-Jukebox-RFID"
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
@@ -281,6 +292,7 @@ verify_folder_access() {
 }
 
 main() {
+    printf "\nTesting installation:\n"
     verify_conf_file
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings

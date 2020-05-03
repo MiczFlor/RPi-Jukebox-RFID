@@ -698,7 +698,7 @@ install_main() {
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
-    #startup sound now part of phoniebox-startup-scripts
+    #startup sound is part of phoniebox-startup-scripts now
     #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
     sudo systemctl enable phoniebox-gpio-buttons
