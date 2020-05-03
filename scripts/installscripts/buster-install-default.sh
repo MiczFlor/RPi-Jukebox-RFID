@@ -225,7 +225,7 @@ check_existing() {
 "
         # check if we find the version number
         if [ -f "${jukebox_dir}"/settings/version ]; then
-            echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
+            #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
             CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
