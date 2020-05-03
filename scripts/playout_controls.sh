@@ -60,12 +60,6 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordstop
 # recordplaylatest
 
-# SET VARIABLES
-# The variables can be changed in the ../settings dir.
-# Relevant files are:
-# * ../settings/Audio_Volume_Change_Step
-# * ../settings/Audio_iFace_Name
-
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -84,21 +78,6 @@ if [ ! -f ${PATHDATA}/../settings/global.conf ]; then
     . ${PATHDATA}/inc.writeGlobalConfig.sh
 fi
 . ${PATHDATA}/../settings/global.conf
-# contains:
-# AUDIOFOLDERSPATH
-# PLAYLISTSFOLDERPATH
-# SECONDSWIPE
-# AUDIOIFACENAME
-# AUDIOVOLCHANGESTEP
-# AUDIOVOLMAXLIMIT
-# AUDIOVOLMINLIMIT
-# AUDIOVOLSTARTUP
-# VOLCHANGEIDLE
-# IDLETIMESHUTDOWN
-# SHOWCOVER
-# EDITION
-# LANG
-# VERSION
 ###########################################################
 
 #################################
@@ -114,12 +93,12 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 # see following file for details:
 . ${PATHDATA}/inc.readArgsFromCommandLine.sh
 
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: $COMMAND" >> ${PATHDATA}/../logs/debug.log; fi
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
 
 case $COMMAND in 
     shutdown)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   shutdown" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -131,6 +110,7 @@ case $COMMAND in
         ;;
     shutdownsilent)
         # doesn't play a shutdown sound
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -139,6 +119,7 @@ case $COMMAND in
         ;;
     shutdownafter)
         # remove shutdown times if existent
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         for i in `sudo atq -q t | awk '{print $1}'`;do sudo atrm $i;done
         # -c=shutdownafter -v=0 is to remove the shutdown timer
         if [ ${VALUE} -gt 0 ];
@@ -148,6 +129,7 @@ case $COMMAND in
         fi 
         ;;
     reboot)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -155,6 +137,7 @@ case $COMMAND in
         sudo reboot
         ;;
     scan)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -164,6 +147,7 @@ case $COMMAND in
         sudo systemctl start mopidy
         ;;
     mute)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # read volume in percent and write to $VOLFILE
@@ -179,6 +163,7 @@ case $COMMAND in
         fi
         ;;
     setvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
         if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ];
         then
@@ -198,6 +183,7 @@ case $COMMAND in
         fi
         ;;
     volumeup)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #check for volume change during idle
         if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyDown" ];
         then
@@ -235,6 +221,7 @@ case $COMMAND in
         fi
         ;;
     volumedown)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #check for volume change during idle
         if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyUp" ];
         then
@@ -273,10 +260,12 @@ case $COMMAND in
         ;;
     getvolume)
         # read volume in percent
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         echo $VOLPERCENT
         ;;
     setmaxvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # read volume in percent
         VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         # if volume of the box is greater than wanted maxvolume, set volume to maxvolume 
@@ -296,18 +285,22 @@ case $COMMAND in
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # write new value to file
         echo "$VALUE" > ${PATHDATA}/../settings/Audio_Volume_Change_Step       
         # create global config file because individual setting got changed
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getvolstep)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $AUDIOVOLCHANGESTEP
         ;;
     setstartupvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # if value is greater than wanted maxvolume, set value to maxvolume 
         if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
         then
@@ -319,9 +312,11 @@ case $COMMAND in
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getstartupvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo ${AUDIOVOLSTARTUP}
         ;;
     setvolumetostartup)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # check if startup-volume is disabled
         if [ "${AUDIOVOLSTARTUP}" == 0 ]; then
             exit 1
@@ -332,6 +327,7 @@ case $COMMAND in
         ;;
     playerstop)
         # stop the player
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc stop
         #if [ -e $AUDIOFOLDERSPATH/playing.txt ]
         #then
@@ -340,6 +336,7 @@ case $COMMAND in
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> ${PATHDATA}/../logs/debug.log; fi
         ;;
     playerstopafter)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # remove playerstop timer if existent
         for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
         # stop player after ${VALUE} minutes
@@ -405,6 +402,7 @@ case $COMMAND in
         mpc seek 0
         ;;
     playerrepeat)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         # repeats a single track or a playlist. 
         # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
         # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
@@ -482,14 +480,17 @@ case $COMMAND in
         ;;
     playlistadd)
         # add to playlist, no autoplay
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         # save playlist playing
         mpc load "${VALUE}"
         ;;
     playlistappend)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc add "${VALUE}"
         mpc play
         ;;
     playsinglefile)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc clear
         mpc add "${VALUE}"
         mpc repeat off
@@ -497,6 +498,7 @@ case $COMMAND in
         mpc play
         ;;
     setidletime)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         # write new value to file
         echo "$VALUE" > ${PATHDATA}/../settings/Idle_Time_Before_Shutdown
         # create global config file because individual setting got changed
@@ -508,21 +510,26 @@ case $COMMAND in
         echo $IDLETIMESHUTDOWN
         ;;
     enablewifi)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         rfkill unblock wifi
         ;;
     disablewifi)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
         # as good as it gets
         rfkill block wifi
         ;;
     togglewifi)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # function to allow toggle the wifi state
         # Build special for franzformator
         if [[ $(rfkill list wifi | grep -i "Soft blocked: no")  > 0 ]]
         then
+            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be deactivated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be deactivated"
             rfkill block wifi
         else
+            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be activated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be activated"
             rfkill unblock wifi
         fi
