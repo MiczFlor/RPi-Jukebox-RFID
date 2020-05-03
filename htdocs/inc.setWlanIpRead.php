@@ -40,19 +40,11 @@ if(isset($_POST['WlanIpReadYN']) && trim($_POST['WlanIpReadYN']) != "") {
 ?>
 
 
-      <div class="panel-body">
-
+	<div class="row" style="margin-bottom:1em;">
+	  <div class="col-md-6 col-xs-12">
 		<form name='WlanIpRead' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
-		
-        <fieldset>
-        
-            <!-- Form Name -->
-            <legend><?php print $lang['settingsWlanReadInfo']; ?></legend>
-            
-            <!-- Select Basic -->
-            <div class="form-group">
-              <label class="col-md-4 control-label" for="selectbasic"><?php print $lang['settingsWlanReadQuest']; ?></label>
-              <div class="col-md-6">        			
+            <h4><?php print $lang['settingsWlanReadInfo']; ?></h4>
+              <div class="input-group my-group">        			
                 <select id="WlanIpReadYN" name="WlanIpReadYN" class="selectpicker form-control">
             		<?php
             			print "
@@ -70,21 +62,13 @@ if(isset($_POST['WlanIpReadYN']) && trim($_POST['WlanIpReadYN']) != "") {
             			print ">".$lang['settingsWlanReadOFF'];
             			print "</option>\n";
             		?>
-                </select><br/>
+                </select>
+    			<span class="input-group-btn">
+    				<input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
+    			</span>
               </div>
             </div>
         
-        </fieldset>		
-		
-    <!-- Button (Double) -->
-    <div class="form-group">
-        <label class="col-md-4 control-label" for="submit"></label>
-        <div class="col-md-8">
-            <br/>
-            <button id="submit" name="sumbit" class="btn btn-success" value="submit">Submit</button>
-            <br clear="all"><br>
-        </div>
-    </div>
 
 		</form>
 	  
