@@ -229,7 +229,7 @@ verify_systemd_services() {
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
     check_service_enablement phoniebox-rfid-reader enabled
-    check_service_enablement phoniebox-startup-sound enabled
+    check_service_enablement phoniebox-startup-scripts enabled
     check_service_enablement phoniebox-gpio-buttons enabled
     check_service_enablement phoniebox-rotary-encoder enabled
 }
