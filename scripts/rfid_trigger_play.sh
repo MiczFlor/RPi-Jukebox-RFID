@@ -272,6 +272,9 @@ if [ "$CARDID" ]; then
         $RECORDPLAYBACKLATEST)
             $PATHDATA/playout_controls.sh -c=recordplaybacklatest
             ;;
+        $CMDREADWIFIIP)
+            $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
+            ;;
         *)
 
             # We checked if the card was a special command, seems it wasn't.
