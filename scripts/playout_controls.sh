@@ -395,7 +395,11 @@ case $COMMAND in
         mpc toggle
         ;;
     playerpauseforce)
-        # pause current track
+        # pause current track with additional delay
+        if [ -n ${VALUE} ];
+        then
+	       /bin/sleep $VALUE
+        fi
         mpc pause
         ;;
     playerplay)

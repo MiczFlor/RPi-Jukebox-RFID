@@ -87,7 +87,7 @@ def recordstop_action(channel):
 def recordplaylatest_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 def rfidoff_action(channel):
-    check_call("./scripts/playout_controls.sh -c=playerpauseforce", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playerpauseforce -v=0.5", shell=True)
 
 
 # Handlers that handle special behavior of the push of a button
