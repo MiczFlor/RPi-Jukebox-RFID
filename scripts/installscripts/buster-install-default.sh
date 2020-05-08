@@ -20,13 +20,13 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
-LOGDIR="${PATHDATA}"/logfiles
 DATETIME=$(date +"%Y%m%d_%H%M%S")
  
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 HOME_DIR="/home/pi"
+LOGDIR="${HOME_DIR}"/phoniebox_logs
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
@@ -128,7 +128,7 @@ reset_install_config_file() {
     rm PhonieboxInstall.conf
     # Create empty config file
     touch PhonieboxInstall.conf
-    echo "# Phoniebox config" > "${PATHDATA}/PhonieboxInstall.conf"
+    echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
 }
 
 config_wifi() {
@@ -152,9 +152,9 @@ case "$response" in
         WIFIconfig=NO
         echo "You want to configure WiFi later."
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
     *)
         WIFIconfig=YES
@@ -191,7 +191,7 @@ case "$response" in
                     echo "WIFIpass=\"$WIFIpass\"";
                     echo "WIFIip=\"$WIFIip\"";
                     echo "WIFIipRouter=\"$WIFIipRouter\"";
-                } >> "${PATHDATA}/PhonieboxInstall.conf"
+                } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
         ;;
@@ -273,7 +273,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -285,7 +285,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -297,7 +297,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "GPIO: use existing file? [Y/n] " response
                 case "$response" in
@@ -309,7 +309,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -321,7 +321,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -330,7 +330,7 @@ check_existing() {
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
 }
 
 config_audio_interface() {
@@ -360,7 +360,7 @@ config_audio_interface() {
             ;;
     esac
     # append variables to config file
-    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your iFace is called'$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -427,7 +427,7 @@ config_spotify() {
         echo "SPOTIpass=\"$SPOTIpass\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
         echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
-    } >> "${PATHDATA}/PhonieboxInstall.conf"
+    } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -457,7 +457,7 @@ config_mpd() {
             ;;
     esac
     # append variables to config file
-    echo "MPDconfig=\"$MPDconfig\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "MPDconfig=\"$MPDconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -496,7 +496,7 @@ config_audio_folder() {
             ;;
     esac
     # append variables to config file
-    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your audio folders live in this dir:"
     echo "${DIRaudioFolders}"
     read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -510,7 +510,7 @@ check_variable() {
 }
 
 check_config_file() {
-    local install_conf="${PATHDATA}/PhonieboxInstall.conf"
+    local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
     echo "Checking PhonieboxInstall.conf..."
     # check that PhonieboxInstall.conf exists and is not empty
 
@@ -633,7 +633,7 @@ install_main() {
             [nN][oO]|[nN])
                 echo "Exiting the installation."
                 echo "Your configuration data was saved in this file:"
-                echo "${PATHDATA}/PhonieboxInstall.conf"
+                echo "${HOME_DIR}/PhonieboxInstall.conf"
                 echo
                 exit
                 ;;
@@ -645,7 +645,7 @@ install_main() {
 
     # Add conffile into logfile for better debugging
     echo "################################################"
-    grep -v -e "SPOTI" -e "WIFIpass" "${PATHDATA}/PhonieboxInstall.conf"
+    grep -v -e "SPOTI" -e "WIFIpass" "${HOME_DIR}/PhonieboxInstall.conf"
     echo "################################################"
 
     #####################################################
@@ -655,7 +655,7 @@ install_main() {
     # (this might look stupid so far, but makes sense once
     # the option to install from config file is introduced.)
     # shellcheck source=scripts/installscripts/tests/ShellCheck/PhonieboxInstall.conf
-    . "${PATHDATA}/PhonieboxInstall.conf"
+    . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
     sudo iwconfig wlan0 power off
