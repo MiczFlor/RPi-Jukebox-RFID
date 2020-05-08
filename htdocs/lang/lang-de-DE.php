@@ -128,25 +128,32 @@ $lang['cardRegisterManualLinks'] = "<p>Du kannst Karten auch manuell mit Ordnern
 /*
 * Card edit form
 */
-$lang['cardFormFolderLegend'] = "Audio-Ordner";
-$lang['cardFormFolderLabel'] = "a) Karte mit Audio-Ordner verbinden";
+$lang['cardFormFolderLegend'] = "RFID-Karte verlinken mit:";
+$lang['cardFormFolderLabel'] = "Einen Audio-Ordner auswählen";
+$lang['cardFormFolderHelp'] = "Enthält lokale Dateien / Stream. Bzw. ein YouTube Download für diesen Ordner (s.u.).";
 $lang['cardFormFolderSelectDefault'] = "Keiner (--Wählen-- zur Auswahl eines Ordners)";
-$lang['cardFormStreamLabel'] = "b) ..... oder Verbindung mit Stream-URL";
-$lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(....).mp3 / .m3u / .ogg / ....";
+$lang['cardFormStreamLegend'] = "Stream verlinken / erstellen";
+$lang['cardFormStreamLabel'] = "Stream URL (benötigt immer einen neuen Ordner - s.o.)";
+$lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
 $lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
 $lang['cardFormStreamHelp'] = "Füge die URL für spotify, Podcast, Webradio, Stream oder andere Online-Medien hinzu";
 $lang['cardFormStreamTypeSelectDefault'] = "Wähle den Typ";
-$lang['cardFormStreamTypeHelp'] = "Wähle den Typ, den du hinzufügen möchtest";
+$lang['cardFormStreamTypeHelp'] = "Wähle die Art des Streams, den du hinzufügen möchtest";
 $lang['cardFormStreamFolderPlaceholder'] = "z.B.'Album/Playlist/Stationsname'";
-$lang['cardFormStreamFolderHelp'] = "Name für den Audio-Ordner, der die Stream-URL enthält";
-$lang['cardFormYTLegend'] = "YouTube";
-$lang['cardFormYTLabel'] = "c) .... oder YouTube-Audio herunterladen";
+$lang['cardFormYTLegend'] = "Von YouTube Herunterladen";
+$lang['cardFormYTLabel'] = "YouTube URL (einzelner Track oder Playlist)";
 $lang['cardFormYTPlaceholder'] = "z.B. https://www.youtube.com/watch?v=7GI0VdPehQI";
 $lang['cardFormYTSelectDefault'] = "--Wählen--, um einen Ordner auszuwählen oder einen neuen darunter zu erstellen";
-$lang['cardFormYTFolderPlaceholder'] = "z.B. 'Neuer Ordner'";
-$lang['cardFormYTFolderHelp'] = "Name für den Audio-Ordner, der das YouTube-Audio enthält";
 $lang['cardFormYTHelp'] = "Füge die volle YouTube-URL wie im Beispiel hinzu";
 $lang['cardFormRemoveCard'] = "Karten-ID entfernen";
+
+$lang['cardFormNewFolderLabel'] = "... oder einen neuen Ordner erstellen";
+$lang['cardFormNewFolderHelp'] = "Für einen Stream (s.u.) <strong>muss</strong> ein neuer Ordner erstellt werden. Für YouTube optional.";
+$lang['cardFormNewFolderPlaceholder'] = "e.g. 'Artist Name/Album'";
+$lang['cardFormTriggerLegend'] = "Phoniebox Funktion verknüpfen";
+$lang['cardFormTriggerLabel'] = "... eine Phoniebox Funktion auswählen";
+$lang['cardFormTriggerHelp'] = "Wähle eine Funktion aus der Liste aus (z.B. 'pause', 'volume up', 'shutdown'). Bestehende Verknüpfungen werden im Pulldown-Menü angezeigt.";
+$lang['cardFormTriggerSelectDefault'] = "Wähle eine Phoniebox Funktion";
 
 /*
 * Track edit form

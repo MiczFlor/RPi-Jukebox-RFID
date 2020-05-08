@@ -1,11 +1,11 @@
 <?php
-if(isset($post['streamFolderName'])) {
+if(isset($post['audiofolderNew'])) {
     // create new folder
-    $exec = "mkdir '".$Audio_Folders_Path."/".$post['streamFolderName']."'; chmod 777 '".$Audio_Folders_Path."/".$post['streamFolderName']."'";
+    $exec = "mkdir --parents '".$Audio_Folders_Path."/".$post['audiofolderNew']."'; chmod 777 '".$Audio_Folders_Path."/".$post['audiofolderNew']."'";
     exec($exec);
-    $foldername = $Audio_Folders_Path."/".$post['streamFolderName'];
-    // New folder is created so we link a RFID to it. Write $post['streamFolderName'] to cardID file in shortcuts
-    $exec = "rm ".$fileshortcuts."; echo '".$post['streamFolderName']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
+    $foldername = $Audio_Folders_Path."/".$post['audiofolderNew'];
+    // New folder is created so we link a RFID to it. Write $post['audiofolderNew'] to cardID file in shortcuts
+    $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolderNew']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
     exec($exec);
 } else {
     // link to existing audiofolder

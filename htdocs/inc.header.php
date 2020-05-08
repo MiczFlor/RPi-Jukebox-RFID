@@ -99,8 +99,6 @@ if($debugLoggingConf['DEBUG_WebApp'] == "TRUE") {
     $debug = "false";
 }
 
-
-
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 $url_abs = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
@@ -178,6 +176,7 @@ $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Fo
 * load language strings
 */
 include("inc.langLoad.php");
+
 //<<<<<<< HEAD
 /*=======
 $Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
@@ -274,11 +273,17 @@ if(isset($_POST['streamType']) && $_POST['streamType'] != "" && $_POST['streamTy
 if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['audiofolder'])) {
     $post['audiofolder'] = $_POST['audiofolder'];
 }
+if(isset($_POST['audiofolderNew']) && $_POST['audiofolderNew'] != "" && $_POST['audiofolderNew'] != "false") {
+    $post['audiofolderNew'] = $_POST['audiofolderNew'];
+}
 if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
     $post['YTstreamURL'] = $_POST['YTstreamURL'];
 }
 if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
     $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
+}
+if(isset($_POST['TriggerCommand']) && $_POST['TriggerCommand'] != "false") {
+    $post['TriggerCommand'] = $_POST['TriggerCommand'];
 }
 if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['YTaudiofolder'])) {
     $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
@@ -292,7 +297,6 @@ if(isset($_POST['delete']) && $_POST['delete'] == "delete") {
 if(isset($_GET['delete']) && $_GET['delete'] == "delete") {
     $post['delete'] = $_GET['delete'];
 }
-
 
 /*******************************************
 * ACTIONS

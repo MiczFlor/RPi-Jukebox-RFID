@@ -1,5 +1,4 @@
 <?php
-
 include("inc.header.php");
 
 /**************************************************
@@ -35,7 +34,6 @@ $conf['shared_abs'] = realpath(getcwd().'/../shared/');
 * ACTIONS
 *******************************************/
 include("inc.processCheckCardEditRegister.php");
-
 ?>
 
     <div class="row playerControls">
@@ -45,7 +43,7 @@ include("inc.processCheckCardEditRegister.php");
 /*
 * Do we need to voice a warning here?
 */
-if ($messageAction == "") {
+if ($messageAction == "" && $messageError == "") {
     $messageAction = $lang['cardRegisterMessageDefault'].$lang['cardRegisterManualLinks'];
 } 
 if(isset($messageSuccess) && $messageSuccess != "") {
@@ -53,13 +51,15 @@ if(isset($messageSuccess) && $messageSuccess != "") {
     unset($post);
 } else {
     if(isset($warning)) {
-        print '<div class="alert alert-warning">'.$warning.'</div>';
+        print '<div class="alert alert-warning">WARNING: '.$warning.'</div>';
     }
-    if(isset($messageAction)) {
+    if(isset($messageError) && $messageError != "") {
+        print '<div class="alert alert-danger">ERROR: '.$messageError.'</div>';
+    }
+    if(isset($messageAction) && $messageAction != "") {
         print '<div class="alert alert-info">'.$messageAction.'</div>';
     }
 }
-
 
 ?>
 
