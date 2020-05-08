@@ -26,9 +26,9 @@ SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 HOME_DIR="/home/pi"
-LOGDIR="${HOME_DIR}"/phoniebox_logs
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+LOGDIR="${JUKEBOX_HOME_DIR}"/logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 INTERACTIVE=true
@@ -125,9 +125,9 @@ reset_install_config_file() {
     # from such a config file with no user input.
 
     # Remove existing config file
-    rm PhonieboxInstall.conf
+    rm "${HOME_DIR}/PhonieboxInstall.conf"
     # Create empty config file
-    touch PhonieboxInstall.conf
+    touch "${HOME_DIR}/PhonieboxInstall.conf"
     echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
 }
 
