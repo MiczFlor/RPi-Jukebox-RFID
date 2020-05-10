@@ -1,6 +1,6 @@
 <?php
 // create new folder
-$streamfolder = $Audio_Folders_Path."/".$post['audifolderNew']."/";
+$streamfolder = $Audio_Folders_Path."/".$post['audiofolderNew']."/";
 $exec = "sudo mkdir -p '".$streamfolder."'";
 exec($exec);
 
