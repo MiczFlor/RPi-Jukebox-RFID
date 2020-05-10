@@ -3,8 +3,10 @@
 # Install Phoniebox and test it
 # Used e.g. for tests on Docker
 
+# TODO path code for Docker to be removed
+
 # run installation
-../buster-install-default.sh
+./code/scripts/installscripts/buster-install-default.sh
 
 # test installation
-./test_installation.sh
+./code/scripts/installscripts/tests/test_installation.sh
