@@ -5,6 +5,9 @@
 
 # TODO path code for Docker to be removed
 
+# print current path
+echo $PWD
+
 # run installation
 ./code/scripts/installscripts/buster-install-default.sh
 
