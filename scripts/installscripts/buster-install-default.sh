@@ -13,7 +13,7 @@
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder /home/pi/
-# 4. run the installscript with option -a like this: 
+# 4. run the installscript with option -a like this:
 #    buster-install-default.sh -a
 
 # The absolute path to the folder which contains this script
@@ -21,14 +21,14 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
- 
+
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 HOME_DIR="/home/pi"
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
-LOGDIR="${JUKEBOX_HOME_DIR}"/logs
+LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 INTERACTIVE=true
@@ -66,7 +66,7 @@ log_open() {
     exec 1>"${PIPE}" 2>&1
     PIPE_OPENED=1
 }
- 
+
 log_close() {
     if [ "${PIPE_OPENED}" ]; then
         exec 1<&3
@@ -95,14 +95,14 @@ welcome() {
 #####################################################
 
 You are turning your Raspberry Pi into a Phoniebox. Good choice.
-This INTERACTIVE INSTALL script requires you to be online and 
+This INTERACTIVE INSTALL script requires you to be online and
 will guide you through the configuration.
 
-If you want to run the AUTOMATED INSTALL (non-interactive) from 
+If you want to run the AUTOMATED INSTALL (non-interactive) from
 an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder /home/pi/
-3. run the installscript with option -a. For example like this: 
+3. run the installscript with option -a. For example like this:
    ./home/pi/buster-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
@@ -722,7 +722,7 @@ install_main() {
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
     # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
-    # Back then the master install script needed develop branch files. I think this is from that time...?    
+    # Back then the master install script needed develop branch files. I think this is from that time...?
     #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
     #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
     #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
