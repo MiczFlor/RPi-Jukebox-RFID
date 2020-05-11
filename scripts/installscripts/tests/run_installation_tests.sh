@@ -21,7 +21,7 @@ export DEBIAN_FRONTEND=noninteractive
 # y audio default location
 # n no RFID registration
 # n No reboot
-./scripts/installscripts/buster-install-default.sh <<< $'y\nn\ny\nn\ny\ny\nn\nn\n'
+./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\nn\nn\n'
 
 # Rest installation
 ./scripts/installscripts/tests/test_installation.sh
