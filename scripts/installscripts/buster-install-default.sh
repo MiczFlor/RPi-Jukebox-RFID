@@ -731,7 +731,7 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
-    sudo pip3 install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
+    sudo python3 -m pip install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
 
     samba_config
 
