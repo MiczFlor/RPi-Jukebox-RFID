@@ -19,13 +19,13 @@ include("inc.navigation.php");
 $exec = "lsb_release -a";
 if($debug == "true") { 
 		print "Command: ".$exec; 
-} else { 
-		exec($exec, $res);
-		$distributor = substr($res[0],strpos($res[0],":")+1,strlen($res[0])-strpos($res[0],":"));
-		$description = substr($res[1],strpos($res[1],":")+1,strlen($res[1])-strpos($res[1],":"));
-		$release = substr($res[2],strpos($res[2],":")+1,strlen($res[2])-strpos($res[2],":"));
-		$codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],":"));
-}
+}  
+exec($exec, $res);
+$distributor = substr($res[0],strpos($res[0],":")+1,strlen($res[0])-strpos($res[0],":"));
+$description = substr($res[1],strpos($res[1],":")+1,strlen($res[1])-strpos($res[1],":"));
+$release = substr($res[2],strpos($res[2],":")+1,strlen($res[2])-strpos($res[2],":"));
+$codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],":"));
+
 ?>
 <div class="panel-group">
   <div class="panel panel-default">
@@ -123,13 +123,12 @@ $(document).ready(function() {
 $exec = "df -H -B K / ";
     if($debug == "true") { 
         print "Command: ".$exec; 
-    } else { 
-				$exploded = preg_split("/ +/", exec($exec));
-				// all values are in MeBit
-        $all = round(Trim(substr($exploded[1],0,Strpos($exploded[1],"K")))/1024, 2);
-        $used = round(Trim(substr($exploded[2],0,Strpos($exploded[2],"K")))/1024, 2);
-        $free = round(Trim(substr($exploded[3],0,Strpos($exploded[3],"K")))/1024, 2);
-	}
+    } 
+    $exploded = preg_split("/ +/", exec($exec));
+    // all values are in MeBit
+    $all = round(Trim(substr($exploded[1],0,Strpos($exploded[1],"K")))/1024, 2);
+    $used = round(Trim(substr($exploded[2],0,Strpos($exploded[2],"K")))/1024, 2);
+    $free = round(Trim(substr($exploded[3],0,Strpos($exploded[3],"K")))/1024, 2);
 ?>
 
 <div class="panel-group">
@@ -147,11 +146,10 @@ $exec = "df -H -B K / ";
 			$exec = "du -H -B K -s ".$conf['base_path']."/shared/";
 			if($debug == "true") { 
 					print "Command: ".$exec; 
-			} else { 
-					$res = exec($exec);
-					$exploded = explode("/", $res);
-					$Media = round(Trim(substr($exploded[0],0,Strpos($exploded[0],"K")))/1024, 2);
-			}
+			}  
+			$res = exec($exec);
+			$exploded = explode("/", $res);
+			$Media = round(Trim(substr($exploded[0],0,Strpos($exploded[0],"K")))/1024, 2);
 			// make some percentage calculation
 			$percent = 100/$all;
 			$reserved = $all - $used - $free;

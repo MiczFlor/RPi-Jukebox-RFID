@@ -98,9 +98,8 @@ if($post['delete'] == "delete") {
         print "<pre>deleting shortcut:\n";
         print $exec;
         print "</pre>";
-    } else {
-        exec($exec);
-    }
+    } 
+    exec($exec);
 } elseif($post['submit'] == "submit") {
     /*
     * error check

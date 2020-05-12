@@ -368,14 +368,13 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
     $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
     if($debug == "true") {
         print "Command: ".$exec;
-    } else {
-        // pass folder to resume script
-        exec($exec);
+    } 
+    // pass folder to resume script
+    exec($exec);
 
-        /* redirect to drop all the url parameters */
-        header("Location: ".$url_abs);
-        exit;
-    }
+    /* redirect to drop all the url parameters */
+    header("Location: ".$url_abs);
+    exit;
 }
 
 // disable resume
