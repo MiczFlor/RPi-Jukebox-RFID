@@ -161,31 +161,91 @@ if($post['delete'] == "delete") {
         */
         $fileshortcuts = $conf['shared_abs']."/shortcuts/".$post['cardID'];
         if(isset($post['streamURL'])) {
-            /*
+            /*******************************************************
             * Stream URL to be created
             */
-            include('inc.processAddNewStream.php');
+            // 20200512 included code from removed the old include('inc.processAddNewStream.php');
+            
+            // create new folder
+            $streamfolder = $Audio_Folders_Path."/".$post['audiofolderNew']."/";
+            $exec = "mkdir -p '".$streamfolder."'";
+            exec($exec);
+            // New folder is created so we link a RFID to it. Write $post['audiofolderNew'] to cardID file in shortcuts
+            $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolderNew']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
+            exec($exec);
+            
+            // figure out $streamfile depending on $post['streamType']
+            switch($post['streamType']) {
+            	case "spotify":
+                    $streamfile = "spotify.txt";
+                    break;
+                case "podcast":
+                    $streamfile = "podcast.txt";
+                    break;
+                case "livestream":
+                    $streamfile = "livestream.txt";
+                    break;
+                default:
+                    $streamfile = "url.txt";
+            }
+            
+            // write $post['streamURL'] to $streamfile and make accessible to anyone
+            $exec = "echo '".$post['streamURL']."' > '".$streamfolder."/".$streamfile."'; sudo chmod -R 777 '".$streamfolder."'";
+            exec($exec);
             // success message
             $messageSuccess = "<p>".$lang['cardRegisterStream2Card']." ".$lang['globalFolder']." '".$post['audiofolderNew']."' ".$lang['globalCardId']." '".$post['cardID']."'</p>";
         }
         elseif(isset($post['TriggerCommand']) && trim($post['TriggerCommand']) != "false") {
-            /*
+            /*******************************************************
             * RFID triggers system commands
             */
-            include('inc.processAddTriggerCommand.php');
+            // 20200512 included code from removed the old include('inc.processAddTriggerCommand.php');
+            
+            // Replace the potential existing RFID value with the posted one
+            //print $post['cardID']."->".$post['TriggerCommand'];
+            $rfidAvailArr[$post['TriggerCommand']] = $post['cardID'];
+            
+            /******************************************
+            * Create new conf file based on posted values
+            */
+            
+            // copy sample file to conf file
+            exec("cp ../settings/rfid_trigger_play.conf.sample ../settings/rfid_trigger_play.conf; chmod 777 ../settings/rfid_trigger_play.conf");
+            // replace posted values in new conf file
+            foreach($rfidAvailArr as $key => $val) {
+                // only change those with values in the form (not empty)
+                if($val != "") {
+                    exec("sed -i 's/%".$key."%/".$val."/' '../settings/rfid_trigger_play.conf'");
+                }
+            }
             // success message
             $messageSuccess = $lang['cardRegisterTriggerSuccess']." ".$post['TriggerCommand'];
         }        
         elseif(isset($post['YTstreamURL'])) {
-            /*
-            * Stream URL to be created
+            /*******************************************************
+            * YouTube Download
             */
-            include('inc.processAddYT.php');
+            // 20200512 included code from removed the old include('inc.processAddYT.php');
+            
+            if(isset($post['audiofolderNew'])) {
+                // create new folder
+                $exec = "mkdir --parents '".$Audio_Folders_Path."/".$post['audiofolderNew']."'; chmod 777 '".$Audio_Folders_Path."/".$post['audiofolderNew']."'";
+                exec($exec);
+                $foldername = $Audio_Folders_Path."/".$post['audiofolderNew'];
+                // New folder is created so we link a RFID to it. Write $post['audiofolderNew'] to cardID file in shortcuts
+                $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolderNew']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
+                exec($exec);
+            } else {
+                // link to existing audiofolder
+                $foldername = $Audio_Folders_Path."/".$post['audiofolder'];
+            }
+            $exec = "cd '".$foldername."'; youtube-dl -f bestaudio --extract-audio --audio-format mp3 ".$post['YTstreamURL']." > ".$conf['shared_abs']."/youtube-dl.log; chmod 777 ".$foldername."/* 2>&1 &";
+            exec($exec);
             // success message
             $messageSuccess = $lang['cardRegisterDownloadingYT'];
         } 
         elseif(isset($post['audiofolder']) && trim($post['audiofolder']) != "false") {
-            /*
+            /*******************************************************
             * connect card with existing audio folder
             */
             // write $post['audiofolder'] to cardID file in shortcuts
