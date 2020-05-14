@@ -22,17 +22,15 @@ if(isset($_POST['WlanIpReadYN']) && trim($_POST['WlanIpReadYN']) != "") {
         $exec = 'echo "'.$WlanIpReadYN.'" > '.$conf['settings_abs'].'/WlanIpReadYN';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } elseif(trim($_POST['WlanIpReadYN']) == "OFF") {
         $WlanIpReadYN = "OFF";
         $exec = 'echo "'.$WlanIpReadYN.'" > '.$conf['settings_abs'].'/WlanIpReadYN';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } 
     // execute shell to create config file
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");

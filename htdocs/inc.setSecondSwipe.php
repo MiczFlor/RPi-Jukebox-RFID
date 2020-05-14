@@ -12,41 +12,36 @@ if(isset($_POST['secondSwipe']) && trim($_POST['secondSwipe']) != "") {
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "PAUSE") {
         $Second_Swipe = "PAUSE";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "PLAY") {
         $Second_Swipe = "PLAY";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "SKIPNEXT") {
         $Second_Swipe = "SKIPNEXT";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "NOAUDIOPLAY") {
         $Second_Swipe = "NOAUDIOPLAY";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     }
     // execute shell to create config file
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");

@@ -695,13 +695,19 @@ install_main() {
     cd "${HOME_DIR}" || exit
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
+    # VERSION of installation
+    
+    # Get version number
+    VERSION_NO=`cat ${jukebox_dir}/settings/version-number`
+    
     # add used git branch and commit hash to version file
     USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
-    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' "${jukebox_dir}"/settings/version
 
     # add git commit hash to version file
     COMMIT_NO="$(git --git-dir=${jukebox_dir}/.git describe --always)"
-    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' "${jukebox_dir}"/settings/version
+    
+    echo "${VERSION_NO} - ${COMMIT_NO} - ${USED_BRANCH}" > ${jukebox_dir}/settings/version
+    chmod 777 ${jukebox_dir}/settings/version
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
@@ -731,7 +737,6 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
 
     samba_config
 
@@ -995,6 +1000,10 @@ folder_access() {
 
     sudo chown -R "${user_group}" "${jukebox_dir}"/settings
     sudo chmod -R "${mod}" "${jukebox_dir}"/settings
+
+    # logs dir accessible by pi and www-data
+    sudo chown "${user_group}" "${jukebox_dir}"/logs
+    sudo chmod "${mod}" "${jukebox_dir}"/logs
 
     # audio folders might be somewhere else, so treat them separately
     sudo chown "${user_group}" "${DIRaudioFolders}"

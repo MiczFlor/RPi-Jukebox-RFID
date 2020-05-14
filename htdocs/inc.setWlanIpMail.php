@@ -22,26 +22,23 @@ if(isset($_POST['WlanIpMailYN']) && trim($_POST['WlanIpMailYN']) != "") {
         $exec = 'echo "'.$WlanIpMailYN.'" > '.$conf['settings_abs'].'/WlanIpMailYN';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } elseif(trim($_POST['WlanIpMailYN']) == "OFF") {
         $WlanIpMailYN = "OFF";
         $exec = 'echo "'.$WlanIpMailYN.'" > '.$conf['settings_abs'].'/WlanIpMailYN';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } 
     // Email address
     $WlanIpMailAddr = trim($_POST['WlanIpMailAddr']);
     $exec = 'echo "'.$WlanIpMailAddr.'" > '.$conf['settings_abs'].'/WlanIpMailAddr';
     if($debug == "true") {
         print $exec;
-    } else {
-        exec($exec);
     }
+    exec($exec);
     // execute shell to create config file
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
 }

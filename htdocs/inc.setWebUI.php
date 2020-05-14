@@ -12,17 +12,15 @@ if(isset($_POST['ShowCover']) && trim($_POST['ShowCover']) != "") {
         $exec = 'echo "'.$ShowCover.'" > '.$conf['settings_abs'].'/ShowCover';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } elseif(trim($_POST['ShowCover']) == "OFF") {
         $ShowCover = "OFF";
         $exec = 'echo "'.$ShowCover.'" > '.$conf['settings_abs'].'/ShowCover';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
         }
+        exec($exec);
     } 
     // execute shell to create config file
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
