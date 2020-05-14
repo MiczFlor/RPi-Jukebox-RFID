@@ -150,14 +150,14 @@ print '<a id="pause" onclick="pause();" class="btn btn-player-xl" title="' . $la
     }
 
     function updateRepeatState() {
-        if (JUKEBOX.playerInfo.single === '1') {
+        if (JUKEBOX.playerInfo.single === '0' && JUKEBOX.playerInfo.repeat === '1') {
             $('#repeatOff').css('display', 'none');
- 	    } else if (JUKEBOX.playerInfo.repeat === '1') {
             $('#repeatPlaylist').css('display', 'initial');
             $('#repeatSingle').css('display', 'none');
+ 	    } else if (JUKEBOX.playerInfo.single === '1' && JUKEBOX.playerInfo.repeat === '1') {
+            $('#repeatOff').css('display', 'none');
             $('#repeatPlaylist').css('display', 'none');
             $('#repeatSingle').css('display', 'initial');
-            $('#repeatOff').css('display', 'none');
         } else {
             $('#repeatPlaylist').css('display', 'none');
             $('#repeatSingle').css('display', 'none');
