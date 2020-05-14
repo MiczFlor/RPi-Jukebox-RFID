@@ -694,7 +694,6 @@ install_main() {
     # Get github code
     cd "${HOME_DIR}" || exit
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
-    ls -l "${jukebox_dir}"/misc/sampleconfigs/
 
     # VERSION of installation
 
@@ -797,7 +796,6 @@ install_main() {
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
-    ls -l "${jukebox_dir}"/misc/sampleconfigs/
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
