@@ -996,6 +996,10 @@ folder_access() {
     sudo chown -R "${user_group}" "${jukebox_dir}"/settings
     sudo chmod -R "${mod}" "${jukebox_dir}"/settings
 
+    # logs dir accessible by pi and www-data
+    sudo chown "${user_group}" "${jukebox_dir}"/logs
+    sudo chmod "${mod}" "${jukebox_dir}"/logs
+
     # audio folders might be somewhere else, so treat them separately
     sudo chown "${user_group}" "${DIRaudioFolders}"
     sudo chmod "${mod}" "${DIRaudioFolders}"
