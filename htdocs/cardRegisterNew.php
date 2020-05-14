@@ -18,7 +18,7 @@ $conf['url_abs']    = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // U
 * START HTML
 *******************************************/
 
-html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
+html_bootstrap3_createHeader("en","RFID Card | Phoniebox",$conf['base_url']);
 
 ?>
 <body>
