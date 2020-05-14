@@ -693,7 +693,8 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone -v https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    ls -l "${jukebox_dir}"/misc/sampleconfigs/
 
     # VERSION of installation
 
