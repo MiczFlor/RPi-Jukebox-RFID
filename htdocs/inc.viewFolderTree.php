@@ -110,29 +110,72 @@ foreach($subfolders as $key => $subfolder) {
             $temp['type'] = "livestream";
         } elseif(file_exists($subfolder."/spotify.txt")){
             $temp['type'] = "spotify";
-			// get the cover and title from spotify
-			$check1 = $subfolder."/cover.jpg";
-			$check2 = $subfolder."/title.txt";
+            $titlefile = $subfolder."/title.txt";
+            $coverfile = $subfolder."/cover.jpg";
 
-			// this is for loading spotify informations!
-			$track = file_get_contents($subfolder."/spotify.txt");
-			$url = "https://open.spotify.com/oembed/?url=".trim($track)."&format=json";
-            $context = stream_context_create(array());
+            // get title from Spotify via Mopidy
+            if (!file_exists($titlefile)) {
+                $uri = file_get_contents($subfolder."/spotify.txt");
+                // check for mediatype ("track" / "playlist") because Mopidy API requires different approaches for getting title
+                $mediatype = explode(':' , $uri)[1];
             
-			if (!file_exists($check1)) {
-				$str = file_get_contents($url, false, $context);
-				$json  = json_decode($str, true);
+                if ($mediatype == "playlist"){
+                    // request title via Mopidy's HTTP JSON-RPC API
+                    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+                    --header 'Content-Type: application/json' \
+                    --data-raw '{
+                        \"jsonrpc\": \"2.0\",
+                        \"id\": 1,
+                        \"method\": \"core.playlists.lookup\",
+                        \"params\": {
+                                \"uri\": \"".trim($uri)."\"
+                            }
+                    }'";
+                    exec($exec, $response);
+                    $json  = json_decode($response[0], true);
+                    unset($response);
+                    $title = $json["result"]["name"];
 
-				$cover = $json['thumbnail_url'];
-				$coverdl = file_get_contents($cover);
-				file_put_contents($check1, $coverdl);
+                } elseif($mediatype == "track") {
+                    // request title via Mopidy's HTTP JSON-RPC API
+                    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+                    --header 'Content-Type: application/json' \
+                    --data-raw '{
+                        \"jsonrpc\": \"2.0\",
+                        \"id\": 1,
+                        \"method\": \"core.library.lookup\",
+                        \"params\": {
+                                \"uris\": [\"".trim($uri)."\"]
+                            }
+                    }'";
+                    exec($exec, $response);
+                    $json  = json_decode($response[0], true);
+                    unset($response);
+                    $title = $json["result"][trim($uri)][0]["name"];
+                }
+                file_put_contents($titlefile, $title);
 			}
-			if (!file_exists($check2)) {
-				$str = file_get_contents($url, false, $context);
-				$json  = json_decode($str, true);
 
-				$title = $json['title'];
-				file_put_contents($check2, $title);
+            // get cover from Spotify via Mopidy
+            if (!file_exists($coverfile)) {
+                $uri = file_get_contents($subfolder."/spotify.txt");
+                // request cover image via Mopidy's HTTP JSON-RPC API
+                $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{
+                    \"jsonrpc\": \"2.0\",
+                    \"id\": 1,
+                    \"method\": \"core.library.get_images\",
+                    \"params\": {
+                            \"uris\": [\"".trim($uri)."\"]
+                        }
+                }'";
+                exec($exec, $response);
+                $json  = json_decode($response[0], true);
+                unset($response);
+                $coveruri = $json["result"][trim($uri)][0]["uri"];
+                $cover = file_get_contents($coveruri);
+                file_put_contents($coverfile, $cover);
 			}
         } else {
             $temp['type'] = "generic";
