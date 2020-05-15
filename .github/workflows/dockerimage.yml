@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Test Installation
 
 on: [push]
 
@@ -12,5 +12,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: |
-        docker build . --file ./ci/Dockerfile.buster.amd64 --tag rpi-jukebox-rfid-buster:latest
+        docker build . --file ./ci/Dockerfile.buster.test_install.amd64 --tag rpi-jukebox-rfid-buster:latest
         docker run --rm -i rpi-jukebox-rfid-buster:latest
