@@ -224,7 +224,7 @@ verify_webserver_config() {
 verify_systemd_services() {
     printf "\nTESTING systemd services...\n\n"
     # check that services exist
-    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-sound.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
+    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
 
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
