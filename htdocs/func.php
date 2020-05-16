@@ -553,5 +553,24 @@ function printPlaylistHtml($files)
             </ol>";
 }
 
+function mopidyApiCall($method, $params){
+    // this function simplifies making Mopidy API requests (HTTP JSON-RPC API)
+    // used e.g. for getting title and cover images from Spotify
+    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        \"jsonrpc\": \"2.0\",
+        \"id\": 1,
+        \"method\": \"".$method."\",
+        \"params\": ".$params."
+    }'";
+    exec($exec, $response);
+
+    $json  = json_decode($response[0], true);
+
+    unset($response); //otherwise responses of later executions will add to the array $response
+
+    return $json;
+}
 
 ?>

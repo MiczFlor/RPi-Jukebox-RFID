@@ -113,68 +113,50 @@ foreach($subfolders as $key => $subfolder) {
             $titlefile = $subfolder."/title.txt";
             $coverfile = $subfolder."/cover.jpg";
 
-            // get title from Spotify via Mopidy
+            // get title from Spotify if wasn't previously stored
             if (!file_exists($titlefile)) {
                 $uri = file_get_contents($subfolder."/spotify.txt");
-                // check for mediatype ("track" / "playlist") because Mopidy API requires different approaches for getting title
+
+                // check for mediatype ("track" / "playlist") because following Mopidy API request needs differing parameters
                 $mediatype = explode(':' , $uri)[1];
-            
+
                 if ($mediatype == "playlist"){
-                    // request title via Mopidy's HTTP JSON-RPC API
-                    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
-                    --header 'Content-Type: application/json' \
-                    --data-raw '{
-                        \"jsonrpc\": \"2.0\",
-                        \"id\": 1,
-                        \"method\": \"core.playlists.lookup\",
-                        \"params\": {
-                                \"uri\": \"".trim($uri)."\"
-                            }
-                    }'";
-                    exec($exec, $response);
-                    $json  = json_decode($response[0], true);
-                    unset($response);
+                    // request media info via Mopidy's API
+                    $method = 'core.playlists.lookup';
+                    $params = '{
+                            "uri": "'.trim($uri).'"
+                        }';
+                    $json = mopidyApiCall($method, $params);
+
                     $title = $json["result"]["name"];
 
-                } elseif($mediatype == "track") {
-                    // request title via Mopidy's HTTP JSON-RPC API
-                    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
-                    --header 'Content-Type: application/json' \
-                    --data-raw '{
-                        \"jsonrpc\": \"2.0\",
-                        \"id\": 1,
-                        \"method\": \"core.library.lookup\",
-                        \"params\": {
-                                \"uris\": [\"".trim($uri)."\"]
-                            }
-                    }'";
-                    exec($exec, $response);
-                    $json  = json_decode($response[0], true);
-                    unset($response);
+                } elseif ($mediatype == "track") {
+                    // request media info via Mopidy's API
+                    $method = 'core.library.lookup';
+                    $params = '{
+                            "uris": ["'.trim($uri).'"]
+                        }';
+                    $json = mopidyApiCall($method, $params);
+
                     $title = $json["result"][trim($uri)][0]["name"];
                 }
                 file_put_contents($titlefile, $title);
 			}
 
-            // get cover from Spotify via Mopidy
+            // get cover from Spotify if wasn't previously stored
             if (!file_exists($coverfile)) {
                 $uri = file_get_contents($subfolder."/spotify.txt");
-                // request cover image via Mopidy's HTTP JSON-RPC API
-                $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
-                --header 'Content-Type: application/json' \
-                --data-raw '{
-                    \"jsonrpc\": \"2.0\",
-                    \"id\": 1,
-                    \"method\": \"core.library.get_images\",
-                    \"params\": {
-                            \"uris\": [\"".trim($uri)."\"]
-                        }
-                }'";
-                exec($exec, $response);
-                $json  = json_decode($response[0], true);
-                unset($response);
+
+                // request media-related images via Mopidy's API
+                $method = 'core.library.get_images';
+                $params = '{
+                        "uris": ["'.trim($uri).'"]
+                    }';
+                $json = mopidyApiCall($method, $params);
+
                 $coveruri = $json["result"][trim($uri)][0]["uri"];
                 $cover = file_get_contents($coveruri);
+                
                 file_put_contents($coverfile, $cover);
 			}
         } else {
