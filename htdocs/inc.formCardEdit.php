@@ -113,10 +113,10 @@ while(! feof($fn))  {
         // replace values with used or placeholders in sample conf
         $temp = explode("=", $result);
         // leave input empty if no value in active conf
-        if(startsWith($rfidAvailArr[$temp[0]], "%")) {
+        if(startsWith($fillRfidArrAvailWithUsed[$temp[0]], "%")) {
             $rfidCurrent = "";
         } else {
-            $rfidCurrent = $rfidAvailArr[$temp[0]];
+            $rfidCurrent = $fillRfidArrAvailWithUsed[$temp[0]];
         }
         print "\n<option value=\"".$temp[0]."\"";
         if($temp[0] == $fpost['TriggerCommand']) {

@@ -244,6 +244,8 @@ foreach ($commandsWithAllowedValues as $command => $allowedValues) {
 
 if ($debug == "true") {
     print "<pre>urlparams: \n"; print_r($urlparams); print "</pre>";
+    print "<pre>_POST: \n"; print_r($_POST); print "</pre>";
+    print "<pre>_FILES: \n"; print_r($_FILES); print "</pre>";
 }
 
 /*******************************************
