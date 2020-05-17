@@ -6,6 +6,8 @@ from .simple_button import SimpleButton
 
 
 logger = logging.getLogger(__name__)
+
+
 class ShutdownButton(SimpleButton):
 
     def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING,
@@ -15,7 +17,6 @@ class ShutdownButton(SimpleButton):
         self.iteration_time = .2
         super(ShutdownButton, self).__init__(pin=pin, action=action, name=name, bouncetime=bouncetime, edge=edge,
                  hold_time=hold_time, hold_repeat=False)
-
 
     # function to provide user feedback (= flashing led) while the shutdown button is pressed
     # do not directly call shutdown, in case it was hit accedently
@@ -29,14 +30,14 @@ class ShutdownButton(SimpleButton):
 
     def callbackFunctionHandler(self, *args):
         status = False
-        n_checks =  math.ceil(self.time_pressed/self.iteration_time)
+        n_checks = math.ceil(self.time_pressed / self.iteration_time)
         logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s: {}'.format(
             self.time_pressed, self.iteration_time, n_checks
         ))
         for x in range(n_checks):
             self.set_led(x & 1)
             time.sleep(.2)
-            status =  not self.is_pressed
+            status = not self.is_pressed
             if status:
                 break
         self.set_led(status)

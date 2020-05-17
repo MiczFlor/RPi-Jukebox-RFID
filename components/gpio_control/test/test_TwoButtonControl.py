@@ -113,12 +113,13 @@ class TestTwoButtonControl:
     def test_btn1_pressed(self, two_button_controller):
         pinA = two_button_controller.bcmPin1
         pinB = two_button_controller.bcmPin2
+
         def func(pin):
             values = {pinA: False, pinB: True}
             if pin in values:
                 return values[pin]
             else:
-                print('Cannot find pin {} in values: {}'.format(pin,values))
+                print('Cannot find pin {} in values: {}'.format(pin, values))
                 return None
         two_button_control.GPIO.input.side_effect = func
         two_button_controller.action()

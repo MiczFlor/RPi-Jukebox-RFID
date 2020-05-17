@@ -9,15 +9,13 @@ GPIO.setmode(GPIO.BCM)
 logger = logging.getLogger(__name__)
 
 
-
 class LED:
     def __init__(self, pin, initial_value=True, name='LED'):
         self.pin = pin
-        self.name=name
+        self.name = name
         logger.debug('initialize {}(pin={}) to off'.format(self.name, self.pin))
         GPIO.setup(self.pin, GPIO.OUT)
         GPIO.output(self.pin, initial_value)
-
 
     def on(self):
         logger.debug('Set Output of {}(pin={}) to on'.format(self.name, self.pin))
@@ -40,11 +38,11 @@ class MPDStatusLED(LED):
         self.host = host
         self.port = port
         self.logger.info('Waiting for MPD Connection on {}:{}'.format(
-            self.host,self.port))
+            self.host, self.port))
         while not self.has_mpd_connection():
             self.logger.debug('No MPD Connection yet established')
             time.sleep(1)
-        self.logger.info('Connection to MPD server on host {}:{} established'.format(self.host,self.port))
+        self.logger.info('Connection to MPD server on host {}:{} established'.format(self.host, self.port))
         self.on()
 
     def has_mpd_connection(self):

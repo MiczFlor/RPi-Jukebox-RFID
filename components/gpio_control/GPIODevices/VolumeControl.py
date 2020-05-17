@@ -23,5 +23,5 @@ class VolumeControl:
                 config.getint('pinDown'),
                 getFunctionCall(config.get('functionCallUp')),
                 getFunctionCall(config.get('functionCallDown')),
-                config.getfloat('timeBase',fallback=0.1),
+                config.getfloat('timeBase', fallback=0.1),
                 name='RotaryVolumeControl')

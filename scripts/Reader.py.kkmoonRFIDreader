@@ -5,8 +5,6 @@
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
 
-import string
-# import csv
 import os.path
 import sys
 

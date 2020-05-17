@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Original code found at:
 # https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
@@ -142,7 +142,7 @@ class lcd:
    def lcd_write_char(self, charvalue, mode=1):
       self.lcd_write_four_bits(mode | (charvalue & 0xF0))
       self.lcd_write_four_bits(mode | ((charvalue << 4) & 0xF0))
-  
+
    # put string function with optional char positioning
    def lcd_display_string(self, string, line=1, pos=0):
     if line == 1:
@@ -176,5 +176,5 @@ class lcd:
       self.lcd_write(0x40);
       for char in fontdata:
          for line in char:
-            self.lcd_write_char(line)         
-         
+            self.lcd_write_char(line)
+
