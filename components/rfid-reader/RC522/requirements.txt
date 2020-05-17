@@ -1,0 +1,5 @@
+# RC522 related requirements
+# You need to install these with `sudo python3 -m pip install -q -r requirements.txt`
+
+# pi-rc522 use latest version from Github
+git+git://github.com/ondryaso/pi-rc522.git#egg=pi-rc522
