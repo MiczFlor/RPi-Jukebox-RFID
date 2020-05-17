@@ -185,9 +185,10 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
-    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO pi-rc522"
+    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO"
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
+    local modules_rc522="pi-rc522"
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -196,7 +197,7 @@ verify_pip_packages() {
         modules="${modules} ${modules_spotify}"
     fi
 
-    modules="${modules} ${modules_pn532}"
+    # modules="${modules} ${modules_pn532}"
 
     for module in ${modules}
     do
@@ -205,6 +206,21 @@ verify_pip_packages() {
         else
             echo "  ERROR: pip module ${module} is not installed"
             ((failed_tests++))
+        fi
+        ((tests++))
+    done
+
+    # workaround, because currently it's not known, if modules have been installed manually
+    # TODO integrate in above check (similar to spotify modules)
+    optional_modules="${modules_rc522} ${modules_pn532}"
+
+    for module in ${optional_modules}
+    do
+        if [[ $(pip3 show "${module}") ]]; then
+            echo "  ${module} is installed"
+        else
+            echo "  WARNING: Optional pip module ${module} is not installed"
+            # doesnt count as error, because only manually installed or not
         fi
         ((tests++))
     done
