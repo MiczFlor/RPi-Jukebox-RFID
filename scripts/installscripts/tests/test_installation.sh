@@ -145,17 +145,18 @@ verify_wifi_settings() {
     # check owner and permissions
     check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
     check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
-    
+
     # check that dhcpcd service is enabled and started
     check_service_state dhcpcd active
     check_service_enablement dhcpcd enabled
 }
 
 verify_apt_packages(){
-    local packages="apt-transport-https libspotify-dev raspberrypi-kernel-headers samba
+    local packages="apt-transport-https libspotify-dev samba
 samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
 resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 python3-spidev"
+    local packages_raspberrypi="raspberrypi-kernel-headers"
     local packages_spotify="mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
 python3-cffi python3-ply python3-pycparser python3-spotify"
 
@@ -164,6 +165,11 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
     # also check for spotify packages if it has been installed
     if [[ "${SPOTinstall}" == "YES" ]]; then
         packages="${packages} ${packages_spotify}"
+    fi
+
+    # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
+    if [[ $(uname -m) =~ ^armv.+$ ]]; then
+        packages="${packages} ${packages_raspbrrypi}"
     fi
 
     for package in ${packages}
@@ -317,7 +323,7 @@ runtime=$((end-start))
 ((h=${runtime}/3600))
 ((m=($runtime%3600)/60))
 ((s=$runtime%60))
- 
+
 if [[ "${failed_tests}" -gt 0 ]]; then
     echo "${failed_tests} Test(s) failed (of ${tests} tests) (in ${h}h ${m}m ${s}s)."
     exit 1
