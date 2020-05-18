@@ -3,7 +3,7 @@
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
-    case "$choice" in 
+    case "$choice" in
       y|Y ) ;;
       n|N ) exit 0;;
       * ) echo "Error: invalid" ; question ${question};;
@@ -21,7 +21,7 @@ sudo systemctl disable phoniebox-gpio-buttons.service
 printf "Adding settings to /boot/config.txt...\n"
 sudo cp /boot/config.txt /boot/config.txt.bak
 
-echo "gpio=25=op,dhc" | sudo tee -a /boot/config.txt > /dev/null
+echo "gpio=25=op,dh" | sudo tee -a /boot/config.txt > /dev/null
 echo "dtoverlay=hifiberry-dac" | sudo tee -a /boot/config.txt > /dev/null
 
 printf "Adding settings to /etc/asound.conf...\n"
