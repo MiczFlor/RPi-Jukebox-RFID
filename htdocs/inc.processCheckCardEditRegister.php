@@ -9,45 +9,65 @@
 /******************************************
 * read available RFID trigger commands
 */
-$rfidAvailRaw = "";
-$fn = fopen("../settings/rfid_trigger_play.conf.sample","r");
-while(! feof($fn))  {
-    $result = fgets($fn);
-    // ignore commented and empty lines
-    if(!startsWith($result, "#") && trim($result) != "") {
-        $rfidAvailRaw .= $result."\n";
+$rfidAvailArr = rfidAvailArr();
+
+function rfidAvailArr() {
+    $rfidAvailRaw = "";
+    $conf['conf_abs'] = realpath(getcwd().'/../settings/rfid_trigger_play.conf.sample');
+    $fn = fopen($conf['conf_abs'],"r");
+    while(! feof($fn))  {
+        $result = fgets($fn);
+        // ignore commented and empty lines
+        if(!startsWith($result, "#") && trim($result) != "") {
+            $rfidAvailRaw .= $result."\n";
+        }
     }
+    fclose($fn);
+    $rfidAvailArr = parse_ini_string($rfidAvailRaw); //print "<pre>"; print_r($rfidAvailArr); print "</pre>";
+    return $rfidAvailArr;
 }
-fclose($fn);
-$rfidAvailArr = parse_ini_string($rfidAvailRaw); //print "<pre>"; print_r($rfidAvailArr); print "</pre>";
 /******************************************/
 
 /******************************************
 * read RFID trigger commands already in use
 */
-$rfidUsedRaw = "";
-$fn = fopen("../settings/rfid_trigger_play.conf","r");
-while(! feof($fn))  {
-    $result = fgets($fn);
-    // ignore commented and empty lines
-    if(!startsWith($result, "#") && trim($result) != "") {
-        $rfidUsedRaw .= $result."\n";
+$rfidUsedArr = rfidUsedArr();
+
+function rfidUsedArr() {
+    $rfidUsedRaw = "";
+    $fn = fopen("../settings/rfid_trigger_play.conf","r");
+    while(! feof($fn))  {
+        $result = fgets($fn);
+        // ignore commented and empty lines
+        if(!startsWith($result, "#") && trim($result) != "") {
+            $rfidUsedRaw .= $result."\n";
+        }
     }
+    fclose($fn);
+    $rfidUsedArr = parse_ini_string($rfidUsedRaw); //print "<pre>"; print_r($rfidUsedArr); print "</pre>";
+    return $rfidUsedArr;
 }
-fclose($fn);
-$rfidUsedArr = parse_ini_string($rfidUsedRaw); //print "<pre>"; print_r($rfidUsedRaw); print "</pre>";
 /******************************************/
 
 /******************************************
 * fill Avail with Used, else empty value
 */
-foreach($rfidAvailArr as $key => $val) {
-    // check if there is something in the existing conf file already
-    if(startsWith($rfidUsedArr[$key], "%")) {
-        $rfidAvailArr[$key] = "";
-    } else {
-        $rfidAvailArr[$key] = $rfidUsedArr[$key];
+$fillRfidArrAvailWithUsed = fillRfidArrAvailWithUsed($rfidAvailArr, $rfidUsedArr);
+//print "<pre>fillRfidArrAvailWithUsed: \n"; print_r($fillRfidArrAvailWithUsed); print "</pre>";
+
+function fillRfidArrAvailWithUsed($rfidAvailArr, $rfidUsedArr=array()) {
+    foreach($rfidAvailArr as $key => $val) {
+        // check if there is something in the existing conf file already
+        if(
+            startsWith($rfidUsedArr[$key], "%")
+            || endsWith($rfidUsedArr[$key], "%")
+        ) {
+            $rfidAvailArr[$key] = "";
+        } else {
+            $rfidAvailArr[$key] = $rfidUsedArr[$key];
+        }
     }
+    return $rfidAvailArr;
 }
 
 /******************************************
@@ -202,7 +222,7 @@ if($post['delete'] == "delete") {
             
             // Replace the potential existing RFID value with the posted one
             //print $post['cardID']."->".$post['TriggerCommand'];
-            $rfidAvailArr[$post['TriggerCommand']] = $post['cardID'];
+            $fillRfidArrAvailWithUsed[$post['TriggerCommand']] = $post['cardID'];
             
             /******************************************
             * Create new conf file based on posted values
@@ -211,7 +231,7 @@ if($post['delete'] == "delete") {
             // copy sample file to conf file
             exec("cp ../settings/rfid_trigger_play.conf.sample ../settings/rfid_trigger_play.conf; chmod 777 ../settings/rfid_trigger_play.conf");
             // replace posted values in new conf file
-            foreach($rfidAvailArr as $key => $val) {
+            foreach($fillRfidArrAvailWithUsed as $key => $val) {
                 // only change those with values in the form (not empty)
                 if($val != "") {
                     exec("sed -i 's/%".$key."%/".$val."/' '../settings/rfid_trigger_play.conf'");

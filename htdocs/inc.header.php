@@ -113,19 +113,13 @@ function execAndRedirect($exec)
     if (!isset($exec)) {
         return;
     }
-
+    $res = exec($exec);
     if ($debug == "true") {
-        print "Command in execAndRedirect: " . $exec;
-    } else {
-        $res = exec($exec);
-        //if ($debug == "true") {
-            print "Command in execAndRedirect: " . $exec;
-            print "Result: " . $res;
-        //}
-        /* redirect to drop all the url parameters */
-        header("Location: " . $url_abs);
-        exit;
+        print "<pre>\nCommand in execAndRedirect: " . $exec . "\nResult: " . $res . "\n</pre>";
     }
+    /* redirect to drop all the url parameters */
+    header("Location: " . $url_abs);
+    exit;
 }
 
 function fileGetContentOrDefault($filename, $defaultValue)
@@ -249,8 +243,9 @@ foreach ($commandsWithAllowedValues as $command => $allowedValues) {
 }
 
 if ($debug == "true") {
-    print "urlparams: ";
-    print "<pre>"; print_r($urlparams); print "</pre>";
+    print "<pre>urlparams: \n"; print_r($urlparams); print "</pre>";
+    print "<pre>_POST: \n"; print_r($_POST); print "</pre>";
+    print "<pre>_FILES: \n"; print_r($_FILES); print "</pre>";
 }
 
 /*******************************************

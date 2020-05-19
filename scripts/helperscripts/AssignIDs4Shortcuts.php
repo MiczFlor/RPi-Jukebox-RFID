@@ -30,7 +30,7 @@ id,value
 * Variables - that should not need changing if you do the custom install
 */
 
-$conf               = array();
+$conf = array();
 $conf['path2presetCSV']         = "/home/pi/RPi-Jukebox-RFID/misc/presets.csv"; // absolute path to CSV file with IDs
 $conf['path2shortcuts']         = "/home/pi/RPi-Jukebox-RFID/shared/shortcuts"; // absolute path to shortcuts folder, no trailing slash
 $conf['path2bashdaemonsource']  = "/home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.sample"; // absolute path to sample file for daemon script

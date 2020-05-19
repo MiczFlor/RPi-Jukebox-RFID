@@ -24,11 +24,10 @@ class TestShutdownButton():
     def test_action(self, shutdown_button):
         for i in range(9):
             GPIO.input.reset_mock()
-            GPIO.input.side_effect = i*[0]+[1]
+            GPIO.input.side_effect = i * [0] + [1]
             shutdown_button.callbackFunctionHandler()
-            assert GPIO.input.call_count == i+1
+            assert GPIO.input.call_count == i + 1
             mocked_function.assert_not_called()
-
 
     @patch('time.sleep', mock_time)
     def test_action2(self, shutdown_button):

@@ -14,6 +14,14 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 
 <?php
 include("inc.navigation.php");
+
+if($debug == "true") {
+    print "<pre>";
+    print "_POST: \n";
+    print_r($_POST);
+    print "</pre>";
+}
+
 ?>
 
     <div class="row playerControls">

@@ -183,7 +183,7 @@ def disk_stats():
     # size_avail = statvfs.f_frsize * statvfs.f_bfree    # actual free
     size_avail = statvfs.f_frsize * statvfs.f_bavail    # free for non-root
 
-    return round(size_total/1073741824, 1), round(size_avail/1073741824, 1)
+    return round(size_total / 1073741824, 1), round(size_avail / 1073741824, 1)
 
 
 def readfile(filepath):

@@ -565,9 +565,9 @@ case $COMMAND in
         fi
 
         # Now load and play
-        ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
-
+        ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
+        
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played

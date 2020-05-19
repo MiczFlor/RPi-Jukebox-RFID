@@ -174,7 +174,7 @@ if ($_POST['ACTION'] == "folderCreateNew") {
  * START HTML
  *******************************************/
 
-html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
+html_bootstrap3_createHeader("en", "Files and Folders | Phoniebox", $conf['base_url']);
 
 ?>
 <body>

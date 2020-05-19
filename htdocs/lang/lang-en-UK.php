@@ -111,6 +111,7 @@ $lang['Spotify'] = "Spotify";
 */
 $lang['cardRegisterTitle'] = "Add new card";
 $lang['cardEditTitle'] = "Edit or add card";
+$lang['cardRegisterAnchorLink'] = "Interactive RFID Registration";
 $lang['cardRegisterMessageDefault'] = "The 'Latest Card ID' value in the form is updated on the fly as you swipe a RFID card.<br/>(Requires Javascript in the browser to be enabled.)";
 $lang['cardEditMessageDefault'] = "The card IDs used in this system are listed on the <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterMessageSwipeNew'] = "Swipe another card, if you want to register more cards.";
@@ -158,6 +159,32 @@ $lang['cardFormYTSelectDefault'] = "Pull down to select a folder or create a new
 $lang['cardFormYTHelp'] = "Full YouTube-URL of clip or playlist. Will be downloaded in the folder specified above or the new one if specified.";
 $lang['cardFormRemoveCard'] = "Remove Card ID";
 
+// Export Card IDs as .csv file
+$lang['cardExportAnchorLink'] = "Export all RFID links (audio playout and commands)";
+$lang['cardExportButtonLink'] = "Create .csv file of available RFID links";
+
+// Import Card IDs as .csv file
+$lang['cardImportAnchorLink'] = "Import RFID links from .csv file";
+$lang['cardImportFileLabel'] = "Select .csv file to create RFID links";
+$lang['cardImportFileSuccessUpload'] = "Successful upload of file: ";
+$lang['cardImportFileErrorUpload'] = "<p>There was an error uploading the file, please try again!</p>";
+$lang['cardImportFileErrorFiletype'] = "<p>Wrong file type! The file must be a <em>.csv</em> file.</p>";
+$lang['cardImportFormOverwriteLabel'] = "Select import action";
+$lang['cardImportFormOverwriteHelp'] = "Specify what to do with the uploaded RFID links.";
+$lang['cardImportFormOverwriteAll'] = "Overwrite both: audio AND commands";
+$lang['cardImportFormOverwriteAudio'] = "Overwrite ONLY audio triggers";
+$lang['cardImportFormOverwriteCommands'] = "Overwrite ONLY system commands";
+$lang['cardImportFileOverwriteMessageCommands'] = "<p><i class='mdi mdi-check'></i> <strong>System commands</strong> were overwritten with uploaded RFID IDs.</p>";
+$lang['cardImportFileOverwriteMessageAudio'] = "<p><i class='mdi mdi-check'></i> Links to <strong>audio</strong> playlists etc. were overwritten with uploaded RFID IDs.</p>";
+$lang['cardImportFormDeleteLabel'] = "Delete or keep other RFID links?";
+$lang['cardImportFormDeleteNone'] = "Keep all existing: audio AND commands";
+$lang['cardImportFormDeleteAll'] = "Delete both: audio AND commands";
+$lang['cardImportFormDeleteAudio'] = "Delete ONLY audio triggers";
+$lang['cardImportFormDeleteCommands'] = "Delete ONLY system commands";
+$lang['cardImportFormDeleteHelp'] = "Which of the existing RFID links should be kept, which deleted?.";
+$lang['cardImportFileDeleteMessageCommands'] = "<p><i class='mdi mdi-delete'></i> <strong>System commands</strong> deleted.</p>";
+$lang['cardImportFileDeleteMessageAudio'] = "<p><i class='mdi mdi-delete'></i> <strong>Audio links</strong> deleted.</p>";
+
 /*
 * Track edit form
 */
@@ -171,7 +198,6 @@ $lang['trackEditDeleteLabel'] = "Sure you want to delete???";
 $lang['trackEditDeleteHelp'] = "There is no 'undo' for deleted files. They are gone! Are you sure?";
 $lang['trackEditDeleteNo'] = "Do NOT delete this track";
 $lang['trackEditDeleteYes'] = "Yes, DELETE this track";
-
 
 /*
 * Settings

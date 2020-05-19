@@ -10,6 +10,17 @@
 # to the following:
 # CMDMUTE="1234567890"
 # Leave everything untouched where you do not use a card.
+#
+# Adding new commands to this sample file:
+# Structure the file by sections and commands
+# A section starts with ##
+# Example: ## Audio player
+# A command's description is *above* the command and starts with ###
+# Example: 
+# ### Stop player
+# CMDSTOP="%CMDSTOP%"
+# This structuring was introduced to have a human readable display in the Web UI
+# All lines starting with # are comments and ignored in the Web UI
 
 ## Audio player
 # The following commands control audio playout
@@ -22,59 +33,87 @@ CMDVOLDOWN="%CMDVOLDOWN%"
 CMDSTOP="%CMDSTOP%"
 ### Mute player
 CMDMUTE="%CMDMUTE%"
-### Skip to next track in playlist
+### Skip next track
 CMDNEXT="%CMDNEXT%"
-### Skip to previous track in playlist
+### Skip previous track
 CMDPREV="%CMDPREV%"
-### Restart the playlist from the beginning
+### Restart the playlist
 CMDREWIND="%CMDREWIND%"
-### Seek ahead 15 seconds
+### Seek ahead 15 sec.
 CMDSEEKFORW="%CMDSEEKFORW%"
-### Seek back 15 seconds
+### Seek back 15 sec.
 CMDSEEKBACK="%CMDSEEKBACK%"
-### Pause audio playout
+### Pause player
 CMDPAUSE="%CMDPAUSE%"
-### Resume audio playout (makes only sense in combination with pause)
+### Resume audio playout
 CMDPLAY="%CMDPLAY%"
 
+## System
+### Shutdown
+CMDSHUTDOWN="%CMDSHUTDOWN%"
+### Reboot
+CMDREBOOT="%CMDREBOOT%"
+
 ## Playlist
-### Toggles shuffle mode for current playlist (random on/off)
+### Shuffle mode toggle for current playlist (random on/off)
 CMDSHUFFLE="%CMDSHUFFLE%"
 ### Play custom playlist
 CMDPLAYCUSTOMPLS="%CMDPLAYCUSTOMPLS%"
 
 ## Set volume (in percent)
+### Volume 30%
 CMDVOL30="%CMDVOL30%"
+### Volume 50%
 CMDVOL50="%CMDVOL50%"
+### Volume 75%
 CMDVOL75="%CMDVOL75%"
+### Volume 80%
 CMDVOL80="%CMDVOL80%"
+### Volume 85%
 CMDVOL85="%CMDVOL85%"
+### Volume 90%
 CMDVOL90="%CMDVOL90%"
+### Volume 95%
 CMDVOL95="%CMDVOL95%"
+### Volume 100%
 CMDVOL100="%CMDVOL100%"
-CMDSHUTDOWN="%CMDSHUTDOWN%"
-CMDREBOOT="%CMDREBOOT%"
 
 ## Set maximum volume (in percent)
+### Max. Volume 30%
 CMDMAXVOL30="%CMDMAXVOL30%"
+### Max. Volume 50%
 CMDMAXVOL50="%CMDMAXVOL50%"
+### Max. Volume 75%
 CMDMAXVOL75="%CMDMAXVOL75%"
+### Max. Volume 80%
 CMDMAXVOL80="%CMDMAXVOL80%"
+### Max. Volume 85%
 CMDMAXVOL85="%CMDMAXVOL85%"
+### Max. Volume 90%
 CMDMAXVOL90="%CMDMAXVOL90%"
+### Max. Volume 95%
 CMDMAXVOL95="%CMDMAXVOL95%"
+### Max. Volume 100%
 CMDMAXVOL100="%CMDMAXVOL100%"
 
-## Timer: stop after x minutes
+## Timer: stop player after x minutes
+### Stop player after 5 min.
 STOPAFTER5="%STOPAFTER5%"
+### Stop player after 15 min.
 STOPAFTER15="%STOPAFTER15%"
+### Stop player after 30 min.
 STOPAFTER30="%STOPAFTER30%"
+### Stop player after 60 min.
 STOPAFTER60="%STOPAFTER60%"
 
 ## Timer: shutdown after x minutes
+### Shutdown after 5 min.
 SHUTDOWNAFTER5="%SHUTDOWNAFTER5%"
+### Shutdown after 15 min.
 SHUTDOWNAFTER15="%SHUTDOWNAFTER15%"
+### Shutdown after 30 min.
 SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
+### Shutdown after 60 min.
 SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
 
 ## Wifi: switch on/off and other
@@ -85,12 +124,12 @@ DISABLEWIFI="%DISABLEWIFI%"
 ### Read out the Wifi IP over the Phoniebox speakers
 CMDREADWIFIIP="%CMDREADWIFIIP%"
 
-## Control commands for Audio Recording
-### Start recording for 10 sec duration
+## Recording audio commands 
+### Start recording for 10 sec. duration
 RECORDSTART10="%RECORDSTART10%"
-### Start recording for 60 sec duration
+### Start recording for 60 sec. duration
 RECORDSTART60="%RECORDSTART60%"
-### Start recording for 600 sec duration
+### Start recording for 600 sec. duration
 RECORDSTART600="%RECORDSTART600%"
 ### Stop recording
 RECORDSTOP="%RECORDSTOP%"

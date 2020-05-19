@@ -15,8 +15,7 @@
 #     KKMOON RFID Reader which appears twice in the devices list as HID 413d:2107
 #     and this required to check "if" the device is a keyboard.
 
-import string
-#import csv
+
 import os.path
 import sys
 

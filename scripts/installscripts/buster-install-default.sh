@@ -13,7 +13,7 @@
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder /home/pi/
-# 4. run the installscript with option -a like this: 
+# 4. run the installscript with option -a like this:
 #    buster-install-default.sh -a
 
 # The absolute path to the folder which contains this script
@@ -21,14 +21,14 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
- 
+
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 HOME_DIR="/home/pi"
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
-LOGDIR="${JUKEBOX_HOME_DIR}"/logs
+LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 INTERACTIVE=true
@@ -66,7 +66,7 @@ log_open() {
     exec 1>"${PIPE}" 2>&1
     PIPE_OPENED=1
 }
- 
+
 log_close() {
     if [ "${PIPE_OPENED}" ]; then
         exec 1<&3
@@ -95,14 +95,14 @@ welcome() {
 #####################################################
 
 You are turning your Raspberry Pi into a Phoniebox. Good choice.
-This INTERACTIVE INSTALL script requires you to be online and 
+This INTERACTIVE INSTALL script requires you to be online and
 will guide you through the configuration.
 
-If you want to run the AUTOMATED INSTALL (non-interactive) from 
+If you want to run the AUTOMATED INSTALL (non-interactive) from
 an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder /home/pi/
-3. run the installscript with option -a. For example like this: 
+3. run the installscript with option -a. For example like this:
    ./home/pi/buster-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
@@ -695,13 +695,19 @@ install_main() {
     cd "${HOME_DIR}" || exit
     git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
+    # VERSION of installation
+
+    # Get version number
+    VERSION_NO=`cat ${jukebox_dir}/settings/version-number`
+
     # add used git branch and commit hash to version file
     USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
-    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' "${jukebox_dir}"/settings/version
 
     # add git commit hash to version file
     COMMIT_NO="$(git --git-dir=${jukebox_dir}/.git describe --always)"
-    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' "${jukebox_dir}"/settings/version
+
+    echo "${VERSION_NO} - ${COMMIT_NO} - ${USED_BRANCH}" > ${jukebox_dir}/settings/version
+    chmod 777 ${jukebox_dir}/settings/version
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
@@ -722,7 +728,7 @@ install_main() {
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
     # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
-    # Back then the master install script needed develop branch files. I think this is from that time...?    
+    # Back then the master install script needed develop branch files. I think this is from that time...?
     #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
     #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
     #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
@@ -731,7 +737,6 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
-    sudo pip3 install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
 
     samba_config
 
@@ -750,7 +755,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-
+    
+    # sample file for debugging with all options set to FALSE
+    sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
+    sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
+    
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
@@ -995,6 +1004,10 @@ folder_access() {
 
     sudo chown -R "${user_group}" "${jukebox_dir}"/settings
     sudo chmod -R "${mod}" "${jukebox_dir}"/settings
+
+    # logs dir accessible by pi and www-data
+    sudo chown "${user_group}" "${jukebox_dir}"/logs
+    sudo chmod "${mod}" "${jukebox_dir}"/logs
 
     # audio folders might be somewhere else, so treat them separately
     sudo chown "${user_group}" "${DIRaudioFolders}"

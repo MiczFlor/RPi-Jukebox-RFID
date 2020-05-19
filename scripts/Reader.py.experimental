@@ -135,10 +135,10 @@ class Pn532Reader:
         self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
 
     def readCard(self):
-        return str(+int('0x' + self.device.scan_field().hex(),0))
+        return str(+int('0x' + self.device.scan_field().hex(), 0))
 
     def cleanup(self):
-        #Not sure if something needs to be done here.
+        # Not sure if something needs to be done here.
         logger.debug("PN532Reader clean up.")
 
 

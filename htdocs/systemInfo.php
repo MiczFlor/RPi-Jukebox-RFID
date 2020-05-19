@@ -6,7 +6,7 @@ include("inc.header.php");
 * START HTML
 *******************************************/
 
-html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
+html_bootstrap3_createHeader("en","System Info | Phoniebox",$conf['base_url']);
 
 ?>
 <body>
@@ -69,7 +69,27 @@ $codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],
   
         <div class="row">	
           <label class="col-md-4 control-label" for=""><?php print $lang['globalVersion']; ?></label> 
-          <div class="col-md-6"><?php echo $version; ?></div>
+          <div class="col-md-6"><?php
+            // create current version
+            
+            // get information for version number on current running system
+            $exec = "cat ../settings/version-number";
+            $VERSION_NO = exec($exec);
+            $exec = "git --git-dir=../.git rev-parse --abbrev-ref HEAD";
+            $USED_BRANCH = exec($exec);
+            $exec = "git --git-dir=../.git  describe --always";
+            $COMMIT_NO = exec($exec);
+            $version = $VERSION_NO . " - " . $COMMIT_NO . " - " . $USED_BRANCH;
+            // write version to file
+            $exec = "echo ${version} > ../settings/version";
+            exec($exec);
+            // write new version number to global config file
+            exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+            exec("sudo chmod 777 ".$conf['settings_abs']."/global.conf");
+            // and print the version on the info site
+            echo $version; 
+
+           ?></div>
         </div><!-- / row -->
         <div class="row">	
           <label class="col-md-4 control-label" for=""><?php print $lang['globalEdition']; ?></label> 
