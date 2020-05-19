@@ -44,15 +44,20 @@ if [ "${ACCESSconfig}" == "YES" ]; then
    # install requiered packages
    sudo apt-get install dnsmasq hostapd
 
-   sudo echo -e "Added by RPi-Jukebox-RFID to enable this device as Hotspot" >> /etc/dhcpcd.conf
+   sudo echo -e "# Added by RPi-Jukebox-RFID to enable this device as Hotspot" >> /etc/dhcpcd.conf
    sudo echo -e "interface wlan0" >> /etc/dhcpcd.conf
    sudo echo -e "static ip_address=192.168.99.1/24" >> /etc/dhcpcd.conf
 
    sudo systemctl restart dhcpcd
    
    # configure DNS
-   sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-   sudo cat << EOF > /etc/dnsmasq.conf
+   if [ -f /etc/dnsmasq.conf ]; then
+      sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+      sudo touch /etc/dnsmasq.conf
+   else
+      sudo touch /etc/dnsmasq.conf
+   fi
+   sudo bash -c 'cat << EOF > /etc/dnsmasq.conf
 # Activate DHCP-Server for WiFi-Interface
 interface=wlan0
 
@@ -64,12 +69,18 @@ dhcp-range=192.168.99.100,192.168.99.200,255.255.255.0,24h
 
 # DNS
 dhcp-option=option:dns-server,192.168.99.1
-EOF
+EOF'
    dnsmasq --test -C /etc/dnsmasq.conf || exit 1
    sudo systemctl restart dnsmasq
 
    # configure hotspot
-   sudo cat << EOF > /etc/hostapd/hostapd.conf
+   if [ -f /etc/hostapd/hostapd.conf ]; then
+      sudo mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.orig
+      sudo touch /etc/hostapd/hostapd.conf
+   else
+      sudo touch /etc/hostapd/hostapd.conf
+   fi
+   sudo bash -c 'cat << EOF > /etc/hostapd/hostapd.conf
 # WiFi Hotspot
 
 # interface and driver
@@ -91,16 +102,16 @@ wpa=2
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 wpa_passphrase=PlayItLoud
-EOF
+EOF'
    sudo chmod 600 /etc/hostapd/hostapd.conf
    
    sudo hostapd -dd /etc/hostapd/hostapd.conf || exit 2
 
    # configure Hotspot daemon
-   sudo cat << EOF > /etc/default/hostapd
+   sudo bash -c 'cat << EOF > /etc/default/hostapd
 RUN_DAEMON=yes
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
-EOF
+EOF'
    sudo systemctl unmask hostapd
    sudo systemctl start hostapd
    sudo systemctl enable hostapd
