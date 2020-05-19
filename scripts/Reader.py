@@ -39,7 +39,7 @@ class Reader:
             sys.exit('Please run RegisterDevice.py first')
         else:
             with open(path + '/deviceName.txt', 'r') as f:
-                deviceName = f.read().rstrip()
+                deviceName = f.read()
             devices = get_devices()
             for device in devices:
                 if device.name == deviceName:
