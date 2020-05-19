@@ -755,7 +755,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-
+    
+    # sample file for debugging with all options set to FALSE
+    sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
+    sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
+    
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
