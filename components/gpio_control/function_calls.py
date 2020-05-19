@@ -1,10 +1,11 @@
 import logging
 import sys
-from subprocess import  Popen as function_call
+from subprocess import Popen as function_call
 
 logger = logging.getLogger(__name__)
 
 playout_control = "../../scripts/playout_controls.sh"
+
 
 def functionCallShutdown(*args):
     function_call("{command} -c=shutdown".format(command=playout_control), shell=True)
@@ -70,7 +71,6 @@ def functionCallPlayerStop(*args):
 
 
 def getFunctionCall(functionName):
-    logger.error('Get FunctionCall: {} {}'.format(functionName,functionName in locals()))
+    logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))
     getattr(sys.modules[__name__], str)
     return locals().get(functionName, None)
-

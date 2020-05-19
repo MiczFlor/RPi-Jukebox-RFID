@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # rotary volume knob
 # these files belong all together:
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
@@ -110,14 +110,14 @@ class RotaryEncoder:
     def _Callback(self, pin):
         logger.debug('EventDetection Called')
         # construct new state machine input from encoder state and old state
-        statusA =  GPIO.input(self.pinA)
-        statusB =  GPIO.input(self.pinB)
+        statusA = GPIO.input(self.pinA)
+        statusB = GPIO.input(self.pinB)
 
         self.encoderState.A = statusA
         self.encoderState.B = statusB
         logger.debug('new encoderState: "{}" -> {}, {},{}'.format(
             self.encoderState.asByte,
-            self.tblEncoder[self.encoderState.asByte],statusA,statusB
+            self.tblEncoder[self.encoderState.asByte], statusA, statusB
         ))
         current_state = self.encoderState.asByte
         self.encoderState.asByte = self.tblEncoder[current_state]
@@ -125,7 +125,7 @@ class RotaryEncoder:
         if self.KeyIncr == self.encoderState.asByte:
             steps = self._StepSize()
             logger.info('{name}: Calling functionIncr {steps}'.format(
-                name=self.name,steps=steps))
+                name=self.name, steps=steps))
             self.functionCallbackIncr(steps)
         elif self.KeyDecr == self.encoderState.asByte:
             steps = self._StepSize()
@@ -134,6 +134,7 @@ class RotaryEncoder:
             self.functionCallbackDecr(steps)
         else:
             logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
+
 
 if __name__ == "__main__":
     logging.basicConfig(level='INFO')

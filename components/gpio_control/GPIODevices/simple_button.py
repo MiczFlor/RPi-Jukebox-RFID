@@ -6,6 +6,7 @@ GPIO.setmode(GPIO.BCM)
 
 logger = logging.getLogger(__name__)
 
+
 def parse_edge_key(edge):
     if edge in [GPIO.FALLING, GPIO.RISING, GPIO.BOTH]:
         edge
@@ -18,7 +19,6 @@ def parse_edge_key(edge):
     else:
         raise KeyError('Unknown Edge type {edge}'.format(edge=edge))
     return edge
-
 
 
 # This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
@@ -64,11 +64,10 @@ class SimpleButton:
         logger.info('{}: executre callback'.format(self.name))
         return self.when_pressed(*args)
 
-
     @property
     def when_pressed(self):
         logger.info('{}: action'.format(self.name))
-        return self._action             
+        return self._action
 
     @when_pressed.setter
     def when_pressed(self, func):
@@ -76,12 +75,10 @@ class SimpleButton:
         self._action = func
 
         GPIO.remove_event_detect(self.pin)
-        self._action =  func
+        self._action = func
         logger.info('add new action')
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
 
-
-                                        
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
