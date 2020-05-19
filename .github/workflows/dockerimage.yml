@@ -1,4 +1,4 @@
-name: Docker Test Installation
+name: Test Install Scripts on Docker
 
 on: [push]
 
