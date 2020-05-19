@@ -1,4 +1,4 @@
-name: Python package
+name: Python Checks and Tests
 
 on: [push]
 
