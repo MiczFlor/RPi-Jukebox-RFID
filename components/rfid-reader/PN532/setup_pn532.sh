@@ -6,7 +6,7 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
-    case "$choice" in 
+    case "$choice" in
       y|Y ) ;;
       n|N ) exit 0;;
       * ) echo "Error: invalid" ; question ${question};;
@@ -19,8 +19,8 @@ question "Continue"
 printf "Activating I2C interface...\n"
 sudo raspi-config nonint do_i2c 0
 
-printf "Installing i2c-tools and libnfc-bin...\n"
-sudo apt-get -qq -y install i2c-tools libnfc-bin
+printf "Installing i2c-tools...\n"
+sudo apt-get -qq -y install i2c-tools
 
 printf "Checking if PN532 RFID reader is found through I2C...\n"
 if sudo i2cdetect -y 1 | grep "24" ; then
@@ -32,16 +32,12 @@ else
     exit 1
 fi
 
-#TODO: is this even necessary?
-printf "Configuring libnfc...\n"
-printf 'device.name = "_PN532_I2c"\ndevice.connstring = "pn532_i2c:/dev/i2c-1"' | sudo tee -a /etc/nfc/libnfc.conf
-
 printf "Installing Python requirements for PN532...\n"
 sudo python3 -m pip install -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt
 
 printf "Configure RFID reader in Phoniebox...\n"
 cp "${JUKEBOX_HOME_DIR}"/scripts/Reader.py.experimental "${JUKEBOX_HOME_DIR}"/scripts/Reader.py
-echo "PN532" > "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
+printf "PN532" > "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chown pi:www-data "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chmod 644 "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 

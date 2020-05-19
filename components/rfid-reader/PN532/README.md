@@ -8,9 +8,6 @@ Similar shields/breakout boards, based on the same chip might work, but have not
 
 It has been tested with the I2C interface. Using SPI might work as well, but it has not been tested.
 
-The following steps should be done before installing RPi-Jukebox-RFID. If RPi-Jukebox-RFIS is already
-installed, make sure to stop the phoniebox-rfid-reader service first (`sudo systemctl stop phoniebox-rfid-reader.service`).
-   
 
 1. Connect the PN532 RFID reader to the GPIO pins
 
@@ -29,8 +26,8 @@ installed, make sure to stop the phoniebox-rfid-reader service first (`sudo syst
     - or instead of using the UI, here is the CLI command:
         `sudo raspi-config nonint do_i2c 0`
 
-4. Install I2C tools and libnfc
-    - `sudo apt-get install i2c-tools libnfc-bin`
+4. Install I2C tools
+    - `sudo apt-get install i2c-tools`
 
 5. Check that the reader is found trough I2C
     - check `sudo i2cdetect -y 1`
@@ -49,26 +46,11 @@ installed, make sure to stop the phoniebox-rfid-reader service first (`sudo syst
 
     - if the table is empty, try switching I2C off and on again in raspi-config or reboot
 
-6. Configure libnfc
-
-    - `sudo nano /etc/nfc/libnfc.conf`
-    - Add the following lines at the end of the file:
-
-          device.name = "_PN532_I2c"
-          device.connstring = "pn532_i2c:/dev/i2c-1"
-
-7. Test libnfc config (Note: even if nfc-list shows an error, the RFID reader might still work with Phoniebox.)
-   - Run `nfc-list`
-   - Output should be:
-
-          nfc-list uses libnfc 1.7.1
-          NFC device: pn532_i2c:/dev/i2c-1 opened
-
-8. Configure experimental reader
+6. Configure experimental reader
    - `cd scripts`
    - `cp Reader.py.experimental Reader.py`
    - Run `python3 RegisterDevice.py`
    - Select 2 (PN532)
 
-If you stopped the phoniebox-rfid-reader service, start it again:
-`sudo systemctl start phoniebox-rfid-reader.service`
+7. Restart the phoniebox-rfid-reader service
+   - `sudo systemctl restart phoniebox-rfid-reader.service`
