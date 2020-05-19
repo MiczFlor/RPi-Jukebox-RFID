@@ -378,20 +378,56 @@ case $COMMAND in
         ;;
     playernext)
         # play next track in playlist (==folder)
+        # Unmute if muted
+        if [ -f $VOLFILE ]; then
+            # $VOLFILE DOES exist == audio off
+            # read volume level from $VOLFILE and set as percent
+            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # delete $VOLFILE
+            rm -f $VOLFILE
+        fi
+        
         mpc next
         ;;
     playerprev)
         # play previous track in playlist (==folder)
+        # Unmute if muted
+        if [ -f $VOLFILE ]; then
+            # $VOLFILE DOES exist == audio off
+            # read volume level from $VOLFILE and set as percent
+            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # delete $VOLFILE
+            rm -f $VOLFILE
+        fi
+
         mpc prev
         ;;
     playerrewind)
         # play the first track in playlist (==folder)
+        # Unmute if muted
+        if [ -f $VOLFILE ]; then
+            # $VOLFILE DOES exist == audio off
+            # read volume level from $VOLFILE and set as percent
+            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # delete $VOLFILE
+            rm -f $VOLFILE
+        fi
+
 	      mpc play 1
         ;;
     playerpause)
         # toggle current track
         # mpc knows "pause", which pauses only, and "toggle" which pauses and unpauses, whatever is needed
         # Why on earth has this been called pause instead of toggle? :-)
+
+        # Unmute if muted
+        if [ -f $VOLFILE ]; then
+            # $VOLFILE DOES exist == audio off
+            # read volume level from $VOLFILE and set as percent
+            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # delete $VOLFILE
+            rm -f $VOLFILE
+        fi
         mpc toggle
         ;;
     playerpauseforce)
