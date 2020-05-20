@@ -408,11 +408,11 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             # following needs testing (see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/914)
             # Special case for NOAUDIOPLAY because once the playlist has finished, 
             # it needs to be noted by the system that the second swipe is like a *first* swipe.
-            # currentSong=`mpc current`
-            # if [[ -z "$currentSong" ]]; then
-            #     #end of playlist (EOPL) reached. Ignore last played playlist
-            #     PLAYPLAYLIST=yes
-            # fi
+            currentSong=`mpc current`
+            if [[ -z "$currentSong" ]]; then
+                #end of playlist (EOPL) reached. Ignore last played playlist
+                PLAYPLAYLIST=yes
+            fi
 
             # "$SECONDSWIPE" == "NOAUDIOPLAY"
             # "$LASTPLAYLIST" == "$PLAYLISTNAME" => same playlist triggered again
