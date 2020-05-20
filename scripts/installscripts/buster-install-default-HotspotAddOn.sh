@@ -1,7 +1,5 @@
 #!/bin/bash
 
-local apt_get="sudo apt-get -qq --yes"
-
 #####################################################
 # Ask if access point
 
@@ -36,20 +34,19 @@ esac
 
 ########################
 # Access Point / Hotspot
-# https://www.elektronik-kompendium.de/sites/raspberry-pi/2002171.htm
+# https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 if [ "${ACCESSconfig}" == "YES" ]; then
    # debugging. Erase if productive
-   # set -x
+   set -x
    
    # install requiered packages
    sudo apt-get install dnsmasq hostapd
 
-   sudo echo -e "# Added by RPi-Jukebox-RFID to enable this device as Hotspot" >> /etc/dhcpcd.conf
-   sudo echo -e "interface wlan0" >> /etc/dhcpcd.conf
-   sudo echo -e "static ip_address=192.168.99.1/24" >> /etc/dhcpcd.conf
+   sudo systemctl unmask hostapd
+   sudo systemctl disable hostapd
+   sudo systemctl disable dnsmasq
 
-   sudo systemctl restart dhcpcd
-   
+
    # configure DNS
    if [ -f /etc/dnsmasq.conf ]; then
       sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
@@ -58,20 +55,14 @@ if [ "${ACCESSconfig}" == "YES" ]; then
       sudo touch /etc/dnsmasq.conf
    fi
    sudo bash -c 'cat << EOF > /etc/dnsmasq.conf
-# Activate DHCP-Server for WiFi-Interface
+#AutoHotspot Config
+#stop DNSmasq from using resolv.conf
+no-resolv
+#Interface to use
 interface=wlan0
-
-# Deactivate DHCP-Server for given interfaces
-no-dhcp-interface=eth0
-
-# IPv4-range and Lease-Time
-dhcp-range=192.168.99.100,192.168.99.200,255.255.255.0,24h
-
-# DNS
-dhcp-option=option:dns-server,192.168.99.1
+bind-interfaces
+dhcp-range=10.0.0.50,10.0.0.150,12h
 EOF'
-   dnsmasq --test -C /etc/dnsmasq.conf || exit 1
-   sudo systemctl restart dnsmasq
 
    # configure hotspot
    if [ -f /etc/hostapd/hostapd.conf ]; then
@@ -81,40 +72,59 @@ EOF'
       sudo touch /etc/hostapd/hostapd.conf
    fi
    sudo bash -c 'cat << EOF > /etc/hostapd/hostapd.conf
-# WiFi Hotspot
-
-# interface and driver
+#2.4GHz setup wifi 80211 b,g,n
 interface=wlan0
-#driver=nl80211
-
-# WiFi configuration
+driver=nl80211
 ssid=phoniebox
-channel=1
 hw_mode=g
+channel=8
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=PlayItLoud
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=CCMP TKIP
+rsn_pairwise=CCMP
+
+#80211n - Change DE to your WiFi country code
+country_code=DE
 ieee80211n=1
 ieee80211d=1
-country_code=DE
-wmm_enabled=1
-
-# WLAN-Verschlüsselung
-auth_algs=1
-wpa=2
-wpa_key_mgmt=WPA-PSK
-rsn_pairwise=CCMP
-wpa_passphrase=PlayItLoud
 EOF'
-   sudo chmod 600 /etc/hostapd/hostapd.conf
-   
-   sudo hostapd -dd /etc/hostapd/hostapd.conf || exit 2
 
    # configure Hotspot daemon
    sudo bash -c 'cat << EOF > /etc/default/hostapd
-RUN_DAEMON=yes
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
 EOF'
-   sudo systemctl unmask hostapd
-   sudo systemctl start hostapd
-   sudo systemctl enable hostapd
+   
+   if [ $(grep -v '^$' /etc/network/interfaces |wc -l) -gt 5 ]; then
+      sudo cp /etc/network/interfaces /etc/network/interfaces-backup
+   fi
+   
+   if [ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]; then
+      sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
+   fi
+
+   # create service to trigger hotspot
+   sudo bash -c 'cat << EOF > /etc/systemd/system/autohotspot.service
+[Unit]
+Description=Automatically generates an internet Hotspot when a valid ssid is not in range
+After=multi-user.target
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/autohotspot
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+   sudo systemctl enable autohotspot.service
+
+   sudo cp ../helperscripts/autohotspot /usr/bin/autohotspot
+   sudo chmod +x /usr/bin/autohotspot
+
 
    echo "
    ########################
