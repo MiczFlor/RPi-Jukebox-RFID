@@ -9,42 +9,71 @@ from <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Deta
 
 The `setup_pirateAudioHAT.sh` script can be used to set it up to work with Phoniebox.
 
-Getting the display to work with Phoniebox should not be too difficult, but it's still a work in progress.
-
 ## Install steps in writing
 
 (Discussions regarding *Pirate Audio HAT* should take place in the same thread where the below instructions were taken from: [#950](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/950)
 
-NOTE: changes to the installation should find their way into the script `setup_pirateAudioHAT.sh`. Please create pull requests *after* having tested your changes :)
+NOTE: changes to the installation should find their way into the script `setup_pirateAudioHAT.sh`. Please create pull requests *after* having tested your changes. :)
 
-i have received my Pirate Audio HAT and everything is working (Sound, Display and Buttons).
-
-Here are my installation steps:
-
-1. Install phoniebox develop
-2. Enable SPI
-`sudo raspi-config nonint do_spi 0`
-3. Run `components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh`
-4. Install plugins
- `sudo pip3 install Mopidy-PiDi pidi-display-pil pidi-display-st7789 mopidy-raspberry-gpio`
-5. Edit mopidy configuration 
-`sudo nano /etc/mopidy/mopidy.conf`
-
-Add the following sections:
-```
-[raspberry-gpio]
-enabled = true
-bcm5 = play_pause,active_low,150
-bcm6 = volume_down,active_low,150
-bcm16 = next,active_low,150
-bcm20 = volume_up,active_low,150
-
-[pidi]
-enabled = true
-display = st7789
-```
-6. Enable access for modipy user
-`sudo usermod -a -G spi,i2c,gpio,video mopidy`
-
-7. Reboot
-
+1. Connect Pirate Audio Hat to your Raspberry Pi
+2. Install Phoniebox (develop branch!)
+3. Stop and disable the GPIO button service:
+   `sudo systemctl stop phoniebox-gpio-buttons.service`
+   `sudo systemctl disable phoniebox-gpio-buttons.service`
+4. Add the following two lines to /boot/config.txt
+   `gpio=25=op,dh`
+   `dtoverlay=hifiberry-dac`
+5. Add settings to /etc/asound.conf (create it, if it does not exist yet)
+   ```
+   pcm.hifiberry {
+        type            softvol
+        slave.pcm       "plughw:CARD=sndrpihifiberry,DEV=0"
+        control.name    "Master"
+        control.card    1
+    }
+    pcm.!default {
+        type            plug
+        slave.pcm       "hifiberry"
+    }
+    ctl.!default {
+        type            hw
+        card            1
+    }
+    ```
+6. Add the following section to /etc/mpd.conf
+   ```
+   audio_output {
+            enabled         "yes"
+            type            "alsa"
+            name            "HiFiBerry DAC+ Lite"
+            device          "hifiberry"
+            auto_resample   "no"
+            auto_channels   "no"
+            auto_format     "no"
+            dop             "no"
+    }
+    ```
+7. Set mixer_control name in /etc/mpd.conf
+    `mixer_control      "Master"`
+8. Enable SPI
+    `sudo raspi-config nonint do_spi 0`
+9. Install Python dependencies
+    `sudo apt-get install python3-pil python3-numpy`
+10. Install Mopidy plugins
+    `sudo pip3 install Mopidy-PiDi pidi-display-pil pidi-display-st7789 mopidy-raspberry-gpio`
+11. Add the following sections to /etc/mopidy/mopidy.conf:
+    ```
+    [raspberry-gpio]
+    enabled = true
+    bcm5 = play_pause,active_low,150
+    bcm6 = volume_down,active_low,150
+    bcm16 = next,active_low,150
+    bcm20 = volume_up,active_low,150
+    
+    [pidi]
+    enabled = true
+    display = st7789
+    ```
+12. Enable access for modipy user
+    `sudo usermod -a -G spi,i2c,gpio,video mopidy`
+13. Reboot Raspberry Pi
