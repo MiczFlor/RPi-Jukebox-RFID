@@ -1108,6 +1108,9 @@ EOF'
         sudo cp /etc/network/interfaces /etc/network/interfaces-backup
     fi
 
+    # disable powermanagement of wlan0 device
+    sudo iw wlan0 set power_save off
+
     if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
         sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
     fi
