@@ -1131,12 +1131,14 @@ EOF'
     sudo chmod +x /usr/bin/autohotspot
 
     # create crontab entry
-    if [[ ! $(grep "autohotspot" /var/spool/cron/root) ]]; then
-        sudo bash -c 'cat << EOF >> /var/spool/cron/root
-*/5 * * * * /usr/bin/autohotspot >/dev/null 2>&1
+    if [[ ! $(grep "autohotspot" /var/spool/cron/crontabs/pi) ]]; then
+        sudo bash -c 'cat << EOF >> /var/spool/cron/crontabs/pi
+*/5 * * * * sudo /usr/bin/autohotspot >/dev/null 2>&1
 EOF'
     fi
-    sudo /usr/bin/crontab /var/spool/cron/root
+    sudo chown pi:crontab /var/spool/cron/crontabs/pi
+    sudo chmod 600 /var/spool/cron/crontabs/pi
+    sudo /usr/bin/crontab /var/spool/cron/crontabs/pi
 
 }
 
