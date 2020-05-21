@@ -106,7 +106,7 @@ EOF'
       sudo cp /etc/network/interfaces /etc/network/interfaces-backup
    fi
    
-   if [ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]; then
+   if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
       sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
    fi
 
@@ -130,9 +130,11 @@ EOF'
 
 
    # create crontab entry
-   sudo bash -c 'cat << EOF >> /var/spool/cron/root
+   if [[ ! $(grep "autohotspot" /var/spool/cron/root) ]]; then
+      sudo bash -c 'cat << EOF >> /var/spool/cron/root
 */5 * * * * sudo /usr/bin/autohotspot >/dev/null 2>&1
 EOF'
+   fi
    sudo /usr/bin/crontab /var/spool/cron/root
 
 
