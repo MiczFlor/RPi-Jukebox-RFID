@@ -1133,7 +1133,7 @@ EOF'
     # create crontab entry
     if [[ ! $(grep "autohotspot" /var/spool/cron/root) ]]; then
         sudo bash -c 'cat << EOF >> /var/spool/cron/root
-*/5 * * * * sudo /usr/bin/autohotspot >/dev/null 2>&1
+*/5 * * * * /usr/bin/autohotspot >/dev/null 2>&1
 EOF'
     fi
     sudo /usr/bin/crontab /var/spool/cron/root
@@ -1208,7 +1208,7 @@ main() {
         echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
     fi
     install_main "${JUKEBOX_HOME_DIR}"
-    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
+    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_suppli1cant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
     autohotspot "${JUKEBOX_HOME_DIR}"
