@@ -36,9 +36,6 @@ esac
 # Access Point / Hotspot
 # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 if [ "${ACCESSconfig}" == "YES" ]; then
-   # debugging. Erase if productive
-   set -x
-   
    # install requiered packages
    sudo apt-get install dnsmasq hostapd
 
@@ -95,6 +92,12 @@ ieee80211d=1
 EOF'
 
    # configure Hotspot daemon
+   if [ -f /etc/default/hostapd ]; then
+      sudo mv /etc/default/hostapd /etc/default/hostapd.orig
+      sudo touch /etc/default/hostapd
+   else
+      sudo touch /etc/default/hostapd
+   fi
    sudo bash -c 'cat << EOF > /etc/default/hostapd
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
 EOF'
@@ -124,6 +127,13 @@ EOF'
 
    sudo cp ../helperscripts/autohotspot /usr/bin/autohotspot
    sudo chmod +x /usr/bin/autohotspot
+
+
+   # create crontab entry
+   sudo bash -c 'cat << EOF >> /var/spool/cron/root
+*/5 * * * * sudo /usr/bin/autohotspot >/dev/null 2>&1
+EOF'
+   sudo /usr/bin/crontab /var/spool/cron/root
 
 
    echo "
