@@ -121,6 +121,8 @@ SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
 ENABLEWIFI="%ENABLEWIFI%"
 ### Disable Wifi
 DISABLEWIFI="%DISABLEWIFI%"
+### Toggle Wifi on/off
+TOGGLEWIFI="%TOGGLEWIFI%"
 ### Read out the Wifi IP over the Phoniebox speakers
 CMDREADWIFIIP="%CMDREADWIFIIP%"
 

@@ -244,6 +244,9 @@ if [ "$CARDID" ]; then
         $DISABLEWIFI)
             $PATHDATA/playout_controls.sh -c=disablewifi
             ;;
+        $TOGGLEWIFI)
+            $PATHDATA/playout_controls.sh -c=togglewifi
+            ;;
         $CMDPLAYCUSTOMPLS)
             $PATHDATA/playout_controls.sh -c=playlistaddplay -v="PhonieCustomPLS" -d="PhonieCustomPLS"
             ;;
