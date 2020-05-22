@@ -124,6 +124,20 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
 
+### Components
+
+- Audio 
+    - [Pirate Audio HAT](components/audio/PirateAudioHAT/README.md)
+- Display
+    - [HD44780](components/displays/HD44780-i2c/README.md)
+    - [MAX7219](components/displays/dot-matrix-module-MAX7219/README.md)
+- [GPIO Control](components/gpio_control/README.md)
+- RFID Reader
+    - [PN532](components/rfid-reader/PN532/README.md)
+    - [RC522](components/rfid-reader/RC522/README.md)
+- Smart Home
+    - [MQTT](components/smart-home-automation/MQTT-protocol/README.md)
+
 ## Manual
 
 In the [Manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) you will learn:
