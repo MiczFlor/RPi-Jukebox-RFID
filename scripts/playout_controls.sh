@@ -562,7 +562,8 @@ case $COMMAND in
         WIFI_SOFTBLOCK_RESULT=$?
         wpa_cli -i wlan0 status | grep 'ip_address' > /dev/null 2>&1
         WIFI_IP_RESULT=$?
-        if [ $WIFI_SOFTBLOCK_RESULT -ne 0 ] && [ $WIFI_IP_RESULT -eq 0]
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   WIFI_IP_RESULT='${WIFI_IP_RESULT}' WIFI_SOFTBLOCK_RESULT='${WIFI_SOFTBLOCK_RESULT}'" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ $WIFI_SOFTBLOCK_RESULT -eq 0 ] && [ $WIFI_IP_RESULT -eq 0 ]
         then
             if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be deactivated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be deactivated"
