@@ -558,7 +558,11 @@ case $COMMAND in
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # function to allow toggle the wifi state
         # Build special for franzformator
-        if [[ $(rfkill list wifi | grep -i "Soft blocked: no")  > 0 ]]
+        rfkill list wifi | grep -i "Soft blocked: no" > /dev/null 2>&1
+        WIFI_SOFTBLOCK_RESULT=$?
+        wpa_cli -i wlan0 status | grep 'ip_address' > /dev/null 2>&1
+        WIFI_IP_RESULT=$?
+        if [ $WIFI_SOFTBLOCK_RESULT -ne 0 ] && [ $WIFI_IP_RESULT -eq 0]
         then
             if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be deactivated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be deactivated"
