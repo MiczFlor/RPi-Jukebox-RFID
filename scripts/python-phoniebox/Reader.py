@@ -12,7 +12,6 @@ import string
 import RPi.GPIO as GPIO
 
 from evdev import InputDevice, categorize, ecodes, list_devices
-# import MFRC522
 import pirc522
 
 
