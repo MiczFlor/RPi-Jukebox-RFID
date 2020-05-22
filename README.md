@@ -23,12 +23,12 @@ In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://d
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-xx)
+* **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-xx)**
 
 * **What's new?**
     * Improvement and bugfixing of [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) including optional LCD display optimization
-    * [GPIO control](https://github.com/MiczFlor/RPi-Jukebox-RFID/components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
-    * Support for PN532 RFID reader
+    * [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
+    * Support for [PN532](components/rfid-reader/PN532/README.md) RFID reader
     * New WiFi hotspot mode 
     * Improved **one-line install script** for Buster and Stretch, interactive and new automatic mode
     * Improved installation for various components (RFID readers, displays, ...)
