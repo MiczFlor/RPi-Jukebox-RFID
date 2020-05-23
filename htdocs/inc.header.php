@@ -144,7 +144,7 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
     // scripts/inc.writeGlobalConfig.sh
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
     exec("sudo chmod 777 ".$conf['settings_abs']."/global.conf");
-} 
+}
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
@@ -161,6 +161,8 @@ $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
 $maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
 $startupvolumevalue = $globalConf['AUDIOVOLSTARTUP'];
+$volstepvalue = $globalConf['AUDIOVOLCHANGESTEP'];
+$idletimevalue = $globalConf['IDLETIMESHUTDOWN'];
 $conf['settings_lang'] = $globalConf['LANG'];
 
 // vars that must be read continuously and can't be in the global conf file
@@ -363,7 +365,7 @@ if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_d
     $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
     if($debug == "true") {
         print "Command: ".$exec;
-    } 
+    }
     // pass folder to resume script
     exec($exec);
 
