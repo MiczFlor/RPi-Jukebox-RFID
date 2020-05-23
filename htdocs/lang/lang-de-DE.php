@@ -92,7 +92,7 @@ $lang['navEditionClassic'] = "Classic";
 $lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navBrand'] = "Phoniebox";
-$lang['navHome'] = "Home";
+$lang['navHome'] = "Player";
 $lang['navSearch'] = "Suchen";
 $lang['navSettings'] = "Einstellungen";
 $lang['navInfo'] = "Info";
