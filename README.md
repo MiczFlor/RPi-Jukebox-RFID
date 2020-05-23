@@ -16,8 +16,7 @@ The PDF is about 6MB and will print well on A2 paper size, but it should also lo
 ![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
 
 * [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
-
-In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
+* In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
 
 ## Important updates / news
 
@@ -25,17 +24,21 @@ In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://d
 
 * **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-xx)**
 
-* **What's new?**
-    * Improvement and bugfixing of [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) including optional LCD display optimization
-    * [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
-    * Support for [PN532](components/rfid-reader/PN532/README.md) RFID reader
-    * New WiFi hotspot mode 
-    * Improved **one-line install script** for Buster and Stretch, interactive and new automatic mode
-    * Improved installation for various components (RFID readers, displays, ...)
-    * Updated all Python code to 3.5 and consistent use of packages via requirements.txt files
-    * Updated pi-rc522 package to fix various bugs
-    * Use Mopidy 3 for Spotify edition
-    * Improved development life cycle (unit tests, checkers, continous integration, ...)
+The 2.0 release was pushed through the doors with *countless additions and great oversight* from @s-martin. Thank you. And *substantial input* by @ZyanKLee and [many more contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/pulls?q=is%3Apr) like, in alphabetical particular order: @andreasbrett @BerniPi @danielhammer @drocx @fredg02 @Groovylein @MalteHST @Piehti @SimonChelkowski @veloxidSchweiz and starring @splitti as *the great hotfix*.
+
+## What's new in version 2.0?
+* **[WiFi management](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#wifi-settings)**
+    * RFID cards to toggle Wifi (or switch it on/off)
+    * Read out the Wifi IP address (if you are connecting to a new network and don't know where to point your browser)
+    * Hotspot Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
+* Touchscreen LCD display Player (file: `index-lcd.php`in web app)
+* [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
+* Improved [PN532](components/rfid-reader/PN532/README.md) RFID reader support
+* Improved **one-line install script** featuring *non-interactive* installs based on a config file
+* Updated all Python code to 3.5 and consistent use of packages via requirements.txt files
+* Migration to Mopidy3 for Spotify and [Google Music](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Enable-Google-Play-Music-GMusic) integration
+* Improved development life cycle (unit tests, checkers, continous integration, ...)
+* ... and many bug fixes (as well as new bugs, we don't know yet)
 
 * **What's still hot?**
     * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
@@ -126,17 +129,7 @@ Adding push buttons to control volume, skipping tracks, pause, play: read the [G
 
 ### Components
 
-- Audio 
-    - [Pirate Audio HAT](components/audio/PirateAudioHAT/README.md)
-- Display
-    - [HD44780](components/displays/HD44780-i2c/README.md)
-    - [MAX7219](components/displays/dot-matrix-module-MAX7219/README.md)
-- [GPIO Control](components/gpio_control/README.md)
-- RFID Reader
-    - [PN532](components/rfid-reader/PN532/README.md)
-    - [RC522](components/rfid-reader/RC522/README.md)
-- Smart Home
-    - [MQTT](components/smart-home-automation/MQTT-protocol/README.md)
+Special hardware is now organised in the folder [`components`](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/components). If you have new hardware attached to your Phoniebox, please add to this library! It currently contains soundcards, displays, GPIO controls, RFID reader, smarthome integration.
 
 ## Manual
 
