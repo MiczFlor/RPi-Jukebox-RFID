@@ -41,7 +41,6 @@ include("inc.controlPlayer.php");
 
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
-
 <?php
 // show currently played track
 

@@ -72,8 +72,8 @@ $lang['globalEmail'] = "Email address";
 // Player title HTML
 $lang['playerSeekBack'] = "Rückwärts spulen";
 $lang['playerSeekAhead'] = "Vorwärts spulen";
-$lang['playerSkipPrev'] = "vorheriger Titel";
-$lang['playerSkipNext'] = "nächster Titel";
+$lang['playerSkipPrev'] = "Vorheriger Titel";
+$lang['playerSkipNext'] = "Nächster Titel";
 $lang['playerPlayPause'] = "Play / Pause";
 $lang['playerReplay'] = "Titel wiederholen";
 $lang['playerLoop'] = "Wiederholung";
