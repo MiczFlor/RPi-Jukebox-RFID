@@ -23,17 +23,27 @@ In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://d
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox 2.0 rc8 released (2020-01-18 ... getting closer to the actual release...)
+* **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-xx)**
 
 * **What's new?**
+    * Improvement and bugfixing of [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) including optional LCD display optimization
+    * [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
+    * Support for [PN532](components/rfid-reader/PN532/README.md) RFID reader
+    * New WiFi hotspot mode 
+    * Improved **one-line install script** for Buster and Stretch, interactive and new automatic mode
+    * Improved installation for various components (RFID readers, displays, ...)
+    * Updated all Python code to 3.5 and consistent use of packages via requirements.txt files
+    * Updated pi-rc522 package to fix various bugs
+    * Use Mopidy 3 for Spotify edition
+    * Improved development life cycle (unit tests, checkers, continous integration, ...)
+
+* **What's still hot?**
     * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
     * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
     * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
     * The **one-line install script** handles both: **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
     * Control the debug logs in the web app (individual scripts switched on/off, empty log file).
     * Set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards.
- 
-* **What's still hot?**
     * Control via [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) from your phone, tablet or PC. You can play, upload, move files, assign new RFID cards, control playout, settings, etc.
     * [**RFID** control](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#phoniebox-controls-using-rfid-cards) for playout and controlling your Phoniebox.
     * [Playout **Resume**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour) switch for audio books, allowing you to jump straight back to where you were (unless you fell asleep...).
@@ -113,6 +123,20 @@ The **web app** runs on any device and is mobile optimised. It provides:
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 
 Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO buttons installation guide](docs/GPIO-BUTTONS.md).
+
+### Components
+
+- Audio 
+    - [Pirate Audio HAT](components/audio/PirateAudioHAT/README.md)
+- Display
+    - [HD44780](components/displays/HD44780-i2c/README.md)
+    - [MAX7219](components/displays/dot-matrix-module-MAX7219/README.md)
+- [GPIO Control](components/gpio_control/README.md)
+- RFID Reader
+    - [PN532](components/rfid-reader/PN532/README.md)
+    - [RC522](components/rfid-reader/RC522/README.md)
+- Smart Home
+    - [MQTT](components/smart-home-automation/MQTT-protocol/README.md)
 
 ## Manual
 
