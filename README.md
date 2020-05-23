@@ -21,16 +21,16 @@ The 2.0 release was pushed through the doors with *countless additions and great
 ## What's new in version 2.0?
 
 * **[WiFi management](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#wifi-settings)**
-    * RFID cards to toggle Wifi (or switch it on/off)
+    * RFID cards to **toggle Wifi** (or switch it on/off)
     * Read out the Wifi IP address (if you are connecting to a new network and don't know where to point your browser)
-    * Hotspot Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
-* Touchscreen LCD display Player (file: `index-lcd.php`in web app)
+    * **Hotspot** Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
+* **Touchscreen** LCD display Player (file: `index-lcd.php`in web app)
 * [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
 * Improved [PN532](components/rfid-reader/PN532/README.md) RFID reader support
 * Improved **one-line install script** featuring *non-interactive* installs based on a config file
-* Updated all Python code to 3.5 and consistent use of packages via requirements.txt files
-* Migration to Mopidy3 for Spotify and [Google Music](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Enable-Google-Play-Music-GMusic) integration
-* Improved development life cycle (unit tests, checkers, continous integration, ...)
+* Updated all **python code to 3.5** and consistent use of packages via requirements.txt files
+* Migration to **mopidy3** for Spotify and [Google Music](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Enable-Google-Play-Music-GMusic) integration
+* Improved development life cycle (**unit tests**, checkers, continous integration, ...)
 * ... and many bug fixes (as well as new bugs, we don't know yet)
 
 **What's still hot?**
