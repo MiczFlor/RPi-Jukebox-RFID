@@ -8,23 +8,13 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
-## The 2020 Phoniebox Calendar is out!
-
-Celebrating all the great designs of 2019, I put together a calendar for 2020. If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
-
-The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
-![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
-
-* [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
-* In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
-
 ## Important updates / news
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
 * **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-xx)**
 
-The 2.0 release was pushed through the doors with *countless additions and great oversight* from @s-martin. Thank you. And *substantial input* by @ZyanKLee and [many more contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/pulls?q=is%3Apr) like, in alphabetical particular order: @andreasbrett @BerniPi @danielhammer @drocx @fredg02 @Groovylein @MalteHST @Piehti @SimonChelkowski @veloxidSchweiz and starring @splitti as *the great hotfix*.
+The 2.0 release was pushed through the doors with *countless additions and great oversight* from @s-martin. Thank you. And *substantial input* by @ZyanKLee and [many more contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/pulls?q=is%3Apr) amongst which are (in alphabetical order): @andreasbrett @BerniPi @danielhammer @drocx @fredg02 @Groovylein @MalteHST @Piehti @SimonChelkowski @veloxidSchweiz and starring @splitti as *the great hotfix*.
 
 ## What's new in version 2.0?
 * **[WiFi management](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#wifi-settings)**
@@ -65,6 +55,16 @@ The 2.0 release was pushed through the doors with *countless additions and great
 * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
 
 Documentation can be found in the [GitHub wiki for Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki). Please try to add content in the wiki regarding special hardware, software tweaks and the like.
+
+## The 2020 Phoniebox Calendar is out!
+
+Celebrating all the great designs of 2019, I put together a calendar for 2020. If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
+
+The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
+![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
+
+* [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
+* In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
 
 ---
 
