@@ -1,6 +1,43 @@
+
+# Table of contents
+
+* Naming conventions
+* Structure of files and folders
+* How to contribute
+
+# Naming conventions
+
+* **Files & folder names**
+    * all **lower case**
+    * separate words with **dashes** `-` (less keystrokes, better autocomplete recognition, in HTML links dashes can not be confused) not camel/PascalCaps or underscores
+    * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
+    * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
+    * unique and clear product IDs (e.g. MAX7219)
+        * the product ID should be written as is (no lowercase)
+        * the product ID should come last in a descriptive name (e.g. dot-matrix-module-MAX7219)
+    * be consistent and look at existing examples before you invent something new
+
+* **`README.md`**
+    * written in capital letters, so it's easier to spot
+    * every new folder of a component deserves a `README.md` file
+
+# Structure of files and folders
+
+Inside the root folder or the repo, these folders are important:
+
+* `scripts`
+    * this folder should contain **only actively used scripts** (controlling playout, rfid tiggers, etc.)
+    * some possible services and features might live in the *components* directory (see below)
+    * if one or more scripts are needed for the activation of a component (like daemons), they should be copied to the `scripts` directory during installation / activation
+    * WHY? By copying, changes will NOT affect the github repo and make it easier for users to modify their components
+* `components`
+    * contains sub- und subsubfolders for additional features, services, hardware
+    * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one
+    * **subsubfolders** are specific hardware, services, features, protocols, etc. 
+
 # How to contribute
 
-Contributors have played a bigger role over time to keep Phoniebox on the endge of innovation :)
+Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
 We want to keep it as easy as possible to contribute changes that get things working in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
@@ -91,6 +128,10 @@ The original contributor will be notified of the revert.
 
 * Changes resulting in test failures will be reverted if they cannot
   be resolved within one business day.
+
+## Guidelines ##
+* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**. Some existing code may still be Python 2, but new code has to be compatible with Python 3.5 and old code that is changed should then be ported to Python 3.5.
+* For GPIO all code should work with RPi.GPIO. gpiozero is currently not intended to use.
 
 ## Additional Resources
 

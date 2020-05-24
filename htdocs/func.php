@@ -252,7 +252,7 @@ function dir_list_recursively($rootdir = "") {
   */
 
   $iter = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS),
+    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS + RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
     RecursiveIteratorIterator::SELF_FIRST,
     RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
   );
@@ -539,6 +539,8 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li class='list-group-item'>".$counter++." :
+                <a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
+                <a onclick='appendFileToPlaylist(\"$file\");' class='btn-panel-small btn-panel-col' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
                     <strong>".basename($file)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
@@ -551,5 +553,24 @@ function printPlaylistHtml($files)
             </ol>";
 }
 
+function mopidyApiCall($method, $params){
+    // this function simplifies making Mopidy API requests (HTTP JSON-RPC API)
+    // used e.g. for getting title and cover images from Spotify
+    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        \"jsonrpc\": \"2.0\",
+        \"id\": 1,
+        \"method\": \"".$method."\",
+        \"params\": ".$params."
+    }'";
+    exec($exec, $response);
+
+    $json  = json_decode($response[0], true);
+
+    unset($response); //otherwise responses of later executions will add to the array $response
+
+    return $json;
+}
 
 ?>

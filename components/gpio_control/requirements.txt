@@ -1,0 +1,3 @@
+
+python-mpd2
+mock

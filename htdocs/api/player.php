@@ -13,11 +13,11 @@ include 'common.php';
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
 
+if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+}
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
-        file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
-    }
     handlePut();
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     handleGet();
@@ -49,11 +49,6 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-/* this is called regularly via ajax, so uncomment if you need this in the log file
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
-    }
-/**/
     $statusCommand   = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
     $commandResponseList = execSuccessfully($statusCommand);
     $responseList = array();
@@ -62,6 +57,10 @@ function handleGet() {
         if ($match) {
             $responseList[strtolower($match['key'])] = $match['value'];
         }
+    }
+    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
     }
 
     header('Content-Type: application/json');
@@ -81,15 +80,20 @@ function determineCommand($body) {
         case 'pause':
             return '-c=playerpause -v=single';
         case 'repeat':
-            return '-c=playerprev -c=playerrepeat -v=playlist';
+            //return '-c=playerprev -c=playerrepeat -v=playlist';
+            return '-c=playerrepeat -v=playlist';
         case 'single':
-            return '-c=playerprev -c=playerrepeat -v=single';
+            //return '-c=playerprev -c=playerrepeat -v=single';
+            return '-c=playerrepeat -v=single';
         case 'repeatoff':
-            return '-c=playerprev -c=playerrepeat -v=off';
+            //return '-c=playerprev -c=playerrepeat -v=off';
+            return '-c=playerrepeat -v=off';
         case 'seekBack':
-            return '-c=playerprev -c=playerseek -v=-15';
+            //return '-c=playerprev -c=playerseek -v=-15';
+            return '-c=playerseek -v=-15';
         case 'seekAhead':
-            return '-c=playerprev -c=playerseek -v=+15';
+            //return '-c=playerprev -c=playerseek -v=+15';
+            return '-c=playerseek -v=+15';
         case 'stop':
             return '-c=playerstop';
         case 'mute':

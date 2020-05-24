@@ -21,7 +21,8 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> <?php print $lang['navHome']; ?></a></li>
+        <li><a href='index.php' class='mainMenu'><i class='mdi mdi-play-circle'></i> <?php print $lang['navHome']; ?></a></li>
+        <li><a href='search.php' class='mainMenu'><i class='mdi mdi-magnify'></i> <?php print $lang['navSearch']; ?></a></li>
 	      <li><a href='settings.php' class='mainMenu'><i class='mdi mdi-settings'></i> <?php print $lang['navSettings']; ?></a></li>
         <li><a href='systemInfo.php' class='mainMenu'><i class='mdi mdi-information-outline'></i> <?php print $lang['navInfo']; ?></a></li>
         <li><a href='manageFilesFolders.php' class='mainMenu'><i class='mdi mdi-folder-upload'></i> <?php print $lang['manageFilesFoldersTitle']; ?></a></li>

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import RPi.GPIO as GPIO
 import sys, time
 from signal import pause
@@ -11,49 +11,52 @@ from subprocess import check_call
 # add the following line to /boot/config.txt to give user early feedback on system start up (adjust gpio if required)
 # gpio=12=op,dh
 
-# this script has the `pull_up=True` for all input pins. See the following link for additional info: 
+# this script has the `pull_up=True` for all input pins. See the following link for additional info:
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
 
 
 def def_shutdown(channel):
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
+
 def def_halt(channel):
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
+
 
 # do not directly call halt, in case it was hit accedently
 # hat is only issued when the button remains pressed for all interations of the for loop
 def halt(channel):
-	status = False
-	for x in range(0, 2):
-		time.sleep(.05)
-		status = GPIO.input(haltGPIO)
-		if status:
-			break
+    status = False
+    for x in range(0, 2):
+        time.sleep(.05)
+        status = GPIO.input(haltGPIO)
+        if status:
+            break
 
-	if not status:
-		def_halt(channel)
+    if not status:
+        def_halt(channel)
 
 
 # function to provide user feedback (= flashing led) while the shutdown button is pressed
 # do not directly call shutdown, in case it was hit accedently
 # shutdown is only issued when the button remains pressed for all interations of the for loop
 def shutdown(channel):
-	status = False
-	for x in range(0, 10):
-		GPIO.output(LEDGPIO, x & 1)
-		time.sleep(.2)
-		status = GPIO.input(shutGPIO)
-		if status:
-			break
-	
-	GPIO.output(LEDGPIO, status)
-	if not status:
-		# trippel off period to indicate command accepted
-		time.sleep(.6)
-		GPIO.output(LEDGPIO, GPIO.HIGH)
-		# leave it on for the moment, it will be off when the system is down
-		def_shutdown(channel)
+    status = False
+    for x in range(0, 10):
+        GPIO.output(LEDGPIO, x & 1)
+        time.sleep(.2)
+        status = GPIO.input(shutGPIO)
+        if status:
+            break
+
+    GPIO.output(LEDGPIO, status)
+    if not status:
+        # trippel off period to indicate command accepted
+        time.sleep(.6)
+        GPIO.output(LEDGPIO, GPIO.HIGH)
+        # leave it on for the moment, it will be off when the system is down
+        def_shutdown(channel)
+
 
 # Flexible Pinout
 # warning of physical pull up on GPIO 3 maybe ignored
@@ -61,7 +64,7 @@ shutGPIO = 3
 haltGPIO = 27
 LEDGPIO = 12
 # Classic Pinout
-#haltGPIO = 21
+# haltGPIO = 21
 bouncetime = 500
 
 GPIO.setmode(GPIO.BCM)
@@ -70,16 +73,16 @@ GPIO.setup(haltGPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(LEDGPIO, GPIO.OUT)
 
 if __name__ == "__main__":
-	try:
-		GPIO.add_event_detect(shutGPIO, GPIO.FALLING, callback=shutdown, bouncetime=bouncetime)
-		GPIO.add_event_detect(haltGPIO, GPIO.FALLING, callback=halt, bouncetime=bouncetime)
-		GPIO.output(LEDGPIO, GPIO.HIGH)
-		pause()
-	except KeyboardInterrupt:
-		GPIO.remove_event_detect(shutGPIO)
-		GPIO.remove_event_detect(haltGPIO)
-		GPIO.output(LEDGPIO, GPIO.LOW)
-		GPIO.cleanup()
-		print("\nExiting button decoder\n")
-		# exit the application
-		sys.exit(0)
+    try:
+        GPIO.add_event_detect(shutGPIO, GPIO.FALLING, callback=shutdown, bouncetime=bouncetime)
+        GPIO.add_event_detect(haltGPIO, GPIO.FALLING, callback=halt, bouncetime=bouncetime)
+        GPIO.output(LEDGPIO, GPIO.HIGH)
+        pause()
+    except KeyboardInterrupt:
+        GPIO.remove_event_detect(shutGPIO)
+        GPIO.remove_event_detect(haltGPIO)
+        GPIO.output(LEDGPIO, GPIO.LOW)
+        GPIO.cleanup()
+        print("\nExiting button decoder\n")
+        # exit the application
+        sys.exit(0)

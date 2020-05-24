@@ -14,6 +14,14 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 
 <?php
 include("inc.navigation.php");
+
+if($debug == "true") {
+    print "<pre>";
+    print "_POST: \n";
+    print_r($_POST);
+    print "</pre>";
+}
+
 ?>
 
     <div class="row playerControls">
@@ -25,15 +33,11 @@ include("inc.navigation.php");
 if(isset($warning)) {
     print '<div class="alert alert-warning">'.$warning.'</div>';
 }
-
 print '<div id="api-alert" class="alert alert-warning" style="display: none"></div>';
 include("inc.controlPlayer.php");
-
 ?>
-
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
-
 <?php
 // show currently played track
 

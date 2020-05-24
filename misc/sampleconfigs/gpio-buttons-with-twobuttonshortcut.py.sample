@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 from gpiozero import Button
 from signal import pause
 from subprocess import check_call
@@ -7,7 +7,7 @@ from subprocess import check_call
 # Added the function on holding volume + - buttons to change the volume in 0.3s interval
 #
 # 2018-10-15
-# this script has the `pull_up=True` for all pins. See the following link for additional info: 
+# this script has the `pull_up=True` for all pins. See the following link for additional info:
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
 #
 # 2017-12-12
@@ -16,32 +16,42 @@ from subprocess import check_call
 # I have not yet had the time to test is, so I placed it in the misc folder.
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
+
 def def_shutdown():
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
+
 
 def def_reboot():
     check_call("./scripts/playout_controls.sh -c=reboot", shell=True)
 
+
 def def_togglewifi():
     check_call("./scripts/playout_controls.sh -c=togglewifi", shell=True)
+
 
 def def_volU():
     check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
 
+
 def def_volD():
     check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
+
 
 def def_vol0():
     check_call("./scripts/playout_controls.sh -c=mute", shell=True)
 
+
 def def_next():
     check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+
 
 def def_prev():
     check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
+
 def def_halt():
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
+
 
 def def_both_pressed():
     if volU.is_pressed and volD.is_pressed:
@@ -59,14 +69,13 @@ def def_both_pressed():
         print("Error")
 
 
-
 shut = Button(3, hold_time=2)
-vol0 = Button(13,pull_up=True)
-volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
-volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
-next = Button(26,pull_up=True)
-prev = Button(20,pull_up=True)
-halt = Button(21,pull_up=True)
+vol0 = Button(13, pull_up=True)
+volU = Button(16, pull_up=True, hold_time=0.3, hold_repeat=True)
+volD = Button(19, pull_up=True, hold_time=0.3, hold_repeat=True)
+next = Button(26, pull_up=True)
+prev = Button(20, pull_up=True)
+halt = Button(21, pull_up=True)
 
 shut.when_held = def_shutdown
 vol0.when_pressed = def_vol0
@@ -74,13 +83,13 @@ vol0.when_pressed = def_vol0
 # DISABLED to allow two button shortcut
 # volU.when_pressed = def_volU
 volU.when_pressed = def_both_pressed
-#When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
+# When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
 volU.when_held = def_volU
 
 # DISABLED to allow two button shortcut
-#volD.when_pressed = def_volD
+# volD.when_pressed = def_volD
 volD.when_pressed = def_both_pressed
-#When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
+# When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
 volD.when_held = def_volD
 
 next.when_pressed = def_next
@@ -88,4 +97,3 @@ prev.when_pressed = def_prev
 halt.when_pressed = def_halt
 
 pause()
-

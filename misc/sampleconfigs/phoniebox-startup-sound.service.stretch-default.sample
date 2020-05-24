@@ -1,6 +1,6 @@
-[Unit]  
+[Unit]
 Description=Phoniebox Startup Sound
-After=default.target
+After=mpd.service
 
 [Service]
 User=pi
@@ -8,7 +8,9 @@ Group=pi
 Type=oneshot
 RemainAfterExit=true
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
-ExecStart=/usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+ExecStartPre=/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
+ExecStart=/bin/sleep 2
+ExecStartPost=/usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 [Install]
 WantedBy=multi-user.target

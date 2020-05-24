@@ -110,29 +110,54 @@ foreach($subfolders as $key => $subfolder) {
             $temp['type'] = "livestream";
         } elseif(file_exists($subfolder."/spotify.txt")){
             $temp['type'] = "spotify";
-			// get the cover and title from spotify
-			$check1 = $subfolder."/cover.jpg";
-			$check2 = $subfolder."/title.txt";
+            $titlefile = $subfolder."/title.txt";
+            $coverfile = $subfolder."/cover.jpg";
 
-			// this is for loading spotify informations!
-			$track = file_get_contents($subfolder."/spotify.txt");
-			$url = "https://open.spotify.com/oembed/?url=".trim($track)."&format=json";
-			
-			if (!file_exists($check1)) {
-				$str = file_get_contents($url);
-				$json  = json_decode($str, true);
+            // get title from Spotify if wasn't previously stored
+            if (!file_exists($titlefile)) {
+                $uri = file_get_contents($subfolder."/spotify.txt");
 
-				$cover = $json['thumbnail_url'];
-				$coverdl = file_get_contents($cover);
-				file_put_contents($check1, $coverdl);
+                // check for mediatype ("track" / "playlist") because following Mopidy API request needs differing parameters
+                $mediatype = explode(':' , $uri)[1];
+
+                if ($mediatype == "playlist"){
+                    // request media info via Mopidy's API
+                    $method = 'core.playlists.lookup';
+                    $params = '{
+                            "uri": "'.trim($uri).'"
+                        }';
+                    $json = mopidyApiCall($method, $params);
+
+                    $title = $json["result"]["name"];
+
+                } elseif ($mediatype == "track") {
+                    // request media info via Mopidy's API
+                    $method = 'core.library.lookup';
+                    $params = '{
+                            "uris": ["'.trim($uri).'"]
+                        }';
+                    $json = mopidyApiCall($method, $params);
+
+                    $title = $json["result"][trim($uri)][0]["name"];
+                }
+                file_put_contents($titlefile, $title);
 			}
-			
-			if (!file_exists($check2)) {
-				$str = file_get_contents($url);
-				$json  = json_decode($str, true);
 
-				$title = $json['title'];
-				file_put_contents($check2, $title);
+            // get cover from Spotify if wasn't previously stored
+            if (!file_exists($coverfile)) {
+                $uri = file_get_contents($subfolder."/spotify.txt");
+
+                // request media-related images via Mopidy's API
+                $method = 'core.library.get_images';
+                $params = '{
+                        "uris": ["'.trim($uri).'"]
+                    }';
+                $json = mopidyApiCall($method, $params);
+
+                $coveruri = $json["result"][trim($uri)][0]["uri"];
+                $cover = file_get_contents($coveruri);
+                
+                file_put_contents($coverfile, $cover);
 			}
         } else {
             $temp['type'] = "generic";

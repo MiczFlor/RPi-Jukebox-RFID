@@ -6,7 +6,7 @@ include("inc.header.php");
 * START HTML
 *******************************************/
 
-html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
+html_bootstrap3_createHeader("en","Settings | Phoniebox",$conf['base_url']);
 
 ?>
 <body>
@@ -42,6 +42,12 @@ if($debug == "true") {
         <a href="#wifi" class="xbtn xbtn-default ">
         <i class='mdi mdi-wifi'></i> <?php print $lang['globalWifiSettings']; ?>
         </a> |
+        <!--a href="#wlanIpEmail" class="xbtn xbtn-default ">
+        <i class='mdi mdi-wifi'></i> <?php print $lang['settingsWlanSendNav']; ?>
+        </a>  |-->
+        <a href="#wlanIpRead" class="xbtn xbtn-default ">
+        <i class='mdi mdi-wifi'></i> <?php print $lang['settingsWlanReadNav']; ?>
+        </a>  |
         <a href="#webInterface" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsWebInterface']; ?>
         </a>  |
@@ -50,7 +56,7 @@ if($debug == "true") {
         </a>  |
         <a href="#secondSwipe" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
-        </a> | 
+        </a> |
         <a href="#DebugLogSettings" class="xbtn xbtn-default ">
         <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogSettings']; ?>
         </a>
@@ -112,6 +118,7 @@ include("inc.setLanguage.php");
 include("inc.setVolume.php");
 include("inc.setMaxVolume.php");
 include("inc.setVolumeStep.php");
+include("inc.setStartupVolume.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->
@@ -159,6 +166,17 @@ include("inc.setWifi.php");
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
+<?php
+/*
+* This is work in progress. 
+* If you were to have a local mailserver installed, 
+* Phoniebox could send you the IP address over email.
+* Useful if you move your Phoniebox into a new Wifi which
+* assigns a dynmamic IP.
+*/
+include("inc.setWlanIpRead.php");
+?>
+
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -168,11 +186,12 @@ include("inc.setWifi.php");
     </div><!-- /.panel-heading -->
 
       <div class="panel-body">
+
 <?php
 include("inc.setWebUI.php");
 ?>
-      </div><!-- /.panel-body -->
 
+      </div><!-- /.panel-body -->
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
@@ -189,7 +208,6 @@ include("inc.setWebUI.php");
 include("inc.setInputDevices.php");
 ?>
       </div><!-- /.panel-body -->
-
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 

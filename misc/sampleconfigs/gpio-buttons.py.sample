@@ -1,16 +1,28 @@
-#!/usr/bin/python3
-from gpiozero import Button
+#!/usr/bin/env python3
+import RPi.GPIO as GPIO
 from signal import pause
 from subprocess import check_call
+import time
+from time import sleep
 
 # This script will block any I2S DAC e.g. from Hifiberry, Justboom, ES9023, PCM5102A
 # due to the assignment of GPIO 19 and 21 to a buttons
-
+#
+# 2019-12-17
+# Added support to detect RFID tag removal. Requires an appropriate switch
+# makes no difference which hardware implementation you choose, could be a simple switch,
+# or hidden magnetic switch or hacking the rfid reader as suggested here:
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/62
+#
+# 2019-05-14
+# * Rewrite using RPi.GPIO for Raspberry pi zero compatibility.
+# * Added power LED functionality
+#
 # 2018-10-31
 # Added the function on holding volume + - buttons to change the volume in 0.3s interval
 #
 # 2018-10-15
-# this script has the `pull_up=True` for all pins. See the following link for additional info: 
+# this script has the `pull_up=True` for all pins. See the following link for additional info:
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259#issuecomment-430007446
 #
 # 2017-12-12
@@ -19,59 +31,148 @@ from subprocess import check_call
 # I have not yet had the time to test is, so I placed it in the misc folder.
 # If anybody has ideas or tests or experience regarding this solution, please create pull requests or contact me.
 
-def def_shutdown():
+
+# This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
+# It checks if the GPIO is in the state since the function was called. If the state
+# changes it return False. If the time is over the function returns True.
+def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
+    # Get a reference start time (https://docs.python.org/3/library/time.html#time.perf_counter)
+    startTime = time.perf_counter()
+    # Continously check if time is not over
+    while(holdingTime >= (time.perf_counter() - startTime)):
+        # Return if state does not match holding state
+        if(gpioHoldingState != GPIO.input(gpioChannel)):
+            return False
+        # Else: Wait
+    return True
+
+
+# Actions that call other processes of the phoniebox (Channel Parameter needed by RPi.GPIO)
+def shutdown_action(channel):
     check_call("./scripts/playout_controls.sh -c=shutdown", shell=True)
 
-def def_volU():
-    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
 
-def def_volD():
-    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
-
-def def_vol0():
+def vol0_action(channel):
     check_call("./scripts/playout_controls.sh -c=mute", shell=True)
 
-def def_next():
+
+def volD_action(channel):
+    check_call("./scripts/playout_controls.sh -c=volumedown", shell=True)
+
+
+def volU_action(channel):
+    check_call("./scripts/playout_controls.sh -c=volumeup", shell=True)
+
+
+def next_action(channel):
     check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
 
-def def_prev():
+
+def prev_action(channel):
     check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
 
-def def_halt():
+
+def halt_action(channel):
     check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
 
-def def_recordstart():
+
+def recordstart_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordstart", shell=True)
 
-def def_recordstop():
+
+def recordstop_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordstop", shell=True)
 
-def def_recordplaylatest():
+
+def recordplaylatest_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
 
-shut = Button(3, hold_time=2)
-vol0 = Button(13,pull_up=True)
-volU = Button(16,pull_up=True,hold_time=0.3,hold_repeat=True)
-volD = Button(19,pull_up=True,hold_time=0.3,hold_repeat=True)
-next = Button(26,pull_up=True)
-prev = Button(20,pull_up=True)
-halt = Button(21,pull_up=True)
-#reco = Button(6, pull_up=True) # Choose GPIO to fit your hardware
-#play = Button(12,pull_up=True) # Choose GPIO to fit your hardware
 
-shut.when_held = def_shutdown
-vol0.when_pressed = def_vol0
-volU.when_pressed = def_volU
-#When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
-volU.when_held = def_volU
-volD.when_pressed = def_volD
-#When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
-volD.when_held = def_volD
-next.when_pressed = def_next
-prev.when_pressed = def_prev
-halt.when_pressed = def_halt
-#reco.when_pressed = def_recordstart
-#reco.when_released = def_recordstop
-#play.when_pressed = def_recordplaylatest
+def rfidoff_action(channel):
+    check_call("./scripts/playout_controls.sh -c=playerpauseforce -v=0.5", shell=True)
+
+
+# Handlers that handle special behavior of the push of a button
+# When the shutdown button was held for more than 2 seconds LED flashed and afterwards
+def shutdown_handler(channel):
+    # Detect holding of button
+    if checkGpioStaysInState(shutdownHoldTime, btn_shut, GPIO.LOW) is True:
+        # Blink LED
+        for x in range(0, 10):
+            GPIO.output(led_power, x & 1)
+            sleep(PledBlinkTime)
+        # Keep LED on until power off
+        GPIO.output(led_power, GPIO.HIGH)
+        # Shutdown afterwards
+        shutdown_action(channel)
+
+
+# When the Volume Down button was held for more than 0.3 seconds every 0.3 seconds he will lower t$
+def volU_handler(channel):
+    # Rise volume as requested
+    volU_action(channel)
+    # Detect holding of button
+    while checkGpioStaysInState(volumeHoldTime, btn_volU, GPIO.LOW):
+        volU_action(channel)
+
+
+# When the Volume Up button was held for more than 0.3 seconds every 0.3 seconds he will call a ra$
+def volD_handler(channel):
+    # Rise volume as requested
+    volD_action(channel)
+    # Detect holding of button
+    while checkGpioStaysInState(volumeHoldTime, btn_volD, GPIO.LOW):
+        volD_action(channel)
+
+
+# Define the used pins of the raspberry board
+btn_shut = 3
+btn_vol0 = 13
+btn_volU = 16
+btn_volD = 19
+btn_next = 26
+btn_prev = 20
+btn_halt = 21
+led_power = 12
+# btn_rfidoff =
+# reco =
+# play =
+
+# Set GPIO numbering to BCM instead of board numbering
+GPIO.setmode(GPIO.BCM)
+# Bounce tolerance time for buttons
+bouncetime = 500
+volumeHoldTime = 0.3  # Seconds
+shutdownHoldTime = 2  # Seconds
+PledBlinkTime = 0.3  # Seconds
+
+# Set up GPIO pins and the power led
+GPIO.setup(btn_shut, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_vol0, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_volU, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_volD, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_next, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_prev, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(btn_halt, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# GPIO.setup(btn_rfidoff, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(led_power, GPIO.OUT)
+
+
+# Set standard events for the buttons. Callback functions define the actions of the events (THey are defined above)
+GPIO.add_event_detect(btn_shut, GPIO.FALLING, callback=shutdown_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_vol0, GPIO.FALLING, callback=vol0_action, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_volU, GPIO.FALLING, callback=volU_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_volD, GPIO.FALLING, callback=volD_handler, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_next, GPIO.FALLING, callback=next_action, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_prev, GPIO.FALLING, callback=prev_action, bouncetime=bouncetime)
+GPIO.add_event_detect(btn_halt, GPIO.FALLING, callback=halt_action, bouncetime=bouncetime)
+# GPIO.add_event_detect(btn_rfidoff, GPIO.FALLING, callback=rfidoff_action, bouncetime=bouncetime)
+# reco.when_pressed = recordstart_action
+# reco.when_released = recordstop_action
+# play.when_pressed = recordplaylatest_action
+
+
+# Switch on power led after boot to indicate state "on" for phoniebox
+GPIO.output(led_power, GPIO.HIGH)
 
 pause()

@@ -49,6 +49,7 @@ $lang['globalExternalInterfaces'] = "Externe Geräte & Schnittstellen";
 $lang['globalIdleTime'] = "Leerlaufzeit";
 $lang['globalNotIdle'] = "Nicht im Leerlauf";
 $lang['globalGpioButtons'] = "GPIO Buttons";
+$lang['globalRotaryKnob'] = "Drehknopf";
 $lang['globalRfidReader'] = "RFID Reader";
 $lang['globalEnabled'] = "Aktiviert";
 $lang['globalDisabled'] = "Deaktiviert";
@@ -66,19 +67,21 @@ $lang['globalLoop'] = "Schleife";
 $lang['globalLang'] = "Sprache";
 $lang['globalLanguageSettings'] = "Spracheinstellungen";
 $lang['globalPriority'] = "Priorität";
+$lang['globalEmail'] = "Email address";
 
 // Player title HTML
-$lang['playerSeekBack'] = "seek back";
-$lang['playerSeekAhead'] = "seek forward";
-$lang['playerSkipPrev'] = "previous track";
-$lang['playerSkipNext'] = "next track";
-$lang['playerPlayPause'] = "play / pause";
-$lang['playerReplay'] = "replay track";
-$lang['playerLoop'] = "loop";
-$lang['playerStop'] = "stop player";
-$lang['playerVolDown'] = "volume down";
-$lang['playerVolUp'] = "volume up";
-$lang['playerMute'] = "toggle mute";
+$lang['playerSeekBack'] = "Rückwärts spulen";
+$lang['playerSeekAhead'] = "Vorwärts spulen";
+$lang['playerSkipPrev'] = "Vorheriger Titel";
+$lang['playerSkipNext'] = "Nächster Titel";
+$lang['playerPlayPause'] = "Play / Pause";
+$lang['playerReplay'] = "Titel wiederholen";
+$lang['playerLoop'] = "Wiederholung";
+$lang['playerStop'] = "Player stoppen";
+$lang['playerVolDown'] = "Lautstärke verringern";
+$lang['playerVolUp'] = "Lautstärke erhöhen";
+$lang['player'] = "Stumm ein/aus";
+
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Edition";
@@ -89,7 +92,8 @@ $lang['navEditionClassic'] = "Classic";
 $lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navBrand'] = "Phoniebox";
-$lang['navHome'] = "Home";
+$lang['navHome'] = "Player";
+$lang['navSearch'] = "Suchen";
 $lang['navSettings'] = "Einstellungen";
 $lang['navInfo'] = "Info";
 $lang['navShutdown'] = "Herunterfahren";
@@ -103,10 +107,11 @@ $lang['indexManageFilesChips'] = "Dateien und Chips verwalten";
 $lang['Spotify'] = "Spotify";
 
 /*
-* Register & Edit Cards
+* Karten registrieren & bearbeiten
 */
 $lang['cardRegisterTitle'] = "Neue Karte hinzufügen";
 $lang['cardEditTitle'] = "Karte bearbeiten oder hinzufügen";
+$lang['cardRegisterAnchorLink'] = "RFID-Registrierung interaktiv";
 $lang['cardRegisterMessageDefault'] = "Der Wert 'Zuletzt verwendete Karten-ID' im Formular wird beim Durchziehen einer RFID-Karte sofort aktualisiert.<br/>(Erfordert die Aktivierung von Javascript im Browser.)";
 $lang['cardEditMessageDefault'] = "Die in diesem System verwendeten Karten-IDs sind auf der <a href='index.php' class='mainMenu'><i class='mdi mdi-home'>Startseite</i></a> aufgeführt.";
 $lang['cardRegisterMessageSwipeNew'] = "Eine weitere Karte auslesen, wenn du sie registrieren möchtest.";
@@ -122,32 +127,66 @@ $lang['cardRegisterFolder2Card'] = "Audio-Ordner ist nun mit der Karten-ID verkn
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube Audio wird heruntergeladen. Dies kann einige Minuten dauern. Du kannst die Logdatei \"youtube-dl.log\" im Ordner \"shared\" ansehen.</p>";
 $lang['cardRegisterSwipeUpdates'] = "Dies wird automatisch aktualisiert, wenn du eine RFID-Karte ausliest.";
 $lang['cardRegisterManualLinks'] = "<p>Du kannst Karten auch manuell mit Ordnern verbinden. Das Handbuch erklärt, wie man sich <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='-blank'>mit der Phoniebox verbindet</a> und <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>Karten registriert</a>.</p>";
+$lang['cardRegisterTriggerSuccess'] = "Die Karte ist jetzt verknüpft um die Funktion auszuführen:";
 
 /*
-* Card edit form
+* "Karten bearbeiten"-Formular
 */
-$lang['cardFormFolderLegend'] = "Audio-Ordner";
-$lang['cardFormFolderLabel'] = "a) Karte mit Audio-Ordner verbinden";
+$lang['cardFormFolderLegend'] = "RFID-Karte verlinken mit:";
+$lang['cardFormFolderLabel'] = "Einen Audio-Ordner auswählen";
 $lang['cardFormFolderSelectDefault'] = "Keiner (--Wählen-- zur Auswahl eines Ordners)";
-$lang['cardFormStreamLabel'] = "b) ..... oder Verbindung mit Stream-URL";
-$lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(....).mp3 / .m3u / .ogg / ....";
+$lang['cardFormFolderHelp'] = "Enthält lokale Dateien / Stream. Bzw. ein YouTube Download für diesen Ordner (s.u.).";
+$lang['cardFormNewFolderLabel'] = "... oder einen neuen Ordner erstellen";
+$lang['cardFormNewFolderHelp'] = "Für einen Stream (s.u.) <strong>muss</strong> ein neuer Ordner erstellt werden. Für YouTube optional.";
+$lang['cardFormNewFolderPlaceholder'] = "e.g. 'Artist Name/Album'";
+$lang['cardFormTriggerLegend'] = "Phoniebox Funktion verknüpfen";
+$lang['cardFormTriggerLabel'] = "... eine Phoniebox Funktion auswählen";
+$lang['cardFormTriggerHelp'] = "Wähle eine Funktion aus der Liste aus (z.B. 'pause', 'volume up', 'shutdown'). Bestehende Verknüpfungen werden im Pulldown-Menü angezeigt.";
+$lang['cardFormTriggerSelectDefault'] = "Wähle eine Phoniebox Funktion";
+
+$lang['cardFormStreamLegend'] = "Stream verlinken / erstellen";
+$lang['cardFormStreamLabel'] = "Stream URL (benötigt immer einen neuen Ordner - s.o.)";
+$lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
 $lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
 $lang['cardFormStreamHelp'] = "Füge die URL für spotify, Podcast, Webradio, Stream oder andere Online-Medien hinzu";
 $lang['cardFormStreamTypeSelectDefault'] = "Wähle den Typ";
-$lang['cardFormStreamTypeHelp'] = "Wähle den Typ, den du hinzufügen möchtest";
-$lang['cardFormStreamFolderPlaceholder'] = "z.B.'Album/Playlist/Stationsname'";
-$lang['cardFormStreamFolderHelp'] = "Name für den Audio-Ordner, der die Stream-URL enthält";
-$lang['cardFormYTLegend'] = "YouTube";
-$lang['cardFormYTLabel'] = "c) .... oder YouTube-Audio herunterladen";
+$lang['cardFormStreamTypeHelp'] = "Wähle die Art des Streams, den du hinzufügen möchtest";
+
+$lang['cardFormYTLegend'] = "Von YouTube Herunterladen";
+$lang['cardFormYTLabel'] = "YouTube URL (einzelner Track oder Playlist)";
 $lang['cardFormYTPlaceholder'] = "z.B. https://www.youtube.com/watch?v=7GI0VdPehQI";
 $lang['cardFormYTSelectDefault'] = "--Wählen--, um einen Ordner auszuwählen oder einen neuen darunter zu erstellen";
-$lang['cardFormYTFolderPlaceholder'] = "z.B. 'Neuer Ordner'";
-$lang['cardFormYTFolderHelp'] = "Name für den Audio-Ordner, der das YouTube-Audio enthält";
 $lang['cardFormYTHelp'] = "Füge die volle YouTube-URL wie im Beispiel hinzu";
 $lang['cardFormRemoveCard'] = "Karten-ID entfernen";
 
+// Karten IDs als .csv-Datei exportieren
+$lang['cardExportAnchorLink'] = "Alle RFID Verknüpfungen exportieren (Audio und Systembefehle)";
+$lang['cardExportButtonLink'] = ".csv-Datei aller verfügbaren RFID-Verknüpfungen erstellen";
+
+// Karten IDs aus .csv-Datei importieren
+$lang['cardImportAnchorLink'] = "RFID Verknüpfungen aus .csv-Datei importieren";
+$lang['cardImportFileLabel'] = ".csv-Datei auswählen um RFID-Verknüpfungen zu erstellen";
+$lang['cardImportFileSuccessUpload'] = "Datei erfolgreich hochgeladen: ";
+$lang['cardImportFileErrorUpload'] = "<p>Fehler beim Hochladen der Datei, bitte erneut versuchen!</p>";
+$lang['cardImportFileErrorFiletype'] = "<p>Falscher Datei-Typ! Die Datei muss eine <em>.csv</em> Datei sein.</p>";
+$lang['cardImportFormOverwriteLabel'] = "Importvorgang auswählen";
+$lang['cardImportFormOverwriteHelp'] = "Was soll mit den hochgeladenen RFID-Verknüpfungen gemacht werden.";
+$lang['cardImportFormOverwriteAll'] = "Beide überschreiben: Audio UND Systembefehle";
+$lang['cardImportFormOverwriteAudio'] = "NUR Audio überschreiben";
+$lang['cardImportFormOverwriteCommands'] = "NUR Systembefehle überschreiben";
+$lang['cardImportFileOverwriteMessageCommands'] = "<p><i class='mdi mdi-check'></i> <strong>Systembefehle</strong> wurden mit hochgeladenen RFID-IDs überschrieben.</p>";
+$lang['cardImportFileOverwriteMessageAudio'] = "<p><i class='mdi mdi-check'></i> Verknüpfungen zu <strong>Audio</strong> Playlisten usw. wurden mit hochgeladenen RFID-IDs überschrieben.</p>";
+$lang['cardImportFormDeleteLabel'] = "Andere RFID-Verknüpfungen löschen oder behalten?";
+$lang['cardImportFormDeleteNone'] = "Alle vorhandenen behalten: Audio UND Systembefehle";
+$lang['cardImportFormDeleteAll'] = "Beide löschen: Audio UND Systembefehle";
+$lang['cardImportFormDeleteAudio'] = "NUR Audio löschen";
+$lang['cardImportFormDeleteCommands'] = "NUR Systembefehle löschen";
+$lang['cardImportFormDeleteHelp'] = "Welche der bestehenden RFID-Verknüpfungen sollen behalten werden, welche gelöscht?";
+$lang['cardImportFileDeleteMessageCommands'] = "<p><i class='mdi mdi-delete'></i> <strong>Systembefehle</strong> gelöscht.</p>";
+$lang['cardImportFileDeleteMessageAudio'] = "<p><i class='mdi mdi-delete'></i> <strong>Audio Verknüpfungen</strong> gelöscht.</p>";
+
 /*
-* Track edit form
+* "Track bearbeiten"-Formular
 */
 $lang['trackEditTitle'] = "Track-Management";
 $lang['trackEditInformation'] = "Track-Informationen";
@@ -160,12 +199,12 @@ $lang['trackEditDeleteHelp'] = "Es gibt kein Rückgängigmachen für gelöschte 
 $lang['trackEditDeleteNo'] = "Diesen Track NICHT löschen";
 $lang['trackEditDeleteYes'] = "Ja, diesen Track LÖSCHEN";
 
-
 /*
-* Settings
+* Einstellungen
 */
 $lang['settingsVolChangePercent'] = "Lautst. Änderung";
 $lang['settingsMaxVol'] = "Max. Lautstärke";
+$lang['settingsStartupVol'] = "Start-Lautstärke";
 $lang['settingsWifiRestart'] = "Die Änderungen an der WiFi-Verbindung erfordern einen Neustart, um wirksam zu werden";
 $lang['settingsWifiSsidPlaceholder'] = "z.B. PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "Der Name, unter dem dein WiFi als 'verfügbares Netzwerk' angezeigt wird";
@@ -176,24 +215,41 @@ $lang['settingsSecondSwipeInfo'] = "Aktion, wenn dieselbe Karte ein weiteres Mal
 $lang['settingsSecondSwipeRestart'] = "Wiedergabeliste neu starten";
 $lang['settingsSecondSwipeSkipnext'] = "Zum nächsten Track springen";
 $lang['settingsSecondSwipePause'] = "Pause / Wiedergabe umschalten";
+$lang['settingsSecondSwipePlay'] = "Wiedergabe fortsetzen";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Nur Systembefehle mehrfach ausführen";
 $lang['settingsWebInterface'] = "Web-Oberfläche";
 $lang['settingsCoverInfo'] = "Willst du Cover neben den Alben und Playlisten auf der Hauptseite anzeigen?";
 $lang['settingsShowCoverON'] = "Cover anzeigen";
 $lang['settingsShowCoverOFF'] = "Kein Cover anzeigen";
 $lang['settingsMessageLangfileNewItems'] = "Es gibt neue Sprachelemente in der originalen Sprachdatei <em>lang-en-UK.php</em>. Möglicherweise möchtest du deine Sprachdatei aktualisieren und Ihre Änderungen in den Phoniebox-Code übernehmen? :)";
+$lang['settingsWlanSendNav'] = "Wlan IP mailen";
+$lang['settingsWlanSendInfo'] = "Wlan IP beim Systemstart per E-Mail senden? (nützlich wenn du deine Phoniebox in ein neues Wlan-Netzwerk mit dynamischer IP verbindest)";
+$lang['settingsWlanSendQuest'] = "Wlan IP senden?";
+$lang['settingsWlanSendEmail'] = "E-Mail Adr.";
+$lang['settingsWlanSendON'] = "Ja, E-Mail senden.";
+$lang['settingsWlanSendOFF'] = "Nein, E-Mail nicht senden.";
+
+
+$lang['settingsWlanReadNav'] = "Wlan IP vorlesen";
+$lang['settingsWlanReadInfo'] = "Wlan IP bei jedem Systemstart vorlesen? (nützlich wenn du deine Phoniebox in ein neues Wlan-Netzwerk mit dynamischer IP verbindest)";
+$lang['settingsWlanReadQuest'] = "Wlan IP vorlesen?";
+$lang['settingsWlanReadON'] = "Ja, Wlan IP vorlesen.";
+$lang['settingsWlanReadOFF'] = "Nein, Wlan IP nicht vorlesen.";
 
 /*
-* System info
+* Systeminformationen
 */
 $lang['infoOsDistrib'] = "Betriebssystem";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoStorageUsed'] = "Speicherverbrauch";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoDebugLogTail'] = "<b>DEBUG Logdatei</b>: Letzte 40 Zeilen";
+$lang['infoDebugLogClear'] = "Lösche Inhalt von debug.log";
+$lang['infoDebugLogSettings'] = "Debug Log Einstellungen";
 
 /*
-* Folder Management and File Upload
+* Ordnerverwaltung und Dateien hochladen
 */
 $lang['manageFilesFoldersTitle'] = "Ordner &amp; Dateien";
 $lang['manageFilesFoldersUploadFilesLabel'] = "Dateien von deinem Laufwerk auswählen";
@@ -215,5 +271,11 @@ $lang['manageFilesFoldersRenewDB'] = "Datenbank erneuern";
 $lang['manageFilesFoldersLocalScan'] = "Musikbibliothek scannen";
 $lang['manageFilesFoldersRenewDBinfo'] = "Bitte scanne deine Musikbibliothek, nachdem du neue Dateien hochgeladen oder Ordner verschoben hast. Der Scan ist nicht notwendig, um Musik zu hören, aber es ist notwendig, um Track-Informationen in der Web-Oberfläche zu sehen. Es werden nur neue oder verschobene Dateien gescannt. Während der Scan läuft, wird Mopidy gestoppt. Nach Abschluss des Scans startet Mopidy automatisch neu. Den Serverstatus siehst du im Abschnitt Info.";
 
-
+/*
+* Dateisuche
+*/
+$lang['searchTitle'] = "Audiodateien suchen";
+$lang['searchExample'] = "z.B. Moonlight";
+$lang['searchSend'] = "Suchen";
+$lang['searchResult'] = "Suchergebnisse:";
 ?>

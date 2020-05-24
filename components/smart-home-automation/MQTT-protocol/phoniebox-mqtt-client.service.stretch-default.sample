@@ -1,0 +1,14 @@
+[Unit]
+Description=Phoniebox MQTT Client Service
+After=network.target iptables.service firewalld.service
+
+[Service]
+User=pi
+Group=pi
+Restart=always
+RestartSec=10
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/daemon-mqtt-client.py
+
+[Install]
+WantedBy=multi-user.target

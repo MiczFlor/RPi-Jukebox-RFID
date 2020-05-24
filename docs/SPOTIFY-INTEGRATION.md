@@ -29,12 +29,12 @@ The one-line-install should detect an existing installation and ask you if you w
 
 The below documentation might be out of date. The one-line-install script will be more up to date. But the below still exists, because it has more content about how the integration works - and that might help you to understand a problem if and when it occurs. Please add, edit and comment to this document while testing the code.
 
-## Installing stretch on your Pi
+## Installing Buster on your Pi
 
-1. Install Strech on SD Card.
+1. Install Buster on SD Card.
 2. Remove card and insert again.
 
-Setting up the Phoniebox via a SSH connection saves the need for a monitor and a mouse. The following worked on Raspian stretch.
+Setting up the Phoniebox via a SSH connection saves the need for a monitor and a mouse. The following worked on Raspian Buster.
 
 * Flash your SD card with the Raspian image
 * Eject the card and insert it again. This should get the boot partition mounted.
@@ -99,34 +99,29 @@ PermitRootLogin yes
 ~~~
 	
 ## Install MOPIDY
-
+Pin major version of Mopidy to 3
+~~~
+echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
+~~~
 Add the archive’s GPG key:
 ~~~
 wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 ~~~
 Add the APT repo to your package sources:
 ~~~
-sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/stretch.list
+sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 ~~~
 Install Mopidy and all dependencies:
 ~~~
 sudo apt-get update
-sudo apt-get install mopidy
+sudo apt-get upgrade
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
 ~~~
 Finally, you need to set a couple of config values, and then you’re ready to run Mopidy. Alternatively you may want to have Mopidy run as a system service, automatically starting at boot.
 
 To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
-sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
-sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
-sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
-cd
-sudo rm -rf mopidy-spotify
-sudo apt-get install git
-git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
-cd mopidy-spotify
-sudo python setup.py install
-cd
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 ~~~
 
 ## Mopidy as service...
@@ -139,7 +134,7 @@ This will make Mopidy start when the system boots.
 	
 ## Install MOPIDY-IRIS Web Interface
 ~~~
-sudo pip install Mopidy-Iris
+sudo python3 -m pip install Mopidy-Iris
 ~~~
 
 Set the rights

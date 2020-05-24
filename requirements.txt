@@ -10,7 +10,6 @@ youtube_dl
 pyserial
 # spidev - currently installed via apt-get
 RPi.GPIO
-pi-rc522
 
 # Type checking for python
 # typing
@@ -22,17 +21,17 @@ pi-rc522
 
 # We'll use pytest to run our tests; this isn't really necessary to run the code, but it is to run
 # the tests.  With this here, you can run the tests with `py.test` from the base directory.
-# pytest
+pytest
 
 # Makes it so that pytest can handle the code structure we use, with src/main/python, and src/test.
-# pytest-pythonpath
+pytest-pythonpath
 
 # Allows generation of coverage reports with pytest.
-# pytest-cov
+pytest-cov
 
 # Allows marking tests as flaky, to be rerun if they fail
 # flaky
 
 # Allows codecov to generate coverage reports
-# coverage
+coverage
 # codecov

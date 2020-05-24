@@ -106,6 +106,16 @@ fi
 AUDIOVOLMINLIMIT=`cat $PATHDATA/../settings/Min_Volume_Limit`
 
 ##############################################
+# Startup_Volume
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Startup_Volume ]; then
+    echo "0" > $PATHDATA/../settings/Startup_Volume
+    chmod 777 $PATHDATA/../settings/Startup_Volume
+fi
+# 2. then|or read value from file
+AUDIOVOLSTARTUP=`cat $PATHDATA/../settings/Startup_Volume`
+
+##############################################
 # Change_Volume_Idle
 # Change volume during idle (or only change it during Play and in the WebApp)
 #TRUE=Change Volume during all Time (Default; FALSE=Change Volume only during "Play"; OnlyDown=It is possible to decrease Volume during Idle; OnlyUp=It is possible to increase Volume during Idle
@@ -135,6 +145,36 @@ if [ ! -f $PATHDATA/../settings/ShowCover ]; then
 fi
 # 2. then|or read value from file
 SHOWCOVER=`cat $PATHDATA/../settings/ShowCover`
+
+##############################################
+# Mail Wlan Ip Address
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/WlanIpMailAddr ]; then
+    echo "" > $PATHDATA/../settings/WlanIpMailAddr
+    chmod 777 $PATHDATA/../settings/WlanIpMailAddr
+fi
+# 2. then|or read value from file
+MAILWLANIPADDR=`cat $PATHDATA/../settings/WlanIpMailAddr`
+
+##############################################
+# Mail Wlan Ip Email Address
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/MailWlanIpYN ]; then
+    echo "OFF" > $PATHDATA/../settings/MailWlanIpYN
+    chmod 777 $PATHDATA/../settings/MailWlanIpYN
+fi
+# 2. then|or read value from file
+MAILWLANIPYN=`cat $PATHDATA/../settings/WlanIpMailYN`
+
+##############################################
+# Read IP address of Wlan after boot?
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/WlanIpReadYN ]; then
+    echo "OFF" > $PATHDATA/../settings/WlanIpReadYN
+    chmod 777 $PATHDATA/../settings/WlanIpReadYN
+fi
+# 2. then|or read value from file
+READWLANIPYN=`cat $PATHDATA/../settings/WlanIpReadYN`
 
 ##############################################
 # edition
@@ -176,9 +216,13 @@ VERSION=`cat $PATHDATA/../settings/version`
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
+# AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # SHOWCOVER
+# MAILWLANIPYN
+# MAILWLANIPADDR
+# READWLANIPYN
 # EDITION
 # LANG
 # VERSION
@@ -193,13 +237,18 @@ echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.c
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
+# Work in progress:
+#echo "MAILWLANIPYN=\"${MAILWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
+#echo "MAILWLANIPADDR=\"${MAILWLANIPADDR}\"" >> "${PATHDATA}/../settings/global.conf"
 
 # change the read/write so that later this might also be editable through the web app
 sudo chown -R pi:www-data ${PATHDATA}/../settings/global.conf
-sudo chmod -R 775 ${PATHDATA}/../settings/global.conf
+sudo chmod -R 777 ${PATHDATA}/../settings/global.conf

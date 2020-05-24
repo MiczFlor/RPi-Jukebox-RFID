@@ -1,4 +1,4 @@
-[Unit]  
+[Unit]
 Description=Phoniebox RFID-Reader Service
 After=network.target iptables.service firewalld.service
 

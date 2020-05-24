@@ -1,0 +1,3 @@
+# PN532 related requirements
+# You need to install these with `sudo python3 -m pip install -q -r requirements.txt`
+py532lib
