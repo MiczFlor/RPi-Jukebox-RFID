@@ -13,6 +13,7 @@ import RPi.GPIO as GPIO
 import logging
 
 from evdev import InputDevice, categorize, ecodes, list_devices
+# Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
 try:
     import pirc522
     from py532lib.i2c import *
