@@ -23,7 +23,7 @@ html_bootstrap3_createHeader("en","RFID Card | Phoniebox",$conf['base_url']);
 ?>
 <body>
   <div class="container">
-      
+
 <?php
 include("inc.navigation.php");
 
@@ -46,23 +46,23 @@ if(!empty($_FILES['importFileUpload'])) {
 
     if($debug == "true") {
         print "file upload";
-        print "<pre>"; 
-        print $conf['upload_abs']; 
+        print "<pre>";
+        print $conf['upload_abs'];
         print "\n";
-        print $uploadFileType; 
+        print $uploadFileType;
         print "\n";
         print "</pre>";
     }
     // check if csv
     if($uploadFileType == "csv") {
-        if(move_uploaded_file($_FILES['importFileUpload']['tmp_name'], $conf['upload_abs'] . "/rfidImport.csv")) {
+        if(move_uploaded_file($_FILES['importFileUpload']['tmp_name'], $conf['upload_abs'] . "./rfidImport.csv")) {
             $messageSuccess .= "<p>" . $lang['cardImportFileSuccessUpload'] .  basename( $_FILES['importFileUpload']['name']). "</p>";
             /*
             * read RFID into array
             */
             $rfidPostedAudio = array();
             $rfidPostedCommands = array();
-            $fn = fopen($conf['upload_abs'] . "/rfidImport.csv","r");
+            $fn = fopen($conf['upload_abs'] . "./rfidImport.csv","r");
             while(! feof($fn))  {
                 $pair = explode("\",\"", fgets($fn));
                 // ignore header and empty lines
@@ -83,10 +83,10 @@ if(!empty($_FILES['importFileUpload'])) {
             }
             fclose($fn);
             if($debug == "true") {
-                print "<pre>rfidPostedCommands: \n"; 
+                print "<pre>rfidPostedCommands: \n";
                 print_r($rfidPostedCommands);
                 print "\nrfidPostedAudio: \n";
-                print_r($rfidPostedAudio); 
+                print_r($rfidPostedAudio);
                 print "\nshortcuts: \n";
                 print_r($shortcuts);
                 print "</pre>";
@@ -97,11 +97,11 @@ if(!empty($_FILES['importFileUpload'])) {
             */
             if($_POST['importFileDelete'] == "all" || $_POST['importFileDelete'] == "commands") {
                 // delete commands => create array of available commands with not array of used commands
-                $fillRfidArrAvailWithUsed = fillRfidArrAvailWithUsed($rfidAvailArr); 
+                $fillRfidArrAvailWithUsed = fillRfidArrAvailWithUsed($rfidAvailArr);
                 if($debug == "true") {
                     print "<pre>delete commands - fillRfidArrAvailWithUsed:\n"; print_r($fillRfidArrAvailWithUsed); print "</pre>";
                 }
-                $messageSuccess .= $lang['cardImportFileDeleteMessageCommands'];        
+                $messageSuccess .= $lang['cardImportFileDeleteMessageCommands'];
             } else {
                 // keep commands
                 if($debug == "true") {
@@ -119,9 +119,9 @@ if(!empty($_FILES['importFileUpload'])) {
                         $result = exec($exec);
                     }
                 }
-                $messageSuccess .= $lang['cardImportFileDeleteMessageAudio'];        
+                $messageSuccess .= $lang['cardImportFileDeleteMessageAudio'];
             }
-            
+
             // which files to replace?
             if($_POST['importFileOverwrite'] != "audio") {
                 // create commands
@@ -132,7 +132,7 @@ if(!empty($_FILES['importFileUpload'])) {
                     }
                     $fillRfidArrAvailWithUsed[trim($value, '%')] = $key;
                 }
-                
+
                 /******************************************
                 * Create new conf file based on posted values
                 */
@@ -145,7 +145,7 @@ if(!empty($_FILES['importFileUpload'])) {
                         exec("sed -i 's/%".$key."%/".$val."/' '../settings/rfid_trigger_play.conf'");
                     }
                 }
-                $messageSuccess .= $lang['cardImportFileOverwriteMessageCommands'];        
+                $messageSuccess .= $lang['cardImportFileOverwriteMessageCommands'];
             }
             if($_POST['importFileOverwrite'] != "commands") {
                 // create audio files
@@ -154,14 +154,14 @@ if(!empty($_FILES['importFileUpload'])) {
                     exec($exec);
                 }
                 exec("chmod 777 ../shared/shortcuts/*");
-                $messageSuccess .= $lang['cardImportFileOverwriteMessageAudio'];        
+                $messageSuccess .= $lang['cardImportFileOverwriteMessageAudio'];
             }
         } else{
             $messageError .= $lang['cardImportFileErrorUpload'];
         }
     } else {
         $messageError .= $lang['cardImportFileErrorFiletype'];
-    }    
+    }
 } else {
     if($debug == "true") {
         print "no file upload";
@@ -181,7 +181,7 @@ if(!empty($_FILES['importFileUpload'])) {
         </a> |
         <a href="#RFIDimport" class="btn xbtn-info ">
         <i class='mdi mdi-plus-circle'></i> <?php print $lang['cardImportAnchorLink']; ?>
-        </a> 
+        </a>
   </div>
 </div>
         <br/>
@@ -202,7 +202,7 @@ if(!empty($_FILES['importFileUpload'])) {
 */
 if ($messageAction == "" && $messageError == "") {
     $messageAction = $lang['cardRegisterMessageDefault'].$lang['cardRegisterManualLinks'];
-} 
+}
 if(isset($messageSuccess) && $messageSuccess != "") {
     print '<div class="alert alert-success">'.$messageSuccess.'<p>'.$lang['cardRegisterMessageSwipeNew'].'</p></div>';
     unset($post);
@@ -253,8 +253,8 @@ include("inc.formCardEdit.php");
         </div><!-- /.panel-body -->
 
     </div><!-- /.panel -->
-</div><!-- /.panel-group -->  
-    
+</div><!-- /.panel-group -->
+
 
 <div class="panel-group">
   <div class="panel panel-default">
@@ -275,7 +275,7 @@ include("inc.formCardEdit.php");
       </div><!-- /.panel-body -->
 
     </div><!-- /.panel -->
-</div><!-- /.panel-group -->  
+</div><!-- /.panel-group -->
 
 <div class="panel-group">
   <div class="panel panel-default">
@@ -287,21 +287,21 @@ include("inc.formCardEdit.php");
 
       <div class="panel-body">
         <div class="row">
-          <div class="col-lg-12"> 
+          <div class="col-lg-12">
             <form name='upload' enctype='multipart/form-data' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
-            <fieldset>        
+            <fieldset>
             <!-- Form Name -->
             <!--legend><?php print $lang['']; ?></legend-->
             <!-- File Upload -->
             <div class="form-group">
-              <label class="col-md-4 control-label" for="importFileUpload"><?php print $lang['cardImportFileLabel']; ?></label>  
+              <label class="col-md-4 control-label" for="importFileUpload"><?php print $lang['cardImportFileLabel']; ?></label>
               <div class="col-md-6">
                 <input type="file" name="importFileUpload" id="importFileUpload"class="form-control input-md" >
-              <span class="help-block"> </span>  
+              <span class="help-block"> </span>
               </div>
             </div>
-            </fieldset>        
-            
+            </fieldset>
+
             <!-- Select Basic -->
             <div class="form-group">
               <label class="col-md-4 control-label" for="importFileOverwrite"><?php print $lang['cardImportFormOverwriteLabel']; ?></label>
@@ -311,10 +311,10 @@ include("inc.formCardEdit.php");
                   <option value="commands"><?php print $lang['cardImportFormOverwriteCommands']; ?></option>
                   <option value="audio"><?php print $lang['cardImportFormOverwriteAudio']; ?></option>
                 </select>
-              <span class="help-block"><?php print $lang['cardImportFormOverwriteHelp']; ?></span>  
-              </div>          
-            </div>      
-            
+              <span class="help-block"><?php print $lang['cardImportFormOverwriteHelp']; ?></span>
+              </div>
+            </div>
+
             <!-- Select Basic -->
             <div class="form-group">
               <label class="col-md-4 control-label" for="importFileDelete"><?php print $lang['cardImportFormDeleteLabel']; ?></label>
@@ -325,11 +325,11 @@ include("inc.formCardEdit.php");
                   <option value="commands"><?php print $lang['cardImportFormDeleteCommands']; ?></option>
                   <option value="audio"><?php print $lang['cardImportFormDeleteAudio']; ?></option>
                 </select>
-              <span class="help-block"><?php print $lang['cardImportFormDeleteHelp']; ?></span>  
-              </div>          
+              <span class="help-block"><?php print $lang['cardImportFormDeleteHelp']; ?></span>
+              </div>
             </div>
-    
-            
+
+
             <!-- Button (Double) -->
             <div class="form-group">
               <label class="col-md-4 control-label" for="submit"></label>
@@ -338,15 +338,15 @@ include("inc.formCardEdit.php");
                 <br clear='all'><br>
               </div>
             </div>
-    
+
             </form>
           </div><!-- / .col-lg-12 -->
         </div><!-- /.row -->
       </div><!-- /.panel-body -->
 
     </div><!-- /.panel -->
-</div><!-- /.panel-group -->    
-    
+</div><!-- /.panel-group -->
+
   </div><!-- /.container -->
 
 <script>
@@ -357,7 +357,7 @@ $(document).ready(function() {
     }, 1000);
 });
 
-</script>  
+</script>
 
 </body>
 </html>
