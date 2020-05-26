@@ -13,9 +13,13 @@ import RPi.GPIO as GPIO
 import logging
 
 from evdev import InputDevice, categorize, ecodes, list_devices
-import pirc522
-from py532lib.i2c import *
-from py532lib.mifare import *
+# Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
+try:
+    import pirc522
+    from py532lib.i2c import *
+    from py532lib.mifare import *
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
