@@ -44,8 +44,11 @@ foreach($langDef as $langKey => $langVal) {
 }
 
 /**
+print "<ul>\n";
 foreach($lang as $key => $value) {
     $lang[$key] = "#NEW#".$value;
+    print "\n<li>".$key." => ".$value."</li>";
 }
+print "</ul>\n";
 /**/
 ?>

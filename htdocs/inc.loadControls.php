@@ -1,6 +1,3 @@
-<?php
-include ("lang/lang-en-UK.php");
-?>
 
 <div class="playerWrapper">
     <a onclick="executePlayerCommand('seekBack')" class='btn btn-player-l'

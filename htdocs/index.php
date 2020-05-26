@@ -33,15 +33,11 @@ if($debug == "true") {
 if(isset($warning)) {
     print '<div class="alert alert-warning">'.$warning.'</div>';
 }
-
 print '<div id="api-alert" class="alert alert-warning" style="display: none"></div>';
 include("inc.controlPlayer.php");
-
 ?>
-
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
-
 <?php
 // show currently played track
 

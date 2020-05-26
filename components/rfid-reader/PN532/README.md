@@ -18,9 +18,9 @@ It has been tested with the I2C interface. Using SPI might work as well, but it 
     | SDA   | GPIO 2 (SDA) |     3      |
     | SCL   | GPIO 3 (SCL) |     5      |
 
-2. You can use the `setup_pn532.sh` script or follow the manual steps.
+2. **You can use the `setup_pn532.sh` script (recommended)** or follow the manual steps:
 
-3.  Activate the I2C interface of the Raspberry Pi
+3. Activate the I2C interface of the Raspberry Pi
     - `sudo raspi-config`
     - Select "5 Interfacing Options" -> I2C -> yes
     - or instead of using the UI, here is the CLI command:

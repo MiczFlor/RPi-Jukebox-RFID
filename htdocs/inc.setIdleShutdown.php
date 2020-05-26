@@ -3,7 +3,7 @@
 <!--
 Idle Shutdown Set Form
 -->
-        <!-- input-group -->          
+        <!-- input-group -->
         <?php
         /*
         * Values for pulldown form
@@ -12,7 +12,7 @@ Idle Shutdown Set Form
         /*
         * Get idle time value
         */
-        $idletimevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getidletime");
+        //$idletimevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getidletime");
         //$idletimevalue = 20;// debug
         /*
         * Now get the remaining time
@@ -21,9 +21,9 @@ Idle Shutdown Set Form
             $shutdowntime = exec("sudo atq -q i | awk '{print $5}'");
             $unixtime = time();
             /*
-            * For the night owls: if the shutdown time is after midnight (and so on the next day), 
+            * For the night owls: if the shutdown time is after midnight (and so on the next day),
             * $shutdowntime is something like 00:30:00 and time() is e.g. 23:45:00.
-            * strtotime($shutdowntime) returns the unix time for today and we get a negative 
+            * strtotime($shutdowntime) returns the unix time for today and we get a negative
             * value in the calculation below.
             * This is fixed by subtracting a day from the current time, as we only need the difference.
             */
@@ -62,28 +62,28 @@ Idle Shutdown Set Form
                     }
                     print "\n";
                     ?>
-                    </select> 
+                    </select>
                     <span class="input-group-btn">
                         <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>
               </div>
-              
+
               <div class="col-xs-6">
                   <div class="c100 p<?php print round($idletimevalue*100/60); ?>">
-                    <span><?php 
+                    <span><?php
                         if ($idletimevalue == 0) {
                             print $lang['globalOff'];
                         } else {
-                            print $idletimevalue."min"; 
+                            print $idletimevalue."min";
                         }
                     ?></span>
                     <div class="slice">
                         <div class="bar"></div>
                         <div class="fill"></div>
                     </div>
-                  </div> 
+                  </div>
               </div>
             </div><!-- ./row -->
         </div>
@@ -99,10 +99,10 @@ if ($idletimevalue != 0) {
               <div class="col-xs-6">
               <h4><?php print $lang['globalIdleTime']; ?></h4>
               </div>
-              
+
               <div class="col-xs-6">
                   <div class="orange c100 p<?php print round($remainingtimedisplay*100/60); ?>">
-                    <span><?php 
+                    <span><?php
                         if ($shutdowntime != "") {
                             print $remainingtimedisplay.'min';
                         }
@@ -114,7 +114,7 @@ if ($idletimevalue != 0) {
                         <div class="bar"></div>
                         <div class="fill"></div>
                     </div>
-                  </div> 
+                  </div>
               </div>
             </div><!-- ./row -->
         </div>
