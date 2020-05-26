@@ -726,14 +726,6 @@ install_main() {
         sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
-    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
-    # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
-    # Back then the master install script needed develop branch files. I think this is from that time...?
-    #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
-    #wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
-
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
@@ -755,11 +747,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-    
+
     # sample file for debugging with all options set to FALSE
     sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
     sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
-    
+
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
