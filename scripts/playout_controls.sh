@@ -570,6 +570,7 @@ case $COMMAND in
         
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
+        sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played" >> ${PATHDATA}/../logs/debug.log; fi
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> ${PATHDATA}/../logs/debug.log; fi
