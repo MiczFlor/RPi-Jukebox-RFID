@@ -125,10 +125,11 @@ reset_install_config_file() {
     # from such a config file with no user input.
 
     # Remove existing config file
-    rm "${HOME_DIR}/PhonieboxInstall.conf"
+    #rm "${HOME_DIR}/PhonieboxInstall.conf"
     # Create empty config file
-    touch "${HOME_DIR}/PhonieboxInstall.conf"
-    echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
+    #touch "${HOME_DIR}/PhonieboxInstall.conf"
+    #echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "# Phoniebox config"
 }
 
 config_wifi() {
@@ -202,6 +203,7 @@ read -rp "Hit ENTER to proceed to the next step." INPUT
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
+    local home_dir="$3"
 
     #####################################################
     # Check for existing Phoniebox
@@ -230,10 +232,44 @@ check_existing() {
             # get the current short commit hash of the repo
             CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
         fi
-        echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+        echo "IMPORTANT: you can use the existing content and configuration"
+        echo "files for your new install."
         echo "Whatever you chose to keep will be moved to the new install."
         echo "Everything else will remain in a folder called 'BACKUP'.
         "
+
+        ###
+        # See if we find the PhonieboxInstall.conf file
+        # We need to do this first, because if we re-use the .conf file, we need to append
+        # the variables regarding the found content to the also found configuration file.
+        # That way, reading the configuration file for the (potentially) non-interactive
+        # install procedure will:
+        # a) overwrite whatever variables regarding re-cycling existing content which might 
+        #    be stored in the config file
+        # b) if there are no variables for dealing with re-cycled context, we will append 
+        #    them - to have them for this install
+        if [ -f "${jukebox_dir}"/settings/PhonieboxInstall.conf ]; then
+            # ask for re-using the found configuration file
+            echo "The configuration of your last Phoniebox install was found."
+            read -rp "Use existing configuration for this installation? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                    EXISTINGusePhonieboxInstall=NO
+                    ;;
+                *)
+                    EXISTINGusePhonieboxInstall=YES
+                    # Copy PhonieboxInstall.conf configuration file to settings folder
+                    sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${home_dir}"/PhonieboxInstall.conf
+                    sudo chown pi:www-data "${home_dir}"/PhonieboxInstall.conf
+                    sudo chmod 775 "${home_dir}"/PhonieboxInstall.conf
+                    echo "The existing configuration will be used."
+                    echo "Just a few more questions to answer."
+                    read -rp "Hit ENTER to proceed to the next step." INPUT
+                    clear
+                    ;;
+            esac
+        fi
+
         # Delete or use existing installation?
         read -rp "Re-use config, audio and RFID codes for the new install? [Y/n] " response
         case "$response" in
@@ -331,6 +367,25 @@ check_existing() {
     fi
     # append variables to config file
     echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    
+    # Check if we found a Phoniebox install configuration earlier and ask if to run this now
+    if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
+        clear
+        echo "Using the existing configuration, you can run a non-interactive install."
+        echo "This will re-cycle found content (specified just now) as well as the"
+        echo "system information from last time (wifi, audio interface, spotify, etc.)."
+        read -rp "Do you want to run a non-interactive installation? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                cd "${home_dir}"
+                clear
+                ./buster-install-default.sh -a
+                exit
+                ;;
+        esac
+    fi
 }
 
 config_audio_interface() {
@@ -726,14 +781,6 @@ install_main() {
         sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
-    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
-    # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
-    # Back then the master install script needed develop branch files. I think this is from that time...?
-    #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
-    #wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
-
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
@@ -755,11 +802,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-    
+
     # sample file for debugging with all options set to FALSE
     sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
     sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
-    
+
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
@@ -1089,9 +1136,9 @@ finish_installation() {
 main() {
     if [[ ${INTERACTIVE} == "true" ]]; then
         welcome
-        reset_install_config_file
+        #reset_install_config_file
         config_wifi
-        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
+        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}" "${HOME_DIR}"
         config_audio_interface
         config_spotify
         config_mpd
@@ -1106,6 +1153,12 @@ main() {
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
+    
+    # Copy PhonieboxInstall.conf configuration file to settings folder
+    sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
+    sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+    sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+    
     if [[ ${INTERACTIVE} == "true" ]]; then
         finish_installation "${JUKEBOX_HOME_DIR}"
     else
