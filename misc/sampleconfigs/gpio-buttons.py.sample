@@ -141,7 +141,7 @@ led_power = 12
 # Set GPIO numbering to BCM instead of board numbering
 GPIO.setmode(GPIO.BCM)
 # Bounce tolerance time for buttons
-bouncetime = 500
+bouncetime = 200 # Milliseconds?
 volumeHoldTime = 0.3  # Seconds
 shutdownHoldTime = 2  # Seconds
 PledBlinkTime = 0.3  # Seconds
