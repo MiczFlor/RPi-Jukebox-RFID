@@ -178,7 +178,7 @@ foreach($subfolders as $key => $subfolder) {
         $temp['count_subdirs'] = count($containingfolders);
         $temp['count_files'] = count($containingfiles);
         $temp['count_audioFiles'] = count($containingaudiofiles);
-        usort($containingfolders);
+        usort($containingfolders, 'strnatcasecmp');
         $temp['subdirs'] = $containingfolders;
         usort($containingfiles, 'strnatcasecmp');
         $temp['files'] = $containingfiles;
