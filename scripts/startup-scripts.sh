@@ -29,6 +29,10 @@ echo ${AUDIOVOLSTARTUP}
 /usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 #######################
+# re-scan music library
+mpc rescan 
+
+#######################
 # read out wifi config?
 if [ "${READWLANIPYN}" == "ON" ]; then
     /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
