@@ -398,20 +398,19 @@ config_audio_interface() {
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# By default for the RPi the audio interface would be 'PCM'.
-# But this does not work for every setup, alternatives are
-# 'Master' or 'Speaker'. Other external sound cards might
-# use different interface names.
-# To list all available iFace names, type 'amixer scontrols'
-# in the terminal.
+# The default RPi audio interface is 'Headphone'.
+# But this does not work for every setup. Here a list of 
+# available iFace names:
 "
-    read -rp "Use PCM as iFace? [Y/n] " response
+    amixer scontrols
+    echo " "
+    read -rp "Use Headphone as iFace? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             read -rp "Type the iFace name you want to use:" AUDIOiFace
             ;;
         *)
-            AUDIOiFace="PCM"
+            AUDIOiFace="Headphone"
             ;;
     esac
     # append variables to config file
@@ -793,7 +792,6 @@ install_main() {
     cp "${jukebox_dir}"/settings/rfid_trigger_play.conf.sample "${jukebox_dir}"/settings/rfid_trigger_play.conf
 
     # creating files containing editable values for configuration
-    # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
     echo "$AUDIOiFace" > "${jukebox_dir}"/settings/Audio_iFace_Name
     echo "$DIRaudioFolders" > "${jukebox_dir}"/settings/Audio_Folders_Path
     echo "3" > "${jukebox_dir}"/settings/Audio_Volume_Change_Step
