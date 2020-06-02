@@ -326,11 +326,11 @@ function index_folders_print($item, $key)
 */
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col pb-plist-play' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col pb-plist-play' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
 	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
 
@@ -339,7 +339,7 @@ function index_folders_print($item, $key)
 		print "<i class='mdi mdi-folder-outline mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
-		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
+		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline' ></i> ";
 
         if($contentTree[$key]['count_subdirs'] > 0) {
             print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
