@@ -15,7 +15,7 @@ export DEBIAN_FRONTEND=noninteractive
 # Run installation (in interactive mode)
 # y confirm interactive
 # n dont configure wifi
-# y PCM as iface
+# y Headphone as iface
 # n no spotify
 # y configure mpd
 # y audio default location
