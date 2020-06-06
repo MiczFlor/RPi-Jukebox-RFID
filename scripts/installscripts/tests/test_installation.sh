@@ -199,16 +199,18 @@ verify_pip_packages() {
         modules="${modules} ${modules_spotify}"
     fi
 
-    # RC522 reader is used
-    if grep -Fxq "${deviceName}" MFRC522
-    then
-        modules="${modules} ${modules_rc522}"
-    fi
+    if [[ -f "${deviceName}" ]]; then
+        # RC522 reader is used
+        if grep -Fxq "${deviceName}" MFRC522
+        then
+            modules="${modules} ${modules_rc522}"
+        fi
 
-    # PN532 reader is used
-    if grep -Fxq "${deviceName}" PN532
-    then
-        modules="${modules} ${modules_pn532}"
+        # PN532 reader is used
+        if grep -Fxq "${deviceName}" PN532
+        then
+            modules="${modules} ${modules_pn532}"
+        fi
     fi
 
     for module in ${modules}

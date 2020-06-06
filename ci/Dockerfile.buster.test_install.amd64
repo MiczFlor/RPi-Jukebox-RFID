@@ -28,6 +28,4 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   touch /boot/cmdlinetxt ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
-ENTRYPOINT /code/scripts/installscripts/tests/run_installation_tests.sh
-
 USER pi
