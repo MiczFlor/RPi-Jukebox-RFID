@@ -13,4 +13,4 @@ jobs:
     - name: Build Docker image and run tests
       run: |
         docker build . --file ./ci/Dockerfile.buster.test_install.amd64 --tag rpi-jukebox-rfid-buster:latest
-        docker run --rm -i rpi-jukebox-rfid-buster:latest --entrypoint /bin/bash /code/scripts/installscripts/tests/run_installation_tests.sh
+        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests.sh
