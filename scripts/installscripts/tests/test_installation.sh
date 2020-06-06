@@ -190,6 +190,7 @@ verify_pip_packages() {
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
     local modules_rc522="pi-rc522"
+    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -198,7 +199,17 @@ verify_pip_packages() {
         modules="${modules} ${modules_spotify}"
     fi
 
-    # modules="${modules} ${modules_pn532}"
+    # RC522 reader is used
+    if grep -Fxq "${deviceName}" MFRC522
+    then
+        modules="${modules} ${modules_rc522}"
+    fi
+
+    # PN532 reader is used
+    if grep -Fxq "${deviceName}" PN532
+    then
+        modules="${modules} ${modules_pn532}"
+    fi
 
     for module in ${modules}
     do
@@ -207,21 +218,6 @@ verify_pip_packages() {
         else
             echo "  ERROR: pip module ${module} is not installed"
             ((failed_tests++))
-        fi
-        ((tests++))
-    done
-
-    # workaround, because currently it's not known, if modules have been installed manually
-    # TODO integrate in above check (similar to spotify modules)
-    optional_modules="${modules_rc522} ${modules_pn532}"
-
-    for module in ${optional_modules}
-    do
-        if [[ $(pip3 show "${module}") ]]; then
-            echo "  ${module} is installed"
-        else
-            echo "  WARNING: Optional pip module ${module} is not installed"
-            # doesnt count as error, because only manually installed or not
         fi
         ((tests++))
     done
