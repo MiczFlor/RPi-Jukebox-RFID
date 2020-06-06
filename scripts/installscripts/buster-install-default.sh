@@ -1096,19 +1096,42 @@ finish_installation() {
     #####################################################
     # Register external device(s)
 
-    echo "If you are using an USB RFID reader, connect it to your RPi."
+    echo "If you are using an RFID reader, connect it to your RPi."
     echo "(In case your RFID reader required soldering, consult the manual.)"
     # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your USB Reader? [Y/n] " response
+    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             ;;
         *)
-            cd "${jukebox_dir}"/scripts/ || exit
-            python3 RegisterDevice.py
-            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-            ;;
+            echo  'Please select the RFID reader you want to use'
+            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration")
+            select opt in "${options[@]}"; do
+                case $opt in
+                    "USB-Reader (e.g. Neuftech)")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        python3 RegisterDevice.py
+                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                        break
+                        ;;
+                    "RC522")
+                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                        break
+                        ;;
+                    "PN532")
+                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                        break
+                        ;;
+                    "Manual configuration")
+                        echo "Please configure your reader manually."
+                        break
+                        ;;
+                    *)
+                        echo "This is not a number"
+                        ;;
+                esac
+            done
     esac
 
     echo
