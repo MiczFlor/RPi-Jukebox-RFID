@@ -7,7 +7,8 @@ RUN groupadd --gid 1000 pi ;\
   useradd -u 1000 -g 1000 -G sudo -d /home/pi -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' pi ;\
   chown -R 1000:1000 /code /home/pi ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests2.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
