@@ -1,11 +1,11 @@
 #!/bin/bash
 if [[ $(id -u) = 0 ]]; then
-   echo "This script should  be run as root/sudo, please run as normal 'pi' user" 
+   echo "This script should  be run as root/sudo, please run as normal 'pi' user"
    exit 1
 fi
 
 echo 'Install all required python modules'
-pip install -r requirements.txt
+sudo python3 -m pip install --upgrade --force-reinstall -r requirements.txt
 
 echo 'Installing GPIO_Control service'
 echo

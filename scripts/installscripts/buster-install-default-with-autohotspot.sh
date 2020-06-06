@@ -344,7 +344,7 @@ config_audio_interface() {
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
 # The default RPi audio interface is 'Headphone'.
-# But this does not work for every setup. Here a list of 
+# But this does not work for every setup. Here a list of
 # available iFace names:
 "
     amixer scontrols
@@ -722,7 +722,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
@@ -735,7 +735,7 @@ install_main() {
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -753,11 +753,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-    
+
     # sample file for debugging with all options set to FALSE
     sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
     sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
-    
+
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
