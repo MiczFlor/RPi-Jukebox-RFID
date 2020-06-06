@@ -3,7 +3,7 @@
 # Install Phoniebox and test it
 # Used e.g. for tests on Docker
 
-# Objective: Test installation with script using a simple configuration
+# Objective: Test installation with script using a RC522 reader
 
 # Print current path
 echo $PWD
@@ -21,11 +21,13 @@ export DEBIAN_FRONTEND=noninteractive
 # n no spotify
 # y configure mpd
 # y audio default location
-# n no RFID registration
+# y RFID registration
+# 2 use RC522 reader
+# yes, reader is connected
 # n No reboot
 
 # TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\nn\nn\n'
+GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
 
 # Rest installation
 ./scripts/installscripts/tests/test_installation.sh
