@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+HOME_DIR="/home/pi"
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
@@ -90,7 +93,7 @@ printf "Installing Python dependencies...\n"
 sudo apt-get -y -qq install python3-pil python3-numpy
 
 printf "Installing mopidy plugins...\n"
-sudo pip3 --quiet install Mopidy-PiDi pidi-display-pil pidi-display-st7789 mopidy-raspberry-gpio
+sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
 
 # Only add, if it does not exist already
 printf "Editing mopidy configuration...\n"

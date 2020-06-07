@@ -244,9 +244,9 @@ check_existing() {
         # the variables regarding the found content to the also found configuration file.
         # That way, reading the configuration file for the (potentially) non-interactive
         # install procedure will:
-        # a) overwrite whatever variables regarding re-cycling existing content which might 
+        # a) overwrite whatever variables regarding re-cycling existing content which might
         #    be stored in the config file
-        # b) if there are no variables for dealing with re-cycled context, we will append 
+        # b) if there are no variables for dealing with re-cycled context, we will append
         #    them - to have them for this install
         if [ -f "${jukebox_dir}"/settings/PhonieboxInstall.conf ]; then
             # ask for re-using the found configuration file
@@ -367,7 +367,7 @@ check_existing() {
     fi
     # append variables to config file
     echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
-    
+
     # Check if we found a Phoniebox install configuration earlier and ask if to run this now
     if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
         clear
@@ -399,7 +399,7 @@ config_audio_interface() {
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
 # The default RPi audio interface is 'Headphone'.
-# But this does not work for every setup. Here a list of 
+# But this does not work for every setup. Here a list of
 # available iFace names:
 "
     amixer scontrols
@@ -777,12 +777,12 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -892,7 +892,7 @@ install_main() {
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
         local mpd_log="/var/log/mpd/mpd.log"
-        
+
         echo "Configuring MPD..."
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
@@ -903,7 +903,7 @@ install_main() {
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
-        
+
         sudo chown mpd:audio "${mpd_log}"
     fi
 
@@ -1155,12 +1155,12 @@ main() {
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
-    
+
     # Copy PhonieboxInstall.conf configuration file to settings folder
     sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
     sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
     sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
-    
+
     if [[ ${INTERACTIVE} == "true" ]]; then
         finish_installation "${JUKEBOX_HOME_DIR}"
     else
