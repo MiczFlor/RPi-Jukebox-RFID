@@ -539,8 +539,8 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li class='list-group-item'>".$counter++." :
-                <a onclick='playSingleFile(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
-                <a onclick='appendFileToPlaylist(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
+                <a onclick='playSingleFile(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
+                <a onclick='appendFileToPlaylist(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
                     <strong>".htmlspecialchars(basename($file),ENT_QUOTES)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
