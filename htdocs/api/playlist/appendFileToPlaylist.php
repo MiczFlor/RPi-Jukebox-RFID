@@ -17,7 +17,7 @@ if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $body = str_replace("'","''\''",file_get_contents('php://input'));
+    $body = str_replace("'","'\''",file_get_contents('php://input'));
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
