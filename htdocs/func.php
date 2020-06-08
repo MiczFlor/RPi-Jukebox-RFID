@@ -544,7 +544,7 @@ function printPlaylistHtml($files)
                     <strong>".htmlspecialchars(basename($file),ENT_QUOTES)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
-                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".htmlspecialchars(dirname($file),ENT_QUOTES)."&filename=".htmlspecialchars(basename($file),ENT_QUOTES)."'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
+                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".htmlspecialchars(dirname($file),ENT_QUOTES)."&filename=".htmlspecialchars(basename($file),ENT_QUOTES)."' class='pb-plist-play'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
         }
         print "
                 </li>";
