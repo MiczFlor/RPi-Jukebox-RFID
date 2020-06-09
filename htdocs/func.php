@@ -173,14 +173,14 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             margin-right: 1em
         }
         /* anchor behaviour */
-        
+
         /* flash briefly on click */
         .panel-heading a.btn-panel-big:active {
             color: #fff!important;
         }
         .panel-heading a.btn-panel-big {
             cursor: pointer;
-        } 
+        }
         </style>
 
     </head>\n";
@@ -191,7 +191,7 @@ function tailShell($filepath, $lines = 1) {
 	passthru('tail -'  . $lines . ' ' . escapeshellarg($filepath));
 	return trim(ob_get_clean());
 }
-	
+
 function arrayPregDiff($a, $p) {
     # added function to use regular expressions to remove multiple files
     # e.g. all of the same file type from the array forming the later playlist.
@@ -539,12 +539,12 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li class='list-group-item'>".$counter++." :
-                <a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
-                <a onclick='appendFileToPlaylist(\"$file\");' class='btn-panel-small btn-panel-col' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
-                    <strong>".basename($file)."</strong>";
+                <a onclick='playSingleFile(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
+                <a onclick='appendFileToPlaylist(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
+                    <strong>".htmlspecialchars(basename($file),ENT_QUOTES)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
-                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
+                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".htmlspecialchars(dirname($file),ENT_QUOTES)."&filename=".htmlspecialchars(basename($file),ENT_QUOTES)."' class='pb-plist-play'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
         }
         print "
                 </li>";
