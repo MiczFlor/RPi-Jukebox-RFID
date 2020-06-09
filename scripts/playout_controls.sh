@@ -28,7 +28,6 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # mute
 # setvolume
 # setmaxvolume
-# setmaxvolumetemp
 # setstartupvolume
 # getstartupvolume
 # setvolumetostartup
@@ -36,7 +35,6 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # volumedown
 # getvolume
 # getmaxvolume
-# getmaxvolumetemp
 # setvolstep
 # getvolstep
 # playerstop
@@ -175,7 +173,7 @@ case $COMMAND in
 		done
 		# schedule shutdown after VALUE minutes
 		echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
-		;;		
+		;;			
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
@@ -213,7 +211,7 @@ case $COMMAND in
     setvolume)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
-        if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ] && [ ${VALUE} -le $AUDIOVOLMAXTEMP ];
+        if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ];
         then
             # set volume level in percent
             echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
@@ -223,11 +221,6 @@ case $COMMAND in
                 # if we are over the max volume limit, set the volume to maxvol
                 echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
             fi
-            if [ ${VALUE} -gt $AUDIOVOLMAXTEMP ];
-            then
-                # if we are over the max volume temü limit, set the volume to maxvoltemp
-                echo -e setvol $AUDIOVOLMAXTEMP\\nclose | nc -w 1 localhost 6600
-            fi						
             if [ ${VALUE} -lt $AUDIOVOLMINLIMIT ];
             then
                 # if we are unter the min volume limit, set the volume to minvol
@@ -257,30 +250,14 @@ case $COMMAND in
             # increase by $AUDIOVOLCHANGESTEP
             VOLPERCENT=`expr ${VOLPERCENT} + \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)`
             #increase volume only if VOLPERCENT is below the max volume limit
-			#is max volume limit above max volume temp?
-            if [ $AUDIOVOLMAXLIMIT -gt $AUDIOVOLMAXTEMP ];     
-			then
-            #increase volume only if VOLPERCENT is below the max volume temp			
-				if [ $VOLPERCENT -le $AUDIOVOLMAXTEMP ];
-				then
-					# set volume level in percent				
-					echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
-				else 
-					# if we are over the max volume temp, set the volume to maxvoltemp				
-					echo -e setvol $AUDIOVOLMAXTEMP\\nclose | nc -w 1 localhost 6600
-				fi
-			#otherwise max volume temp must be above or equal max volume limit
-			elif [ $AUDIOVOLMAXTEMP -ge $AUDIOVOLMAXLIMIT ];
-			then
-				if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
-				then
-					# set volume level in percent						
-					echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
-				else
-					# if we are over the max volume limit, set the volume to maxvol					
-					echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
-				fi
-			fi
+            if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
+            then
+                # set volume level in percent
+                echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+            else
+                # if we are over the max volume limit, set the volume to maxvol
+                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+            fi
         else
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
@@ -353,28 +330,10 @@ case $COMMAND in
         # create global config file because individual setting got changed
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
-    setmaxvolumetemp)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-        # read volume in percent
-        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
-        # if volume of the box is greater than wanted maxvolumetemp, set volume to maxvolumetemp
-        if [ $VOLPERCENT -gt ${VALUE} ];
-        then
-            echo -e setvol ${VALUE} | nc -w 1 localhost 6600
-        fi
-        # write new value to file
-        echo "$VALUE" > ${PATHDATA}/../settings/Max_Volume_Limit_Temp
-        # create global config file because individual setting got changed
-        . ${PATHDATA}/inc.writeGlobalConfig.sh
-        ;;		
     getmaxvolume)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $AUDIOVOLMAXLIMIT
         ;;
-    getmaxvolumetemp)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-        echo $AUDIOVOLMAXTEMP
-        ;;		
     setvolstep)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # write new value to file
