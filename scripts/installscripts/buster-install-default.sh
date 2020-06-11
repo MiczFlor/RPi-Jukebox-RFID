@@ -19,6 +19,9 @@
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
+GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 
@@ -230,7 +233,7 @@ check_existing() {
             #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
-            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
+            CURRENT_REMOTE_COMMIT="$(git ls-remote ${GIT_URL} ${GIT_BRANCH} | cut -c1-7)"
         fi
         echo "IMPORTANT: you can use the existing content and configuration"
         echo "files for your new install."
@@ -747,7 +750,7 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # VERSION of installation
 
