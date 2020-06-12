@@ -19,9 +19,12 @@ echo
 echo ${AUDIOVOLSTARTUP}
 
 ####################################
-# make playists, files and folders readable and writable to all
+# make playists, files and folders 
+# and shortcuts 
+# readable and writable to all
 sudo chmod -R 777 ${AUDIOFOLDERSPATH}
 sudo chmod -R 777 ${PLAYLISTSFOLDERPATH}
+sudo chmod -R 777 $PATHDATA/../shared/shortcuts
 
 ####################################
 # check if and set volume on startup
