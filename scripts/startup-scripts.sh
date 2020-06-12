@@ -19,8 +19,7 @@ echo
 echo ${AUDIOVOLSTARTUP}
 
 ####################################
-# make playists, files and folders 
-# readable and writable to all
+# make playists, files and folders readable and writable to all
 sudo chmod -R 777 ${AUDIOFOLDERSPATH}
 sudo chmod -R 777 ${PLAYLISTSFOLDERPATH}
 

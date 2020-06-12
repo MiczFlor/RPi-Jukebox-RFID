@@ -175,16 +175,6 @@ $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Fo
 */
 include("inc.langLoad.php");
 
-/*=======
-$Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
-$ShowCover = fileGetContentOrDefault($conf['settings_abs'].'/ShowCover', "ON");
-$version = trim(file_get_contents($conf['settings_abs'].'/version'));
-$edition = fileGetContentOrDefault(dirname(__FILE__).'/../settings/edition', "classic");
-/*
-* load language strings
-*/
-//$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-UK");
-
 /*******************************************
 * URLPARAMETERS
 *******************************************/
