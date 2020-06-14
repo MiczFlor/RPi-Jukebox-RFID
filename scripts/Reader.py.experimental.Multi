@@ -177,15 +177,15 @@ class Reader(object):
                         break
 
     def readCard(self):
-        que = Queue.Queue()
+        que = Queue()
         threads_list = list()
         for dev in self.devs:
-            t = Thread(target=lambda q, arg1: q.put(dev.readCard(arg1)), args=(que,))
+            t = Thread(target=lambda q: q.put(dev.readCard()), args=(que,))
             t.start()
             threads_list.append(t)
-        for t in threads_list:
-            t.join()
-        while not que.empty():
-            result = que.get()
-            print(result)
-        return result
+        #for t in threads_list:
+        #    t.join()
+        while True:
+            for read_thread in threads_list:
+                if not read_thread.is_alive() and not que.empty():
+                    return que.get()
