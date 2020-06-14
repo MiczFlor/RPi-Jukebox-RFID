@@ -4,7 +4,7 @@
 # MFRC522, RDM6300 or PN532.
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
-
+import multiprocessing
 import os.path
 import sys
 import serial
@@ -12,7 +12,6 @@ import string
 import RPi.GPIO as GPIO
 import logging
 from queue import Queue
-from threading import Thread
 
 from evdev import InputDevice, categorize, ecodes, list_devices
 # Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
@@ -180,12 +179,15 @@ class Reader(object):
         que = Queue()
         threads_list = list()
         for dev in self.devs:
-            t = Thread(target=lambda q: q.put(dev.readCard()), args=(que,))
+            t = multiprocessing.Process(target=lambda q: q.put(dev.readCard()), args=(que,))
             t.start()
             threads_list.append(t)
-        #for t in threads_list:
-        #    t.join()
-        while True:
+
+        while que.empty():
             for read_thread in threads_list:
-                if not read_thread.is_alive() and not que.empty():
-                    return que.get()
+                if not read_thread.is_alive():
+                    break
+
+        for process in threads_list:
+            process.terminate()
+        return que.get()
