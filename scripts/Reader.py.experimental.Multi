@@ -166,8 +166,8 @@ class Reader(object):
                     dev_name_phys = dev_key.rstrip().split(';', 1)
                     dev_name = dev_name_phys[0]
                     dev_phys = ''
-                    if len(dev_name) > 1:
-                        dev_phys = dev_name_phys[0]
+                    if len(dev_name_phys) > 1:
+                        dev_phys = dev_name_phys[1]
                     if device.name == dev_name and device.phys == dev_phys:
                         if dev_name == 'MFRC522':
                             self.devs.append(Mfrc522Reader())
