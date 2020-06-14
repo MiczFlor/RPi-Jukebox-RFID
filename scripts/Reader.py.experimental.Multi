@@ -5,15 +5,18 @@
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
 import multiprocessing
+try:
+    from multiprocessing import SimpleQueue
+except ImportError:
+    from multiprocessing.queues import SimpleQueue
 import os.path
 import sys
 import serial
 import string
 import RPi.GPIO as GPIO
 import logging
-from queue import Queue
 
-from evdev import InputDevice, categorize, ecodes, list_devices
+from evdev import InputDevice, ecodes, list_devices
 # Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
 try:
     import pirc522
@@ -36,8 +39,9 @@ def get_devices():
 class NonUsbDevice(object):
     name = None
 
-    def __init__(self, name):
+    def __init__(self, name, phys=''):
         self.name = name
+        self.phys = phys
 
 
 class UsbReader(object):
@@ -159,7 +163,11 @@ class Reader(object):
             devices = get_devices()
             for device in devices:
                 for dev_key in device_keys:
-                    dev_name, dev_phys = dev_key.rstrip().split(';', 1)
+                    dev_name_phys = dev_key.rstrip().split(';', 1)
+                    dev_name = dev_name_phys[0]
+                    dev_phys = ''
+                    if len(dev_name) > 1:
+                        dev_phys = dev_name_phys[0]
                     if device.name == dev_name and device.phys == dev_phys:
                         if dev_name == 'MFRC522':
                             self.devs.append(Mfrc522Reader())
@@ -176,18 +184,23 @@ class Reader(object):
                         break
 
     def readCard(self):
-        que = Queue()
+        que = SimpleQueue()
         threads_list = list()
+
         for dev in self.devs:
             t = multiprocessing.Process(target=lambda q: q.put(dev.readCard()), args=(que,))
             t.start()
             threads_list.append(t)
 
-        while que.empty():
-            for read_thread in threads_list:
-                if not read_thread.is_alive():
+        found_result = False
+        while not found_result:
+            for process in threads_list:
+                process.join(0.001)
+                if not process.is_alive():
+                    found_result = True
                     break
 
         for process in threads_list:
             process.terminate()
+
         return que.get()
