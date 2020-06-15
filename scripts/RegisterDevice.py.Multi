@@ -1,23 +1,7 @@
 #!/usr/bin/env python3
 
 import os.path
-from evdev import InputDevice, list_devices
-
-
-class NonUsbDevice(object):
-    name = None
-
-    def __init__(self, name, phys=''):
-        self.name = name
-        self.phys = phys
-
-
-def get_devices():
-    devs = [InputDevice(fn) for fn in list_devices()]
-    devs.append(NonUsbDevice('MFRC522'))
-    devs.append(NonUsbDevice('RDM6300'))
-    devs.append(NonUsbDevice('PN532'))
-    return devs
+from Reader import get_devices
 
 
 list_dev_ids = list()
