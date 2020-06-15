@@ -76,6 +76,16 @@ fi
 AUDIOIFACENAME=`cat $PATHDATA/../settings/Audio_iFace_Name`
 
 ##############################################
+# Volume_Manager (mpd or amixer)
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Volume_Manager ]; then
+    echo "mpd" > $PATHDATA/../settings/Volume_Manager
+    chmod 777 $PATHDATA/../settings/Volume_Manager
+fi
+# 2. then|or read value from file
+VOLUMEMANAGER=`cat $PATHDATA/../settings/Volume_Manager`
+
+##############################################
 # Audio_Volume_Change_Step
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Audio_Volume_Change_Step ]; then
@@ -164,7 +174,7 @@ if [ ! -f $PATHDATA/../settings/MailWlanIpYN ]; then
     chmod 777 $PATHDATA/../settings/MailWlanIpYN
 fi
 # 2. then|or read value from file
-MAILWLANIPYN=`cat $PATHDATA/../settings/WlanIpMailYN`
+MAILWLANIPYN=`cat $PATHDATA/../settings/MailWlanIpYN`
 
 ##############################################
 # Read IP address of Wlan after boot?
@@ -213,6 +223,7 @@ VERSION=`cat $PATHDATA/../settings/version`
 # PLAYLISTSFOLDERPATH
 # SECONDSWIPE
 # AUDIOIFACENAME
+# VOLUMEMANAGER
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
@@ -234,6 +245,7 @@ echo "AUDIOFOLDERSPATH=\"${AUDIOFOLDERSPATH}\"" >> "${PATHDATA}/../settings/glob
 echo "PLAYLISTSFOLDERPATH=\"${PLAYLISTSFOLDERPATH}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "VOLUMEMANAGER=\"${VOLUMEMANAGER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"

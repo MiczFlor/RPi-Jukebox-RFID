@@ -178,38 +178,74 @@ case $COMMAND in
         sudo systemctl start mopidy
         ;;
     mute)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # read volume in percent and write to $VOLFILE
-            echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*' > $VOLFILE
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])' > $VOLFILE
+            else
+                # manage volume with mpd
+                echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*' > $VOLFILE
+            fi
             # set volume to 0%
-            echo -e setvol 0\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' 0%
+            else 
+                # manage volume with mpd
+                echo -e setvol 0\\nclose | nc -w 1 localhost 6600
+            fi
         else
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
-            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
+            else
+                # manage volume with mpd
+                echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            fi
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
         ;;
     setvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
         if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ];
         then
             # set volume level in percent
-            echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' $VALUE%
+            else
+                # manage volume with mpd
+                echo -e setvol $VALUE\\nclose | nc -w 1 localhost 6600
+            fi
         else
             if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
             then
                 # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' $AUDIOVOLMAXLIMIT%
+                else
+                    # manage volume with mpd
+                    echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+                fi
             fi
             if [ ${VALUE} -lt $AUDIOVOLMINLIMIT ];
             then
                 # if we are unter the min volume limit, set the volume to minvol
-                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' $AUDIOVOLMINLIMIT%
+                else
+                    # manage volume with mpd
+                    echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+                fi
             fi
         fi
         ;;
@@ -231,22 +267,47 @@ case $COMMAND in
             fi
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
-            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                VOLPERCENT=`amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+            else
+                # manage volume with mpd
+                VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+            fi
             # increase by $AUDIOVOLCHANGESTEP
             VOLPERCENT=`expr ${VOLPERCENT} + \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)`
+            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
             then
                 # set volume level in percent
-                echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' ${VOLPERCENT}%
+                else
+                    # manage volume with mpd
+                    echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+                fi
             else
                 # if we are over the max volume limit, set the volume to maxvol
-                echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLMAXLIMIT}%
+                else
+                    # manage volume with mpd
+                    echo -e setvol $AUDIOVOLMAXLIMIT\\nclose | nc -w 1 localhost 6600
+                fi
             fi
         else
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
-            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
+            else
+                # manage volume with mpd
+                echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            fi
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -269,40 +330,84 @@ case $COMMAND in
             fi
             # $VOLFILE does NOT exist == audio on
             # read volume in percent
-            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                VOLPERCENT=`amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+            else
+                # manage volume with mpd
+                VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+            fi
             # decrease by $AUDIOVOLCHANGESTEP
             VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)`
+            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
             #decrease volume only if VOLPERCENT is above the min volume limit
             if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
             then
                 # set volume level in percent
-                echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' ${VOLPERCENT}%
+                else
+                    # manage volume with mpd
+                    echo -e setvol +$VOLPERCENT\\nclose | nc -w 1 localhost 6600
+                fi
             else
                 # if we are below the min volume limit, set the volume to minvol
-                echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+                if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                    # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                    amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLMINLIMIT}%
+                else
+                    # manage volume with mpd
+                    echo -e setvol $AUDIOVOLMINLIMIT\\nclose | nc -w 1 localhost 6600
+                fi
             fi
         else
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
-            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
+            else
+                # manage volume with mpd
+                echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            fi
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
         ;;
     getvolume)
         # read volume in percent
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "#  ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            VOLPERCENT=`amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+        else
+            # manage volume with mpd
+            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+        fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $VOLPERCENT
         ;;
     setmaxvolume)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # read volume in percent
-        VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+        if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            VOLPERCENT=`amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
+        else
+            # manage volume with mpd
+            VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+        fi
         # if volume of the box is greater than wanted maxvolume, set volume to maxvolume
         if [ $VOLPERCENT -gt ${VALUE} ];
         then
-            echo -e setvol ${VALUE} | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' ${VALUE}%
+            else
+                # manage volume with mpd
+                echo -e setvol ${VALUE} | nc -w 1 localhost 6600
+            fi
         fi
         # if startupvolume is greater than wanted maxvolume, set startupvolume to maxvolume
         if [ ${AUDIOVOLSTARTUP} -gt ${VALUE} ];
@@ -353,7 +458,14 @@ case $COMMAND in
             exit 1
         else
             # set volume level in percent
-            echo -e setvol ${AUDIOVOLSTARTUP}\\nclose | nc -w 1 localhost 6600
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLSTARTUP}%
+            else
+                # manage volume with mpd
+                echo -e setvol ${AUDIOVOLSTARTUP}\\nclose | nc -w 1 localhost 6600
+            fi
+
         fi
         ;;
     playerstop)
@@ -383,6 +495,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -396,6 +510,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -409,6 +525,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -425,6 +543,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -454,6 +574,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -480,6 +602,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -492,6 +616,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
@@ -560,6 +686,8 @@ case $COMMAND in
             # $VOLFILE DOES exist == audio off
             # read volume level from $VOLFILE and set as percent
             echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
+            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
             # delete $VOLFILE
             rm -f $VOLFILE
         fi

@@ -19,6 +19,9 @@
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
+GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 
@@ -230,7 +233,7 @@ check_existing() {
             #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
-            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
+            CURRENT_REMOTE_COMMIT="$(git ls-remote ${GIT_URL} ${GIT_BRANCH} | cut -c1-7)"
         fi
         echo "IMPORTANT: you can use the existing content and configuration"
         echo "files for your new install."
@@ -747,7 +750,7 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # VERSION of installation
 
@@ -777,12 +780,12 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -1093,19 +1096,42 @@ finish_installation() {
     #####################################################
     # Register external device(s)
 
-    echo "If you are using an USB RFID reader, connect it to your RPi."
+    echo "If you are using an RFID reader, connect it to your RPi."
     echo "(In case your RFID reader required soldering, consult the manual.)"
     # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your USB Reader? [Y/n] " response
+    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             ;;
         *)
-            cd "${jukebox_dir}"/scripts/ || exit
-            python3 RegisterDevice.py
-            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-            ;;
+            echo  'Please select the RFID reader you want to use'
+            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration")
+            select opt in "${options[@]}"; do
+                case $opt in
+                    "USB-Reader (e.g. Neuftech)")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        python3 RegisterDevice.py
+                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                        break
+                        ;;
+                    "RC522")
+                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                        break
+                        ;;
+                    "PN532")
+                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                        break
+                        ;;
+                    "Manual configuration")
+                        echo "Please configure your reader manually."
+                        break
+                        ;;
+                    *)
+                        echo "This is not a number"
+                        ;;
+                esac
+            done
     esac
 
     echo
