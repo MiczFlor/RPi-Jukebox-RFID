@@ -22,7 +22,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 logger.info('Dir_PATH: {dir_path}'.format(dir_path=dir_path))
 
 # vars for ensuring delay between same-card-swipes
-same_id_delay = 0
+same_id_delay = 2
 previous_id = ""
 previous_time = time.time()
 
@@ -44,12 +44,14 @@ while True:
                 logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                 subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
                 previous_id = cardid
-                previous_time = time.time()
+                
             else:
                 logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
                     cardid=cardid,
                     same_id_delay=same_id_delay
                 ))
+
+            previous_time = time.time()
 
     except OSError as e:
         logger.error('Execution failed: {e}'.format(e=e))
