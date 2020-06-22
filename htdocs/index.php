@@ -13,11 +13,15 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
   <div class="container">
 
 <?php
-include("inc.playerStatus.php");
-?>
-
-<?php
 include("inc.navigation.php");
+
+if($debug == "true") {
+    print "<pre>";
+    print "_POST: \n";
+    print_r($_POST);
+    print "</pre>";
+}
+
 ?>
 
     <div class="row playerControls">
@@ -29,18 +33,14 @@ include("inc.navigation.php");
 if(isset($warning)) {
     print '<div class="alert alert-warning">'.$warning.'</div>';
 }
-
+print '<div id="api-alert" class="alert alert-warning" style="display: none"></div>';
 include("inc.controlPlayer.php");
-
 ?>
-
       </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->
-
 <?php
 // show currently played track
 
-if (isset($playerStatus['file'])) {
     print '
     <div class="row">
         <div class="col-lg-12">';
@@ -48,7 +48,6 @@ include("inc.loadedPlaylist.php");
     print '
         </div><!-- / .col-lg-12 -->
     </div><!-- /.row -->';
-}
 ?>
     <div class="row">
       <div class="col-lg-12">
@@ -87,7 +86,6 @@ foreach($audiofolders as $audiofolder) {
     $idcounter++;
     
     include('inc.viewFolderTree.php');
-    //include('inc.viewFolderWell.php');
     
 }
 
@@ -99,7 +97,7 @@ foreach($audiofolders as $audiofolder) {
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-12">
               <h4><?php print $lang['indexManageFilesChips']; ?></h4>
-                <a href="cardRegisterNew.php" class="btn btn-primary btn">
+                <a href="cardRegisterNew.php" class="btn btn-info btn">
                 <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
               </div>
@@ -119,13 +117,13 @@ foreach($audiofolders as $audiofolder) {
           </div>
           <div class="modal-body">
 <pre>
-<?php
+<!--?php
 print file_get_contents($conf['base_path'].'/shared/latestID.txt', true);
-?>
+?-->
 </pre>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal"><?php print $lang['globalClose']; ?></button>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><!--?php print $lang['globalClose']; ?--></button>
           </div>
     
         </div><!-- / .modal-content -->
@@ -136,4 +134,10 @@ print file_get_contents($conf['base_path'].'/shared/latestID.txt', true);
   </div><!-- /.container -->
 
 </body>
+
+<script src="js/jukebox.js">
+</script>
+<script>
+	JUKEBOX.lang = <?php echo json_encode($lang );?>
+</script>
 </html>

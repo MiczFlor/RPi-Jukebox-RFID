@@ -18,9 +18,7 @@ music_directory		"%DIRaudioFolders%"
 # playlist files not created by the server but only if they are in the MPD
 # format. This setting defaults to playlist saving being disabled.
 #
-# this was the old way:
-# playlist_directory		"/tmp"
-# now playlists are inside the Phoniebox root:
+# playlists are inside the Phoniebox root:
 playlist_directory		"/home/pi/RPi-Jukebox-RFID/playlists"
 #
 # This setting sets the location of the MPD database. This file is used to
@@ -131,7 +129,7 @@ auto_update    "yes"
 # Limit the depth of the directories being watched, 0 means only watch
 # the music directory itself.  There is no limit by default.
 #
-#auto_update_depth "3"
+auto_update_depth "10"
 #
 ###############################################################################
 
