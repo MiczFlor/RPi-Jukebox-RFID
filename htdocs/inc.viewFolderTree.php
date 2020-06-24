@@ -112,7 +112,9 @@ foreach($subfolders as $key => $subfolder) {
             $temp['type'] = "spotify";
             $titlefile = $subfolder."/title.txt";
             $coverfile = $subfolder."/cover.jpg";
-
+			
+		/* routine 1 (deprecated): getting spotify informations from mopidy API
+		
             // get title from Spotify if wasn't previously stored
             if (!file_exists($titlefile)) {
                 $uri = file_get_contents($subfolder."/spotify.txt");
@@ -159,6 +161,31 @@ foreach($subfolders as $key => $subfolder) {
                 
                 file_put_contents($coverfile, $cover);
 			}
+			*/
+			
+			
+			// routine 2: this is a new and easier way for loading spotify informations!
+			$uri = file_get_contents($subfolder."/spotify.txt");
+			$url = "https://open.spotify.com/oembed/?url=".trim($uri)."&format=json";
+			
+			if (!file_exists($coverfile)) {
+				$str = file_get_contents($url);
+				$json  = json_decode($str, true);
+
+				$cover = $json['thumbnail_url'];
+				$coverdl = file_get_contents($cover);
+				file_put_contents($coverfile, $coverdl);
+			}
+			
+			if (!file_exists($titlefile)) {
+				$str = file_get_contents($url);
+				$json  = json_decode($str, true);
+
+				$title = $json['title'];
+				file_put_contents($titlefile, $title);
+			}
+			
+			
         } else {
             $temp['type'] = "generic";
         }
