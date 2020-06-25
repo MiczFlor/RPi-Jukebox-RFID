@@ -28,6 +28,7 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
   border: none;
   outline: none;
   padding: 12px 16px;
+  margin-bottom: 3px;
   background-color: #464545;
   color: white;
   cursor: pointer;
