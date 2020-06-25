@@ -113,58 +113,7 @@ foreach($subfolders as $key => $subfolder) {
             $titlefile = $subfolder."/title.txt";
             $coverfile = $subfolder."/cover.jpg";
 			
-		/* routine 1 (deprecated): getting spotify informations from mopidy API
-		
-            // get title from Spotify if wasn't previously stored
-            if (!file_exists($titlefile)) {
-                $uri = file_get_contents($subfolder."/spotify.txt");
-
-                // check for mediatype ("track" / "playlist") because following Mopidy API request needs differing parameters
-                $mediatype = explode(':' , $uri)[1];
-
-                if ($mediatype == "playlist"){
-                    // request media info via Mopidy's API
-                    $method = 'core.playlists.lookup';
-                    $params = '{
-                            "uri": "'.trim($uri).'"
-                        }';
-                    $json = mopidyApiCall($method, $params);
-
-                    $title = $json["result"]["name"];
-
-                } elseif ($mediatype == "track") {
-                    // request media info via Mopidy's API
-                    $method = 'core.library.lookup';
-                    $params = '{
-                            "uris": ["'.trim($uri).'"]
-                        }';
-                    $json = mopidyApiCall($method, $params);
-
-                    $title = $json["result"][trim($uri)][0]["name"];
-                }
-                file_put_contents($titlefile, $title);
-			}
-
-            // get cover from Spotify if wasn't previously stored
-            if (!file_exists($coverfile)) {
-                $uri = file_get_contents($subfolder."/spotify.txt");
-
-                // request media-related images via Mopidy's API
-                $method = 'core.library.get_images';
-                $params = '{
-                        "uris": ["'.trim($uri).'"]
-                    }';
-                $json = mopidyApiCall($method, $params);
-
-                $coveruri = $json["result"][trim($uri)][0]["uri"];
-                $cover = file_get_contents($coveruri);
-                
-                file_put_contents($coverfile, $cover);
-			}
-			*/
-			
-			
-			// routine 2: this is a new and easier way for loading spotify informations!
+			// this is a new and easier way for loading spotify informations!
 			$uri = file_get_contents($subfolder."/spotify.txt");
 			$url = "https://open.spotify.com/oembed/?url=".trim($uri)."&format=json";
 			
