@@ -279,4 +279,14 @@ $lang['searchTitle'] = "Search for audiofiles";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Search";
 $lang['searchResult'] = "Search-Results:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Show all";
+$lang['filterfile'] = "Files";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
