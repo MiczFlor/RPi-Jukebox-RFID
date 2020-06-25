@@ -278,4 +278,14 @@ $lang['searchTitle'] = "Audiodateien suchen";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Suchen";
 $lang['searchResult'] = "Suchergebnisse:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Zeige alle";
+$lang['filterfile'] = "Dateien";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
