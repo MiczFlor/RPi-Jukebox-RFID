@@ -205,5 +205,15 @@ $lang['searchTitle'] = "Zoeken naar audiobestanden";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Zoeken";
 $lang['searchResult'] = "Zoekresultaten:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Toon alles";
+$lang['filterfile'] = "Bestanden";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
 
