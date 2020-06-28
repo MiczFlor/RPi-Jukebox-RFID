@@ -119,7 +119,7 @@ $lang['cardFormFolderLabel'] = "a) Link kaart naar audiomap";
 $lang['cardFormFolderSelectDefault'] = "Geen (Pulldown om een ​​map te selecteren)";
 $lang['cardFormStreamLabel'] = "b) ... of maak verbinding met de Stream-URL";
 $lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Voeg de URL toe voor spotify, podcast, webradio, stream of andere online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Selecteer type";
 $lang['cardFormStreamTypeHelp'] = "Selecteer het type dat u toevoegt";
@@ -163,6 +163,12 @@ $lang['settingsSecondSwipeRestart'] = "afspeellijst opnieuw afspelen";
 $lang['settingsSecondSwipeSkipnext'] = "Ga naar het volgende nummer";
 $lang['settingsSecondSwipePause'] = "Schakelen tussen pauze / afspelen";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Negeer audio playout-triggers, alleen systeemopdrachten";
+$lang['settingsSecondSwipePauseInfo'] = "Negeer het opnieuw scannen van dezelfde kaart voor:";
+$lang['second'] = "Seconde";
+$lang['seconds'] = "Seconden";
+$lang['settingsSecondSwipePauseControlsInfo'] = "Bepaalde functiekaarten (bijv. Volume omhoog / omlaag, volgende / vorige track, snel vooruit / terugspoelen) mogen geen vertraging hebben (zoals eerder ingesteld in de instelling):";
+$lang['settingsSecondSwipePauseControlsOn'] = "Functiekaarten zonder vertraging";
+$lang['settingsSecondSwipePauseControlsOff'] = "Functiekaarten met vertraging (seconden als voorheen)";
 $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Wil je albumhoezen naast de albums en afspeellijsten op de hoofdpagina weergeven?";
 $lang['settingsShowCoverON'] = "Albumhoes laten zien";
@@ -205,5 +211,15 @@ $lang['searchTitle'] = "Zoeken naar audiobestanden";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Zoeken";
 $lang['searchResult'] = "Zoekresultaten:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Toon alles";
+$lang['filterfile'] = "Bestanden";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
 
