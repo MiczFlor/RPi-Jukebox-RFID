@@ -43,8 +43,8 @@ with open('../settings/global.conf', 'r') as filehandle:
     filecontents = filehandle.readlines()
 
     for line in filecontents:
-        current_place = line[:-1]
-        cards.append(current_place)
+        cids = line[:-1]
+        cards.append(cids)
 
 
 extract = [s for s in cards if s.startswith('CMD')]
