@@ -147,7 +147,7 @@ $lang['cardFormTriggerSelectDefault'] = "Wähle eine Phoniebox Funktion";
 $lang['cardFormStreamLegend'] = "Stream verlinken / erstellen";
 $lang['cardFormStreamLabel'] = "Stream URL (benötigt immer einen neuen Ordner - s.o.)";
 $lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
 $lang['cardFormStreamHelp'] = "Füge die URL für spotify, Podcast, Webradio, Stream oder andere Online-Medien hinzu";
 $lang['cardFormStreamTypeSelectDefault'] = "Wähle den Typ";
 $lang['cardFormStreamTypeHelp'] = "Wähle die Art des Streams, den du hinzufügen möchtest";
@@ -217,6 +217,12 @@ $lang['settingsSecondSwipeSkipnext'] = "Zum nächsten Track springen";
 $lang['settingsSecondSwipePause'] = "Pause / Wiedergabe umschalten";
 $lang['settingsSecondSwipePlay'] = "Wiedergabe fortsetzen";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Nur Systembefehle mehrfach ausführen";
+$lang['settingsSecondSwipePauseInfo'] = "Ignoriere das erneute Scannen derselben Karte für:";
+$lang['second'] = "Sekunde";
+$lang['seconds'] = "Sekunden";
+$lang['settingsSecondSwipePauseControlsInfo'] = "Bestimmte Funktionskarten (z.B. Lautstärke hoch/runter, Nächster/Voriger Titel, Vor-/Zurückspulen) sollen keine Verzögerung (wie in der Einstellung zuvor eingestellt) haben:";
+$lang['settingsSecondSwipePauseControlsOn'] = "Funktionskarten ohne Verzögerung";
+$lang['settingsSecondSwipePauseControlsOff'] = "Funktionskarten mit Verzögerung (Sekunden wie zuvor)";
 $lang['settingsWebInterface'] = "Web-Oberfläche";
 $lang['settingsCoverInfo'] = "Willst du Cover neben den Alben und Playlisten auf der Hauptseite anzeigen?";
 $lang['settingsShowCoverON'] = "Cover anzeigen";
@@ -278,4 +284,14 @@ $lang['searchTitle'] = "Audiodateien suchen";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Suchen";
 $lang['searchResult'] = "Suchergebnisse:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Zeige alle";
+$lang['filterfile'] = "Dateien";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
