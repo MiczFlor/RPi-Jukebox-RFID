@@ -147,7 +147,7 @@ $lang['cardFormTriggerSelectDefault'] = "Select command to link";
 $lang['cardFormStreamLegend'] = "Link Stream";
 $lang['cardFormStreamLabel'] = "Stream URL (always requires new folder above)";
 $lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Stream/Podcast like http....mp3 .xml .rss .ogg";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track/:### / Stream/Podcast like http....mp3 .xml .rss .ogg";
 $lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Select type";
 $lang['cardFormStreamTypeHelp'] = "Select the type you are adding";
@@ -217,6 +217,12 @@ $lang['settingsSecondSwipeSkipnext'] = "Skip to next track";
 $lang['settingsSecondSwipePause'] = "Toggle pause / play";
 $lang['settingsSecondSwipePlay'] = "Resume playback";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Ignore audio playout triggers, only system commands";
+$lang['settingsSecondSwipePauseInfo'] = "Ignore rescanning of the same card for:";
+$lang['second'] = "second";
+$lang['seconds'] = "seconds";
+$lang['settingsSecondSwipePauseControlsInfo'] = "Certain function cards (e.g. volume up / down, next / previous track, forward / rewind) should not have a delay (as set in the setting previously):";
+$lang['settingsSecondSwipePauseControlsOn'] = "Function cards without delay";
+$lang['settingsSecondSwipePauseControlsOff'] = "Function cards with delay (seconds as before)";
 $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Do you want to show covers beside the albums and playlists on the main page?";
 $lang['settingsShowCoverON'] = "Show cover";
@@ -279,4 +285,14 @@ $lang['searchTitle'] = "Search for audiofiles";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Search";
 $lang['searchResult'] = "Search-Results:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Show all";
+$lang['filterfile'] = "Files";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
