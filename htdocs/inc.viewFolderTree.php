@@ -132,7 +132,7 @@ foreach($subfolders as $key => $subfolder) {
 
 				$title = $json['title'];
 				file_put_contents($titlefile, $title);
-			}	
+			}
 			
         } else {
             $temp['type'] = "generic";
