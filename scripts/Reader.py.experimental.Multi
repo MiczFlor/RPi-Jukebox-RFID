@@ -15,7 +15,7 @@ import serial
 import string
 import RPi.GPIO as GPIO
 import logging
-
+from enum import Enum
 from evdev import InputDevice, ecodes, list_devices
 # Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
 try:
@@ -27,12 +27,17 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+class EDevices(Enum):
+    MFRC522 = 0
+    RDM6300 = 1
+    PN532 = 2
+
 
 def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
-    devices.append(NonUsbDevice('MFRC522'))
-    devices.append(NonUsbDevice('RDM6300'))
-    devices.append(NonUsbDevice('PN532'))
+    devices.append(NonUsbDevice(EDevices.MFRC522.name))
+    devices.append(NonUsbDevice(EDevices.RDM6300.name))
+    devices.append(NonUsbDevice(EDevices.PN532.name))
     return devices
 
 
