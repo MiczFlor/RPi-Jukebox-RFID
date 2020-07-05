@@ -58,7 +58,7 @@ else
     done
 
 fi
-chown -R ${SUDO_USER}:${SUDO_USER} $FILE
+chown -R ${SUDO_USER}:${SUDO_USER} $USER_HOME/.config/phoniebox/
 
 echo
 echo 'Installing GPIO_Control service, this will require to enter your password up to 3 times to enable the service'
