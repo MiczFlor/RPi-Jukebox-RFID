@@ -134,7 +134,6 @@ foreach($subfolders as $key => $subfolder) {
 				file_put_contents($titlefile, $title);
 			}
 			
-			
         } else {
             $temp['type'] = "generic";
         }
@@ -179,7 +178,7 @@ foreach($subfolders as $key => $subfolder) {
     //}
 }
 if(count($contentTree) > 0) {   
-    print "\n    <div class='col-md-12'>";
+    //print "\n    <div class='col-md-12'>";
 
     $rootBranch = current($contentTree);
     

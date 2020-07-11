@@ -147,7 +147,7 @@ $lang['cardFormTriggerSelectDefault'] = "Wähle eine Phoniebox Funktion";
 $lang['cardFormStreamLegend'] = "Stream verlinken / erstellen";
 $lang['cardFormStreamLabel'] = "Stream URL (benötigt immer einen neuen Ordner - s.o.)";
 $lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:#### / Livestream: http(....).mp3 / .m3u / .ogg / ....";
 $lang['cardFormStreamHelp'] = "Füge die URL für spotify, Podcast, Webradio, Stream oder andere Online-Medien hinzu";
 $lang['cardFormStreamTypeSelectDefault'] = "Wähle den Typ";
 $lang['cardFormStreamTypeHelp'] = "Wähle die Art des Streams, den du hinzufügen möchtest";
@@ -278,4 +278,14 @@ $lang['searchTitle'] = "Audiodateien suchen";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Suchen";
 $lang['searchResult'] = "Suchergebnisse:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Zeige alle";
+$lang['filterfile'] = "Dateien";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>

@@ -119,7 +119,7 @@ $lang['cardFormFolderLabel'] = "a) Link kaart naar audiomap";
 $lang['cardFormFolderSelectDefault'] = "Geen (Pulldown om een ​​map te selecteren)";
 $lang['cardFormStreamLabel'] = "b) ... of maak verbinding met de Stream-URL";
 $lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Voeg de URL toe voor spotify, podcast, webradio, stream of andere online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Selecteer type";
 $lang['cardFormStreamTypeHelp'] = "Selecteer het type dat u toevoegt";
@@ -205,5 +205,15 @@ $lang['searchTitle'] = "Zoeken naar audiobestanden";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Zoeken";
 $lang['searchResult'] = "Zoekresultaten:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Toon alles";
+$lang['filterfile'] = "Bestanden";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
 

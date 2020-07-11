@@ -147,7 +147,7 @@ $lang['cardFormTriggerSelectDefault'] = "Select command to link";
 $lang['cardFormStreamLegend'] = "Link Stream";
 $lang['cardFormStreamLabel'] = "Stream URL (always requires new folder above)";
 $lang['cardFormStreamPlaceholderClassic'] = "http(...).mp3 / .m3u / .ogg / .rss / .xml / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Stream/Podcast like http....mp3 .xml .rss .ogg";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:### / Stream/Podcast like http....mp3 .xml .rss .ogg";
 $lang['cardFormStreamHelp'] = "Add the URL for spotify, podcast, web radio, stream or other online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Select type";
 $lang['cardFormStreamTypeHelp'] = "Select the type you are adding";
@@ -279,4 +279,14 @@ $lang['searchTitle'] = "Search for audiofiles";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Search";
 $lang['searchResult'] = "Search-Results:";
+
+/*
+* Filter
+*/
+$lang['filterall'] = "Show all";
+$lang['filterfile'] = "Files";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
