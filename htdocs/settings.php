@@ -222,6 +222,8 @@ include("inc.setInputDevices.php");
       <div class="panel-body">
 <?php
 include("inc.setSecondSwipe.php");
+include("inc.setSecondSwipePause.php");
+include("inc.setSecondSwipePauseControls.php");
 ?>
       </div><!-- /.panel-body -->
 
