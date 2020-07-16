@@ -308,6 +308,29 @@ function index_folders_print($item, $key)
         print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
     }
     */
+	
+	/* filter */
+	if (in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv spotify col-md-12'>";
+	  
+	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv livestream col-md-12'>";
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv podcast col-md-12'>";
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv youtube col-md-12'>";
+	  
+	} else {
+		print "
+      <div class='filterDiv file col-md-12'>";
+	}
+
     print "
       <div class='panel ".$panelStyle."'>";
 
@@ -332,7 +355,7 @@ function index_folders_print($item, $key)
         print "
               <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col pb-plist-play' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
-	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
+	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files']) ) {
 
 	    print "
 				  <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$id."' aria-expanded='true' aria-controls='collapse".$id."' style='cursor:pointer;' title='Show contents'>";
@@ -355,11 +378,15 @@ function index_folders_print($item, $key)
 		print $contentTree[$key]['basename'];
 		}
 	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
-		print "<i class='mdi mdi-podcast mdi-36px'></i> ";
+		print "<i class='mdi mdi-radio mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 
 	} elseif (in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files'])) {
-		print "<i class='mdi mdi-cast mdi-36px'></i> ";
+		print "<i class='mdi mdi-cast-audio mdi-36px'></i> ";
+		print $contentTree[$key]['basename'];
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files'])) {
+		print "<i class='mdi mdi-youtube mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 
 	} else {
