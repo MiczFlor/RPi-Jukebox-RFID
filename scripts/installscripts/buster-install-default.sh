@@ -1108,7 +1108,7 @@ finish_installation() {
             ;;
         *)
             echo  'Please select the RFID reader you want to use'
-            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration")
+            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
             select opt in "${options[@]}"; do
                 case $opt in
                     "USB-Reader (e.g. Neuftech)")
@@ -1128,6 +1128,11 @@ finish_installation() {
                         ;;
                     "Manual configuration")
                         echo "Please configure your reader manually."
+                        break
+                        ;;
+                    "Multiple RFID reader")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        sudo python3 RegisterDevice.py.Multi
                         break
                         ;;
                     *)
