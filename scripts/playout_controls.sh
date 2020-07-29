@@ -50,6 +50,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playlistaddplay
 # playlistadd
 # playlistappend
+# playlistreset
 # playsinglefile
 # getidletime
 # setidletime
@@ -602,6 +603,13 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         mpc play
+        ;;    
+     playlistreset)
+        if [ -e $PATHDATA/../shared/audiofolders/$FOLDERPATH/lastplayed.dat ]
+        then
+           echo "" > $PATHDATA/../shared/audiofolders/$FOLDERPATH/lastplayed.dat
+        fi
+        mpc play 1
         ;;
     playsinglefile)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
