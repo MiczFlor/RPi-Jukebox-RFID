@@ -180,6 +180,7 @@ $lang['settingsMessageLangfileNewItems'] = "Er zijn nieuwe taalitems in het oors
 */
 $lang['infoOsDistrib'] = "OS-distributie";
 $lang['infoOsCodename'] = "Codenaam";
+$lang['infoOsTemperature'] = "Temperatuur";
 $lang['infoStorageUsed'] = "Opslag gebruik";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
