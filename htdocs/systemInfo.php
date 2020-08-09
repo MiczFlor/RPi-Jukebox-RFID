@@ -26,6 +26,39 @@ $description = substr($res[1],strpos($res[1],":")+1,strlen($res[1])-strpos($res[
 $release = substr($res[2],strpos($res[2],":")+1,strlen($res[2])-strpos($res[2],":"));
 $codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],":"));
 
+// check RPis throttling state
+function checkRpiThrottle() {
+	$codes = array(
+		0	=> "under-voltage detected",
+		1	=> "arm frequency capped",
+		2	=> "currently throttled",
+		3	=> "soft temperature limit active",
+		16	=> "under-voltage has occurred",
+		17	=> "arm frequency capped has occurred",
+		18	=> "throttling has occurred",
+		19	=> "soft temperature limit has occurred"
+	);
+
+	$getThrottledResult = explode("0x", exec("sudo vcgencmd get_throttled"))[1];
+
+	// code is zero => no issue
+	if ($getThrottledResult == "0") return "OK";
+
+	// analyse returned code
+	$result = [];
+	$codeHex = str_split($getThrottledResult);
+	$codeBinary = "";
+	foreach ($codeHex as $fourbits) {
+		$codeBinary .= str_pad(base_convert($fourbits, 16, 2), 4, "0", STR_PAD_LEFT);
+	}
+	$codeBinary = array_reverse(str_split($codeBinary));
+	foreach ($codeBinary as $bitNumber => $bitValue) {
+		if ($bitValue) $result[] = $codes[$bitNumber];
+	}
+	return "WARNING: " . implode(", ", $result);
+}
+$rpi_throttle = checkRpiThrottle();
+
 ?>
 <div class="panel-group">
   <div class="panel panel-default">
@@ -52,7 +85,11 @@ $codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],
         <div class="row">	
           <label class="col-md-4 control-label" for=""><?php print $lang['infoOsCodename']; ?></label> 
           <div class="col-md-6"><?php echo trim($codename); ?></div>
-        </div>     
+        </div>
+        <div class="row">
+          <label class="col-md-4 control-label" for=""><?php print $lang['infoOsThrottle']; ?></label>
+          <div class="col-md-6"><?php echo trim($rpi_throttle); ?></div>
+        </div>
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
