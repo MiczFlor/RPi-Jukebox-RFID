@@ -247,6 +247,7 @@ $lang['settingsWlanReadOFF'] = "Nein, Wlan IP nicht vorlesen.";
 */
 $lang['infoOsDistrib'] = "Betriebssystem";
 $lang['infoOsCodename'] = "Codename";
+$lang['infoOsThrottle'] = "Drosselung";
 $lang['infoStorageUsed'] = "Speicherverbrauch";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
