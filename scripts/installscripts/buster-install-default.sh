@@ -1,22 +1,60 @@
 #!/usr/bin/env bash
 #
 # see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
-# Especially the docs folder for documentation
+#
+# NOTE: Running automated install (without interaction):
+# Each install creates a file called PhonieboxInstall.conf
+# in the folder /home/pi/
+# You can install the Phoniebox using such a config file
+# which means you don't need to run the interactive install:
+#
+# 1. download the install file from github
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    (note: currently only works for buster and newer OS)
+# 2. make the file executable: chmod +x
+# 3. place the PhonieboxInstall.conf in the folder /home/pi/
+# 4. run the installscript with option -a like this:
+#    buster-install-default.sh -a
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
+GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
 
-LOGDIR="${PATHDATA}"/logfiles
 DATETIME=$(date +"%Y%m%d_%H%M%S")
- 
+
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
 HOME_DIR="/home/pi"
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
+
+INTERACTIVE=true
+
+usage() {
+    printf "Usage: ${SCRIPTNAME} [-a] [-h]\n"
+    printf " -a\tautomatic/non-interactive mode\n"
+    printf " -h\thelp\n"
+    exit 0
+}
+
+while getopts ":ah" opt;
+do
+  case ${opt} in
+    a ) INTERACTIVE=false
+      ;;
+    h ) usage
+      ;;
+    \? ) usage
+      ;;
+  esac
+done
+
 
 # Setup logger functions
 # Input from http://www.ludovicocaldara.net/dba/bash-tips-5-output-logfile/
@@ -31,7 +69,7 @@ log_open() {
     exec 1>"${PIPE}" 2>&1
     PIPE_OPENED=1
 }
- 
+
 log_close() {
     if [ "${PIPE_OPENED}" ]; then
         exec 1<&3
@@ -59,19 +97,26 @@ welcome() {
 #                                                   #
 #####################################################
 
-Welcome to the installation script.
+You are turning your Raspberry Pi into a Phoniebox. Good choice.
+This INTERACTIVE INSTALL script requires you to be online and
+will guide you through the configuration.
 
-This script will install Phoniebox on your Raspberry Pi.
-To do so, you must be online. The install script can
-automatically configure:
-
-* WiFi settings (SSID, password and static IP)
-
-All these are optional and can also be done later
-manually.
-
-If you are ready, hit ENTER"
-    read -r INPUT
+If you want to run the AUTOMATED INSTALL (non-interactive) from
+an existing configuration file, do the following:
+1. exit this install script (press n)
+2. place your PhonieboxInstall.conf in the folder /home/pi/
+3. run the installscript with option -a. For example like this:
+   ./home/pi/buster-install-default.sh -a
+   "
+    read -rp "Continue interactive installation? [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+            exit
+            ;;
+        *)
+            echo "Installation continues..."
+            ;;
+    esac
 }
 
 reset_install_config_file() {
@@ -83,10 +128,11 @@ reset_install_config_file() {
     # from such a config file with no user input.
 
     # Remove existing config file
-    rm PhonieboxInstall.conf
+    #rm "${HOME_DIR}/PhonieboxInstall.conf"
     # Create empty config file
-    touch PhonieboxInstall.conf
-    echo "# Phoniebox config" > "${PATHDATA}/PhonieboxInstall.conf"
+    #touch "${HOME_DIR}/PhonieboxInstall.conf"
+    #echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "# Phoniebox config"
 }
 
 config_wifi() {
@@ -110,9 +156,9 @@ case "$response" in
         WIFIconfig=NO
         echo "You want to configure WiFi later."
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${PATHDATA}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
     *)
         WIFIconfig=YES
@@ -149,7 +195,7 @@ case "$response" in
                     echo "WIFIpass=\"$WIFIpass\"";
                     echo "WIFIip=\"$WIFIip\"";
                     echo "WIFIipRouter=\"$WIFIipRouter\"";
-                } >> "${PATHDATA}/PhonieboxInstall.conf"
+                } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
         ;;
@@ -160,6 +206,7 @@ read -rp "Hit ENTER to proceed to the next step." INPUT
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
+    local home_dir="$3"
 
     #####################################################
     # Check for existing Phoniebox
@@ -183,15 +230,49 @@ check_existing() {
 "
         # check if we find the version number
         if [ -f "${jukebox_dir}"/settings/version ]; then
-            echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
+            #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
-            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
+            CURRENT_REMOTE_COMMIT="$(git ls-remote ${GIT_URL} ${GIT_BRANCH} | cut -c1-7)"
         fi
-        echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+        echo "IMPORTANT: you can use the existing content and configuration"
+        echo "files for your new install."
         echo "Whatever you chose to keep will be moved to the new install."
         echo "Everything else will remain in a folder called 'BACKUP'.
         "
+
+        ###
+        # See if we find the PhonieboxInstall.conf file
+        # We need to do this first, because if we re-use the .conf file, we need to append
+        # the variables regarding the found content to the also found configuration file.
+        # That way, reading the configuration file for the (potentially) non-interactive
+        # install procedure will:
+        # a) overwrite whatever variables regarding re-cycling existing content which might
+        #    be stored in the config file
+        # b) if there are no variables for dealing with re-cycled context, we will append
+        #    them - to have them for this install
+        if [ -f "${jukebox_dir}"/settings/PhonieboxInstall.conf ]; then
+            # ask for re-using the found configuration file
+            echo "The configuration of your last Phoniebox install was found."
+            read -rp "Use existing configuration for this installation? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                    EXISTINGusePhonieboxInstall=NO
+                    ;;
+                *)
+                    EXISTINGusePhonieboxInstall=YES
+                    # Copy PhonieboxInstall.conf configuration file to settings folder
+                    sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${home_dir}"/PhonieboxInstall.conf
+                    sudo chown pi:www-data "${home_dir}"/PhonieboxInstall.conf
+                    sudo chmod 775 "${home_dir}"/PhonieboxInstall.conf
+                    echo "The existing configuration will be used."
+                    echo "Just a few more questions to answer."
+                    read -rp "Hit ENTER to proceed to the next step." INPUT
+                    clear
+                    ;;
+            esac
+        fi
+
         # Delete or use existing installation?
         read -rp "Re-use config, audio and RFID codes for the new install? [Y/n] " response
         case "$response" in
@@ -231,7 +312,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -243,7 +324,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -255,7 +336,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "GPIO: use existing file? [Y/n] " response
                 case "$response" in
@@ -267,7 +348,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -279,7 +360,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${PATHDATA}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -288,7 +369,26 @@ check_existing() {
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
+
+    # Check if we found a Phoniebox install configuration earlier and ask if to run this now
+    if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
+        clear
+        echo "Using the existing configuration, you can run a non-interactive install."
+        echo "This will re-cycle found content (specified just now) as well as the"
+        echo "system information from last time (wifi, audio interface, spotify, etc.)."
+        read -rp "Do you want to run a non-interactive installation? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                cd "${home_dir}"
+                clear
+                ./buster-install-default.sh -a
+                exit
+                ;;
+        esac
+    fi
 }
 
 config_audio_interface() {
@@ -301,24 +401,23 @@ config_audio_interface() {
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# By default for the RPi the audio interface would be 'PCM'.
-# But this does not work for every setup, alternatives are
-# 'Master' or 'Speaker'. Other external sound cards might
-# use different interface names.
-# To list all available iFace names, type 'amixer scontrols'
-# in the terminal.
+# The default RPi audio interface is 'Headphone'.
+# But this does not work for every setup. Here a list of
+# available iFace names:
 "
-    read -rp "Use PCM as iFace? [Y/n] " response
+    amixer scontrols
+    echo " "
+    read -rp "Use Headphone as iFace? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             read -rp "Type the iFace name you want to use:" AUDIOiFace
             ;;
         *)
-            AUDIOiFace="PCM"
+            AUDIOiFace="Headphone"
             ;;
     esac
     # append variables to config file
-    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your iFace is called'$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -385,7 +484,7 @@ config_spotify() {
         echo "SPOTIpass=\"$SPOTIpass\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
         echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
-    } >> "${PATHDATA}/PhonieboxInstall.conf"
+    } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -415,7 +514,7 @@ config_mpd() {
             ;;
     esac
     # append variables to config file
-    echo "MPDconfig=\"$MPDconfig\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "MPDconfig=\"$MPDconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -454,10 +553,68 @@ config_audio_folder() {
             ;;
     esac
     # append variables to config file
-    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${PATHDATA}/PhonieboxInstall.conf"
+    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your audio folders live in this dir:"
     echo "${DIRaudioFolders}"
     read -rp "Hit ENTER to proceed to the next step." INPUT
+}
+
+check_variable() {
+  local variable=${1}
+  # check if variable exist and if it's empty
+  test -z "${!variable+x}" && echo "ERROR: \$${variable} is missing!" && fail=true && return
+  test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
+}
+
+check_config_file() {
+    local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
+    echo "Checking PhonieboxInstall.conf..."
+    # check that PhonieboxInstall.conf exists and is not empty
+
+    # check if config file exists
+    if [[ -f "${install_conf}" ]]; then
+        # Source config file
+        source "${install_conf}"
+        cat "${install_conf}"
+        echo ""
+    else
+        echo "ERROR: ${install_conf} does not exist!"
+        exit 1
+    fi
+
+    fail=false
+    if [[ -z "${WIFIconfig+x}" ]]; then
+        echo "ERROR: \$WIFIconfig is missing or not set!" && fail=true
+    else
+        if [[ "$WIFIconfig" == "YES" ]]; then
+            check_variable "WIFIcountryCode"
+            check_variable "WIFIssid"
+            check_variable "WIFIpass"
+            check_variable "WIFIip"
+            check_variable "WIFIipRouter"
+        fi
+    fi
+    check_variable "EXISTINGuse"
+    check_variable "AUDIOiFace"
+
+    if [[ -z "${SPOTinstall+x}" ]]; then
+        echo "ERROR: \$SPOTinstall is missing or not set!" && fail=true
+    else
+        if [ "$SPOTinstall" == "YES" ]; then
+            check_variable "SPOTIuser"
+            check_variable "SPOTIpass"
+            check_variable "SPOTIclientid"
+            check_variable "SPOTIclientsecret"
+        fi
+    fi
+    check_variable "MPDconfig"
+    check_variable "DIRaudioFolders"
+
+    if [ "${fail}" == "true" ]; then
+      exit 1
+    fi
+
+    echo ""
 }
 
 samba_config() {
@@ -527,23 +684,25 @@ install_main() {
 # You will be prompted later to complete the installation.
 "
 
-    read -rp "Do you want to start the installation? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            echo "Exiting the installation."
-            echo "Your configuration data was saved in this file:"
-            echo "${PATHDATA}/PhonieboxInstall.conf"
-            echo
-            exit
-            ;;
-    esac
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        read -rp "Do you want to start the installation? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                echo "Exiting the installation."
+                echo "Your configuration data was saved in this file:"
+                echo "${HOME_DIR}/PhonieboxInstall.conf"
+                echo
+                exit
+                ;;
+        esac
+    fi
 
     # Start logging here
     log_open
 
     # Add conffile into logfile for better debugging
     echo "################################################"
-    grep -v -e "SPOTI" -e "WIFIpass" "${PATHDATA}/PhonieboxInstall.conf"
+    grep -v -e "SPOTI" -e "WIFIpass" "${HOME_DIR}/PhonieboxInstall.conf"
     echo "################################################"
 
     #####################################################
@@ -553,7 +712,7 @@ install_main() {
     # (this might look stupid so far, but makes sense once
     # the option to install from config file is introduced.)
     # shellcheck source=scripts/installscripts/tests/ShellCheck/PhonieboxInstall.conf
-    . "${PATHDATA}/PhonieboxInstall.conf"
+    . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
     sudo iwconfig wlan0 power off
@@ -591,15 +750,21 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
+
+    # VERSION of installation
+
+    # Get version number
+    VERSION_NO=`cat ${jukebox_dir}/settings/version-number`
 
     # add used git branch and commit hash to version file
     USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
-    sudo sed -i 's/%GIT_BRANCH%/'"$USED_BRANCH"'/' "${jukebox_dir}"/settings/version
 
     # add git commit hash to version file
     COMMIT_NO="$(git --git-dir=${jukebox_dir}/.git describe --always)"
-    sudo sed -i 's/%GIT_COMMIT%/'"$COMMIT_NO"'/' "${jukebox_dir}"/settings/version
+
+    echo "${VERSION_NO} - ${COMMIT_NO} - ${USED_BRANCH}" > ${jukebox_dir}/settings/version
+    chmod 777 ${jukebox_dir}/settings/version
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
@@ -615,19 +780,12 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
-
-    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
-    sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
-    wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
-    sudo pip3 install -q -r "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -637,7 +795,6 @@ install_main() {
     cp "${jukebox_dir}"/settings/rfid_trigger_play.conf.sample "${jukebox_dir}"/settings/rfid_trigger_play.conf
 
     # creating files containing editable values for configuration
-    # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
     echo "$AUDIOiFace" > "${jukebox_dir}"/settings/Audio_iFace_Name
     echo "$DIRaudioFolders" > "${jukebox_dir}"/settings/Audio_Folders_Path
     echo "3" > "${jukebox_dir}"/settings/Audio_Volume_Change_Step
@@ -646,6 +803,10 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
+
+    # sample file for debugging with all options set to FALSE
+    sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
+    sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
 
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
@@ -676,7 +837,7 @@ install_main() {
     echo "### Deleting older versions of service daemons. This might throw errors, ignore them"
     sudo systemctl disable idle-watchdog
     sudo systemctl disable rfid-reader
-    sudo systemctl disable startup-sound
+    sudo systemctl disable phoniebox-startup-sound
     sudo systemctl disable gpio-buttons
     sudo rm "${systemd_dir}"/rfid-reader.service
     sudo rm "${systemd_dir}"/startup-sound.service
@@ -685,7 +846,9 @@ install_main() {
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    #startup sound now part of phoniebox-startup-scripts
+    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
@@ -694,7 +857,9 @@ install_main() {
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
-    sudo systemctl enable phoniebox-startup-sound
+    #startup sound is part of phoniebox-startup-scripts now
+    #sudo systemctl enable phoniebox-startup-sound
+    sudo systemctl enable phoniebox-startup-scripts
     sudo systemctl enable phoniebox-gpio-buttons
     sudo systemctl enable phoniebox-rotary-encoder.service
 
@@ -729,6 +894,8 @@ install_main() {
 
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
+        local mpd_log="/var/log/mpd/mpd.log"
+
         echo "Configuring MPD..."
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
@@ -739,6 +906,8 @@ install_main() {
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
+
+        sudo chown mpd:audio "${mpd_log}"
     fi
 
     # set which version has been installed
@@ -888,6 +1057,10 @@ folder_access() {
     sudo chown -R "${user_group}" "${jukebox_dir}"/settings
     sudo chmod -R "${mod}" "${jukebox_dir}"/settings
 
+    # logs dir accessible by pi and www-data
+    sudo chown "${user_group}" "${jukebox_dir}"/logs
+    sudo chmod "${mod}" "${jukebox_dir}"/logs
+
     # audio folders might be somewhere else, so treat them separately
     sudo chown "${user_group}" "${DIRaudioFolders}"
     sudo chmod "${mod}" "${DIRaudioFolders}"
@@ -926,19 +1099,47 @@ finish_installation() {
     #####################################################
     # Register external device(s)
 
-    echo "If you are using an USB RFID reader, connect it to your RPi."
+    echo "If you are using an RFID reader, connect it to your RPi."
     echo "(In case your RFID reader required soldering, consult the manual.)"
     # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your USB Reader? [Y/n] " response
+    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             ;;
         *)
-            cd "${jukebox_dir}"/scripts/ || exit
-            python3 RegisterDevice.py
-            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-            ;;
+            echo  'Please select the RFID reader you want to use'
+            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
+            select opt in "${options[@]}"; do
+                case $opt in
+                    "USB-Reader (e.g. Neuftech)")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        python3 RegisterDevice.py
+                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                        break
+                        ;;
+                    "RC522")
+                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                        break
+                        ;;
+                    "PN532")
+                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                        break
+                        ;;
+                    "Manual configuration")
+                        echo "Please configure your reader manually."
+                        break
+                        ;;
+                    "Multiple RFID reader")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        sudo python3 RegisterDevice.py.Multi
+                        break
+                        ;;
+                    *)
+                        echo "This is not a number"
+                        ;;
+                esac
+            done
     esac
 
     echo
@@ -966,19 +1167,40 @@ finish_installation() {
 # Main #
 ########
 main() {
-    welcome
-    reset_install_config_file
-    config_wifi
-    check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
-    config_audio_interface
-    config_spotify
-    config_mpd
-    config_audio_folder "${JUKEBOX_HOME_DIR}"
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        welcome
+        #reset_install_config_file
+        config_wifi
+        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}" "${HOME_DIR}"
+        config_audio_interface
+        config_spotify
+        config_mpd
+        config_audio_folder "${JUKEBOX_HOME_DIR}"
+    else
+        echo "Non-interactive installation!"
+        check_config_file
+        # Skip interactive Samba WINS config dialog
+        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+    fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
-    finish_installation "${JUKEBOX_HOME_DIR}"
+
+    # Copy PhonieboxInstall.conf configuration file to settings folder
+    sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
+    sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+    sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        finish_installation "${JUKEBOX_HOME_DIR}"
+    else
+        echo "Skipping USB device setup..."
+        echo "For manual registration of a USB card reader type:"
+        echo "python3 /home/pi/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo " "
+        echo "Reboot is required to activate all settings!"
+    fi
 }
 
 start=$(date +%s)
@@ -995,14 +1217,6 @@ echo "Done (in ${h}h ${m}m ${s}s)."
 #####################################################
 # notes for things to do
 
-# Soundcard
-# PCM is currently set
-# This needs to be done for mpd and in settings folder
-
-#Ask ssh password
-
-# get existing install
-# new config should be done with sed using existing conf and user input
-
 # CLEANUP
 ## remove dir BACKUP (possibly not, because we do this at the beginning after user confirms for latest config)
+#####################################################

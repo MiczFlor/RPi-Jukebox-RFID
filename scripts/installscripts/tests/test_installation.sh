@@ -3,15 +3,12 @@
 # Test to verify that the installation script works as expected.
 # This script needs to be adapted, if new packages, etc are added to the install script
 
-printf "\nTesting installation:\n"
+# The absolute path to the folder which contains this script
+PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HOME_DIR="/home/pi"
 
 tests=0
 failed_tests=0
-
-home_dir="/home/pi"
-
-jukebox_dir="${home_dir}/RPi-Jukebox-RFID"
-install_conf="${home_dir}/PhonieboxInstall.conf"
 
 # Tool functions
 
@@ -69,53 +66,66 @@ check_service_enablement() {
     ((tests++))
 }
 
+check_variable() {
+  local variable=${1}
+  # check if variable exist and if it's empty
+  test -z "${!variable+x}" && echo "ERROR: \$${variable} is missing!" && fail=true && return
+  test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
+}
+
 # Verify functions
 
 verify_conf_file() {
+    local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
     printf "\nTESTING PhonieboxInstall.conf file...\n\n"
     # check that PhonieboxInstall.conf exists and is not empty
 
     # check if config file exists
-    if [[ ! -f "${install_conf}" ]]; then
-        echo "  ERROR: ${install_conf} does not exist!"
-        exit 1
-    fi
-
-    # Source config file
     if [[ -f "${install_conf}" ]]; then
+        # Source config file
         source "${install_conf}"
         cat "${install_conf}"
         echo ""
+    else
+        echo "ERROR: ${install_conf} does not exist!"
+        exit 1
     fi
 
+    fail=false
     if [[ -z "${WIFIconfig+x}" ]]; then
-        echo "  ERROR: \$WIFIconfig is unset"
+        echo "  ERROR: \$WIFIconfig is missing or not set!" && fail=true
     else
         echo "\$WIFIconfig is set to '$WIFIconfig'"
         if [[ "$WIFIconfig" == "YES" ]]; then
-            test -z "${WIFIcountryCode+x}" && echo "  ERROR: \$WIFIcountryCode is missing!"
-            test -z "${WIFIssid+x}" && echo "  ERROR: \$WIFIssid is missing!"
-            test -z "${WIFIpass+x}" && echo "  ERROR: \$WIFIpass is missing!"
-            test -z "${WIFIip+x}" && echo "  ERROR: \$WIFIip is missing!"
-            test -z "${WIFIipRouter+x}" && echo "  ERROR: \$WIFIipRouter is missing!"
+            check_variable "WIFIcountryCode"
+            check_variable "WIFIssid"
+            check_variable "WIFIpass"
+            check_variable "WIFIip"
+            check_variable "WIFIipRouter"
         fi
     fi
-    test -z "${EXISTINGuse+x}" && echo "  ERROR: \$EXISTINGuse is missing!"
-    test -z "${AUDIOiFace+x}" && echo "  ERROR: \$AUDIOiFace is missing!"
+    check_variable "EXISTINGuse"
+    check_variable "AUDIOiFace"
 
     if [[ -z "${SPOTinstall+x}" ]]; then
-        echo "  ERROR: \$SPOTinstall is unset"
+        echo "  ERROR: \$SPOTinstall is missing or not set!" && fail=true
     else
         echo "\$SPOTinstall is set to '$SPOTinstall'"
         if [ "$SPOTinstall" == "YES" ]; then
-            test -z "${SPOTIuser+x}" && echo "  ERROR: \$SPOTIuser is missing!"
-            test -z "${SPOTIpass+x}" && echo "  ERROR: \$SPOTIpass is missing!"
-            test -z "${SPOTIclientid+x}" && echo "  ERROR: \$SPOTIclientid is missing!"
-            test -z "${SPOTIclientsecret+x}" && echo "  ERROR: \$SPOTIclientsecret is missing!"
+            check_variable "SPOTIuser"
+            check_variable "SPOTIpass"
+            check_variable "SPOTIclientid"
+            check_variable "SPOTIclientsecret"
         fi
     fi
-    test -z "${MPDconfig+x}" && echo "  ERROR: \$MPDconfig is missing!"
-    test -z "${DIRaudioFolders+x}" && echo "  ERROR: \$DIRaudioFolders is missing!"
+    check_variable "MPDconfig"
+    check_variable "DIRaudioFolders"
+
+    if [ "${fail}" == "true" ]; then
+      exit 1
+    fi
+
+    echo ""
 }
 
 verify_wifi_settings() {
@@ -135,17 +145,19 @@ verify_wifi_settings() {
     # check owner and permissions
     check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
     check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
-    
+
     # check that dhcpcd service is enabled and started
     check_service_state dhcpcd active
     check_service_enablement dhcpcd enabled
 }
 
 verify_apt_packages(){
-    local packages="apt-transport-https libspotify-dev raspberrypi-kernel-headers samba
+    local packages="libspotify-dev samba
 samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
 resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 python3-spidev"
+    # TODO apt-transport-https checking only on RPi is currently a workaround
+    local packages_raspberrypi="apt-transport-https raspberrypi-kernel-headers"
     local packages_spotify="mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
 python3-cffi python3-ply python3-pycparser python3-spotify"
 
@@ -154,6 +166,11 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
     # also check for spotify packages if it has been installed
     if [[ "${SPOTinstall}" == "YES" ]]; then
         packages="${packages} ${packages_spotify}"
+    fi
+
+    # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
+    if [[ $(uname -m) =~ ^armv.+$ ]]; then
+        packages="${packages} ${packages_raspberrypi}"
     fi
 
     for package in ${packages}
@@ -169,9 +186,11 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
-    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO pi-rc522"
+    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO"
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
+    local modules_rc522="pi-rc522"
+    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -180,7 +199,19 @@ verify_pip_packages() {
         modules="${modules} ${modules_spotify}"
     fi
 
-    modules="${modules} ${modules_pn532}"
+    if [[ -f "${deviceName}" ]]; then
+        # RC522 reader is used
+        if grep -Fxq "${deviceName}" MFRC522
+        then
+            modules="${modules} ${modules_rc522}"
+        fi
+
+        # PN532 reader is used
+        if grep -Fxq "${deviceName}" PN532
+        then
+            modules="${modules} ${modules_pn532}"
+        fi
+    fi
 
     for module in ${modules}
     do
@@ -214,19 +245,19 @@ verify_webserver_config() {
 verify_systemd_services() {
     printf "\nTESTING systemd services...\n\n"
     # check that services exist
-    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-sound.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
+    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
 
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
     check_service_enablement phoniebox-rfid-reader enabled
-    check_service_enablement phoniebox-startup-sound enabled
+    check_service_enablement phoniebox-startup-scripts enabled
     check_service_enablement phoniebox-gpio-buttons enabled
     check_service_enablement phoniebox-rotary-encoder enabled
 }
 
 verify_spotify_config() {
     local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-    local mopidy_conf="${home_dir}/.config/mopidy/mopidy.conf"
+    local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
 
     printf "\nTESTING spotify config...\n\n"
 
@@ -263,6 +294,7 @@ verify_mpd_config() {
 }
 
 verify_folder_access() {
+    local jukebox_dir="${HOME_DIR}/RPi-Jukebox-RFID"
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
@@ -281,6 +313,7 @@ verify_folder_access() {
 }
 
 main() {
+    printf "\nTesting installation:\n"
     verify_conf_file
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings
@@ -305,7 +338,7 @@ runtime=$((end-start))
 ((h=${runtime}/3600))
 ((m=($runtime%3600)/60))
 ((s=$runtime%60))
- 
+
 if [[ "${failed_tests}" -gt 0 ]]; then
     echo "${failed_tests} Test(s) failed (of ${tests} tests) (in ${h}h ${m}m ${s}s)."
     exit 1

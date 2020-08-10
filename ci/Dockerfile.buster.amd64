@@ -10,7 +10,7 @@ RUN groupadd --gid 1000 pi ;\
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
-  apt-get -y install curl gnupg sudo nano python3-pytest ;\
+  apt-get -y install curl gnupg sudo nano;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ buster main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
@@ -26,7 +26,5 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get clean ;\
   touch /boot/cmdline.txt /etc/sysctl.conf ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
-
-ENTRYPOINT pytest-3
 
 USER pi

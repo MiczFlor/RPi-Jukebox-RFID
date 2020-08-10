@@ -32,4 +32,3 @@ def testMain():
     devices = get_all_devices(config)
     print(devices)
     pass
-

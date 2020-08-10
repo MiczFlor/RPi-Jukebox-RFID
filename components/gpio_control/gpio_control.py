@@ -1,20 +1,21 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 import configparser
 import os
 import logging
 
 from GPIODevices import *
-import  function_calls
+import function_calls
 from signal import pause
 
 from RPi import GPIO
 
-#from GPIODevices.VolumeControl import VolumeControl
-#from GPIODevices.led import LED, MPDStatusLED
+# from GPIODevices.VolumeControl import VolumeControl
+# from GPIODevices.led import LED, MPDStatusLED
 
 GPIO.setmode(GPIO.BCM)
 
 logger = logging.getLogger(__name__)
+
 
 def getFunctionCall(function_name):
     try:
@@ -38,18 +39,18 @@ def generate_device(config, deviceName):
             getFunctionCall(config.get('functionCall1')),
             getFunctionCall(config.get('functionCall2')),
             functionCallTwoBtns=getFunctionCall(config.get('functionCallTwoButtons')),
-            pull_up=config.getboolean('pull_up',fallback=True),
+            pull_up=config.getboolean('pull_up', fallback=True),
             hold_repeat=config.getboolean('hold_repeat', False),
-            hold_time=config.getfloat('hold_time',fallback=0.3),
+            hold_time=config.getfloat('hold_time', fallback=0.3),
             name=deviceName)
     elif device_type in ('Button', 'SimpleButton'):
         return SimpleButton(config.getint('Pin'),
                             action=getFunctionCall(config.get('functionCall')),
                             name=deviceName,
                             bouncetime=config.getint('bouncetime', fallback=500),
-                            edge=config.get('edge',fallback='FALLING'),
+                            edge=config.get('edge', fallback='FALLING'),
                             hold_repeat=config.getboolean('hold_repeat', False),
-                            hold_time=config.getfloat('hold_time',fallback=0.3))
+                            hold_time=config.getfloat('hold_time', fallback=0.3))
     elif device_type == 'LED':
         return LED(config.getint('Pin'),
                             name=deviceName,

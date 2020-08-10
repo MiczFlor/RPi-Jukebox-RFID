@@ -109,7 +109,7 @@ function playSongInPlaylist(song) {
 
 function appendFileToPlaylist(file) {
     $.ajax({
-        url: `api/playlist/appendfiletoplaylist.php`,
+        url: `api/playlist/appendFileToPlaylist.php`,
         method: 'PUT',
         data: file.toString()
     }).success(data => {

@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Test Install Scripts on Docker
 
 on: [push]
 
@@ -10,7 +10,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build Docker image and run tests
       run: |
-        docker build . --file ./ci/Dockerfile.buster.amd64 --tag rpi-jukebox-rfid-buster:latest
-        docker run --rm -i rpi-jukebox-rfid-buster:latest
+        docker build . --file ./ci/Dockerfile.buster.test_install.amd64 --tag rpi-jukebox-rfid-buster:latest
+        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests.sh
+        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests2.sh

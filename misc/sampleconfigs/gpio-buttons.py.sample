@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import RPi.GPIO as GPIO
 from signal import pause
 from subprocess import check_call
@@ -86,8 +86,10 @@ def recordstop_action(channel):
 
 def recordplaylatest_action(channel):
     check_call("./scripts/playout_controls.sh -c=recordplaylatest", shell=True)
+
+
 def rfidoff_action(channel):
-    check_call("./scripts/playout_controls.sh -c=playerpauseforce", shell=True)
+    check_call("./scripts/playout_controls.sh -c=playerpauseforce -v=0.5", shell=True)
 
 
 # Handlers that handle special behavior of the push of a button
@@ -132,14 +134,14 @@ btn_next = 26
 btn_prev = 20
 btn_halt = 21
 led_power = 12
-# btn_rfidoff = 
+# btn_rfidoff =
 # reco =
 # play =
 
 # Set GPIO numbering to BCM instead of board numbering
 GPIO.setmode(GPIO.BCM)
 # Bounce tolerance time for buttons
-bouncetime = 500
+bouncetime = 200 # Milliseconds?
 volumeHoldTime = 0.3  # Seconds
 shutdownHoldTime = 2  # Seconds
 PledBlinkTime = 0.3  # Seconds
@@ -164,10 +166,10 @@ GPIO.add_event_detect(btn_volD, GPIO.FALLING, callback=volD_handler, bouncetime=
 GPIO.add_event_detect(btn_next, GPIO.FALLING, callback=next_action, bouncetime=bouncetime)
 GPIO.add_event_detect(btn_prev, GPIO.FALLING, callback=prev_action, bouncetime=bouncetime)
 GPIO.add_event_detect(btn_halt, GPIO.FALLING, callback=halt_action, bouncetime=bouncetime)
-#GPIO.add_event_detect(btn_rfidoff, GPIO.FALLING, callback=rfidoff_action, bouncetime=bouncetime)
-#reco.when_pressed = recordstart_action
-#reco.when_released = recordstop_action
-#play.when_pressed = recordplaylatest_action
+# GPIO.add_event_detect(btn_rfidoff, GPIO.FALLING, callback=rfidoff_action, bouncetime=bouncetime)
+# reco.when_pressed = recordstart_action
+# reco.when_released = recordstop_action
+# play.when_pressed = recordplaylatest_action
 
 
 # Switch on power led after boot to indicate state "on" for phoniebox

@@ -13,10 +13,13 @@ import RPi.GPIO as GPIO
 import logging
 
 from evdev import InputDevice, categorize, ecodes, list_devices
-# import MFRC522
-import pirc522
-from py532lib.i2c import *
-from py532lib.mifare import *
+# Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
+try:
+    import pirc522
+    from py532lib.i2c import *
+    from py532lib.mifare import *
+except ImportError:
+    pass
 
 logger = logging.getLogger(__name__)
 
@@ -135,10 +138,10 @@ class Pn532Reader:
         self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
 
     def readCard(self):
-        return str(+int('0x' + self.device.scan_field().hex(),0))
+        return str(+int('0x' + self.device.scan_field().hex(), 0))
 
     def cleanup(self):
-        #Not sure if something needs to be done here.
+        # Not sure if something needs to be done here.
         logger.debug("PN532Reader clean up.")
 
 
