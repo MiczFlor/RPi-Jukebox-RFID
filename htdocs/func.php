@@ -498,7 +498,8 @@ function index_folders_print($item, $key)
     print "
           </div><!-- ./ class='panel-body' -->
         </div><!-- ./ class='collapse' -->
-      </div><!-- ./ class='panel' -->";
+      </div><!-- ./ class='panel' -->
+	 </div><!-- ./ class='filterDiv' -->";
 
 }
 function getSubDirectories( $path = '.', $level = 0, $showfiles = 0 ){
