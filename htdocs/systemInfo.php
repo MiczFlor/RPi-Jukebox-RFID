@@ -25,6 +25,7 @@ $distributor = substr($res[0],strpos($res[0],":")+1,strlen($res[0])-strpos($res[
 $description = substr($res[1],strpos($res[1],":")+1,strlen($res[1])-strpos($res[1],":"));
 $release = substr($res[2],strpos($res[2],":")+1,strlen($res[2])-strpos($res[2],":"));
 $codename = substr($res[3],strpos($res[3],":")+1,strlen($res[3])-strpos($res[3],":"));
+$rpi_temperature = explode("=", exec("sudo vcgencmd measure_temp"))[1];
 
 // check RPis throttling state
 function checkRpiThrottle() {
@@ -89,6 +90,10 @@ $rpi_throttle = checkRpiThrottle();
         <div class="row">
           <label class="col-md-4 control-label" for=""><?php print $lang['infoOsThrottle']; ?></label>
           <div class="col-md-6"><?php echo trim($rpi_throttle); ?></div>
+        </div>     
+        <div class="row">
+          <label class="col-md-4 control-label" for=""><?php print $lang['infoOsTemperature']; ?></label>
+          <div class="col-md-6"><?php echo trim($rpi_temperature); ?></div>
         </div>
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
