@@ -249,6 +249,7 @@ $lang['settingsWlanReadOFF'] = "No, do not read wlan IP.";
 $lang['infoOsDistrib'] = "OS Distribution";
 $lang['infoOsCodename'] = "Codename";
 $lang['infoOsTemperature'] = "Temperature";
+$lang['infoOsThrottle'] = "Throttling";
 $lang['infoStorageUsed'] = "Storage usage";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
