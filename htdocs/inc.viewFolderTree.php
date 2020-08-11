@@ -196,7 +196,7 @@ if(count($contentTree) > 0) {
         //array_walk($getSubDirectories, 'test_index_folders_print');
         array_walk($getSubDirectories, 'index_folders_print');
 
-    print "\n    </div><!-- ./ class='col-md-12' -->";
+    //print "\n    </div><!-- ./ class='col-md-12' -->";
 }
 
 ?>
