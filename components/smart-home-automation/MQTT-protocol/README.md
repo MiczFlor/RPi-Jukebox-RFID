@@ -137,7 +137,7 @@ sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol
 sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/phoniebox-mqtt-client.service.stretch-default.sample /etc/systemd/system/phoniebox-mqtt-client.service
 ~~~
 
-Now edit the file `pi/RPi-Jukebox-RFID/scripts/daemon-mqtt-client.py` to match your requirements.
+Now edit the file `/home/pi/RPi-Jukebox-RFID/scripts/daemon_mqtt_client.py` to match your requirements.
 Now continue and activate the service.
 
 ~~~
