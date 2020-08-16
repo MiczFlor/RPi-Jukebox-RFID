@@ -1,73 +1,139 @@
 # VARIABLES TO CHANGE
-# This file is read by scripts/rfid_trigger_play.conf
+# This file is read by scripts/rfid_trigger_play.sh
 # It contains the RFID chip IDs which are used to control the Phoniebox.
 # Adjust these variables to match your system and configuration.
 
 # If you use cards to change audio level, stop playing or shutdown the RPi,
 # replace the following strings with the ID of the card. For example:
 # Using the card ID 1234567890 to set the audio to mute, change this line:
-# CMDMUTE="mute"
+# CMDMUTE="%CMDMUTE%"
 # to the following:
 # CMDMUTE="1234567890"
 # Leave everything untouched where you do not use a card.
-CMDMUTE="%CMDMUTE%"
-CMDMAXVOL30="%CMDMAXVOL30%"
-CMDMAXVOL50="%CMDMAXVOL50%"
-CMDMAXVOL75="%CMDMAXVOL75%"
-CMDMAXVOL80="%CMDMAXVOL80%"
-CMDMAXVOL85="%CMDMAXVOL85%"
-CMDMAXVOL90="%CMDMAXVOL90%"
-CMDMAXVOL95="%CMDMAXVOL95%"
-CMDMAXVOL100="%CMDMAXVOL100%"
-CMDVOL30="%CMDVOL30%"
-CMDVOL50="%CMDVOL50%"
-CMDVOL75="%CMDVOL75%"
-CMDVOL80="%CMDVOL80%"
-CMDVOL85="%CMDVOL85%"
-CMDVOL90="%CMDVOL90%"
-CMDVOL95="%CMDVOL95%"
-CMDVOL100="%CMDVOL100%"
-CMDVOLUP="%CMDVOLUP%"
-CMDVOLDOWN="%CMDVOLDOWN%"
-CMDSTOP="%CMDSTOP%"
-CMDSHUTDOWN="%CMDSHUTDOWN%"
-CMDREBOOT="%CMDREBOOT%"
+#
+# Adding new commands to this sample file:
+# Structure the file by sections and commands
+# A section starts with ##
+# Example: ## Audio player
+# A command's description is *above* the command and starts with ###
+# Example: 
+# ### Stop player
+# CMDSTOP="%CMDSTOP%"
+# This structuring was introduced to have a human readable display in the Web UI
+# All lines starting with # are comments and ignored in the Web UI
+
+## Audio player
 # The following commands control audio playout
-# next and prev play the preivous or next track in the playlist (== folder & spotify)
+# next and prev play the previous or next track in the playlist (== folder & spotify)
+### Volume up by one step
+CMDVOLUP="%CMDVOLUP%"
+### Volume down by one step
+CMDVOLDOWN="%CMDVOLDOWN%"
+### Stop player
+CMDSTOP="%CMDSTOP%"
+### Mute player
+CMDMUTE="%CMDMUTE%"
+### Skip next track
 CMDNEXT="%CMDNEXT%"
+### Skip previous track
 CMDPREV="%CMDPREV%"
-# The following command restarts the playlist from the beginning
+### Restart the playlist
 CMDREWIND="%CMDREWIND%"
-# seek ahead or back 15 seconds
+### Seek ahead 15 sec.
 CMDSEEKFORW="%CMDSEEKFORW%"
+### Seek back 15 sec.
 CMDSEEKBACK="%CMDSEEKBACK%"
-# pause audio playout
+### Pause player
 CMDPAUSE="%CMDPAUSE%"
-# resume audio playout (makes only sense in combination with pause)
+### Resume audio playout
 CMDPLAY="%CMDPLAY%"
-# Timer top stop after x minutes
-STOPAFTER5="%STOPAFTER5%"
-STOPAFTER15="%STOPAFTER15%"
-STOPAFTER30="%STOPAFTER30%"
-STOPAFTER60="%STOPAFTER60%"
-# Timer top shutdown after x minutes
-SHUTDOWNAFTER5="%SHUTDOWNAFTER5%"
-SHUTDOWNAFTER15="%SHUTDOWNAFTER15%"
-SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
-SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
-# Toggle wifi like in airplane mode
-ENABLEWIFI="%ENABLEWIFI%"
-DISABLEWIFI="%DISABLEWIFI%"
-# Toggle Shuffle mode
+
+## System
+### Shutdown
+CMDSHUTDOWN="%CMDSHUTDOWN%"
+### Reboot
+CMDREBOOT="%CMDREBOOT%"
+
+## Playlist
+### Shuffle mode toggle for current playlist (random on/off)
 CMDSHUFFLE="%CMDSHUFFLE%"
-#Controll commands for Audio Recording
-# the first two are legacy name spaces
-STARTRECORD600="%STARTRECORD600%"
-STOPRECORD="%STOPRECORD%"
-RECORDSTOP="%RECORDSTOP%"
-RECORDSTART10="%RECORDSTART10%"
-RECORDSTART60="%RECORDSTART60%"
-RECORDSTART600="%RECORDSTART600%"
-RECORDPLAYBACKLATEST="%RECORDPLAYBACKLATEST%"
-# Custom Playlist
+### Play custom playlist
 CMDPLAYCUSTOMPLS="%CMDPLAYCUSTOMPLS%"
+
+## Set volume (in percent)
+### Volume 30%
+CMDVOL30="%CMDVOL30%"
+### Volume 50%
+CMDVOL50="%CMDVOL50%"
+### Volume 75%
+CMDVOL75="%CMDVOL75%"
+### Volume 80%
+CMDVOL80="%CMDVOL80%"
+### Volume 85%
+CMDVOL85="%CMDVOL85%"
+### Volume 90%
+CMDVOL90="%CMDVOL90%"
+### Volume 95%
+CMDVOL95="%CMDVOL95%"
+### Volume 100%
+CMDVOL100="%CMDVOL100%"
+
+## Set maximum volume (in percent)
+### Max. Volume 30%
+CMDMAXVOL30="%CMDMAXVOL30%"
+### Max. Volume 50%
+CMDMAXVOL50="%CMDMAXVOL50%"
+### Max. Volume 75%
+CMDMAXVOL75="%CMDMAXVOL75%"
+### Max. Volume 80%
+CMDMAXVOL80="%CMDMAXVOL80%"
+### Max. Volume 85%
+CMDMAXVOL85="%CMDMAXVOL85%"
+### Max. Volume 90%
+CMDMAXVOL90="%CMDMAXVOL90%"
+### Max. Volume 95%
+CMDMAXVOL95="%CMDMAXVOL95%"
+### Max. Volume 100%
+CMDMAXVOL100="%CMDMAXVOL100%"
+
+## Timer: stop player after x minutes
+### Stop player after 5 min.
+STOPAFTER5="%STOPAFTER5%"
+### Stop player after 15 min.
+STOPAFTER15="%STOPAFTER15%"
+### Stop player after 30 min.
+STOPAFTER30="%STOPAFTER30%"
+### Stop player after 60 min.
+STOPAFTER60="%STOPAFTER60%"
+
+## Timer: shutdown after x minutes
+### Shutdown after 5 min.
+SHUTDOWNAFTER5="%SHUTDOWNAFTER5%"
+### Shutdown after 15 min.
+SHUTDOWNAFTER15="%SHUTDOWNAFTER15%"
+### Shutdown after 30 min.
+SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
+### Shutdown after 60 min.
+SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
+
+## Wifi: switch on/off and other
+### Enable Wifi
+ENABLEWIFI="%ENABLEWIFI%"
+### Disable Wifi
+DISABLEWIFI="%DISABLEWIFI%"
+### Toggle Wifi on/off
+TOGGLEWIFI="%TOGGLEWIFI%"
+### Read out the Wifi IP over the Phoniebox speakers
+CMDREADWIFIIP="%CMDREADWIFIIP%"
+
+## Recording audio commands 
+### Start recording for 10 sec. duration
+RECORDSTART10="%RECORDSTART10%"
+### Start recording for 60 sec. duration
+RECORDSTART60="%RECORDSTART60%"
+### Start recording for 600 sec. duration
+RECORDSTART600="%RECORDSTART600%"
+### Stop recording
+RECORDSTOP="%RECORDSTOP%"
+### Replay latest recording
+RECORDPLAYBACKLATEST="%RECORDPLAYBACKLATEST%"

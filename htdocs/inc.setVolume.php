@@ -59,7 +59,7 @@ Volume Select Form
                             $('#volume').val(Math.round(volume/5) * 5);
                             $('#volume').attr('initialized', 'true');
                         }
-                        $('#volumeValue').html(volume);
+                        $('#volumeValue').html(volume+"%");
                         $('#volumeCircle').attr('class', `c100 p${volume}`);
                     }
 

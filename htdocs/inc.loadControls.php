@@ -1,6 +1,3 @@
-<?php
-include ("lang/lang-en-UK.php");
-?>
 
 <div class="playerWrapper">
     <a onclick="executePlayerCommand('seekBack')" class='btn btn-player-l'
@@ -37,9 +34,9 @@ print '<a id="pause" onclick="pause();" class="btn btn-player-xl" title="' . $la
         <!--a href='?player=replay' class='btn btn-default btn-success btn-lg'><i class='mdi mdi-loop'></i></a-->
         <!--a href="?player=random" class="btn  btn-lg"><i class="mdi mdi-shuffle"></i></a-->
             <?php
-            print '<a id="repeatPlaylist" onclick="repeatSingle();" class="btn btn-lg" title="' . $lang['playerLoop'] . ': ' . $lang['globalOff'] . '" style="display: none"><i class="mdi mdi-repeat-off"></i> ' . $lang['globalOff'] . '</a>';
+            print '<a id="repeatPlaylist" onclick="repeatSingle();" class="btn btn-lg" title="' . $lang['playerLoop'] . ': ' . $lang['globalList'] . '" style="display: none"><i class="mdi mdi-repeat"></i> ' . $lang['globalList'] . '</a>';
             print '<a id="repeatSingle" onclick="repeatOff();" class="btn  btn-lg" title="' . $lang['playerLoop'] . ": " . $lang['globalTrack'] . '" style="display: none"><i class="mdi mdi-repeat-once"></i> ' . $lang['globalTrack'] . '</a>';
-            print '<a id="repeatOff" onclick="repeatPlaylist();" class="btn  btn-lg" title="' . $lang['playerLoop'] . ': ' . $lang['globalList'] . '" style="display: none"><i class="mdi mdi-repeat"></i> ' . $lang['globalList'] . '</a>';
+            print '<a id="repeatOff" onclick="repeatPlaylist();" class="btn btn-lg" title="' . $lang['playerLoop'] . ': ' . $lang['globalOff'] . '" style="display: none"><i class="mdi mdi-repeat-off"></i> ' . $lang['globalOff'] . '</a>';
             print '<a id="stop" onclick="stop();" class="btn  btn-lg" title="' . $lang['playerStop'] . '"><i class="mdi mdi-stop"></i></a>';
             ?>
         </div>
@@ -150,14 +147,14 @@ print '<a id="pause" onclick="pause();" class="btn btn-player-xl" title="' . $la
     }
 
     function updateRepeatState() {
-        if (JUKEBOX.playerInfo.repeat === '0') {
+        if (JUKEBOX.playerInfo.single === '0' && JUKEBOX.playerInfo.repeat === '1') {
+            $('#repeatOff').css('display', 'none');
             $('#repeatPlaylist').css('display', 'initial');
             $('#repeatSingle').css('display', 'none');
+ 	    } else if (JUKEBOX.playerInfo.single === '1' && JUKEBOX.playerInfo.repeat === '1') {
             $('#repeatOff').css('display', 'none');
-        } else if (JUKEBOX.playerInfo.single === '1') {
             $('#repeatPlaylist').css('display', 'none');
             $('#repeatSingle').css('display', 'initial');
-            $('#repeatOff').css('display', 'none');
         } else {
             $('#repeatPlaylist').css('display', 'none');
             $('#repeatSingle').css('display', 'none');

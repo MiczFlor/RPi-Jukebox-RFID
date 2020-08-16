@@ -10,13 +10,12 @@
 # * Reader.py.experimental
 #     This alternative Reader.py script was meant to cover not only USB readers but more.
 #     It can be used to replace Reader.py if you have readers such as
-#     MFRC522 or RDM6300
+#     MFRC522, RDM6300 or PN532
 # * Reader.py.kkmoonRFIDreader
 #     KKMOON RFID Reader which appears twice in the devices list as HID 413d:2107
 #     and this required to check "if" the device is a keyboard.
 
-import string
-#import csv
+
 import os.path
 import sys
 
@@ -39,13 +38,13 @@ class Reader:
         path = os.path.dirname(os.path.realpath(__file__))
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
         deviceNameFile = os.path.join(path, 'deviceName.txt')
-        if not os.path.isfile(fileName):
-            logger.error(f'deviceName not set in {deviceNameFile}')
+        if not os.path.isfile(deviceNameFile):
+            logger.error('deviceName not set in {deviceNameFile}'.format(deviceNameFile=deviceNameFile))
             sys.exit('Please run RegisterDevice.py first')
         else:
             with open(deviceNameFile, 'r') as f:
                 deviceName = f.read()
-                logging.debug(f'DeviceName {deviceName}')
+                logging.debug('DeviceName {deviceName}'.format(deviceName=deviceName))
             devices = get_devices()
             for device in devices:
                 if device.name == deviceName:

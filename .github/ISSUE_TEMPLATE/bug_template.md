@@ -3,7 +3,6 @@ name: bug report
 about: use this template to report bugs
 title: "\U0001F41B | BUG SUMMARY"
 labels: bug, needs triage
-assignees: MiczFlor
 ---
 
 ## Bug
@@ -29,6 +28,8 @@ i.e. `I would have expected that this command would magically fix itself when it
 ### Further information that might help
 
 <!--
+Please post here the output of 'tail -n 500 /var/log/syslog' or 'journalctl -u mopidy' ( Spotify edition only)
+
 i.e. `find logfiles at https://paste.ubuntu.com/p/cRS7qM8ZmP/`
 -->
 

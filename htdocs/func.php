@@ -173,14 +173,14 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             margin-right: 1em
         }
         /* anchor behaviour */
-        
+
         /* flash briefly on click */
         .panel-heading a.btn-panel-big:active {
             color: #fff!important;
         }
         .panel-heading a.btn-panel-big {
             cursor: pointer;
-        } 
+        }
         </style>
 
     </head>\n";
@@ -191,7 +191,7 @@ function tailShell($filepath, $lines = 1) {
 	passthru('tail -'  . $lines . ' ' . escapeshellarg($filepath));
 	return trim(ob_get_clean());
 }
-	
+
 function arrayPregDiff($a, $p) {
     # added function to use regular expressions to remove multiple files
     # e.g. all of the same file type from the array forming the later playlist.
@@ -308,6 +308,29 @@ function index_folders_print($item, $key)
         print '<img class="img-playlist-item-placeholder" src="" alt=""/>';
     }
     */
+	
+	/* filter */
+	if (in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv spotify col-md-12'>";
+	  
+	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv livestream col-md-12'>";
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv podcast col-md-12'>";
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files'])) {
+		print "
+      <div class='filterDiv youtube col-md-12'>";
+	  
+	} else {
+		print "
+      <div class='filterDiv file col-md-12'>";
+	}
+
     print "
       <div class='panel ".$panelStyle."'>";
 
@@ -326,20 +349,20 @@ function index_folders_print($item, $key)
 */
     if($contentTree[$key]['count_files'] > 0) {
         print "
-              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"false\");' class='btn-panel-big btn-panel-col pb-plist-play' title='Play folder' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>";
     }
     if($contentTree[$key]['count_subdirs'] > 0) {
         print "
-              <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
+              <a onclick='playPlaylist(\"$playlist\", \"true\");' class='btn-panel-big btn-panel-col pb-plist-play' title='Play (sub)folders'><i class='mdi mdi-animation-play-outline'></i></a>";
     }
-	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) ) {
+	if (!in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/spotify.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files']) && !in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files']) ) {
 
 	    print "
 				  <span class='mb-0 playlist_headline' data-toggle='collapse' data-target='#collapse".$id."' aria-expanded='true' aria-controls='collapse".$id."' style='cursor:pointer;' title='Show contents'>";
 		print "<i class='mdi mdi-folder-outline mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 		//print "\n              <i class='mdi mdi-eye-settings-outline'></i> ";
-		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline'></i> ";
+		print "\n              <i class='mdi mdi-arrow-down-drop-circle-outline' ></i> ";
 
         if($contentTree[$key]['count_subdirs'] > 0) {
             print "            <span class='badge' title='Show folders'><i class='mdi mdi-folder-multiple'></i> ".$contentTree[$key]['count_subdirs']."</span>";
@@ -355,11 +378,15 @@ function index_folders_print($item, $key)
 		print $contentTree[$key]['basename'];
 		}
 	} elseif (in_array($contentTree[$key]['path_abs']."/livestream.txt", $contentTree[$key]['files'])) {
-		print "<i class='mdi mdi-podcast mdi-36px'></i> ";
+		print "<i class='mdi mdi-radio mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 
 	} elseif (in_array($contentTree[$key]['path_abs']."/podcast.txt", $contentTree[$key]['files'])) {
-		print "<i class='mdi mdi-cast mdi-36px'></i> ";
+		print "<i class='mdi mdi-cast-audio mdi-36px'></i> ";
+		print $contentTree[$key]['basename'];
+
+	} elseif (in_array($contentTree[$key]['path_abs']."/youtube.txt", $contentTree[$key]['files'])) {
+		print "<i class='mdi mdi-youtube mdi-36px'></i> ";
 		print $contentTree[$key]['basename'];
 
 	} else {
@@ -471,7 +498,8 @@ function index_folders_print($item, $key)
     print "
           </div><!-- ./ class='panel-body' -->
         </div><!-- ./ class='collapse' -->
-      </div><!-- ./ class='panel' -->";
+      </div><!-- ./ class='panel' -->
+	 </div><!-- ./ class='filterDiv' -->";
 
 }
 function getSubDirectories( $path = '.', $level = 0, $showfiles = 0 ){
@@ -539,11 +567,12 @@ function printPlaylistHtml($files)
     foreach($files as $file) {
         print "
                 <li class='list-group-item'>".$counter++." :
-                <a onclick='playSingleFile(\"$file\");' class='btn-panel-small btn-panel-col' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
-                    <strong>".basename($file)."</strong>";
+                <a onclick='playSingleFile(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Play song' style='cursor: pointer'><i class='mdi mdi-play-circle-outline'></i></a>
+                <a onclick='appendFileToPlaylist(\"".htmlspecialchars($file,ENT_QUOTES)."\");' class='btn-panel-small btn-panel-col pb-plist-play' title='Append song to playlist' style='cursor: pointer'><i class='mdi mdi-plus-circle-outline'></i></a>
+                    <strong>".htmlspecialchars(basename($file),ENT_QUOTES)."</strong>";
         if(basename($file) != "livestream.txt" && basename($file) != "podcast.txt" && basename($file) != "spotify.txt") {
             print"
-                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".dirname($file)."&filename=".basename($file)."'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
+                    &nbsp;&nbsp; <a href='trackEdit.php?folder=".htmlspecialchars(dirname($file),ENT_QUOTES)."&filename=".htmlspecialchars(basename($file),ENT_QUOTES)."' class='pb-plist-play'><i class='mdi mdi-text'></i> ".$lang['globalEdit']."</a>";
         }
         print "
                 </li>";
@@ -552,5 +581,24 @@ function printPlaylistHtml($files)
             </ol>";
 }
 
+function mopidyApiCall($method, $params){
+    // this function simplifies making Mopidy API requests (HTTP JSON-RPC API)
+    // used e.g. for getting title and cover images from Spotify
+    $exec = "curl --location --request POST 'http://localhost:6680/mopidy/rpc' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        \"jsonrpc\": \"2.0\",
+        \"id\": 1,
+        \"method\": \"".$method."\",
+        \"params\": ".$params."
+    }'";
+    exec($exec, $response);
+
+    $json  = json_decode($response[0], true);
+
+    unset($response); //otherwise responses of later executions will add to the array $response
+
+    return $json;
+}
 
 ?>

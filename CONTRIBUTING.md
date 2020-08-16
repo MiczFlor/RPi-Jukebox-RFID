@@ -2,6 +2,7 @@
 # Table of contents
 
 * Naming conventions
+* Structure of files and folders
 * How to contribute
 
 # Naming conventions
@@ -25,10 +26,10 @@
 Inside the root folder or the repo, these folders are important:
 
 * `scripts`
-    * this folder should contain *only* the scripts which are actively used (controlling playout, rfid tiggers, etc.)
+    * this folder should contain **only actively used scripts** (controlling playout, rfid tiggers, etc.)
     * some possible services and features might live in the *components* directory (see below)
-    * if one or more scripts are needed for a component (like daemons), they should be copied to the `scripts` directory during installation / activation
-    * by copying, changes will NOT affect the github repo and make it easier for users to modify their components
+    * if one or more scripts are needed for the activation of a component (like daemons), they should be copied to the `scripts` directory during installation / activation
+    * WHY? By copying, changes will NOT affect the github repo and make it easier for users to modify their components
 * `components`
     * contains sub- und subsubfolders for additional features, services, hardware
     * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one

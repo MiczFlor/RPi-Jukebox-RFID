@@ -1,4 +1,4 @@
-name: Python package
+name: Python Checks and Tests
 
 on: [push]
 
@@ -20,15 +20,18 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install wheel
+        pip install spidev
         pip install -r requirements.txt
     - name: Lint with flake8
       run: |
         pip install flake8
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --filename=*.py,*.py.*
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    #- name: Test with pytest
-    #  run: |
-    #    pip install pytest
-    #    pytest
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --filename=*.py,*.py.*
+    - name: Test with pytest
+      working-directory: ./components/gpio_control
+      run: |
+        pip install -r requirements.txt
+        pytest

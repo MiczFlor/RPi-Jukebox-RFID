@@ -107,6 +107,16 @@ function playSongInPlaylist(song) {
     });
 }
 
+function appendFileToPlaylist(file) {
+    $.ajax({
+        url: `api/playlist/appendFileToPlaylist.php`,
+        method: 'PUT',
+        data: file.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
 function playSingleFile(file) {
     $.ajax({
         url: `api/playlist/playsinglefile.php`,

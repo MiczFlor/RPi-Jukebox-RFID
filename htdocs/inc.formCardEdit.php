@@ -21,15 +21,6 @@ if($fdata['streamURL_ajax'] == "true") {
     print "\" id=\"cardID\" name=\"cardID\" placeholder=\"".$fdata['streamURL_placeholder']."\" class=\"form-control input-md\" type=\"text\">";
 
 }
-
-// read the shortcuts available
-$shortcutstemp = array_filter(glob($conf['base_path'].'/shared/shortcuts/*'), 'is_file');
-$shortcuts = array(); // the array with pairs of ID => foldername
-// read files' content into array
-foreach ($shortcutstemp as $shortcuttemp) {
-    $shortcuts[basename($shortcuttemp)] = trim(file_get_contents($shortcuttemp));
-}
-//print "<pre>"; print_r($shortcuts); print "</pre>"; //???
 ?>
           
           <span class="help-block"><?php print $fdata['streamURL_help']; ?></span>  
@@ -37,6 +28,9 @@ foreach ($shortcutstemp as $shortcuttemp) {
         </div>
         </fieldset>
         
+<!-----------------------------------------
+- Folder link
+-->
         <fieldset>        
         <!-- Form Name -->
         <legend><?php print $lang['cardFormFolderLegend']; ?></legend>
@@ -46,41 +40,8 @@ foreach ($shortcutstemp as $shortcuttemp) {
           <label class="col-md-4 control-label" for="audiofolder"><?php print $lang['cardFormFolderLabel']; ?></label>
           <div class="col-md-6">
             <select id="audiofolder" name="audiofolder" class="form-control">
-              <option value="false"><?php print $lang['cardFormFolderSelectDefault']; ?></option>
+              <option value="false"<?php if(!isset($fpost['audiofolder'])) { print " selected=selected"; } ?>><?php print $lang['cardFormFolderSelectDefault']; ?></option>
 <?php
-/*
-* read the subfolders of $Audio_Folders_Path
-*/
-$audiofolders_abs = dir_list_recursively($Audio_Folders_Path);
-usort($audiofolders_abs, 'strcasecmp');
-/*
-* get relative paths for pulldown
-*/
-$audiofolders = array();
-foreach($audiofolders_abs as $audiofolder){
-    /*
-    * get the relative path as value, set the absolute path as key
-    */
-    $relpath = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
-    if($relpath != "") {
-        $audiofolders[$audiofolder] = substr($audiofolder, strlen($Audio_Folders_Path) + 1, strlen($audiofolder));
-    }
-}
-//print "<pre>"; print_r($audiofolders); print "</pre>"; //???
-
-    
-/*
-// counter for ID of each folder
-$idcounter = 0;
-// go through all folders
-foreach($audiofolders as $keyfolder => $audiofolder) {
-    if($post['folder'] != $keyfolder) {
-        print "              <option value='".$keyfolder."'";
-        print ">".$audiofolder."</option>\n";
-    }   
-}
-*/
-
 
 // counter for ID of each folder
 $idcounter = 0;
@@ -102,13 +63,90 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
 }
 ?>
             </select>
+          <span class="help-block"><?php print $lang['cardFormFolderHelp']; ?></span>  
+          </div>          
+        </div>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="audiofolderNew"><?php print $lang['cardFormNewFolderLabel']; ?></label>  
+          <div class="col-md-6">
+          <input value="<?php
+          if (isset($fpost['audiofolderNew'])) {
+              print $fpost['audiofolderNew'];
+          }
+          ?>" id="audiofolderNew" name="audiofolderNew" placeholder="<?php print $lang['cardFormNewFolderPlaceholder']; ?>" class="form-control input-md" type="text">
+          <span class="help-block"><?php print $lang['cardFormNewFolderHelp']; ?></span>  
           </div>
         </div>
+        
+<!-----------------------------------------
+- Trigger for system function (like volume up, pause, shutdown)
+-->
+               
+        <!-- Select Basic -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="TriggerCommand"><?php print $lang['cardFormTriggerLabel']; ?></label>
+           <div class="col-md-6">
+            <select id="TriggerCommand" name="TriggerCommand" class="form-control">
+              <option value="false"<?php if(!isset($fpost['TriggerCommand'])) { print " selected=selected"; } ?>><?php print $lang['cardFormTriggerSelectDefault']; ?></option>
+<?php
+
+// create form fields 
+$fn = fopen("../settings/rfid_trigger_play.conf.sample","r");
+$counter = 1;
+
+while(! feof($fn))  {
+    $result = fgets($fn);
+    if(startsWith($result, "#") && trim($result) != "") {
+        // group title
+        if(startsWith($result, "## ")) {
+            print "<option value=\"false\">-- ".trim(substr($result, 3))."</option>";
+        }
+        // help
+        if(startsWith($result, "### ")) {
+            //print "<h3>".trim(substr($result, 3))."</h3>";
+            // keep help in mind for coming item
+            $help = trim(substr($result, 3));
+        }
+    } elseif(trim($result) != "") {
+        // replace values with used or placeholders in sample conf
+        $temp = explode("=", $result);
+        // leave input empty if no value in active conf
+        if(startsWith($fillRfidArrAvailWithUsed[$temp[0]], "%")) {
+            $rfidCurrent = "";
+        } else {
+            $rfidCurrent = $fillRfidArrAvailWithUsed[$temp[0]];
+        }
+        print "\n<option value=\"".$temp[0]."\"";
+        if($temp[0] == $fpost['TriggerCommand']) {
+            print " selected=selected";
+        }
+        print ">".$help." (".$temp[0]." RFID: ";
+        if($rfidCurrent != "") {
+            print $rfidCurrent;
+        } else {
+            print "NONE";
+        }
+        //print " ".$temp[0]." == ".$fpost['TriggerCommand'];
+        print ")</option>";
+        $help = "";
+    }
+}
+fclose($fn);
+?>
+            </select>
+            <span class="help-block"><?php print $lang['cardFormTriggerHelp']; ?></span>  
+          </div>
+        </div>  
         </fieldset>
         
+<!-----------------------------------------
+- Stream (radio, podcast)
+-->
         <fieldset>        
         <!-- Form Name -->
-        <legend><?php print $lang['globalStream']; ?></legend>
+        <legend><?php print $lang['cardFormStreamLegend']; ?></legend>
         
         <!-- Text input-->
         <div class="form-group">
@@ -121,7 +159,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           ?>" id="streamURL" name="streamURL" placeholder="<?php 
 		  if ($edition == "plusSpotify") { 
 		  print $lang['cardFormStreamPlaceholderPlusSpotify']; 
-		  } elseif ($edition == "classic") { 
+		  } else { 
 		  print $lang['cardFormStreamPlaceholderClassic']; 
 		  } 
 		  ?>" class="form-control input-md" type="text">
@@ -134,7 +172,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           <label class="col-md-4 control-label" for="streamType"></label>
           <div class="col-md-6">
             <select id="streamType" name="streamType" class="form-control">
-              <option value="false"><?php print $lang['cardFormStreamTypeSelectDefault']; ?></option>
+              <option value="false"<?php if(!isset($fpost['streamType'])) { print " selected=selected"; } ?>><?php print $lang['cardFormStreamTypeSelectDefault']; ?></option>
 			  <?php
 			  if ($edition == "plusSpotify") {
 				print "<option value='spotify'";
@@ -151,21 +189,12 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           </div>
         </div>
         
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="streamFolderName"></label>  
-          <div class="col-md-6">
-          <input value="<?php
-          if (isset($fpost['streamFolderName'])) {
-              print $fpost['streamFolderName'];
-          }
-          ?>" id="streamFolderName" name="streamFolderName" placeholder="<?php print $lang['cardFormStreamFolderPlaceholder']; ?>" class="form-control input-md" type="text">
-          <span class="help-block"><?php print $lang['cardFormStreamFolderHelp']; ?></span>  
-          </div>
-        </div>
-        
         </fieldset>
 
+
+<!-----------------------------------------
+- YouTube
+-->
         <fieldset>        
         <!-- Form Name -->
         <legend><?php print $lang['cardFormYTLegend']; ?></legend>
@@ -183,51 +212,9 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
           </div>
         </div>
         
-        <!-- Select Basic -->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="YTaudiofolder"></label>
-           <div class="col-md-6">
-            <select id="YTaudiofolder" name="YTaudiofolder" class="form-control">
-              <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
-<?php
-
-// check if we can preselect an audiofolder if NOT a foldername was posted
-if(! isset($fpost['audiofolder'])) {
-    if(array_key_exists($fpost['cardID'], $shortcuts)) {
-        $fpost['audiofolder'] = $shortcuts[$fpost['cardID']];
-    }
-}
-    
-// counter for ID of each folder
-$idcounter = 0;
-
-// go through all folders
-foreach($audiofolders as $keyfolder => $audiofolder) {
-    print "              <option value='".$audiofolder."'";
-    if($audiofolder == $fpost['audiofolder']) {
-        print " selected=selected";
-    }
-    print ">".$audiofolder."</option>\n";
-   
-}
-?>
-            </select>
-            <span class="help-block"></span>  
-          </div>
-        </div>
         
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="YTstreamFolderName"></label>  
-          <div class="col-md-6">
-          <input value="<?php
-          if (isset($fpost['YTstreamFolderName'])) {
-              print $fpost['YTstreamFolderName'];
-          }
-          ?>" id="YTstreamFolderName" name="YTstreamFolderName" placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>" class="form-control input-md" type="text">
-          <span class="help-block"><?php print $lang['cardFormYTFolderHelp']; ?></span>  
-          </div>
-        </div>
+        </fieldset>
+              
         
         </fieldset>
         
