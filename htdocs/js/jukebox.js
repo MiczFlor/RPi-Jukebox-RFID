@@ -117,6 +117,20 @@ function playSongInPlaylist(song) {
     });
 }
 
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' entfernt.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+    }).success(data => {
+        loadStatus();
+    });
+}
+
 function appendFileToPlaylist(file) {
     $.ajax({
         url: `api/playlist/appendFileToPlaylist.php`,
