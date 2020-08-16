@@ -82,7 +82,12 @@ function playPlaylist(playlist, recursive) {
     $.ajax({
         url: `api/playlist.php`,
         method: 'PUT',
-        data: JSON.stringify(json)
+        data: JSON.stringify(json),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + playlist.toString().replace(/^.*[\\\/]/, '') + ' wird abgespielt.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -101,7 +106,12 @@ function playSongInPlaylist(song) {
     $.ajax({
         url: `api/playlist/song.php`,
         method: 'PUT',
-        data: song.toString()
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + song.toString() + ' wird abgespielt.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -111,7 +121,12 @@ function appendFileToPlaylist(file) {
     $.ajax({
         url: `api/playlist/appendFileToPlaylist.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' wurde der Playlist hinzugef&uuml;gt.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -121,7 +136,12 @@ function playSingleFile(file) {
     $.ajax({
         url: `api/playlist/playsinglefile.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' wird abgespielt.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
