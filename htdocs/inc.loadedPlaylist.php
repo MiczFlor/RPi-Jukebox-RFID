@@ -98,17 +98,17 @@ $(document).ready(function() {
     function createPlaylistTrack(track) {
         var trackPosTemp = parseInt(track.pos, 10) + 1;
         var result = '<tr style="border-bottom: 1px solid #444;"> ' +
-            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
+            '<td style="width: 40px!important; border-collapse: collapse;"> ' +
             '    <a onclick="playSongInPlaylist(' + trackPosTemp + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
             '</td> ' +
-            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
-            '    <a onclick="removeSongFromPlaylist(' + trackPosTemp + ');" class="btn btn-danger" style="margin: 3px!important;"><i class="mdi mdi-delete" aria-hidden="true"></i></a>' +
+            '<td style="width: 40px!important; border-collapse: collapse;"> ' +
+            '    <a onclick="removeSongFromPlaylist(' + trackPosTemp + ');" class="btn btn-danger btn-sm" style="margin: 3px!important;"><i class="mdi mdi-delete" aria-hidden="true"></i></a>' +
             '</td> ' +
-            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
-            '    <a onclick="moveUpSongInPlaylist(' + trackPosTemp + ');" class="btn btn-warning" style="margin: 3px!important;"><i class="mdi mdi-arrow-up-thick" aria-hidden="true"></i></a>' +
+            '<td style="width: 40px!important; border-collapse: collapse;"> ' +
+            '    <a onclick="moveUpSongInPlaylist(' + trackPosTemp + ');" class="btn btn-warning btn-sm" style="margin: 3px!important;"><i class="mdi mdi-arrow-up-thick" aria-hidden="true"></i></a>' +
             '</td> ' +
-            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
-            '    <a onclick="moveDownSongInPlaylist(' + trackPosTemp + ');" class="btn btn-warning" style="margin: 3px!important;"><i class="mdi mdi-arrow-down-thick" aria-hidden="true"></i></a>' +
+            '<td style="width: 50px!important; border-collapse: collapse;"> ' +
+            '    <a onclick="moveDownSongInPlaylist(' + trackPosTemp + ');" class="btn btn-warning btn-sm" style="margin: 3px!important;"><i class="mdi mdi-arrow-down-thick" aria-hidden="true"></i></a>' +
             '</td> ' +
             '<td style="border-collapse: collapse;">';
         if (track.title != null) {
