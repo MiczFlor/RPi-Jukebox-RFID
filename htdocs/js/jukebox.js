@@ -85,7 +85,7 @@ function playPlaylist(playlist, recursive) {
         data: JSON.stringify(json),
         success: function() {
           var infomessage = $("#phonieboxinfomessage");
-          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + playlist.toString().replace(/^.*[\\\/]/, '') + ' wird abgespielt.</div>');
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + playlist.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
         }
     }).success(data => {
@@ -109,7 +109,7 @@ function playSongInPlaylist(song) {
         data: song.toString(),
         success: function() {
           var infomessage = $("#phonieboxinfomessage");
-          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + song.toString() + ' wird abgespielt.</div>');
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + song.toString() + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
         }
     }).success(data => {
@@ -124,7 +124,7 @@ function removeSongFromPlaylist(song) {
         data: song.toString(),
         success: function() {
           var infomessage = $("#phonieboxinfomessage");
-          infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' entfernt.</div>');
+          infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' ' + JUKEBOX.lang['playerFileDeleted'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
     }).success(data => {
         loadStatus();
@@ -138,7 +138,7 @@ function appendFileToPlaylist(file) {
         data: file.toString(),
         success: function() {
           var infomessage = $("#phonieboxinfomessage");
-          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' wurde der Playlist hinzugef&uuml;gt.</div>');
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFileAdded'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
         }
     }).success(data => {
@@ -153,7 +153,7 @@ function playSingleFile(file) {
         data: file.toString(),
         success: function() {
           var infomessage = $("#phonieboxinfomessage");
-          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' wird abgespielt.</div>');
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
         }
     }).success(data => {
