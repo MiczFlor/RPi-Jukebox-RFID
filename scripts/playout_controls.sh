@@ -44,6 +44,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerpauseforce
 # playerplay
 # playerremove
+# playermoveup
+# playermovedown
 # playerreplay
 # playerrepeat
 # playershuffle
@@ -600,6 +602,24 @@ case $COMMAND in
         . ${PATHDATA}/inc.settingsFolderSpecific.sh
 
         mpc del $VALUE
+        ;;
+    playermoveup)
+        # remove selected song position
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to move: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+
+        # Change some settings according to current folder IF the folder.conf exists
+        . ${PATHDATA}/inc.settingsFolderSpecific.sh
+
+        mpc move $(($VALUE)) $(($VALUE-1))
+        ;;
+    playermovedown)
+        # remove selected song position
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to move: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+
+        # Change some settings according to current folder IF the folder.conf exists
+        . ${PATHDATA}/inc.settingsFolderSpecific.sh
+
+        mpc move $(($VALUE)) $(($VALUE+1))
         ;;
     playerseek)
         # jumps back and forward in track.
