@@ -43,6 +43,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerpause
 # playerpauseforce
 # playerplay
+# playerremove
 # playerreplay
 # playerrepeat
 # playershuffle
@@ -590,6 +591,15 @@ case $COMMAND in
             #${PATHDATA}/resume_play.sh -c=resume -v=$VALUE
             mpc play $VALUE
         fi
+        ;;
+    playerremove)
+        # remove selected song position
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to remove: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+
+        # Change some settings according to current folder IF the folder.conf exists
+        . ${PATHDATA}/inc.settingsFolderSpecific.sh
+
+        mpc del $VALUE
         ;;
     playerseek)
         # jumps back and forward in track.

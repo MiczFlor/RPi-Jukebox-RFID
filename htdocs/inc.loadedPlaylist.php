@@ -101,6 +101,9 @@ $(document).ready(function() {
             '<td style="width: 70px!important; border-collapse: collapse;"> ' +
             '    <a onclick="playSongInPlaylist(' + trackPosTemp + ');" class="btn btn-success" style="margin: 3px!important;"><i class="mdi mdi-play" aria-hidden="true"></i></a>' +
             '</td> ' +
+            '<td style="width: 70px!important; border-collapse: collapse;"> ' +
+            '    <a onclick="removeSongFromPlaylist(' + trackPosTemp + ');" class="btn btn-danger" style="margin: 3px!important;"><i class="mdi mdi-delete" aria-hidden="true"></i></a>' +
+            '</td> ' +
             '<td style="border-collapse: collapse;">';
         if (track.title != null) {
             result += `<strong>${track.title}</strong>`;
