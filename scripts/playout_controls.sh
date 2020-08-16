@@ -98,6 +98,42 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
 
+
+AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
+CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
+CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
+CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
+CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+CHAPTER_CACHE_DIR="/tmp/chapter-cache/"
+CHAPTER_CACHE_FILENAME="$(echo \"${CURRENT_SONG_FILE}\" | shasum -a 256 | cut -d ' ' -f 1)"
+CHAPTER_CACHE_FILE="${CHAPTER_CACHE_DIR}${CHAPTER_CACHE_FILENAME}"
+mkdir -p "${CHAPTER_CACHE_DIR}"
+
+#echo "audio path: $AUDIO_FOLDERS_PATH" >> ${PATHDATA}/../logs/debug.log
+#echo "current file: $CURRENT_SONG_FILE_ABS" >> ${PATHDATA}/../logs/debug.log
+#echo "chaptercache: $CHAPTER_CACHE_FILE" >> ${PATHDATA}/../logs/debug.log
+# echo "sudo /usr/bin/ffprobe -i ${CURRENT_SONG_FILE}" >> ${PATHDATA}/../logs/debug.log
+if ! [ -f "${CHAPTER_CACHE_FILE}" ]; then
+  /usr/bin/ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error | grep start_time | cut -d ':' -f 2 | sed -r 's/[\"\,]//g' > "${CHAPTER_CACHE_FILE}"
+
+  if [ "${CHAPTERS_COUNT}" -lt 2 ]; then
+    echo "" > "${CHAPTERS_FILE}"
+  fi
+fi
+
+if [ -s "${CHAPTER_CACHE_FILE}" ]; then
+  /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/
+  REWRITTEN_VALUES=$(sudo /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/playout_controls_chapter.php "${COMMAND}" "${VALUE}" "${CHAPTER_CACHE_FILE}" "$CURRENT_SONG_ELAPSED")
+  COMMAND=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 1)
+  VALUE=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 2)
+  # echo "rewritten: ${REWRITTEN_VALUES}, newcommand:${COMMAND}, newvalue:${VALUE}" >> ${PATHDATA}/../logs/debug.log
+fi
+
+
+# SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+
+
+
 case $COMMAND in
     shutdown)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -194,7 +230,7 @@ case $COMMAND in
             if [ "${VOLUMEMANAGER}" == "amixer" ]; then
                 # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
                 amixer sset \'$AUDIOIFACENAME\' 0%
-            else 
+            else
                 # manage volume with mpd
                 echo -e setvol 0\\nclose | nc -w 1 localhost 6600
             fi
@@ -501,7 +537,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        
+
         mpc next
         ;;
     playerprev)
@@ -696,7 +732,7 @@ case $COMMAND in
         # Now load and play
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
-        
+
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
@@ -732,7 +768,7 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         mpc play
-        ;;    
+        ;;
      playlistreset)
         if [ -e $PATHDATA/../shared/audiofolders/$FOLDERPATH/lastplayed.dat ]
         then
