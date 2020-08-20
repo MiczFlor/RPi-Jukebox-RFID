@@ -894,7 +894,6 @@ install_main() {
 
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
-        local mpd_log="/var/log/mpd/mpd.log"
 
         echo "Configuring MPD..."
         # MPD configuration
@@ -906,8 +905,6 @@ install_main() {
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
-
-        sudo chown mpd:audio "${mpd_log}"
     fi
 
     # set which version has been installed
