@@ -81,6 +81,9 @@ $lang['playerStop'] = "stop player";
 $lang['playerVolDown'] = "volume down";
 $lang['playerVolUp'] = "volume up";
 $lang['playerMute'] = "toggle mute";
+$lang['playerFilePlayed'] = "is playing";
+$lang['playerFileAdded'] = "added to playlist";
+$lang['playerFileDeleted'] = "removed";
 
 
 // Edition (classic, +spotify)
