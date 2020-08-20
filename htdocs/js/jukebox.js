@@ -131,6 +131,36 @@ function removeSongFromPlaylist(song) {
     });
 }
 
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveUpSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveUpSongInPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveDownSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveDownSongInPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
 function appendFileToPlaylist(file) {
     $.ajax({
         url: `api/playlist/appendFileToPlaylist.php`,
