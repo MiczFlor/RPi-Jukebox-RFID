@@ -338,18 +338,6 @@ check_existing() {
                 # append variables to config file
                 echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
-                read -rp "GPIO: use existing file? [Y/n] " response
-                case "$response" in
-                    [nN][oO]|[nN])
-                        EXISTINGuseGpio=NO
-                        ;;
-                    *)
-                        EXISTINGuseGpio=YES
-                        ;;
-                esac
-                # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
-
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
                     [nN][oO]|[nN])
@@ -361,6 +349,26 @@ check_existing() {
                 esac
                 # append variables to config file
                 echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
+
+                if [ "$(printf '%s\n' "2.1" "$(cat ${jukebox_dir}"/settings/version)" | sort -V | head -n1)" = "2.1" ]; then
+                    read -rp "GPIO: use existing file? [Y/n] " response
+                        case "$response" in
+                            [nN][oO]|[nN])
+                                EXISTINGuseGpio=NO
+                                ;;
+                            *)
+                                EXISTINGuseGpio=YES 
+                                ;;
+                        esac
+                else
+                    echo "The configuration of GPIO-Devices has changed in the new version
+and needs to be reconfigured. For further info check out the wiki: 
+https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
+                    read -rp "Hit ENTER to proceed to the next step." INPUT
+                    config_gpio
+                fi
+                # append variables to config file
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -566,6 +574,38 @@ check_variable() {
   test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
 }
 
+config_gpio() {
+    #####################################################
+    # Configure GPIO
+
+    clear
+
+    echo "#####################################################
+#
+# ACTIVATE GPIO-Controls
+#
+# Activation of the Service, which mangages GPIO-Controls such as 
+# Buttons or a Rotary Encoder for Volume and/or Track control. 
+# To configure the controls please consult the wiki:
+# (https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons)
+# It's also possible to activate the service later (info in the wiki). 
+"
+    read -rp "Do you want to activate the GPIO-Control-Service? [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+            GPIOconfig=NO
+            echo "You don't want to activate GPIO-Controls now."
+            ;;
+        *)
+            GPIOconfig=YES
+            echo "GPIO-Control-Service will be activated and set to default values."
+            ;;
+    esac
+    # append variables to config file
+    echo "GPIOconfig=\"$GPIOconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    read -rp "Hit ENTER to proceed to the next step." INPUT
+}
+
 check_config_file() {
     local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
     echo "Checking PhonieboxInstall.conf..."
@@ -609,6 +649,7 @@ check_config_file() {
     fi
     check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
+    check_variable "GPIOconfig"
 
     if [ "${fail}" == "true" ]; then
       exit 1
@@ -820,15 +861,18 @@ install_main() {
     sudo lighttpd-enable-mod fastcgi-php
     sudo service lighttpd force-reload
 
-    # create copy of GPIO script
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/gpio-buttons.py.sample "${jukebox_dir}"/scripts/gpio-buttons.py
-    sudo chmod +x "${jukebox_dir}"/scripts/gpio-buttons.py
+#Not needed anymore    # create copy of GPIO script
+#        sudo cp "${jukebox_dir}"/misc/sampleconfigs/gpio-buttons.py.sample "${jukebox_dir}"/scripts/gpio-buttons.py
+#        sudo chmod +x "${jukebox_dir}"/scripts/gpio-buttons.py
 
     # make sure bash scripts have the right settings
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.sh
     sudo chmod +x "${jukebox_dir}"/scripts/*.sh
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.py
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
+    sudo chown pi:www-data -r "${jukebox_dir}"/components/gpio_control/*
+    sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.py
+    sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.sh
 
     # services to launch after boot using systemd
     # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
@@ -839,19 +883,22 @@ install_main() {
     sudo systemctl disable rfid-reader
     sudo systemctl disable phoniebox-startup-sound
     sudo systemctl disable gpio-buttons
+    sudo systemctl disable phoniebox-rotary-encoder
     sudo rm "${systemd_dir}"/rfid-reader.service
     sudo rm "${systemd_dir}"/startup-sound.service
     sudo rm "${systemd_dir}"/gpio-buttons.service
     sudo rm "${systemd_dir}"/idle-watchdog.service
+    sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
+    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
+    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
+    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -860,9 +907,9 @@ install_main() {
     #startup sound is part of phoniebox-startup-scripts now
     #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
-    sudo systemctl enable phoniebox-gpio-buttons
-    sudo systemctl enable phoniebox-rotary-encoder.service
-
+    #sudo systemctl enable phoniebox-gpio-buttons
+    #sudo systemctl enable phoniebox-rotary-encoder.service
+    [[ "${GPIOconfig}" == "YES" ]] && sudo systemctl enable phoniebox-gpio-control.service
     # copy mp3s for startup and shutdown sound to the right folder
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
@@ -1011,7 +1058,7 @@ existing_assets() {
         # GPIO: use existing file
         if [ "${EXISTINGuseGpio}" == "YES" ]; then
             # copy from backup to new install
-            cp "${backup_dir}"/scripts/gpio-buttons.py "${jukebox_dir}"/scripts/gpio-buttons.py
+            cp "${backup_dir}"/settings/gpio_settings.ini "${jukebox_dir}"/settings/gpio_settings.ini
         fi
 
         # Sound effects: use existing startup / shutdown sounds
@@ -1173,6 +1220,7 @@ main() {
         config_spotify
         config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
+        config_gpio
     else
         echo "Non-interactive installation!"
         check_config_file
