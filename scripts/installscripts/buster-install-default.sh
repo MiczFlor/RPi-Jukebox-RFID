@@ -828,6 +828,9 @@ install_main() {
     echo "Installing additional Python packages..."
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
+    # Install required packages for GPIO-Control 
+    [[ "${GPIOconfig}" == "YES" ]] && sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+    
     samba_config
 
     web_server_config
