@@ -350,7 +350,7 @@ check_existing() {
                 # append variables to config file
                 echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
-                if [ "$(printf '%s\n' "2.1" "$(cat ${jukebox_dir}/settings/version)" | sort -V | head -n1)" = "2.1" ]; then
+                if [ "$(printf '%s\n' "2.1" "$(cat ~/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
                         case "$response" in
                             [nN][oO]|[nN])
@@ -873,7 +873,7 @@ install_main() {
     sudo chmod +x "${jukebox_dir}"/scripts/*.sh
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.py
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
-    sudo chown pi:www-data -r "${jukebox_dir}"/components/gpio_control/*
+    sudo chown pi:www-data -R "${jukebox_dir}"/components/gpio_control/*
     sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.py
     sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.sh
 
