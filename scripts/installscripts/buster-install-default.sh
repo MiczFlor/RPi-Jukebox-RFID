@@ -350,7 +350,7 @@ check_existing() {
                 # append variables to config file
                 echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
-                if [ "$(printf '%s\n' "2.1" "$(cat ${jukebox_dir}"/settings/version)" | sort -V | head -n1)" = "2.1" ]; then
+                if [ "$(printf '%s\n' "2.1" "$(cat ${jukebox_dir}/settings/version)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
                         case "$response" in
                             [nN][oO]|[nN])
