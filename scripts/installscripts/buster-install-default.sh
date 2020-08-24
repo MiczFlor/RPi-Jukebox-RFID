@@ -584,13 +584,13 @@ config_gpio() {
 
     echo "#####################################################
 #
-# ACTIVATE GPIO-Controls
+# ACTIVATE GPIO-Control
 #
-# Activation of the Service, which mangages GPIO-Controls such as 
-# Buttons or a Rotary Encoder for Volume and/or Track control. 
+# Activation of the GPIO-Control-Service, which mangages Buttons 
+# or a Rotary Encoder for Volume and/or Track control. 
 # To configure the controls please consult the wiki:
-# (https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons)
-# It's also possible to activate the service later (info in the wiki). 
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons
+# It's also possible to activate the service later (see wiki). 
 "
     read -rp "Do you want to activate the GPIO-Control-Service? [Y/n] " response
     case "$response" in
@@ -605,6 +605,7 @@ config_gpio() {
     esac
     # append variables to config file
     echo "GPIOconfig=\"$GPIOconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo ""
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -875,9 +876,6 @@ install_main() {
     sudo chmod +x "${jukebox_dir}"/scripts/*.sh
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.py
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
-    sudo chown pi:www-data -R "${jukebox_dir}"/components/gpio_control/*
-    sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.py
-    sudo chmod +x -r "${jukebox_dir}"/components/gpio_control/*.sh
 
     # services to launch after boot using systemd
     # -rw-r--r-- 1 root root  304 Apr 30 10:07 phoniebox-rfid-reader.service
