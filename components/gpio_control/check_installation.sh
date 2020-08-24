@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FRED="\033[31m"
 FBOLD='\033[1;31m'
@@ -17,7 +17,7 @@ done
 
 
 
-SERVICE_STATUS="$(systemctl is-active phoniebox_gpio_control.service)"
+SERVICE_STATUS="$(systemctl is-active phoniebox-gpio-control.service)"
 if [ "${SERVICE_STATUS}" = "active" ]; then
     echo "Phoniebox GPIO Service started correctly ....."
 else
