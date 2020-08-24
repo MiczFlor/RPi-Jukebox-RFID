@@ -361,8 +361,8 @@ check_existing() {
                                 ;;
                         esac
                 else
-                    echo "
-Warning!
+                    echo ""
+                    echo "Warning!
 The configuration of GPIO-Devices has changed in the new version
 and needs to be reconfigured. For further info check out the wiki: 
 https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
