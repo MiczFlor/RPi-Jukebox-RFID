@@ -29,7 +29,7 @@ else
     echo "      $ cd ~/RPi-Jukebox-RFID/components/gpio_control"
     echo "      $ python gpio_control.py"
     echo "   or check output of journaclctl by:"
-    echo "      $ journalctl -u phoniebox_gpio_control.service -f"
+    echo "      $ journalctl -u phoniebox-gpio-control.service -f"
 fi
 echo
 if $ERROR ; then
