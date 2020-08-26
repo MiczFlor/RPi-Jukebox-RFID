@@ -638,7 +638,12 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        echo -e "seekcur $VALUE\nclose" | nc -w 1 localhost 6600
+        # Seek negative value doesn't work in mpd anymore.
+        # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
+        # if there are issues, please comment in that thread
+        CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
+        NEW_POS=$(($CUR_POS + $VALUE))
+        echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
         ;;
     playerreplay)
         # start the playing track from beginning
