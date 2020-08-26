@@ -887,11 +887,13 @@ install_main() {
     sudo systemctl disable phoniebox-startup-sound
     sudo systemctl disable gpio-buttons
     sudo systemctl disable phoniebox-rotary-encoder
+    sudo systemctl disable phoniebox-gpio-buttons.service
     sudo rm "${systemd_dir}"/rfid-reader.service
     sudo rm "${systemd_dir}"/startup-sound.service
     sudo rm "${systemd_dir}"/gpio-buttons.service
     sudo rm "${systemd_dir}"/idle-watchdog.service
     sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
+    sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
