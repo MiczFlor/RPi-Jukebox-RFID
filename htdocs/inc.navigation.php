@@ -1,3 +1,17 @@
+<style>
+         #phonieboxinfomessage {
+            display: none;
+            position: fixed;
+            width: 50%;
+            height: 100px;
+            left: 25%;
+            top: 40%;
+            z-index: 7000;
+         }
+</style>
+
+<div id="phonieboxinfomessage" class="alert-messages"></div>
+
 <nav class="navbar navbar-default" style="position: -webkit-sticky; position: sticky; top: 0; z-index: 1000;">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
