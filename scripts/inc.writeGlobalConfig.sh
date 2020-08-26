@@ -9,6 +9,17 @@
 # 2. each settings change done in the web UI
 # 3. a new feature to be implemented: manually triggered
 #    in the web UI
+#
+# Why so complicated? Because we don't know what other vars will be in the 
+# config in the future. Editing only this file, we are future proof, 
+# because old config files will work and update
+# gracefully when new stuff arrives in the sample file.
+#
+# To make sure that the global.conf file has EVERYTHING in it 
+# that could be, for each feature it does the following:
+# a) checks if there is a config file
+# a) 1) if not, make one with the default value
+# b) read the value from the config file
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
