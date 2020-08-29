@@ -31,22 +31,22 @@ function rewriteCommandValueIfRequired($scriptArguments)
     $chapters = parseChapters($chaptersFile);
     $elapsedTimeUnit = new TimeUnit((float)$elapsedTime, TimeUnit::SECOND);
 
-    if (isLastChapterAlreadyPlaying($chapters, $elapsedTimeUnit, $command)) {
+    if (isNextClickedAndLastChapterPlaying($chapters, $elapsedTimeUnit, $command)) {
         return $originalCommandValue;
     }
 
 
-    list($prevChapter, $nextChapter) = findPrevAndNextChapter($chapters, $elapsedTimeUnit);
+    list($prevChapter, $nextChapter) = findPrevAndNextChapterForCurrentPosition($chapters, $elapsedTimeUnit);
 
     if ($command === COMMAND_PLAYER_PREV && $prevChapter !== null) {
-        return rewriteCommand($prevChapter);
+        return rewriteCommandSeek($prevChapter);
     }
 
     if ($command === COMMAND_PLAYER_NEXT && $nextChapter !== null) {
-        return rewriteCommand($nextChapter);
+        return rewriteCommandSeek($nextChapter);
     }
 
-    return [$command, $value];
+    return $originalCommandValue;
 }
 
 function includeM4bToolAutoload()
@@ -70,7 +70,7 @@ function parseChapters(SplFileInfo $chaptersFile)
     return $mp4chaps->parseChaptersTxt(file_get_contents($chaptersFile));
 }
 
-function isLastChapterAlreadyPlaying($chapters, TimeUnit $elapsedTimeUnit, $command)
+function isNextClickedAndLastChapterPlaying($chapters, TimeUnit $elapsedTimeUnit, $command)
 {
     if ($command !== COMMAND_PLAYER_NEXT) {
         return false;
@@ -80,7 +80,7 @@ function isLastChapterAlreadyPlaying($chapters, TimeUnit $elapsedTimeUnit, $comm
 }
 
 
-function findPrevAndNextChapter($chapters, TimeUnit $inputElapsedTimeUnit)
+function findPrevAndNextChapterForCurrentPosition($chapters, TimeUnit $inputElapsedTimeUnit)
 {
     $prevChapter = null;
     $nextChapter = null;
@@ -108,7 +108,7 @@ function isChapterBetterMatchForNextChapter(Chapter $chapter, Chapter $nextChapt
 }
 
 
-function rewriteCommand(Chapter $chapter)
+function rewriteCommandSeek(Chapter $chapter)
 {
     return [COMMAND_PLAYER_SEEK, round($chapter->getStart()->milliseconds() / 1000, 3)];
 }
