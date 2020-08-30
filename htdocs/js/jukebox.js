@@ -127,13 +127,13 @@ function playSingleFile(file) {
     });
 }
 
-function executePlayerCommand(command, completion) {
+function executePlayerCommand(command, completion, value) {
     hideApiError();
     $.ajax({
         url: 'api/player.php',
         method: 'PUT',
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({ 'command': command })
+        data: JSON.stringify({ 'command': command, "value": arguments.length === 3 ? value : null })
     }).success(data => {
          if (completion != null) {
              completion(data);

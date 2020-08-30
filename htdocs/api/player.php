@@ -13,9 +13,9 @@ include 'common.php';
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
 
-if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
-    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
+    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
 }
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     handlePut();
@@ -27,19 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
 function handlePut() {
     global $debugLoggingConf;
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handlePut() " , FILE_APPEND | LOCK_EX);
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handlePut() ", FILE_APPEND | LOCK_EX);
     }
 
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:".$json['command'] , FILE_APPEND | LOCK_EX);
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:" . $json['command'], FILE_APPEND | LOCK_EX);
     }
     $inputCommand = $json['command'];
+    $inputValue = $json['value'] ?? "";
     if ($inputCommand != null) {
         $controlsCommand = determineCommand($inputCommand);
-        $execCommand = "playout_controls.sh {$controlsCommand}";
+        $controlsValue = $inputValue !== "" ? " -v=" . ((float)$inputValue) : "";
+        $execCommand = "playout_controls.sh {$controlsCommand}{$controlsValue}";
         execScript($execCommand);
     } else {
         echo "Body is missing command";
@@ -49,10 +51,10 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-    $statusCommand   = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
+    $statusCommand = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
     $commandResponseList = execSuccessfully($statusCommand);
     $responseList = array();
-    forEach($commandResponseList as $commandResponse) {
+    forEach ($commandResponseList as $commandResponse) {
         preg_match("/(?P<key>.+?): (?P<value>.*)/", $commandResponse, $match);
         if ($match) {
             $responseList[strtolower($match['key'])] = $match['value'];
@@ -65,11 +67,11 @@ function handleGet() {
 
     $command = "playout_controls.sh -c=getchapterdetails";
     $output = execScript($command);
-    $responseList['chapterdetails'] = @json_decode(trim(implode('\n', $output)));
+    $responseList['chapters'] = @json_decode(trim(implode('\n', $output)));
 
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
-        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
     }
 
     header('Content-Type: application/json');
@@ -103,14 +105,16 @@ function determineCommand($body) {
         case 'seekAhead':
             //return '-c=playerprev -c=playerseek -v=+15';
             return '-c=playerseek -v=+15';
+        case 'seekPosition':
+            return '-c=playerseek';
         case 'stop':
             return '-c=playerstop';
         case 'mute':
-            return'-c=mute';
+            return '-c=mute';
         case 'volumeup':
-            return'-c=volumeup';
+            return '-c=volumeup';
         case 'volumedown':
-            return'-c=volumedown';
+            return '-c=volumedown';
     }
     echo "Unknown command {$body}";
     http_response_code(400);
