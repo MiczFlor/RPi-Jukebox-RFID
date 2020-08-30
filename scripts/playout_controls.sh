@@ -32,6 +32,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setvolumetostartup
 # volumeup
 # volumedown
+# getchapterdetails
 # getvolume
 # getmaxvolume
 # setvolstep
@@ -102,12 +103,20 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}"
 ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
 ENABLE_CHAPTERS_MIN_DURATION="600"
 M4B_TOOL="${PATHDATA}/m4b-tool.phar"
-
+CHAPTER_DETAILS=""
+ORIGINAL_COMMAND="$COMMAND"
 function dbg {
-  if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+  #echo "==> ${ORIGINAL_COMMAND}" >> ${PATHDATA}/../logs/debug.log;
+  #if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+  if [ "${ORIGINAL_COMMAND}" == "playernext" ]; then
+    echo "$1" >> ${PATHDATA}/../logs/debug.log;
+  fi
+  if [ "${ORIGINAL_COMMAND}" == "playerprev" ]; then
     echo "$1" >> ${PATHDATA}/../logs/debug.log;
   fi
 }
+dbg "===================================="
+dbg "===================================="
 
 if ! [ -f "${M4B_TOOL}" ]; then
     dbg "m4b-tool not installed - file ${M4B_TOOL} not found";
@@ -159,6 +168,7 @@ else
       REWRITTEN_VALUES=$(sudo /usr/bin/php ${PATHDATA}/playout_controls_chapter.php "${COMMAND}" "${VALUE}" "${CHAPTERS_FILE}" "$CURRENT_SONG_ELAPSED")
       COMMAND=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 1)
       VALUE=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 2)
+      CHAPTER_DETAILS=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 3)
       dbg "rewritten: ${REWRITTEN_VALUES}, newcommand:${COMMAND}, newvalue:${VALUE}"
     fi
   fi
@@ -445,6 +455,10 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
+        ;;
+    getchapterdetails)
+        # read volume in percent
+        echo $CHAPTER_DETAILS
         ;;
     getvolume)
         # read volume in percent

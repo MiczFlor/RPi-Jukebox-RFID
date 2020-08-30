@@ -11,9 +11,11 @@ const PREV_TOLERANCE_MILLISECONDS = 5000;
 const COMMAND_PLAYER_SEEK = "playerseek";
 const COMMAND_PLAYER_NEXT = "playernext";
 const COMMAND_PLAYER_PREV = "playerprev";
+const SEMICOLON = ";";
+const GREEK_QUESTION_MARK = ";";
 
 
-echo implode(";", rewriteCommandValueIfRequired($argv));
+echo implode(SEMICOLON, rewriteCommandValueIfRequired($argv));
 
 function rewriteCommandValueIfRequired($scriptArguments)
 {
@@ -22,7 +24,7 @@ function rewriteCommandValueIfRequired($scriptArguments)
     $chaptersFile = new SplFileInfo($scriptArguments[3] ?? "");
     $elapsedTime = $scriptArguments[4] ?? "0";
 
-    $originalCommandValue = [$command, $value];
+    $originalCommandValue = [$command, $value, ""];
 
     if (!includeM4bToolAutoload() || !shouldRewriteCommand($command, $chaptersFile)) {
         return $originalCommandValue;
@@ -31,22 +33,43 @@ function rewriteCommandValueIfRequired($scriptArguments)
     $chapters = parseChapters($chaptersFile);
     $elapsedTimeUnit = new TimeUnit((float)$elapsedTime, TimeUnit::SECOND);
 
-    if (isNextClickedAndLastChapterPlaying($chapters, $elapsedTimeUnit, $command)) {
-        return $originalCommandValue;
-    }
+    list($prevChapter, $currentChapter, $nextChapter) = findPrevAndNextChapterForCurrentPosition($chapters, $elapsedTimeUnit);
 
+    $chapterDetails = [
+        "prev" => buildChapterDetailsForJson($prevChapter),
+        "current" => buildChapterDetailsForJson($currentChapter),
+        "next" => buildChapterDetailsForJson($nextChapter)
+    ];
+    $originalCommandValue[2] = json_encode($chapterDetails);
 
-    list($prevChapter, $nextChapter) = findPrevAndNextChapterForCurrentPosition($chapters, $elapsedTimeUnit);
-
-    if ($command === COMMAND_PLAYER_PREV && $prevChapter !== null) {
-        return rewriteCommandSeek($prevChapter);
+    if ($command === COMMAND_PLAYER_PREV && ($prevChapter || $currentChapter)) {
+        if (isChapterBetterMatchForPrevChapter($currentChapter, $prevChapter, $elapsedTimeUnit)) {
+            return rewriteCommandSeek($currentChapter, $chapterDetails);
+        }
+        return rewriteCommandSeek($prevChapter, $chapterDetails);
     }
 
     if ($command === COMMAND_PLAYER_NEXT && $nextChapter !== null) {
-        return rewriteCommandSeek($nextChapter);
+        return rewriteCommandSeek($nextChapter, $chapterDetails);
     }
 
     return $originalCommandValue;
+}
+
+function buildChapterDetailsForJson(Chapter $chapter = null)
+{
+
+    if ($chapter === null) {
+        return null;
+    }
+    return [
+        "start" => $chapter->getStart()->milliseconds(),
+        "length" => $chapter->getLength()->milliseconds(),
+        // trick to keep the visual appearance of the chapter name if it contains a semicolon
+        // is replacing it with the greek question mark, which is a different char but looks the same
+        // this is done to prevent problems with the separator char ;
+        "name" => str_replace(SEMICOLON, GREEK_QUESTION_MARK, $chapter->getName())
+    ];
 }
 
 function includeM4bToolAutoload()
@@ -61,7 +84,7 @@ function includeM4bToolAutoload()
 
 function shouldRewriteCommand($command, SplFileInfo $chaptersFile)
 {
-    return in_array($command, [COMMAND_PLAYER_NEXT, COMMAND_PLAYER_PREV]) && $chaptersFile->isFile() && $chaptersFile->getSize() > 0;
+    return $chaptersFile->isFile() && $chaptersFile->getSize() > 0;
 }
 
 function parseChapters(SplFileInfo $chaptersFile)
@@ -70,31 +93,28 @@ function parseChapters(SplFileInfo $chaptersFile)
     return $mp4chaps->parseChaptersTxt(file_get_contents($chaptersFile));
 }
 
-function isNextClickedAndLastChapterPlaying($chapters, TimeUnit $elapsedTimeUnit, $command)
-{
-    if ($command !== COMMAND_PLAYER_NEXT) {
-        return false;
-    }
-    $lastChapter = end($chapters);
-    return $elapsedTimeUnit->milliseconds() > $lastChapter->getEnd()->milliseconds();
-}
-
+// sudo /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/playout_controls_chapter.php 'getchapterdetails' '' '/home/pi/RPi-Jukebox-RFID/shared/audiofolders/audiobooks/Kai Meyer/Wellenläufer/1 - Wellenläufer.chapters.txt' '528.230'
 
 function findPrevAndNextChapterForCurrentPosition($chapters, TimeUnit $inputElapsedTimeUnit)
 {
     $prevChapter = null;
     $nextChapter = null;
+    $currentChapter = null;
 
-    foreach ($chapters as $chapter) {
-        if (isChapterBetterMatchForPrevChapter($chapter, $prevChapter, $inputElapsedTimeUnit)) {
-            $prevChapter = $chapter;
-        } else if (isChapterBetterMatchForNextChapter($chapter, $nextChapter, $inputElapsedTimeUnit)) {
-            $nextChapter = $chapter;
-            // if we found a better match next chapter, we can stop searching
+    // convert keys that contain start times in ms to real array integer index keys
+    /** @var Chapter[] $chapterValues */
+    $chapterValues = array_values($chapters);
+    foreach ($chapterValues as $key => $chapter) {
+        if ($chapter->getStart()->milliseconds() <= $inputElapsedTimeUnit->milliseconds() && $chapter->getEnd()->milliseconds() >= $inputElapsedTimeUnit->milliseconds()) {
+            $currentChapter = $chapter;
+            $prevChapter = $chapterValues[$key - 1] ?? null;
+            $nextChapter = $chapterValues[$key + 1] ?? null;
+        }
+        if($chapter->getStart()->milliseconds() > $inputElapsedTimeUnit->milliseconds()) {
             break;
         }
     }
-    return [$prevChapter, $nextChapter];
+    return [$prevChapter, $currentChapter, $nextChapter];
 }
 
 function isChapterBetterMatchForPrevChapter(Chapter $chapter, Chapter $prevChapter = null, TimeUnit $inputElapsedTimeUnit = null)
@@ -102,15 +122,12 @@ function isChapterBetterMatchForPrevChapter(Chapter $chapter, Chapter $prevChapt
     return $chapter->getStart()->milliseconds() < $inputElapsedTimeUnit->milliseconds() - PREV_TOLERANCE_MILLISECONDS && ($prevChapter === null || $chapter->getStart()->milliseconds() >= $prevChapter->getEnd()->milliseconds());
 }
 
-function isChapterBetterMatchForNextChapter(Chapter $chapter, Chapter $nextChapter = null, TimeUnit $inputElapsedTimeUnit = null)
-{
-    return $chapter->getStart()->milliseconds() > $inputElapsedTimeUnit->milliseconds() && ($nextChapter === null || $chapter->getEnd()->milliseconds() < $nextChapter->getStart()->milliseconds());
-}
 
-
-function rewriteCommandSeek(Chapter $chapter)
+function rewriteCommandSeek(Chapter $chapter, $chapterDetails = [])
 {
-    return [COMMAND_PLAYER_SEEK, round($chapter->getStart()->milliseconds() / 1000, 3)];
+    $seekPosition = round($chapter->getStart()->milliseconds() / 1000, 3);
+
+    return [COMMAND_PLAYER_SEEK, $seekPosition, json_encode($chapterDetails)];
 }
 
 

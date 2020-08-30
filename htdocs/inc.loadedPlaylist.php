@@ -12,11 +12,13 @@ $(document).ready(function() {
             $('#elapsedTime').html('');
         }
         updateOverallTime();
+        updateChapterTitle();
     }
 
     function updateSongInfo(song) {
         $('#infoWrapper').html(createSongInformation(song));
         updateOverallTime();
+        updateChapterTitle();
     }
 
     function updateOverallTime() {
@@ -26,12 +28,21 @@ $(document).ready(function() {
         }
     }
 
+    function updateChapterTitle() {
+        const playerInfo = JUKEBOX.playerInfo;
+        const chapterTitle = (playerInfo.chapterdetails && playerInfo.chapterdetails.current) ? playerInfo.chapterdetails.current.name : "";
+        if(chapterTitle !== "") {
+            $('#chapter-title').html(" - " + chapterTitle);
+        }
+    }
+
     function createSongInformation(song) {
         var songInfo = '';
         if (song) {
             const playerInfo = JUKEBOX.playerInfo;
             if (playerInfo.title != null) {
-                const title = `<strong>${playerInfo.title}</strong>`;
+
+                const title = `<strong>${playerInfo.title}<span id="chapter-title"></span></strong>`;
 
                 var artist = (playerInfo.artist) ? '<br><i>' + playerInfo.artist.replace(';', ' and ') + '</i>' : '';
                 if (!artist && playerInfo.name) {

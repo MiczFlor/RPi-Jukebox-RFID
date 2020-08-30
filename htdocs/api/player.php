@@ -61,8 +61,12 @@ function handleGet() {
     // get volume separately from mpd, because we might use amixer to control volume
     $command = "playout_controls.sh -c=getvolume";
     $output = execScript($command);
-    $responseList['volume'] = implode('\n', $output); 
-    
+    $responseList['volume'] = implode('\n', $output);
+
+    $command = "playout_controls.sh -c=getchapterdetails";
+    $output = execScript($command);
+    $responseList['chapterdetails'] = @json_decode(trim(implode('\n', $output)));
+
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
         file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
