@@ -67,6 +67,10 @@ $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
 
+$lang['playerFilePlayed'] = "is gespeeld";
+$lang['playerFileAdded'] = "is toegevoegd aan de playlist";
+$lang['playerFileDeleted'] = "is verwijderd";
+
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Editie";
 $lang['classic'] = "Classic editie (barebones)";

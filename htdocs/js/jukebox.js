@@ -82,7 +82,12 @@ function playPlaylist(playlist, recursive) {
     $.ajax({
         url: `api/playlist.php`,
         method: 'PUT',
-        data: JSON.stringify(json)
+        data: JSON.stringify(json),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + playlist.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -101,6 +106,55 @@ function playSongInPlaylist(song) {
     $.ajax({
         url: `api/playlist/song.php`,
         method: 'PUT',
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + song.toString() + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' ' + JUKEBOX.lang['playerFileDeleted'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveUpSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveUpSongInPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveDownSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveDownSongInPlaylist.php`,
+        method: 'PUT',
         data: song.toString()
     }).success(data => {
         loadStatus();
@@ -111,7 +165,12 @@ function appendFileToPlaylist(file) {
     $.ajax({
         url: `api/playlist/appendFileToPlaylist.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFileAdded'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -121,7 +180,12 @@ function playSingleFile(file) {
     $.ajax({
         url: `api/playlist/playsinglefile.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
