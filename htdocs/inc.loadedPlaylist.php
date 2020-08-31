@@ -1,6 +1,6 @@
 <script>
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
         function updateSongTime(time) {
             if (time) {
@@ -132,7 +132,7 @@
 
         function updatePlaylistData(playlistData) {
             //console.debug(playlistData);
-            $playListToggle = $("#showPlaylistToggle");
+            $playListToggle  = $("#showPlaylistToggle");
             $playListToggle.hide();
             $playlistTable = $("#playlistTable");
             $playlistTable.empty();
@@ -163,9 +163,9 @@
             if (track.artist != null) {
                 result += '<br><i>' + track.artist.replace(";", " and ",) + '</i>';
             }
-            if (track.album != null) {
+            if(track.album != null) {
                 result += `<br><font color=#7d7d7d>${track.album}`;
-                if (track.date != null) {
+                if(track.date != null) {
                     result += ` (${track.date})`;
                 }
                 result += "</font>";
@@ -173,9 +173,9 @@
             result += '</td><td style="width: 20px; border-collapse: collapse;">';
             // Livestreams and podcasts have no time length, check to suppress badge
             const time = track.time;
-            if (time > 0 && time < 3600) {
+            if ( time > 0 && time < 3600 ) {
                 result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeMinutes(time) + '</span>';
-            } else if (time >= 3600) {
+            } else if ( time >= 3600 ) {
                 result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeHours(time) + '</span>';
             }
             result += '</td></tr>';
