@@ -60,7 +60,8 @@
             selectList.classList.add("selectedpicker");
             selectList.classList.add("form-control");
             selectList.setAttribute("initialized", "false");
-            selectList.style.width = "250px";
+            selectList.style.width = "30vw";
+            selectList.style.maxWidth = "300px";
 
             selectList.onchange = function() {
                 const $selectedOption = $(this).find('option:selected');
