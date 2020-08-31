@@ -37,11 +37,16 @@
             const currentChapter = chapters.find(chapter => chapter.current);
             const chaptersSelect = document.getElementById('chapters-select');
 
+            if(chapters.length === 0) {
+                return;
+            }
+
             if (currentChapter) {
                 $('#chapter-current-name').html(" - " + currentChapter.name);
             }
             if (!chaptersSelect) {
-                $('#chapters-select-container').html(buildChaptersSelectBox(chapters, currentChapter));
+                $('#chapters-select-container').html('<label for="chapters-select" style="line-height:45px;float:left;padding-right:15px">Chapters: </label>').append(buildChaptersSelectBox(chapters, currentChapter));
+
             } else if (currentChapter) {
                 chaptersSelect.selectedIndex = currentChapter.index;
             }
@@ -51,7 +56,12 @@
         function buildChaptersSelectBox(chapters, currentChapter) {
             var selectList = document.createElement("select");
             selectList.id = "chapters-select";
-            selectList.classList.add("custom-select");
+            selectList.name = "chapters-select";
+            selectList.classList.add("selectedpicker");
+            selectList.classList.add("form-control");
+            selectList.setAttribute("initialized", "false");
+            selectList.style.width = "250px";
+
             selectList.onchange = function() {
                 const $selectedOption = $(this).find('option:selected');
                 if($selectedOption === undefined) {
