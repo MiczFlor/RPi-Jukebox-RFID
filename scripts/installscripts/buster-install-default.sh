@@ -867,10 +867,6 @@ install_main() {
     sudo lighttpd-enable-mod fastcgi-php
     sudo service lighttpd force-reload
 
-#Not needed anymore    # create copy of GPIO script
-#        sudo cp "${jukebox_dir}"/misc/sampleconfigs/gpio-buttons.py.sample "${jukebox_dir}"/scripts/gpio-buttons.py
-#        sudo chmod +x "${jukebox_dir}"/scripts/gpio-buttons.py
-
     # make sure bash scripts have the right settings
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.sh
     sudo chmod +x "${jukebox_dir}"/scripts/*.sh
@@ -900,9 +896,7 @@ install_main() {
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
-    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
     [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
@@ -912,8 +906,6 @@ install_main() {
     #startup sound is part of phoniebox-startup-scripts now
     #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
-    #sudo systemctl enable phoniebox-gpio-buttons
-    #sudo systemctl enable phoniebox-rotary-encoder.service
     [[ "${GPIOconfig}" == "YES" ]] && sudo systemctl enable phoniebox-gpio-control.service
     # copy mp3s for startup and shutdown sound to the right folder
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
