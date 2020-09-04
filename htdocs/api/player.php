@@ -65,9 +65,27 @@ function handleGet() {
     $output = execScript($command);
     $responseList['volume'] = implode('\n', $output);
 
-    $command = "playout_controls.sh -c=getchapterdetails";
+    $command = "playout_controls.sh -c=getchapters";
     $output = execScript($command);
-    $responseList['chapters'] = @json_decode(trim(implode('\n', $output)));
+    $jsonChapters = trim(implode("\n", $output));
+    $chapters = @json_decode($jsonChapters, true);
+    $mappedChapters = array_filter(array_map(function($chapter) use($responseList) {
+        static $i = 1;
+        if(isset($chapter["start_time"], $chapter["end_time"])) {
+            $start = (double)$chapter["start_time"];
+            $end = (double)$chapter["end_time"];
+            $elapsed = (double)($responseList["elapsed"] ?? 0);
+            $current = ($start <= $elapsed && $end >= $elapsed);
+            return [
+                "name" => $chapter["tags"]["title"] ?? $i++,
+                "start" => round($start, 3),
+                "length" => round($end - $start, 3),
+                "current" => $current,
+            ];
+        }
+        return null;
+    }, $chapters["chapters"] ?? []));
+    $responseList['chapters'] = $mappedChapters;
 
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);

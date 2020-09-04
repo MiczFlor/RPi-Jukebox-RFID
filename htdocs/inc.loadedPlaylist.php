@@ -68,7 +68,8 @@
                 if($selectedOption === undefined) {
                     return;
                 }
-                const seekPosition = $selectedOption.data('start') / 1000;
+                // this is not 100% accurate, but floats are not supported by mpc to seek a position
+                const seekPosition = Math.floor($selectedOption.data('start'));
                 executePlayerCommand("seekPosition", null, seekPosition);
             };
 

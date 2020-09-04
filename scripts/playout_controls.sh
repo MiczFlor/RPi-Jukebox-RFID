@@ -32,7 +32,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setvolumetostartup
 # volumeup
 # volumedown
-# getchapterdetails
+# getchapters
 # getvolume
 # getmaxvolume
 # setvolstep
@@ -105,8 +105,6 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}"
 
 ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
 ENABLE_CHAPTERS_MIN_DURATION="600"
-M4B_TOOL="${PATHDATA}/m4b-tool.phar"
-CHAPTERS_AS_JSON=""
 
 function dbg {
   if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
@@ -114,65 +112,49 @@ function dbg {
   fi
 }
 
-if ! [ -f "${M4B_TOOL}" ]; then
-    dbg "m4b-tool not installed - file ${M4B_TOOL} not found";
+AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
+
+CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
+CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
+CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
+dbg "current file: $CURRENT_SONG_FILE_ABS"
+
+CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
+CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
+CURRENT_SONG_FILE_EXT="${CURRENT_SONG_BASENAME##*.}"
+CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
+
+CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
+dbg "chapters file: $CHAPTERS_FILE"
+
+if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
+  CHAPTER_SUPPORT_FOR_EXTENSION="1"
 else
-  AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
+  CHAPTER_SUPPORT_FOR_EXTENSION="0"
+fi
+dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
-  CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
-  CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
-  CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
-  dbg "current file: $CURRENT_SONG_FILE_ABS"
 
-  CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
-  CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
-  CURRENT_SONG_FILE_EXT="${CURRENT_SONG_BASENAME##*.}"
-  CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
-  CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
+if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
+  CHAPTER_SUPPORT_FOR_DURATION="1"
+else
+  CHAPTER_SUPPORT_FOR_DURATION="0"
+fi
+dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
 
-  CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.txt"
-  dbg "chapters file: $CHAPTERS_FILE"
-
-  if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
-    CHAPTER_SUPPORT_FOR_EXTENSION="1"
+if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
+  if ! [ -f "${CHAPTERS_FILE}" ]; then
+    CHAPTERS_COUNT="0"
+    dbg "chaptes file does not exist - export triggered"
+    ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
   else
-    CHAPTER_SUPPORT_FOR_EXTENSION="0"
-  fi
-  dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
-
-  if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
-    CHAPTER_SUPPORT_FOR_DURATION="1"
-  else
-    CHAPTER_SUPPORT_FOR_DURATION="0"
-  fi
-  dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
-
-  if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
-    if ! [ -f "${CHAPTERS_FILE}" ]; then
-      CHAPTERS_COUNT="0"
-      dbg "chaptes file does not exist - export triggered"
-      dbg "sudo ${PATHDATA}/m4b-tool.phar meta '${CURRENT_SONG_FILE_ABS}' --export-chapters"
-      sudo "$M4B_TOOL" meta "${CURRENT_SONG_FILE_ABS}" --export-chapters &
-    else
-      CHAPTERS_COUNT="$(grep -v '^\s*$\|^\s*\#' "${CHAPTERS_FILE}" | wc -l )"
-      dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
-    fi
-
-    if [ "${CHAPTERS_COUNT}" -gt 1 ]; then
-      dbg "rewrite command:"
-      dbg "sudo /usr/bin/php ${PATHDATA}/playout_controls_chapter.php '${COMMAND}' '${VALUE}' '${CHAPTERS_FILE}' '$CURRENT_SONG_ELAPSED'"
-      REWRITTEN_VALUES=$(sudo /usr/bin/php ${PATHDATA}/playout_controls_chapter.php "${COMMAND}" "${VALUE}" "${CHAPTERS_FILE}" "$CURRENT_SONG_ELAPSED")
-      COMMAND=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 1)
-      VALUE=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 2)
-      CHAPTERS_AS_JSON=$(echo "$REWRITTEN_VALUES" | cut -d ';' -f 3)
-      dbg "rewritten: ${REWRITTEN_VALUES}, newcommand:${COMMAND}, newvalue:${VALUE}"
-    fi
+    CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
+    dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
   fi
 fi
 
 # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
-
-
 
 case $COMMAND in
     shutdown)
@@ -452,9 +434,8 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         ;;
-    getchapterdetails)
-        # read volume in percent
-        echo $CHAPTERS_AS_JSON
+    getchapters)
+        if [ -f "${CHAPTERS_FILE}" ]; then cat "${CHAPTERS_FILE}"; fi
         ;;
     getvolume)
         # read volume in percent
@@ -715,12 +696,19 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        # Seek negative value doesn't work in mpd anymore.
-        # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
-        # if there are issues, please comment in that thread
-        CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
-        NEW_POS=$(($CUR_POS + $VALUE))
-        echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
+
+        # if value does not start with + or - (relative seek), perform an absolute seek
+        if [[ $VALUE =~ ^[0-9] ]]; then
+          # seek absolute position
+          mpc seek "$VALUE"
+        else
+          # Seek negative value doesn't work in mpd anymore.
+          # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
+          # if there are issues, please comment in that thread
+          CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
+          NEW_POS=$(($CUR_POS + $VALUE))
+          echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
+        fi
         ;;
     playerreplay)
         # start the playing track from beginning
