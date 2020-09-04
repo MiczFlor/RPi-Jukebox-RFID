@@ -126,6 +126,7 @@ function removeSongFromPlaylist(song) {
           var infomessage = $("#phonieboxinfomessage");
           infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' ' + JUKEBOX.lang['playerFileDeleted'] + '.</div>');
           infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -208,6 +209,22 @@ function executePlayerCommand(command, completion, value) {
      });
 }
 
+function nextChapter() {
+    gotoChapter($('#chapters-select').find('option:selected').next());
+}
+
+function previousChapter() {
+    gotoChapter($('#chapters-select').find('option:selected').prev());
+}
+
+function gotoChapter(chapter) {
+
+    if(chapter.length !== 0) {
+        const seekPosition = Math.floor(chapter.data('start'));
+        executePlayerCommand("seekPosition", null, seekPosition);
+        debugger;
+    }
+}
 
 function volumeUp() {
     executePlayerCommand('volumeup', () => {

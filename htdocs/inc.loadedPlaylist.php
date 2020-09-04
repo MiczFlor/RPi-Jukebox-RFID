@@ -1,6 +1,6 @@
 <script>
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         function updateSongTime(time) {
             if (time) {
@@ -37,35 +37,37 @@
             const currentChapter = chapters.find(chapter => chapter.current);
             const chaptersSelect = document.getElementById('chapters-select');
 
-            if(chapters.length === 0) {
+            if (chapters.length === 0) {
+                $('#chaptersWrapper').hide();
                 return;
             }
 
+
+            chaptersSelect.innerHTML = '';
+            buildChaptersSelectBox(chapters, currentChapter);
+
             if (currentChapter) {
-                $('#chapter-current-name').html(" - " + currentChapter.name);
-            }
-            if (!chaptersSelect) {
-                $('#chapters-select-container').html('<label for="chapters-select" style="line-height:45px;float:left;padding-right:15px">Chapters: </label>').append(buildChaptersSelectBox(chapters, currentChapter));
-
-            } else if (currentChapter) {
-                chaptersSelect.selectedIndex = currentChapter.index;
+                chaptersSelect.selectedIndex = chapters.indexOf(currentChapter);
             }
 
+            $('#chaptersWrapper').show();
         }
 
         function buildChaptersSelectBox(chapters, currentChapter) {
-            var selectList = document.createElement("select");
-            selectList.id = "chapters-select";
+            var selectList = document.getElementById("chapters-select");
+
             selectList.name = "chapters-select";
             selectList.classList.add("selectedpicker");
             selectList.classList.add("form-control");
             selectList.setAttribute("initialized", "false");
             selectList.style.width = "30vw";
-            selectList.style.maxWidth = "300px";
+            selectList.style.maxWidth = "200px";
+            selectList.style.display = 'inline';
+            selectList.style.textAlign = 'center';
 
-            selectList.onchange = function() {
+            selectList.onchange = function () {
                 const $selectedOption = $(this).find('option:selected');
-                if($selectedOption === undefined) {
+                if ($selectedOption === undefined) {
                     return;
                 }
                 // this is not 100% accurate, but floats are not supported by mpc to seek a position
@@ -144,7 +146,7 @@
 
         function updatePlaylistData(playlistData) {
             //console.debug(playlistData);
-            $playListToggle  = $("#showPlaylistToggle");
+            $playListToggle = $("#showPlaylistToggle");
             $playListToggle.hide();
             $playlistTable = $("#playlistTable");
             $playlistTable.empty();
@@ -184,9 +186,9 @@
             if (track.artist != null) {
                 result += '<br><i>' + track.artist.replace(";", " and ",) + '</i>';
             }
-            if(track.album != null) {
+            if (track.album != null) {
                 result += `<br><font color=#7d7d7d>${track.album}`;
-                if(track.date != null) {
+                if (track.date != null) {
                     result += ` (${track.date})`;
                 }
                 result += "</font>";
@@ -194,9 +196,9 @@
             result += '</td><td style="width: 20px; border-collapse: collapse;">';
             // Livestreams and podcasts have no time length, check to suppress badge
             const time = track.time;
-            if ( time > 0 && time < 3600 ) {
+            if (time > 0 && time < 3600) {
                 result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeMinutes(time) + '</span>';
-            } else if ( time >= 3600 ) {
+            } else if (time >= 3600) {
                 result += '<span class="badge" style="float: right; margin: 3px!important;">' + formatTimeHours(time) + '</span>';
             }
             result += '</td></tr>';
@@ -211,7 +213,8 @@
     });
 </script>
 
-<table style="margin-bottom: 20px; width: 100%; border-collapse: collapse; border-top: 1px solid #444; border-bottom: 1px solid #444">
+<table
+    style="margin-bottom: 20px; width: 100%; border-collapse: collapse; border-top: 1px solid #444; border-bottom: 1px solid #444">
     <tr>
         <td style="padding: 10px 0; border-collapse: collapse;"><i class="mdi"></i>
             <span id="infoWrapper">
@@ -225,8 +228,13 @@
         </td>
     </tr>
     <tr>
-        <td style="padding: 10px 0;border-collapse: collapse;"><div id="showPlaylistToggle" style="display: none"><i class="mdi mdi-playlist-play"></i> <a data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a></div></td>
-        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;"><div id="overalltimeWrapper"></div></td>
+        <td style="padding: 10px 0;border-collapse: collapse;">
+            <div id="showPlaylistToggle" style="display: none"><i class="mdi mdi-playlist-play"></i> <a
+                    data-toggle="collapse" href="#collapse1" class="panel-title">Show playlist</a></div>
+        </td>
+        <td style="padding: 10px 0;width: 50px; border-collapse: collapse;">
+            <div id="overalltimeWrapper"></div>
+        </td>
     </tr>
 </table>
 <div id="collapse1" class="panel-collapse collapse" style="margin-bottom: 40px;">
