@@ -214,16 +214,41 @@ function nextChapter() {
 }
 
 function previousChapter() {
-    gotoChapter($('#chapters-select').find('option:selected').prev());
+    var timerSeconds = 5;
+    var playerInfo = JUKEBOX.playerInfo;
+    var elapsed = +playerInfo.elapsed;
+    var $selectedChapter = $('#chapters-select').find('option:selected');
+    var selectedChapterStart = +$selectedChapter.data('start');
+
+    // if chapter is playing for more than 5 seconds return to start of chapter instead of going to the previous one
+    // to keep responsive during the ajax requests, set a timer that blocks this behavior after the first trigger
+    if(elapsed - selectedChapterStart > timerSeconds && !this.timerActive) {
+        gotoChapter($selectedChapter);
+        this.timerActive = true;
+        window.setTimeout(() => {
+            this.timerActive = false;
+        }, timerSeconds*1000 + 1);
+
+    } else {
+        gotoChapter($selectedChapter.prev());
+    }
 }
 
 function gotoChapter(chapter) {
-
     if(chapter.length !== 0) {
-        const seekPosition = Math.floor(chapter.data('start'));
-        executePlayerCommand("seekPosition", null, seekPosition);
-        debugger;
+        $('#chapters-select').val(chapter.val()).change();
     }
+}
+
+function onChangeChapter() {
+    const $selectedOption = $('#chapters-select').find('option:selected');
+
+    if ($selectedOption.length === 0) {
+        return;
+    }
+    // this is not 100% accurate, but floats are not supported by mpc to seek a position
+    const seekPosition = Math.floor($selectedOption.data('start'));
+    executePlayerCommand("seekPosition", null, seekPosition);
 }
 
 function volumeUp() {

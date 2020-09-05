@@ -34,61 +34,44 @@
         function updateChapters() {
             const playerInfo = JUKEBOX.playerInfo;
             const chapters = playerInfo.chapters || [];
-            const currentChapter = chapters.find(chapter => chapter.current);
-            const chaptersSelect = document.getElementById('chapters-select');
+            const $chaptersSelect = $('#chapters-select');
+
 
             if (chapters.length === 0) {
                 $('#chaptersWrapper').hide();
                 return;
             }
-
-
-            chaptersSelect.innerHTML = '';
-            buildChaptersSelectBox(chapters, currentChapter);
-
-            if (currentChapter) {
-                chaptersSelect.selectedIndex = chapters.indexOf(currentChapter);
+            if($chaptersSelect.data('id') !== playerInfo.id) {
+                updatedOptionsForChaptersSelectBox(playerInfo, $chaptersSelect, chapters);
             }
+            markCurrentChapterAsSelected(playerInfo, $chaptersSelect, chapters);
 
             $('#chaptersWrapper').show();
         }
 
-        function buildChaptersSelectBox(chapters, currentChapter) {
-            var selectList = document.getElementById("chapters-select");
-
-            selectList.name = "chapters-select";
-            selectList.classList.add("selectedpicker");
-            selectList.classList.add("form-control");
-            selectList.setAttribute("initialized", "false");
-            selectList.style.width = "30vw";
-            selectList.style.maxWidth = "200px";
-            selectList.style.display = 'inline';
-            selectList.style.textAlign = 'center';
-
-            selectList.onchange = function () {
-                const $selectedOption = $(this).find('option:selected');
-                if ($selectedOption === undefined) {
-                    return;
-                }
-                // this is not 100% accurate, but floats are not supported by mpc to seek a position
-                const seekPosition = Math.floor($selectedOption.data('start'));
-                executePlayerCommand("seekPosition", null, seekPosition);
-            };
-
+        function updatedOptionsForChaptersSelectBox(playerInfo, $chaptersSelect, chapters) {
+            $chaptersSelect.html('');
+            $chaptersSelect.data('id', playerInfo.id);
             for (var i = 0; i < chapters.length; i++) {
+                var chapter = chapters[i];
                 var option = document.createElement("option");
                 option.value = chapters[i].name;
                 option.text = chapters[i].name;
-                option.setAttribute("data-start", chapters[i].start);
-                if (chapters[i] === currentChapter) {
-                    // selectList.selectedIndex = i+1;
-                    option.selected = true;
-                    option.setAttribute("selected", "");
-
-                }
-                selectList.appendChild(option);
+                option.setAttribute("data-start", chapter.start);
+                $chaptersSelect.append(option);
             }
-            return selectList;
+        }
+
+        function markCurrentChapterAsSelected(playerInfo, $chaptersSelect, chapters) {
+            var selectedIndex = 0;
+            for (var i = 0; i < chapters.length; i++) {
+                var elapsed = +playerInfo.elapsed;
+                var start = +chapters[i].start;
+                if (start <= elapsed) {
+                    selectedIndex = i;
+                }
+            }
+            $chaptersSelect[0].selectedIndex = selectedIndex;
         }
 
 
