@@ -209,10 +209,16 @@ function executePlayerCommand(command, completion, value) {
      });
 }
 
+/**
+ * Although there is a playout_controls.sh command "playernextchapter" it is implemented manually to keep the ui responsive
+ */
 function nextChapter() {
     gotoChapter($('#chapters-select').find('option:selected').next());
 }
 
+/**
+ * Although there is a playout_controls.sh command "playerprevchapter" it is implemented manually to keep the ui responsive
+ */
 function previousChapter() {
     var timerSeconds = 5;
     var playerInfo = JUKEBOX.playerInfo;
@@ -234,6 +240,10 @@ function previousChapter() {
     }
 }
 
+/**
+ * Will only change the selected item and trigger change - see onChangeChapter for event handler
+ * @param chapter
+ */
 function gotoChapter(chapter) {
     if(chapter.length !== 0) {
         $('#chapters-select').val(chapter.val()).change();
@@ -247,7 +257,7 @@ function onChangeChapter() {
         return;
     }
     // this is not 100% accurate, but floats are not supported by mpc to seek a position
-    const seekPosition = Math.floor($selectedOption.data('start'));
+    const seekPosition = $selectedOption.data('start');
     executePlayerCommand("seekPosition", null, seekPosition);
 }
 

@@ -41,6 +41,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerstopafter
 # playernext
 # playerprev
+# playernextchapter
+# playerprevchapter
 # playerpause
 # playerpauseforce
 # playerplay
@@ -112,6 +114,21 @@ function dbg {
   fi
 }
 
+function sec_to_ms() {
+  SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
+  MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
+  MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
+
+  if [[ "" == "$SECONDSPART" ]]; then
+    SECONDSPART="0"
+  fi
+
+  if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
+    MILLISECONDSPART_NORMALIZED="0"
+  fi
+  echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
+}
+
 AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
 
 CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
@@ -152,6 +169,21 @@ if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]
     CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
     dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
   fi
+
+
+  CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
+  ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
+
+  # elapsed and chapter start exactly match -> skip one line
+  if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
+    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+    CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
+  else
+    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
+    CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+  fi
+
+  NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
 fi
 
 # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -580,6 +612,31 @@ case $COMMAND in
 
         mpc prev
         ;;
+    playerprevchapter)
+        CURRENT_SONG_ELAPSED_MS=$(sec_to_ms "$CURRENT_SONG_ELAPSED")
+        CURRENT_CHAPTER_START_MS=$(sec_to_ms "$CURRENT_CHAPTER_START")
+        CHAPTER_DIFF_ELAPSED_CURRENT_MS=$(($CURRENT_SONG_ELAPSED_MS-$CURRENT_CHAPTER_START_MS))
+
+        # if elapsed - current > 5.000 => seek current chapter
+        # if elapsed - current <= 5.000 => seek prev chapter
+        # if prev === 0.000 && elapsed < 5.000 => prev track? (don't do that)
+        if [ "$CHAPTER_DIFF_ELAPSED_CURRENT_MS" -gt 5000 ]; then
+          dbg "chapter is already running for longer, seek to current chapter: $SEEK_POS"
+          echo -e "seekcur $CURRENT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        else
+          dbg "chapter just started, seek to prev chapter $PREV_CHAPTER_START"
+          echo -e "seekcur $PREV_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        fi
+        ;;
+    playernextchapter)
+        # if next === elapsed => next track
+        if ! [ "$NEXT_CHAPTER_START" == "$CURRENT_SONG_ELAPSED" ]; then
+          dbg "next chapter $NEXT_CHAPTER_START"
+          echo -e "seekcur $NEXT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        else
+          dbg "next chapter not available, last chapter already playing"
+        fi
+        ;;
     playerrewind)
         # play the first track in playlist (==folder)
         # Unmute if muted
@@ -700,7 +757,7 @@ case $COMMAND in
         # if value does not start with + or - (relative seek), perform an absolute seek
         if [[ $VALUE =~ ^[0-9] ]]; then
           # seek absolute position
-          mpc seek "$VALUE"
+          echo -e "seekcur $VALUE\nclose" | nc -w 1 localhost 6600
         else
           # Seek negative value doesn't work in mpd anymore.
           # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
