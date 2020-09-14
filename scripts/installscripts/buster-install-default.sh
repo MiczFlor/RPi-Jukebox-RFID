@@ -830,9 +830,6 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
-
-    # Install required packages for GPIO-Control 
-    [[ "${GPIOconfig}" == "YES" ]] && sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
     
     samba_config
 
@@ -897,7 +894,6 @@ install_main() {
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -906,7 +902,6 @@ install_main() {
     #startup sound is part of phoniebox-startup-scripts now
     #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
-    [[ "${GPIOconfig}" == "YES" ]] && sudo systemctl enable phoniebox-gpio-control.service
     # copy mp3s for startup and shutdown sound to the right folder
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
@@ -936,6 +931,16 @@ install_main() {
         sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
     fi
 
+    # GPIO-Control
+    [[ "${GPIOconfig}" == "YES" ]] && sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
+    [[ "${GPIOconfig}" == "YES" ]] && sudo systemctl enable phoniebox-gpio-control.service
+    if [[ "${GPIOconfig}" == "YES" ]]; then
+        if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
+            mkdir -p ~/.config/phoniebox && cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+        fi
+    fi
+    
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
 

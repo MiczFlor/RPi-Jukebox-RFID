@@ -5,6 +5,10 @@ if [[ $(id -u) != 0 ]]; then
    exit 1
 fi
 
+if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
+    mkdir -p ~/.config/phoniebox && cp /example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+fi
+
 echo 'disable old services: phoniebox-gpio-buttons and phoniebox-rotary-encoder'
 systemctl stop phoniebox-rotary-encoder.service
 systemctl disable phoniebox-rotary-encoder.service
