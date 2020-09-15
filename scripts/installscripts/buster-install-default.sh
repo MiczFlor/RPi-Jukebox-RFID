@@ -932,12 +932,13 @@ install_main() {
     fi
 
     # GPIO-Control
-    [[ "${GPIOconfig}" == "YES" ]] && sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
-    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
-    [[ "${GPIOconfig}" == "YES" ]] && sudo systemctl enable phoniebox-gpio-control.service
     if [[ "${GPIOconfig}" == "YES" ]]; then
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
+        sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
-            mkdir -p ~/.config/phoniebox && cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+            mkdir -p ~/.config/phoniebox
+            cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
         fi
     fi
     
