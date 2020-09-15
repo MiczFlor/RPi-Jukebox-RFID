@@ -894,6 +894,7 @@ install_main() {
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
+    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -934,7 +935,6 @@ install_main() {
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
             mkdir -p ~/.config/phoniebox
