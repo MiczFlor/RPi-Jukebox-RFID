@@ -9,6 +9,7 @@ git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube_dl
 pyserial
 RPi.GPIO
+nfcpy
 
 # Type checking for python
 # typing

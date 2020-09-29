@@ -15,17 +15,14 @@
 #     KKMOON RFID Reader which appears twice in the devices list as HID 413d:2107
 #     and this required to check "if" the device is a keyboard.
 
-# import string
-# import csv
 import os.path
 import sys
+import nfc
+from nfc.clf import RemoteTarget
 
-from evdev import InputDevice, ecodes, list_devices
-from select import select
 
-
-def get_devices():
-    return [InputDevice(fn) for fn in list_devices()]
+def get_devices() -> str:
+    return 'usb:072f:2200'
 
 
 class Reader:
@@ -33,31 +30,11 @@ class Reader:
 
     def __init__(self):
         self.reader = self
-        path = os.path.dirname(os.path.realpath(__file__))
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
-        if not os.path.isfile(path + '/deviceName.txt'):
-            sys.exit('Please run RegisterDevice.py first')
-        else:
-            with open(path + '/deviceName.txt', 'r') as f:
-                deviceName = f.read()
-            devices = get_devices()
-            for device in devices:
-                if device.name == deviceName:
-                    self.dev = device
-                    break
-            try:
-                self.dev
-            except:
-                sys.exit('Could not find the device %s\n. Make sure is connected' % deviceName)
+        self.clf = nfc.ContactlessFrontend()
 
-    def readCard(self):
-        stri = ''
-        key = ''
-        while key != 'KEY_ENTER':
-            r, w, x = select([self.dev], [], [])
-            for event in self.dev.read():
-                if event.type == 1 and event.value == 1:
-                    stri += self.keys[event.code]
-                    # print( keys[ event.code ] )
-                    key = ecodes.KEY[event.code]
-        return stri[:-1]
+    def readCard(self) -> str:
+        self.clf.open('usb:072f:2200')
+        tag = self.clf.connect(rdwr={'on-connect': lambda tag: False})
+        self.clf.close()
+        return str(tag.identifier).replace(" ", "").strip()
