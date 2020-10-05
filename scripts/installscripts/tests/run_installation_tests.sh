@@ -21,11 +21,12 @@ export DEBIAN_FRONTEND=noninteractive
 # n no spotify
 # y configure mpd
 # y audio default location
+# y config gpio 
 # n no RFID registration
 # n No reboot
 
 # TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\nn\nn\n'
+GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\ny\nn\nn\n'
 
-# Rest installation
+# Test installation
 ./scripts/installscripts/tests/test_installation.sh
