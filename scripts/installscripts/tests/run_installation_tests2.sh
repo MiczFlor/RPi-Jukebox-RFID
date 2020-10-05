@@ -28,7 +28,7 @@ export DEBIAN_FRONTEND=noninteractive
 # n No reboot
 
 # TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\ny\ny\n2\ny\nn\n'
+GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
 
 # Test installation
 ./scripts/installscripts/tests/test_installation.sh
