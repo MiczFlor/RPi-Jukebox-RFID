@@ -28,7 +28,7 @@ def parse_pull_up_down(pull_up_down):
         pull_up_down = GPIO.PUD_UP
     elif pull_up_down.lower() == 'pull_down':
         pull_up_down = GPIO.PUD_DOWN
-    elif edge.lower() == 'pull_off':
+    elif pull_up_down.lower() == 'pull_off':
         pull_up_down = GPIO.PUD_OFF
     else:
         raise KeyError('Unknown Pull Up/Down type {pull_up_down}'.format(pull_up_down=pull_up_down))
