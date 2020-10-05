@@ -14,27 +14,27 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/1?closed=1) released (2020-05-24)**
+* **Phoniebox [2.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/3?closed=1) released (2020-10-xx)**
 
-The 2.0 release was pushed through the doors with *countless additions and great oversight* from @s-martin and *substantial input* by @ZyanKLee together alongside many other contributors (some of which in alphabetical order): @andreasbrett @BerniPi @ctietze @danielhammer @fredg02 @Groovylein @MalteHST @patrickweigelt @Piehti @SimonChelkowski @veloxidSchweiz @xn--nding-jua and starring @splitti as *the great hotfix*. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The 2.1 release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @ctietze @danielhammer @fredg02 @Groovylein @MalteHST @patrickweigelt @Piehti @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.0?
+## What's new in version 2.1?
+
+* Improved [GPIO control](components/gpio_control/README.md) and integrated in **one-line install script**
+* Integrated selection of RFID readers in **one-line install script**
+* Improved handling of playlists in web UI
+* Improved Spotify handling of albums covers, etc.
+* Seeking via GPIO buttons
+* Lots of fixed bugs and minor improvements...
+
+**What's still hot?**
 
 * **[WiFi management](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#wifi-settings)**
     * RFID cards to **toggle Wifi** (or switch it on/off)
     * Read out the Wifi IP address (if you are connecting to a new network and don't know where to point your browser)
     * **Hotspot** Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
 * **Touchscreen** LCD display Player (file: `index-lcd.php`in web app)
-* [GPIO control](components/gpio_control/README.md) for improved hadling of GPIO devices (buttons, rotary control, ...)
-* Improved [PN532](components/rfid-reader/PN532/README.md) RFID reader support
 * Improved **one-line install script** featuring *non-interactive* installs based on a config file
-* Updated all **python code to 3.5** and consistent use of packages via requirements.txt files
-* Migration to **mopidy3** for Spotify and [Google Music](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Enable-Google-Play-Music-GMusic) integration
-* Improved development life cycle (**unit tests**, checkers, continous integration, ...)
-* ... and many bug fixes (as well as new bugs, we don't know yet)
-
-**What's still hot?**
-
 * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
 * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
 * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
