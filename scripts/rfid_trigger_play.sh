@@ -400,7 +400,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: toggle pause/play" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "PLAY" -a $PLLENGTH -gt 0 ]
         then
-            # The following involves NOT playing the playlist, so we set: 
+            # The following involves NOT playing the playlist, so we set:
             PLAYPLAYLIST=no
             sudo $PATHDATA/playout_controls.sh -c=playerplay &>/dev/null
             if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: Resume playback" >> $PATHDATA/../logs/debug.log; fi
@@ -408,8 +408,8 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         then
             # The following involves NOT playing the playlist, so we set:
             PLAYPLAYLIST=no
-            # following needs testing (see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/914)
-            # Special case for NOAUDIOPLAY because once the playlist has finished, 
+            # following needs testing (see https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/914)
+            # Special case for NOAUDIOPLAY because once the playlist has finished,
             # it needs to be noted by the system that the second swipe is like a *first* swipe.
             currentSong=`mpc current`
             if [[ -z "$currentSong" ]]; then

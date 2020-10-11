@@ -4,7 +4,7 @@
 # RPi-Jukebox-RFID/scripts/rotary-encoder.py
 # RPi-Jukebox-RFID/scripts/rotary_encoder.py
 # RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
-# See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
+# See wiki for more info: https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki
 
 import RPi.GPIO as GPIO
 from timeit import default_timer as timer

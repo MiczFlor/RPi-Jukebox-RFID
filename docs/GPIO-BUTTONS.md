@@ -1,9 +1,9 @@
 
 # Control Jukebox with buttons / GPIO
 
-(Other docs: [Installation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) |
-[Configuration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch) |
-[Phoniebox manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL))
+(Other docs: [Installation](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/INSTALL-stretch) |
+[Configuration](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch) |
+[Phoniebox manual](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL))
 
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
@@ -46,7 +46,7 @@ You will be running wires from the RPi board to another board where the buttons 
 
 On the above image you can also see the pin numbering, in this case containing both: the RPi board numbering on the RPi3 and the Broadcom (BCM) pin numbering used for the code.
 
-The [script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) we are using originally been provided by Andreas aka [hailogugo](https://github.com/hailogugo). It's been modified since then and now provides `pull_up=True` for all pins (not incl. shutdown). Read more in this thread [why we added `pull_up`](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/259).
+The [script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) we are using originally been provided by Andreas aka [hailogugo](https://github.com/hailogugo). It's been modified since then and now provides `pull_up=True` for all pins (not incl. shutdown). Read more in this thread [why we added `pull_up`](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/259).
 
 Here is how to connect the buttons:
 
@@ -92,4 +92,4 @@ $ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 
 **Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.
 
-To have this started automatically at boot. Please read the section on [autostarting the scripts](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart) in the [configuration documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart).
+To have this started automatically at boot. Please read the section on [autostarting the scripts](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart) in the [configuration documentation](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart).

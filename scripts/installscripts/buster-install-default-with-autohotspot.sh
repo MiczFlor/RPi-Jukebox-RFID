@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
+# see https://github.com/chbuehlmann/RPi-Jukebox-RFID for details
 #
 # NOTE: Running automated install (without interaction):
 # Each install creates a file called PhonieboxInstall.conf
@@ -9,7 +9,7 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    https://github.com/chbuehlmann/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder /home/pi/
@@ -228,7 +228,7 @@ check_existing() {
             #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
-            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
+            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/chbuehlmann/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
         fi
         echo "IMPORTANT: you can use the existing content and configuration files for your new install."
         echo "Whatever you chose to keep will be moved to the new install."
@@ -692,7 +692,7 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone https://github.com/chbuehlmann/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
     # VERSION of installation
 
@@ -725,7 +725,7 @@ install_main() {
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
-    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
+    local raw_github="https://raw.githubusercontent.com/chbuehlmann/RPi-Jukebox-RFID"
     # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
     # Back then the master install script needed develop branch files. I think this is from that time...?
     #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
@@ -1018,7 +1018,7 @@ folder_access() {
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
 
     # set audio volume to 100%
-    # see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
+    # see: https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/54
     sudo amixer cset numid=1 100%
 
     # delete the global.conf file, in case somebody manually copied stuff back and forth
@@ -1174,7 +1174,7 @@ finish_installation() {
     echo
     echo "DONE. Let the sounds begin."
     echo "Find more information and documentation on the github account:"
-    echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+    echo "https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/"
 
     echo "Reboot is needed to activate all settings"
     # Use -e to display response of user in the logfile

@@ -44,7 +44,7 @@ SERVICE_STATUS="$(systemctl is-active phoniebox-gpio-control.service)"
 if [[ "${SERVICE_STATUS}" = "active" ]]; then
     echo "Phoniebox GPIO Service started correctly ....."
     echo "For further configuration of GPIO-devices consult the wiki:
-https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
+https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
 else
     echo ""
     FRED="\033[31m"

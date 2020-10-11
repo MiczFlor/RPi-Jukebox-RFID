@@ -23,7 +23,7 @@ if(!file_exists("config.php")) {
         print "<h1>Configuration file not found</h1>
             <p>The files 'config.php' and 'config.php.sample' were not found in the
             directory 'htdocs'. Please download 'htdocs/config.php.sample' from the
-            <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
+            <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/'>online repository</a>,
             copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
         die;
     } else {
@@ -43,7 +43,7 @@ sudo chgrp -R www-data htdocs/
                 </pre>
                 </p>
                 Alternatively, download 'htdocs/config.php.sample' from the
-                <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
+                <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/'>online repository</a>,
                 copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
             die;
         } else {

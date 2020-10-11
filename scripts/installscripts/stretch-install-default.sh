@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
+# see https://github.com/chbuehlmann/RPi-Jukebox-RFID for details
 # Especially the docs folder for documentation
 
 # The absolute path to the folder which contains this script
@@ -497,7 +497,7 @@ fi
 
 # Get github code
 cd /home/pi/ || exit
-git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+git clone https://github.com/chbuehlmann/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
 
 # check, which branch was cloned
 git status
@@ -806,7 +806,7 @@ sudo chown pi:www-data /home/pi/RPi-Jukebox-RFID/scripts/*.py
 sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/*.py
 
 # set audio volume to 100%
-# see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
+# see: https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/54
 sudo amixer cset numid=1 100%
 
 # / Access settings
@@ -839,7 +839,7 @@ esac
 echo
 echo "DONE. Let the sounds begin."
 echo "Find more information and documentation on the github account:"
-echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+echo "https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/"
 echo ""
 
 #####################################################

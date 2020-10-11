@@ -1,7 +1,7 @@
 
 # LCD displays based on HD44780
 
-*([Permission to use this code for the Phoniebox project](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/859#discussion_r408667007) on April 15th 2020 by author [Denis Pleic](https://github.com/DenisFromHR). Original [code on https://gist.github.com/DenisFromHR/cc863375a6e19dce359d](https://gist.github.com/DenisFromHR/cc863375a6e19dce359d))*
+*([Permission to use this code for the Phoniebox project](https://github.com/chbuehlmann/RPi-Jukebox-RFID/pull/859#discussion_r408667007) on April 15th 2020 by author [Denis Pleic](https://github.com/DenisFromHR). Original [code on https://gist.github.com/DenisFromHR/cc863375a6e19dce359d](https://gist.github.com/DenisFromHR/cc863375a6e19dce359d))*
 
 The following files allow using LCD displays based on HD44780 connected via i2c bus for this project. The following displays have been used for testing:
 

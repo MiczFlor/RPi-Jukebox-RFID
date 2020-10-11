@@ -15,7 +15,7 @@ If you want to integrate Spotify:
 
 ## Bug reports and testers
 
-**Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
+**Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 
 If you open an issue on github, please provide as much informations as you can. What is you Edition (Classic or +Spotify)? Which version so you have? What is the problem and what did you try to solve this? And so on..
 
@@ -23,7 +23,7 @@ If you open an issue on github, please provide as much informations as you can. 
 
 ## About this document
 
-You best start will be to start a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
+You best start will be to start a FRESH INSTALLATION, please read [more here](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
 
 The one-line-install should detect an existing installation and ask you if you want to keep the content. That should work, no guarantee :) a backup won't hurt anyone.
 
@@ -388,7 +388,7 @@ client_secret = %spotify_client_secret%
 
 ## Install Phoniebox (if not done yet) - if you want to UPGRADE to spotify only, skip this step
 ~~~
-cd; rm stretch-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-spotify.sh; chmod +x stretch-install-spotify.sh; ./stretch-install-spotify.sh
+cd; rm stretch-install-*; wget https://raw.githubusercontent.com/chbuehlmann/RPi-Jukebox-RFID/master/scripts/installscripts/stretch-install-spotify.sh; chmod +x stretch-install-spotify.sh; ./stretch-install-spotify.sh
 ~~~
 ## Change Playlists_Folders_Path to:
 ~~~

@@ -128,7 +128,7 @@ $lang['cardRegisterStream2Card'] = "Stream ist mit der Karten-ID verknüpft.";
 $lang['cardRegisterFolder2Card'] = "Audio-Ordner ist nun mit der Karten-ID verknüpft.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube Audio wird heruntergeladen. Dies kann einige Minuten dauern. Du kannst die Logdatei \"youtube-dl.log\" im Ordner \"shared\" ansehen.</p>";
 $lang['cardRegisterSwipeUpdates'] = "Dies wird automatisch aktualisiert, wenn du eine RFID-Karte ausliest.";
-$lang['cardRegisterManualLinks'] = "<p>Du kannst Karten auch manuell mit Ordnern verbinden. Das Handbuch erklärt, wie man sich <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='-blank'>mit der Phoniebox verbindet</a> und <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>Karten registriert</a>.</p>";
+$lang['cardRegisterManualLinks'] = "<p>Du kannst Karten auch manuell mit Ordnern verbinden. Das Handbuch erklärt, wie man sich <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='-blank'>mit der Phoniebox verbindet</a> und <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>Karten registriert</a>.</p>";
 $lang['cardRegisterTriggerSuccess'] = "Die Karte ist jetzt verknüpft um die Funktion auszuführen:";
 
 /*

@@ -11,7 +11,7 @@ If you still encounter problems after running the below upgrade snippets, check 
 
 There is a file `settings/version` containing the version number.
 
-**Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+**Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues).
 
 # Upgrade from Version 1.1.7 to 1.1.8
 
@@ -23,7 +23,7 @@ We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Cl
 
 **This is a bugfix-version.** After release of "Phoniebox +Spotify" there were reported some problems, which are bugfixed now, hopefully. e.g. Improved loading time of local music **(please go to "Folders & Files" and scan your library ONCE after update and everytime you upload new files to your box!)**. To reduce the boot up time of Phoniebox, be sure you are using the newest version of mopidy-spotify. The upgrade is integrated into the following steps.
 
-**Please use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature.**
+**Please use our [spotify thread](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature.**
 
 ~~~
 cd /home/pi/RPi-Jukebox-RFID
@@ -106,7 +106,7 @@ sudo reboot
 
 # Upgrade from Version 1.1.1 to 1.1.7
 
-Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
+Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
 
 Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
 
@@ -145,7 +145,7 @@ sudo systemctl enable rfid-reader
 
 # Upgrade from Version 1.0.0 to 1.1.1
 
-This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
+This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
 cd /home/pi/RPi-Jukebox-RFID
@@ -165,13 +165,13 @@ sudo service php7.0-fpm restart
 
 # Upgrade to Version 1.0
 
-As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
+As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
 
 # Upgrade from 0.9.5 to 0.9.7
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
 * Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
-* Adding auto shutdown when idle for longer than x minutes (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
-* Adding maximum volume percent to settings (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
+* Adding auto shutdown when idle for longer than x minutes (see [manual](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
+* Adding maximum volume percent to settings (see [manual](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
 * Fixing bug: settings volume for stereo audio iFace
 * Fixing bug: bash code compatible with all shells  
 * Web app enhancements (audio level, display 'playing now')

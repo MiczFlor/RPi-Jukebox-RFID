@@ -26,7 +26,7 @@ logger.info('Dir_PATH: {dir_path}'.format(dir_path=dir_path))
 file_path = os.path.dirname(__file__)
 if file_path != "":
     os.chdir(file_path)
-	
+
 # vars for ensuring delay between same-card-swipes
 ssp = open('../settings/Second_Swipe_Pause', 'r')
 same_id_delay = ssp.read().strip()
@@ -64,7 +64,7 @@ while True:
     # change the line to:
     # cardid = reader.readCard()
     # See here for (German ;) details:
-    # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
+    # https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/551
     cardid = reader.reader.readCard()
     try:
         # start the player script and pass on the cardid (but only if new card or otherwise
@@ -74,7 +74,7 @@ while True:
                 logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                 subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
                 previous_id = cardid
-                
+
             else:
                 logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
                     cardid=cardid,

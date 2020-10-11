@@ -197,7 +197,7 @@ case $COMMAND in
             if [ "${VOLUMEMANAGER}" == "amixer" ]; then
                 # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
                 amixer sset \'$AUDIOIFACENAME\' 0%
-            else 
+            else
                 # manage volume with mpd
                 echo -e setvol 0\\nclose | nc -w 1 localhost 6600
             fi
@@ -504,7 +504,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        
+
         mpc next
         ;;
     playerprev)
@@ -639,7 +639,7 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         # Seek negative value doesn't work in mpd anymore.
-        # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
+        # solution taken from: https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/1031
         # if there are issues, please comment in that thread
         CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
         NEW_POS=$(($CUR_POS + $VALUE))
@@ -731,7 +731,7 @@ case $COMMAND in
         # Now load and play
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
-        
+
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
@@ -767,7 +767,7 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         mpc play
-        ;;    
+        ;;
      playlistreset)
         if [ -e $PATHDATA/../shared/audiofolders/$FOLDERPATH/lastplayed.dat ]
         then

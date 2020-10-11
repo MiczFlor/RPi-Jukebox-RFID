@@ -2,7 +2,7 @@ Installing Phoniebox
 ====================
 
 You can download the code or use git to keep up to date with the
-latest changes. As a third option there are install scripts 
+latest changes. As a third option there are install scripts
 available - which require a better understanding of what you are
 doing.
 
@@ -14,9 +14,9 @@ the manuals inside the 'docs' folder.
 Download
 --------
 You can either download the latest version as a zip / tarball at:
-https://github.com/MiczFlor/RPi-Jukebox-RFID/releases
+https://github.com/chbuehlmann/RPi-Jukebox-RFID/releases
 The advantages of using the download option: your installation
-will be running when it's running and changes in the code on 
+will be running when it's running and changes in the code on
 github will not change your installation.
 
 1. Download the code as .zip or .tar.gz into your home directory
@@ -30,8 +30,8 @@ Git
 ---
 The advantage of using git and the github repo means: you can always
 update to the latest code changes. This can be a problem - for the
-same reason - when changes in the code repository might require 
-additional changes in your installation. If you run into such 
+same reason - when changes in the code repository might require
+additional changes in your installation. If you run into such
 problems, check the file 'docs/UPGRADE.md'
 
 The manuals are written with the 'git' installation process in mind,
@@ -40,12 +40,12 @@ please go to the 'docs' folder and read the manuals.
 Install Scripts
 ---------------
 Inside the folder 'scripts/installscripts' you can find bash files
-which install the system in one go. However, you might need to change 
+which install the system in one go. However, you might need to change
 some sample config files (e.g. static IP address).
 If you want to use the install scripts, you seem to know what you are
 doing, so roll up your sleeves, open them and read :)
 
 All the best and don't forget to share your results with the community
 in this thread:
-https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/5
+https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/5
 

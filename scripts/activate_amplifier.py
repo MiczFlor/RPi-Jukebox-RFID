@@ -9,7 +9,7 @@ import RPi.GPIO as GPIO
 
 # see for an example implementation with a PAM8403 digital amplifier
 # (PAM pin 12 connected to GPIO 26)
-# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Hardware-Hack-PAM8403-Poweroff
+# https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/Hardware-Hack-PAM8403-Poweroff
 
 # change this value based on which GPIO port the amplifier or other devices are connected to
 # Flexible Pinout

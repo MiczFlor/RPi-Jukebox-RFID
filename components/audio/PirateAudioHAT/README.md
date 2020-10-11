@@ -5,13 +5,13 @@ These instructions are for the following Pimoroni PirateAudio HATs:
 <https://shop.pimoroni.com/?q=pirate+audio>
 
 The PirateAudio HATs use the same DAC as the hifiberry, so some of the instructions
-from <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Details> can be applied as well.
+from <https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Details> can be applied as well.
 
 The `setup_pirateAudioHAT.sh` script can be used to set it up to work with Phoniebox.
 
 ## Install steps in writing
 
-(Discussions regarding *Pirate Audio HAT* should take place in the same thread where the below instructions were taken from: [#950](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/950)
+(Discussions regarding *Pirate Audio HAT* should take place in the same thread where the below instructions were taken from: [#950](https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/950)
 
 NOTE: changes to the installation should find their way into the script `setup_pirateAudioHAT.sh`. Please create pull requests *after* having tested your changes. :)
 

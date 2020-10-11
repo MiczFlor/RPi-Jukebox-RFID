@@ -20,7 +20,7 @@ Up to now the following input devices are implemented:
 
 * **RotaryEncoder**:
     Control of a rotary encoder, for example KY040, see also in 
-    [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume)
+    [Wiki](https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume)
     it can be configured using pinA, pinB, functionCallIncr, functionCallDecr, timeBase=0.1
 
 * **TwoButtonControl**:

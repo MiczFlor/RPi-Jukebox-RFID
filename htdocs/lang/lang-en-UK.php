@@ -129,7 +129,7 @@ $lang['cardRegisterStream2Card'] = "Stream is linked to Card ID.";
 $lang['cardRegisterFolder2Card'] = "Audio folder is now linked to Card.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube audio is downloading. This may take a couple of minutes. You may check the logfile \"youtube-dl.log\" in the shared folder.</p>";
 $lang['cardRegisterSwipeUpdates'] = "This will automatically update as you swipe a RFID card.";
-$lang['cardRegisterManualLinks'] = "<p>You can also connect cards to folders manually. The manual explains how to <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='–blank'>connect to the phoniebox</a> and <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>register cards</a>.</p>";
+$lang['cardRegisterManualLinks'] = "<p>You can also connect cards to folders manually. The manual explains how to <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='–blank'>connect to the phoniebox</a> and <a href='https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>register cards</a>.</p>";
 $lang['cardRegisterTriggerSuccess'] = "The card is now linked to trigger the command:";
 
 /*

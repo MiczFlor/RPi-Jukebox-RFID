@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# see https://github.com/MiczFlor/RPi-Jukebox-RFID for details
+# see https://github.com/chbuehlmann/RPi-Jukebox-RFID for details
 #
 # NOTE: Running automated install (without interaction):
 # Each install creates a file called PhonieboxInstall.conf
@@ -9,7 +9,7 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    https://github.com/chbuehlmann/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder /home/pi/
@@ -19,7 +19,7 @@
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
-GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
+GIT_URL=${GIT_URL:-https://github.com/chbuehlmann/RPi-Jukebox-RFID.git}
 echo GIT_BRANCH $GIT_BRANCH
 echo GIT_URL $GIT_URL
 
@@ -357,15 +357,15 @@ check_existing() {
                                 EXISTINGuseGpio=NO
                                 ;;
                             *)
-                                EXISTINGuseGpio=YES 
+                                EXISTINGuseGpio=YES
                                 ;;
                         esac
                 else
                     echo ""
                     echo "Warning!
 The configuration of GPIO-Devices has changed in the new version
-and needs to be reconfigured. For further info check out the wiki: 
-https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
+and needs to be reconfigured. For further info check out the wiki:
+https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     read -rp "Hit ENTER to proceed to the next step." INPUT
                     config_gpio
                 fi
@@ -586,11 +586,11 @@ config_gpio() {
 #
 # ACTIVATE GPIO-Control
 #
-# Activation of the GPIO-Control-Service, which mangages Buttons 
-# or a Rotary Encoder for Volume and/or Track control. 
+# Activation of the GPIO-Control-Service, which mangages Buttons
+# or a Rotary Encoder for Volume and/or Track control.
 # To configure the controls please consult the wiki:
-# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons
-# It's also possible to activate the service later (see wiki). 
+# https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons
+# It's also possible to activate the service later (see wiki).
 "
     read -rp "Do you want to activate the GPIO-Control-Service? [Y/n] " response
     case "$response" in
@@ -830,7 +830,7 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
-    
+
     samba_config
 
     web_server_config
@@ -941,7 +941,7 @@ install_main() {
             cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
         fi
     fi
-    
+
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
 
@@ -1119,7 +1119,7 @@ folder_access() {
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
 
     # set audio volume to 100%
-    # see: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/54
+    # see: https://github.com/chbuehlmann/RPi-Jukebox-RFID/issues/54
     sudo amixer cset numid=1 100%
 
     # delete the global.conf file, in case somebody manually copied stuff back and forth
@@ -1192,7 +1192,7 @@ finish_installation() {
     echo
     echo "DONE. Let the sounds begin."
     echo "Find more information and documentation on the github account:"
-    echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+    echo "https://github.com/chbuehlmann/RPi-Jukebox-RFID/wiki/"
 
     echo "Reboot is needed to activate all settings"
     # Use -e to display response of user in the logfile
