@@ -55,7 +55,7 @@ class Reader:
                     sys.exit('Could not find the device %s\n. Make sure is connected' % dev.name)
 
             str_devs = ','.join([str(x) for x in devs])
-            #print("Devs: " + str_devs)
+            # print("Devs: " + str_devs)
             self.devices = map(InputDevice, str_devs)
             self.devices = {dev.fd: dev for dev in devs}
 
