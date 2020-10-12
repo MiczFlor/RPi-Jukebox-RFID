@@ -63,8 +63,7 @@ def generate_device(config, deviceName):
                             name=deviceName
                             )
     elif device_type == 'RotaryEncoder':
-       return   RotaryEncoder(
-                config.getint('pinUp'),
+        return RotaryEncoder(config.getint('pinUp'),
                 config.getint('pinDown'),
                 getFunctionCall(config.get('functionCallUp')),
                 getFunctionCall(config.get('functionCallDown')),
