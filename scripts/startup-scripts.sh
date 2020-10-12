@@ -19,14 +19,29 @@ echo
 echo ${AUDIOVOLSTARTUP}
 
 ####################################
+# make playists, files and folders 
+# and shortcuts 
+# readable and writable to all
+sudo chmod -R 777 ${AUDIOFOLDERSPATH}
+sudo chmod -R 777 ${PLAYLISTSFOLDERPATH}
+sudo chmod -R 777 $PATHDATA/../shared/shortcuts
+
+#########################################
+# wait until mopidy/MPD server is running
+STATUS=0
+while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep 'OK MPD'| sed 's/^.*$/ACTIVE/'); done
+
+####################################
 # check if and set volume on startup
 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
 
 ####################
 # play startup sound
-# after some sleep
-/bin/sleep 2
 /usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+
+#######################
+# re-scan music library
+mpc rescan 
 
 #######################
 # read out wifi config?

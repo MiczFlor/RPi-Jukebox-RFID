@@ -466,6 +466,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Command: $PATHDATA/playout_controls.sh -c=playlistaddplay -v=\"${PLAYLISTNAME}\" -d=\"${FOLDER}\"" >> $PATHDATA/../logs/debug.log; fi
         # save latest playlist not to file
         sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
+        sudo chown pi:www-data $PATHDATA/../settings/Latest_Playlist_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
     fi
     if [ "$PLAYPLAYLIST" == "skipnext" ]

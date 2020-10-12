@@ -4,15 +4,19 @@
 # MFRC522, RDM6300 or PN532.
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
-
+import multiprocessing
+try:
+    from multiprocessing import SimpleQueue
+except ImportError:
+    from multiprocessing.queues import SimpleQueue
 import os.path
 import sys
 import serial
 import string
 import RPi.GPIO as GPIO
 import logging
-
-from evdev import InputDevice, categorize, ecodes, list_devices
+from enum import Enum
+from evdev import InputDevice, ecodes, list_devices
 # Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
 try:
     import pirc522
@@ -23,20 +27,26 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+class EDevices(Enum):
+    MFRC522 = 0
+    RDM6300 = 1
+    PN532 = 2
+
 
 def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
-    devices.append(NonUsbDevice('MFRC522'))
-    devices.append(NonUsbDevice('RDM6300'))
-    devices.append(NonUsbDevice('PN532'))
+    devices.append(NonUsbDevice(EDevices.MFRC522.name))
+    devices.append(NonUsbDevice(EDevices.RDM6300.name))
+    devices.append(NonUsbDevice(EDevices.PN532.name))
     return devices
 
 
 class NonUsbDevice(object):
     name = None
 
-    def __init__(self, name):
+    def __init__(self, name, phys=''):
         self.name = name
+        self.phys = phys
 
 
 class UsbReader(object):
@@ -147,22 +157,55 @@ class Pn532Reader:
 
 class Reader(object):
     def __init__(self):
+        self.reader = self
+        self.devs = list()
         path = os.path.dirname(os.path.realpath(__file__))
         if not os.path.isfile(path + '/deviceName.txt'):
             sys.exit('Please run RegisterDevice.py first')
         else:
             with open(path + '/deviceName.txt', 'r') as f:
-                device_name = f.read()
+                device_keys = f.readlines()
+            devices = get_devices()
+            for device in devices:
+                for dev_key in device_keys:
+                    dev_name_phys = dev_key.rstrip().split(';', 1)
+                    dev_name = dev_name_phys[0]
+                    dev_phys = ''
+                    if len(dev_name_phys) > 1:
+                        dev_phys = dev_name_phys[1]
+                    if device.name == dev_name and device.phys == dev_phys:
+                        if dev_name == 'MFRC522':
+                            self.devs.append(Mfrc522Reader())
+                        elif dev_name == 'RDM6300':
+                            self.devs.append(Rdm6300Reader())
+                        elif dev_name == 'PN532':
+                            self.devs.append(Pn532Reader())
+                        else:
+                            try:
+                                usb_reader = UsbReader(device)
+                                self.devs.append(usb_reader)
+                            except IndexError:
+                                sys.exit('Could not find the device %s.\n Make sure it is connected' % dev_name)
+                        break
 
-            if device_name == 'MFRC522':
-                self.reader = Mfrc522Reader()
-            elif device_name == 'RDM6300':
-                self.reader = Rdm6300Reader()
-            elif device_name == 'PN532':
-                self.reader = Pn532Reader()
-            else:
-                try:
-                    device = [device for device in get_devices() if device.name == device_name][0]
-                    self.reader = UsbReader(device)
-                except IndexError:
-                    sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
+    def readCard(self):
+        que = SimpleQueue()
+        threads_list = list()
+
+        for dev in self.devs:
+            t = multiprocessing.Process(target=lambda q: q.put(dev.readCard()), args=(que,))
+            t.start()
+            threads_list.append(t)
+
+        found_result = False
+        while not found_result:
+            for process in threads_list:
+                process.join(0.001)
+                if not process.is_alive():
+                    found_result = True
+                    break
+
+        for process in threads_list:
+            process.terminate()
+
+        return que.get()

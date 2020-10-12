@@ -343,20 +343,19 @@ config_audio_interface() {
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# By default for the RPi the audio interface would be 'PCM'.
-# But this does not work for every setup, alternatives are
-# 'Master' or 'Speaker'. Other external sound cards might
-# use different interface names.
-# To list all available iFace names, type 'amixer scontrols'
-# in the terminal.
+# The default RPi audio interface is 'Headphone'.
+# But this does not work for every setup. Here a list of
+# available iFace names:
 "
-    read -rp "Use PCM as iFace? [Y/n] " response
+    amixer scontrols
+    echo " "
+    read -rp "Use Headphone as iFace? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             read -rp "Type the iFace name you want to use:" AUDIOiFace
             ;;
         *)
-            AUDIOiFace="PCM"
+            AUDIOiFace="Headphone"
             ;;
     esac
     # append variables to config file
@@ -723,7 +722,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements-spotify.txt
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
@@ -736,7 +735,7 @@ install_main() {
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install -q -r "${jukebox_dir}"/requirements.txt
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -746,7 +745,6 @@ install_main() {
     cp "${jukebox_dir}"/settings/rfid_trigger_play.conf.sample "${jukebox_dir}"/settings/rfid_trigger_play.conf
 
     # creating files containing editable values for configuration
-    # DISCONTINUED: now done by MPD? echo "PCM" > /home/pi/RPi-Jukebox-RFID/settings/Audio_iFace_Name
     echo "$AUDIOiFace" > "${jukebox_dir}"/settings/Audio_iFace_Name
     echo "$DIRaudioFolders" > "${jukebox_dir}"/settings/Audio_Folders_Path
     echo "3" > "${jukebox_dir}"/settings/Audio_Volume_Change_Step
@@ -755,11 +753,11 @@ install_main() {
     echo "RESTART" > "${jukebox_dir}"/settings/Second_Swipe
     echo "${jukebox_dir}/playlists" > "${jukebox_dir}"/settings/Playlists_Folders_Path
     echo "ON" > "${jukebox_dir}"/settings/ShowCover
-    
+
     # sample file for debugging with all options set to FALSE
     sudo cp "${jukebox_dir}"/settings/debugLogging.conf.sample "${jukebox_dir}"/settings/debugLogging.conf
     sudo chmod 777 "${jukebox_dir}"/settings/debugLogging.conf
-    
+
     # The new way of making the bash daemon is using the helperscripts
     # creating the shortcuts and script from a CSV file.
     # see scripts/helperscripts/AssignIDs4Shortcuts.php
@@ -1037,11 +1035,12 @@ folder_access() {
 
 autohotspot() {
     local jukebox_dir="$1"
+    local apt_get="sudo apt-get -qq --yes"
 
     # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
     # required packages
-    sudo apt-get install dnsmasq hostapd
+    ${apt_get} install dnsmasq hostapd
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
     sudo systemctl disable dnsmasq

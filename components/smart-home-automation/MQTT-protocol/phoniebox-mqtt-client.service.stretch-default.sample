@@ -8,7 +8,7 @@ Group=pi
 Restart=always
 RestartSec=10
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
-ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/daemon-mqtt-client.py
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/daemon_mqtt_client.py
 
 [Install]
 WantedBy=multi-user.target

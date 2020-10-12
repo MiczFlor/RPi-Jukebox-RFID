@@ -2,7 +2,7 @@
 namespace JukeBox\Api;
 
 /**
- * Appends a given file to the current playlist (and starts playing)
+ * Moves a song within the current playlist up.
  */
 include('../common.php');
 
@@ -17,19 +17,18 @@ if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $body = str_replace("'","'\''",file_get_contents('php://input'));
+    $body = file_get_contents('php://input');
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='{$body}'");
+    if (is_numeric($body)) {
+        // This script always returns with returncode 1, so we cannot check that the returncode is 0
+        execScriptWithoutCheck("playout_controls.sh -c=playermoveup -v='{$body}'");
+    } else {
+        http_response_code(400);
+    }
 } else {
-  $file = $_GET["file"];
-  if ($file !== "") {
-    print "Playing file " . $file;
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='$file'");
-  }else{
     http_response_code(405);
-  }
 }
 
 ?>

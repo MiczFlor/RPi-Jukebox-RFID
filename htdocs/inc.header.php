@@ -152,7 +152,11 @@ $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sect
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
+$Playlists_Folders_Path = $globalConf['PLAYLISTSFOLDERPATH'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
+$Second_Swipe_Pause = $globalConf['SECONDSWIPEPAUSE'];
+$Second_Swipe_Pause_Controls = $globalConf['SECONDSWIPEPAUSECONTROLS'];
+$VolumeManager = $globalConf['VOLUMEMANAGER'];
 $ShowCover = $globalConf['SHOWCOVER'];
 $WlanIpReadYN = $globalConf['READWLANIPYN'];
 $WlanIpMailYN = $globalConf['MAILWLANIPYN'];
@@ -172,18 +176,6 @@ $Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Fo
 * load language strings
 */
 include("inc.langLoad.php");
-
-//<<<<<<< HEAD
-/*=======
-$Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
-$ShowCover = fileGetContentOrDefault($conf['settings_abs'].'/ShowCover', "ON");
-$version = trim(file_get_contents($conf['settings_abs'].'/version'));
-$edition = fileGetContentOrDefault(dirname(__FILE__).'/../settings/edition', "classic");
-/*
-* load language strings
-*/
-//$conf['settings_lang'] = fileGetContentOrDefault($conf['settings_abs'].'/Lang', "en-UK");
-//>>>>>>> 7ef4a568abfc0e0c97cd0ffd954fa3e5ce54b240
 
 /*******************************************
 * URLPARAMETERS
@@ -232,8 +224,7 @@ $commandsWithAllowedValues = array(
     'volumedown' => array('true'),
     'rfidstatus' => array('turnon', 'turnoff'),
     'WlanIpMailYN' => array('turnon', 'turnoff'),
-    'gpiostatus' => array('turnon', 'turnoff'),
-    'rotarystatus' => array('turnon', 'turnoff')
+    'gpiostatus' => array('turnon', 'turnoff')
 );
 foreach ($commandsWithAllowedValues as $command => $allowedValues) {
     if(isset($_GET[$command]) && in_array(trim($_GET[$command]), $allowedValues)) {
@@ -329,12 +320,8 @@ $commandToAction = array(
         'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-rfid-reader.service"                      // stop the rfid service
     ),
     'gpiostatus' => array(
-        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-buttons.service",                    // start the gpio button service
-        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-buttons.service"                     // stop the gpio button service
-    ),
-    'rotarystatus' => array(
-        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-rotary-encoder.service",                    // start the rotary encoder service
-        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-rotary-encoder.service"                     // stop the rotary encoder service
+        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-control.service",                    // start the gpio control service
+        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-control.service"                     // stop the gpio control service
     ),
     // control player through web interface
     'player' => array(

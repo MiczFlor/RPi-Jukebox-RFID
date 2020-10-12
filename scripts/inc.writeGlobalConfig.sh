@@ -9,6 +9,17 @@
 # 2. each settings change done in the web UI
 # 3. a new feature to be implemented: manually triggered
 #    in the web UI
+#
+# Why so complicated? Because we don't know what other vars will be in the 
+# config in the future. Editing only this file, we are future proof, 
+# because old config files will work and update
+# gracefully when new stuff arrives in the sample file.
+#
+# To make sure that the global.conf file has EVERYTHING in it 
+# that could be, for each feature it does the following:
+# a) checks if there is a config file
+# a) 1) if not, make one with the default value
+# b) read the value from the config file
 
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
@@ -66,6 +77,26 @@ fi
 SECONDSWIPE=`cat $PATHDATA/../settings/Second_Swipe`
 
 ##############################################
+# Second swipe Pause
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Second_Swipe_Pause ]; then
+    echo "2" > $PATHDATA/../settings/Second_Swipe_Pause
+    chmod 777 $PATHDATA/../settings/Second_Swipe_Pause
+fi
+# 2. then|or read value from file
+SECONDSWIPEPAUSE=`cat $PATHDATA/../settings/Second_Swipe_Pause`
+
+##############################################
+# Second swipe Pause Controls
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Second_Swipe_Pause_Controls ]; then
+    echo "ON" > $PATHDATA/../settings/Second_Swipe_Pause_Controls
+    chmod 777 $PATHDATA/../settings/Second_Swipe_Pause_Controls
+fi
+# 2. then|or read value from file
+SECONDSWIPEPAUSECONTROLS=`cat $PATHDATA/../settings/Second_Swipe_Pause_Controls`
+
+##############################################
 # Audio_iFace_Name
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
@@ -74,6 +105,16 @@ if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
 fi
 # 2. then|or read value from file
 AUDIOIFACENAME=`cat $PATHDATA/../settings/Audio_iFace_Name`
+
+##############################################
+# Volume_Manager (mpd or amixer)
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Volume_Manager ]; then
+    echo "mpd" > $PATHDATA/../settings/Volume_Manager
+    chmod 777 $PATHDATA/../settings/Volume_Manager
+fi
+# 2. then|or read value from file
+VOLUMEMANAGER=`cat $PATHDATA/../settings/Volume_Manager`
 
 ##############################################
 # Audio_Volume_Change_Step
@@ -164,7 +205,7 @@ if [ ! -f $PATHDATA/../settings/MailWlanIpYN ]; then
     chmod 777 $PATHDATA/../settings/MailWlanIpYN
 fi
 # 2. then|or read value from file
-MAILWLANIPYN=`cat $PATHDATA/../settings/WlanIpMailYN`
+MAILWLANIPYN=`cat $PATHDATA/../settings/MailWlanIpYN`
 
 ##############################################
 # Read IP address of Wlan after boot?
@@ -209,10 +250,24 @@ fi
 # 2. then|or read value from file
 VERSION=`cat $PATHDATA/../settings/version`
 
+##############################################
+# read control card ids
+# 1. read all values from file
+CMDVOLUP=`grep 'CMDVOLUP' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDVOLUP=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDVOLDOWN=`grep 'CMDVOLDOWN' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDVOLDOWN=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDNEXT=`grep 'CMDNEXT' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDNEXT=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDPREV=`grep 'CMDPREV' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDPREV=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDREWIND=`grep 'CMDREWIND' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDREWIND=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDSEEKFORW=`grep 'CMDSEEKFORW' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDSEEKFORW=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDSEEKBACK=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
+
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
 # SECONDSWIPE
+# SECONDSWIPEPAUSE
+# SECONDSWIPEPAUSECONTROLS
 # AUDIOIFACENAME
+# VOLUMEMANAGER
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
@@ -226,6 +281,13 @@ VERSION=`cat $PATHDATA/../settings/version`
 # EDITION
 # LANG
 # VERSION
+# CMDVOLUP
+# CMDVOLDOWN
+# CMDNEXT
+# CMDPREV
+# CMDREWIND
+# CMDSEEKFORW
+# CMDSEEKBACK
 
 #########################################################
 # WRITE CONFIG FILE
@@ -233,7 +295,10 @@ rm "${PATHDATA}/../settings/global.conf"
 echo "AUDIOFOLDERSPATH=\"${AUDIOFOLDERSPATH}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "PLAYLISTSFOLDERPATH=\"${PLAYLISTSFOLDERPATH}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "SECONDSWIPEPAUSE=\"${SECONDSWIPEPAUSE}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "SECONDSWIPEPAUSECONTROLS=\"${SECONDSWIPEPAUSECONTROLS}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "VOLUMEMANAGER=\"${VOLUMEMANAGER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
@@ -245,6 +310,14 @@ echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDVOLUP=\"${CMDVOLUP}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDVOLDOWN=\"${CMDVOLDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDNEXT=\"${CMDNEXT}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDPREV=\"${CMDPREV}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDREWIND=\"${CMDREWIND}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDSEEKFORW=\"${CMDSEEKFORW}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CMDSEEKBACK=\"${CMDSEEKBACK}\"" >> "${PATHDATA}/../settings/global.conf"
+
 # Work in progress:
 #echo "MAILWLANIPYN=\"${MAILWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 #echo "MAILWLANIPADDR=\"${MAILWLANIPADDR}\"" >> "${PATHDATA}/../settings/global.conf"

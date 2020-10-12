@@ -64,6 +64,8 @@ MQTT clients can (additionally to the periodic updates) request an attribute of 
 - remaining_stopafter [minutes left until "stop" is triggered]
 - remaining_shutdownafter [minutes left until shutdown]
 - remaining_idle [minutes left for the idle shutdown timer]
+- throttling
+- temperature
 
 ### Help
 Sending empty payload to `phoniebox/get/help` will be responded by a list of all possible attributes to `phoniebox/available_attributes`
@@ -123,7 +125,7 @@ components/smart-home-automation/MQTT-protocol/
 
 ## Auto-Starting the daemon at bootup
 
-* The daemon is run by executing the script `daemon-mqtt-client.py` which will run in an endless loop.
+* The daemon is run by executing the script `daemon_mqtt_client.py` which will run in an endless loop.
 * There's a sample service file (`phoniebox-mqtt-client.service.stretch-default.sample`) that can be used to register the daemon to be run at bootup. 
 * It is currently not integrated into the one-line-install script so please run the following commands to do it manually.
 
@@ -131,11 +133,11 @@ First step: copy files to destination locations:
 
 ~~~
 # First copy the daemon script and service config file to the correct directory:
-sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/daemon-mqtt-client.py /home/pi/RPi-Jukebox-RFID/scripts/
+sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/daemon_mqtt_client.py /home/pi/RPi-Jukebox-RFID/scripts/
 sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/phoniebox-mqtt-client.service.stretch-default.sample /etc/systemd/system/phoniebox-mqtt-client.service
 ~~~
 
-Now edit the file `pi/RPi-Jukebox-RFID/scripts/daemon-mqtt-client.py` to match your requirements.
+Now edit the file `/home/pi/RPi-Jukebox-RFID/scripts/daemon_mqtt_client.py` to match your requirements.
 Now continue and activate the service.
 
 ~~~
