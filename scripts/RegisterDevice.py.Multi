@@ -5,12 +5,14 @@ import subprocess
 
 JUKEBOX_HOME_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
+
 def runCmd(cmd, wait=True):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     (output, err) = p.communicate()
     if wait:
         p.wait()
     return output
+
 
 def setupPN532():
     answer = input('Please make sure that the PN532 reader is wired up correctly '
@@ -52,6 +54,7 @@ runCmd("cp {0}/scripts/Reader.py.experimental.Multi {1}/scripts/Reader.py".forma
 from Reader import get_devices, EDevices
 list_dev_ids = list()
 devices = get_devices()
+
 
 def addDevice():
     i = 0
@@ -98,6 +101,3 @@ runCmd("sudo chown pi:www-data {}/scripts/deviceName.txt".format(JUKEBOX_HOME_DI
 runCmd("sudo chmod 644 {}/scripts/deviceName.txt".format(JUKEBOX_HOME_DIR))
 
 print("Register Device(s) Done!")
-
-
-

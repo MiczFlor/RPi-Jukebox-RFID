@@ -26,7 +26,7 @@ logger.info('Dir_PATH: {dir_path}'.format(dir_path=dir_path))
 file_path = os.path.dirname(__file__)
 if file_path != "":
     os.chdir(file_path)
-	
+
 # vars for ensuring delay between same-card-swipes
 ssp = open('../settings/Second_Swipe_Pause', 'r')
 same_id_delay = ssp.read().strip()
@@ -35,7 +35,7 @@ sspc_nodelay = sspc.readline().strip()
 previous_id = ""
 previous_time = time.time()
 
-#create array for control card ids
+# create array for control card ids
 cards = []
 
 # open file and read the content in a list
@@ -74,7 +74,7 @@ while True:
                 logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                 subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
                 previous_id = cardid
-                
+
             else:
                 logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
                     cardid=cardid,
