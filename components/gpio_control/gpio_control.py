@@ -51,7 +51,7 @@ def generate_device(config, deviceName):
                             edge=config.get('edge', fallback='FALLING'),
                             hold_repeat=config.getboolean('hold_repeat', False),
                             hold_time=config.getfloat('hold_time', fallback=0.3),
-                            pull_up_down=config.get('pull_up_down', fallback='GPIO.PUD_UP'))
+                            pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
     elif device_type == 'LED':
         return LED(config.getint('Pin'),
                             name=deviceName,
