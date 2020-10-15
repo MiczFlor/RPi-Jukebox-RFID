@@ -192,13 +192,13 @@ function playSingleFile(file) {
     });
 }
 
-function executePlayerCommand(command, completion) {
+function executePlayerCommand(command, completion, value) {
     hideApiError();
     $.ajax({
         url: 'api/player.php',
         method: 'PUT',
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({ 'command': command })
+        data: JSON.stringify({ 'command': command, "value": arguments.length === 3 ? value : null })
     }).success(data => {
          if (completion != null) {
              completion(data);
@@ -209,6 +209,57 @@ function executePlayerCommand(command, completion) {
      });
 }
 
+/**
+ * Although there is a playout_controls.sh command "playernextchapter" it is implemented manually to keep the ui responsive
+ */
+function nextChapter() {
+    gotoChapter($('#chapters-select').find('option:selected').next());
+}
+
+/**
+ * Although there is a playout_controls.sh command "playerprevchapter" it is implemented manually to keep the ui responsive
+ */
+function previousChapter() {
+    var timerSeconds = 5;
+    var playerInfo = JUKEBOX.playerInfo;
+    var elapsed = +playerInfo.elapsed;
+    var $selectedChapter = $('#chapters-select').find('option:selected');
+    var selectedChapterStart = +$selectedChapter.data('start');
+
+    // if chapter is playing for more than 5 seconds return to start of chapter instead of going to the previous one
+    // to keep responsive during the ajax requests, set a timer that blocks this behavior after the first trigger
+    if(elapsed - selectedChapterStart > timerSeconds && !this.timerActive) {
+        gotoChapter($selectedChapter);
+        this.timerActive = true;
+        window.setTimeout(() => {
+            this.timerActive = false;
+        }, timerSeconds*1000 + 1);
+
+    } else {
+        gotoChapter($selectedChapter.prev());
+    }
+}
+
+/**
+ * Will only change the selected item and trigger change - see onChangeChapter for event handler
+ * @param chapter
+ */
+function gotoChapter(chapter) {
+    if(chapter.length !== 0) {
+        $('#chapters-select').val(chapter.val()).change();
+    }
+}
+
+function onChangeChapter() {
+    const $selectedOption = $('#chapters-select').find('option:selected');
+
+    if ($selectedOption.length === 0) {
+        return;
+    }
+    // this is not 100% accurate, but floats are not supported by mpc to seek a position
+    const seekPosition = $selectedOption.data('start');
+    executePlayerCommand("seekPosition", null, seekPosition);
+}
 
 function volumeUp() {
     executePlayerCommand('volumeup', () => {

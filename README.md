@@ -14,11 +14,11 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/3?closed=1) released (2020-10-12)**
+* **Phoniebox [2.1.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/5?closed=1) released (2020-10-14)**
 
-The 2.1 release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The [2.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/3?closed=1) release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.1?
+## What's new in version 2.1.1?
 
 * Use [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
 * Improved [GPIO control](components/gpio_control/README.md) and integrated in **one-line install script**
