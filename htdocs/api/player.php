@@ -13,9 +13,9 @@ include 'common.php';
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
 
-if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
-    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
+    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
 }
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     handlePut();
@@ -27,19 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
 function handlePut() {
     global $debugLoggingConf;
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handlePut() " , FILE_APPEND | LOCK_EX);
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handlePut() ", FILE_APPEND | LOCK_EX);
     }
 
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:".$json['command'] , FILE_APPEND | LOCK_EX);
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:" . $json['command'], FILE_APPEND | LOCK_EX);
     }
     $inputCommand = $json['command'];
+    $inputValue = $json['value'] ?? "";
     if ($inputCommand != null) {
         $controlsCommand = determineCommand($inputCommand);
-        $execCommand = "playout_controls.sh {$controlsCommand}";
+        $controlsValue = $inputValue !== "" ? " -v=" . ((float)$inputValue) : "";
+        $execCommand = "playout_controls.sh {$controlsCommand}{$controlsValue}";
         execScript($execCommand);
     } else {
         echo "Body is missing command";
@@ -49,10 +51,10 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-    $statusCommand   = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
+    $statusCommand = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
     $commandResponseList = execSuccessfully($statusCommand);
     $responseList = array();
-    forEach($commandResponseList as $commandResponse) {
+    forEach ($commandResponseList as $commandResponse) {
         preg_match("/(?P<key>.+?): (?P<value>.*)/", $commandResponse, $match);
         if ($match) {
             $responseList[strtolower($match['key'])] = $match['value'];
@@ -61,11 +63,34 @@ function handleGet() {
     // get volume separately from mpd, because we might use amixer to control volume
     $command = "playout_controls.sh -c=getvolume";
     $output = execScript($command);
-    $responseList['volume'] = implode('\n', $output); 
-    
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handleGet() " , FILE_APPEND | LOCK_EX);
-        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+    $responseList['volume'] = implode('\n', $output);
+
+    $command = "playout_controls.sh -c=getchapters";
+    $output = execScript($command);
+    $jsonChapters = trim(implode("\n", $output));
+    $chapters = @json_decode($jsonChapters, true);
+
+    $currentChapterIndex = null;
+    $mappedChapters = array_filter(array_map(function($chapter) use($responseList, &$currentChapterIndex) {
+        static $i = 1;
+        if(isset($chapter["start_time"], $chapter["end_time"])) {
+            $start = (double)$chapter["start_time"];
+            $end = (double)$chapter["end_time"];
+
+            return [
+                "name" => $chapter["tags"]["title"] ?? $i++,
+                "start" => round($start, 3),
+                "length" => round($end - $start, 3)
+            ];
+        }
+        return null;
+    }, $chapters["chapters"] ?? []));
+
+    $responseList['chapters'] = $mappedChapters;
+
+    if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
+        file_put_contents("../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
     }
 
     header('Content-Type: application/json');
@@ -99,14 +124,16 @@ function determineCommand($body) {
         case 'seekAhead':
             //return '-c=playerprev -c=playerseek -v=+15';
             return '-c=playerseek -v=+15';
+        case 'seekPosition':
+            return '-c=playerseek';
         case 'stop':
             return '-c=playerstop';
         case 'mute':
-            return'-c=mute';
+            return '-c=mute';
         case 'volumeup':
-            return'-c=volumeup';
+            return '-c=volumeup';
         case 'volumedown':
-            return'-c=volumedown';
+            return '-c=volumedown';
     }
     echo "Unknown command {$body}";
     http_response_code(400);
