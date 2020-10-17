@@ -98,7 +98,7 @@ if __name__ == "__main__":
     logger.setLevel('INFO')
 
     config = configparser.ConfigParser(inline_comment_prefixes=";")
-    config_path = os.path.expanduser('~/.config/phoniebox/gpio_settings.ini')
+    config_path = os.path.expanduser('/home/pi/RPi_jukebox_RFID/settings/gpio_settings.ini')
     config.read(config_path)
 
     devices = get_all_devices(config)
