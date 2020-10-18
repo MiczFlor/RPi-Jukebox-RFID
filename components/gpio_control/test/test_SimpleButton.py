@@ -36,7 +36,7 @@ class TestButton:
         mockedAction.asser_called_once()
         mockedAction.assert_called_with(simple_button.pin + 1)
 
-    def test_callback_without_more_arguments(self, simple_button):
+    def test_callback_with_more_arguments(self, simple_button):
         simple_button.callbackFunctionHandler(simple_button.pin, 5)
         mockedAction.asser_called_once()
         mockedAction.assert_called_with(5)
