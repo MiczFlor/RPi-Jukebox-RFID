@@ -6,6 +6,7 @@ from test.mockedGPIO import GPIO
 
 import TwoButtonControl
 
+
 @pytest.fixture
 def btn1Mock():
     return mock.MagicMock()
@@ -113,12 +114,13 @@ class TestTwoButtonControl:
     def test_btn1_pressed(self, two_button_control):
         pinA = two_button_control.bcmPin1
         pinB = two_button_control.bcmPin2
+
         def func(pin):
             values = {pinA: False, pinB: True}
             if pin in values:
                 return values[pin]
             else:
-                print('Cannot find pin {} in values: {}'.format(pin,values))
+                print('Cannot find pin {} in values: {}'.format(pin, values))
                 return None
         TwoButtonControl.GPIO.input.side_effect = func
         two_button_control.action()
