@@ -9,7 +9,7 @@ It uses to a configuration file to configure the active devices.
 
 ## How to edit configuration files?
 The configuration file is located here: `~/RPi-Jukebox-RFID/settings/gpio_settings.ini` 
-Editing the configuration file and restarting the service will activate the new settings.
+Editing the configuration file and restarting the service with `sudo systemctl restart phoniebox-gpio-control` will activate the new settings.
 
 In the following the different devices are described. 
 Each device can have actions which correspond to function calls.
