@@ -245,14 +245,13 @@ verify_webserver_config() {
 verify_systemd_services() {
     printf "\nTESTING systemd services...\n\n"
     # check that services exist
-    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
+    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-control.service phoniebox-idle-watchdog.service"
 
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
     check_service_enablement phoniebox-rfid-reader enabled
     check_service_enablement phoniebox-startup-scripts enabled
     check_service_enablement phoniebox-gpio-control enabled
-    #check_service_enablement phoniebox-rotary-encoder enabled
 }
 
 verify_spotify_config() {
@@ -265,11 +264,13 @@ verify_spotify_config() {
     check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
     check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
     check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
+    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
     check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
     check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
     check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
     check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
+    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
 
     # check that mopidy service is enabled
     check_service_enablement mopidy enabled
