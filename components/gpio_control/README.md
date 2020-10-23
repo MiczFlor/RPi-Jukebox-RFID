@@ -25,3 +25,5 @@ Up to now the following input devices are implemented:
 
 * **TwoButtonControl**:
     This Device uses two Buttons and implements a third action if both buttons are pressed together.
+
+Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/example_configs/`.
