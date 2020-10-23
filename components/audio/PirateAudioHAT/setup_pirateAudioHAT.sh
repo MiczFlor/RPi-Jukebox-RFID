@@ -17,9 +17,9 @@ printf "Please make sure that the Pirate Audio HAT is connected...\n"
 question "Continue"
 
 printf "Stopping and disabling GPIO button service...\n"
-#TODO this might not be necessary
-sudo systemctl stop phoniebox-gpio-buttons.service
-sudo systemctl disable phoniebox-gpio-buttons.service
+#TODO this might not be necessary, see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1109
+sudo systemctl stop phoniebox-gpio-service.service
+sudo systemctl disable phoniebox-gpio-service.service
 
 printf "Adding settings to /boot/config.txt...\n"
 if [[ ! -f /boot/config.txt.bak ]]; then
