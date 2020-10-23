@@ -7,19 +7,21 @@ These instructions are for the following Pimoroni PirateAudio HATs:
 The PirateAudio HATs use the same DAC as the hifiberry, so some of the instructions
 from <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Details> can be applied as well.
 
-The `setup_pirateAudioHAT.sh` script can be used to set it up to work with Phoniebox.
+## Automatic Script
 
-## Install steps in writing
+Please use `setup_pirateAudioHAT.sh` script to set it up to work with Phoniebox.
+
+## Manual install steps (not recommended)
 
 (Discussions regarding *Pirate Audio HAT* should take place in the same thread where the below instructions were taken from: [#950](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/950)
 
 NOTE: changes to the installation should find their way into the script `setup_pirateAudioHAT.sh`. Please create pull requests *after* having tested your changes. :)
 
 1. Connect Pirate Audio Hat to your Raspberry Pi
-2. Install Phoniebox (develop branch!)
+2. Install Phoniebox
 3. Stop and disable the GPIO button service:
-   `sudo systemctl stop phoniebox-gpio-buttons.service`
-   `sudo systemctl disable phoniebox-gpio-buttons.service`
+   `sudo systemctl stop phoniebox-gpio-control.service`
+   `sudo systemctl disable phoniebox-gpio-control.service`
 4. Add the following two lines to /boot/config.txt
    `gpio=25=op,dh`
    `dtoverlay=hifiberry-dac`
