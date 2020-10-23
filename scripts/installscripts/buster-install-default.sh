@@ -1218,6 +1218,9 @@ finish_installation() {
 # Main #
 ########
 main() {
+    # Skip interactive Samba WINS config dialog
+    echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+
     if [[ ${INTERACTIVE} == "true" ]]; then
         welcome
         #reset_install_config_file
@@ -1231,8 +1234,6 @@ main() {
     else
         echo "Non-interactive installation!"
         check_config_file
-        # Skip interactive Samba WINS config dialog
-        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
     fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
