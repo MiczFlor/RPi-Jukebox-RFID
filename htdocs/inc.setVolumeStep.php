@@ -1,9 +1,9 @@
 <!--
 Volume Up/Down Percent Form
 -->
-        <!-- input-group -->          
+        <!-- input-group -->
         <?php
-        $volstepvalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getvolstep");
+        //$volstepvalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getvolstep");
         //$volstepvalue = 3.6;//debug
         $volstepvalueselect = round($volstepvalue);
         $volstepvaluedisplay = round($volstepvalue);
@@ -24,18 +24,18 @@ Volume Up/Down Percent Form
                             print " selected";
                         }
                         print ">".$i."%</option>";
-                        $i++;  
+                        $i++;
                     };
                     print "\n";
                     ?>
-                    </select> 
+                    </select>
                     <span class="input-group-btn">
                         <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>
               </div>
-              
+
               <div class="col-xs-6">
                   <div class="c100 p<?php print $volstepvaluedisplay; ?>">
                     <span><?php print $volstepvaluedisplay; ?>%</span>
@@ -43,7 +43,7 @@ Volume Up/Down Percent Form
                         <div class="bar"></div>
                         <div class="fill"></div>
                     </div>
-                  </div> 
+                  </div>
               </div>
             </div><!-- ./row -->
         </div>

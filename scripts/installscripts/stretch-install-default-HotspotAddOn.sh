@@ -29,17 +29,17 @@ echo "#####################################################
 read -r -p "Do you want to configure as Access Point? [Y/n] " response
 case "$response" in
     [nN][oO]|[nN])
-    	ACCESSconfig=NO
-    	echo "You don't want to configure as an Access Point."
-    	echo "Hit ENTER to proceed to the next step."
-        read INPUT
+        ACCESSconfig=NO
+        echo "You don't want to configure as an Access Point."
+        echo "Hit ENTER to proceed to the next step."
+        read -r
         ;;
     *)
-    	ACCESSconfig=YES
+        ACCESSconfig=YES
         ;;
 esac
 # append variables to config file
-echo "ACCESSconfig=\"$ACCESSconfig\"" >> $PATHDATA/PhonieboxInstall.conf
+echo "ACCESSconfig=\"$ACCESSconfig\"" >> "${PATHDATA}/PhonieboxInstall.conf"
 
 
 ########################

@@ -13,6 +13,17 @@
 * ./rfid_trigger_play.sh -d="ZZZ SubMaster Whitespaces" -v=recursive
 */
 
+/*
+* debug? Conf file line:
+* DEBUG_playlist_recursive_by_folder_php="TRUE"
+echo getcwd();
+$debugLoggingConf = parse_ini_file(getcwd()."/../settings/debugLogging.conf");
+if($debugLoggingConf['DEBUG_playlist_recursive_by_folder_php'] == "TRUE") {
+    file_put_contents(getcwd()."../logs/debug.log", "\n# DEBUG_playlist_recursive_by_folder_php # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents(getcwd()."/../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+}
+*/
+
 $debug = "false";
 
 // get path of this file
@@ -31,8 +42,7 @@ $version = trim(file_get_contents(dirname(__FILE__).'/../settings/version'));
 /*
 * Get vars passed on from command line
 */
-parse_str(implode('&', array_slice($argv, 1)), $_GET);
-
+$_GET = getopt(null, ["folder:", "list:"]);
 
 /*
 * Create path to folder we want to get a list from
@@ -43,6 +53,7 @@ if(file_exists($Audio_Folders_Path_Playlist)) {
     /*
     * now we look recursively only if list=recursive was given when calling this script
     */
+
     if(isset($_GET['list']) && $_GET['list'] == "recursive") {
         $folders = dir_list_recursively($Audio_Folders_Path_Playlist);
     } else {
@@ -136,7 +147,11 @@ foreach($folders as $folder) {
             * list all files and folders
             * ignore . and ..
             */
-            $folder_files = array_diff(scandir($folder), array('..', '.'));
+            #$folder_files = array_diff(scandir($folder), array('..', '.'));
+            $folder_files = arrayPregDiff(scandir($folder), '/^\./'); # remove all files starting with "." meaning all files ".*" from array
+            $folder_files = arrayPregDiff($folder_files, '/^.*\.m3u$/i'); # remove all *.m3u files from array
+            $folder_files = arrayPregDiff($folder_files, '/^.*\.png$/i'); # remove all *.png files from array
+	    $folder_files = arrayPregDiff($folder_files, '/Thumbs\.db/i'); # ignore windows file 'Thumbs.db'
             // some debugging info
             if($debug == "true") {
                 print "\$folder:".$folder."\n";

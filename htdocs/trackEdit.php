@@ -1,6 +1,12 @@
 <?php
+namespace JukeBox;
+
 
 include("inc.header.php");
+require_once 'utils/Files.php';
+require_once 'utils/Strings.php';
+use JukeBox\Utils\Files;
+use JukeBox\Utils\Strings;
 
 /**************************************************
 * VARIABLES
@@ -167,18 +173,29 @@ $messageSuccess = "";
 * Move file to different dir
 */
 if($_POST['ACTION'] == "trackMove") {
-    if(
-    trim($_POST['folderNew']) != "" 
-    && file_exists($Audio_Folders_Path."/".$_POST['folderNew'])
-    && is_dir($Audio_Folders_Path."/".$_POST['folderNew'])
-    // check if new folder is different from current
-    && $_POST['folderNew'] != basename($post['folder'])
-    ) {
-        // rename($post['folder']."/".$post['filename'], $Audio_Folders_Path."/".$_POST['folderNew']."/".$post['filename']);
-        $exec = "mv ".$post['folder']."/".$post['filename']." ".$Audio_Folders_Path."/".$_POST['folderNew']."/";
-        exec($exec);
-        // set new location for form that is being displayed
-        $post['folder'] = $Audio_Folders_Path."/".$_POST['folderNew'];
+    $sourceFolder = $post['folder'];
+    $targetFolder = trim($_POST['folderNew']);
+    $fileName = trim($_POST['filename']);
+
+    $sourceFile = Files::buildPath($sourceFolder, $fileName);
+    $targetFile = Files::buildPath($targetFolder, $fileName);
+
+    if (!empty($targetFolder) && is_dir($targetFolder)
+            && $sourceFolder != $targetFolder
+            && Strings::startsWith($targetFile, $Audio_Folders_Path) && Strings::startsWith($sourceFile, $Audio_Folders_Path)) {
+        $result = rename($sourceFile, $targetFile);
+        if ($result) {
+            $post['folder'] = $targetFolder;
+            $messageSuccess = "<p>File '".$fileName."' moved successfully to '" . $targetFolder . "'.</p>";
+
+        } else {
+            $messageWarning = "<p>Move file '".$fileName."' to '" . $targetFolder . "'failed!</p>";
+            error_log('Move track failed!' . var_export(array("sourceFile" => $sourceFile, 'targetFile' => $targetFile), true), 0);
+        }
+    }
+    else {
+        $messageWarning = "<p>Move file '".$fileName."' to '" . $targetFolder . "'failed!</p>";
+        error_log('Move track failed!' . var_export(array("sourceFile" => $sourceFile, 'targetFile' => $targetFile), true), 0);
     }
 }
 
@@ -194,31 +211,19 @@ if($_POST['ACTION'] == "trackMove") {
 */
 if($_POST['ACTION'] == "trackUpdate") {
     unset($exec);
+    $fileName = Files::buildPath($post['folder'], $post['filename']);
     /*
     * general metadata that should work for all file types
     */
-    // trackArtist
-    if(isset($post['trackArtist'])) {
-	$exec = 'mid3v2 --artist "'.replaceUmlaute($post['trackArtist']).'" '.$post['folder'].'/'.$post['filename'];
+    $optionalArtistOption = (isset($post['trackArtist']))? " --artist='" . replaceUmlaute($post['trackArtist']) . "'" : "";
+    $optionalTitleOption = (isset($post['trackTitle']))?   " --song='" . replaceUmlaute($post['trackTitle']) . "'" : "";
+    $optionalAlbumOption = (isset($post['trackAlbum']))?   " --album='" . replaceUmlaute($post['trackAlbum']) . "'" : "";
+    $optionalComposerOption = (strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION)) == "mp3" && isset($post['trackComposer']))? " --TCOM='" . replaceUmlaute($post['trackComposer']) . "'" : "";
+
+    $exec = "mid3v2" . $optionalArtistOption . $optionalAlbumOption . $optionalTitleOption . $optionalComposerOption . " '" . $fileName . "'";
+
+    if ($optionalArtistOption || $optionalTitleOption || $optionalAlbumOption || $optionalComposerOption) {
         exec($exec);
-    }
-    // trackTitle
-    if(isset($post['trackTitle'])) {
-        $exec = "mid3v2 --song '".replaceUmlaute($post['trackTitle'])."' ".$post['folder']."/".$post['filename'];
-        exec($exec);
-    }
-    // trackAlbum
-    if(isset($post['trackAlbum'])) {
-        $exec = "mid3v2 --album '".replaceUmlaute($post['trackAlbum'])."' ".$post['folder']."/".$post['filename'];
-        exec($exec);
-    }
-    // what file type are we dealing with?
-    if(strtolower(pathinfo($post['filename'], PATHINFO_EXTENSION)) == "mp3") {
-        // trackComposer
-        if(isset($post['trackComposer'])) {
-            $exec = "mid3v2 --TCOM '".replaceUmlaute($post['trackComposer'])."' ".$post['folder']."/".$post['filename'];
-            exec($exec);
-        }
     }
 }
 /*
@@ -241,7 +246,8 @@ if($_POST['ACTION'] == "trackDelete") {
 /*
 * read metadata
 */
-$exec = "mid3v2 -l ".$post['folder']."/".$post['filename'];
+$fileName = Files::buildPath($post['folder'], $post['filename']);
+$exec = "mid3v2 -l '" .$fileName ."'" ;
 $res = shell_exec($exec);
 $lines = explode(PHP_EOL, $res);
 foreach($lines as $line) {
@@ -262,7 +268,7 @@ html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 ?>
 <body>
   <div class="container">
-      
+
 <?php
 include("inc.navigation.php");
 ?>
@@ -276,7 +282,7 @@ include("inc.navigation.php");
 */
 if ($messageAction == "") {
     $messageAction = "";
-}  
+}
 if(isset($messageWarning) && $messageWarning != "") {
     print '<div class="alert alert-warning">'.$messageWarning.'</div>';
 }
@@ -313,16 +319,16 @@ if(
     </div><!-- /.panel-heading -->
 
     <div class="panel-body">
-  
-        <div class="row">	
-          <label class="col-md-3 control-label" for=""><?php print $lang['globalFolder']; ?></label> 
+
+        <div class="row">
+          <label class="col-md-3 control-label" for=""><?php print $lang['globalFolder']; ?></label>
           <div class="col-md-9"><?php print $post['folder']; ?></div>
         </div><!-- / row -->
-        <div class="row">	
-          <label class="col-md-3 control-label" for=""> <?php print $lang['globalFilename']; ?></label> 
+        <div class="row">
+          <label class="col-md-3 control-label" for=""> <?php print $lang['globalFilename']; ?></label>
           <div class="col-md-9"><?php print $post['filename']; ?></div>
         </div><!-- / row -->
-      
+
 	</div><!-- /.panel-body -->
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
@@ -330,15 +336,15 @@ if(
     <div class="row">
       <div class="col-lg-12">
 
-      
+
         <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
           <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
           <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
           <input type="hidden" name="ACTION" value="trackMove">
-        <fieldset> 
+        <fieldset>
         <legend><i class='mdi mdi-folder-move'></i> <?php print $lang['trackEditMove']; ?></legend>
-        
-        
+
+
         <!-- Select Basic -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="folderNew"><?php print $lang['trackEditMoveSelectLabel']; ?></label>
@@ -374,15 +380,15 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
     if($post['folder'] != $keyfolder) {
         print "              <option value='".$keyfolder."'";
         print ">".$audiofolder."</option>\n";
-    }   
+    }
 }
 ?>
             </select>
-            <span class="help-block"></span>  
+            <span class="help-block"></span>
           </div>
         </div>
         </fieldset>
-        
+
         <!-- Button (Double) -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="submit"></label>
@@ -400,14 +406,14 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
     <div class="row">
       <div class="col-lg-12">
 
-      
+
         <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
           <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
           <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
           <input type="hidden" name="ACTION" value="trackDelete">
-        <fieldset> 
+        <fieldset>
         <legend><i class='mdi mdi-folder-move'></i> <?php print $lang['trackEditDelete']; ?></legend>
-          
+
     <!-- Multiple Radios -->
     <div class="form-group">
       <label class="col-md-3 control-label" for="radios"><?php print $lang['trackEditDeleteLabel']; ?></label>
@@ -424,12 +430,12 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
       <?php print $lang['trackEditDeleteYes']; ?>
     </label>
 	</div>
-          <span class="help-block"><?php print $lang['trackEditDeleteHelp']; ?></span>  
+          <span class="help-block"><?php print $lang['trackEditDeleteHelp']; ?></span>
   </div>
     </div>
 
         </fieldset>
-        
+
         <!-- Button (Double) -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="submit"></label>
@@ -447,68 +453,68 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
     <div class="row">
       <div class="col-lg-12">
 
-      
+
         <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
           <input type="hidden" name="folder" value="<?php print $post['folder']; ?>">
           <input type="hidden" name="filename" value="<?php print $post['filename']; ?>">
           <input type="hidden" name="ACTION" value="trackUpdate">
-        <fieldset> 
+        <fieldset>
         <legend><i class='mdi mdi-information-outline'></i> Edit track information</legend>
         <div class="alert alert-info">Please note that the tag editing only works well for ASCII chars. German Umlaute will be replaced. Other UTF-8 chars turn into '?'. Help needed: please file pull requests :)</div>
-        
+
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="TIT2">Track title</label>  
+          <label class="col-md-3 control-label" for="TIT2">Track title</label>
           <div class="col-md-9">
           <input value="<?php
           if (isset($trackDat['existingTags']['TIT2']) && trim($trackDat['existingTags']['TIT2']) != "") {
               echo trim($trackDat['existingTags']['TIT2']);
           }
           ?>" id="TIT2" name="TIT2" placeholder="" class="form-control input-md" type="text">
-          <span class="help-block"></span>  
+          <span class="help-block"></span>
           </div>
         </div>
-        
+
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="TPE1">Artist</label>  
+          <label class="col-md-3 control-label" for="TPE1">Artist</label>
           <div class="col-md-9">
           <input value="<?php
           if (isset($trackDat['existingTags']['TPE1']) && trim($trackDat['existingTags']['TPE1']) != "") {
               echo trim($trackDat['existingTags']['TPE1']);
           }
           ?>" id="TPE1" name="TPE1" placeholder="" class="form-control input-md" type="text">
-          <span class="help-block"></span>  
+          <span class="help-block"></span>
           </div>
         </div>
-        
+
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="TCOM">Composer</label>  
+          <label class="col-md-3 control-label" for="TCOM">Composer</label>
           <div class="col-md-9">
           <input value="<?php
           if (isset($trackDat['existingTags']['TCOM']) && trim($trackDat['existingTags']['TCOM']) != "") {
               echo trim($trackDat['existingTags']['TCOM']);
           }
           ?>" id="TCOM" name="TCOM" placeholder="" class="form-control input-md" type="text">
-          <span class="help-block"></span>  
+          <span class="help-block"></span>
           </div>
         </div>
-        
+
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="TALB">Album title</label>  
+          <label class="col-md-3 control-label" for="TALB">Album title</label>
           <div class="col-md-9">
           <input value="<?php
           if (isset($trackDat['existingTags']['TALB']) && trim($trackDat['existingTags']['TALB']) != "") {
               echo trim($trackDat['existingTags']['TALB']);
           }
           ?>" id="TALB" name="TALB" placeholder="" class="form-control input-md" type="text">
-          <span class="help-block"></span>  
+          <span class="help-block"></span>
           </div>
         </div>
         </fieldset>
-        
+
         <!-- Button (Double) -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="submit"></label>
@@ -521,7 +527,7 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
         </form>
 
       </div><!-- / .col-lg-12 -->
-    </div><!-- /.row -->  
+    </div><!-- /.row -->
 
 <?php
 /*
@@ -535,8 +541,8 @@ if(
     ) {
 */
 }
-?>  
-    
+?>
+
   </div><!-- /.container -->
 
 <?php

@@ -1,0 +1,6 @@
+{
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "php-mock/php-mock-phpunit": "^2.5"
+    }
+}

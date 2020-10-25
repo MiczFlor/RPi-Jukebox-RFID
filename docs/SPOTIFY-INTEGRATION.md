@@ -1,18 +1,40 @@
 
 # Spotify support for Phoniebox (this guide is for all who want to manually update to +Spotify Edition)
 
+**MUST READ**
+
+If you want to integrate Spotify:
+
+* You **must have** a Spotify Premium subscription. Phoniebox will not work with Spotify Free, just Spotify Premium. 
+* You need a non-Facebook Spotify username and password. 
+  * If you created your account through Facebook you'll need to create a "device password" to be able to use Phoniebox. Go to http://www.spotify.com/account/set-device-password/, login with your Facebook account, and follow the instructions. However, sometimes that process can fail for users with Facebook logins, in which case you can create an app-specific password on Facebook by going to facebook.com > Settings > Security > App passwords > Generate app passwords, and generate one to use with Phoniebox.
+* MP3 (local music) handling has completely changed for the +Spotify Edition. The tracks  need to be indexed by Mopidy & Mopidy-Spotify (this is the part of Phoniebox, which gives you spotify support) and the created M3U files do have another structure than normal M3U files.
+  * You have to scan you library once (if you hadn't yet) and everytime you upload new local tracks to your Phoniebox.
+  * You can scan local files under "Folders & Files" (Top Navigation).
+  * For the future we try to integrate an automation for that.
+
+## Bug reports and testers
+
 **Testers needed for the Spotify integration** Please read [more in this thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18#issuecomment-430140524).
 
-This is the documentation on how to integrate Spotify into your Phoniebox if you want to manually install it. It starts from scratch (i.e. with the installation of the stretch OS). Please add, edit and comment to this document while testing the code.
+If you open an issue on github, please provide as much informations as you can. What is you Edition (Classic or +Spotify)? Which version so you have? What is the problem and what did you try to solve this? And so on..
 
-# If you are searching for a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
+** END of MUST READ :) **
 
-## Installing stretch on your Pi
+## About this document
 
-1. Install Strech on SD Card.
+You best start will be to start a FRESH INSTALLATION, please read [more here](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
+
+The one-line-install should detect an existing installation and ask you if you want to keep the content. That should work, no guarantee :) a backup won't hurt anyone.
+
+The below documentation might be out of date. The one-line-install script will be more up to date. But the below still exists, because it has more content about how the integration works - and that might help you to understand a problem if and when it occurs. Please add, edit and comment to this document while testing the code.
+
+## Installing Buster on your Pi
+
+1. Install Buster on SD Card.
 2. Remove card and insert again.
 
-Setting up the Phoniebox via a SSH connection saves the need for a monitor and a mouse. The following worked on Raspian stretch.
+Setting up the Phoniebox via a SSH connection saves the need for a monitor and a mouse. The following worked on Raspian Buster.
 
 * Flash your SD card with the Raspian image
 * Eject the card and insert it again. This should get the boot partition mounted.
@@ -77,34 +99,29 @@ PermitRootLogin yes
 ~~~
 	
 ## Install MOPIDY
-
+Pin major version of Mopidy to 3
+~~~
+echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
+~~~
 Add the archive’s GPG key:
 ~~~
 wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 ~~~
 Add the APT repo to your package sources:
 ~~~
-sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/stretch.list
+sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 ~~~
 Install Mopidy and all dependencies:
 ~~~
 sudo apt-get update
-sudo apt-get install mopidy
+sudo apt-get upgrade
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install mopidy mopidy-mpd mopidy-local mopidy-spotify
 ~~~
 Finally, you need to set a couple of config values, and then you’re ready to run Mopidy. Alternatively you may want to have Mopidy run as a system service, automatically starting at boot.
 
 To install one of the listed packages, e.g. mopidy-spotify, simply run the following:
 ~~~
-sudo apt-get install libspotify12 python-cffi python-ply python-pycparser python-spotify
-sudo rm -rf /usr/lib/python2.7/dist-packages/mopidy_spotify*
-sudo rm -rf /usr/lib/python2.7/dist-packages/Mopidy_Spotify-*
-cd
-sudo rm -rf mopidy-spotify
-sudo apt-get install git
-git clone -b fix/web_api_playlists --single-branch https://github.com/princemaxwell/mopidy-spotify.git
-cd mopidy-spotify
-sudo python setup.py install
-cd
+sudo apt-get --yes --allow-downgrades --allow-remove-essential --allow-change-held-packages install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 ~~~
 
 ## Mopidy as service...
@@ -117,7 +134,7 @@ This will make Mopidy start when the system boots.
 	
 ## Install MOPIDY-IRIS Web Interface
 ~~~
-sudo pip install Mopidy-Iris
+sudo python3 -m pip install Mopidy-Iris
 ~~~
 
 Set the rights

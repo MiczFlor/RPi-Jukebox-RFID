@@ -13,9 +13,9 @@ There is a file `settings/version` containing the version number.
 
 **Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
-# Upgrade from Version 1.1.7 to 1.1.8-rc2
+# Upgrade from Version 1.1.7 to 1.1.8
 
-**NOTE**: version `1.1.8-rc2` is the `master` branch but still in beta, meaning: we don't trust it fully ;) If you run into issues, please ask them on the "issues" board on GitHub. [2018-10-30].
+**NOTE**: version `1.1.8` is the `master` branch. If you run into issues, please ask them on the "issues" board on GitHub. [2018-12-10].
 
 And in capital letters: **YOUR BEST CHOICE IS TO GET A NEW SD CARD AND DO A FRESH INSTALL FOR THE NEW 1.1.8 VERSION, BECAUSE A LOT HAS CHANGED AS YOU CAN SEE IN THE UPGRADE SCRIPT BELOW** (now you can't say you didn't know...)
 
@@ -148,7 +148,7 @@ sudo systemctl enable rfid-reader
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
-cd RPi-Jukebox-RFID
+cd /home/pi/RPi-Jukebox-RFID
 git fetch
 git checkout master
 git pull

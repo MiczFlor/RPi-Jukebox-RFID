@@ -12,29 +12,42 @@ if(isset($_POST['secondSwipe']) && trim($_POST['secondSwipe']) != "") {
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "PAUSE") {
         $Second_Swipe = "PAUSE";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
+    } elseif(trim($_POST['secondSwipe']) == "PLAY") {
+        $Second_Swipe = "PLAY";
+        $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
+        if($debug == "true") {
+            print $exec;
+        } 
+        exec($exec);
+    } elseif(trim($_POST['secondSwipe']) == "SKIPNEXT") {
+        $Second_Swipe = "SKIPNEXT";
+        $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
+        if($debug == "true") {
+            print $exec;
+        } 
+        exec($exec);
     } elseif(trim($_POST['secondSwipe']) == "NOAUDIOPLAY") {
         $Second_Swipe = "NOAUDIOPLAY";
         $exec = 'echo "'.$Second_Swipe.'" > '.$conf['settings_abs'].'/Second_Swipe';
         if($debug == "true") {
             print $exec;
-        } else {
-            exec($exec);
-        }
+        } 
+        exec($exec);
     }
+    // execute shell to create config file
+    exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
 }
 ?>
-        <!-- input-group --> 
+        <!-- input-group -->
             <div class="row" style="margin-bottom:1em;">
               <div class="col-md-6 col-xs-12">
               <h4><?php print $lang['settingsSecondSwipeInfo']; ?></h4>
@@ -57,6 +70,20 @@ if(isset($_POST['secondSwipe']) && trim($_POST['secondSwipe']) != "") {
                         print ">".$lang['settingsSecondSwipePause'];
                         print "</option>\n";
                         print "
+                        <option value='PLAY'";
+                        if($Second_Swipe == "PLAY") {
+                            print " selected";
+                        }
+                        print ">".$lang['settingsSecondSwipePlay'];
+                        print "</option>\n";
+                        print "
+                        <option value='SKIPNEXT'";
+                        if($Second_Swipe == "SKIPNEXT") {
+                            print " selected";
+                        }
+                        print ">".$lang['settingsSecondSwipeSkipnext'];
+                        print "</option>\n";
+                        print "
                         <option value='NOAUDIOPLAY'";
                         if($Second_Swipe == "NOAUDIOPLAY") {
                             print " selected";
@@ -64,13 +91,13 @@ if(isset($_POST['secondSwipe']) && trim($_POST['secondSwipe']) != "") {
                         print ">".$lang['settingsSecondSwipeNoAudioPlay'];
                         print "</option>\n";
                     ?>
-                    </select> 
+                    </select>
                     <span class="input-group-btn">
                         <input type='submit' class="btn btn-default" name='submit' value='<?php print $lang['globalSet']; ?>'/>
                     </span>
                   </div>
                 </form>
               </div>
-              
+
             </div><!-- ./row -->
         <!-- /input-group -->

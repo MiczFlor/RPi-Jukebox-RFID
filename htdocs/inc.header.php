@@ -1,24 +1,12 @@
 <?php
+namespace JukeBox;
+
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
 * INSTALL-stretch.md instructions.
 * If you want to change the paths, edit config.php
 ***************************************************/
-
-/*
-* DEBUGGING
-* for debugging, set following var to true.
-* This will only print the executable strings, not execute them
-*/
-$debug = "false"; // true or false
-
-
-/*
-* load language strings
-*/
-include("inc.langLoad.php");
-
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 /*
@@ -34,7 +22,7 @@ if(!file_exists("config.php")) {
         // no config nor sample config found. die.
         print "<h1>Configuration file not found</h1>
             <p>The files 'config.php' and 'config.php.sample' were not found in the
-            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the 
+            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the
             <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
             copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
         die;
@@ -54,7 +42,7 @@ sudo chmod -R 775 htdocs/
 sudo chgrp -R www-data htdocs/
                 </pre>
                 </p>
-                Alternatively, download 'htdocs/config.php.sample' from the 
+                Alternatively, download 'htdocs/config.php.sample' from the
                 <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
                 copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
             die;
@@ -70,7 +58,74 @@ sudo chgrp -R www-data htdocs/
 }
 include("config.php");
 
-$conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+/*
+* Config for debug logging
+* this file is read by shell scripts and php
+*/
+$debugAvail = array(
+"DEBUG_WebApp",
+"DEBUG_WebApp_API",
+"DEBUG_inc_readArgsFromCommandLine_sh",
+"DEBUG_inc_settingsFolderSpecific_sh",
+"DEBUG_inc_writeFolderConfig_sh",
+"DEBUG_inc_writeGlobalConfig_sh",
+"DEBUG_playlist_recursive_by_folder_php",
+"DEBUG_playout_controls_sh",
+"DEBUG_resume_play_sh",
+"DEBUG_rfid_trigger_play_sh",
+"DEBUG_shuffle_play_sh",
+"DEBUG_single_play_sh",
+);
+$debugOptions = array("TRUE", "FALSE");
+
+if(!file_exists("../settings/debugLogging.conf")) {
+    // create file
+    $debugLoggingConf = "";
+    foreach($debugAvail as $debugItem) {
+        $debugLoggingConf .= $debugItem."=\"FALSE\"\n";
+    }
+    file_put_contents("../settings/debugLogging.conf", $debugLoggingConf);
+}
+// read file
+$debugLoggingConf = parse_ini_file("../settings/debugLogging.conf");
+/*
+* DEBUGGING
+* for debugging, set following var to true.
+* This will only print the executable strings, not execute them
+*/
+if($debugLoggingConf['DEBUG_WebApp'] == "TRUE") {
+    $debug = "true"; // true or false
+} else {
+    $debug = "false";
+}
+
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+$url_abs = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+
+/**
+ * @param $exec
+ */
+function execAndRedirect($exec)
+{
+    global $debug;
+    global $url_abs;
+
+    if (!isset($exec)) {
+        return;
+    }
+    $res = exec($exec);
+    if ($debug == "true") {
+        print "<pre>\nCommand in execAndRedirect: " . $exec . "\nResult: " . $res . "\n</pre>";
+    }
+    /* redirect to drop all the url parameters */
+    header("Location: " . $url_abs);
+    exit;
+}
+
+function fileGetContentOrDefault($filename, $defaultValue)
+{
+    return file_exists($filename) ? trim(file_get_contents($filename)) : $defaultValue;
+}
 
 include("func.php");
 
@@ -84,17 +139,43 @@ $conf['settings_abs'] = realpath(getcwd().'/../settings/');
 /*
 * Vars from the settings folder
 */
-$Audio_Folders_Path = trim(file_get_contents($conf['settings_abs'].'/Audio_Folders_Path'));
-$Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
-$Second_Swipe = trim(file_get_contents($conf['settings_abs'].'/Second_Swipe'));
-$ShowCover = trim(file_get_contents($conf['settings_abs'].'/ShowCover'));
-$version = trim(file_get_contents($conf['settings_abs'].'/version'));
-if(file_exists(dirname(__FILE__).'/../settings/edition')) {
-    $edition = trim(file_get_contents(dirname(__FILE__).'/../settings/edition'));
-} else {
-    $edition = "classic";
-    $edition = "classic";
+if(!file_exists($conf['settings_abs']."/global.conf")) {
+    // execute shell to create config file
+    // scripts/inc.writeGlobalConfig.sh
+    exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+    exec("sudo chmod 777 ".$conf['settings_abs']."/global.conf");
 }
+
+// read the global conf file
+$globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
+//print "<pre>"; print_r($globalConf); print "</pre>"; //???
+
+// assign the values from the global conf file to the vars in PHP
+$Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
+$Playlists_Folders_Path = $globalConf['PLAYLISTSFOLDERPATH'];
+$Second_Swipe = $globalConf['SECONDSWIPE'];
+$Second_Swipe_Pause = $globalConf['SECONDSWIPEPAUSE'];
+$Second_Swipe_Pause_Controls = $globalConf['SECONDSWIPEPAUSECONTROLS'];
+$VolumeManager = $globalConf['VOLUMEMANAGER'];
+$ShowCover = $globalConf['SHOWCOVER'];
+$WlanIpReadYN = $globalConf['READWLANIPYN'];
+$WlanIpMailYN = $globalConf['MAILWLANIPYN'];
+$WlanIpMailAddr = $globalConf['MAILWLANIPADDR'];
+$version = $globalConf['VERSION'];
+$edition = $globalConf['EDITION'];
+$maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
+$startupvolumevalue = $globalConf['AUDIOVOLSTARTUP'];
+$volstepvalue = $globalConf['AUDIOVOLCHANGESTEP'];
+$idletimevalue = $globalConf['IDLETIMESHUTDOWN'];
+$conf['settings_lang'] = $globalConf['LANG'];
+
+// vars that must be read continuously and can't be in the global conf file
+$Latest_Folder_Played = trim(file_get_contents($conf['settings_abs'].'/Latest_Folder_Played'));
+
+/*
+* load language strings
+*/
+include("inc.langLoad.php");
 
 /*******************************************
 * URLPARAMETERS
@@ -104,197 +185,60 @@ $urlparams = array();
 /*
 * Firstly, collect via 'GET', later collect 'POST'
 */
-if(isset($_GET['play']) && trim($_GET['play']) != "") {
-    $urlparams['play'] = trim($_GET['play']);
-}
-if(isset($_GET['recursive']) && trim($_GET['recursive']) == "true") {
-    $urlparams['recursive'] = trim($_GET['recursive']);
-}
-
-if(isset($_GET['playpos']) && trim($_GET['playpos']) != "") {
-    $urlparams['playpos'] = trim($_GET['playpos']);
-}
-
-if(isset($_GET['player']) && trim($_GET['player']) != "") {
-    $urlparams['player'] = trim($_GET['player']);
-}
-
-if(isset($_GET['stop']) && trim($_GET['stop']) != "") {
-    $urlparams['stop'] = trim($_GET['stop']);
-}
-
-if(isset($_GET['volume']) && trim($_GET['volume']) != "") {
-    $urlparams['volume'] = trim($_GET['volume']);
-}
-
-if(isset($_GET['maxvolume']) && trim($_GET['maxvolume']) != "") {
-    $urlparams['maxvolume'] = trim($_GET['maxvolume']);
-}
-
-if(isset($_GET['volstep']) && trim($_GET['volstep']) != "") {
-    $urlparams['volstep'] = trim($_GET['volstep']);
-}
-
-if(isset($_GET['mute']) && trim($_GET['mute']) == "true") {
-    $urlparams['mute'] = trim($_GET['mute']);
+$nonEmptyCommands = array(
+    'play',
+    'playpos',
+    'player',
+    'stop',
+    'volume',
+    'maxvolume',
+    'startupvolume',
+    'volstep',
+    'shutdown',
+    'reboot',
+    'scan',
+    'idletime',
+    'shutdownafter',
+    'stopplayoutafter',
+    'enableresume',
+    'disableresume',
+    'enableshuffle',
+    'disableshuffle',
+    'singleenable',
+    'singledisable',
+    'DebugLogClear',
+);
+foreach ($nonEmptyCommands as $command) {
+    if(isset($_GET[$command]) && trim($_GET[$command]) != "") {
+        $urlparams[$command] = trim($_GET[$command]);
+    }
+    if(isset($_POST[$command]) && trim($_POST[$command]) != "") {
+        $urlparams[$command] = trim($_POST[$command]);
+    }
 }
 
-if(isset($_GET['volumeup']) && trim($_GET['volumeup']) == "true") {
-    $urlparams['volumeup'] = trim($_GET['volumeup']);
+$commandsWithAllowedValues = array(
+    'recursive' => array('true'),
+    'mute' => array('true'),
+    'volumeup' => array('true'),
+    'volumedown' => array('true'),
+    'rfidstatus' => array('turnon', 'turnoff'),
+    'WlanIpMailYN' => array('turnon', 'turnoff'),
+    'gpiostatus' => array('turnon', 'turnoff')
+);
+foreach ($commandsWithAllowedValues as $command => $allowedValues) {
+    if(isset($_GET[$command]) && in_array(trim($_GET[$command]), $allowedValues)) {
+        $urlparams[$command] = trim($_GET[$command]);
+    }
+    if(isset($_POST[$command]) && in_array(trim($_POST[$command]), $allowedValues)) {
+        $urlparams[$command] = trim($_POST[$command]);
+    }
 }
 
-if(isset($_GET['volumedown']) && trim($_GET['volumedown']) == "true") {
-    $urlparams['volumedown'] = trim($_GET['volumedown']);
-}
-
-if(isset($_GET['shutdown']) && trim($_GET['shutdown']) != "") {
-    $urlparams['shutdown'] = trim($_GET['shutdown']);
-}
-
-if(isset($_GET['reboot']) && trim($_GET['reboot']) != "") {
-    $urlparams['reboot'] = trim($_GET['reboot']);
-}
-
-if(isset($_GET['scan']) && trim($_GET['scan']) != "") {
-    $urlparams['scan'] = trim($_GET['scan']);
-}
-
-if(isset($_GET['idletime']) && trim($_GET['idletime']) != "") {
-    $urlparams['idletime'] = trim($_GET['idletime']);
-}
-
-if(isset($_GET['shutdownafter']) && trim($_GET['shutdownafter']) != "") {
-    $urlparams['shutdownafter'] = trim($_GET['shutdownafter']);
-}
-
-if(isset($_GET['rfidstatus']) && trim($_GET['rfidstatus']) == "turnon") {
-    $urlparams['rfidstatus'] = trim($_GET['rfidstatus']);
-}
-
-if(isset($_GET['rfidstatus']) && trim($_GET['rfidstatus']) == "turnoff") {
-    $urlparams['rfidstatus'] = trim($_GET['rfidstatus']);
-}
-
-if(isset($_GET['gpiostatus']) && trim($_GET['gpiostatus']) == "turnon") {
-    $urlparams['gpiostatus'] = trim($_GET['gpiostatus']);
-}
-
-if(isset($_GET['gpiostatus']) && trim($_GET['gpiostatus']) == "turnoff") {
-    $urlparams['gpiostatus'] = trim($_GET['gpiostatus']);
-}
-
-if(isset($_GET['enableresume']) && trim($_GET['enableresume']) != "") {
-    $urlparams['enableresume'] = trim($_GET['enableresume']);
-}
-
-if(isset($_GET['disableresume']) && trim($_GET['disableresume']) != "") {
-    $urlparams['disableresume'] = trim($_GET['disableresume']);
-}
-
-if(isset($_GET['enableshuffle']) && trim($_GET['enableshuffle']) != "") {
-    $urlparams['enableshuffle'] = trim($_GET['enableshuffle']);
-}
-
-if(isset($_GET['disableshuffle']) && trim($_GET['disableshuffle']) != "") {
-    $urlparams['disableshuffle'] = trim($_GET['disableshuffle']);
-}
-
-/*
-* Now check for $_POST
-*/
-if(isset($_POST['play']) && trim($_POST['play']) != "") {
-    $urlparams['play'] = trim($_POST['play']);
-}
-if(isset($_POST['recursive']) && trim($_POST['recursive']) == "true") {
-    $urlparams['recursive'] = trim($_POST['recursive']);
-}
-
-if(isset($_POST['playpos']) && trim($_POST['playpos']) != "") {
-    $urlparams['playpos'] = trim($_POST['playpos']);
-}
-
-if(isset($_POST['player']) && trim($_POST['player']) != "") {
-    $urlparams['player'] = trim($_POST['player']);
-}
-
-if(isset($_POST['stop']) && trim($_POST['stop']) != "") {
-    $urlparams['stop'] = trim($_POST['stop']);
-}
-
-if(isset($_POST['volume']) && trim($_POST['volume']) != "") {
-    $urlparams['volume'] = trim($_POST['volume']);
-}
-
-if(isset($_POST['maxvolume']) && trim($_POST['maxvolume']) != "") {
-    $urlparams['maxvolume'] = trim($_POST['maxvolume']);
-}
-
-if(isset($_POST['volstep']) && trim($_POST['volstep']) != "") {
-    $urlparams['volstep'] = trim($_POST['volstep']);
-}
-
-if(isset($_POST['mute']) && trim($_POST['mute']) == "true") {
-    $urlparams['mute'] = trim($_POST['mute']);
-}
-
-if(isset($_POST['volumeup']) && trim($_POST['volumeup']) == "true") {
-    $urlparams['volumeup'] = trim($_POST['volumeup']);
-}
-
-if(isset($_POST['volumedown']) && trim($_POST['volumedown']) == "true") {
-    $urlparams['volumedown'] = trim($_POST['volumedown']);
-}
-
-if(isset($_POST['shutdown']) && trim($_POST['shutdown']) != "") {
-    $urlparams['shutdown'] = trim($_POST['shutdown']);
-}
-
-if(isset($_POST['reboot']) && trim($_POST['reboot']) != "") {
-    $urlparams['reboot'] = trim($_POST['reboot']);
-}
-
-if(isset($_POST['scan']) && trim($_POST['scan']) != "") {
-    $urlparams['scan'] = trim($_POST['scan']);
-}
-
-if(isset($_POST['idletime']) && trim($_POST['idletime']) != "") {
-    $urlparams['idletime'] = trim($_POST['idletime']);
-}
-
-if(isset($_POST['shutdownafter']) && trim($_POST['shutdownafter']) != "") {
-    $urlparams['shutdownafter'] = trim($_POST['shutdownafter']);
-}
-
-if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnon") {
-    $urlparams['rfidstatus'] = trim($_POST['rfidstatus']);
-}
-
-if(isset($_POST['rfidstatus']) && trim($_POST['rfidstatus']) == "turnoff") {
-    $urlparams['rfidstatus'] = trim($_POST['rfidstatus']);
-}
-
-if(isset($_POST['gpiostatus']) && trim($_POST['gpiostatus']) == "turnon") {
-    $urlparams['gpiostatus'] = trim($_POST['gpiostatus']);
-}
-
-if(isset($_POST['gpiostatus']) && trim($_POST['gpiostatus']) == "turnoff") {
-    $urlparams['gpiostatus'] = trim($_POST['gpiostatus']);
-}
-
-if(isset($_POST['enableresume']) && trim($_POST['enableresume']) != "") {
-    $urlparams['enableresume'] = trim($_POST['enableresume']);
-}
-
-if(isset($_POST['disableresume']) && trim($_POST['disableresume']) != "") {
-    $urlparams['disableresume'] = trim($_POST['disableresume']);
-}
-
-if(isset($_POST['enableshuffle']) && trim($_POST['enableshuffle']) != "") {
-    $urlparams['enableshuffle'] = trim($_POST['enableshuffle']);
-}
-
-if(isset($_POST['disableshuffle']) && trim($_POST['disableshuffle']) != "") {
-    $urlparams['disableshuffle'] = trim($_POST['disableshuffle']);
+if ($debug == "true") {
+    print "<pre>urlparams: \n"; print_r($urlparams); print "</pre>";
+    print "<pre>_POST: \n"; print_r($_POST); print "</pre>";
+    print "<pre>_FILES: \n"; print_r($_FILES); print "</pre>";
 }
 
 /*******************************************
@@ -317,11 +261,17 @@ if(isset($_POST['streamType']) && $_POST['streamType'] != "" && $_POST['streamTy
 if(isset($_POST['audiofolder']) && $_POST['audiofolder'] != "" && $_POST['audiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['audiofolder'])) {
     $post['audiofolder'] = $_POST['audiofolder'];
 }
+if(isset($_POST['audiofolderNew']) && $_POST['audiofolderNew'] != "" && $_POST['audiofolderNew'] != "false") {
+    $post['audiofolderNew'] = $_POST['audiofolderNew'];
+}
 if(isset($_POST['YTstreamURL']) && $_POST['YTstreamURL'] != "") {
     $post['YTstreamURL'] = $_POST['YTstreamURL'];
 }
 if(isset($_POST['YTstreamFolderName']) && $_POST['YTstreamFolderName'] != "") {
     $post['YTstreamFolderName'] = $_POST['YTstreamFolderName'];
+}
+if(isset($_POST['TriggerCommand']) && $_POST['TriggerCommand'] != "false") {
+    $post['TriggerCommand'] = $_POST['TriggerCommand'];
 }
 if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YTaudiofolder'] != "false" && file_exists($Audio_Folders_Path.'/'.$_POST['YTaudiofolder'])) {
     $post['YTaudiofolder'] = $_POST['YTaudiofolder'];
@@ -329,429 +279,130 @@ if(isset($_POST['YTaudiofolder']) && $_POST['YTaudiofolder'] != "" && $_POST['YT
 if(isset($_POST['submit']) && $_POST['submit'] == "submit") {
     $post['submit'] = $_POST['submit'];
 }
-
+if(isset($_POST['delete']) && $_POST['delete'] == "delete") {
+    $post['delete'] = $_POST['delete'];
+}
+if(isset($_GET['delete']) && $_GET['delete'] == "delete") {
+    $post['delete'] = $_GET['delete'];
+}
 
 /*******************************************
 * ACTIONS
 *******************************************/
 
-// change volume
-if(isset($urlparams['volume'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=".$urlparams['volume'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// change max volume
-if(isset($urlparams['maxvolume'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=".$urlparams['maxvolume'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// change volume step
-if(isset($urlparams['volstep'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolstep -v=".$urlparams['volstep'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-
-// volume mute (toggle)
-if(isset($urlparams['mute'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// volume up
-if(isset($urlparams['volumeup'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumeup";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// volume down
-if(isset($urlparams['volumedown'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumedown";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// reboot the jukebox
-if(isset($urlparams['reboot']) && $urlparams['reboot'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=reboot > /dev/null 2>&1 &";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// shutdown the jukebox
-if(isset($urlparams['shutdown']) && $urlparams['shutdown'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdown > /dev/null 2>&1 &";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// set idletime
-if(isset($urlparams['idletime'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setidletime -v=".$urlparams['idletime'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// set shutdownafter time (sleeptimer)
-if(isset($urlparams['shutdownafter'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=".$urlparams['shutdownafter'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// start the rfid service
-if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnon") {
-    $exec = "/usr/bin/sudo /bin/systemctl start phoniebox-rfid-reader.service";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// stop the rfid service
-if(isset($urlparams['rfidstatus']) && $urlparams['rfidstatus'] == "turnoff") {
-    $exec = "/usr/bin/sudo /bin/systemctl stop phoniebox-rfid-reader.service";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// start the gpio button service
-if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnon") {
-    $exec = "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-buttons.service";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// stop the gpio button service
-if(isset($urlparams['gpiostatus']) && $urlparams['gpiostatus'] == "turnoff") {
-    $exec = "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-buttons.service";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
+$commandToAction = array(
+    'volume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=%s",            // change volume
+    'maxvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=%s",      // change max volume
+    'startupvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setstartupvolume -v=%s",      // change startup volume
+    'volstep' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolstep -v=%s",          // change volume step
+    'mute' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute",                         // volume mute (toggle)
+    'volumeup' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumeup",                 // volume up
+    'volumedown' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumedown",             // volume down
+    'idletime' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setidletime -v=%s",        // set idletime
+    'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
+    'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
+    'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
+    'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",
+    'scan' => array(
+        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &"   // scan the library
+    ),
+    'stop' => array(
+        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstop"                // stop playing
+    ),
+    'reboot' => array(
+        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=reboot > /dev/null 2>&1 &" // reboot the jukebox
+    ),
+    'shutdown' => array(
+        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdown > /dev/null 2>&1 &"// shutdown the jukebox
+    ),
+    'rfidstatus' => array(
+        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-rfid-reader.service",                     // start the rfid service
+        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-rfid-reader.service"                      // stop the rfid service
+    ),
+    'gpiostatus' => array(
+        'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-gpio-control.service",                    // start the gpio control service
+        'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-gpio-control.service"                     // stop the gpio control service
+    ),
+    // control player through web interface
+    'player' => array(
+        "next" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playernext",
+        "prev" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerprev",
+        "play" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerplay",
+        "replay" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerreplay",
+        "pause" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerpause",
+        "repeat" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerrepeat -v=playlist",
+        "single" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerrepeat -v=single",
+        "repeatoff" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerrepeat -v=off",
+        "seekBack" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerseek -v=-15",
+        "seekAhead" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerseek -v=+15",
+    ),
+);
+foreach ($urlparams as $paramKey => $paramValue) {
+    if(isset($commandToAction[$paramKey]) && !is_array($commandToAction[$paramKey])) {
+        $exec = sprintf($commandToAction[$paramKey], $paramValue);
+        execAndRedirect($exec);
+    } elseif (isset($commandToAction[$paramKey]) && isset($commandToAction[$paramKey][$paramValue])) {
+        $exec = sprintf($commandToAction[$paramKey][$paramValue], $paramValue);
+        execAndRedirect($exec);
     }
 }
 
 // enable resume
 if(isset($urlparams['enableresume']) && $urlparams['enableresume'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableresume']))) {
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=enableresume -d="'.$urlparams['enableresume'].'"';
+    if($debug == "true") {
+        print "Command: ".$exec;
+    }
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=enableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['enableresume']);
     exec($exec);
 
     /* redirect to drop all the url parameters */
-    header("Location: ".$conf['url_abs']);
-    exit; 
-    }
+    header("Location: ".$url_abs);
+    exit;
 }
 
 // disable resume
 if(isset($urlparams['disableresume']) && $urlparams['disableresume'] != "" && is_dir($Audio_Folders_Path."/".urldecode($urlparams['disableresume']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/resume_play.sh -c=disableresume -d=".preg_replace('/\s+/', '\ ',$urlparams['disableresume']);
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/resume_play.sh -c=disableresume -d="'.$urlparams['disableresume'].'"';
+    execAndRedirect($exec);
 }
 
 // enable shuffle
 if(isset($urlparams['enableshuffle']) && $urlparams['enableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['enableshuffle']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=enableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['enableshuffle']);
-
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/shuffle_play.sh -c=enableshuffle -d="'.$urlparams['enableshuffle'].'"';
+    execAndRedirect($exec);
 }
 
 // disable shuffle
 if(isset($urlparams['disableshuffle']) && $urlparams['disableshuffle'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['disableshuffle']))) {
     // pass folder to resume script
-    // escape whitespaces with backslashes
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/shuffle_play.sh -c=disableshuffle -d=".preg_replace('/\s+/', '\ ',$urlparams['disableshuffle']);
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-    exec($exec);
-
-    /* redirect to drop all the url parameters */
-    header("Location: ".$conf['url_abs']);
-    exit; 
-    }
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/shuffle_play.sh -c=disableshuffle -d="'.$urlparams['disableshuffle'].'"';
+    execAndRedirect($exec);
 }
 
-// scan the library
-if(isset($urlparams['scan']) && $urlparams['scan'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
+// enable single track play
+if(isset($urlparams['singleenable']) && $urlparams['singleenable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singleenable']))) {
+    // pass folder to single_play script
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/single_play.sh -c=singleenable -d="'.$urlparams['singleenable'].'"';
+    execAndRedirect($exec);
 }
 
-
-// stop playing
-if(isset($urlparams['stop']) && $urlparams['stop'] == "true") {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstop";
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
+// disable single track play
+if(isset($urlparams['singledisable']) && $urlparams['singledisable'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['singledisable']))) {
+    // pass folder to single_play script
+    $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/single_play.sh -c=singledisable -d="'.$urlparams['singledisable'].'"';
+    execAndRedirect($exec);
 }
 
 // play folder audio files
 if(isset($urlparams['play']) && $urlparams['play'] != "" && is_dir(urldecode($Audio_Folders_Path."/".$urlparams['play']))) {
     // pass folder to playout script
-    // escape whitespaces with backslashes
-    #$exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.preg_replace('/\s+/', '\ ',$urlparams['play']).'"';
     $exec = '/usr/bin/sudo '.$conf['scripts_abs'].'/rfid_trigger_play.sh -d="'.$urlparams['play'].'"';
     if($urlparams['recursive'] == "true") {
         $exec .= ' -v="recursive"';
     }
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-// play from playlist position
-if(isset($urlparams['playpos'])) {
-    $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=".$urlparams['playpos'];
-    if($debug == "true") { 
-        print "Command: ".$exec; 
-    } else { 
-        exec($exec);
-        /* redirect to drop all the url parameters */
-        header("Location: ".$conf['url_abs']);
-        exit; 
-    }
-}
-
-
-// control player through web interface
-if(isset($urlparams['player'])) {
-    if($urlparams['player'] == "next") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playernext";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "prev") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerprev";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "play") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "replay") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerreplay";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "pause") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerpause";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "repeat") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=playlist";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "single") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=single";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "repeatoff") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerrepeat -v=off";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "seekBack") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerseek -v=-15";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
-    if($urlparams['player'] == "seekAhead") {
-        $exec = "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerseek -v=+15";
-        if($debug == "true") { 
-            print "Command: ".$exec; 
-        } else { 
-            exec($exec);
-            /* redirect to drop all the url parameters */
-            header("Location: ".$conf['url_abs']);
-            exit; 
-        }
-    }
+    execAndRedirect($exec);
 }
 ?>
