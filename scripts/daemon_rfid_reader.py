@@ -5,6 +5,7 @@ import os
 import subprocess
 import time
 import re
+import signal
 
 from Reader import Reader
 
@@ -56,7 +57,27 @@ if sspc_nodelay == "ON":
 else:
     ids = ""
 
+
+# handler for RFID reading no cardid
+def handler(signum, frame):
+    logger.info('No RFID Signal detected.')
+    try:
+        # force pause the player script
+        logger.info('Trigger Pause Force')
+        subprocess.call([dir_path + '/playout_controls.sh -c=playerpauseforce -v=0.1'], shell=True)
+    except OSError as e:
+        logger.info('Execution of Pause failed.')
+
+
+# associate the handler to signal alarm
+signal.signal(signal.SIGALRM, handler)
+
 while True:
+    # slow down the card reading while loop
+    time.sleep(0.2)
+    # enable the signal alarm (if no card is present for 1 second)
+    signal.alarm(1)
+
     # reading the card id
     # NOTE: it's been reported that KKMOON Reader might need the following line altered.
     # Instead of:
@@ -66,6 +87,10 @@ while True:
     # See here for (German ;) details:
     # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
     cardid = reader.reader.readCard()
+
+    # disable the alarm after a successful read
+    signal.alarm(0)
+
     try:
         # start the player script and pass on the cardid (but only if new card or otherwise
         # "same_id_delay" seconds have passed)
