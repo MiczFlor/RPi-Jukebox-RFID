@@ -24,7 +24,7 @@
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -33,7 +33,7 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . $PATHDATA/../settings/debugLogging.conf
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "${DEBUG_inc_writeGlobalConfig_sh}" == "TRUE" ]; then echo "########### SCRIPT inc.writeGlobalConf.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
