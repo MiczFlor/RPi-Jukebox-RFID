@@ -3,6 +3,15 @@
 HOME_DIR="/home/pi"
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 
+EDITION=$1
+
+if [[ -n "$EDITION" ]]; then
+    echo "Configuring Pirate Audio HAT for ${EDITION} edition"
+else
+    echo "Error: please pass classic or spotify to script."
+    exit -1
+fi
+
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
@@ -16,10 +25,11 @@ question() {
 printf "Please make sure that the Pirate Audio HAT is connected...\n"
 question "Continue"
 
-printf "Stopping and disabling GPIO button service...\n"
-#TODO this might not be necessary, see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1109
-sudo systemctl stop phoniebox-gpio-service.service
-sudo systemctl disable phoniebox-gpio-service.service
+if [ "${EDITION}" == "spotify" ]; then
+    printf "Stopping and disabling GPIO control service...\n"
+    sudo systemctl stop phoniebox-gpio-control.service
+    sudo systemctl disable phoniebox-gpio-control.service
+fi
 
 printf "Adding settings to /boot/config.txt...\n"
 if [[ ! -f /boot/config.txt.bak ]]; then
@@ -92,13 +102,17 @@ sudo raspi-config nonint do_spi 0
 printf "Installing Python dependencies...\n"
 sudo apt-get -y -qq install python3-pil python3-numpy
 
-printf "Installing mopidy plugins...\n"
+printf "Installing Python packages...\n"
 sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
 
-# Only add, if it does not exist already
-printf "Editing mopidy configuration...\n"
-if ! sudo grep -qe "raspberry-gpio" /etc/mopidy/mopidy.conf; then
-    sudo tee -a /etc/mopidy/mopidy.conf << EOH > /dev/null
+if [ "${EDITION}" == "spotify" ]; then
+    printf "Installing mopidy plugins...\n"
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements-mopidy.txt
+
+    # Only add, if it does not exist already
+    printf "Editing mopidy configuration...\n"
+    if ! sudo grep -qe "raspberry-gpio" /etc/mopidy/mopidy.conf; then
+        sudo tee -a /etc/mopidy/mopidy.conf << EOH > /dev/null
 
 [raspberry-gpio]
 enabled = true
@@ -111,12 +125,17 @@ bcm20 = volume_up,active_low,150
 enabled = true
 display = st7789
 EOH
-else
-    printf "/etc/mopidy/mopidy.conf is already configured. Skipping...\n"
-fi
+    else
+        printf "/etc/mopidy/mopidy.conf is already configured. Skipping...\n"
+    fi
 
-printf "Enable access for modipy user...\n"
-sudo usermod -a -G spi,i2c,gpio,video mopidy
+    printf "Enable access for modipy user...\n"
+    sudo usermod -a -G spi,i2c,gpio,video mopidy
+else
+    cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.priate-audio-hat.sample "${jukebox_dir}"/settings/gpio_settings.ini
+
+    # TODO configure display
+fi
 
 printf "You need to reboot to apply the settings.\n"
 question "Do you want to reboot now"

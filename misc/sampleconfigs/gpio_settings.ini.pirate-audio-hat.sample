@@ -1,0 +1,34 @@
+[DEFAULT]
+enabled: True
+
+[PlayPause]
+enabled: True
+Type: Button
+Pin: 5
+pull_up: True
+bouncetime: 250
+functionCall: functionCallPlayerPause
+
+[VolumeUp]
+enabled: True
+Type:  Button
+Pin: 20
+pull_up: True
+bouncetime: 250
+functionCall: functionCallVolU
+
+[VolumeDown]
+enabled: True
+Type:  Button
+Pin: 6
+pull_up: True
+bouncetime: 250
+functionCall: functionCallVolD
+
+[NextSong]
+enabled: True
+Type:  Button
+Pin: 16
+pull_up: True
+bouncetime: 250
+functionCall: functionCallPlayerNext
