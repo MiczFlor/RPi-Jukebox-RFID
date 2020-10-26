@@ -1207,13 +1207,11 @@ finish_installation() {
                     "Pimoroni Pirate Audio")
                         if [ "$SPOTinstall" == "YES" ]; then
                             bash "${jukebox_dir}"/components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh spotify
-                            break
-                            ;;
                         else
                             bash "${jukebox_dir}"/components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh classic
-                            break
-                            ;;
                         fi
+                        break
+                        ;;
                     "Manual configuration")
                         echo "Please configure your sound card manually."
                         break
