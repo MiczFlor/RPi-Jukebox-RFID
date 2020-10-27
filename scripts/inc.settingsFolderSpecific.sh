@@ -50,7 +50,7 @@ then
         if [ $SHUFFLE == "ON" ]
         then 
 		    if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # # CHANGING: mpc shuffle" >> $PATHDATA/../logs/debug.log; fi
-            mpc shuffle
+            # mpc shuffle
         else
 		    if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # # CHANGING: mpc random off" >> $PATHDATA/../logs/debug.log; fi
             mpc random off
