@@ -178,6 +178,16 @@ fi
 IDLETIMESHUTDOWN=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 
 ##############################################
+# Poweroff_Command
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Poweroff_Command ]; then
+    echo "sudo poweroff" > $PATHDATA/../settings/Poweroff_Command
+    chmod 777 $PATHDATA/../settings/Poweroff_Command
+fi
+# 2. then|or read value from file
+POWEROFFCMD=`cat $PATHDATA/../settings/Poweroff_Command`
+
+##############################################
 # ShowCover
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/ShowCover ]; then
@@ -274,6 +284,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
+# POWEROFFCMD
 # SHOWCOVER
 # MAILWLANIPYN
 # MAILWLANIPADDR
@@ -305,6 +316,7 @@ echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/glob
 echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "POWEROFFCMD=\"${POWEROFFCMD}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
