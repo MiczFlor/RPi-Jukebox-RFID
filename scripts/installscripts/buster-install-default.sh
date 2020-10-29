@@ -781,7 +781,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -940,9 +940,8 @@ install_main() {
     if [[ "${GPIOconfig}" == "YES" ]]; then
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
-        if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
-            mkdir -p ~/.config/phoniebox
-            cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+        if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
+            cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
         fi
     fi
 
@@ -1252,6 +1251,9 @@ finish_installation() {
 # Main #
 ########
 main() {
+    # Skip interactive Samba WINS config dialog
+    echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+
     if [[ ${INTERACTIVE} == "true" ]]; then
         welcome
         #reset_install_config_file
@@ -1265,8 +1267,6 @@ main() {
     else
         echo "Non-interactive installation!"
         check_config_file
-        # Skip interactive Samba WINS config dialog
-        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
     fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
