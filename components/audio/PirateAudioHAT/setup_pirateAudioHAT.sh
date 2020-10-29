@@ -40,61 +40,8 @@ fi
 if ! sudo grep -qe "gpio=25=op,dh" /boot/config.txt; then
     echo "gpio=25=op,dh" | sudo tee -a /boot/config.txt > /dev/null
 fi
-if ! sudo grep -qe "dtoverlay=hifiberry-dac" /boot/config.txt; then
-    echo "dtoverlay=hifiberry-dac" | sudo tee -a /boot/config.txt > /dev/null
-fi
 
-printf "Adding settings to /etc/asound.conf...\n"
-# Create backup of /etc/asound.conf if it already exists
-if [[ -f /etc/asound.conf && ! -f /etc/asound.conf.bak ]]; then
-    sudo cp /etc/asound.conf /etc/asound.conf.bak
-fi
-
-# Do not add, but replace content if file already exists
-sudo tee /etc/asound.conf << EOF > /dev/null
-pcm.hifiberry {
-    type            softvol
-    slave.pcm       "plughw:CARD=sndrpihifiberry,DEV=0"
-    control.name    "Master"
-    control.card    1
-}
-pcm.!default {
-    type            plug
-    slave.pcm       "hifiberry"
-}
-ctl.!default {
-    type            hw
-    card            1
-}
-EOF
-
-# Create backup of /etc/mpd.conf if it already exists
-if [[ -f /etc/mpd.conf && ! -f /etc/mpd.conf.bak ]]; then
-    sudo cp /etc/mpd.conf /etc/mpd.conf.bak
-fi
-
-printf "Add hifiberry as audio_output in /etc/mpd.conf...\n"
-# Only add, if it does not exist already
-if ! sudo grep -qe "HiFiBerry DAC+ Lite" /etc/mpd.conf; then
-    sudo sed -i "/# An example of an ALSA output:/ r /dev/stdin" /etc/mpd.conf <<'EOG'
-audio_output {
-        enabled         "yes"
-        type            "alsa"
-        name            "HiFiBerry DAC+ Lite"
-        device          "hifiberry"
-        auto_resample   "no"
-        auto_channels   "no"
-        auto_format     "no"
-        dop             "no"
-}
-EOG
-else
-    printf "/etc/mpd.conf is already configured. Skipping...\n"
-fi
-
-printf "Set mixer_control name in /etc/mpd.conf...\n"
-mixer_control_name="Master"
-sudo sed -i -E "s/^(\s*mixer_control\s*\")[^\"]*(\"\s*# optional)/\1\\${mixer_control_name}\2/" /etc/mpd.conf
+bash "${JUKEBOX_HOME_DIR}/component/audio/Hifiberry/setup_Hifiberry.sh"
 
 printf "Activating SPI...\n"
 sudo raspi-config nonint do_spi 0
@@ -102,11 +49,8 @@ sudo raspi-config nonint do_spi 0
 printf "Installing Python dependencies...\n"
 sudo apt-get -y -qq install python3-pil python3-numpy
 
-printf "Installing Python packages...\n"
-sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
-
 if [ "${EDITION}" == "spotify" ]; then
-    printf "Installing mopidy plugins...\n"
+    printf "Installing Python packages...\n"
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements-mopidy.txt
 
     # Only add, if it does not exist already
@@ -132,9 +76,20 @@ EOH
     printf "Enable access for modipy user...\n"
     sudo usermod -a -G spi,i2c,gpio,video mopidy
 else
-    cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.priate-audio-hat.sample "${jukebox_dir}"/settings/gpio_settings.ini
+    printf "Installing Python packages...\n"
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
 
-    # TODO configure display
+    cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.pirate-audio-hat.sample "${jukebox_dir}"/settings/gpio_settings.ini
+
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-pirateaudio-display.service.sample "/etc/systemd/system/phoniebox-pirateaudio-display.service"
+    sudo chown root:root /etc/systemd/system/phoniebox-pirateaudio-display.service
+    sudo chmod 644 /etc/systemd/system/phoniebox-pirateaudio-display.service
+    # enable the services needed
+    sudo systemctl enable phoniebox-pirateaudio-display
+
+    # restart services
+    sudo systemctl restart phoniebox-gpio-control
+    sudo systemctl restart phoniebox-pirateaudio-display
 fi
 
 printf "You need to reboot to apply the settings.\n"

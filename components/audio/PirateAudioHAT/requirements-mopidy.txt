@@ -1,5 +1,7 @@
-# PirateAudioHAT related requirements
+# PirateAudioHAT related  for spotify edition
 # You need to install these with `sudo python3 -m pip install --upgrade --force-reinstall -q -r requirements-mopidy.txt`
 
 Mopidy-PiDi
 mopidy-raspberry-gpio
+pidi-display-pil
+pidi-display-st7789

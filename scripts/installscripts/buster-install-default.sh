@@ -1201,9 +1201,13 @@ finish_installation() {
             ;;
         *)
             echo  'Please select the sound card you want to use'
-            options=("Pimoroni Pirate Audio" "Manual configuration")
+            options=("Hifiberry" "Pimoroni Pirate Audio" "Manual configuration")
             select opt in "${options[@]}"; do
                 case $opt in
+                    "Hifiberry")
+                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh
+                        break
+                        ;;
                     "Pimoroni Pirate Audio")
                         if [ "$SPOTinstall" == "YES" ]; then
                             bash "${jukebox_dir}"/components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh spotify
