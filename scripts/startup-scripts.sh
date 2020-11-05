@@ -16,7 +16,7 @@ fi
 cat $PATHDATA/../settings/global.conf
 
 echo
-echo ${AUDIOVOLSTARTUP}
+echo "${AUDIOVOLSTARTUP} is the mpd startup volume"
 
 ####################################
 # make playists, files and folders 
@@ -37,7 +37,9 @@ while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 lo
 
 ####################
 # play startup sound
-/usr/bin/mpg123 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+mpgvolume=$((32768*${AUDIOVOLSTARTUP}/100))
+echo "${mpgvolume} is the mpg123 startup volume"
+/usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 #######################
 # re-scan music library

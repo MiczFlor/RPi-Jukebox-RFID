@@ -44,17 +44,6 @@ then
     else
 		if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # # CHANGING: mpc single off" >> $PATHDATA/../logs/debug.log; fi
         mpc single off
-        # only now we might shuffle
-        # SHUFFLE FOLDER
-        if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # SHUFFLE FOLDER: $SHUFFLE" >> $PATHDATA/../logs/debug.log; fi
-        if [ $SHUFFLE == "ON" ]
-        then 
-		    if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # # CHANGING: mpc shuffle" >> $PATHDATA/../logs/debug.log; fi
-            mpc shuffle
-        else
-		    if [ "${DEBUG_inc_settingsFolderSpecific_sh}" == "TRUE" ]; then echo "  # # CHANGING: mpc random off" >> $PATHDATA/../logs/debug.log; fi
-            mpc random off
-        fi
     fi
     
 fi

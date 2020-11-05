@@ -83,7 +83,7 @@
 
                     const title = `<strong>${playerInfo.title}<span id="chapter-current-name"></span></strong>`;
 
-                    var artist = (playerInfo.artist) ? '<br><i>' + playerInfo.artist.replace(';', ' and ') + '</i>' : '';
+                    var artist = (playerInfo.artist) ? '<br><i>' + playerInfo.artist.replace(/;/gi, ' & ') + '</i>' : '';
                     if (!artist && playerInfo.name) {
                         artist = '<br><i>' + playerInfo.name + '</i>';
                     }
