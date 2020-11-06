@@ -148,7 +148,9 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
-print "<pre>"; print_r($globalConf); print "</pre>"; //???
+if ($debug == "true") {
+    print "<pre>Array globalConf"; print_r($globalConf); print "</pre>"; //???
+}
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
