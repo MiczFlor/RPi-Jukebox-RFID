@@ -148,11 +148,12 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
-//print "<pre>"; print_r($globalConf); print "</pre>"; //???
+print "<pre>"; print_r($globalConf); print "</pre>"; //???
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
 $Playlists_Folders_Path = $globalConf['PLAYLISTSFOLDERPATH'];
+$Swipe_or_Place = $globalConf['SWIPEORPLACE'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
 $Second_Swipe_Pause = $globalConf['SECONDSWIPEPAUSE'];
 $Second_Swipe_Pause_Controls = $globalConf['SECONDSWIPEPAUSECONTROLS'];
