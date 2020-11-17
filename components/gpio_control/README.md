@@ -16,12 +16,12 @@ Each device can have actions which correspond to function calls.
 Up to now the following input devices are implemented:
 * **Button**: 
    A simple button which has a hold and repeat functionality as well as a delayed action. 
-   It can be configured using the keywords: Pin, hold_time, functionCall
+   It can be configured using the keywords: Pin (**use GPIO number here**), hold_time, functionCall
 
 * **RotaryEncoder**:
     Control of a rotary encoder, for example KY040, see also in 
     [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume)
-    it can be configured using pinA, pinB, functionCallIncr, functionCallDecr, timeBase=0.1
+    it can be configured using pinA (**use GPIO number here**), pinB (**use GPIO number here**), functionCallIncr, functionCallDecr, timeBase=0.1
 
 * **TwoButtonControl**:
     This Device uses two Buttons and implements a third action if both buttons are pressed together.
