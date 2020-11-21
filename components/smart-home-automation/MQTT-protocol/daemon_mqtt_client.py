@@ -114,7 +114,7 @@ def processCmd(command, parameter):
     elif command == "gpio":
         parameter = parameter.lower()
         if parameter == "start" or parameter == "stop":
-            subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-buttons.service"], shell=True)
+            subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-control.service"], shell=True)
         else:
             print(" --> Expecting parameter start or stop")
 
@@ -331,7 +331,7 @@ def fetchData():
 
     # fetch service states
     result["rfid"] = isServiceRunning("phoniebox-rfid-reader.service")
-    result["gpio"] = isServiceRunning("phoniebox-gpio-buttons.service")
+    result["gpio"] = isServiceRunning("phoniebox-gpio-control.service")
 
     # fetch linux jobs
     result["remaining_stopafter"] = str(linux_job_remaining("s"))
