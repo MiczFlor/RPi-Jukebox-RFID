@@ -82,11 +82,6 @@ last_state = "not_running"
 track_time = " "
 current_time = time.time()
 last_time = time.time()
-playlist = 0
-last_playlist = 0
-track_counter = 1
-list_tracks = [" "]
-first_track = True
 if n_cols > 16:  # select date_string dependent on how many columns the display has (usually either 16 or 20 rows)
     date_string = "%d.%m.%Y %H:%M"
 else:
@@ -308,9 +303,6 @@ try:
 
         ########### GET INFOS, IF STATE IS "STOP" #######################################
         elif state == "stop":                                                           #
-            track_counter = 0 
-            list_tracks = [" "]
-            first_track = True  
             for row in range(n_rows):                                               #
                 lines[row] = choose_line(info_at_lines_stop[row])              #
         #################################################################################
@@ -321,7 +313,7 @@ try:
             #                                                                                 #
             ## read in track number                                                           #
             try:                                                                              #
-                track_number = str(track_counter)                                #
+                track_number = str(int(status['song'])+1)                                #
             except KeyError:                                                                  #
                 track_number = "1"                                                        #
             ## read in playlistlength                                                         #
@@ -415,33 +407,9 @@ try:
             i_counter = 1000  # <-- not 0, cause the display could be off                 #
         ######################################################################################
         
-        ########################### UPDATE TRACK COUNTER #####################################
-        if first_track:
-            list_tracks.append(title)
-            first_track = False
-
-        if last_playlist == playlist:
-            # Music change within a playlist
-            if (last_title != title) and (title not in list_tracks):
-                list_tracks.append(title)
-                track_counter += 1
-            elif (last_title != title) and (title in list_tracks):
-                list_tracks = list_tracks[:-1]
-                track_counter -= 1
-                if track_counter < 1:
-                    track_counter = 1
-        else: 
-            # New Playlist, reset values
-            track_counter = 1
-            list_tracks = [" "]
-            first_track = True
-        #####################################################################################
-
-        
         ####################### REMIND STUFF FOR NEXT CYCLE #################################
         last_state = state                                                                     #
         last_title = title                                                                     #
-        last_playlist = playlist
         for row in range(n_rows):                                                            #
             last_lines[row] = lines[row]                                                   #
         ######################################################################################
