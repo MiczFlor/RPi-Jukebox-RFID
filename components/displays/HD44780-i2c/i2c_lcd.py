@@ -313,7 +313,7 @@ try:
             #                                                                                 #
             ## read in track number                                                           #
             try:                                                                              #
-                track_number = current_song_infos['track']                                #
+                track_number = str(int(status['song'])+1)                                #
             except KeyError:                                                                  #
                 track_number = "1"                                                        #
             ## read in playlistlength                                                         #
@@ -406,7 +406,7 @@ try:
         if i_counter >= 65000:                                                               #
             i_counter = 1000  # <-- not 0, cause the display could be off                 #
         ######################################################################################
-
+        
         ####################### REMIND STUFF FOR NEXT CYCLE #################################
         last_state = state                                                                     #
         last_title = title                                                                     #
