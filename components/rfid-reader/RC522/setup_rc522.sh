@@ -19,6 +19,9 @@ question "Continue"
 printf "Installing Python requirements for RC522...\n"
 sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/RC522/requirements.txt
 
+printf "Activating SPI...\n"
+sudo raspi-config nonint do_spi 0
+
 printf "Configure RFID reader in Phoniebox...\n"
 cp "${JUKEBOX_HOME_DIR}"/scripts/Reader.py.experimental "${JUKEBOX_HOME_DIR}"/scripts/Reader.py
 printf "MFRC522" > "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
