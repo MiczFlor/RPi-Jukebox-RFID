@@ -14,32 +14,32 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.1.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/5?closed=1) released (2020-10-14)**
+* **Phoniebox [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) released (2020-xx-xx)**
 
-The [2.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/3?closed=1) release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.1.1?
+## What's new in version 2.2?
 
-* Use [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
-* Improved [GPIO control](components/gpio_control/README.md) and integrated in **one-line install script**
-* Integrated selection of RFID readers in **one-line install script**
-* Improved handling of playlists in web UI
-* Improved Spotify handling of albums covers, etc.
-* Seeking via GPIO buttons
+* :fire: **Fixed location of gpio_settings.ini** for [GPIO control](components/gpio_control/README.md)
+* Added support for files with embedded chapters metada (like m4a) enhancement
+* Added customizable poweroff command bash enhancement
+* Finally fixed resume function...
 * Lots of fixed bugs and minor improvements...
+    * Status LED, Rotary Button, Volume Up/Down, custom music directory for +Spotify, Startup sound volume
 
 **What's still hot?**
-
+* The constantly improved **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command)
+    * integrated improved [GPIO control](components/gpio_control/README.md)
+    * integrated selection of RFID readers and uses [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
+    * features *non-interactive* installs based on a config file
 * **[WiFi management](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#wifi-settings)**
     * RFID cards to **toggle Wifi** (or switch it on/off)
     * Read out the Wifi IP address (if you are connecting to a new network and don't know where to point your browser)
     * **Hotspot** Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
 * **Touchscreen** LCD display Player (file: `index-lcd.php`in web app)
-* Improved **one-line install script** featuring *non-interactive* installs based on a config file
 * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Smart-Home-remote-control-with-MQTT).
 * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
 * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
-* The **one-line install script** handles both: **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
 * Control the debug logs in the web app (individual scripts switched on/off, empty log file).
 * Set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards.
 * Control via [**wifi web app**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) from your phone, tablet or PC. You can play, upload, move files, assign new RFID cards, control playout, settings, etc.
