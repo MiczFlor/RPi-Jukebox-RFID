@@ -357,14 +357,14 @@ check_existing() {
                                 EXISTINGuseGpio=NO
                                 ;;
                             *)
-                                EXISTINGuseGpio=YES 
+                                EXISTINGuseGpio=YES
                                 ;;
                         esac
                 else
                     echo ""
                     echo "Warning!
 The configuration of GPIO-Devices has changed in the new version
-and needs to be reconfigured. For further info check out the wiki: 
+and needs to be reconfigured. For further info check out the wiki:
 https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     read -rp "Hit ENTER to proceed to the next step." INPUT
                     config_gpio
@@ -586,11 +586,11 @@ config_gpio() {
 #
 # ACTIVATE GPIO-Control
 #
-# Activation of the GPIO-Control-Service, which mangages Buttons 
-# or a Rotary Encoder for Volume and/or Track control. 
+# Activation of the GPIO-Control-Service, which mangages Buttons
+# or a Rotary Encoder for Volume and/or Track control.
 # To configure the controls please consult the wiki:
 # https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons
-# It's also possible to activate the service later (see wiki). 
+# It's also possible to activate the service later (see wiki).
 "
     read -rp "Do you want to activate the GPIO-Control-Service? [Y/n] " response
     case "$response" in
@@ -781,7 +781,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -830,7 +830,7 @@ install_main() {
     # Install more required packages
     echo "Installing additional Python packages..."
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
-    
+
     samba_config
 
     web_server_config
@@ -926,22 +926,25 @@ install_main() {
         sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
         sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
         sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
     fi
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
-        if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
-            mkdir -p ~/.config/phoniebox
-            cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+        if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
+            cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
         fi
     fi
-    
+
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
 
@@ -1214,6 +1217,9 @@ finish_installation() {
 # Main #
 ########
 main() {
+    # Skip interactive Samba WINS config dialog
+    echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+
     if [[ ${INTERACTIVE} == "true" ]]; then
         welcome
         #reset_install_config_file
@@ -1227,8 +1233,6 @@ main() {
     else
         echo "Non-interactive installation!"
         check_config_file
-        # Skip interactive Samba WINS config dialog
-        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
     fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"

@@ -19,6 +19,9 @@
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
+GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 
@@ -125,10 +128,11 @@ reset_install_config_file() {
     # from such a config file with no user input.
 
     # Remove existing config file
-    rm "${HOME_DIR}/PhonieboxInstall.conf"
+    #rm "${HOME_DIR}/PhonieboxInstall.conf"
     # Create empty config file
-    touch "${HOME_DIR}/PhonieboxInstall.conf"
-    echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
+    #touch "${HOME_DIR}/PhonieboxInstall.conf"
+    #echo "# Phoniebox config" > "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "# Phoniebox config"
 }
 
 config_wifi() {
@@ -202,6 +206,7 @@ read -rp "Hit ENTER to proceed to the next step." INPUT
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
+    local home_dir="$3"
 
     #####################################################
     # Check for existing Phoniebox
@@ -228,12 +233,46 @@ check_existing() {
             #echo "The version of your installation is: $(cat ${jukebox_dir}/settings/version)"
 
             # get the current short commit hash of the repo
-            CURRENT_REMOTE_COMMIT="$(git ls-remote https://github.com/MiczFlor/RPi-Jukebox-RFID.git ${GIT_BRANCH} | cut -c1-7)"
+            CURRENT_REMOTE_COMMIT="$(git ls-remote ${GIT_URL} ${GIT_BRANCH} | cut -c1-7)"
         fi
-        echo "IMPORTANT: you can use the existing content and configuration files for your new install."
+        echo "IMPORTANT: you can use the existing content and configuration"
+        echo "files for your new install."
         echo "Whatever you chose to keep will be moved to the new install."
         echo "Everything else will remain in a folder called 'BACKUP'.
         "
+
+                ###
+        # See if we find the PhonieboxInstall.conf file
+        # We need to do this first, because if we re-use the .conf file, we need to append
+        # the variables regarding the found content to the also found configuration file.
+        # That way, reading the configuration file for the (potentially) non-interactive
+        # install procedure will:
+        # a) overwrite whatever variables regarding re-cycling existing content which might
+        #    be stored in the config file
+        # b) if there are no variables for dealing with re-cycled context, we will append
+        #    them - to have them for this install
+        if [ -f "${jukebox_dir}"/settings/PhonieboxInstall.conf ]; then
+            # ask for re-using the found configuration file
+            echo "The configuration of your last Phoniebox install was found."
+            read -rp "Use existing configuration for this installation? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                    EXISTINGusePhonieboxInstall=NO
+                    ;;
+                *)
+                    EXISTINGusePhonieboxInstall=YES
+                    # Copy PhonieboxInstall.conf configuration file to settings folder
+                    sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${home_dir}"/PhonieboxInstall.conf
+                    sudo chown pi:www-data "${home_dir}"/PhonieboxInstall.conf
+                    sudo chmod 775 "${home_dir}"/PhonieboxInstall.conf
+                    echo "The existing configuration will be used."
+                    echo "Just a few more questions to answer."
+                    read -rp "Hit ENTER to proceed to the next step." INPUT
+                    clear
+                    ;;
+            esac
+        fi
+
         # Delete or use existing installation?
         read -rp "Re-use config, audio and RFID codes for the new install? [Y/n] " response
         case "$response" in
@@ -299,18 +338,6 @@ check_existing() {
                 # append variables to config file
                 echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
-                read -rp "GPIO: use existing file? [Y/n] " response
-                case "$response" in
-                    [nN][oO]|[nN])
-                        EXISTINGuseGpio=NO
-                        ;;
-                    *)
-                        EXISTINGuseGpio=YES
-                        ;;
-                esac
-                # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
-
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
                     [nN][oO]|[nN])
@@ -323,6 +350,28 @@ check_existing() {
                 # append variables to config file
                 echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
+                if [ "$(printf '%s\n' "2.1" "$(cat ~/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
+                    read -rp "GPIO: use existing file? [Y/n] " response
+                        case "$response" in
+                            [nN][oO]|[nN])
+                                EXISTINGuseGpio=NO
+                                ;;
+                            *)
+                                EXISTINGuseGpio=YES
+                                ;;
+                        esac
+                else
+                    echo ""
+                    echo "Warning!
+The configuration of GPIO-Devices has changed in the new version
+and needs to be reconfigured. For further info check out the wiki:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
+                    read -rp "Hit ENTER to proceed to the next step." INPUT
+                    config_gpio
+                fi
+                # append variables to config file
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
+
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
                 read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -331,6 +380,25 @@ check_existing() {
     fi
     # append variables to config file
     echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
+
+    # Check if we found a Phoniebox install configuration earlier and ask if to run this now
+    if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
+        clear
+        echo "Using the existing configuration, you can run a non-interactive install."
+        echo "This will re-cycle found content (specified just now) as well as the"
+        echo "system information from last time (wifi, audio interface, spotify, etc.)."
+        read -rp "Do you want to run a non-interactive installation? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                cd "${home_dir}"
+                clear
+                ./buster-install-default.sh -a
+                exit
+                ;;
+        esac
+    fi
 }
 
 config_audio_interface() {
@@ -508,6 +576,39 @@ check_variable() {
   test "${!variable}" == "" && echo "ERROR: \$${variable} is empty!" && fail=true
 }
 
+config_gpio() {
+    #####################################################
+    # Configure GPIO
+
+    clear
+
+    echo "#####################################################
+#
+# ACTIVATE GPIO-Control
+#
+# Activation of the GPIO-Control-Service, which mangages Buttons
+# or a Rotary Encoder for Volume and/or Track control.
+# To configure the controls please consult the wiki:
+# https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons
+# It's also possible to activate the service later (see wiki).
+"
+    read -rp "Do you want to activate the GPIO-Control-Service? [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+            GPIOconfig=NO
+            echo "You don't want to activate GPIO-Controls now."
+            ;;
+        *)
+            GPIOconfig=YES
+            echo "GPIO-Control-Service will be activated and set to default values."
+            ;;
+    esac
+    # append variables to config file
+    echo "GPIOconfig=\"$GPIOconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo ""
+    read -rp "Hit ENTER to proceed to the next step." INPUT
+}
+
 check_config_file() {
     local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
     echo "Checking PhonieboxInstall.conf..."
@@ -551,6 +652,7 @@ check_config_file() {
     fi
     check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
+    check_variable "GPIOconfig"
 
     if [ "${fail}" == "true" ]; then
       exit 1
@@ -692,7 +794,7 @@ install_main() {
 
     # Get github code
     cd "${HOME_DIR}" || exit
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git --branch "${GIT_BRANCH}"
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # VERSION of installation
 
@@ -789,10 +891,14 @@ install_main() {
     sudo systemctl disable rfid-reader
     sudo systemctl disable phoniebox-startup-sound
     sudo systemctl disable gpio-buttons
+    sudo systemctl disable phoniebox-rotary-encoder
+    sudo systemctl disable phoniebox-gpio-buttons.service
     sudo rm "${systemd_dir}"/rfid-reader.service
     sudo rm "${systemd_dir}"/startup-sound.service
     sudo rm "${systemd_dir}"/gpio-buttons.service
     sudo rm "${systemd_dir}"/idle-watchdog.service
+    sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
+    sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
@@ -801,7 +907,7 @@ install_main() {
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample "${systemd_dir}"/phoniebox-rotary-encoder.service
+    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -836,14 +942,29 @@ install_main() {
         sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
         sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
         sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
+    fi
+
+    # GPIO-Control
+    if [[ "${GPIOconfig}" == "YES" ]]; then
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+        sudo systemctl enable phoniebox-gpio-control.service
+        if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
+            mkdir -p ~/.config/phoniebox
+            cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+        fi
     fi
 
     if [ "${MPDconfig}" == "YES" ]; then
         local mpd_conf="/etc/mpd.conf"
+
         echo "Configuring MPD..."
         # MPD configuration
         # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
@@ -960,7 +1081,7 @@ existing_assets() {
         # GPIO: use existing file
         if [ "${EXISTINGuseGpio}" == "YES" ]; then
             # copy from backup to new install
-            cp "${backup_dir}"/scripts/gpio-buttons.py "${jukebox_dir}"/scripts/gpio-buttons.py
+            cp "${backup_dir}"/settings/gpio_settings.ini "${jukebox_dir}"/settings/gpio_settings.ini
         fi
 
         # Sound effects: use existing startup / shutdown sounds
@@ -1156,19 +1277,47 @@ finish_installation() {
     #####################################################
     # Register external device(s)
 
-    echo "If you are using an USB RFID reader, connect it to your RPi."
+    echo "If you are using an RFID reader, connect it to your RPi."
     echo "(In case your RFID reader required soldering, consult the manual.)"
     # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your USB Reader? [Y/n] " response
+    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             ;;
         *)
-            cd "${jukebox_dir}"/scripts/ || exit
-            python3 RegisterDevice.py
-            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-            ;;
+            echo  'Please select the RFID reader you want to use'
+            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
+            select opt in "${options[@]}"; do
+                case $opt in
+                    "USB-Reader (e.g. Neuftech)")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        python3 RegisterDevice.py
+                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                        break
+                        ;;
+                    "RC522")
+                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                        break
+                        ;;
+                    "PN532")
+                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                        break
+                        ;;
+                    "Manual configuration")
+                        echo "Please configure your reader manually."
+                        break
+                        ;;
+                    "Multiple RFID reader")
+                        cd "${jukebox_dir}"/scripts/ || exit
+                        sudo python3 RegisterDevice.py.Multi
+                        break
+                        ;;
+                    *)
+                        echo "This is not a number"
+                        ;;
+                esac
+            done
     esac
 
     echo
@@ -1198,13 +1347,14 @@ finish_installation() {
 main() {
     if [[ ${INTERACTIVE} == "true" ]]; then
         welcome
-        reset_install_config_file
+        #reset_install_config_file
         config_wifi
-        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
+        check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}" "${HOME_DIR}"
         config_audio_interface
         config_spotify
         config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
+        config_gpio
     else
         echo "Non-interactive installation!"
         check_config_file
@@ -1212,10 +1362,16 @@ main() {
         echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
     fi
     install_main "${JUKEBOX_HOME_DIR}"
-    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_suppli1cant/wpa_supplicant.conf"
+    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
     autohotspot "${JUKEBOX_HOME_DIR}"
+
+    # Copy PhonieboxInstall.conf configuration file to settings folder
+    sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
+    sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+    sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+
     if [[ ${INTERACTIVE} == "true" ]]; then
         finish_installation "${JUKEBOX_HOME_DIR}"
     else

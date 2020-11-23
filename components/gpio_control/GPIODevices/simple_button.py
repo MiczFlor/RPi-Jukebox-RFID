@@ -74,6 +74,11 @@ class SimpleButton:
                               bouncetime=self.bouncetime)
 
     def callbackFunctionHandler(self, *args):
+        if (len(args) > 0 and args[0] == self.pin):
+            logger.debug('args before: {}'.format(args))
+            args = args[1:]
+            logger.debug('args after: {}'.format(args))
+
         if self.hold_repeat:
             return self.holdAndRepeatHandler(*args)
         logger.info('{}: executre callback'.format(self.name))

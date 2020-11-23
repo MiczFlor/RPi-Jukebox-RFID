@@ -21,6 +21,17 @@ print '<a id="pause" onclick="pause();" class="btn btn-player-xl" title="' . $la
         title='<?php print $lang['playerSeekAhead']; ?>'><i
         class="mdi mdi-24px mdi-flip-h mdi-replay"></i></a>
 
+
+    <div id="chaptersWrapper" style="display:none;">
+        <a onclick="previousChapter()" class='btn btn-player-l'
+           title='<?php print $lang['playerSkipPrev']; ?>'><i
+                class="mdi mdi-48px mdi-rewind"></i></a>
+        <select onchange="onChangeChapter();" name="chapters-select" id="chapters-select" class="selectpicker form-control" initialized="false" style="width:30vw;max-width:200px;display:inline;text-align-last:center;"></select>
+        <a onclick="nextChapter()" class='btn btn-player-l'
+           title='<?php print $lang['playerSkipNext']; ?>'><i
+                class="mdi mdi-48px mdi-fast-forward"></i></a>
+    </div>
+
 </div>
 <!-- ./playerWrapper -->
 <div class="playerWrapperSub">

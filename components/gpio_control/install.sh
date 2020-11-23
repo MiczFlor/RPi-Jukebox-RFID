@@ -5,8 +5,8 @@ if [[ $(id -u) != 0 ]]; then
    exit 1
 fi
 
-if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
-    mkdir -p ~/.config/phoniebox && cp /example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+if [[ ! -f /home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini ]]; then
+    cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio_settings.ini.sample /home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini
 fi
 
 echo 'disable old services: phoniebox-gpio-buttons and phoniebox-rotary-encoder'

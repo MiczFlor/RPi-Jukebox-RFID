@@ -32,6 +32,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setvolumetostartup
 # volumeup
 # volumedown
+# getchapters
 # getvolume
 # getmaxvolume
 # setvolstep
@@ -40,6 +41,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # playerstopafter
 # playernext
 # playerprev
+# playernextchapter
+# playerprevchapter
 # playerpause
 # playerpauseforce
 # playerplay
@@ -101,6 +104,90 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
 
+
+ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
+ENABLE_CHAPTERS_MIN_DURATION="600"
+
+function dbg {
+  if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+    echo "$1" >> ${PATHDATA}/../logs/debug.log;
+  fi
+}
+
+function sec_to_ms() {
+  SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
+  MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
+  MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
+
+  if [[ "" == "$SECONDSPART" ]]; then
+    SECONDSPART="0"
+  fi
+
+  if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
+    MILLISECONDSPART_NORMALIZED="0"
+  fi
+  echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
+}
+
+AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
+
+CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
+CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
+CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
+dbg "current file: $CURRENT_SONG_FILE_ABS"
+
+CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
+CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
+CURRENT_SONG_FILE_EXT="${CURRENT_SONG_BASENAME##*.}"
+CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
+
+CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
+dbg "chapters file: $CHAPTERS_FILE"
+
+if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
+  CHAPTER_SUPPORT_FOR_EXTENSION="1"
+else
+  CHAPTER_SUPPORT_FOR_EXTENSION="0"
+fi
+dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
+
+
+if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
+  CHAPTER_SUPPORT_FOR_DURATION="1"
+else
+  CHAPTER_SUPPORT_FOR_DURATION="0"
+fi
+dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
+
+if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
+  if ! [ -f "${CHAPTERS_FILE}" ]; then
+    CHAPTERS_COUNT="0"
+    dbg "chaptes file does not exist - export triggered"
+    ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
+  else
+    CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
+    dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
+  fi
+
+
+  CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
+  ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
+
+  # elapsed and chapter start exactly match -> skip one line
+  if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
+    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+    CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
+  else
+    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
+    CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+  fi
+
+  NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
+fi
+
+# SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+
 case $COMMAND in
     shutdown)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -126,7 +213,7 @@ case $COMMAND in
         sleep 1
         /usr/bin/mpg123 ${PATHDATA}/../shared/shutdownsound.mp3
         sleep 3
-        sudo poweroff
+        ${POWEROFFCMD}
         ;;
     shutdownsilent)
         # doesn't play a shutdown sound
@@ -150,7 +237,7 @@ case $COMMAND in
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
         if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
-        sudo poweroff
+        ${POWEROFFCMD}
         ;;
     shutdownafter)
         # remove shutdown times if existent
@@ -197,7 +284,7 @@ case $COMMAND in
             if [ "${VOLUMEMANAGER}" == "amixer" ]; then
                 # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
                 amixer sset \'$AUDIOIFACENAME\' 0%
-            else 
+            else
                 # manage volume with mpd
                 echo -e setvol 0\\nclose | nc -w 1 localhost 6600
             fi
@@ -379,6 +466,9 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         ;;
+    getchapters)
+        if [ -f "${CHAPTERS_FILE}" ]; then cat "${CHAPTERS_FILE}"; fi
+        ;;
     getvolume)
         # read volume in percent
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "#  ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -504,7 +594,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        
+
         mpc next
         ;;
     playerprev)
@@ -521,6 +611,31 @@ case $COMMAND in
         fi
 
         mpc prev
+        ;;
+    playerprevchapter)
+        CURRENT_SONG_ELAPSED_MS=$(sec_to_ms "$CURRENT_SONG_ELAPSED")
+        CURRENT_CHAPTER_START_MS=$(sec_to_ms "$CURRENT_CHAPTER_START")
+        CHAPTER_DIFF_ELAPSED_CURRENT_MS=$(($CURRENT_SONG_ELAPSED_MS-$CURRENT_CHAPTER_START_MS))
+
+        # if elapsed - current > 5.000 => seek current chapter
+        # if elapsed - current <= 5.000 => seek prev chapter
+        # if prev === 0.000 && elapsed < 5.000 => prev track? (don't do that)
+        if [ "$CHAPTER_DIFF_ELAPSED_CURRENT_MS" -gt 5000 ]; then
+          dbg "chapter is already running for longer, seek to current chapter: $SEEK_POS"
+          echo -e "seekcur $CURRENT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        else
+          dbg "chapter just started, seek to prev chapter $PREV_CHAPTER_START"
+          echo -e "seekcur $PREV_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        fi
+        ;;
+    playernextchapter)
+        # if next === elapsed => next track
+        if ! [ "$NEXT_CHAPTER_START" == "$CURRENT_SONG_ELAPSED" ]; then
+          dbg "next chapter $NEXT_CHAPTER_START"
+          echo -e "seekcur $NEXT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
+        else
+          dbg "next chapter not available, last chapter already playing"
+        fi
         ;;
     playerrewind)
         # play the first track in playlist (==folder)
@@ -638,12 +753,19 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        # Seek negative value doesn't work in mpd anymore.
-        # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
-        # if there are issues, please comment in that thread
-        CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
-        NEW_POS=$(($CUR_POS + $VALUE))
-        echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
+
+        # if value does not start with + or - (relative seek), perform an absolute seek
+        if [[ $VALUE =~ ^[0-9] ]]; then
+          # seek absolute position
+          echo -e "seekcur $VALUE\nclose" | nc -w 1 localhost 6600
+        else
+          # Seek negative value doesn't work in mpd anymore.
+          # solution taken from: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1031
+          # if there are issues, please comment in that thread
+          CUR_POS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*' | awk '{print int($1)}')
+          NEW_POS=$(($CUR_POS + $VALUE))
+          echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
+        fi
         ;;
     playerreplay)
         # start the playing track from beginning
@@ -731,7 +853,7 @@ case $COMMAND in
         # Now load and play
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
-        
+
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
@@ -767,7 +889,7 @@ case $COMMAND in
             rm -f $VOLFILE
         fi
         mpc play
-        ;;    
+        ;;
      playlistreset)
         if [ -e $PATHDATA/../shared/audiofolders/$FOLDERPATH/lastplayed.dat ]
         then

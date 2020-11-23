@@ -24,7 +24,7 @@
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -33,7 +33,7 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . $PATHDATA/../settings/debugLogging.conf
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "${DEBUG_inc_writeGlobalConfig_sh}" == "TRUE" ]; then echo "########### SCRIPT inc.writeGlobalConf.sh ($NOW) ##" >> $PATHDATA/../logs/debug.log; fi
@@ -178,6 +178,16 @@ fi
 IDLETIMESHUTDOWN=`cat $PATHDATA/../settings/Idle_Time_Before_Shutdown`
 
 ##############################################
+# Poweroff_Command
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Poweroff_Command ]; then
+    echo "sudo poweroff" > $PATHDATA/../settings/Poweroff_Command
+    chmod 777 $PATHDATA/../settings/Poweroff_Command
+fi
+# 2. then|or read value from file
+POWEROFFCMD=`cat $PATHDATA/../settings/Poweroff_Command`
+
+##############################################
 # ShowCover
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/ShowCover ]; then
@@ -274,6 +284,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # AUDIOVOLSTARTUP
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
+# POWEROFFCMD
 # SHOWCOVER
 # MAILWLANIPYN
 # MAILWLANIPADDR
@@ -305,6 +316,7 @@ echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/glob
 echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "POWEROFFCMD=\"${POWEROFFCMD}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SHOWCOVER=\"${SHOWCOVER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
