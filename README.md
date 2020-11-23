@@ -36,7 +36,7 @@ The [2.1](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/3?closed=1) rel
     * **Hotspot** Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
 * **Touchscreen** LCD display Player (file: `index-lcd.php`in web app)
 * Improved **one-line install script** featuring *non-interactive* installs based on a config file
-* Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/581).
+* Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Smart-Home-remote-control-with-MQTT).
 * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
 * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
 * The **one-line install script** handles both: **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command).
