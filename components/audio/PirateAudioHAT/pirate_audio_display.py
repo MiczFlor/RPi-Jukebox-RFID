@@ -3,6 +3,7 @@
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+from mpd import MPDClient
 import time
 
 import ST7789
