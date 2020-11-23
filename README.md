@@ -233,6 +233,7 @@ Here is a list of equipment needed. You can find a lot second hand online (save 
 
 ### Arcade Buttons
 
+* [USB Interface for Arcade buttons](https://amzn.to/3nRAtIS) if you insist on not soldering hardware. (23rd Nov 2020: GPIO control script not yet part of the repo)
 * Arcade Buttons / Sensors (one of these might suit you)
     * [Arcade Buttons / Schalter in various colours](https://amzn.to/2QMxe9r) if you want buttons for the GPIO control.
     * [Arcade Buttons wit LED and custom icons](https://amzn.to/2MWQ6hq) as used by [@splitti](https://splittscheid.de/selfmade-phoniebox/#3C).
