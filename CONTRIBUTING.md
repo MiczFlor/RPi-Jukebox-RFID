@@ -130,8 +130,8 @@ The original contributor will be notified of the revert.
   be resolved within one business day.
 
 ## Guidelines ##
-* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**. Some existing code may still be Python 2, but new code has to be compatible with Python 3.5 and old code that is changed should then be ported to Python 3.5.
-* For GPIO all code should work with RPi.GPIO. gpiozero is currently not intended to use.
+* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**.
+* For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
 ## Additional Resources
 
