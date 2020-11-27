@@ -335,7 +335,7 @@ try:
                 album = ""                                                                #
             ## read in artist info                                                            #
             try:                                                                              #
-                if playlist_length == 1
+                if playlist_length == "1":
                     artist = current_song_info['name'] # Webradio
                 else:
                     artist = current_song_infos['artist']                                     #
