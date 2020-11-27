@@ -11,9 +11,11 @@ GPIO.setmode(GPIO.BCM)
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCallBothPressed=None):
     def functionCallTwoButtons(*args):
+        btn1_pin=btn1.pin
+        btn2_pin=btn2.pin
         btn1_pressed = btn1.is_pressed
         btn2_pressed = btn2.is_pressed
-        logger.info('Btn1 {}, Btn2 {}'.format(btn1_pressed,btn2_pressed))
+        logger.info('Btn1 {}, Btn2 {}-args:{}'.format(btn1_pressed,btn2_pressed,args))
         if btn1_pressed and btn2_pressed:
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:
@@ -29,8 +31,16 @@ def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCal
             logger.debug("Btn2 is pressed, action: functionCall2")
             logger.info('functionCall2')
             return functionCall2(*args)
-        else:
-            logger.debug("No Button Pressed: no action")
+        elif args[0] == btn1_pin:
+            logger.debug("No Button recognized, called by {}-pin1:functionCall1".format(args))
+            logger.info('functionCall1')
+            return functionCall1(*args)
+        elif args[0] == btn2_pin:
+            logger.debug("No Button recognized, called by {}-pin2:functionCall2".format(args))
+            logger.info('functionCall2')
+            return functionCall2(*args)
+
+
             return None
 
     return functionCallTwoButtons
