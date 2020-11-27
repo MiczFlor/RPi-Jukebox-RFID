@@ -335,10 +335,13 @@ try:
                 album = ""                                                                #
             ## read in artist info                                                            #
             try:                                                                              #
-                artist = current_song_infos['artist']                                     #
-                artist = artist.replace("\n", "").replace("ä", "\341").replace("ö", "\357").replace("ü", "\365").replace("ß", "\342").replace("Ä", "\341").replace("Ö", "\357").replace("Ü", "\365")  # weitere codes siehe https://www.mikrocontroller.net/topic/293125                         #
+                if playlist_length == "1"
+                    artist = current_song_info['name'] # Webradio
+                else:
+                    artist = current_song_infos['artist']                                     #
+                    artist = artist.replace("\n", "").replace("ä", "\341").replace("ö", "\357").replace("ü", "\365").replace("ß", "\342").replace("Ä", "\341").replace("Ö", "\357").replace("Ü", "\365")  # weitere codes siehe https://www.mikrocontroller.net/topic/293125                         #
             except KeyError:                                                                  #
-                artist = ""                                                               #
+                artist = ""                                                               # 
             if (client.mpd_version) >= "0.20":
                 try:                                                                              #
                     elapsed = status['elapsed'].split(".")[0]                                   #
