@@ -318,6 +318,13 @@ if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VA
 # - and points to existing directory (-d "${AUDIOFOLDERSPATH}/${FOLDER}")
 if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
+    # Look for file "random" to determine a random subfolder to be played
+    if [ -f "${AUDIOFOLDERSPATH}/${FOLDER}/random" ]
+    then
+        RND_FOLDER=`find "${AUDIOFOLDERSPATH}/${FOLDER}/" -type d | shuf -n 1`
+        FOLDER=${RND_FOLDER#"$AUDIOFOLDERSPATH/"}
+    fi
+
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
