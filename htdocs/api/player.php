@@ -53,9 +53,7 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-    global $globalConf;
-    //$statusCommand = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";    
-    //$commandResponseList = execSuccessfully($statusCommand);
+    global $globalConf;    
     $statusCommand = "status\ncurrentsong\nclose";
     $commandResponseList = execMPDCommand($statusCommand);
     $responseList = array();
