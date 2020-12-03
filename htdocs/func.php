@@ -398,7 +398,21 @@ function index_folders_print($item, $key)
     * settings buttons
     */
     // we show the buttons only if there are actual audio files in the folder
-    if($contentTree[$key]['count_audioFiles'] == 0) {
+    if($contentTree[$key]['count_subdirs'] > 0) {
+        // FOLDER SHUFFLE BUTTON
+        $foundFolderShuffle = "OFF";
+        if(
+            file_exists($contentTree[$key]['path_abs']."/folder.conf")
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'FOLDERSHUFFLE="ON"') !== false
+        ) {
+            $foundFolderShuffle = "ON";
+        }
+        if( $foundFolderShuffle == "OFF" ) {
+            // do stuff
+            print "<a playlist=\"$playlist\" foldershuffle='false' onclick='toggleFolderShuffle(this);' class='btn btn-warning '>".$lang['globalFolderShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundFolderShuffle == "ON") {
+            print "<a playlist=\"$playlist\" foldershuffle='true' onclick='toggleFolderShuffle(this);'  class='btn btn-success '>".$lang['globalFolderShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
     } else {
         print "\n                <div><!-- settings buttons -->";
         // RESUME BUTTON

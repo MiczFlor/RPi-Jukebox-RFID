@@ -318,13 +318,6 @@ if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VA
 # - and points to existing directory (-d "${AUDIOFOLDERSPATH}/${FOLDER}")
 if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
-    # Look for file "random" to determine a random subfolder to be played
-    if [ -f "${AUDIOFOLDERSPATH}/${FOLDER}/random" ]
-    then
-        RND_FOLDER=`find "${AUDIOFOLDERSPATH}/${FOLDER}/" -type d | shuf -n 1`
-        FOLDER=${RND_FOLDER#"$AUDIOFOLDERSPATH/"}
-    fi
-
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
     # if we play a folder the first time, add some sensible information to the folder.conf
@@ -337,13 +330,44 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
     fi
 
+    ID="$FOLDER"
+    # Read the current config file (include will execute == read)
+    . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
+
+    # Look for file "random" to determine a random subfolder to be played
+    if [ $FOLDERSHUFFLE == "ON" ]
+    then
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be shuffled: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+
+        # search all subfolders and choose a shuffled one
+        RND_FOLDER=`find "${AUDIOFOLDERSPATH}/${FOLDER}/" -type d | shuf -n 1`
+        
+        # substract AUDIOFOLDERSPATH from the found subfolder to match the expected format
+        # being sloppy on check for audiofiles...
+        FOLDER=${RND_FOLDER#"$AUDIOFOLDERSPATH/"}
+
+        # check new folder again for folder.conf
+        # if we play a folder the first time, add some sensible information to the folder.conf
+        if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
+            # now we create a default folder.conf file by calling this script
+            # with the command param createDefaultFolderConf
+            # (see script for details)
+            # the $FOLDER would not need to be passed on, because it is already set in this script
+            # see inc.writeFolderConfig.sh for details
+            . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
+        fi
+    fi
+
     # get the name of the last folder played. As mpd doesn't store the name of the last
     # playlist, we have to keep track of it via the Latest_Folder_Played file
+    # also track the last ID to enable random playing functionality and second swipe
     LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
     LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
+    LASTID=$(cat $PATHDATA/../settings/Latest_ID_Played)
     # this might need to go? resume not working... echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTID: $LASTID" >> $PATHDATA/../logs/debug.log; fi
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
 
     if [ "$VALUE" == "recursive" ]; then
@@ -376,7 +400,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
 
     # Check if the second swipe happened
     # - The same playlist is cued up ("$LASTPLAYLIST" == "$PLAYLISTNAME")
-    if [ "$LASTPLAYLIST" == "$PLAYLISTNAME" ]
+    if [ "$LASTID" == "$ID" ]
     then
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Second Swipe DID happen: \$LASTPLAYLIST == \$PLAYLISTNAME"   >> $PATHDATA/../logs/debug.log; fi
 
@@ -475,6 +499,10 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         sudo echo ${PLAYLISTNAME} > $PATHDATA/../settings/Latest_Playlist_Played
         sudo chown pi:www-data $PATHDATA/../settings/Latest_Playlist_Played
         sudo chmod 777 $PATHDATA/../settings/Latest_Playlist_Played
+        # save latest ID to file
+        sudo echo ${ID} > $PATHDATA/../settings/Latest_ID_Played
+        sudo chown pi:www-data $PATHDATA/../settings/Latest_ID_Played
+        sudo chmod 777 $PATHDATA/../settings/Latest_ID_Played
     fi
     if [ "$PLAYPLAYLIST" == "skipnext" ]
     then

@@ -291,6 +291,10 @@ function toggleShuffle(element) {
     togglePlaylistCommand(element, 'shuffle')
 }
 
+function toggleFolderShuffle(element) {
+    togglePlaylistCommand(element, 'foldershuffle')
+}
+
 function toggleResume(element) {
     console.log("toggle resume");
     console.log(element);
