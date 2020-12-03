@@ -61,6 +61,7 @@ $lang['globalDescription'] = "Description";
 $lang['globalRelease'] = "Release";
 $lang['globalStorage'] = "Storage";
 $lang['globalShuffle'] = "Shuffle";
+$lang['globalFoldershuffle'] = "Shuffle subfolders";
 $lang['globalReplay'] = "Replay";
 $lang['globalRepeat'] = "Repeat";
 $lang['globalLoop'] = "Loop";

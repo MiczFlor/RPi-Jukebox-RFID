@@ -291,7 +291,7 @@ function toggleShuffle(element) {
     togglePlaylistCommand(element, 'shuffle')
 }
 
-function toggleFolderShuffle(element) {
+function toggleFoldershuffle(element) {
     togglePlaylistCommand(element, 'foldershuffle')
 }
 

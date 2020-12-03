@@ -409,9 +409,9 @@ function index_folders_print($item, $key)
         }
         if( $foundFolderShuffle == "OFF" ) {
             // do stuff
-            print "<a playlist=\"$playlist\" foldershuffle='false' onclick='toggleFolderShuffle(this);' class='btn btn-warning '>".$lang['globalFolderShuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+            print "<a playlist=\"$playlist\" foldershuffle='false' onclick='toggleFoldershuffle(this);' class='btn btn-warning '>".$lang['globalFoldershuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
         } elseif($foundFolderShuffle == "ON") {
-            print "<a playlist=\"$playlist\" foldershuffle='true' onclick='toggleFolderShuffle(this);'  class='btn btn-success '>".$lang['globalFolderShuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+            print "<a playlist=\"$playlist\" foldershuffle='true' onclick='toggleFoldershuffle(this);'  class='btn btn-success '>".$lang['globalFoldershuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
         }
     } else {
         print "\n                <div><!-- settings buttons -->";

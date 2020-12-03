@@ -61,6 +61,7 @@ $lang['globalDescription'] = "Beschreibung";
 $lang['globalRelease'] = "Release";
 $lang['globalStorage'] = "Speicher";
 $lang['globalShuffle'] = "Mischen";
+$lang['globalFoldershuffle'] = "Unterverzeichnisse Mischen";
 $lang['globalReplay'] = "Wiederholung";
 $lang['globalRepeat'] = "Wiederholen";
 $lang['globalLoop'] = "Schleife";
