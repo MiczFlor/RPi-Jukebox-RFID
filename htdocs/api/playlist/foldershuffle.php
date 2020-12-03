@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $json = json_decode(trim($body), TRUE);
     if (validateRequest($json)) {
         $playlist = $json['playlist'];
-        $shuffle = $json['shuffle'];
-        if ($shuffle === 'true') {
+        $foldershuffle = $json['foldershuffle'];
+        if ($foldershuffle === 'true') {
             execScript("shuffle_folder.sh -c=enableshuffle -d='{$playlist}'");
         } else {
             execScript("shuffle_folder.sh -c=disableshuffle -d='{$playlist}'");
@@ -28,9 +28,9 @@ function validateRequest($json) {
         http_response_code(400);
         echo "playlist attribute missing";
         return false;
-    } else if ($json['shuffle'] == null) {
+    } else if ($json['foldershuffle'] == null) {
         http_response_code(400);
-        echo "shuffle attribute missing";
+        echo "foldershuffle attribute missing";
         return false;
     }
     return true;
