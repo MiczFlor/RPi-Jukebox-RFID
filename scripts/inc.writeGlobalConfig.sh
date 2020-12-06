@@ -150,11 +150,21 @@ AUDIOVOLMINLIMIT=`cat $PATHDATA/../settings/Min_Volume_Limit`
 # Startup_Volume
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Startup_Volume ]; then
-    echo "30" > $PATHDATA/../settings/Startup_Volume
+    echo "0" > $PATHDATA/../settings/Startup_Volume
     chmod 777 $PATHDATA/../settings/Startup_Volume
 fi
 # 2. then|or read value from file
 AUDIOVOLSTARTUP=`cat $PATHDATA/../settings/Startup_Volume`
+
+##############################################
+# Volume_Boot - after reboot
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Volume_Boot ]; then
+    echo "30" > $PATHDATA/../settings/Volume_Boot
+    chmod 777 $PATHDATA/../settings/Volume_Boot
+fi
+# 2. then|or read value from file
+AUDIOVOLBOOT=`cat $PATHDATA/../settings/Volume_Boot`
 
 ##############################################
 # Change_Volume_Idle
@@ -282,6 +292,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
 # AUDIOVOLSTARTUP
+# AUDIOVOLBOOT
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # POWEROFFCMD
@@ -314,6 +325,7 @@ echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLBOOT=\"${AUDIOVOLBOOT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "POWEROFFCMD=\"${POWEROFFCMD}\"" >> "${PATHDATA}/../settings/global.conf"

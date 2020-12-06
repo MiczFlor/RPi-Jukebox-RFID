@@ -30,6 +30,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setstartupvolume
 # getstartupvolume
 # setvolumetostartup
+# setbootvolume
+# getbootvolume
+# setvolumetobootvolume
 # volumeup
 # volumedown
 # getchapters
@@ -558,6 +561,39 @@ case $COMMAND in
             else
                 # manage volume with mpd
                 echo -e setvol ${AUDIOVOLSTARTUP}\\nclose | nc -w 1 localhost 6600
+            fi
+
+        fi
+        ;;
+    setbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # if value is greater than wanted maxvolume, set value to maxvolume
+        if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
+        then
+            VALUE=$AUDIOVOLMAXLIMIT;
+        fi
+        # write new value to file
+        echo "$VALUE" > ${PATHDATA}/../settings/Volume_Boot
+        # create global config file because individual setting got changed
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
+        ;;
+    getbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        echo ${AUDIOVOLBOOT}
+        ;;
+    setvolumetobootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # check if startup-volume is disabled
+        if [ "${AUDIOVOLBOOT}" == 0 ]; then
+            exit 1
+        else
+            # set volume level in percent
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLBOOT}%
+            else
+                # manage volume with mpd
+                echo -e setvol ${AUDIOVOLBOOT}\\nclose | nc -w 1 localhost 6600
             fi
 
         fi

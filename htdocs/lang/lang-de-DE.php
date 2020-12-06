@@ -207,6 +207,7 @@ $lang['trackEditDeleteYes'] = "Ja, diesen Track LÖSCHEN";
 $lang['settingsVolChangePercent'] = "Lautst. Änderung";
 $lang['settingsMaxVol'] = "Max. Lautstärke";
 $lang['settingsStartupVol'] = "Start-Lautstärke";
+$lang['settingsBootVol'] = "Lautst. nach Boot";
 $lang['settingsWifiRestart'] = "Die Änderungen an der WiFi-Verbindung erfordern einen Neustart, um wirksam zu werden";
 $lang['settingsWifiSsidPlaceholder'] = "z.B. PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "Der Name, unter dem dein WiFi als 'verfügbares Netzwerk' angezeigt wird";

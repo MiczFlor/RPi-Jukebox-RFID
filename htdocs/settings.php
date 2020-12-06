@@ -119,6 +119,7 @@ include("inc.setVolume.php");
 include("inc.setMaxVolume.php");
 include("inc.setVolumeStep.php");
 include("inc.setStartupVolume.php");
+include("inc.setBootVolume.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->

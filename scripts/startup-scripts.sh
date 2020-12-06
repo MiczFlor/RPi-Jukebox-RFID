@@ -34,7 +34,16 @@ STATUS=0
 while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep 'OK MPD'| sed 's/^.*$/ACTIVE/'); done
 
 ####################################
-# check if and set volume on startup
+# Set volume levels on boot
+# Both can be set in the Web UI under settings
+# Confusion explained:
+# 1. Set the volume to the global boot level.
+#    Sometimes the Pi sets volume to 0.
+#    The first command makes sure there is *some* level, not 0.
+# 2. Then set the volume to the startup volume.
+#    If the kids crank up the volume at night,
+#    after a reboot, the box will be back to this level.
+/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetobootvolume
 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
 
 ####################

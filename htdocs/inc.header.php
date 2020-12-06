@@ -165,6 +165,7 @@ $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
 $maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
 $startupvolumevalue = $globalConf['AUDIOVOLSTARTUP'];
+$bootvolumevalue = $globalConf['AUDIOVOLBOOT'];
 $volstepvalue = $globalConf['AUDIOVOLCHANGESTEP'];
 $idletimevalue = $globalConf['IDLETIMESHUTDOWN'];
 $conf['settings_lang'] = $globalConf['LANG'];
@@ -193,6 +194,7 @@ $nonEmptyCommands = array(
     'volume',
     'maxvolume',
     'startupvolume',
+    'bootvolume',
     'volstep',
     'shutdown',
     'reboot',
@@ -294,6 +296,7 @@ $commandToAction = array(
     'volume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=%s",            // change volume
     'maxvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=%s",      // change max volume
     'startupvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setstartupvolume -v=%s",      // change startup volume
+    'bootvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setbootvolume -v=%s",      // change startup volume
     'volstep' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolstep -v=%s",          // change volume step
     'mute' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute",                         // volume mute (toggle)
     'volumeup' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumeup",                 // volume up
