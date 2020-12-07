@@ -428,7 +428,7 @@ config_audio_interface() {
     esac
     # append variables to config file
     echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
-    echo "Your iFace is called'$AUDIOiFace'"
+    echo "Your iFace is called '$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
