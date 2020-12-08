@@ -26,7 +26,25 @@ function init() {
 function loadStatusRepeat() {
     loadStatus(() => {
         setTimeout(loadStatusRepeat, 5000);
+        var counter = 0,
+        interval  = setInterval(function () {
+            setTime();
+            if (++counter == 5) {
+                clearInterval(interval);
+            }
+        },1000)
+        JUKEBOX.interval = interval;
     });
+}
+
+
+
+function setTime()
+{
+    if (JUKEBOX.playerInfo.state == "play" && JUKEBOX.playerInfo.elapsed < JUKEBOX.playlistInfo.albumLength){
+        ++JUKEBOX.playerInfo.elapsed;
+    }
+    notify(JUKEBOX.timeListener, JUKEBOX.playerInfo.time);
 }
 
 
