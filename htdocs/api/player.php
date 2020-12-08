@@ -13,7 +13,6 @@ include 'common.php';
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
 $globalConf = parse_ini_file("../../settings/global.conf");
-$globalConf['ENABLE_CHAPTERS_FOR_EXTENSIONS'] = "mp4,m4a,m4b,m4r";
 
 if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
     file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
@@ -73,7 +72,7 @@ function handleGet() {
 
     // get chapter info if file extension indicates supports
     $fileExtension = pathinfo ( $responseList['file'], PATHINFO_EXTENSION);         
-    if (in_array($fileExtension, explode(',', $globalConf['ENABLE_CHAPTERS_FOR_EXTENSIONS']))) {
+    if (in_array($fileExtension, explode(',', $globalConf['CHAPTEREXTENSIONS']))) {
         $command = "playout_controls.sh -c=getchapters";
         $output = execScript($command);
         $jsonChapters = trim(implode("\n", $output));
