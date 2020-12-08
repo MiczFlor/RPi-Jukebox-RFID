@@ -12,10 +12,12 @@ if [ ! -f $PATHDATA/../settings/global.conf ]; then
 fi
 . $PATHDATA/../settings/global.conf
 ###########################################################
+echo "Phoniebox is starting..."
+
+cat $PATHDATA/../settings/version-number
 
 cat $PATHDATA/../settings/global.conf
 
-echo
 echo "${AUDIOVOLSTARTUP} is the mpd startup volume"
 
 ####################################

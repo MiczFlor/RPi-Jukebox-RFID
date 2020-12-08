@@ -72,10 +72,11 @@ class SimpleButton:
         self._action = action
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
+        self.callback_with_pin_argument = False
 
     def callbackFunctionHandler(self, *args):
-        if (len(args) > 0 and args[0] == self.pin):
-            logger.debug('args before: {}'.format(args))
+        if len(args) > 0 and args[0] == self.pin and not self.callback_with_pin_argument:
+            logger.debug('Remove pin argument by callbackFunctionHandler - args before: {}'.format(args))
             args = args[1:]
             logger.debug('args after: {}'.format(args))
 
