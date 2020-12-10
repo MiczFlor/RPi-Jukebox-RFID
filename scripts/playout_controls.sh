@@ -579,7 +579,7 @@ case $COMMAND in
         # stop player after ${VALUE} minutes
         if [ ${VALUE} -gt 0 ];
         then
-            echo "mpc stop" | at -q s now + ${VALUE} minute
+            echo "${PATHDATA}/resume_play.sh -c=savepos && mpc stop" | at -q s now + ${VALUE} minute
         fi
         ;;
     playernext)
