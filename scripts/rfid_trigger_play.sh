@@ -271,6 +271,12 @@ if [ "$CARDID" ]; then
         $CMDREADWIFIIP)
             $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
             ;;
+
+        $BACKUP2NETWORK)
+            sudo $PATHDATA/backup_data.sh
+            ;;
+
+
         *)
 
             # We checked if the card was a special command, seems it wasn't.
