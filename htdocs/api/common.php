@@ -47,9 +47,10 @@ function execMPDCommand($command) {
     socket_shutdown ($socket,1);
     $output = array();
     while ($out = socket_read($socket, 2048)) {
-        $output = array_merge($output,explode("\n", $out));        
+         $outputTemp .= $out;
     }
-    socket_close($socket);  
+    $output = array_merge($output,explode("\n", $outputTemp));
+    socket_close($socket);
     return $output;
 }
 
