@@ -19,7 +19,7 @@
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
-GIT_URL=${GIT_URL:-https://github.com/Schneelocke/RPi-Jukebox-RFID.git}
+GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
 echo GIT_BRANCH $GIT_BRANCH
 echo GIT_URL $GIT_URL
 
