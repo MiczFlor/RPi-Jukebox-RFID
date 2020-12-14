@@ -171,6 +171,21 @@ if($post['delete'] == "delete") {
         $post['audiofolderNew'] = $link = str_replace(array('http://','https://','/','=','-','.', 'www','?','&'), '', $post['streamURL']);
     }
 
+    //wrong spotify url, convert to mopidy format
+    if((isset($post['streamURL']) && $post['streamType'] == "spotify") && (strpos($post['streamURL'], "https://open.spotify.com/") !== false)){
+        $messageError .= "Wrong spotify url, converted to the correct format";
+        $patterns = array();
+        $patterns[0] = '/https\:\/\/open.spotify.com/';
+        $patterns[1] = '/\/(playlist|album|track|artist)\//';
+        $patterns[2] = '/(\w+)\?(.*)/';
+        $replacements = array();
+        $replacements[0] = 'spotify:';
+        $replacements[1] = '$1:';
+        $replacements[2] = '$1';
+        $post['streamURL'] = preg_replace($patterns, $replacements, $post['streamURL']);
+    }
+
+
     /*
     * any errors?
     */
