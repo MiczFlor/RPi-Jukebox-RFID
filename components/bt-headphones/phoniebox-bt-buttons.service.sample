@@ -1,0 +1,13 @@
+[Unit]
+Description=Phoniebox Bluetooth Buttons Service
+After=network.target
+
+[Service]
+User=pi
+Group=pi
+Restart=always
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID
+ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/bt-buttons.py > /dev/null
+
+[Install]
+WantedBy=multi-user.target
