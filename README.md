@@ -12,6 +12,8 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 ## Important updates / news
 
+* **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask questions there, bugs and enhancements should still be in issues; see here https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions
+
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
 * **Phoniebox [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) released (2020-11-23)**
