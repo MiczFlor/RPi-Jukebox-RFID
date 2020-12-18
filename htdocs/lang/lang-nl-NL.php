@@ -1,6 +1,5 @@
 <?php
 $lang = array();
-
 $lang['globalEdit'] = "Bewerk";
 $lang['globalResume'] = "Vervolg";
 $lang['globalPassword'] = "Wachtwoord";
@@ -66,19 +65,28 @@ $lang['globalRepeat'] = "Herhalen";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
-
+$lang['globalPriority'] = "Priority";
+$lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Devices";
+$lang['playerSeekBack'] = "seek back";
+$lang['playerSeekAhead'] = "seek forward";
+$lang['playerSkipPrev'] = "previous track";
+$lang['playerSkipNext'] = "next track";
+$lang['playerPlayPause'] = "play / pause";
+$lang['playerReplay'] = "replay track";
+$lang['playerLoop'] = "loop";
+$lang['playerStop'] = "stop player";
+$lang['playerVolDown'] = "volume down";
+$lang['playerVolUp'] = "volume up";
+$lang['playerMute'] = "toggle mute";
 $lang['playerFilePlayed'] = "is gespeeld";
 $lang['playerFileAdded'] = "is toegevoegd aan de playlist";
 $lang['playerFileDeleted'] = "is verwijderd";
-
-// Edition (classic, +spotify)
 $lang['globalEdition'] = "Editie";
 $lang['classic'] = "Classic editie (barebones)";
 $lang['plusSpotify'] = "Plus editie (incl. Spotify integratie)";
-
 $lang['navEditionClassic'] = "Classic";
 $lang['navEditionPlusSpotify'] = "+Spotify";
-
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
 $lang['navSearch'] = "Zoeken";
@@ -86,19 +94,14 @@ $lang['navSettings'] = "Instellingen";
 $lang['navInfo'] = "Info";
 $lang['navShutdown'] = "Afsluiten";
 $lang['navReboot'] = "Herstarten";
-
 $lang['indexAvailAudio'] = "Beschikbare audio";
 $lang['indexContainsFiles'] = "Bevat de volgende bestand(en):";
 $lang['indexShowFiles'] = "Toon bestanden";
 $lang['indexManageFilesChips'] = "Beheer Bestanden en fiches";
-
 $lang['Spotify'] = "Spotify";
-
-/*
-* Register & Edit Cards
-*/
 $lang['cardRegisterTitle'] = "Nieuwe kaart toevoegen";
 $lang['cardEditTitle'] = "Nieuwe kaart toevoegen of bewerken";
+$lang['cardRegisterAnchorLink'] = "Interactive RFID Registration";
 $lang['cardRegisterMessageDefault'] = "De waarde 'Nieuwste kaart-ID' in het formulier wordt direct bijgewerkt terwijl u een RFID-kaart veegt. <br/> (Javascript in browser vereist om ingeschakeld te kunnen worden.)";
 $lang['cardEditMessageDefault'] = "De kaart-ID's die in dit systeem worden gebruikt, staan ​​vermeld op de <a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> home page</a>.";
 $lang['cardRegisterMessageSwipeNew'] = "Veeg nog een kaart als u meer kaarten wilt registreren.";
@@ -114,33 +117,53 @@ $lang['cardRegisterFolder2Card'] = "De audiomap is nu gekoppeld aan kaart-ID";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube-audio wordt gedownload. Dit kan een paar minuten duren. U kunt het logbestand 'youtube-dl.log' in de gedeelde map controleren.</p>";
 $lang['cardRegisterSwipeUpdates'] = "Dit wordt automatisch bijgewerkt terwijl je een RFID-kaart veegt.";
 $lang['cardRegisterManualLinks'] = "<p>U kunt kaarten ook handmatig met mappen verbinden. In de handleiding wordt uitgelegd hoe u <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connecting-to-the-phoniebox-to-add-files' target='–blank'>verbinding maakt met de phoniebox</a> en <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>kaarten registreert</a>.</p>";
-
-/*
-* Card edit form
-*/
+$lang['cardRegisterTriggerSuccess'] = "The card is now linked to trigger the command:";
 $lang['cardFormFolderLegend'] = "Audiomap";
 $lang['cardFormFolderLabel'] = "a) Link kaart naar audiomap";
 $lang['cardFormFolderSelectDefault'] = "Geen (Pulldown om een ​​map te selecteren)";
+$lang['cardFormFolderHelp'] = "Containing local files or add YouTube content (specify below).";
+$lang['cardFormNewFolderLabel'] = "... or link a new folder";
+$lang['cardFormNewFolderHelp'] = "Always use a new folder for streams (see below) and optionally for YouTube.";
+$lang['cardFormNewFolderPlaceholder'] = "e.g. 'Artist Name/Album'";
+$lang['cardFormTriggerLegend'] = "Trigger system command";
+$lang['cardFormTriggerLabel'] = "... or link to a system command";
+$lang['cardFormTriggerHelp'] = "Select system commands (like 'pause', 'volume up', 'shutdown') from the list of available commands. If a RFID card is already linked to a function, the ID is shown in the pulldown menu.";
+$lang['cardFormTriggerSelectDefault'] = "Select command to link";
+$lang['cardFormStreamLegend'] = "Link Stream";
 $lang['cardFormStreamLabel'] = "b) ... of maak verbinding met de Stream-URL";
 $lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Voeg de URL toe voor spotify, podcast, webradio, stream of andere online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Selecteer type";
 $lang['cardFormStreamTypeHelp'] = "Selecteer het type dat u toevoegt";
-$lang['cardFormStreamFolderPlaceholder'] = "bijv. 'Album / Afspeellijst / Stationsnaam'";
-$lang['cardFormStreamFolderHelp'] = "Naam voor de audiomap die de stream-URL bevat.";
 $lang['cardFormYTLegend'] = "YouTube";
 $lang['cardFormYTLabel'] = "c) ... of download YouTube-audio";
 $lang['cardFormYTPlaceholder'] = "bijv. https://www.youtube.com/watch?v=7GI0VdPehQI";
 $lang['cardFormYTSelectDefault'] = "Pulldown om een ​​map te selecteren of maak hieronder een nieuwe aan";
-$lang['cardFormYTFolderPlaceholder'] = "bijv. 'Nieuwe Map'";
-$lang['cardFormYTFolderHelp'] = "Naam voor de audiomap die de YouTube-audio bevat.";
 $lang['cardFormYTHelp'] = "Voeg de volledige YouTube-URL toe zoals in het voorbeeld";
 $lang['cardFormRemoveCard'] = "Verwijder kaart-ID";
-
-/*
-* Track edit form
-*/
+$lang['cardExportAnchorLink'] = "Export all RFID links (audio playout and commands)";
+$lang['cardExportButtonLink'] = "Create .csv file of available RFID links";
+$lang['cardImportAnchorLink'] = "Import RFID links from .csv file";
+$lang['cardImportFileLabel'] = "Select .csv file to create RFID links";
+$lang['cardImportFileSuccessUpload'] = "Successful upload of file: ";
+$lang['cardImportFileErrorUpload'] = "<p>There was an error uploading the file, please try again!</p>";
+$lang['cardImportFileErrorFiletype'] = "<p>Wrong file type! The file must be a <em>.csv</em> file.</p>";
+$lang['cardImportFormOverwriteLabel'] = "Select import action";
+$lang['cardImportFormOverwriteHelp'] = "Specify what to do with the uploaded RFID links.";
+$lang['cardImportFormOverwriteAll'] = "Overwrite both: audio AND commands";
+$lang['cardImportFormOverwriteAudio'] = "Overwrite ONLY audio triggers";
+$lang['cardImportFormOverwriteCommands'] = "Overwrite ONLY system commands";
+$lang['cardImportFileOverwriteMessageCommands'] = "<p><i class='mdi mdi-check'></i> <strong>System commands</strong> were overwritten with uploaded RFID IDs.</p>";
+$lang['cardImportFileOverwriteMessageAudio'] = "<p><i class='mdi mdi-check'></i> Links to <strong>audio</strong> playlists etc. were overwritten with uploaded RFID IDs.</p>";
+$lang['cardImportFormDeleteLabel'] = "Delete or keep other RFID links?";
+$lang['cardImportFormDeleteNone'] = "Keep all existing: audio AND commands";
+$lang['cardImportFormDeleteAll'] = "Delete both: audio AND commands";
+$lang['cardImportFormDeleteAudio'] = "Delete ONLY audio triggers";
+$lang['cardImportFormDeleteCommands'] = "Delete ONLY system commands";
+$lang['cardImportFormDeleteHelp'] = "Which of the existing RFID links should be kept, which deleted?.";
+$lang['cardImportFileDeleteMessageCommands'] = "<p><i class='mdi mdi-delete'></i> <strong>System commands</strong> deleted.</p>";
+$lang['cardImportFileDeleteMessageAudio'] = "<p><i class='mdi mdi-delete'></i> <strong>Audio links</strong> deleted.</p>";
 $lang['trackEditTitle'] = "Track management";
 $lang['trackEditInformation'] = "Track informatie";
 $lang['trackEditMove'] = "Verplaats track";
@@ -151,21 +174,20 @@ $lang['trackEditDeleteLabel'] = "Weet je zeker dat je wilt verwijderen???";
 $lang['trackEditDeleteHelp'] = "Er is geen 'ongedaan maken' voor verwijderde bestanden. Ze zijn weg! Weet je het zeker?";
 $lang['trackEditDeleteNo'] = "Verwijder deze track NIET";
 $lang['trackEditDeleteYes'] = "Ja, VERWIJDER deze track";
-
-
-/*
-* Settings
-*/
 $lang['settingsVolChangePercent'] = "Vol. verandering %";
 $lang['settingsMaxVol'] = "Maximaal Volume";
+$lang['settingsStartupVol'] = "Startup Volume";
 $lang['settingsWifiRestart'] = "De wijzigingen die zijn aangebracht op uw WiFi-verbinding vereisen dat een herstart van kracht wordt.";
 $lang['settingsWifiSsidPlaceholder'] = "Bijv.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "De naam waaronder uw WiFi wordt weergegeven als 'beschikbaar netwerk'";
+$lang['settingsWifiPassHelp'] = "The password of your WiFi (8 characters at least)";
+$lang['settingsWifiPrioHelp'] = "Your WiFi's priority (0-100). If more than  one WiFi is found the box will connect to the one with the higher priority";
 $lang['settingsSecondSwipe'] = "Tweede veeg";
 $lang['settingsSecondSwipeInfo'] = "Wanneer u dezelfde RFID voor de tweede keer gebruikt, wat gebeurt er dan? Start de afspeellijst opnieuw? Schakelen tussen pauze / afspelen?";
 $lang['settingsSecondSwipeRestart'] = "afspeellijst opnieuw afspelen";
 $lang['settingsSecondSwipeSkipnext'] = "Ga naar het volgende nummer";
 $lang['settingsSecondSwipePause'] = "Schakelen tussen pauze / afspelen";
+$lang['settingsSecondSwipePlay'] = "Resume playback";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Negeer audio playout-triggers, alleen systeemopdrachten";
 $lang['settingsSecondSwipePauseInfo'] = "Negeer het opnieuw scannen van dezelfde kaart voor:";
 $lang['second'] = "Seconde";
@@ -178,10 +200,18 @@ $lang['settingsCoverInfo'] = "Wil je albumhoezen naast de albums en afspeellijst
 $lang['settingsShowCoverON'] = "Albumhoes laten zien";
 $lang['settingsShowCoverOFF'] = "Albumhoes niet laten zien";
 $lang['settingsMessageLangfileNewItems'] = "Er zijn nieuwe taalitems in het oorspronkelijke <em> lang-en-UK.php </ em> -bestand. Uw taalbestand is bijgewerkt en bevat nu deze (in het Engels). Misschien wilt u uw taalbestand bijwerken en uw wijzigingen in de Phoniebox-code aanbrengen :) ";
-
-/*
-* System info
-*/
+$lang['settingsWlanSendNav'] = "Mail Wlan IP";
+$lang['settingsWlanSendInfo'] = "Send Wlan IP over email on boot? (useful if you hook your Phoniebox into a new Wlan networt with dynamic IP)";
+$lang['settingsWlanSendQuest'] = "Send Wlan IP?";
+$lang['settingsWlanSendEmail'] = "email addr.";
+$lang['settingsWlanSendON'] = "Yes, send email.";
+$lang['settingsWlanSendOFF'] = "No, do not send email.";
+$lang['settingsVolumeManager'] = "Select volume manager";
+$lang['settingsWlanReadNav'] = "Read Wlan IP";
+$lang['settingsWlanReadInfo'] = "Read IP address of wlan (wifi) each time after booting? (useful if you hook your Phoniebox into a new wlan networt with dynamic IP)";
+$lang['settingsWlanReadQuest'] = "Read wlan IP?";
+$lang['settingsWlanReadON'] = "Yes, read wlan IP.";
+$lang['settingsWlanReadOFF'] = "No, do not read wlan IP.";
 $lang['infoOsDistrib'] = "OS-distributie";
 $lang['infoOsCodename'] = "Codenaam";
 $lang['infoOsTemperature'] = "Temperatuur";
@@ -189,10 +219,11 @@ $lang['infoOsThrottle'] = "Beperking";
 $lang['infoStorageUsed'] = "Opslag gebruik";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
-
-/*
-* Folder Management and File Upload
-*/
+$lang['infoDebugLogTail'] = "<b>DEBUG log file</b>: Last 40 lines";
+$lang['infoDebugLogClear'] = "Clear all content from debug.log";
+$lang['infoDebugLogSettings'] = "Debug Log Settings";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 $lang['manageFilesFoldersTitle'] = "Mappen &amp; bestanden";
 $lang['manageFilesFoldersUploadFilesLabel'] = "Selecteer bestanden van uw schijf";
 $lang['manageFilesFoldersUploadLegend'] = "Upload bestanden";
@@ -208,19 +239,13 @@ $lang['manageFilesFoldersErrorNewFolderExists'] = "<p>Er bestaat al een map met 
 $lang['manageFilesFoldersErrorNewFolderNotParent'] = "<p>De bovenliggende map bestaat niet.</p>";
 $lang['manageFilesFoldersSuccessNewFolder'] = "Nieuwe map gemaakt:";
 $lang['manageFilesFoldersSelectDefault'] = "Trek naar beneden om een ​​map te selecteren en / of maak hieronder een nieuwe onderliggende map";
-
 $lang['manageFilesFoldersRenewDB'] = "Database vernieuwen";
 $lang['manageFilesFoldersLocalScan'] = "Scan muziekbibliotheek";
 $lang['manageFilesFoldersRenewDBinfo'] = "Scan uw muziekbibliotheek na het uploaden van nieuwe bestanden of het verplaatsen van mappen. De scan is niet nodig om muziek te horen, maar het is noodzakelijk om nummerinformatie te zien in de Web UI. Alleen nieuwe of verplaatste bestanden worden gescand. Terwijl de scan wordt uitgevoerd, wordt mopidy gestopt. Nadat de scan is voltooid, start de mopidy automatisch. U kunt de serverstatus zien in het gedeelte Info.";
-
 $lang['searchTitle'] = "Zoeken naar audiobestanden";
 $lang['searchExample'] = "z.B. Moonlight";
 $lang['searchSend'] = "Zoeken";
 $lang['searchResult'] = "Zoekresultaten:";
-
-/*
-* Filter
-*/
 $lang['filterall'] = "Toon alles";
 $lang['filterfile'] = "Bestanden";
 $lang['filterlivestream'] = "Livestream";
@@ -228,4 +253,3 @@ $lang['filterpodcast'] = "Podcast";
 $lang['filterspotify'] = "Spotify";
 $lang['filteryoutube'] = "YouTube";
 ?>
-

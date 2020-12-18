@@ -126,6 +126,17 @@ include("inc.setStartupVolume.php");
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
+
+<?php
+$filename = $conf['settings_abs'].'/BtHeadphoneIntegration';
+if (file_exists($filename)) {
+   if (strcmp(trim(file_get_contents($filename)), "ON") === 0) {
+      include('inc.bluetooth.php');
+   }
+}
+?>
+
+
 <div class="panel-group">
   <div class="panel panel-default">
     <div class="panel-heading">

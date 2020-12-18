@@ -67,6 +67,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordstop
 # recordplaylatest
 # readwifiipoverspeaker
+# bluetoothtoggle
 
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -994,6 +995,10 @@ case $COMMAND in
         sudo rm WifiIp.mp3
         /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/helperscripts/cli_ReadWifiIp.php
         ;;
+    bluetoothtoggle)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+	../components/bt-headphones/bt-sink-switch.py $VALUE
+	;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi

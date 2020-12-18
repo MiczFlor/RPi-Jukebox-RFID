@@ -15,9 +15,9 @@ import re
 import subprocess
 
 # If called as script, this variable will set GPIO number of the LED to reflect sink status
-# Uses BCM GPIO numbering, i.e. 6 means GPIO6
+# Uses BCM GPIO numbering, i.e. 'led_pin = 6' means GPIO6
 # Set 'led_pin=None' to disable LED support (and no GPIO pin is blocked in this case)
-led_pin = 6
+led_pin = None
 
 def btUsage(sname):
     print("Usage")
@@ -79,12 +79,13 @@ def btSwitch(cmd, led_pin=None):
         print("Error: Invalid command. Doing nothing.")
         return
     
-    # Sloppy check if LED pin request is valid GPIO pin number
-    if led_pin < 2 or led_pin > 27:
-        led_pin = None
-        print("- ERROR: Invalid led_pin. Ignoring led_pin = " + str(led_pin), file=sys.stderr)
+    # Rudimentary check if LED pin request is valid GPIO pin number
+    if led_pin is not None:
+        if led_pin < 2 or led_pin > 27:
+            led_pin = None
+            print("- ERROR: Invalid led_pin. Ignoring led_pin = " + str(led_pin), file=sys.stderr)
     
-    if led_pin:
+    if led_pin is not None:
         # Set-up GPIO LED pin if not already configured. If it already exists, sanity check direction of pin before use
         try:
             with open("/sys/class/gpio/gpio" + str(led_pin) + "/direction") as f:
@@ -112,8 +113,8 @@ def btSwitch(cmd, led_pin=None):
         # Only switch to BT headphones if they are actually connected
         if isBtConnected:
             print("Switched audio sink to \"Output 2\"")
-            subprocess.run("mpc enable only 2", shell=True, check=False);
-            if led_pin:
+            subprocess.run("mpc enable only 2", shell=True, check=False, capture_output=True);
+            if led_pin is not None:
                 subprocess.run("echo 1 > /sys/class/gpio/gpio" + str(led_pin) + "/value", shell=True, check=False)
             return
         else: 
@@ -125,7 +126,7 @@ def btSwitch(cmd, led_pin=None):
 
     # Default: Switch to Speakers
     print("Switched audio sink to \"Output 1\"")
-    subprocess.run("mpc enable only 1", shell=True, check=False);
+    subprocess.run("mpc enable only 1", shell=True, check=False, capture_output=True);
     if led_pin:
         subprocess.run("echo 0 > /sys/class/gpio/gpio" + str(led_pin) + "/value", shell=True, check=False)
 
