@@ -80,7 +80,7 @@ if [ "$CARDID" ]; then
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in
-	    $CMDSHUFFLE)
+        $CMDSHUFFLE)
             # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
             ;;
