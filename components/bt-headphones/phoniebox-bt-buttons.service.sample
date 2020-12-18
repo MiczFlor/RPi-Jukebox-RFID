@@ -6,8 +6,8 @@ After=network.target
 User=pi
 Group=pi
 Restart=always
-WorkingDirectory=/home/pi/RPi-Jukebox-RFID
-ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/bt-buttons.py > /dev/null
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID/components/bt-headphones
+ExecStart=/home/pi/RPi-Jukebox-RFID/components/bt-headphones/bt-buttons.py > /dev/null
 
 [Install]
 WantedBy=multi-user.target

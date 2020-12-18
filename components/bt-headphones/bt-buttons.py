@@ -15,8 +15,8 @@ import time
 #
 #   Option 1) cat /proc/bus/input/devices
 #             In my case the bluetooth headset is listed under its MAC address           
-#   Option 2) Disconnect headset, show >ls /etc/input
-#             Connect headset   , show >ls /etc/input, analyze the difference
+#   Option 2) Disconnect headset, show >ls /dev/input
+#             Connect headset   , show >ls /dev/input, analyze the difference
 #
 # Step 2: Test the event
 #   > cat /dev/input/event1
@@ -26,7 +26,7 @@ import time
 #
 # Step 3: Figure out the key mappings
 #   In this script adapt the EVTDEV constant to fit your input event device
-#   Call this script directly from command the line (make sure it does not run as a service, if you already used the install script: ./sudo systemctl stop phoniebox-bt-buttons)
+#   Call this script directly from command the line (make sure it does not run as a service, if you already used the install script: >sudo systemctl stop phoniebox-bt-buttons)
 #     >./bt-buttons.py
 #   Press a button on the headset. The script will output a log like this
 #
@@ -42,29 +42,37 @@ import time
 # This script has been tested with the following headset: PowerLocus Buddy
 #
 # Note:
-# (a) If the event device does not exist, this script will not throw an error. (so you see no output if things dont work!)
+# (a) If the event device does not exist, this script will not throw an error. (You will see no output if things dont work!)
 #     But continue checking if that event will appear at some time, i.e. which will happen if the headset gets connected.
 #     So if nothing happens, make sure you have the right event device listed here. 
 # (b) This script assumes a constant /dev/input/eventX to headset mapping, which is not globally given.
 #     But in a stable raspberry pi setup it will be constant, if no input devices are added/removed (especially in any order)
 #
-# Feature Enhancements
+# Possible future feature enhancements
 #   Use cat /proc/bus/input/devices first to find correct eventX to headset mapping
 #
-# If you want this script to run automatically as service after booting, run the install script, or do this:
-#   Adjust directory paths in phoniebox-bt-buttons.service.sample
-#   sudo cp phoniebox-bt-buttons.service.sample /etc/systemd/system/phoniebox-bt-buttons.service
-#   sudo chown root:root /etc/systemd/system/phoniebox-bt-buttons.service
-#   sudo chmod 644 /etc/systemd/system/phoniebox-bt-buttons.service
-#   sudo systemctl enable phoniebox-bt-buttons.service
+# If you want this script to run automatically as service after booting do this:
+#   The easy way:
+#     run the install script
+#   The hard way:
+#     Adjust directory paths in phoniebox-bt-buttons.service.sample
+#     sudo cp phoniebox-bt-buttons.service.sample /etc/systemd/system/phoniebox-bt-buttons.service
+#     sudo chown root:root /etc/systemd/system/phoniebox-bt-buttons.service
+#     sudo chmod 644 /etc/systemd/system/phoniebox-bt-buttons.service
+#     sudo systemctl enable phoniebox-bt-buttons.service
+#
+# Troubleshooting
+#   If buttons fail to work after reboot, take a look into the boot messages to analyze the service messages
+#     >journalctl -b -u phoniebox-bt-buttons.service
+#   Check with >bluetoothctl info, if the headset is connected, play some music to be sure. Check /dev/input/eventX exists and check >cat /proc/bus/input/devices
+#   Then go back to starting the script in the console and take a look at the messages (stop the service first)
 
-
-BTNPLAY = 200
+BTNPLAY  = 200
 BTNPAUSE = 201
-BTNNEXT = 163
-BTNPREV = 165
+BTNNEXT  = 163
+BTNPREV  = 165
 
-EVTDEV='/dev/input/event1'
+EVTDEV='/dev/input/event0'
 
 def btkeyhandler():
     # Try to open the event device
@@ -78,13 +86,13 @@ def btkeyhandler():
             # Only act on button press, not button release
             if event.value == 1:
                 if event.code == BTNPLAY:
-                    check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
+                    check_call("../../scripts/playout_controls.sh -c=playerpause", shell=True)
                 elif event.code == BTNPAUSE:
-                    check_call("./scripts/playout_controls.sh -c=playerpause", shell=True)
+                    check_call("../../scripts/playout_controls.sh -c=playerpause", shell=True)
                 elif event.code == BTNNEXT:
-                    check_call("./scripts/playout_controls.sh -c=playernext", shell=True)
+                    check_call("../../scripts/playout_controls.sh -c=playernext", shell=True)
                 elif event.code == BTNPREV:
-                    check_call("./scripts/playout_controls.sh -c=playerprev", shell=True)
+                    check_call("../../scripts/playout_controls.sh -c=playerprev", shell=True)
         
 while True:
     try:
