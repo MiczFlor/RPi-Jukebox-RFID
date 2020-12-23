@@ -124,16 +124,12 @@ foreach ($shortcutstemp as $shortcuttemp) {
 $audiofolders = array_filter(glob($Audio_Folders_Path.'/*'), 'is_dir');
 usort($audiofolders, 'strcasecmp');
 
-// counter for ID of each folder
+// counter for ID of each folder, increased when used (within inc.viewFolderTree.php)
 $idcounter = 0;
 
 // go through all folders
 foreach($audiofolders as $audiofolder) {
-    // increase ID counter
-    $idcounter++;
-    
     include('inc.viewFolderTree.php');
-    
 }
 
 ?>
