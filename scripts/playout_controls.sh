@@ -101,6 +101,9 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 # see following file for details:
 . ${PATHDATA}/inc.readArgsFromCommandLine.sh
 
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+
 # Regex that declares commands for which the following code can be shortcut
 # and we can immediately jump to the switch-case statement. Increases execution
 # speed of these commands.
@@ -109,10 +112,6 @@ shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
 then
-    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
-
-
     ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
     ENABLE_CHAPTERS_MIN_DURATION="600"
 
