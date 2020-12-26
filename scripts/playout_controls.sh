@@ -116,24 +116,24 @@ then
     ENABLE_CHAPTERS_MIN_DURATION="600"
 
     function dbg {
-    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
-        echo "$1" >> ${PATHDATA}/../logs/debug.log;
-    fi
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+            echo "$1" >> ${PATHDATA}/../logs/debug.log;
+        fi
     }
 
     function sec_to_ms() {
-    SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
-    MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
-    MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
+        SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
+        MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
+        MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
 
-    if [[ "" == "$SECONDSPART" ]]; then
-        SECONDSPART="0"
-    fi
+        if [[ "" == "$SECONDSPART" ]]; then
+            SECONDSPART="0"
+        fi
 
-    if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
-        MILLISECONDSPART_NORMALIZED="0"
-    fi
-    echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
+        if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
+            MILLISECONDSPART_NORMALIZED="0"
+        fi
+        echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
     }
 
     AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
@@ -153,44 +153,43 @@ then
     dbg "chapters file: $CHAPTERS_FILE"
 
     if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
-    CHAPTER_SUPPORT_FOR_EXTENSION="1"
+        CHAPTER_SUPPORT_FOR_EXTENSION="1"
     else
-    CHAPTER_SUPPORT_FOR_EXTENSION="0"
+        CHAPTER_SUPPORT_FOR_EXTENSION="0"
     fi
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
     if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
-    CHAPTER_SUPPORT_FOR_DURATION="1"
+        CHAPTER_SUPPORT_FOR_DURATION="1"
     else
-    CHAPTER_SUPPORT_FOR_DURATION="0"
+        CHAPTER_SUPPORT_FOR_DURATION="0"
     fi
     dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
 
     if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
-    if ! [ -f "${CHAPTERS_FILE}" ]; then
-        CHAPTERS_COUNT="0"
-        dbg "chaptes file does not exist - export triggered"
-        ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
-    else
-        CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
-        dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
-    fi
+        if ! [ -f "${CHAPTERS_FILE}" ]; then
+            CHAPTERS_COUNT="0"
+            dbg "chaptes file does not exist - export triggered"
+            ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
+        else
+            CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
+            dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
+        fi
 
+        CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
+        ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
 
-    CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
-    ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
+        # elapsed and chapter start exactly match -> skip one line
+        if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
+            PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+            CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
+        else
+            PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
+            CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+        fi
 
-    # elapsed and chapter start exactly match -> skip one line
-    if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
-        PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
-        CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
-    else
-        PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
-        CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
-    fi
-
-    NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
+        NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
     fi
 
     # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
