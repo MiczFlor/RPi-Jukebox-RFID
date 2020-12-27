@@ -1,11 +1,12 @@
 import logging
 import sys
 from subprocess import Popen as function_call
+import os
+import pathlib
 
 logger = logging.getLogger(__name__)
 
-playout_control = "../../scripts/playout_controls.sh"
-
+playout_control = os.path.abspath(os.path.join(pathlib.Path(__file__).parent.absolute(), "../../scripts/playout_controls.sh"))
 
 def functionCallShutdown(*args):
     function_call("{command} -c=shutdown".format(command=playout_control), shell=True)
