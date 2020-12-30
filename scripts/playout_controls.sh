@@ -68,7 +68,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordplaylatest
 # readwifiipoverspeaker
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -80,7 +80,7 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> ${PATHDATA}/../logs/debug.log; fi
 
 ###########################################################
-# Read global configuration file (and create is not exists)
+# Read global configuration file (and create if not exists)
 # create the global configuration file from single files - if it does not exist
 if [ ! -f ${PATHDATA}/../settings/global.conf ]; then
     . ${PATHDATA}/inc.writeGlobalConfig.sh
@@ -579,7 +579,7 @@ case $COMMAND in
         # stop player after ${VALUE} minutes
         if [ ${VALUE} -gt 0 ];
         then
-            echo "mpc stop" | at -q s now + ${VALUE} minute
+            echo "${PATHDATA}/resume_play.sh -c=savepos && mpc stop" | at -q s now + ${VALUE} minute
         fi
         ;;
     playernext)
