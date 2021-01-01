@@ -6,7 +6,9 @@ import pathlib
 
 logger = logging.getLogger(__name__)
 
-playout_control = os.path.abspath(os.path.join(pathlib.Path(__file__).parent.absolute(), "../../scripts/playout_controls.sh"))
+playout_control_relative_path = "../../scripts/playout_controls.sh"
+function_calls_absolute_path = str(pathlib.Path(__file__).parent.absolute())
+playout_control = os.path.abspath(os.path.join(function_calls_absolute_path, playout_control_relative_path))
 
 def functionCallShutdown(*args):
     function_call("{command} -c=shutdown".format(command=playout_control), shell=True)
