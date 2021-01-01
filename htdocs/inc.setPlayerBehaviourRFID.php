@@ -27,7 +27,9 @@ if(isset($_POST['rfidSwipePlace']) && trim($_POST['rfidSwipePlace']) != "") {
         exec($exec);
     } 
     // execute shell to create config file
-    $exec = "sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh";        
+    $exec = "sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh";   
+    // execute shell to restart RFID Reader Service
+    $exec = "sudo systemctl restart phoniebox-rfid-reader.service";
     if($debug == "true") {
         print $exec;
     }
