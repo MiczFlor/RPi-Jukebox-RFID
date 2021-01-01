@@ -14,6 +14,6 @@ Tested Devices:
 
 1. Plug in your USB Encoder. You don't need to install any drivers. After plugging in, the USB encoder acts like an
    input device.
-2. Run the script `setup-buttons-usb-encoder.sh` to set up your usb encoder (choose the device and map the buttons).
+2. Run the script `setup-buttons-usb-encoder.sh` to set up your USB Encoder (choose the device and map the buttons).
 
 ![USB Encoder schematics](buttons-usb-encoder.jpg)
