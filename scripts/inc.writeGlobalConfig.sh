@@ -65,6 +65,19 @@ fi
 PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
 
 ##############################################
+# General RFID player control SWIPE OR PLACE
+# General decision on how the player operates 
+# SWIPENOTPLACE = Swiping starts the player
+# PLACENOTSWIPE = Placing the card starts player, removal stops it
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Swipe_or_Place ]; then
+    echo "SWIPENOTPLACE" > $PATHDATA/../settings/Swipe_or_Place
+    chmod 777 $PATHDATA/../settings/Swipe_or_Place
+fi
+# 2. then|or read value from file
+SWIPEORPLACE=`cat $PATHDATA/../settings/Swipe_or_Place`
+
+##############################################
 # Second swipe
 # What happens when the same card is swiped a second time?
 # RESTART => start the playlist again vs. PAUSE => toggle pause and play current
@@ -273,6 +286,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
+# SWIPEORPLACE
 # SECONDSWIPE
 # SECONDSWIPEPAUSE
 # SECONDSWIPEPAUSECONTROLS
@@ -305,6 +319,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 rm "${PATHDATA}/../settings/global.conf"
 echo "AUDIOFOLDERSPATH=\"${AUDIOFOLDERSPATH}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "PLAYLISTSFOLDERPATH=\"${PLAYLISTSFOLDERPATH}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "SWIPEORPLACE=\"${SWIPEORPLACE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSE=\"${SECONDSWIPEPAUSE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSECONTROLS=\"${SECONDSWIPEPAUSECONTROLS}\"" >> "${PATHDATA}/../settings/global.conf"
