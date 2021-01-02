@@ -1,5 +1,6 @@
 import logging
 import time
+from os import system
 
 import mpd
 from RPi import GPIO
@@ -54,3 +55,17 @@ class MPDStatusLED(LED):
             return True
         except ConnectionError:
             return False
+
+class StartupScriptsStatusLED(LED):
+    logger = logging.getLogger("StartupScriptsStatusLED")
+
+    def __init__(self, pin, name='StartupScriptsStatusLED'):
+        super(StartupScriptsStatusLED, self).__init__(pin, initial_value=False, name=name)
+        self.logger.info('Waiting for phoniebox-startup-scripts service to be active')
+        systemctlCmd = 'systemctl is-active --quiet phoniebox-startup-scripts.service'
+        while system(systemctlCmd) != 0:
+            self.logger.debug('phoniebox-startup-scripts service not yet active')
+            time.sleep(1)
+        self.logger.info('phoniebox-startup-scripts service active')
+        self.on()
+

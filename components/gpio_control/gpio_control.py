@@ -67,6 +67,10 @@ class gpio_control():
                                 port=config.getint('port', fallback=6600),
                                 name=deviceName
                                 )
+        elif device_type == 'StartupScriptsStatusLED':
+            return StartupScriptsStatusLED(config.getint('Pin'),
+                                name=deviceName
+                                )
         elif device_type == 'RotaryEncoder':
             return RotaryEncoder(config.getint('pinUp'),
                     config.getint('pinDown'),
