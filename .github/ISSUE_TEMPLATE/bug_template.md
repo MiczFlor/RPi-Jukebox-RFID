@@ -89,13 +89,5 @@ Can be found in the output of `sudo lsusb -v` when it is connected via USB.
 ### Other notable hardware
 
 <!--
-i.e. post your GPIO pin settings from `RPi-Jukebox-RFID/scripts/gpio-buttons.py`:
-```
-GPIO Buttons:
-    volU = Button(22,pull_up=True,hold_time=0.3,hold_repeat=True)
-    volD = Button(27,pull_up=True,hold_time=0.3,hold_repeat=True)
-    frwd = Button(17,pull_up=True)
-    prev = Button(24,pull_up=True)
-    halt = Button(23,pull_up=True)
-```
+i.e. post your GPIO pin settings from `RPi-Jukebox-RFID/settings/gpio_settings.ini`:
 -->

@@ -205,6 +205,12 @@ $lang['trackEditDeleteYes'] = "Yes, DELETE this track";
 /*
 * Settings
 */
+$lang['settingsPlayoutBehaviourCard'] = "General RFID player control";
+$lang['settingsPlayoutBehaviourCardLabel'] = "Swipe or place the card?";
+$lang['settingsPlayoutBehaviourCardSwipe'] = "Swiping starts the player.";
+$lang['settingsPlayoutBehaviourCardPlace'] = "Placing the card starts player, removal stops it.";
+$lang['settingsPlayoutBehaviourCardHelp'] = "If you chose 'Place card', this affects the 'Second Swipe' options which can be selected below.";
+
 $lang['settingsVolChangePercent'] = "Vol. Change %";
 $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsStartupVol'] = "Startup Volume";

@@ -233,6 +233,10 @@ $exec = "df -H -B K / ";
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
 
+<?php
+include("inc.addSystemInfo.php");
+?>
+
 <!-- debug.log -->
 
 <div class="panel-group">
