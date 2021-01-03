@@ -3,6 +3,15 @@
 HOME_DIR="/home/pi"
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 
+TYPE=$1
+
+if [[ -n "$TYPE" ]]; then
+    echo "Configuring Hifiberry ${TYPE} sound card"
+else
+    echo "Error: please pass miniamp or amp2 to script."
+    exit -1
+fi
+
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
@@ -74,7 +83,13 @@ else
 fi
 
 printf "Set mixer_control name in /etc/mpd.conf...\n"
-mixer_control_name="Master"
+mixer_control_name="Master" # for miniamp
+
+if [ "${TYPE}" == "amp2" ]; then
+    # see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1198#issuecomment-750757106
+    mixer_control_name="Digital"
+fi
+
 sudo sed -i -E "s/^(\s*mixer_control\s*\")[^\"]*(\"\s*# optional)/\1\\${mixer_control_name}\2/" /etc/mpd.conf
 
 printf "You should reboot later to apply the settings.\n"

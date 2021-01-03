@@ -1200,11 +1200,15 @@ finish_installation() {
             ;;
         *)
             echo  'Please select the sound card you want to use'
-            options=("Hifiberry" "Pimoroni Pirate Audio" "Manual configuration")
+            options=("Hifiberry Miniamp" "Hifiberry AMP2" "Pimoroni Pirate Audio" "Manual configuration")
             select opt in "${options[@]}"; do
                 case $opt in
-                    "Hifiberry")
-                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh
+                    "Hifiberry Miniamp")
+                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh miniamp
+                        break
+                        ;;
+                    "Hifiberry AMP2")
+                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh amp2
                         break
                         ;;
                     "Pimoroni Pirate Audio")
