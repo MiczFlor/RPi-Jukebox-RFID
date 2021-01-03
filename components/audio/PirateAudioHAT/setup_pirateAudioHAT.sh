@@ -79,9 +79,9 @@ else
     printf "Installing Python packages...\n"
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
 
-    cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.pirate-audio-hat.sample "${jukebox_dir}"/settings/gpio_settings.ini
+    cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/gpio_settings.ini.pirate-audio-hat.sample "${JUKEBOX_HOME_DIR}"/settings/gpio_settings.ini
 
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-pirateaudio-display.service.sample "/etc/systemd/system/phoniebox-pirateaudio-display.service"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/phoniebox-pirateaudio-display.service.sample "/etc/systemd/system/phoniebox-pirateaudio-display.service"
     sudo chown root:root /etc/systemd/system/phoniebox-pirateaudio-display.service
     sudo chmod 644 /etc/systemd/system/phoniebox-pirateaudio-display.service
     # enable the services needed
