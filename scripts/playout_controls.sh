@@ -997,7 +997,7 @@ case $COMMAND in
         ;;
     bluetoothtoggle)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-	$PATHDATA/../components/bt-headphones/bt-sink-switch.py $VALUE
+	$PATHDATA/../components/bluetooth-sink-switch/bt-sink-switch.py $VALUE
 	;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE

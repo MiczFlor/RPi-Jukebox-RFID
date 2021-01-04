@@ -128,9 +128,9 @@ include("inc.setStartupVolume.php");
 
 
 <?php
-$filename = $conf['settings_abs'].'/BtHeadphoneIntegration';
+$filename = $conf['settings_abs'].'/bluetooth-sink-switch';
 if (file_exists($filename)) {
-   if (strcmp(trim(file_get_contents($filename)), "ON") === 0) {
+   if (strcmp(strtolower(trim(file_get_contents($filename))), "enabled") === 0) {
       include('inc.bluetooth.php');
    }
 }

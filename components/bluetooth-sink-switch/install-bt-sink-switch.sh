@@ -25,7 +25,7 @@ USER=`whoami`
 SCRPATH=`pwd`
 
 # Ensure script is executable for everyone
-sudo chmod ugo+x $FILE
+sudo chmod ugo+rx $FILE
 
 # Make sure required packages are installed
 echo -e "\nChecking bluetooth packages"
@@ -36,22 +36,17 @@ echo -e "\nSetting up user rights"
 sudo usermod -G bluetooth -a www-data
 sudo usermod -G bluetooth -a ${USER}
 
-# Default to speaker sink after boot
-STARTUP=../../scripts/startup-scripts.sh
-STARTEXISTS=0
-if [ -f ${STARTUP} ]; then
-    # Check if script is already registed with startup-scripts.sh
-    STARTEXISTS=`grep -c ${FILE} ${STARTUP}`
-fi
-if [ "${STARTEXISTS}" = 0 ]; then
-    echo -e "\nRegistering start-up script"
-    echo -e "\n#Default audio sink to speakers irrespective of setting at shutdown" >> $STARTUP
-    echo -e "${SCRPATH}/bt-sink-switch.py speakers\n" >> $STARTUP
-fi
+# Add www-data to allow gpio control (for LED support)
+sudo usermod -G gpio -a www-data
 
 # Let global controls know this feature is enabled
-CONFFILE=../../settings/BtHeadphoneIntegration
-echo "ON" > ${CONFFILE}
+echo -e "\nLet global controls know this feature is enabled"
+CONFFILE=../../settings/bluetooth-sink-switch
+echo "enabled" > ${CONFFILE}
+chmod ugo+rw ${CONFFILE}
+
+# Restart web service to take notice of new user rights
+sudo systemctl restart lighttpd.service
 
 # Final notes
 echo -e "\n\n\nIMPORTANT NOTE:\nPlease modify ${FILE} around line 20 for\n  led_pin=None\nto configure LED pin-out.\n Do nothing to leave it disabled."
