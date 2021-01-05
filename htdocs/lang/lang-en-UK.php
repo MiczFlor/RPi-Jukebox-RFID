@@ -125,6 +125,7 @@ $lang['cardRegisterErrorStreamOrAudio'] = "<p>Seems you haven't selected anythin
 $lang['cardRegisterErrorExistingAndNew'] = "<p>This is too much! Either choose an existing folder or create a new one.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>A folder named with the same name already exists! Chose a different one.</p>";
 $lang['cardRegisterErrorSuggestFolder'] = "A folder name for the stream needs to be created. Below in the form I made a suggestion.";
+$lang['cardRegisterErrorConvertSpotifyURL'] = "Wrong spotify url, converted to the correct format";
 $lang['cardRegisterStream2Card'] = "Stream is linked to Card ID.";
 $lang['cardRegisterFolder2Card'] = "Audio folder is now linked to Card.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube audio is downloading. This may take a couple of minutes. You may check the logfile \"youtube-dl.log\" in the shared folder.</p>";
