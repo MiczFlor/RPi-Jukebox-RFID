@@ -112,8 +112,6 @@ shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
 then
-    ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
-    ENABLE_CHAPTERS_MIN_DURATION="600"
 
     function dbg {
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
@@ -152,7 +150,7 @@ then
     CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
     dbg "chapters file: $CHAPTERS_FILE"
 
-    if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
+    if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$CHAPTEREXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
         CHAPTER_SUPPORT_FOR_EXTENSION="1"
     else
         CHAPTER_SUPPORT_FOR_EXTENSION="0"
@@ -160,7 +158,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"

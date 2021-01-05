@@ -12,6 +12,7 @@ include 'common.php';
 * DEBUG_WebApp_API="TRUE"
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+$globalConf = parse_ini_file("../../settings/global.conf");
 
 if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
     file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
@@ -51,8 +52,9 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-    $statusCommand = "echo 'status\ncurrentsong\nclose' | nc -w 1 localhost 6600";
-    $commandResponseList = execSuccessfully($statusCommand);
+    global $globalConf;    
+    $statusCommand = "status\ncurrentsong\nclose";
+    $commandResponseList = execMPDCommand($statusCommand);
     $responseList = array();
     forEach ($commandResponseList as $commandResponse) {
         preg_match("/(?P<key>.+?): (?P<value>.*)/", $commandResponse, $match);
@@ -60,16 +62,24 @@ function handleGet() {
             $responseList[strtolower($match['key'])] = $match['value'];
         }
     }
+    
     // get volume separately from mpd, because we might use amixer to control volume
-    $command = "playout_controls.sh -c=getvolume";
-    $output = execScript($command);
-    $responseList['volume'] = implode('\n', $output);
+    if ($globalConf['VOLUMEMANAGER'] != "mpd"){
+        $command = "playout_controls.sh -c=getvolume";
+        $output = execScript($command);
+        $responseList['volume'] = implode('\n', $output);
+    }
 
-    $command = "playout_controls.sh -c=getchapters";
-    $output = execScript($command);
-    $jsonChapters = trim(implode("\n", $output));
-    $chapters = @json_decode($jsonChapters, true);
-
+    // get chapter info if file extension indicates supports
+    $fileExtension = pathinfo ( $responseList['file'], PATHINFO_EXTENSION);         
+    if (in_array($fileExtension, explode(',', $globalConf['CHAPTEREXTENSIONS']))) {
+        $command = "playout_controls.sh -c=getchapters";
+        $output = execScript($command);
+        $jsonChapters = trim(implode("\n", $output));
+        $chapters = @json_decode($jsonChapters, true);           
+    }
+    
+ 
     $currentChapterIndex = null;
     $mappedChapters = array_filter(array_map(function($chapter) use($responseList, &$currentChapterIndex) {
         static $i = 1;
