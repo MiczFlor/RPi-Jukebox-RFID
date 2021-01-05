@@ -254,6 +254,10 @@ if($post['delete'] == "delete") {
                 // New folder is created so we link a RFID to it. Write $post['audiofolderNew'] to cardID file in shortcuts
                 $exec = "rm ".$fileshortcuts."; echo '".$post['audiofolderNew']."' > ".$fileshortcuts."; chmod 777 ".$fileshortcuts;
                 exec($exec);
+				// write $streamfile and make accessible to anyone
+				$ytfile = "youtube.txt";
+				$exec = "echo '' > '".$foldername."/".$ytfile."'; sudo chmod -R 777 '".$foldername."'";
+				exec($exec);
             } else {
                 // link to existing audiofolder
                 $foldername = $Audio_Folders_Path."/".$post['audiofolder'];

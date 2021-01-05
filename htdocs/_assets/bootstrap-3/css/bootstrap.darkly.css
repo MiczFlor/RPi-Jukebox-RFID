@@ -58,7 +58,13 @@
   font-weight: 700;
   src: url("../../fonts/Source_Sans_Pro/SourceSansPro-SemiBoldItalic.ttf");
 }
-
+/* hover effects for list of files and folders on player page */
+.pb-plist-play:hover,
+.pb-plist-play:active,
+.playlist_headline:hover,
+.playlist_headline:active {
+    color: #E74C3C;
+}
 /*@import url("https://fonts.googleapis.com/css?family=Lato:400,700,400italic");*/
 /*!
  * bootswatch v3.3.7

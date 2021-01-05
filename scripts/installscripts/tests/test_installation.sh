@@ -155,7 +155,7 @@ verify_apt_packages(){
     local packages="libspotify-dev samba
 samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
 resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
-python3-spidev"
+python3-spidev netcat alsa-tools"
     # TODO apt-transport-https checking only on RPi is currently a workaround
     local packages_raspberrypi="apt-transport-https raspberrypi-kernel-headers"
     local packages_spotify="mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
@@ -190,6 +190,7 @@ verify_pip_packages() {
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
     local modules_rc522="pi-rc522"
+    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -198,7 +199,19 @@ verify_pip_packages() {
         modules="${modules} ${modules_spotify}"
     fi
 
-    # modules="${modules} ${modules_pn532}"
+    if [[ -f "${deviceName}" ]]; then
+        # RC522 reader is used
+        if grep -Fxq "${deviceName}" MFRC522
+        then
+            modules="${modules} ${modules_rc522}"
+        fi
+
+        # PN532 reader is used
+        if grep -Fxq "${deviceName}" PN532
+        then
+            modules="${modules} ${modules_pn532}"
+        fi
+    fi
 
     for module in ${modules}
     do
@@ -207,21 +220,6 @@ verify_pip_packages() {
         else
             echo "  ERROR: pip module ${module} is not installed"
             ((failed_tests++))
-        fi
-        ((tests++))
-    done
-
-    # workaround, because currently it's not known, if modules have been installed manually
-    # TODO integrate in above check (similar to spotify modules)
-    optional_modules="${modules_rc522} ${modules_pn532}"
-
-    for module in ${optional_modules}
-    do
-        if [[ $(pip3 show "${module}") ]]; then
-            echo "  ${module} is installed"
-        else
-            echo "  WARNING: Optional pip module ${module} is not installed"
-            # doesnt count as error, because only manually installed or not
         fi
         ((tests++))
     done
@@ -247,14 +245,13 @@ verify_webserver_config() {
 verify_systemd_services() {
     printf "\nTESTING systemd services...\n\n"
     # check that services exist
-    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-buttons.service phoniebox-idle-watchdog.service phoniebox-rotary-encoder.service"
+    check_chmod_chown 644 root root "/etc/systemd/system" "phoniebox-rfid-reader.service phoniebox-startup-scripts.service phoniebox-gpio-control.service phoniebox-idle-watchdog.service"
 
     # check that phoniebox services are enabled
     check_service_enablement phoniebox-idle-watchdog enabled
     check_service_enablement phoniebox-rfid-reader enabled
     check_service_enablement phoniebox-startup-scripts enabled
-    check_service_enablement phoniebox-gpio-buttons enabled
-    check_service_enablement phoniebox-rotary-encoder enabled
+    check_service_enablement phoniebox-gpio-control enabled
 }
 
 verify_spotify_config() {
@@ -267,11 +264,13 @@ verify_spotify_config() {
     check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
     check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
     check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
+    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
     check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
     check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
     check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
     check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
+    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
 
     # check that mopidy service is enabled
     check_service_enablement mopidy enabled

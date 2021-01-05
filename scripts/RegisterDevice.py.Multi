@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+import os.path
+import subprocess
+
+JUKEBOX_HOME_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+
+def runCmd(cmd, wait=True):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    (output, err) = p.communicate()
+    if wait:
+        p.wait()
+    return output
+
+
+def setupPN532():
+    answer = input('Please make sure that the PN532 reader is wired up correctly '
+                   'to the GPIO ports before continuing...\n Continue?: [Y/n]')
+    if not answer or answer[0] != 'Y':
+        return False
+    print("Activating I2C interface...\n")
+    runCmd("sudo raspi-config nonint do_i2c 0")
+    print("Installing i2c-tools...\n")
+    runCmd("sudo apt-get -qq -y install i2c-tools")
+    print("Checking if PN532 RFID reader is found through I2C...\n")
+    output = runCmd("sudo i2cdetect -y 1")
+    if "24" in str(output):
+        print("  PN532 was found.\n")
+    else:
+        print("  ERROR: PN532 was not found.\n")
+        print(str(output))
+        return False
+    print("Installing Python requirements for PN532...\n")
+    runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
+           "-q -r {}/components/rfid-reader/PN532/requirements.txt".format(JUKEBOX_HOME_DIR))
+    print("Done")
+    return True
+
+
+def setupMFRC522():
+    answer = input('Please make sure that the RC522 reader is wired up correctly '
+                   'to the GPIO ports before continuing...\n Continue?: [Y/n]')
+    if not answer or answer[0] != 'Y':
+        return False
+    print("Installing Python requirements for RC522...\n")
+    runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
+           "-q -r {}/components/rfid-reader/RC522/requirements.txt".format(JUKEBOX_HOME_DIR))
+    print("Done")
+    return True
+
+
+runCmd("cp {0}/scripts/Reader.py.experimental.Multi {1}/scripts/Reader.py".format(JUKEBOX_HOME_DIR, JUKEBOX_HOME_DIR))
+from Reader import get_devices, EDevices
+list_dev_ids = list()
+devices = get_devices()
+
+
+def addDevice():
+    i = 0
+    print("Choose the reader from list")
+    for dev in devices:
+        if i not in list_dev_ids:
+            print(i, dev.name + str(dev.phys))
+        i += 1
+    dev_id = int(input('Device Number: '))
+    if dev_id not in list_dev_ids:
+        if devices[dev_id].name == EDevices.PN532.name:
+            if not setupPN532():
+                return
+        if devices[dev_id].name == EDevices.MFRC522.name:
+            if not setupMFRC522():
+                return
+        list_dev_ids.append(dev_id)
+
+
+def configureDevices():
+    addDevice()
+    while True:
+        answer = input('Do you want to add another device: [Y/n]')
+        if not answer or answer[0] != 'Y':
+            break
+        addDevice()
+
+
+print("Stopping phoniebox-rfid-reader service...\n")
+runCmd("sudo systemctl stop phoniebox-rfid-reader.service")
+
+configureDevices()
+
+path = os.path.dirname(os.path.realpath(__file__))
+with open(path + '/deviceName.txt', 'w') as f:
+    for sel_dev_id in list_dev_ids:
+        f.write(devices[sel_dev_id].name + ";" + devices[sel_dev_id].phys + '\n')
+    f.close()
+
+print("Restarting phoniebox-rfid-reader service...\n")
+runCmd("sudo systemctl start phoniebox-rfid-reader.service")
+
+runCmd("sudo chown pi:www-data {}/scripts/deviceName.txt".format(JUKEBOX_HOME_DIR))
+runCmd("sudo chmod 644 {}/scripts/deviceName.txt".format(JUKEBOX_HOME_DIR))
+
+print("Register Device(s) Done!")

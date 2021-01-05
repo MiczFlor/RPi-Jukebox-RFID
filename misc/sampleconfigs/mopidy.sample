@@ -36,21 +36,21 @@ restore_state = false
 #mixer = software
 mixer_volume = 30
 output = alsasink
-#buffer_time = 
+#buffer_time =
 
 [proxy]
-#scheme = 
-#hostname = 
-#port = 
-#username = 
-#password = 
+#scheme =
+#hostname =
+#port =
+#username =
+#password =
 
 [local-images]
 #enabled = true
 #library = json
 #base_uri = /images/
-#image_dir = 
-#album_art_files = 
+#image_dir =
+#album_art_files =
 #  *.jpg
 #  *.jpeg
 #  *.png
@@ -70,11 +70,11 @@ locale = de_DE
 #enabled = true
 hostname = 0.0.0.0
 #port = 6600
-#password = 
+#password =
 #max_connections = 20
 #connection_timeout = 60
 #zeroconf = Mopidy MPD server on $hostname
-#command_blacklist = 
+#command_blacklist =
 #  listall
 #  listallinfo
 #default_playlist_scheme = m3u
@@ -85,18 +85,18 @@ hostname = 0.0.0.0
 #port = 6680
 #static_dir =
 #zeroconf = Mopidy HTTP server on $hostname
-#allowed_origins = 
+#allowed_origins =
 
 [stream]
 #enabled = true
-#protocols = 
+#protocols =
 #  http
 #  https
 #  mms
 #  rtmp
 #  rtmps
 #  rtsp
-#metadata_blacklist = 
+#metadata_blacklist =
 #timeout = 5000
 
 [m3u]
@@ -111,10 +111,10 @@ playlists_dir = /home/pi/RPi-Jukebox-RFID/playlists
 
 [file]
 #enabled = true
-#media_dirs = 
+#media_dirs =
 #  $XDG_MUSIC_DIR|Music
 #  ~/|Home
-#excluded_file_extensions = 
+#excluded_file_extensions =
 #  .jpg
 #  .jpeg
 #show_dotfiles = false
@@ -124,11 +124,11 @@ metadata_timeout = 1
 [local]
 enabled = true
 #library = json
-media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+media_dir = %DIRaudioFolders%
 #scan_timeout = 1000
 #scan_flush_threshold = 100
 #scan_follow_symlinks = false
-excluded_file_extensions = 
+excluded_file_extensions =
 #  .directory
 #  .html
 #  .jpeg

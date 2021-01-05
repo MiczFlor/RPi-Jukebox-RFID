@@ -21,6 +21,7 @@ scripts/gpio-buttons.py
 
 shared/*
 playlists/*
+pythonenv*/*
 logs/*
 
 # Byte-compiled / optimized / DLL files

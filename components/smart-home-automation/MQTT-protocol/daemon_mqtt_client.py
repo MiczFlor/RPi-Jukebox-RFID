@@ -40,7 +40,7 @@ refreshInterval = refreshIntervalPlaying
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
 arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle', 'throttling', 'temperature']
 
 
 def on_connect(client, userdata, flags, rc):
@@ -114,7 +114,7 @@ def processCmd(command, parameter):
     elif command == "gpio":
         parameter = parameter.lower()
         if parameter == "start" or parameter == "stop":
-            subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-buttons.service"], shell=True)
+            subprocess.call(["sudo /bin/systemctl " + parameter + " phoniebox-gpio-control.service"], shell=True)
         else:
             print(" --> Expecting parameter start or stop")
 
@@ -220,6 +220,45 @@ def linux_job_remaining(job_name):
         return 0
 
 
+def getOsThrottling():
+        codes = {
+                0: "under-voltage detected",
+                1: "arm frequency capped",
+                2: "currently throttled",
+                3: "soft temperature limit active",
+                16: "under-voltage has occurred",
+                17: "arm frequency capped has occurred",
+                18: "throttling has occurred",
+                19: "soft temperature limit has occurred"
+        }
+
+        p = subprocess.Popen(['vcgencmd', 'get_throttled'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        throttling, err = p.communicate()
+        codeHex = throttling.rstrip().split("0x")[1]
+
+        # code is zero => no issue
+        if codeHex == "0":
+                return "OK"
+
+        # analyse returned code
+        result = []
+        codeBinary = ""
+        for fourbits in codeHex:
+                codeBinary = codeBinary + bin(int(fourbits, 16))[2:].zfill(4)
+        codeBinary = codeBinary[::-1]
+        for bitNumber in range(len(codeBinary)):
+                if codeBinary[bitNumber] == "1":
+                        result.append(codes[bitNumber])
+        return "WARNING: " + ", ".join(result)
+
+
+def getOsTemperature():
+        p = subprocess.Popen(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        temperature, err = p.communicate()
+        temperature = temperature.rstrip().split("=")[1]
+        return temperature
+
+
 def normalizeTrueFalse(s):
     if s == "0":
         return "false"
@@ -292,12 +331,16 @@ def fetchData():
 
     # fetch service states
     result["rfid"] = isServiceRunning("phoniebox-rfid-reader.service")
-    result["gpio"] = isServiceRunning("phoniebox-gpio-buttons.service")
+    result["gpio"] = isServiceRunning("phoniebox-gpio-control.service")
 
     # fetch linux jobs
     result["remaining_stopafter"] = str(linux_job_remaining("s"))
     result["remaining_shutdownafter"] = str(linux_job_remaining("t"))
     result["remaining_idle"] = str(linux_job_remaining("i"))
+
+    # fetch OS information
+    result["throttling"] = getOsThrottling()
+    result["temperature"] = getOsTemperature()
 
     # modify refresh rate depending on play state
     if result["state"] == "play":

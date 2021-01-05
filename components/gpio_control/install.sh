@@ -1,74 +1,50 @@
-#!/bin/bash
-if [[ $(id -u) = 0 ]]; then
-   echo "This script should  be run as root/sudo, please run as normal 'pi' user" 
+#!/usr/bin/env bash
+
+if [[ $(id -u) != 0 ]]; then
+   echo "This script should be run using sudo"
    exit 1
 fi
 
-echo 'Install all required python modules'
-pip install -r requirements.txt
-
-echo 'Installing GPIO_Control service'
-echo
-
-CONFIG_PATH=$HOME/.config/phoniebox
-if [ ! -d $CONFIG_PATH ]; then
-    mkdir -p $HOME/.config/phoniebox/ ;
-fi;
-
-FILE=$CONFIG_PATH/gpio_settings.ini
-if test -f "$FILE"; then
-    echo "$FILE exist"
-    echo "Script will not install a configuration"
-else
-    unset options i
-    while IFS= read -r -d $'\0' f; do
-      options[i++]="$f"
-    done < <(find ./example_configs/ -maxdepth 1 -type f -name "*.ini" -print0 )
-
-
-    echo  'Please choose a default configuration'
-    select opt in "${options[@]}" "Stop the script"; do
-      case $opt in
-        *.ini)
-          echo "Configuration  file $opt selected"
-          echo "Copy file to $FILE"
-          echo cp -v $opt $FILE
-          cp -v $opt $FILE
-          break
-          ;;
-        "Stop the script")
-          echo "You chose to stop"
-          break
-          ;;
-        *)
-          echo "This is not a number"
-          ;;
-      esac
-    done
-
+if [[ ! -f /home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini ]]; then
+    cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio_settings.ini.sample /home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini
 fi
+
+echo 'disable old services: phoniebox-gpio-buttons and phoniebox-rotary-encoder'
+systemctl stop phoniebox-rotary-encoder.service
+systemctl disable phoniebox-rotary-encoder.service
+systemctl stop phoniebox-gpio-buttons.service
+systemctl disable phoniebox-gpio-buttons.service
+
+echo 'Install all required python modules'
+python3 -m pip install --upgrade --force-reinstall -r requirements.txt
+
 echo
-echo 'Installing GPIO_Control service, this will require to enter your password up to 3 times to enable the service'
+echo 'Installing GPIO_Control service'
 read -p "Press enter to continue " -n 1 -r
-SERVICE_FILE=/etc/systemd/system/phoniebox_gpio_control.service
-if test -f "$SERVICE_FILE"; then
+SERVICE_FILE=/etc/systemd/system/phoniebox-gpio-control.service
+if [[ -f "$SERVICE_FILE" ]]; then
    echo "$SERVICE_FILE exists.";
+   echo 'systemctl daemon-reload'
+   systemctl daemon-reload
    echo 'restarting service'
-   systemctl restart phoniebox_gpio_control.service
+   systemctl restart phoniebox-gpio-control.service
    read -p "Press enter to continue " -n 1 -r;
 
     #echo "systemctl daemon-reload"
     #systemctl daemon-reload
 else
-    sudo cp -v ./example_configs/phoniebox_gpio_control.service /etc/systemd/system/
-    echo "systemctl start phoniebox_gpio_control.service"
-    systemctl start phoniebox_gpio_control.service
-    echo "systemctl enable phoniebox_gpio_control.service"
-    systemctl enable phoniebox_gpio_control.service
+    cp -v ../../misc/sampleconfigs/phoniebox-gpio-control.service.sample /etc/systemd/system/phoniebox-gpio-control.service
+    echo "systemctl start phoniebox-gpio-control.service"
+    echo 'systemctl daemon-reload'
+    systemctl start phoniebox-gpio-control.service
+    echo "systemctl enable phoniebox-gpio-control.service"
+    systemctl enable phoniebox-gpio-control.service
 fi
-SERVICE_STATUS="$(systemctl is-active phoniebox_gpio_control.service)"
-if [ "${SERVICE_STATUS}" = "active" ]; then
+SERVICE_STATUS="$(systemctl is-active phoniebox-gpio-control.service)"
+if [[ "${SERVICE_STATUS}" = "active" ]]; then
     echo "Phoniebox GPIO Service started correctly ....."
+    echo "For further configuration of GPIO-devices consult the wiki:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
 else
     echo ""
     FRED="\033[31m"
@@ -80,12 +56,9 @@ else
     echo "      $ cd ~/RPi-Jukebox-RFID/components/gpio_control"
     echo "      $ python gpio_control.py"
     echo "   or check output of journaclctl by:"
-    echo "      $ journalctl -u phoniebox_gpio_control.service -f"
+    echo "      $ journalctl -u phoniebox-gpio-control.service -f"
     exit 1
 fi
 #systemctl is-active --quiet phoniebox_gpio_control.service
 #systemctl status phoniebox_gpio_control.service
-
-
-
 

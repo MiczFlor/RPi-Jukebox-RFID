@@ -37,7 +37,7 @@ db_file			"/var/lib/mpd/tag_cache"
 # setting defaults to logging to syslog, or to journal if mpd was started as
 # a systemd service.
 #
-log_file			"/var/log/mpd/mpd.log"
+log_file			"syslog"
 #
 # This setting sets the location of the file which stores the process ID
 # for use of mpd --kill and some init scripts. This setting is disabled by
@@ -98,7 +98,7 @@ bind_to_address		"localhost"
 # argument is recommended for troubleshooting, though can quickly stretch
 # available resources on limited hardware storage.
 #
-#log_level			"default"
+log_level			"default"
 #
 # Setting "restore_paused" to "yes" puts MPD into pause mode instead
 # of starting playback after startup.
@@ -395,7 +395,7 @@ audio_output {
 # result in the volume of all playing audio to be adjusted so the output has
 # equal "loudness". This setting is disabled by default.
 #
-#volume_normalization		"no"
+volume_normalization		"yes"
 #
 ###############################################################################
 

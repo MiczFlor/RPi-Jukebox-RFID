@@ -82,7 +82,12 @@ function playPlaylist(playlist, recursive) {
     $.ajax({
         url: `api/playlist.php`,
         method: 'PUT',
-        data: JSON.stringify(json)
+        data: JSON.stringify(json),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + playlist.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -101,6 +106,56 @@ function playSongInPlaylist(song) {
     $.ajax({
         url: `api/playlist/song.php`,
         method: 'PUT',
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + song.toString() + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-danger alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' +  song.toString() + ' ' + JUKEBOX.lang['playerFileDeleted'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function removeSongFromPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/removeSongFromPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveUpSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveUpSongInPlaylist.php`,
+        method: 'PUT',
+        data: song.toString()
+    }).success(data => {
+        loadStatus();
+    });
+}
+
+function moveDownSongInPlaylist(song) {
+    $.ajax({
+        url: `api/playlist/moveDownSongInPlaylist.php`,
+        method: 'PUT',
         data: song.toString()
     }).success(data => {
         loadStatus();
@@ -109,9 +164,14 @@ function playSongInPlaylist(song) {
 
 function appendFileToPlaylist(file) {
     $.ajax({
-        url: `api/playlist/appendfiletoplaylist.php`,
+        url: `api/playlist/appendFileToPlaylist.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFileAdded'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
@@ -121,19 +181,24 @@ function playSingleFile(file) {
     $.ajax({
         url: `api/playlist/playsinglefile.php`,
         method: 'PUT',
-        data: file.toString()
+        data: file.toString(),
+        success: function() {
+          var infomessage = $("#phonieboxinfomessage");
+          infomessage.html('<div class="alert alert-success alert-dismissible fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + file.toString().replace(/^.*[\\\/]/, '') + ' ' + JUKEBOX.lang['playerFilePlayed'] + '.</div>');
+          infomessage.first().hide().fadeIn(200).delay(2000).fadeOut(1000, function () { $(this).hide(); });
+        }
     }).success(data => {
         loadStatus();
     });
 }
 
-function executePlayerCommand(command, completion) {
+function executePlayerCommand(command, completion, value) {
     hideApiError();
     $.ajax({
         url: 'api/player.php',
         method: 'PUT',
         contentType: "application/json; charset=utf-8",
-        data: JSON.stringify({ 'command': command })
+        data: JSON.stringify({ 'command': command, "value": arguments.length === 3 ? value : null })
     }).success(data => {
          if (completion != null) {
              completion(data);
@@ -144,6 +209,57 @@ function executePlayerCommand(command, completion) {
      });
 }
 
+/**
+ * Although there is a playout_controls.sh command "playernextchapter" it is implemented manually to keep the ui responsive
+ */
+function nextChapter() {
+    gotoChapter($('#chapters-select').find('option:selected').next());
+}
+
+/**
+ * Although there is a playout_controls.sh command "playerprevchapter" it is implemented manually to keep the ui responsive
+ */
+function previousChapter() {
+    var timerSeconds = 5;
+    var playerInfo = JUKEBOX.playerInfo;
+    var elapsed = +playerInfo.elapsed;
+    var $selectedChapter = $('#chapters-select').find('option:selected');
+    var selectedChapterStart = +$selectedChapter.data('start');
+
+    // if chapter is playing for more than 5 seconds return to start of chapter instead of going to the previous one
+    // to keep responsive during the ajax requests, set a timer that blocks this behavior after the first trigger
+    if(elapsed - selectedChapterStart > timerSeconds && !this.timerActive) {
+        gotoChapter($selectedChapter);
+        this.timerActive = true;
+        window.setTimeout(() => {
+            this.timerActive = false;
+        }, timerSeconds*1000 + 1);
+
+    } else {
+        gotoChapter($selectedChapter.prev());
+    }
+}
+
+/**
+ * Will only change the selected item and trigger change - see onChangeChapter for event handler
+ * @param chapter
+ */
+function gotoChapter(chapter) {
+    if(chapter.length !== 0) {
+        $('#chapters-select').val(chapter.val()).change();
+    }
+}
+
+function onChangeChapter() {
+    const $selectedOption = $('#chapters-select').find('option:selected');
+
+    if ($selectedOption.length === 0) {
+        return;
+    }
+    // this is not 100% accurate, but floats are not supported by mpc to seek a position
+    const seekPosition = $selectedOption.data('start');
+    executePlayerCommand("seekPosition", null, seekPosition);
+}
 
 function volumeUp() {
     executePlayerCommand('volumeup', () => {

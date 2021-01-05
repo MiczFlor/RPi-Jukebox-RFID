@@ -9,6 +9,45 @@ include("inc.header.php");
 html_bootstrap3_createHeader("en","Phoniebox",$conf['base_url']);
 
 ?>
+<style>
+.filterDiv {
+  display: none;
+}
+
+.filtershow {
+  display: block;
+}
+
+.filtercontainer {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+/* Style the buttons */
+.filterbtn {
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  margin-bottom: 3px;
+  background-color: #464545;
+  color: white;
+  cursor: pointer;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.filterbtn:hover {
+  background-color: #f1f1f1;
+  color: black;
+}
+
+.filterbtn.active {
+  background-color: #0ce3ac;
+  color: white;
+}
+</style>
 <body>
   <div class="container">
 
@@ -60,7 +99,15 @@ include("inc.setVolume.php");
     <div class="row">
       <div class="col-lg-12">
         <h3><?php print $lang['indexAvailAudio']; ?></h3>
-      <div class="row">
+			<div id="myfilterBtnContainer">
+				  <button class="filterbtn active" onclick="filterSelection('all')"> <?php print $lang['filterall']; ?></button>
+				  <button class="filterbtn" onclick="filterSelection('file')"> <?php print $lang['filterfile']; ?></button>
+				  <button class="filterbtn" onclick="filterSelection('livestream')"> <?php print $lang['filterlivestream']; ?></button>
+				  <button class="filterbtn" onclick="filterSelection('podcast')"> <?php print $lang['filterpodcast']; ?></button>
+				  <button class="filterbtn" onclick="filterSelection('spotify')"> <?php print $lang['filterspotify']; ?></button>
+				  <button class="filterbtn" onclick="filterSelection('youtube')"> <?php print $lang['filteryoutube']; ?></button>
+			</div>
+      <div class="filtercontainer row">
 <?php
 
 // read the shortcuts used
@@ -92,6 +139,51 @@ foreach($audiofolders as $audiofolder) {
 ?>
 
       </div><!-- / .col-lg-12 -->
+	<script>
+		filterSelection("all")
+		function filterSelection(c) {
+		  var x, i;
+		  x = document.getElementsByClassName("filterDiv");
+		  if (c == "all") c = "";
+		  for (i = 0; i < x.length; i++) {
+			w3RemoveClass(x[i], "filtershow");
+			if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "filtershow");
+		  }
+		}
+
+		function w3AddClass(element, name) {
+		  var i, arr1, arr2;
+		  arr1 = element.className.split(" ");
+		  arr2 = name.split(" ");
+		  for (i = 0; i < arr2.length; i++) {
+			if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+		  }
+		}
+
+		function w3RemoveClass(element, name) {
+		  var i, arr1, arr2;
+		  arr1 = element.className.split(" ");
+		  arr2 = name.split(" ");
+		  for (i = 0; i < arr2.length; i++) {
+			while (arr1.indexOf(arr2[i]) > -1) {
+			  arr1.splice(arr1.indexOf(arr2[i]), 1);     
+			}
+		  }
+		  element.className = arr1.join(" ");
+		}
+
+		// Add active class to the current button (highlight it)
+		var filterbtnContainer = document.getElementById("myfilterBtnContainer");
+		var btns = filterbtnContainer.getElementsByClassName("filterbtn");
+		for (var i = 0; i < btns.length; i++) {
+		  btns[i].addEventListener("click", function(){
+			var current = document.getElementsByClassName("active");
+			current[0].className = current[0].className.replace(" active", "");
+			this.className += " active";
+		  });
+		}
+	</script>
+	
         <!-- input-group -->          
           <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">

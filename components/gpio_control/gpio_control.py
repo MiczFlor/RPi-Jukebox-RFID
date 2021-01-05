@@ -50,7 +50,8 @@ def generate_device(config, deviceName):
                             bouncetime=config.getint('bouncetime', fallback=500),
                             edge=config.get('edge', fallback='FALLING'),
                             hold_repeat=config.getboolean('hold_repeat', False),
-                            hold_time=config.getfloat('hold_time', fallback=0.3))
+                            hold_time=config.getfloat('hold_time', fallback=0.3),
+                            pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
     elif device_type == 'LED':
         return LED(config.getint('Pin'),
                             name=deviceName,
@@ -61,6 +62,13 @@ def generate_device(config, deviceName):
                             port=config.getint('port', fallback=6600),
                             name=deviceName
                             )
+    elif device_type == 'RotaryEncoder':
+        return RotaryEncoder(config.getint('pinUp'),
+                config.getint('pinDown'),
+                getFunctionCall(config.get('functionCallUp')),
+                getFunctionCall(config.get('functionCallDown')),
+                config.getfloat('timeBase', fallback=0.1),
+                name=deviceName)
     logger.warning('cannot find {}'.format(deviceName))
     return None
 
@@ -89,8 +97,8 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel('INFO')
 
-    config = configparser.ConfigParser()
-    config_path = os.path.expanduser('~/.config/phoniebox/gpio_settings.ini')
+    config = configparser.ConfigParser(inline_comment_prefixes=";")
+    config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     config.read(config_path)
 
     devices = get_all_devices(config)

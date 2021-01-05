@@ -1,11 +1,14 @@
 import logging
 import sys
 from subprocess import Popen as function_call
+import os
+import pathlib
 
 logger = logging.getLogger(__name__)
 
-playout_control = "../../scripts/playout_controls.sh"
-
+playout_control_relative_path = "../../scripts/playout_controls.sh"
+function_calls_absolute_path = str(pathlib.Path(__file__).parent.absolute())
+playout_control = os.path.abspath(os.path.join(function_calls_absolute_path, playout_control_relative_path))
 
 def functionCallShutdown(*args):
     function_call("{command} -c=shutdown".format(command=playout_control), shell=True)
@@ -68,6 +71,14 @@ def functionCallToggleWifi(*args):
 def functionCallPlayerStop(*args):
     function_call("{command} -c=playerstop".format(command=playout_control),
             shell=True)
+
+
+def functionCallPlayerSeekFwd(*args):
+    function_call("{command} -c=playerseek -v=+10".format(command=playout_control), shell=True)
+
+
+def functionCallPlayerSeekBack(*args):
+    function_call("{command} -c=playerseek -v=-10".format(command=playout_control), shell=True)
 
 
 def getFunctionCall(functionName):

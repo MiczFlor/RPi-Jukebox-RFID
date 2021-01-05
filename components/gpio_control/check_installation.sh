@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FRED="\033[31m"
 FBOLD='\033[1;31m'
@@ -17,7 +17,7 @@ done
 
 
 
-SERVICE_STATUS="$(systemctl is-active phoniebox_gpio_control.service)"
+SERVICE_STATUS="$(systemctl is-active phoniebox-gpio-control.service)"
 if [ "${SERVICE_STATUS}" = "active" ]; then
     echo "Phoniebox GPIO Service started correctly ....."
 else
@@ -29,7 +29,7 @@ else
     echo "      $ cd ~/RPi-Jukebox-RFID/components/gpio_control"
     echo "      $ python gpio_control.py"
     echo "   or check output of journaclctl by:"
-    echo "      $ journalctl -u phoniebox_gpio_control.service -f"
+    echo "      $ journalctl -u phoniebox-gpio-control.service -f"
 fi
 echo
 if $ERROR ; then

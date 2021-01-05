@@ -4,6 +4,7 @@ import logging
 import os
 import subprocess
 import time
+import re
 
 from Reader import Reader
 
@@ -21,10 +22,39 @@ reader = Reader()
 dir_path = os.path.dirname(os.path.realpath(__file__))
 logger.info('Dir_PATH: {dir_path}'.format(dir_path=dir_path))
 
+# get control card ids
+file_path = os.path.dirname(__file__)
+if file_path != "":
+    os.chdir(file_path)
+
 # vars for ensuring delay between same-card-swipes
-same_id_delay = 0
+ssp = open('../settings/Second_Swipe_Pause', 'r')
+same_id_delay = ssp.read().strip()
+sspc = open('../settings/Second_Swipe_Pause_Controls', 'r')
+sspc_nodelay = sspc.readline().strip()
 previous_id = ""
 previous_time = time.time()
+
+# create array for control card ids
+cards = []
+
+# open file and read the content in a list
+with open('../settings/global.conf', 'r') as filehandle:
+    filecontents = filehandle.readlines()
+
+    for line in filecontents:
+        cids = line[:-1]
+        cards.append(cids)
+
+
+extract = [s for s in cards if s.startswith('CMD')]
+string = ''.join(extract)
+
+# if controlcards delay is deactivated, let the cards pass, otherwise, they have to wait...
+if sspc_nodelay == "ON":
+    ids = re.findall("(\d+)", string)
+else:
+    ids = ""
 
 while True:
     # reading the card id
@@ -40,16 +70,18 @@ while True:
         # start the player script and pass on the cardid (but only if new card or otherwise
         # "same_id_delay" seconds have passed)
         if cardid is not None:
-            if cardid != previous_id or (time.time() - previous_time) >= same_id_delay:
+            if cardid != previous_id or (time.time() - previous_time) >= float(same_id_delay) or cardid in str(ids):
                 logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                 subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
                 previous_id = cardid
-                previous_time = time.time()
+
             else:
                 logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
                     cardid=cardid,
                     same_id_delay=same_id_delay
                 ))
+
+            previous_time = time.time()
 
     except OSError as e:
         logger.error('Execution failed: {e}'.format(e=e))
