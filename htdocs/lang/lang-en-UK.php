@@ -45,6 +45,7 @@ $lang['globalIdleShutdown'] = "Idle Shutdown";
 $lang['globalAutoStopPlayout'] = "Stop Playout Timer";
 $lang['globalStopTimer'] = "Stop Playout Timer";
 $lang['globalSleepTimer'] = "Shutdown Timer";
+$lang['globalShutReduceVolume'] = "Shutdown Timer reducing Volume";
 $lang['globalExternalInterfaces'] = "External Devices & Interfaces";
 $lang['globalIdleTime'] = "Idle Time";
 $lang['globalNotIdle'] = "Not Idle";

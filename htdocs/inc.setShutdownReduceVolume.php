@@ -38,7 +38,7 @@ Sleep Timer Set Form
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4><?php print $lang['globalshut_reduce_volume_']; ?></h4>
+              <h4><?php print $lang['globalShutReduceVolume']; ?></h4>
                 <form name='shutdownafter' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
                     <select id="shutdownafter" name="shutdownafter" class="selectpicker form-control">

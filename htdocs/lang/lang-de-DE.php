@@ -45,6 +45,7 @@ $lang['globalIdleShutdown'] = "Leerlaufabschaltung";
 $lang['globalAutoStopPlayout'] = "Stop Playout Timer";
 $lang['globalStopTimer'] = "Stop Playout Timer";
 $lang['globalSleepTimer'] = "Einschlaf-Timer";
+$lang['globalShutReduceVolume'] = "Einschlaf-Timer mit Lautstärke-Absenkung";
 $lang['globalExternalInterfaces'] = "Externe Geräte & Schnittstellen";
 $lang['globalIdleTime'] = "Leerlaufzeit";
 $lang['globalNotIdle'] = "Nicht im Leerlauf";
