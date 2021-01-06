@@ -270,7 +270,7 @@ case $COMMAND in
 			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q r now + `expr $(((i * TIMESTEP)-1))` minute;
 		done
 		# schedule shutdown after VALUE minutes
-		echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
+		echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q r now + ${VALUE} minute
 		;;			
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
