@@ -116,6 +116,16 @@ SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
 ### Shutdown after 60 min.
 SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
 
+## Shutdown Timer Volume Reduction : reduce volume until shutdown in x minutes
+### Shutdown after 10 min.
+SHUTDOWNVOLUMEREDUCTION10="%SHUTDOWNVOLUMEREDUCTION10%"
+### Shutdown after 15 min.
+SHUTDOWNVOLUMEREDUCTION15="%SHUTDOWNVOLUMEREDUCTION15%"
+### Shutdown after 30 min.
+SHUTDOWNVOLUMEREDUCTION30="%SHUTDOWNVOLUMEREDUCTION30%"
+### Shutdown after 60 min.
+SHUTDOWNVOLUMEREDUCTION60="%SHUTDOWNVOLUMEREDUCTION60%"
+
 ## Wifi: switch on/off and other
 ### Enable Wifi
 ENABLEWIFI="%ENABLEWIFI%"
