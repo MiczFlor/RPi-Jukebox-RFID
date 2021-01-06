@@ -259,6 +259,7 @@ case $COMMAND in
         fi
         ;;
 	shutdownvolumereduction)
+	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
 		# get current volume in percent
 		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
 		# divide current volume by 10 to get a step size for reducing the volume
