@@ -1,6 +1,6 @@
 ## Neatly switch between soundcard and bluetooth audio output
 
-**Wouldn't it be nice to have regular speakers and Bluetooth headphones on your Phoniebox and choose the desired output on a spur of the moment? **
+**Wouldn't it be nice to have regular speakers and Bluetooth headphones on your Phoniebox and choose the desired output on a spur of the moment?**
 
 This component provides a mechanism to toggle between both audio sinks through all the usual user interfaces (i.e. GPIO, RFID Card Swipe, Web Interface). The current status is reflected in the Web Interface and through an optional LED.
 
@@ -28,7 +28,7 @@ You need to set up both audio sinks and make sure they work. This is pretty much
 
 Follow the instructions for your soundcard. Configure `etc/asound.conf`correctly. And make sure it works!
 
-Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `etc/asound.conf (choose a name to your liking). Do **not** touch the mpd.conf yet!
+Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
 
 The new entry should end up looking like this:
 ~~~
@@ -60,12 +60,14 @@ $ aplay -D hifiberry /usr/share/sounds/alsa/Front_Center.wav
 
 You need to set up two audio_output sections. **The order is important**: the first entry must relate to the soundcard setup, the second entry must relate to the bluetooth setup. Give meaningful names, as they will show up in the Web Interface.
 
-~~~sh
-# The first entry should match your soundcard. If you have a working setup, there is most likly no need to change it!  As an exanple, here is my configuration for my HifiBerry MiniAmp.
+~~~
+# The first entry should match your soundcard. If you have a working setup, there is most likly no need to change it!
+# As an exanple, here is my configuration for my HifiBerry MiniAmp.
 audio_output {
         type             "alsa"
         name             "HifiBerry Speakers"   # This name will show up in the Web Interface Status 
-        device           "hifiberry"            # This is the pcm.hifiberry device from the asound.conf. If you did not specify a name, but use the 'default', delete this line
+        device           "hifiberry"            # This is the pcm.hifiberry device from the asound.conf. 
+                                                # If you did not specify a name, but use the 'default', delete this entry
         auto_resample    "no"                   # Depends on your asound.conf. In doubt delete this line
         mixer_control    "Master"               # This is the iFace name, you will recognize from your Phoniebox installation
 }
@@ -154,9 +156,11 @@ pcm.hifiberry {
     type softvol
     slave.pcm    "plughw:0,0" # Your audio output. Here: audio stream goes direclty to the soundcard 0
     control.name "Master"     # Unique, new iFace name not already used in the system
-    control.card  0           # Be sure to also adjust the index to your soundcard number; i.e. if your soundcard is plughw:1,0 this should also be 1
+    control.card  0           # Be sure to also adjust the index to your soundcard number
+                              # i.e. if your soundcard is plughw:1,0 this should also be 1
     max_dB       -20.0        # This limits the maximum speaker volume.
-                              # Play around with this number until your are satisfied with the volume change effect when switching between headphones and speakers
+                              # Play around with this number until your are satisfied with the 
+                              # volume change effect when switching between headphones and speakers
     hint {
          show on
          description "HifiBerry Speakers"
@@ -179,7 +183,7 @@ ctl.!default {
 - Change the mixer control to the new iFace name: `mixer_control    "Master"`
 - Ensure that it is there is no entry mixer_type or that it is `mixer_type  "hardware"`
 
-See example [mpd.conf](#step-2--setting-up-mpd-conf) above! 
+See example [mpd.conf](#step-2-setting-up-mpdconf) above! 
 
 Also change the Phoniebox setting with 
 ~~~sh
@@ -209,15 +213,17 @@ Troubleshooting comes in three major sub-tasks:
 ## Some background
 
 https://alsa.opensrc.org/Softvol
+
 https://alsa.opensrc.org/How_to_use_softvol_to_control_the_master_volume
+
 https://www.alsa-project.org/alsa-doc/alsa-lib/pcm_plugins.html
 
 ## Example config
 
-For reference, this is my /etc/asound.conf in full (it also sets up an equalizer). The corresponding mpd.conf excerpt is the one given above.
+For reference, this is my /etc/asound.conf in full (it also sets up an equalizer). The corresponding [mpd.conf](#step-2-setting-up-mpdconf) excerpt is the one given above.
 
 ~~~
-   pcm.btheadphone {
+pcm.btheadphone {
     type plug
     slave.pcm {
       type bluealsa
