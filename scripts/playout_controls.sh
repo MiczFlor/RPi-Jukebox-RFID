@@ -267,7 +267,7 @@ case $COMMAND in
 		TIMESTEP=`expr $((VALUE / 10))`;
 		# loop 10 times to reduce the volume by VOLSTEP every TIMESTEP minutes
 		for i in $(seq 1 10); do
-			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q t now + `expr $(((i * TIMESTEP)-1))` minute;
+			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q r now + `expr $(((i * TIMESTEP)-1))` minute;
 		done
 		# schedule shutdown after VALUE minutes
 		echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
