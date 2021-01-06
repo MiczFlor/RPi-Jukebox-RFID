@@ -261,6 +261,7 @@ case $COMMAND in
 	shutdownvolumereduction)
 	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # remove existing volume and shutdown commands
+		for i in `sudo atq -q r | awk '{print $1}'`;do sudo atrm $i;done
 		for i in `sudo atq -q q | awk '{print $1}'`;do sudo atrm $i;done
 		# get current volume in percent
 		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
