@@ -11,7 +11,7 @@ Sleep Timer Set Form
         /*
         * Get shutdownvolumereduction value
         */
-        $shutdownvolumereductionvalue = exec("sudo atq -q r | awk '{print $5}'");
+        $shutdownvolumereductionvalue = exec("sudo atq -q q | awk '{print $5}'");
         if ($shutdownvolumereductionvalue != "") {
             $unixtime = time();
             /*
