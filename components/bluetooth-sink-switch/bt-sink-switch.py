@@ -18,8 +18,7 @@ import logging
 # If called as script, this variable will set GPIO number of the LED to reflect sink status
 # Uses BCM GPIO numbering, i.e. 'led_pin = 6' means GPIO6
 # Set 'led_pin=None' to disable LED support (and no GPIO pin is blocked in this case)
-# led_pin = None
-led_pin = 6
+led_pin = None
 
 # Create logger
 logger = logging.getLogger('bt-sink-switch.py')
