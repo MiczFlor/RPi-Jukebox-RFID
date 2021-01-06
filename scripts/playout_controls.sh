@@ -22,7 +22,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shutdown
 # shutdownsilent
 # shutdownafter
-# shutdownwithreducingvolume
+# shutdownvolumereduction
 # reboot
 # scan
 # mute
@@ -258,7 +258,7 @@ case $COMMAND in
             echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
         fi
         ;;
-	shutdownwithreducingvolume)
+	shutdownvolumereduction)
 		# get current volume in percent
 		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
 		# divide current volume by 10 to get a step size for reducing the volume

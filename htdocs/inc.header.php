@@ -202,7 +202,7 @@ $nonEmptyCommands = array(
     'scan',
     'idletime',
     'shutdownafter',
-	'shutdownwithreducingvolume',
+	'shutdownvolumereduction',
     'stopplayoutafter',
     'enableresume',
     'disableresume',
@@ -304,7 +304,7 @@ $commandToAction = array(
     'volumedown' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumedown",             // volume down
     'idletime' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setidletime -v=%s",        // set idletime
     'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
-    'shutdownwithreducingvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownwithreducingvolume -v=%s", // set time to shutdown with reducing volume
+    'shutdownvolumereduction' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownvolumereduction -v=%s", // set time to shutdown with reducing volume
     'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
     'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
     'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",
