@@ -124,6 +124,7 @@ $lang['cardRegisterErrorStreamOrAudio'] = "<p>Das ist nicht genug! Füge eine UR
 $lang['cardRegisterErrorExistingAndNew'] = "<p>Das ist zu viel! Wähle entweder einen bestehenden Ordner aus oder erstelle einen neuen.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>Ein Ordner mit dem gleichen Namen existiert bereits! Wähle einen anderen. </p>";
 $lang['cardRegisterErrorSuggestFolder'] = "Ein Ordnername für den Stream muss erstellt werden. Unten im Formular steht ein Vorschlag.";
+$lang['cardRegisterErrorConvertSpotifyURL'] = "Falsche Spotify URL, konvertiert in korrektes Format";
 $lang['cardRegisterStream2Card'] = "Stream ist mit der Karten-ID verknüpft.";
 $lang['cardRegisterFolder2Card'] = "Audio-Ordner ist nun mit der Karten-ID verknüpft.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube Audio wird heruntergeladen. Dies kann einige Minuten dauern. Du kannst die Logdatei \"youtube-dl.log\" im Ordner \"shared\" ansehen.</p>";
