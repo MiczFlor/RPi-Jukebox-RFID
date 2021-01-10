@@ -16,7 +16,7 @@ If no bluetooth device is connected, the output defaults back to speakers. After
 
 **Limitations**
 
-This feature only works for the *Classic* Edition. Why? It relies on the mpd multiple output channels feature to switch between outputs. This is no avaiable in mopidy, which is used in the Spotify Edition.
+This feature only works for the *Classic* Edition. Why? It relies on the mpd multiple output channels feature to switch between outputs. This is no available in mopidy, which is used in the Spotify Edition.
 
 ### Installation
 
@@ -26,9 +26,9 @@ This looks lengthy, but I the major deal is setting up your audio output devices
 
 You need to set up both audio sinks and make sure they work. This is pretty much a prerequisite for everything that follows. 
 
-Follow the instructions for your soundcard. Configure `etc/asound.conf`correctly. And make sure it works!
+Follow the instructions for your soundcard. Configure `/etc/asound.conf`correctly. And make sure it works!
 
-Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
+Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
 
 The new entry should end up looking like this:
 ~~~
@@ -144,7 +144,7 @@ CMDBLUETOOTHTOGGLE="1364237231134"
 
 **Volume attenuation**
 
-Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restructing the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
+Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restricting the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
 
 The solution is adding a `softvol` component to the /etc/asound.conf. You may already have one set up, if your soundcard does not have a hardware volume control. Then it is easy! The `softvol` copmonent adds a systemwide ALSA-based volume control for a hardware soundcard. You will need to give it a name, that does **not** exist! Check with `$ amixer scontrols` first, which names are already taken. Here, I have choosen *Master*. This will work even if your soundcard has a hardware volume control.
 
