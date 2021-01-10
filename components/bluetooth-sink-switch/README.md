@@ -144,7 +144,7 @@ CMDBLUETOOTHTOGGLE="1364237231134"
 
 **Volume attenuation**
 
-Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restructing the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
+Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restricting the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
 
 The solution is adding a `softvol` component to the /etc/asound.conf. You may already have one set up, if your soundcard does not have a hardware volume control. Then it is easy! The `softvol` copmonent adds a systemwide ALSA-based volume control for a hardware soundcard. You will need to give it a name, that does **not** exist! Check with `$ amixer scontrols` first, which names are already taken. Here, I have choosen *Master*. This will work even if your soundcard has a hardware volume control.
 
