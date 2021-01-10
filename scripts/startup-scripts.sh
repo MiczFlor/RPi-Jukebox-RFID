@@ -41,7 +41,7 @@ while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 lo
 # play startup sound
 mpgvolume=$((32768*${AUDIOVOLSTARTUP}/100))
 echo "${mpgvolume} is the mpg123 startup volume"
-#/usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+/usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 #######################
 # re-scan music library
