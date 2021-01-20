@@ -85,6 +85,8 @@ then
         LOOP="OFF"
         SINGLE="OFF"
         FOLDERSHUFFLE="OFF"
+        FOLDERSINGLE="OFF"
+        FOLDERSKIP="OFF"
     fi
     
     #########################################################
@@ -102,6 +104,8 @@ then
     if [ "$LOOP" ]; then NEWLOOP="$LOOP"; fi
     if [ "$SINGLE" ]; then NEWSINGLE="$SINGLE"; fi
     if [ "$FOLDERSHUFFLE" ]; then NEWFOLDERSHUFFLE="$FOLDERSHUFFLE"; fi
+    if [ "$FOLDERSINGLE" ]; then NEWFOLDERSINGLE="$FOLDERSINGLE"; fi
+    if [ "$FOLDERSKIP" ]; then NEWFOLDERSKIP="$FOLDERSKIP"; fi
     if [ "${DEBUG_inc_writeFolderConfig_sh}" == "TRUE" ]; then echo "  KEEP SINGLE $SINGLE IN MIND" >> $PATHDATA/../logs/debug.log; fi
 
     # Read the current config file (include will execute == read)
@@ -122,6 +126,8 @@ then
     echo "LOOP=\"%LOOP%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     echo "SINGLE=\"%SINGLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     echo "FOLDERSHUFFLE=\"%FOLDERSHUFFLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "FOLDERSINGLE=\"%FOLDERSINGLE%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    echo "FOLDERSKIP=\"%FOLDERSKIP%\"" >> "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
     # Let the juggle begin
     
@@ -140,6 +146,8 @@ then
     if [ "$NEWLOOP" ]; then LOOP="$NEWLOOP"; fi
     if [ "$NEWSINGLE" ]; then SINGLE="$NEWSINGLE"; fi
     if [ "$NEWFOLDERSHUFFLE" ]; then FOLDERSHUFFLE="$NEWFOLDERSHUFFLE"; fi
+    if [ "$NEWFOLDERSINGLE" ]; then FOLDERSINGLE="$NEWFOLDERSINGLE"; fi
+    if [ "$NEWFOLDERSKIP" ]; then FOLDERSKIP="$NEWFOLDERSKIP"; fi
     
     #########################################################
     # WRITE THE VALUES INTO THE NEWLY CREATED RAW CONFIG
@@ -153,13 +161,11 @@ then
     sudo sed -i 's/%LOOP%/'"$LOOP"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%SINGLE%/'"$SINGLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo sed -i 's/%FOLDERSHUFFLE%/'"$FOLDERSHUFFLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%FOLDERSINGLE%/'"$FOLDERSINGLE"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
+    sudo sed -i 's/%FOLDERSKIP%/'"$FOLDERSKIP"'/' "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
     sudo chmod 777 "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf"
 
 else
     if [ "${DEBUG_inc_writeFolderConfig_sh}" == "TRUE" ]; then echo "NOT FOUND: Full path to folder '${AUDIOFOLDERSPATH}/${FOLDER}'" >> $PATHDATA/../logs/debug.log; fi
 fi
-
-
-
-

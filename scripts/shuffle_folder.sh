@@ -78,23 +78,53 @@ case "$COMMAND" in
 # 	fi
 #     ;;
 enableshuffle)
-        if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enableshuffle" >> $PATHDATA/../logs/debug.log; fi
-        # set the vars we need to change
-        FOLDERSHUFFLE="ON"
-        # now calling a script which will only replace these new vars in folder.conf
-        # (see script for details)
-        . $PATHDATA/inc.writeFolderConfig.sh
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enables huffle" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSHUFFLE="ON"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
     ;;
 disableshuffle)
-        if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: disableshuffle" >> $PATHDATA/../logs/debug.log; fi
-        # set the vars we need to change
-        FOLDERSHUFFLE="OFF"
-        # now calling a script which will only replace these new vars in folder.conf
-        # (see script for details)
-        . $PATHDATA/inc.writeFolderConfig.sh
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: disables huffle" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSHUFFLE="OFF"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
     ;;
-
-
+enablesinglefolder)
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enable single folder" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSINGLE="ON"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
+disablesinglefolder)
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enable single folder" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSINGLE="OFF"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
+enableskipfolder)
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enable skip folder" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSKIP="ON"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
+disableskipfolder)
+    if [ "${DEBUG_shuffle_folder_sh}" == "TRUE" ]; then echo "  entering: enable skip folder" >> $PATHDATA/../logs/debug.log; fi
+    # set the vars we need to change
+    FOLDERSKIP="OFF"
+    # now calling a script which will only replace these new vars in folder.conf
+    # (see script for details)
+    . $PATHDATA/inc.writeFolderConfig.sh
+    ;;
 *)
     echo "Command unknown"
     ;;

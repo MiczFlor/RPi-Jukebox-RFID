@@ -295,6 +295,14 @@ function toggleFoldershuffle(element) {
     togglePlaylistCommand(element, 'foldershuffle')
 }
 
+function toggleFoldersingle(element) {
+    togglePlaylistCommand(element, 'foldersingle')
+}
+
+function toggleFolderskip(element) {
+    togglePlaylistCommand(element, 'folderskip')
+}
+
 function toggleResume(element) {
     console.log("toggle resume");
     console.log(element);

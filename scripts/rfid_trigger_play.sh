@@ -320,6 +320,18 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
 
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
+    # get the name of the last folder played. As mpd doesn't store the name of the last
+    # playlist, we have to keep track of it via the Latest_Folder_Played file
+    # also track the last ID to enable random playing functionality and second swipe
+    LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
+    LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
+    LASTID=$(cat $PATHDATA/../settings/Latest_ID_Played)
+    # this might need to go? resume not working... echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTID: $LASTID" >> $PATHDATA/../logs/debug.log; fi
+    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
+
     # if we play a folder the first time, add some sensible information to the folder.conf
     if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
         # now we create a default folder.conf file by calling this script
@@ -333,60 +345,6 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     ID="$FOLDER"
     # Read the current config file (include will execute == read)
     . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-
-    # Look for file "random" to determine a random subfolder to be played
-    if [ $FOLDERSHUFFLE == "ON" ]
-    then
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be shuffled: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-
-        # search all subfolders and choose a shuffled one
-        RND_FOLDER=`find "${AUDIOFOLDERSPATH}/${FOLDER}/" -type d | shuf -n 1`
-        
-        # substract AUDIOFOLDERSPATH from the found subfolder to match the expected format
-        # being sloppy on check for audiofiles...
-        FOLDER=${RND_FOLDER#"$AUDIOFOLDERSPATH/"}
-
-        # check new folder again for folder.conf
-        # if we play a folder the first time, add some sensible information to the folder.conf
-        if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
-            # now we create a default folder.conf file by calling this script
-            # with the command param createDefaultFolderConf
-            # (see script for details)
-            # the $FOLDER would not need to be passed on, because it is already set in this script
-            # see inc.writeFolderConfig.sh for details
-            . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
-        fi
-    fi
-
-    # get the name of the last folder played. As mpd doesn't store the name of the last
-    # playlist, we have to keep track of it via the Latest_Folder_Played file
-    # also track the last ID to enable random playing functionality and second swipe
-    LASTFOLDER=$(cat $PATHDATA/../settings/Latest_Folder_Played)
-    LASTPLAYLIST=$(cat $PATHDATA/../settings/Latest_Playlist_Played)
-    LASTID=$(cat $PATHDATA/../settings/Latest_ID_Played)
-    # this might need to go? resume not working... echo ${FOLDER} > $PATHDATA/../settings/Latest_Folder_Played
-    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTFOLDER: $LASTFOLDER" >> $PATHDATA/../logs/debug.log; fi
-    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTPLAYLIST: $LASTPLAYLIST" >> $PATHDATA/../logs/debug.log; fi
-    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$LASTID: $LASTID" >> $PATHDATA/../logs/debug.log; fi
-    if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Checking 'recursive' list? VAR \$VALUE: $VALUE" >> $PATHDATA/../logs/debug.log; fi
-
-    if [ "$VALUE" == "recursive" ]; then
-        # set path to playlist
-        # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%"
-        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
-    else
-        # set path to playlist
-        # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ }"
-        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" > "${PLAYLISTPATH}"
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
-    fi
 
     # Second Swipe value
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Var \$SECONDSWIPE: ${SECONDSWIPE}"   >> $PATHDATA/../logs/debug.log; fi
@@ -455,11 +413,139 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
             if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: do nothing" >> $PATHDATA/../logs/debug.log; fi
         elif [ "$SECONDSWIPE" == "SKIPNEXT" ]
         then
-            # We will not play the playlist but skip to the next track:
-            PLAYPLAYLIST=skipnext
+            # check if folder should be skipped and increase folder counter if so
+            if [ "$FOLDERSKIP" == "ON" ]; then
+                PLAYPLAYLIST=yes
+                let "FOLDER_COUNTER++"
+            else
+                # We will not play the playlist but skip to the next track:
+                PLAYPLAYLIST=skipnext
+            fi
             if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  Completed: skip next track" >> $PATHDATA/../logs/debug.log; fi
         fi
+        else
+            # If no second swipe happens, we expect that we play the first folder, not necessary for FOLDERSINGLE option
+            FOLDER_COUNTER=0
     fi
+
+    # Look for file "random" to determine a random subfolder to be played
+    if [ $FOLDERSINGLE == "ON" ]
+    then
+        if [ $FOLDERSHUFFLE == "ON" ]
+        then
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be shuffled: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+
+            # search all subfolders and choose a shuffled one
+            RND_FOLDER=`find "${AUDIOFOLDERSPATH}/${FOLDER}/" -mindepth 1 -maxdepth 1 -type d | shuf -n 1`
+            
+            # substract AUDIOFOLDERSPATH from the found subfolder to match the expected format
+            # being sloppy on check for audiofiles...
+            FOLDER=${RND_FOLDER#"$AUDIOFOLDERSPATH/"}
+
+            # check new folder again for folder.conf
+            # if we play a folder the first time, add some sensible information to the folder.conf
+            if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
+                # now we create a default folder.conf file by calling this script
+                # with the command param createDefaultFolderConf
+                # (see script for details)
+                # the $FOLDER would not need to be passed on, because it is already set in this script
+                # see inc.writeFolderConfig.sh for details
+                . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
+            fi
+        elif [ $FOLDERSHUFFLE == "OFF" ]
+        then
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be single played: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+
+            # search all subfolders, put in an array and sort
+            mapfile -d $'\0' RND_FOLDER < <(find "${AUDIOFOLDERSPATH}/${FOLDER}/" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+            
+            # substract AUDIOFOLDERSPATH from the found subfolder to match the expected format
+            # being sloppy on check for audiofiles...
+            FOLDER=${RND_FOLDER[FOLDER_COUNTER]#"$AUDIOFOLDERSPATH/"}
+
+            # check new folder again for folder.conf
+            # if we play a folder the first time, add some sensible information to the folder.conf
+            if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
+                # now we create a default folder.conf file by calling this script
+                # with the command param createDefaultFolderConf
+                # (see script for details)
+                # the $FOLDER would not need to be passed on, because it is already set in this script
+                # see inc.writeFolderConfig.sh for details
+                . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
+            fi
+        fi
+        # handling of recursive subfolders
+        if [ "$VALUE" == "recursive" ]; then
+            # set path to playlist
+            # replace subfolder slashes with " % "
+            PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
+            PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%"
+            $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        else
+            # set path to playlist
+            # replace subfolder slashes with " % "
+            PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
+            PLAYLISTNAME="${FOLDER//\//\ %\ }"
+            $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" > "${PLAYLISTPATH}"
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+        fi
+    elif [ $FOLDERSINGLE == "OFF" ]
+    then
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be shuffled: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+        if [ $FOLDERSHUFFLE == "ON" ]
+        then
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should be single played: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+
+            # search all subfolders and play the first one
+            mapfile -d $'\0' RND_FOLDER < <(find "${AUDIOFOLDERSPATH}/${FOLDER}/" -mindepth 1 -maxdepth 1 -type d -print0 | shuf)
+            
+        elif [ $FOLDERSHUFFLE == "OFF" ]
+        then
+            if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER has subfolders that should not be shuffled: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
+
+            # search all subfolders, put in an array and sort
+            mapfile -d $'\0' RND_FOLDER < <(find "${AUDIOFOLDERSPATH}/${FOLDER}/" -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+        fi
+        # set path to playlist
+        # replace subfolder slashes with " % "
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }"
+        
+        # Loop the found foulders to add to the playlist
+        for (( n=$FOLDER_COUNTER; n<${#my_array[@]}; n++ ))
+        do
+            # substract AUDIOFOLDERSPATH from the found subfolder to match the expected format                
+            FOLDER=${RND_FOLDER[n]#"$AUDIOFOLDERSPATH/"}
+            # handling of recursive subfolders
+            if [ "$VALUE" == "recursive" ]; then
+                $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' >> "${PLAYLISTPATH}"
+                
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+            else
+                $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" >> "${PLAYLISTPATH}"
+
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
+                if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
+            fi
+            # check new folder again for folder.conf
+            # if we play a folder the first time, add some sensible information to the folder.conf
+            if [ ! -f "${AUDIOFOLDERSPATH}/${FOLDER}/folder.conf" ]; then
+                # now we create a default folder.conf file by calling this script
+                # with the command param createDefaultFolderConf
+                # (see script for details)
+                # the $FOLDER would not need to be passed on, because it is already set in this script
+                # see inc.writeFolderConfig.sh for details
+                . $PATHDATA/inc.writeFolderConfig.sh -c=createDefaultFolderConf -d="${FOLDER}"
+            fi
+        done
+    fi
+
+
+
     # now we check if we are still on for playing what we got passed on:
     if [ "$PLAYPLAYLIST" == "yes" ]
     then
