@@ -36,7 +36,22 @@ function execSuccessfully($command) {
         echo "Execution failed\nCommand: {$command}\nOutput: {$formattedOutput}\nRC: .${rc}";
         http_response_code(500);
         exit();
-    }
+    }  
     return $output;
 }
+
+function execMPDCommand($command) {    
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    $stream = socket_connect($socket,"localhost" ,6600);
+    socket_write($socket, $command, strlen($command));
+    socket_shutdown ($socket,1);
+    $output = array();
+    while ($out = socket_read($socket, 2048)) {
+         $outputTemp .= $out;
+    }
+    $output = array_merge($output,explode("\n", $outputTemp));
+    socket_close($socket);
+    return $output;
+}
+
 ?>

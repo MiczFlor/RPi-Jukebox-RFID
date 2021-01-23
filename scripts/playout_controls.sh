@@ -22,6 +22,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shutdown
 # shutdownsilent
 # shutdownafter
+# shutdownvolumereduction
 # reboot
 # scan
 # mute
@@ -112,8 +113,6 @@ shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
 then
-    ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
-    ENABLE_CHAPTERS_MIN_DURATION="600"
 
     function dbg {
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
@@ -152,7 +151,7 @@ then
     CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
     dbg "chapters file: $CHAPTERS_FILE"
 
-    if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
+    if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$CHAPTEREXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
         CHAPTER_SUPPORT_FOR_EXTENSION="1"
     else
         CHAPTER_SUPPORT_FOR_EXTENSION="0"
@@ -160,7 +159,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
@@ -257,6 +256,28 @@ case $COMMAND in
             echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
         fi
         ;;
+	shutdownvolumereduction)
+	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # remove existing volume and shutdown commands
+		for i in `sudo atq -q r | awk '{print $1}'`;do sudo atrm $i;done
+		for i in `sudo atq -q q | awk '{print $1}'`;do sudo atrm $i;done
+		# get current volume in percent
+		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+		# divide current volume by 10 to get a step size for reducing the volume
+		VOLSTEP=`expr $((VOLPERCENT / 10))`;
+		# divide VALUE by 10, volume will be reduced every TIMESTEP minutes (e.g. for a value of "30" it will be every "3" minutes)
+		TIMESTEP=`expr $((VALUE / 10))`;
+		# loop 10 times to reduce the volume by VOLSTEP every TIMESTEP minutes
+		for i in $(seq 1 10); do
+			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q r now + `expr $(((i * TIMESTEP)-1))` minute;
+		done
+		# schedule shutdown after VALUE minutes
+        if [ ${VALUE} -gt 0 ];
+        then
+			# schedule shutdown after VALUE minutes
+			echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q q now + ${VALUE} minute
+		fi
+		;;			
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
