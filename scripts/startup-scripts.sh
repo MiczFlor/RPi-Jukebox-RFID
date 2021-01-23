@@ -54,7 +54,7 @@ if [ "${READWLANIPYN}" == "ON" ]; then
 fi
 
 #######################
-# Default audio sink to speakers (instead of bluetooth device) irrespective of setting at shutdown
+# Default audio output to speakers (instead of bluetooth device) irrespective of setting at shutdown
 if [ -f $PATHDATA/../settings/bluetooth-sink-switch ]; then
     BTSINKSWITCH=`cat $PATHDATA/../settings/bluetooth-sink-switch`
     if [ "${BTSINKSWITCH}" == "enabled" ]; then
