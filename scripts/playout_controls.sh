@@ -22,6 +22,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shutdown
 # shutdownsilent
 # shutdownafter
+# shutdownvolumereduction
 # reboot
 # scan
 # mute
@@ -255,6 +256,28 @@ case $COMMAND in
             echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
         fi
         ;;
+	shutdownvolumereduction)
+	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # remove existing volume and shutdown commands
+		for i in `sudo atq -q r | awk '{print $1}'`;do sudo atrm $i;done
+		for i in `sudo atq -q q | awk '{print $1}'`;do sudo atrm $i;done
+		# get current volume in percent
+		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+		# divide current volume by 10 to get a step size for reducing the volume
+		VOLSTEP=`expr $((VOLPERCENT / 10))`;
+		# divide VALUE by 10, volume will be reduced every TIMESTEP minutes (e.g. for a value of "30" it will be every "3" minutes)
+		TIMESTEP=`expr $((VALUE / 10))`;
+		# loop 10 times to reduce the volume by VOLSTEP every TIMESTEP minutes
+		for i in $(seq 1 10); do
+			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q r now + `expr $(((i * TIMESTEP)-1))` minute;
+		done
+		# schedule shutdown after VALUE minutes
+        if [ ${VALUE} -gt 0 ];
+        then
+			# schedule shutdown after VALUE minutes
+			echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q q now + ${VALUE} minute
+		fi
+		;;			
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
