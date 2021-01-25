@@ -513,6 +513,7 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         # replace subfolder slashes with " % "
         PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
         PLAYLISTNAME="${FOLDER//\//\ %\ }"
+        echo "" > "${PLAYLISTPATH}"
         
         # Loop the found foulders to add to the playlist
         for (( n=$FOLDER_COUNTER; n<${#my_array[@]}; n++ ))
