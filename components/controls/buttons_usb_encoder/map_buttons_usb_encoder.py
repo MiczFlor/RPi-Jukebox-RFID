@@ -32,7 +32,7 @@ try:
                     if keyevent.keystate == KeyEvent.key_down:
                         button_string = keyevent.keycode
                         if type(button_string) is list:
-                            button_string = '-'.join(button_string)
+                            button_string = '-'.join(sorted(button_string))
                         button_map[button_string] = function_name
                         print("Button " + button_string + " is now mapped to " + function_name_short)
                         break
