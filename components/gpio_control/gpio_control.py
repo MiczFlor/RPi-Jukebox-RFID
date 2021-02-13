@@ -102,9 +102,14 @@ def get_all_devices(config):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level='INFO')
+    lf = '%(asctime)s %(message)s'
+    lp = '/home/pi/RPi-Jukebox-RFID/logs/gpio.log'
+    #logging.basicConfig(filename=lp, level=logging.DEBUG,format=lf)
+    logging.basicConfig(level=logging.INFO,format=lf)
     logger = logging.getLogger()
-    logger.setLevel('INFO')
+    #logger.setLevel('INFO')
+    
+    logger.info('GPIO Started')
 
     config = configparser.ConfigParser(inline_comment_prefixes=";")
     config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')

@@ -1,6 +1,8 @@
 <?php
 namespace JukeBox\Api;
 
+include ("zmq.php");
+
 /**
  * Retrieves and sets the volume.
  */
@@ -22,9 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $body = file_get_contents('php://input');
     if (is_numeric($body)) {
-        $command = "playout_controls.sh -c=setvolume -v=$body";
-        execScript($command);
+        #$command = "playout_controls.sh -c=setvolume -v=$body";
+        #execScript($command);
         echo $body;
+        $response = phonie_enquene(array('obj'=>'volume','cmd'=>'set','param'=>array('volume'=>(int)$body)));
+
+        #if ($response == NULL) {$response = "No Response receivd";};
+        #echo($response);
     } else {
         http_response_code(400);
     }

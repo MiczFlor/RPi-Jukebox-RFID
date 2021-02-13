@@ -1,6 +1,8 @@
 <?php
 namespace JukeBox\Api;
 
+include ("zmq.php");
+
 /***
  * Allows to control the player by sending a command via PUT like 'play' or 'pause'.
  * Retrieves information about the player by sending a GET request.
@@ -40,10 +42,17 @@ function handlePut() {
     $inputCommand = $json['command'];
     $inputValue = $json['value'] ?? "";
     if ($inputCommand != null) {
-        $controlsCommand = determineCommand($inputCommand);
-        $controlsValue = $inputValue !== "" ? " -v=" . ((float)$inputValue) : "";
-        $execCommand = "playout_controls.sh {$controlsCommand}{$controlsValue}";
-        execScript($execCommand);
+        if ($inputCommand == 'play')
+        {
+            $response = phonie_enquene(array('obj'=>'player','cmd'=>$inputCommand,'param'=>''));
+        }
+        else
+        {
+            $controlsCommand = determineCommand($inputCommand);
+            $controlsValue = $inputValue !== "" ? " -v=" . ((float)$inputValue) : "";
+            $execCommand = "playout_controls.sh {$controlsCommand}{$controlsValue}";
+            execScript($execCommand);
+        }
     } else {
         echo "Body is missing command";
         http_response_code(400);

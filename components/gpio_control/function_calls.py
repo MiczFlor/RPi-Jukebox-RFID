@@ -4,6 +4,20 @@ from subprocess import Popen as function_call
 import os
 import pathlib
 
+
+
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+parentdir = os.path.dirname(parentdir)
+print (parentdir)
+
+sys.path.append(parentdir+"/scripts")
+
+print(sys.path)
+
+from phonie_access_objects import phoniebox_object_access_queue
+
+
 logger = logging.getLogger(__name__)
 
 playout_control_relative_path = "../../scripts/playout_controls.sh"
@@ -15,21 +29,29 @@ def functionCallShutdown(*args):
 
 
 def functionCallVolU(steps=None):
-    if steps is None:
-        function_call("{command} -c=volumeup".format(command=playout_control), shell=True)
-    else:
-        function_call("{command} -c=volumeup -v={steps}".format(steps=steps,
-            command=playout_control),
-                shell=True)
+    queue = phoniebox_object_access_queue()
+    queue.connect()
+    resp = queue.phonie_enqueue({'obj':'volume','cmd':'inc','param':None})
+    
+    #if steps is None:
+    #    function_call("{command} -c=volumeup".format(command=playout_control), shell=True)
+    #else:
+    #    function_call("{command} -c=volumeup -v={steps}".format(steps=steps,
+    #        command=playout_control),
+    #            shell=True)
 
 
 def functionCallVolD(steps=None):
-    if steps is None:
-        function_call("{command} -c=volumedown".format(command=playout_control), shell=True)
-    else:
-        function_call("{command} -c=volumedown -v={steps}".format(steps=steps,
-            command=playout_control),
-                shell=True)
+    queue = phoniebox_object_access_queue()
+    queue.connect()
+    resp = queue.phonie_enqueue({'obj':'volume','cmd':'dec','param':None})
+    
+    #if steps is None:
+    #    function_call("{command} -c=volumedown".format(command=playout_control), shell=True)
+    #else:
+    #    function_call("{command} -c=volumedown -v={steps}".format(steps=steps,
+    #        command=playout_control),
+    #            shell=True)
 
 
 def functionCallVol0(*args):
@@ -85,3 +107,4 @@ def getFunctionCall(functionName):
     logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))
     getattr(sys.modules[__name__], str)
     return locals().get(functionName, None)
+

@@ -10,6 +10,9 @@
 # Set the date and time of now
 NOW=`date +%Y-%m-%d.%H:%M:%S`
 
+mtime=`date +%s`
+
+
 # USAGE EXAMPLES:
 #
 # shutdown RPi:
@@ -574,6 +577,7 @@ case $COMMAND in
         echo ${AUDIOVOLSTARTUP}
         ;;
     setvolumetostartup)
+    		echo "setvolumetostartup $(expr `date +%s` - $mtime) s"
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # check if startup-volume is disabled
         if [ "${AUDIOVOLSTARTUP}" == 0 ]; then
@@ -582,13 +586,15 @@ case $COMMAND in
             # set volume level in percent
             if [ "${VOLUMEMANAGER}" == "amixer" ]; then
                 # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
-                amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLSTARTUP}%
+                amixer -q sset \'$AUDIOIFACENAME\' ${AUDIOVOLSTARTUP}%
+                echo "after amixer setvolumetostartup $(expr `date +%s` - $mtime) s"
             else
                 # manage volume with mpd
                 echo -e setvol ${AUDIOVOLSTARTUP}\\nclose | nc -w 1 localhost 6600
             fi
 
         fi
+        echo "after setvolumetostartup $(expr `date +%s` - $mtime) s"
         ;;
     playerstop)
         # stop the player

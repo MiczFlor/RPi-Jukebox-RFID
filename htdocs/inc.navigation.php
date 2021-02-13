@@ -52,8 +52,12 @@
       <ul class="nav navbar-nav navbar-right">
         <li><a href='index.php?shutdown=true' class='mainMenu'><i class='mdi mdi-power'></i> <?php print $lang['navShutdown']; ?></a></li>
         <li><a href='index.php?reboot=true' class='mainMenu'><i class='mdi mdi-refresh'></i> <?php print $lang['navReboot']; ?></a></li>
+        
       </ul>
 <!-- / sub menu -->
+
     </div><!-- /.navbar-collapse -->
+    
   </div><!-- /.container-fluid -->
+  <div style="float: right;"><img src="https://raw.githubusercontent.com/xfce-mirror/xfce4-power-manager/master/data/icons/scalable/battery-good.svg" title="70%"/></div>  
 </nav>

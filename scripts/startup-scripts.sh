@@ -1,5 +1,7 @@
 #!/bin/bash
 
+start_time=`date +%s`
+
 # The absolute path to the folder whjch contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -12,43 +14,52 @@ if [ ! -f $PATHDATA/../settings/global.conf ]; then
 fi
 . $PATHDATA/../settings/global.conf
 ###########################################################
-echo "Phoniebox is starting..."
+echo "Phoniebox is starting...$(expr `date +%s` - $start_time) s"
 
-cat $PATHDATA/../settings/version-number
+#cat $PATHDATA/../settings/version-number
 
-cat $PATHDATA/../settings/global.conf
+#cat $PATHDATA/../settings/global.conf
 
-echo "${AUDIOVOLSTARTUP} is the mpd startup volume"
+#echo "${AUDIOVOLSTARTUP} is the mpd startup volume $(expr `date +%s` - $start_time) s"
 
 ####################################
 # make playists, files and folders 
 # and shortcuts 
 # readable and writable to all
-sudo chmod -R 777 ${AUDIOFOLDERSPATH}
-sudo chmod -R 777 ${PLAYLISTSFOLDERPATH}
-sudo chmod -R 777 $PATHDATA/../shared/shortcuts
+#sudo chmod -R 777 ${AUDIOFOLDERSPATH}
+#sudo chmod -R 777 ${PLAYLISTSFOLDERPATH}
+#sudo chmod -R 777 $PATHDATA/../shared/shortcuts
+
+
+#echo "before mpd status $(expr `date +%s` - $start_time) s"
 
 #########################################
 # wait until mopidy/MPD server is running
 STATUS=0
-while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep 'OK MPD'| sed 's/^.*$/ACTIVE/'); done
+while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 0 localhost 6600 | grep 'OK MPD'| sed 's/^.*$/ACTIVE/'); done
+
+
+#echo "before playout $(expr `date +%s` - $start_time) s"
 
 ####################################
 # check if and set volume on startup
-/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
+#/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
+
+
+#echo "after vol $(expr `date +%s` - $start_time) s"
 
 ####################
 # play startup sound
-mpgvolume=$((32768*${AUDIOVOLSTARTUP}/100))
-echo "${mpgvolume} is the mpg123 startup volume"
-/usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
+#mpgvolume=$((32768*${AUDIOVOLSTARTUP}/100))
+#echo "${mpgvolume} is the mpg123 startup volume"
+#/usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
 #######################
 # re-scan music library
-mpc rescan 
+#mpc rescan 
 
 #######################
 # read out wifi config?
-if [ "${READWLANIPYN}" == "ON" ]; then
-    /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
-fi
+#if [ "${READWLANIPYN}" == "ON" ]; then
+#    /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
+#fi
