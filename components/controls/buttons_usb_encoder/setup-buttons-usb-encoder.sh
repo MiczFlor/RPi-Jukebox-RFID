@@ -14,6 +14,12 @@ question() {
     esac
 }
 
+if [ "$PWD" != "$JUKEBOX_HOME_DIR" ]
+then
+    printf "Please execute script from %s directory\n" $JUKEBOX_HOME_DIR
+    exit 0
+fi
+
 printf "Please make sure that the Buttons USB Encoder and the buttons are connected before continuing...\n"
 question "Continue"
 
