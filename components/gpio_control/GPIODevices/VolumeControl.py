@@ -1,9 +1,9 @@
 from GPIODevices import TwoButtonControl, RotaryEncoder
-from gpio_control import logger, getFunctionCall
+#from gpio_control import logger, getFunctionCall
 
 
 class VolumeControl:
-    def __new__(self, config):
+    def __new__(self, config,getFunctionCall,logger):
         if config.get('Type') == 'TwoButtonControl':
             logger.info('VolumeControl as TwoButtonControl')
             return TwoButtonControl(
