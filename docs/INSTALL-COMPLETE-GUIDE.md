@@ -4,13 +4,22 @@
 
 All parts marked with a star (*) are optional but improve the overall experience. All linked components are examples but have proven to work together. You are free to choose different equipment.
 
-1. [Micro SD Card](https://www.amazon.de/gp/product/B073JWXGNT) (e.g. 32 GB)
-1. [Raspberry Pi](https://www.amazon.de/gp/product/B07BDR5PDW) (Model 1, 2, 3, 4, Zero)
-1. [USB RFID Reader](https://www.amazon.de/gp/product/B018OYOR3E)
-1. [RFID Chips](https://www.amazon.de/gp/product/B078WRNLQZ) or [RFID Cards](https://www.amazon.de/gp/product/B00REFN24A)
-1. [Speakers with 3.5mm jack](https://www.amazon.de/gp/product/B00JRW0M32)
-1. [USB Sound Card](https://www.amazon.de/gp/product/B00C7LXUDY) * - [Alternative](https://www.amazon.de/gp/product/B00IRVQ0F8)
-1. [Ground Loop Isolator](https://www.amazon.de/gp/product/B01LX0H29W) *
+1. [Micro SD Card](https://amzn.to/3do7KJr) (e.g. 32 GB)
+1. Raspberry Pi
+    * [Model 4 B](https://amzn.to/2M0xtfJ)
+    * [Model 3 B+](https://amzn.to/2NGL7Fa)
+    * (Model 1, 2, 3 and Zero are possible, but they are slow...)
+1. [USB RFID Reader](https://amzn.to/3s47Iun)
+1. [RFID Chips](https://amzn.to/3k78F2j) or [RFID Cards](https://amzn.to/3dplljG)
+1. [Speakers with 3.5mm jack](https://amzn.to/3dnhmnV)
+
+To improve the sound, we recommend:
+
+* [Ground Loop Isolator](https://amzn.to/37nyZjK) *
+
+Alternatively you can use an external sound card, but sometimes that doesn't seem to improve much:
+
+* [USB Sound Card](https://amzn.to/3djaKqC) * - [Alternative](https://amzn.to/3u8guth)
 
 You'll need a few other things for a one time set up only.
 
@@ -19,7 +28,9 @@ You'll need a few other things for a one time set up only.
 1. Micro SD Card Reader
 1. Screen with HDMI connection
 
-Alternative: If you are able to connect your Raspberry Pi via a wired network interface (LAN), you can set it up via terminal (SSH) only.
+Alternative: 
+* If you are able to connect your Raspberry Pi via a wired network interface (LAN), you can set it up via terminal (SSH) only.
+* It's also possible to set up a Pi with [WiFi and ssh](https://raspberrypi.stackexchange.com/questions/10251/prepare-sd-card-for-wifi-on-headless-pi/57023#57023).
 
 ## Install Raspberry Pi OS on a Micro SD card
 
@@ -75,7 +86,16 @@ If you want to install the **Spotify+ version**, [read this first](https://githu
     ssh pi@192.168.1.123
     ```
 
-### Configure USB sound card
+### Using on-board headphone-jack for audio
+
+Note: Installing with an external monitor (HDMI) can create a problem if you use the mini-jack audio out. The problem is that if you plug in a HDMI monitor an additional sound output is added and the index changes. This bothering behavior was introduced, when Raspberry Pi separated headphones jack and HDMI into two different devices in May 2020.
+
+See: [Troubleshooting: headphone audio unavailable after unplugging HDMI](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1300)
+
+If this problem occurs, follow the steps in the next section (configure USB sound card).
+
+### Configure USB sound card (if you are using one)
+
 
 1. Configure your **USB sound card**. Check if your sound card has been detected
     ```
