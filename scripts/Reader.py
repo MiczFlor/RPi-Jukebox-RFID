@@ -7,22 +7,13 @@
 
 import os.path
 import sys
-import serial
-import string
+
 import RPi.GPIO as GPIO
 import logging
 
 from evdev import InputDevice, categorize, ecodes, list_devices
-# Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
-try:
-    import pirc522
-    from py532lib.i2c import *
-    from py532lib.mifare import *
-except ImportError:
-    pass
 
 logger = logging.getLogger(__name__)
-
 
 def get_devices():
     devices = [InputDevice(fn) for fn in list_devices()]
@@ -59,6 +50,7 @@ class UsbReader(object):
 
 class Mfrc522Reader(object):
     def __init__(self):
+        import pirc522
         self.device = pirc522.RFID()
 
     def readCard(self):
@@ -81,49 +73,88 @@ class Mfrc522Reader(object):
     def cleanup():
         GPIO.cleanup()
 
-
 class Rdm6300Reader:
-    def __init__(self):
+    def __init__(self,param = None):
+        import serial
         device = '/dev/ttyS0'
         baudrate = 9600
         ser_timeout = 0.1
         self.last_card_id = ''
         try:
             self.rfid_serial = serial.Serial(device, baudrate, timeout=ser_timeout)
+            self.serial_SerialException = serial.SerialException
         except serial.SerialException as e:
             logger.error(e)
             exit(1)
+        
+        self.number_format = ''
+        if param is not None:
+            nf = param.get("numberformat")
+            if nf is not None:
+                self.number_format = nf
+        
+    def convert_to_weigand26_when_checksum_ok(self,raw_card_id):
+        weigand26 = []
+        xor = 0
+        for i in range(0, len(raw_card_id)>>1): 
+            val = int(raw_card_id[i*2:i*2+2],16)
+            if (i < 5):
+                xor = xor ^ val
+                weigand26.append(val)
+            else:
+                chk = val
+        if (chk == val):
+            return weigand26
+        else:
+            return None
 
     def readCard(self):
-        byte_card_id = b''
+        byte_card_id = bytearray()
 
         try:
             while True:
                 try:
-                    read_byte = self.rfid_serial.read()
+                    wait_for_start_byte = True
+                    while True:
+                        read_byte = self.rfid_serial.read()
 
-                    if read_byte == b'\x02':    # start byte
-                        while read_byte != b'\x03':     # end bye
-                            read_byte = self.rfid_serial.read()
-                            byte_card_id += read_byte
+                        if (wait_for_start_byte):
+                            if read_byte == b'\x02':
+                                wait_for_start_byte = False
+                        else:
+                            if read_byte != b'\x03':        #could stuck here, check len? check timeout by len == 0??
+                                byte_card_id.extend(read_byte)
+                            else:
+                                wait_for_start_byte = True
+                                break
 
-                        card_id = byte_card_id.decode('utf-8')
-                        byte_card_id = ''
-                        card_id = ''.join(x for x in card_id if x in string.printable)
+                    raw_card_id = byte_card_id.decode('ascii')
+                    byte_card_id.clear()
+                    self.rfid_serial.reset_input_buffer()
 
-                        # Only return UUIDs with correct length
-                        if len(card_id) == 12 and card_id != self.last_card_id:
-                            self.last_card_id = card_id
-                            self.rfid_serial.reset_input_buffer()
-                            return self.last_card_id
-
-                        else:   # wrong UUID length or already send that UUID last time
-                            self.rfid_serial.reset_input_buffer()
+                    if len(raw_card_id) == 12 :
+                        w26 = self.convert_to_weigand26_when_checksum_ok(raw_card_id)
+                        if (w26 is not None):
+                            #print ("factory code is ignored" ,w26[0])
+                            
+                            if self.number_format == 'card_id_dec': 
+                                #this will return a 10 Digit card ID e.g. 0006762840
+                                card_id = '{0:010d}'.format( (w26[1] << 24) + (w26[2] << 16) + (w26[3] << 8) + w26[4])
+                            elif self.number_format == 'card_id_float': 
+                                #this will return a fractional card ID e.g. 103,12632
+                                card_id='{0:d},{1:05d}'.format( ((w26[1] << 8) + w26[2]) , ((w26[3] << 8) + w26[4]))
+                            else:
+                                #this will return the raw (original) card ID e.g. 070067315809
+                                card_id = raw_card_id
+                        
+                            if card_id != self.last_card_id:
+                                self.last_card_id = card_id
+                                return self.last_card_id
 
                 except ValueError as ve:
-                    logger.errror(ve)
+                    logger.error(ve)
 
-        except serial.SerialException as se:
+        except self.serial_SerialException as se:
             logger.error(se)
 
     def cleanup(self):
@@ -132,6 +163,8 @@ class Rdm6300Reader:
 
 class Pn532Reader:
     def __init__(self):
+        from py532lib.i2c import Pn532_i2c
+        from py532lib.mifare import Mifare
         pn532 = Pn532_i2c()
         self.device = Mifare()
         self.device.SAMconfigure()
@@ -143,7 +176,6 @@ class Pn532Reader:
     def cleanup(self):
         # Not sure if something needs to be done here.
         logger.debug("PN532Reader clean up.")
-
 
 class Reader(object):
     def __init__(self):
@@ -157,7 +189,8 @@ class Reader(object):
             if device_name == 'MFRC522':
                 self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
-                self.reader = Rdm6300Reader()
+                self.reader = Rdm6300Reader({'numberformat':'card_id_float'})
+                #self.reader = Rdm6300Reader()
             elif device_name == 'PN532':
                 self.reader = Pn532Reader()
             else:
