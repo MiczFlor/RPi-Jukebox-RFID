@@ -78,7 +78,13 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . ${PATHDATA}/../settings/debugLogging.conf
 
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> ${PATHDATA}/../logs/debug.log; fi
+function log {
+    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+        echo "$1" >> ${PATHDATA}/../logs/debug.log;
+    fi
+}
+
+log "########### SCRIPT playout_controls.sh ($NOW) ##"
 
 ###########################################################
 # Read global configuration file (and create if not exists)
@@ -102,8 +108,8 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 # see following file for details:
 . ${PATHDATA}/inc.readArgsFromCommandLine.sh
 
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+log "VAR COMMAND: ${COMMAND}"
+log "VAR VALUE: ${VALUE}"
 
 # Regex that declares commands for which the following code can be shortcut
 # and we can immediately jump to the switch-case statement. Increases execution
@@ -113,13 +119,6 @@ shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
 then
-
-    function dbg {
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
-            echo "$1" >> ${PATHDATA}/../logs/debug.log;
-        fi
-    }
-
     function sec_to_ms() {
         SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
         MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
@@ -140,7 +139,7 @@ then
     CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
     CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
     CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
-    dbg "current file: $CURRENT_SONG_FILE_ABS"
+    log "current file: $CURRENT_SONG_FILE_ABS"
 
     CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
     CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
@@ -149,14 +148,14 @@ then
     CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
 
     CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
-    dbg "chapters file: $CHAPTERS_FILE"
+    log "chapters file: $CHAPTERS_FILE"
 
     if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$CHAPTEREXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
         CHAPTER_SUPPORT_FOR_EXTENSION="1"
     else
         CHAPTER_SUPPORT_FOR_EXTENSION="0"
     fi
-    dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
+    log "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
     if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
@@ -164,16 +163,16 @@ then
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
     fi
-    dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
+    log "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
 
     if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
         if ! [ -f "${CHAPTERS_FILE}" ]; then
             CHAPTERS_COUNT="0"
-            dbg "chaptes file does not exist - export triggered"
+            log "chaptes file does not exist - export triggered"
             ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
         else
             CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
-            dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
+            log "chapters file does exist, chapter count: $CHAPTERS_COUNT"
         fi
 
         CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
@@ -194,9 +193,10 @@ then
     # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
 fi # END COMMANDS SHORTCUT
 
+log "   ${COMMAND}"
+
 case $COMMAND in
     shutdown)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         while :
         do
             apt=1
@@ -238,7 +238,6 @@ case $COMMAND in
                 break
             fi
         done
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -247,7 +246,6 @@ case $COMMAND in
         ;;
     shutdownafter)
         # remove shutdown times if existent
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         for i in `sudo atq -q t | awk '{print $1}'`;do sudo atrm $i;done
         # -c=shutdownafter -v=0 is to remove the shutdown timer
         if [ ${VALUE} -gt 0 ];
@@ -257,7 +255,6 @@ case $COMMAND in
         fi
         ;;
 	shutdownvolumereduction)
-	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # remove existing volume and shutdown commands
 		for i in `sudo atq -q r | awk '{print $1}'`;do sudo atrm $i;done
 		for i in `sudo atq -q q | awk '{print $1}'`;do sudo atrm $i;done
@@ -279,7 +276,6 @@ case $COMMAND in
 		fi
 		;;			
     reboot)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -287,7 +283,6 @@ case $COMMAND in
         sudo reboot
         ;;
     scan)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
         #remove shuffle mode if active
         SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
@@ -297,7 +292,7 @@ case $COMMAND in
         sudo systemctl start mopidy
         ;;
     mute)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   VOLUMEMANAGER: ${VOLUMEMANAGER}"
         if [ ! -f $VOLFILE ]; then
             # $VOLFILE does NOT exist == audio on
             # read volume in percent and write to $VOLFILE
@@ -331,7 +326,7 @@ case $COMMAND in
         fi
         ;;
     setvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   VOLUMEMANAGER: ${VOLUMEMANAGER}"
         #increase volume only if VOLPERCENT is below the max volume limit and above min volume limit
         if [ ${VALUE} -le $AUDIOVOLMAXLIMIT ] && [ ${VALUE} -ge $AUDIOVOLMINLIMIT ];
         then
@@ -369,7 +364,6 @@ case $COMMAND in
         fi
         ;;
     volumeup)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #check for volume change during idle
         if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyDown" ];
         then
@@ -395,7 +389,7 @@ case $COMMAND in
             fi
             # increase by $AUDIOVOLCHANGESTEP
             VOLPERCENT=`expr ${VOLPERCENT} + \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)`
-            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
+            log "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}"
             #increase volume only if VOLPERCENT is below the max volume limit
             if [ $VOLPERCENT -le $AUDIOVOLMAXLIMIT ];
             then
@@ -432,7 +426,6 @@ case $COMMAND in
         fi
         ;;
     volumedown)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         #check for volume change during idle
         if [ $VOLCHANGEIDLE == "FALSE" ] || [ $VOLCHANGEIDLE == "OnlyUp" ];
         then
@@ -458,7 +451,7 @@ case $COMMAND in
             fi
             # decrease by $AUDIOVOLCHANGESTEP
             VOLPERCENT=`expr ${VOLPERCENT} - \( ${AUDIOVOLCHANGESTEP} \* ${VALUE} \)`
-            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
+            log "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}"
             #decrease volume only if VOLPERCENT is above the min volume limit
             if [ $VOLPERCENT -ge $AUDIOVOLMINLIMIT ];
             then
@@ -499,7 +492,7 @@ case $COMMAND in
         ;;
     getvolume)
         # read volume in percent
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "#  ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "#  ${COMMAND}"
         if [ "${VOLUMEMANAGER}" == "amixer" ]; then
             # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
             VOLPERCENT=`amixer sget \'$AUDIOIFACENAME\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])'`
@@ -507,11 +500,10 @@ case $COMMAND in
             # manage volume with mpd
             VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
         fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   VOLPERCENT:${VOLPERCENT} | VOLUMEMANAGER:${VOLUMEMANAGER}"
         echo $VOLPERCENT
         ;;
     setmaxvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # read volume in percent
         if [ "${VOLUMEMANAGER}" == "amixer" ]; then
             # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
@@ -543,22 +535,18 @@ case $COMMAND in
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getmaxvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $AUDIOVOLMAXLIMIT
         ;;
     setvolstep)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # write new value to file
         echo "$VALUE" > ${PATHDATA}/../settings/Audio_Volume_Change_Step
         # create global config file because individual setting got changed
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getvolstep)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo $AUDIOVOLCHANGESTEP
         ;;
     setstartupvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # if value is greater than wanted maxvolume, set value to maxvolume
         if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
         then
@@ -570,11 +558,9 @@ case $COMMAND in
         . ${PATHDATA}/inc.writeGlobalConfig.sh
         ;;
     getstartupvolume)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         echo ${AUDIOVOLSTARTUP}
         ;;
     setvolumetostartup)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # check if startup-volume is disabled
         if [ "${AUDIOVOLSTARTUP}" == 0 ]; then
             exit 1
@@ -592,16 +578,14 @@ case $COMMAND in
         ;;
     playerstop)
         # stop the player
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc stop
         #if [ -e $AUDIOFOLDERSPATH/playing.txt ]
         #then
         #    sudo rm $AUDIOFOLDERSPATH/playing.txt
         #fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "remove playing.txt" >> ${PATHDATA}/../logs/debug.log; fi
+        log "remove playing.txt"
         ;;
     playerstopafter)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # remove playerstop timer if existent
         for i in `sudo atq -q s | awk '{print $1}'`;do sudo atrm $i;done
         # stop player after ${VALUE} minutes
@@ -649,20 +633,20 @@ case $COMMAND in
         # if elapsed - current <= 5.000 => seek prev chapter
         # if prev === 0.000 && elapsed < 5.000 => prev track? (don't do that)
         if [ "$CHAPTER_DIFF_ELAPSED_CURRENT_MS" -gt 5000 ]; then
-          dbg "chapter is already running for longer, seek to current chapter: $SEEK_POS"
+          log "chapter is already running for longer, seek to current chapter: $SEEK_POS"
           echo -e "seekcur $CURRENT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
         else
-          dbg "chapter just started, seek to prev chapter $PREV_CHAPTER_START"
+          log "chapter just started, seek to prev chapter $PREV_CHAPTER_START"
           echo -e "seekcur $PREV_CHAPTER_START\nclose" | nc -w 1 localhost 6600
         fi
         ;;
     playernextchapter)
         # if next === elapsed => next track
         if ! [ "$NEXT_CHAPTER_START" == "$CURRENT_SONG_ELAPSED" ]; then
-          dbg "next chapter $NEXT_CHAPTER_START"
+          log "next chapter $NEXT_CHAPTER_START"
           echo -e "seekcur $NEXT_CHAPTER_START\nclose" | nc -w 1 localhost 6600
         else
-          dbg "next chapter not available, last chapter already playing"
+          log "next chapter not available, last chapter already playing"
         fi
         ;;
     playerrewind)
@@ -707,7 +691,7 @@ case $COMMAND in
         ;;
     playerplay)
         # play / resume current track
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to play: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+        log "Attempting to play: $VALUE"
         # May be called with e.g. -v=1 to start a track in the middle of the playlist.
         # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
         # of the playlist
@@ -739,7 +723,7 @@ case $COMMAND in
         ;;
     playerremove)
         # remove selected song position
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to remove: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+        log "Attempting to remove: $VALUE"
 
         # Change some settings according to current folder IF the folder.conf exists
         . ${PATHDATA}/inc.settingsFolderSpecific.sh
@@ -748,7 +732,7 @@ case $COMMAND in
         ;;
     playermoveup)
         # remove selected song position
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to move: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+        log "Attempting to move: $VALUE"
 
         # Change some settings according to current folder IF the folder.conf exists
         . ${PATHDATA}/inc.settingsFolderSpecific.sh
@@ -757,7 +741,7 @@ case $COMMAND in
         ;;
     playermovedown)
         # remove selected song position
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to move: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
+        log "Attempting to move: $VALUE"
 
         # Change some settings according to current folder IF the folder.conf exists
         . ${PATHDATA}/inc.settingsFolderSpecific.sh
@@ -810,7 +794,7 @@ case $COMMAND in
         mpc seek 0
         ;;
     playerrepeat)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   value: ${VALUE}"
         # repeats a single track or a playlist.
         # Remark: If "single" is "on" but "repeat" is "off", the playout stops after the current song.
         # This command may be called with ./playout_controls.sh -c=playerrepeat -v=single, playlist or off
@@ -846,8 +830,8 @@ case $COMMAND in
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
         # VALUE = name of playlist
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   playlistaddplay playlist name VALUE: $VALUE"
+        log "   playlistaddplay FOLDER: $FOLDER"
 
         # NEW VERSION:
         # Read the current config file (include will execute == read)
@@ -856,7 +840,7 @@ case $COMMAND in
         # load playlist
         mpc clear
         mpc load "${VALUE//\//SLASH}"
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> ${PATHDATA}/../logs/debug.log; fi
+        log "mpc load "${VALUE//\//SLASH}
 
         # Change some settings according to current folder IF the folder.conf exists
         #. ${PATHDATA}/inc.settingsFolderSpecific.sh
@@ -879,16 +863,16 @@ case $COMMAND in
         fi
 
         # Now load and play
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
+        log "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}""
         ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
 
         # write latest folder played to settings file
         sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
         sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> ${PATHDATA}/../logs/debug.log; fi
+        log "  echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played"
+        log "  VAR Latest_Folder_Played: ${FOLDER}"
+        log "  # end playout_controls.sh playlistaddplay"
 
         # OLD VERSION (pre 20190302 - delete once the new version really seems to work):
         # call shuffle_check HERE to enable/disable folder-based shuffling
@@ -901,12 +885,12 @@ case $COMMAND in
         ;;
     playlistadd)
         # add to playlist, no autoplay
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   value: ${VALUE}"
         # save playlist playing
         mpc load "${VALUE}"
         ;;
     playlistappend)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   value: ${VALUE}"
         mpc add "${VALUE}"
         # Unmute if muted
         if [ -f $VOLFILE ]; then
@@ -926,7 +910,7 @@ case $COMMAND in
         mpc play 1
         ;;
     playsinglefile)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   value: ${VALUE}"
         mpc clear
         mpc add "${VALUE}"
         mpc repeat off
@@ -942,7 +926,7 @@ case $COMMAND in
         mpc play
         ;;
     setidletime)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   value: ${VALUE}"
         # write new value to file
         echo "$VALUE" > ${PATHDATA}/../settings/Idle_Time_Before_Shutdown
         # create global config file because individual setting got changed
@@ -954,31 +938,28 @@ case $COMMAND in
         echo $IDLETIMESHUTDOWN
         ;;
     enablewifi)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         rfkill unblock wifi
         ;;
     disablewifi)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # see https://forum-raspberrypi.de/forum/thread/25696-bluetooth-und-wlan-deaktivieren/#pid226072 seems to disable wifi,
         # as good as it gets
         rfkill block wifi
         ;;
     togglewifi)
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         # function to allow toggle the wifi state
         # Build special for franzformator
         rfkill list wifi | grep -i "Soft blocked: no" > /dev/null 2>&1
         WIFI_SOFTBLOCK_RESULT=$?
         wpa_cli -i wlan0 status | grep 'ip_address' > /dev/null 2>&1
         WIFI_IP_RESULT=$?
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   WIFI_IP_RESULT='${WIFI_IP_RESULT}' WIFI_SOFTBLOCK_RESULT='${WIFI_SOFTBLOCK_RESULT}'" >> ${PATHDATA}/../logs/debug.log; fi
+        log "   WIFI_IP_RESULT='${WIFI_IP_RESULT}' WIFI_SOFTBLOCK_RESULT='${WIFI_SOFTBLOCK_RESULT}'"
         if [ $WIFI_SOFTBLOCK_RESULT -eq 0 ] && [ $WIFI_IP_RESULT -eq 0 ]
         then
-            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be deactivated" >> ${PATHDATA}/../logs/debug.log; fi
+            log "   Wifi will now be deactivated"
             echo "Wifi will now be deactivated"
             rfkill block wifi
         else
-            if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be activated" >> ${PATHDATA}/../logs/debug.log; fi
+            log "   Wifi will now be activated"
             echo "Wifi will now be activated"
             rfkill unblock wifi
         fi
@@ -1024,6 +1005,6 @@ case $COMMAND in
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
+        log "Unknown COMMAND ${COMMAND} VALUE ${VALUE}"
         ;;
 esac
