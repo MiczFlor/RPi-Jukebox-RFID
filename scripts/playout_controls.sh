@@ -7,9 +7,6 @@
 # makes further development and potential replacement of
 # the playout player easier.
 
-# Set the date and time of now
-NOW=`date +%Y-%m-%d.%H:%M:%S`
-
 # USAGE EXAMPLES:
 #
 # shutdown RPi:
@@ -78,11 +75,30 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Read debug logging configuration file
 . ${PATHDATA}/../settings/debugLogging.conf
 
+
+
+######## UTILS #########
+
 function log {
     if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
         echo "$1" >> ${PATHDATA}/../logs/debug.log;
     fi
 }
+
+
+function utils_shuffle_mode_off 
+    SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+    if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+}
+
+
+
+
+
+
+
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 log "########### SCRIPT playout_controls.sh ($NOW) ##"
 
@@ -189,8 +205,6 @@ then
 
         NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
     fi
-
-    # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
 fi # END COMMANDS SHORTCUT
 
 log "   ${COMMAND}"
@@ -213,9 +227,7 @@ case $COMMAND in
             fi
         done
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
-        #remove shuffle mode if active
-        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
-        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+        utils_shuffle_mode_off
         sleep 1
         /usr/bin/mpg123 ${PATHDATA}/../shared/shutdownsound.mp3
         sleep 3
@@ -239,9 +251,7 @@ case $COMMAND in
             fi
         done
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
-        #remove shuffle mode if active
-        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
-        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+        utils_shuffle_mode_off
         ${POWEROFFCMD}
         ;;
     shutdownafter)
@@ -277,16 +287,12 @@ case $COMMAND in
 		;;			
     reboot)
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
-        #remove shuffle mode if active
-        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
-        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+        utils_shuffle_mode_off
         sudo reboot
         ;;
     scan)
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
-        #remove shuffle mode if active
-        SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
-        if [ "$SHUFFLE_STATUS" == 1 ] ; then  mpc random off; fi
+        utils_shuffle_mode_off
         sudo systemctl stop mopidy
         sudo mopidyctl local scan
         sudo systemctl start mopidy
