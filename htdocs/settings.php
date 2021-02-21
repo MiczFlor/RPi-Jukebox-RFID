@@ -156,6 +156,7 @@ include("inc.setStartupVolume.php");
 <?php
 include("inc.setStoptimer.php");
 include("inc.setSleeptimer.php");
+include("inc.setShutdownVolumeReduction.php");
 include("inc.setIdleShutdown.php");
 ?>
         </div><!-- / .row -->

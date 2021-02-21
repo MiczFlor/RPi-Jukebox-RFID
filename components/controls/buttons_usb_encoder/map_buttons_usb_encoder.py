@@ -30,8 +30,11 @@ try:
                 if event.type == ecodes.EV_KEY:
                     keyevent = categorize(event)
                     if keyevent.keystate == KeyEvent.key_down:
-                        button_map[keyevent.keycode] = function_name
-                        print("Button " + keyevent.keycode + " is now mapped to " + function_name_short)
+                        button_string = keyevent.keycode
+                        if type(button_string) is list:
+                            button_string = '-'.join(sorted(button_string))
+                        button_map[button_string] = function_name
+                        print("Button " + button_string + " is now mapped to " + function_name_short)
                         break
         except KeyboardInterrupt:
             continue

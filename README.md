@@ -18,6 +18,8 @@ The year 2020 also has a clear *:star: community hero :star:*: @s-martin has bee
 
 ## Important updates / news
 
+* **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask general questions in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions), bugs and enhancements should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
 * **Phoniebox [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) released (2020-11-23)**

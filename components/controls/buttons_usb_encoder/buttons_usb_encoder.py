@@ -17,14 +17,17 @@ try:
         if event.type == ecodes.EV_KEY:
             keyevent = categorize(event)
             if keyevent.keystate == KeyEvent.key_down:
+                button_string = keyevent.keycode
+                if type(button_string) is list:
+                    button_string = '-'.join(sorted(button_string))
                 try:
-                    function_name = button_map[keyevent.keycode]
+                    function_name = button_map[button_string]
                     try:
                         getattr(components.gpio_control.function_calls, function_name)()
                     except:
                         logger.warning(
-                            "Function " + function_name + " not found in function_calls.py (mapped from button: " + keyevent.keycode + ")")
+                            "Function " + function_name + " not found in function_calls.py (mapped from button: " + button_string + ")")
                 except KeyError:
-                    logger.warning("Button " + keyevent.keycode + " not mapped to any function.")
+                    logger.warning("Button " + button_string + " not mapped to any function.")
 except:
     logger.error("An error with Buttons USB Encoder occurred.")

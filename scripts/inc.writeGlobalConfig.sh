@@ -274,6 +274,28 @@ fi
 VERSION=`cat $PATHDATA/../settings/version`
 
 ##############################################
+# CHAPTEREXTENSIONS
+# Only files with the extensions listed will be scanned for chapters
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/CHAPTEREXTENSIONS ]; then
+    echo "mp4,m4a,m4b,m4r" > $PATHDATA/../settings/CHAPTEREXTENSIONS
+    chmod 777 $PATHDATA/../settings/CHAPTEREXTENSIONS
+fi
+# 2. then|or read value from file
+CHAPTEREXTENSIONS=`cat $PATHDATA/../settings/CHAPTEREXTENSIONS`
+
+##############################################
+# CHAPTERMINDURATION
+# Only files with play length bigger than minimum will be scanned for chapters
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/CHAPTERMINDURATION ]; then
+    echo "600" > $PATHDATA/../settings/CHAPTERMINDURATION
+    chmod 777 $PATHDATA/../settings/CHAPTERMINDURATION
+fi
+# 2. then|or read value from file
+CHAPTERMINDURATION=`cat $PATHDATA/../settings/CHAPTERMINDURATION`
+
+##############################################
 # read control card ids
 # 1. read all values from file
 CMDVOLUP=`grep 'CMDVOLUP' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDVOLUP=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
@@ -306,6 +328,8 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # EDITION
 # LANG
 # VERSION
+# CHAPTEREXTENSIONS
+# CHAPTERMINDURATION
 # CMDVOLUP
 # CMDVOLDOWN
 # CMDNEXT
@@ -337,6 +361,8 @@ echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CHAPTEREXTENSIONS=\"${CHAPTEREXTENSIONS}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CHAPTERMINDURATION=\"${CHAPTERMINDURATION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDVOLUP=\"${CMDVOLUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDVOLDOWN=\"${CMDVOLDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDNEXT=\"${CMDNEXT}\"" >> "${PATHDATA}/../settings/global.conf"
