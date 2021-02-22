@@ -125,7 +125,6 @@ class Rdm6300Reader:
                             if read_byte != b'\x03':        #could get stuck here, check len? check timeout by len == 0??
                                 byte_card_id.extend(read_byte)
                             else:
-                                wait_for_start_byte = True
                                 break
 
                     raw_card_id = byte_card_id.decode('ascii')
@@ -189,8 +188,8 @@ class Reader(object):
             if device_name == 'MFRC522':
                 self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
-                #self.reader = Rdm6300Reader({'numberformat':'card_id_float'})
-                #self.reader = Rdm6300Reader({'numberformat':'card_id_dec'})
+                # The Rdm6300Reader supports 2 Additional Number Formats which can bee choosen by an optional parameter dictionary:
+                # {'numberformat':'card_id_float'} or {'numberformat':'card_id_dec'} 
                 self.reader = Rdm6300Reader()
             elif device_name == 'PN532':
                 self.reader = Pn532Reader()
