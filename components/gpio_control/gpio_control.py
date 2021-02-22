@@ -25,6 +25,7 @@ class gpio_control():
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
+        self._keep_running = 1
 
     def getFunctionCall(self,function_name):
         try:
@@ -106,6 +107,15 @@ class gpio_control():
     def print_all_devices(self):
         for dev in self.devices:
             print(dev)
+
+    def gpio_run(self):
+        self._keep_running = 1
+        while self._keep_running:
+            time.sleep(1)
+        print ("Exiting GPIO")
+
+    def gpio_terminate(self):
+        self._keep_running = 0
 
     def gpio_loop(self):
         self.logger.info('Ready for taking actions')

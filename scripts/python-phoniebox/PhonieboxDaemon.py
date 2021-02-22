@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# import threading
+import threading
 import sys, os.path
 import signal
 from Phoniebox import Phoniebox
 from time import sleep, time
+
+#import gpio_control
+
+import PhonieboxVolume
+import PhonieboxPlayer
+from PhonieboxRpcServer import phoniebox_rpc_server
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -67,89 +73,54 @@ class PhonieboxDaemon(Phoniebox):
         # tells the PhonieboxDaemon to reload the config whenever needed.
 
         # card_assignments_file = daemon.get_setting("phoniebox","card_assignments_file")
-        # cardAssignmentsWatchdog = FileModifiedHandler(card_assignments_file, self.update_cardAssignments)
+        # cardAssignmentsWatchdog = FileModifiedH check for process existandler(card_assignments_file, self.update_cardAssignments)
         # ConfigWatchdog = FileModifiedHandler(configFilePath, self.read_config)
 
 #        # start_reader runs an endless loop, nothing will be executed afterwards
         daemon.start_reader()
 
-    def start_reader(self):
-        from Reader import Reader
-        reader = Reader()
 
-        card_detection_sound = self.get_setting("phoniebox", "card_detection_sound")
-        debounce_time = self.get_setting("phoniebox", "debounce_time")
-        if debounce_time == -1:
-            debounce_time = 0.5
-        second_swipe_delay = self.get_setting("phoniebox", "second_swipe_delay")
-        if second_swipe_delay == -1:
-            second_swipe_delay = 0
-        store_card_assignments = self.get_setting("phoniebox", "store_card_assignments")
-        if store_card_assignments == -1:
-            store_card_assignments = 30
-        last_swipe = 0
-        last_write_card_assignments = 0
+def signal_handler(signal, frame):
+    """ catches signal and triggers the graceful exit """
+    print("Caught signal {}, exiting...".format(signal))
+    exit_gracefully(signal, frame)
 
-        while True:
-            # reading the card id
-            cardid = reader.reader.readCard()
-#            cardid = None
-#            sleep(debounce_time)
-            try:
-                # start the player script and pass on the cardid
-                if cardid is not None:
-                    print("Card ID: {}".format(int(cardid)))
-                    filename = self.get_setting("phoniebox", "Latest_RFID_file")
-                    if filename != -1:
-                        self.print_to_file(filename, "\'{}\' was used at {}".format(cardid, time()))
-                    if card_detection_sound != -1:
-                        self.play_alsa(card_detection_sound)
-                    if cardid in self.cardAssignments.sections():
-                        # second swipe detection
-                        if int(cardid) == int(self.lastplayedID) and time()-last_swipe > second_swipe_delay:
-                            self.log("Second swipe for {}".format(cardid), 3)
-                            self.do_second_swipe()
-                        # if first swipe, just play
-                        else:
-                            last_swipe = time()
-                            self.do_start_playlist(cardid)
-                        # do not react for debounce_time
-                        sleep(debounce_time)
-                    else:
-                        self.log("Card with ID {} not mapped yet.".format(cardid), 1)
+def exit_gracefully(esignal, frame):
+    print ("\nGot Signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
+    
+    #stop all threads
+    
+    #save all nv
+    #play stop (maybe)
+    #shutdown ()
+    
+    
+    #""" stop mpd and write cardAssignments to disk if daemon is stopped """
+    #self.mpd_connect_timeout()
+    #self.client.stop()
+    #self.client.disconnect()
+    # write config to update playstate
+    #self.write_new_cardAssignments()
+     # exit script
 
-            except OSError as e:
-                print("Execution failed:", e)
+    print ("Exiting")
+    
+    sys.exit(0)
+    #trigger halt of system?
 
-            # check if it is time for the next update of the cardAssignments and do it
-            # Note: this is purely time-based and not clever at all. Find a
-            # TODO: find a better way to check for changes in the files on disk to trigger the update
-            if time()-last_write_card_assignments > store_card_assignments and store_card_assignments != False:
-                # store card assignments
-                if self.get_setting("phoniebox", "translate_legacy_cardassignments", "bool") == True:
-                    legacy_cardAssignments = self.translate_legacy_cardAssignments(last_write_card_assignments)
-                    self.update_cardAssignments(legacy_cardAssignments)
-                else:
-                    self.update_cardAssignments(self.read_cardAssignments)
 
-                self.write_new_cardAssignments()
-                last_write_card_assignments = time()
+def startsound():
+    print ("Play Start Sound")
+    ##play start sound
+    ##use dub to play sound? -> benchmark could be used to play 440 hz or other music things
 
-    def signal_handler(self, signal, frame):
-        """ catches signal and triggers the graceful exit """
-        print("Caught signal {}, exiting...".format(signal))
-        self.exit_gracefully()
-
-    def exit_gracefully(self):
-        """ stop mpd and write cardAssignments to disk if daemon is stopped """
-        self.mpd_connect_timeout()
-        self.client.stop()
-        self.client.disconnect()
-        # write config to update playstate
-        self.write_new_cardAssignments()
-
-        # exit script
-        sys.exit(0)
+    # import required libraries 
+    from pydub import AudioSegment  
+    from pydub.playback import play  
+  
+    # Import an audio file  
+    wav_file = AudioSegment.from_file(file = "../../shared/startupsound.wav", format = "wav")  
+    play(wav_file)
 
 
 if __name__ == "__main__":
@@ -161,11 +132,85 @@ if __name__ == "__main__":
     else:
         configFilePath = sys.argv[1]
 
-    daemon = PhonieboxDaemon(configFilePath)
+    #sys.path.append(parentdir+"/scripts")
+    sys.path.insert(0,'../../gpio_control')
+    print(sys.path)
 
+    #parse config
+    #gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
+    #gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
+    #gpio_config.read(config_path)
+
+    # Play Startup Sound
+    startsound_thread = threading.Thread(target=startsound)
+    startsound_thread.start()
+
+
+    PhonieboxVolume.list_cards()
+    PhonieboxVolume.list_mixers({ 'cardindex': 0 })
+
+    ##run zeromq_server as thread
+    #initialize Phonibox objcts
+    objects = {'volume':PhonieboxVolume.volume_control_alsa(),
+               'player':PhonieboxPlayer.player_control()}
+
+    print ("Init Phonibox ZMQ Server ")
+    rpcs = phoniebox_rpc_server(objects)
+    if rpcs != None:
+        rpcs.connect()
+        #pc_t = threading.Thread(target=pc.process_queue)
+        #pc_t.start()
+
+
+    ##rfid
+    #card id will be linked directly with object call which are feeded into the mq
+    cardid_db = {'104,49914':{'object':'','method':'','params':{}},
+                 '103,12632':{'object':'','method':'','params':{}},
+                 '104,29698':{'object':'','method':'','params':{}},
+                 '108,07437':{'object':'','method':'','params':{}},
+                 '107,60360':{'object':'','method':'','params':{}},
+                 '106,64513':{'object':'','method':'','params':{}},
+                 '104,14891':{'object':'','method':'','params':{}},
+                 '103,24033':{'object':'','method':'','params':{}},
+                 '104,32860':{'object':'','method':'','params':{}}   }
+
+    #rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
+    rfid_reader = None
+    if rfid_reader is not None:
+        rfid_reader.set_cardid_db()
+        rfid_thread = threading.Thread(target=rfid_reader.run)
+        #rfid_t.start()
+    else:
+        rfid_thread = None
+    
+    ##initialize gpio
+    #gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
+    gpio_config = None
+    if gpio_config is not None:
+        gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
+        gpio_config.read(config_path)
+    
+        phoniebox_function_calls = function_calls.phoniebox_function_calls()
+        gpio_controler = gpio_control(phoniebox_function_calls)
+
+        devices = gpio_controler.get_all_devices(config)
+        gpio_controler.print_all_devices()
+        gpio_thread = threading.Thread(target=gpio_controler.gpio_loop)
+    else:
+        gpio_thread = None
+    
+    # signal.raise_signal(signum)
     # setup the signal listeners
-    signal.signal(signal.SIGINT, daemon.exit_gracefully)
-    signal.signal(signal.SIGTERM, daemon.exit_gracefully)
-
-    # start the daemon (blocking)
-    daemon.run()
+    signal.signal(signal.SIGINT, exit_gracefully)
+    signal.signal(signal.SIGTERM, exit_gracefully)
+    
+    #Start threads and RPC Server
+    if rpcs is not None:
+        if gpio_thread is not None:
+            print ("Starting GPIO Thread")
+            gpio_thread.start()
+        if rfid_thread is not None:
+            print ("Starting RFID Thread")
+            rfid_thread.start()
+        print ("Starting ZMQ Server")
+        rpcs.server()
