@@ -18,10 +18,7 @@ class gpio_control():
         
         GPIO.setmode(GPIO.BCM)
         
-        lf = '%(asctime)s %(message)s'
-        lp = '/home/pi/RPi-Jukebox-RFID/logs/gpio.log'
-        logging.basicConfig(filename=lp, level=logging.DEBUG,format=lf)
-        #logging.basicConfig(level=logging.INFO,format=lf)
+        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
