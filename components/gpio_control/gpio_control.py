@@ -43,7 +43,7 @@ class gpio_control():
                 config.getint('Pin2'),
                 self.getFunctionCall(config.get('functionCall1')),
                 self.getFunctionCall(config.get('functionCall2')),
-                functionCallTwoBtns=getFunctionCall(config.get('functionCallTwoButtons')),
+                functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons')),
                 pull_up=config.getboolean('pull_up', fallback=True),
                 hold_repeat=config.getboolean('hold_repeat', False),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
