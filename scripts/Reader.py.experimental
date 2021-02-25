@@ -164,6 +164,7 @@ class Pn532Reader:
     def __init__(self):
         from py532lib.i2c import Pn532_i2c
         from py532lib.mifare import Mifare
+        from py532lib.mifare import MIFARE_WAIT_FOR_ENTRY
         pn532 = Pn532_i2c()
         self.device = Mifare()
         self.device.SAMconfigure()
