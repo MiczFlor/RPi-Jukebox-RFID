@@ -148,11 +148,14 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
-//print "<pre>"; print_r($globalConf); print "</pre>"; //???
+if ($debug == "true") {
+    print "<pre>Array globalConf"; print_r($globalConf); print "</pre>"; //???
+}
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
 $Playlists_Folders_Path = $globalConf['PLAYLISTSFOLDERPATH'];
+$Swipe_or_Place = $globalConf['SWIPEORPLACE'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
 $Second_Swipe_Pause = $globalConf['SECONDSWIPEPAUSE'];
 $Second_Swipe_Pause_Controls = $globalConf['SECONDSWIPEPAUSECONTROLS'];
@@ -199,6 +202,7 @@ $nonEmptyCommands = array(
     'scan',
     'idletime',
     'shutdownafter',
+	'shutdownvolumereduction',
     'stopplayoutafter',
     'enableresume',
     'disableresume',
@@ -300,6 +304,7 @@ $commandToAction = array(
     'volumedown' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumedown",             // volume down
     'idletime' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setidletime -v=%s",        // set idletime
     'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
+    'shutdownvolumereduction' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownvolumereduction -v=%s", // set time to shutdown with reducing volume
     'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
     'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
     'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",

@@ -80,7 +80,7 @@ if [ "$CARDID" ]; then
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in
-	    $CMDSHUFFLE)
+        $CMDSHUFFLE)
             # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
             ;;
@@ -238,6 +238,22 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
+		$SHUTDOWNVOLUMEREDUCTION10)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=10
+			;;
+		$SHUTDOWNVOLUMEREDUCTION15)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=15
+			;;
+		$SHUTDOWNVOLUMEREDUCTION30)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=30
+			;;
+		$SHUTDOWNVOLUMEREDUCTION60)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=60
+			;;
         $ENABLEWIFI)
             $PATHDATA/playout_controls.sh -c=enablewifi
             ;;

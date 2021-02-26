@@ -24,9 +24,27 @@ function init() {
 }
 
 function loadStatusRepeat() {
+    clearTimeout(JUKEBOX.timeout);
+    clearInterval(JUKEBOX.interval);
     loadStatus(() => {
-        setTimeout(loadStatusRepeat, 5000);
+        var counter = 0,
+        interval  = setInterval(function () {
+            interpolateTime();
+            if (++counter == 5) {
+                clearInterval(interval);
+            }
+        },1000)
+        JUKEBOX.interval = interval;
+        JUKEBOX.timeout = setTimeout(loadStatusRepeat, 5000);
     });
+}
+
+function interpolateTime()
+{
+    if (JUKEBOX.playerInfo.state == "play" && JUKEBOX.playerInfo.elapsed < JUKEBOX.playlistInfo.albumLength){
+        ++JUKEBOX.playerInfo.elapsed;
+    }
+    notify(JUKEBOX.timeListener, JUKEBOX.playerInfo.time);
 }
 
 
@@ -194,6 +212,7 @@ function playSingleFile(file) {
 
 function executePlayerCommand(command, completion, value) {
     hideApiError();
+    clearTimeout(JUKEBOX.timeout);
     $.ajax({
         url: 'api/player.php',
         method: 'PUT',
@@ -204,8 +223,10 @@ function executePlayerCommand(command, completion, value) {
              completion(data);
          }
      }).error(error => {
-         $("#api-alert").html(`An error occorured: ${error.responseText}`);
+         $("#api-alert").html(`An error occured: ${error.responseText}`);
          showApiError();
+     }).complete(data => {
+        loadStatusRepeat();
      });
 }
 

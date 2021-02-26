@@ -8,9 +8,17 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
-![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
+## The Phoniebox Calendar 2021 is here!!!
+
+Another bunch of wonderful designs! 2021 is the third Phoniebox calendar. If you are interested, you can see the [2019 and 2020 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2021 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
+
+![The 2021 Phoniebox Calendar](docs/2021-Phoniebox-Calendar.jpg "The 2021 Phoniebox Calendar")
+
+The year 2020 also has a clear *:star: community hero :star:*: @s-martin has been doing outstanding work for the Phoniebox community:sparkles:. Thanks to you and may 2021 be a wonderful year for you.
 
 ## Important updates / news
+
+* **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask general questions in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions), bugs and enhancements should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 

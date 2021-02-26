@@ -22,6 +22,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shutdown
 # shutdownsilent
 # shutdownafter
+# shutdownvolumereduction
 # reboot
 # scan
 # mute
@@ -69,7 +70,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # readwifiipoverspeaker
 # bluetoothtoggle
 
-# The absolute path to the folder whjch contains all the scripts.
+# The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -81,7 +82,7 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "########### SCRIPT playout_controls.sh ($NOW) ##" >> ${PATHDATA}/../logs/debug.log; fi
 
 ###########################################################
-# Read global configuration file (and create is not exists)
+# Read global configuration file (and create if not exists)
 # create the global configuration file from single files - if it does not exist
 if [ ! -f ${PATHDATA}/../settings/global.conf ]; then
     . ${PATHDATA}/inc.writeGlobalConfig.sh
@@ -105,89 +106,94 @@ VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
 if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
 
+# Regex that declares commands for which the following code can be shortcut
+# and we can immediately jump to the switch-case statement. Increases execution
+# speed of these commands.
+shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 
-ENABLE_CHAPTERS_FOR_EXTENSIONS="mp4,m4a,m4b,m4r"
-ENABLE_CHAPTERS_MIN_DURATION="600"
+# Run the code from this block only, if the current command is not in "shortcutCommands"
+if [[ ! "$COMMAND" =~ $shortcutCommands ]]
+then
 
-function dbg {
-  if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
-    echo "$1" >> ${PATHDATA}/../logs/debug.log;
-  fi
-}
+    function dbg {
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then
+            echo "$1" >> ${PATHDATA}/../logs/debug.log;
+        fi
+    }
 
-function sec_to_ms() {
-  SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
-  MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
-  MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
+    function sec_to_ms() {
+        SECONDSPART="$(cut -d '.' -f 1 <<< "$1")"
+        MILLISECONDSPART="$(cut -d '.' -f 2 <<< "$1")"
+        MILLISECONDSPART_NORMALIZED="$(echo "$MILLISECONDSPART" | cut -c1-3 | sed 's/^0*//')"
 
-  if [[ "" == "$SECONDSPART" ]]; then
-    SECONDSPART="0"
-  fi
+        if [[ "" == "$SECONDSPART" ]]; then
+            SECONDSPART="0"
+        fi
 
-  if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
-    MILLISECONDSPART_NORMALIZED="0"
-  fi
-  echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
-}
+        if [[ "" == "$MILLISECONDSPART_NORMALIZED" ]]; then
+            MILLISECONDSPART_NORMALIZED="0"
+        fi
+        echo "$((${SECONDSPART} * 1000 + ${MILLISECONDSPART_NORMALIZED}))"
+    }
 
-AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
+    AUDIO_FOLDERS_PATH=$(cat "${PATHDATA}/../settings/Audio_Folders_Path")
 
-CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
-CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
-CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
-dbg "current file: $CURRENT_SONG_FILE_ABS"
+    CURRENT_SONG_INFO=$(echo -e "currentsong\nclose" | nc -w 1 localhost 6600)
+    CURRENT_SONG_FILE=$(echo "$CURRENT_SONG_INFO" | grep -o -P '(?<=file: ).*')
+    CURRENT_SONG_FILE_ABS="${AUDIO_FOLDERS_PATH}/${CURRENT_SONG_FILE}"
+    dbg "current file: $CURRENT_SONG_FILE_ABS"
 
-CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
-CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
-CURRENT_SONG_FILE_EXT="${CURRENT_SONG_BASENAME##*.}"
-CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
-CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
+    CURRENT_SONG_DIR="$(dirname -- "$CURRENT_SONG_FILE_ABS")"
+    CURRENT_SONG_BASENAME="$(basename -- "${CURRENT_SONG_FILE_ABS}")"
+    CURRENT_SONG_FILE_EXT="${CURRENT_SONG_BASENAME##*.}"
+    CURRENT_SONG_ELAPSED=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=elapsed: ).*')
+    CURRENT_SONG_DURATION=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=duration: ).*')
 
-CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
-dbg "chapters file: $CHAPTERS_FILE"
+    CHAPTERS_FILE="${CURRENT_SONG_DIR}/${CURRENT_SONG_BASENAME%.*}.chapters.json"
+    dbg "chapters file: $CHAPTERS_FILE"
 
-if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$ENABLE_CHAPTERS_FOR_EXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
-  CHAPTER_SUPPORT_FOR_EXTENSION="1"
-else
-  CHAPTER_SUPPORT_FOR_EXTENSION="0"
-fi
-dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
-
-
-if [ "$(printf "${CURRENT_SONG_DURATION}\n${ENABLE_CHAPTERS_MIN_DURATION}\n" | sort -g | head -1)" == "${ENABLE_CHAPTERS_MIN_DURATION}" ]; then
-  CHAPTER_SUPPORT_FOR_DURATION="1"
-else
-  CHAPTER_SUPPORT_FOR_DURATION="0"
-fi
-dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
-
-if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
-  if ! [ -f "${CHAPTERS_FILE}" ]; then
-    CHAPTERS_COUNT="0"
-    dbg "chaptes file does not exist - export triggered"
-    ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
-  else
-    CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
-    dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
-  fi
+    if [ "$(grep -wo "$CURRENT_SONG_FILE_EXT" <<< "$CHAPTEREXTENSIONS")" == "$CURRENT_SONG_FILE_EXT" ]; then
+        CHAPTER_SUPPORT_FOR_EXTENSION="1"
+    else
+        CHAPTER_SUPPORT_FOR_EXTENSION="0"
+    fi
+    dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-  CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
-  ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
+        CHAPTER_SUPPORT_FOR_DURATION="1"
+    else
+        CHAPTER_SUPPORT_FOR_DURATION="0"
+    fi
+    dbg "chapters for duration enabled: $CHAPTER_SUPPORT_FOR_DURATION"
 
-  # elapsed and chapter start exactly match -> skip one line
-  if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
-    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
-    CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
-  else
-    PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
-    CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
-  fi
+    if [ "${CHAPTER_SUPPORT_FOR_EXTENSION}${CHAPTER_SUPPORT_FOR_DURATION}" == "11" ]; then
+        if ! [ -f "${CHAPTERS_FILE}" ]; then
+            CHAPTERS_COUNT="0"
+            dbg "chaptes file does not exist - export triggered"
+            ffprobe -i "${CURRENT_SONG_FILE_ABS}" -print_format json -show_chapters -loglevel error > "${CHAPTERS_FILE}" &
+        else
+            CHAPTERS_COUNT="$(grep  '"id":' "${CHAPTERS_FILE}" | wc -l )"
+            dbg "chapters file does exist, chapter count: $CHAPTERS_COUNT"
+        fi
 
-  NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
-fi
+        CHAPTER_START_TIMES="$( ( echo -e $CURRENT_SONG_ELAPSED & grep 'start_time' "$CHAPTERS_FILE" | cut -d '"' -f 4 | sed 's/000$//') | sort -V)"
+        ELAPSED_MATCH_CHAPTER_COUNT=$(grep "$CURRENT_SONG_ELAPSED" <<< "$CHAPTER_START_TIMES" | wc -l)
 
-# SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+        # elapsed and chapter start exactly match -> skip one line
+        if [ "$ELAPSED_MATCH_CHAPTER_COUNT" == "2" ]; then
+            PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+            CURRENT_CHAPTER_START="$CURRENT_SONG_ELAPSED"
+        else
+            PREV_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 2 <<< "$CHAPTER_START_TIMES" | head -n1)
+            CURRENT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -B 1 <<< "$CHAPTER_START_TIMES" | head -n1)
+        fi
+
+        NEXT_CHAPTER_START=$(grep "$CURRENT_SONG_ELAPSED" -A 1 <<< "$CHAPTER_START_TIMES" | tail -n1)
+    fi
+
+    # SHUFFLE_STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=random: ).*')
+fi # END COMMANDS SHORTCUT
 
 case $COMMAND in
     shutdown)
@@ -251,6 +257,28 @@ case $COMMAND in
             echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q t now + ${VALUE} minute
         fi
         ;;
+	shutdownvolumereduction)
+	    if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # remove existing volume and shutdown commands
+		for i in `sudo atq -q r | awk '{print $1}'`;do sudo atrm $i;done
+		for i in `sudo atq -q q | awk '{print $1}'`;do sudo atrm $i;done
+		# get current volume in percent
+		VOLPERCENT=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=volume: ).*')
+		# divide current volume by 10 to get a step size for reducing the volume
+		VOLSTEP=`expr $((VOLPERCENT / 10))`;
+		# divide VALUE by 10, volume will be reduced every TIMESTEP minutes (e.g. for a value of "30" it will be every "3" minutes)
+		TIMESTEP=`expr $((VALUE / 10))`;
+		# loop 10 times to reduce the volume by VOLSTEP every TIMESTEP minutes
+		for i in $(seq 1 10); do
+			VOLPERCENT=`expr ${VOLPERCENT} - ${VOLSTEP}`; echo "${PATHDATA}/playout_controls.sh -c=setvolume -v="$VOLPERCENT | at -q r now + `expr $(((i * TIMESTEP)-1))` minute;
+		done
+		# schedule shutdown after VALUE minutes
+        if [ ${VALUE} -gt 0 ];
+        then
+			# schedule shutdown after VALUE minutes
+			echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q q now + ${VALUE} minute
+		fi
+		;;			
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear

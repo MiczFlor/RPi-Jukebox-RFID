@@ -234,6 +234,18 @@ echo "#####################################################
             # append variables to config file
             echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${PATHDATA}/PhonieboxInstall.conf"
 
+            read -r -p "Button USB Encoder: use existing device and button mapping? [Y/n] " response
+            case "$response" in
+                [nN][oO]|[nN])
+                    EXISTINGuseButtonUSBEncoder=NO
+                    ;;
+                *)
+                    EXISTINGuseButtonUSBEncoder=YES
+                    ;;
+            esac
+            # append variables to config file
+            echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${PATHDATA}/PhonieboxInstall.conf"
+
             echo "Thanks. Got it."
             echo "The existing install can be found in the BACKUP directory."
             echo "Hit ENTER to proceed to the next step."
@@ -769,6 +781,19 @@ then
         # copy from backup to new install
         mv /home/pi/BACKUP/shared/startupsound.mp3 /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
         mv /home/pi/BACKUP/shared/shutdownsound.mp3 /home/pi/RPi-Jukebox-RFID/shared/shutdownsound.mp3
+    fi
+
+    # Button USB Encoder: use existing file
+    if [ $EXISTINGuseButtonUSBEncoder == "YES" ]; then
+        # copy from backup to new install
+        mv /home/pi/BACKUP/components/controls/buttons_usb_encoder/deviceName.txt /home/pi/RPi-Jukebox-RFID/components/controls/buttons_usb_encoder/deviceName.txt
+        mv /home/pi/BACKUP/components/controls/buttons_usb_encoder/buttonMap.json /home/pi/RPi-Jukebox-RFID/components/controls/buttons_usb_encoder/buttonMap.json
+        # make buttons_usb_encoder.py ready to be use from phoniebox-buttons-usb-encoder service
+        sudo chmod +x /home/pi/RPi-Jukebox-RFID/components/controls/buttons_usb_encoder/buttons_usb_encoder.py
+        # make sure service is still enabled by registering again
+        sudo cp -v /home/pi/RPi-Jukebox-RFID/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample /etc/systemd/system/phoniebox-buttons-usb-encoder.service
+        sudo systemctl start phoniebox-buttons-usb-encoder.service
+        sudo systemctl enable phoniebox-buttons-usb-encoder.service
     fi
 
 fi
