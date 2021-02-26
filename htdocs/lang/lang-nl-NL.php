@@ -66,6 +66,7 @@ $lang['globalRepeat'] = "Herhalen";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
+$lang['globalAudioSink'] = "Audio Devices";
 
 $lang['playerFilePlayed'] = "is gespeeld";
 $lang['playerFileAdded'] = "is toegevoegd aan de playlist";
@@ -190,6 +191,8 @@ $lang['infoOsThrottle'] = "Beperking";
 $lang['infoStorageUsed'] = "Opslag gebruik";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Folder Management and File Upload

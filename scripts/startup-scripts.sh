@@ -52,3 +52,15 @@ mpc rescan
 if [ "${READWLANIPYN}" == "ON" ]; then
     /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
 fi
+
+#######################
+# Default audio output to speakers (instead of bluetooth device) irrespective of setting at shutdown
+if [ -f $PATHDATA/../settings/bluetooth-sink-switch ]; then
+    BTSINKSWITCH=`cat $PATHDATA/../settings/bluetooth-sink-switch`
+    if [ "${BTSINKSWITCH}" == "enabled" ]; then
+	$PATHDATA/../components/bluetooth-sink-switch/bt-sink-switch.py speakers
+    fi
+fi
+
+
+

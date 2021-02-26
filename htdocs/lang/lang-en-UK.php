@@ -69,6 +69,7 @@ $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
 $lang['globalPriority'] = "Priority";
 $lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Devices";
 
 // Player title HTML
 $lang['playerSeekBack'] = "seek back";
@@ -267,6 +268,8 @@ $lang['infoMPDStatus'] = "MPD Server Status";
 $lang['infoDebugLogTail'] = "<b>DEBUG log file</b>: Last 40 lines";
 $lang['infoDebugLogClear'] = "Clear all content from debug.log";
 $lang['infoDebugLogSettings'] = "Debug Log Settings";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Folder Management and File Upload

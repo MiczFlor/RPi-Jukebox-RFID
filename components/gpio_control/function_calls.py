@@ -83,6 +83,10 @@ class phoniebox_function_calls:
         function_call("{command} -c=playerseek -v=-10".format(command=self.playout_control), shell=True)
 
 
+    def functionCallBluetoothToggle(self,*args):
+        function_call("{command} -c=bluetoothtoggle -v=toggle".format(command=self.playout_control), shell=True)
+
+
     def getFunctionCall(self,functionName):
         self.logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))
         getattr(sys.modules[__name__], str)

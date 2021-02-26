@@ -287,6 +287,9 @@ if [ "$CARDID" ]; then
         $CMDREADWIFIIP)
             $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
             ;;
+        $CMDBLUETOOTHTOGGLE)
+            $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
+            ;;
         *)
 
             # We checked if the card was a special command, seems it wasn't.

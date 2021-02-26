@@ -47,6 +47,8 @@ CMDSEEKBACK="%CMDSEEKBACK%"
 CMDPAUSE="%CMDPAUSE%"
 ### Resume audio playout
 CMDPLAY="%CMDPLAY%"
+### Toggle between speakers and bluetooth headphones
+CMDBLUETOOTHTOGGLE="%CMDBLUETOOTHTOGGLE%"
 
 ## System
 ### Shutdown
