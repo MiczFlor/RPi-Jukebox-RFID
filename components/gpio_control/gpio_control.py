@@ -8,7 +8,6 @@ import function_calls
 from signal import pause
 from RPi import GPIO
 # from GPIODevices.VolumeControl import VolumeControl
-# from GPIODevices.led import LED, MPDStatusLED
 
 class gpio_control():
 
@@ -61,16 +60,8 @@ class gpio_control():
             return LED(config.getint('Pin'),
                                 name=deviceName,
                                 initial_value=config.getboolean('initial_value', fallback=True))
-        elif device_type == 'MPDStatusLED':
-            return MPDStatusLED(config.getint('Pin'),
-                                host=config.get('host', fallback='localhost'),
-                                port=config.getint('port', fallback=6600),
-                                name=deviceName
-                                )
-        elif device_type == 'StartupScriptsStatusLED':
-            return StartupScriptsStatusLED(config.getint('Pin'),
-                                name=deviceName
-                                )
+        elif device_type in ('StatusLED', 'MPDStatusLED'):
+            return StatusLED(config.getint('Pin'), name=deviceName)
         elif device_type == 'RotaryEncoder':
             return RotaryEncoder(config.getint('pinUp'),
                     config.getint('pinDown'),

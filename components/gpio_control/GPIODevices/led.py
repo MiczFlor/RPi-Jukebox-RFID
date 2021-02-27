@@ -2,7 +2,6 @@ import logging
 import time
 from os import system
 
-import mpd
 from RPi import GPIO
 
 GPIO.setmode(GPIO.BCM)
@@ -30,37 +29,11 @@ class LED:
         return GPIO.input(self.pin)
 
 
-class MPDStatusLED(LED):
-    logger = logging.getLogger("MPDStatusLED")
+class StatusLED(LED):
+    logger = logging.getLogger("StatusLED")
 
-    def __init__(self, pin, host='localhost', port=6600, name='MPDStatusLED'):
-        super(MPDStatusLED, self).__init__(pin, initial_value=False, name=name)
-        self.mpc = mpd.MPDClient()
-        self.host = host
-        self.port = port
-        self.logger.info('Waiting for MPD Connection on {}:{}'.format(
-            self.host, self.port))
-        while not self.has_mpd_connection():
-            self.logger.debug('No MPD Connection yet established')
-            time.sleep(1)
-        self.logger.info('Connection to MPD server on host {}:{} established'.format(self.host, self.port))
-        self.on()
-
-    def has_mpd_connection(self):
-        self.mpc.disconnect()
-        try:
-            self.mpc.connect(self.host, self.port)
-            self.mpc.ping()
-            self.mpc.disconnect()
-            return True
-        except ConnectionError:
-            return False
-
-class StartupScriptsStatusLED(LED):
-    logger = logging.getLogger("StartupScriptsStatusLED")
-
-    def __init__(self, pin, name='StartupScriptsStatusLED'):
-        super(StartupScriptsStatusLED, self).__init__(pin, initial_value=False, name=name)
+    def __init__(self, pin, name='StatusLED'):
+        super(StatusLED, self).__init__(pin, initial_value=False, name=name)
         self.logger.info('Waiting for phoniebox-startup-scripts service to be active')
         systemctlCmd = 'systemctl is-active --quiet phoniebox-startup-scripts.service'
         while system(systemctlCmd) != 0:
