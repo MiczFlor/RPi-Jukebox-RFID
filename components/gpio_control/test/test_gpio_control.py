@@ -3,7 +3,7 @@ import logging
 
 from mock import patch, MagicMock  
 from gpio_control import gpio_control   
-from function_calls import phoniebox_function_calls
+import function_calls
 
 # def test_functionCallTwoButtonsOnlyBtn2Pressed(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
 #                                                functionCallBothPressedMock):
