@@ -1,9 +1,9 @@
 import configparser
 import logging
 
-from mock import patch, MagicMock
-from components.gpio_control.gpio_control import gpio_control
-from components.gpio_control.function_calls import phoniebox_function_calls
+from mock import patch, MagicMock  
+from gpio_control import gpio_control   
+import function_calls
 
 # def test_functionCallTwoButtonsOnlyBtn2Pressed(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
 #                                                functionCallBothPressedMock):
@@ -26,14 +26,14 @@ mockedFunction3.side_effect = lambda *args: print('MockFunction3 called')
 
 logging.basicConfig(level='DEBUG')
 
+
 def testMain():
     config = configparser.ConfigParser()
     config.read('./gpio_settings_test.ini')
-
-    test_phoniebox_function_calls = phoniebox_function_calls()
-    gpio_controler = gpio_control(test_phoniebox_function_calls)
+   
+    phoniebox_function_calls = function_calls.phoniebox_function_calls()
+    gpio_controler = gpio_control(phoniebox_function_calls)
 
     devices = gpio_controler.get_all_devices(config)
     gpio_controler.print_all_devices()
-
     pass
