@@ -36,6 +36,10 @@ sspc_nodelay = sspc.readline().strip()
 previous_id = ""
 previous_time = time.time()
 
+# get swipe or place configuration value
+sop = open('../settings/Swipe_or_Place', 'r')
+swipe_or_place = sop.read().strip()
+
 # create array for control card ids
 cards = []
 
@@ -75,8 +79,10 @@ signal.signal(signal.SIGALRM, handler)
 while True:
     # slow down the card reading while loop
     time.sleep(0.2)
-    # enable the signal alarm (if no card is present for 1 second)
-    signal.alarm(1)
+
+    if swipe_or_place == "PLACENOTSWIPE":
+        # enable the signal alarm (if no card is present for 1 second)
+        signal.alarm(1)
 
     # reading the card id
     # NOTE: it's been reported that KKMOON Reader might need the following line altered.
