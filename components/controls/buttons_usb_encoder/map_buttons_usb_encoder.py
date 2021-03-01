@@ -11,7 +11,7 @@ import components.gpio_control.function_calls
 try:
     functions = list(
         filter(lambda function_name: function_name.startswith("functionCall"),
-               dir(components.gpio_control.function_calls)))
+               dir(components.gpio_control.function_calls.phoniebox_function_calls)))
     button_map = {}
 
     print("")
