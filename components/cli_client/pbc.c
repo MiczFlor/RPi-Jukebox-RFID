@@ -1,114 +1,155 @@
 /**
-  \file rfg.c
+  \file pbc.c
 
-  rfg cli and main
+    MIT License
 
-  Copyright (C) 2008 Arne Pagel <arne@pagelnet.de>
+    Copyright (C) 2021 Arne Pagel
 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+/*
+
+    pbc -> PhonieBox Command line interface
+
+    depenmds on libczmq:
+    apt-get install libczmq-dev
+
+    how to compile:
+    gcc pbc.c -o pbc -lzmq -Wall
 
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <getopt.h>
-
-
-//#include <ctype.h>
-
 #include <czmq.h>
 
-//apt-get install libczmq-dev
-
-// build this gcc pbc.c -o pbc -lzmq  
-
 #define MAX_STRLEN 256
-#define MAX_REQEST_STRLEN  (MAX_STRLEN * 3) + 256
-
+#define MAX_REQEST_STRLEN  (MAX_STRLEN * 16)
+#define MAX_PARAMS 16
 int g_verbose = 0;
-
 
 typedef struct 
 {
     char object [MAX_STRLEN];
     char method [MAX_STRLEN];
-    char params [MAX_STRLEN];
+    char params [MAX_PARAMS][MAX_STRLEN];
+    int num_params;
 } t_request;
+
+
+int send_zmq_request_and_wait_response(char * request, int request_len, char * response, int max_response_len)
+{
+    int zmq_ret,ret = -1;
+    void *context = zmq_ctx_new ();
+    void *requester = zmq_socket (context, ZMQ_REQ);
+    int linger = 200;
+    zmq_setsockopt(requester,ZMQ_LINGER,&linger,sizeof(linger));
+    zmq_setsockopt(requester,ZMQ_RCVTIMEO,&linger,sizeof(linger));
+    zmq_connect (requester, "tcp://localhost:5555");
+
+    zmq_ret = zmq_send (requester, request, request_len, 0);
+
+    if (zmq_ret > 0)
+    {
+        zmq_ret = zmq_recv (requester, response, max_response_len, 0);
+        
+        if (zmq_ret > 0)
+        {
+            printf ("Received %s (%d Bytes)\n", response,zmq_ret);    
+            ret = 0;
+        }
+        else
+        {
+            printf ("zmq_recv rturned %d \n", zmq_ret);    
+        }
+    }
+    else
+    {
+      if (g_verbose) printf ("zmq_send returned %d\n", zmq_ret);  
+    }
+
+    zmq_close (requester);
+    zmq_ctx_destroy (context); 
+    return (ret);
+}
+
 
 void * connect_and_send_request(t_request * tr)
 {
     char json_request[MAX_REQEST_STRLEN];
+    char json_response[MAX_REQEST_STRLEN];
+    char params[MAX_STRLEN * 8];
     size_t json_len;
-    printf ("Connecting to hello world server…\n");
+    int n;
 
-    
-    
-    /*printf ("object %s'\n", tr->object);
-    printf ("object %s'\n", tr->method);
-    printf ("object %s'\n", tr->params);*/
+    if (tr->num_params > 0)
+    {
+        sprintf(params, "\"params\":{");
+        
+        for (n = 0;n < tr->num_params;)
+        {
+            strcat(params,tr->params[n]);
+            n++;
+            if (n < tr->num_params) strcat(params,",");
+        }
 
-    snprintf(json_request,MAX_REQEST_STRLEN,"{\"OBJECT\": %s, \"METHOD\": %s, \"PARAMS\": {%s},\"id\":%d}",tr->object,tr->method,tr->params,123);
+        strcat(params,"},");
+
+    }
+    else params[0] = 0;
+
+    snprintf(json_request,MAX_REQEST_STRLEN,"{\"object\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,params,123);
     json_len = strlen(json_request);
-
     
     if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);
 
-    void *context = zmq_ctx_new ();
-    void *requester = zmq_socket (context, ZMQ_REQ);
+    send_zmq_request_and_wait_response(json_request,json_len,json_response,MAX_REQEST_STRLEN);
 
-    
-    zmq_connect (requester, "tcp://localhost:5555");
-
-    zmq_send (requester, json_request, json_len, 0);
-    //zmq_recv (requester, buffer, 10, 0);
-    //printf ("Received World %d\n", request_nbr);
-
-    zmq_close (requester);
-    zmq_ctx_destroy (context);
     return 0;
 }
 
-
+int check_and_map_parameters_to_json(char * arg, t_request * tr)
+{
+    char * name;
+    char * value;
+    char * fmt;
+    int ret = 0;
+    if (strchr(arg, ':') != NULL)
+    {
+        name = strtok(arg, ":");
+        value = strtok(NULL, ":");
+        fmt = (isdigit(*value)) ? "\"%s\":%s"  : "\"%s\":\"%s\"";
+        snprintf (tr->params[tr->num_params++],MAX_STRLEN, fmt,name,value);
+        ret = 1;
+    }
+    return (ret);
+}
 
 
 void usage(void)
 {
-    fprintf(stderr,"\nusage: rfg -i inputfile -o outputfile -t outpufiletype\n\n");
-    //fprintf(stderr,"    -b startsegment for firmwarefile\n");
-    //fprintf(stderr,"    -c generate crc checksum struct within the firmware at 0x0C10200 \n");
-    fprintf(stderr,"    -d swtich debugmesages on\n");
+    fprintf(stderr,"\npbc -> PhonieBox Command line interface\nusage: pbc -o object -m method param_name:value\n\n");
     fprintf(stderr,"    -h this screen\n");
-    fprintf(stderr,"    -i input firmware-file\n");
-    //fprintf(stderr,"    -l fpga-file\n");
-
-    //fprintf(stderr,"    -f outputformat\n");
-    //fprintf(stderr,"    -g gui-override, displays a dialog wich is asking you what to do\n");
-
-    //fprintf(stderr,"    -n create name.txt, a file with version and date\n");
-    //fprintf(stderr,"    -s create sw_info struct (only with -c)\n");
-    fprintf(stderr,"    -t Outfiletype: e = elf, h = ihex, \n");
-
+    fprintf(stderr,"    -o, --object object\n");
+    fprintf(stderr,"    -m, --method method\n");
     fprintf(stderr,"    -v verbose\n");
-    //fprintf(stderr,"    -x generate intel hex format (128 byte per row)\n");
-    //fprintf(stderr,"    -z compress-firmware (default without compression)\n");
 
-    fprintf(stderr,"\nrfg, written by Arne Pagel 01.Feb.2007\n");
     fprintf(stderr,"last change %s\n\n",__DATE__);
     exit (1);
 }
@@ -119,9 +160,8 @@ void usage(void)
 */
 int HandleOptions(int argc,char *argv[], t_request * tr)
 {
-  int i,c,firstnonoption=0;
-  int oft_cnt = 0,of_cnt = 0;
-
+  int c;
+  
   const struct option long_options[] =
   {
     /* These options set a flag. */
@@ -132,7 +172,6 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
     {"help",        no_argument,       0, 'h'},
     {"object",      required_argument, 0, 'o'},
     {"method",      required_argument, 0, 'm'},
-    {"params",      optional_argument, 0, 'p'},
     {0, 0, 0, 0}
   };
 
@@ -163,10 +202,6 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
         strncpy (tr->method,optarg,MAX_STRLEN);
         break;
 
-      case 'p':
-        strncpy (tr->params,optarg,MAX_STRLEN);
-        break;
-
       case 'v':
         g_verbose = '1';
         break;
@@ -177,96 +212,26 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
     }
   }
 
-  /* Print any remaining command line arguments (not options). */
+  /* treat remaining command line arguments (not options). */
   if (optind < argc)
   {
-    printf ("non-option ARGV-elements: ");
-    while (optind < argc) printf ("%s ", argv[optind++]);
-    putchar ('\n');
+    while (optind < argc)
+    { 
+        check_and_map_parameters_to_json(argv[optind++], tr);
+    }
   }
 
-  return firstnonoption;
+  return (1);
 }
-
-
-
-#ifdef WIN32
-  #include "windows.h"
-#endif 
-
-#define CC_BLACK  0
-#define CC_BLUE   1
-#define CC_RED    2
-
-void set_color(int color)
-{
-  #ifdef WIN32
-    int w_col;
-    HANDLE hConsole;
-    static CONSOLE_SCREEN_BUFFER_INFO ConsoleInfo;
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);  // Get handle to standard output
-    static int init;
-    
-    if (init == 0)
-    {
-      init = 1;
-      GetConsoleScreenBufferInfo(hConsole, &ConsoleInfo);
-    }
-
-    switch (color)
-    {
-      case CC_BLACK:
-        w_col = ConsoleInfo.wAttributes;
-        break;
-      case CC_BLUE:
-        w_col = FOREGROUND_BLUE | FOREGROUND_INTENSITY;
-        break;
-      case CC_RED:
-        w_col = FOREGROUND_RED | FOREGROUND_INTENSITY;
-        break;
-    }
-    SetConsoleTextAttribute(hConsole,w_col);  // set the text attribute of the previous handle
-  #else
-    switch (color)
-    {
-      case CC_BLACK:
-        printf ("\033[0;00m");
-        break;
-      case CC_BLUE:
-        printf ("\033[1;34m");
-        break;
-      case CC_RED:
-        printf ("\033[1;33m");
-        break;
-    }
-  #endif
-}
-
-
 
 int main(int argc,char *argv[])
 {
-    time_t timestamp;
-    struct tm * tmtime;
     t_request tr;
 
     bzero(&tr, sizeof(t_request));
 
-
-
-
-//t_data_sec_descriptor sd;
-
-    //Zeitstempel holen
-    time(&timestamp);
-
-    //Zeitstempel konvertieren
-    tmtime = localtime(&timestamp);
-
-    //Programmoptionen interpretieren
     HandleOptions(argc,argv,&tr);
-
     connect_and_send_request(&tr);
-
+    
     return 0;
 }

@@ -3,13 +3,11 @@
 
 from mpd import MPDClient
 
-
 class player_control:
     def __init__(self):
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command is handled seperately, default: None
-        #self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
         self.connect()
         print("Connected to MPD Version: "+self.mpd_client.mpd_version)
 
@@ -18,19 +16,17 @@ class player_control:
     
     def _mpd_retry(self,mpd_cmd,params=None):
         try:
-            mpd_cmd(params)
+            ret = mpd_cmd(params)
         except ConnectionError: 
             print ("MPD Connection Error, retry")
             self.conncet()
-            mpd_cmd(params)
+            ret = mpd_cmd(params)
         except  Exception as e:
             print(e)
+        return ret
 
-    
     def get_player_type_and_version(self, param):
-        return ({'tpye':'mpd','version':self.mpd_client.mpd_version})
-    
-
+        return ({'result':'mpd','version':self.mpd_client.mpd_version})
     
     def play(self, param):
         try:
@@ -45,9 +41,7 @@ class player_control:
         return ({'song':song})
         
     def get_current_song(self, param):
-        song = self.mpd_client.currentsong()
-        #resp = {'resp': self.mpd_client.currentsong()}
-        return song
+        return {'resp': self.mpd_client.currentsong()}
 
     def playlistaddplay(self, param):
         

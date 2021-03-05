@@ -47,3 +47,7 @@ composer.phar
 # composer.lock
 
 # End of https://www.gitignore.io/api/composer
+
+
+components/cli_client/pbc
+

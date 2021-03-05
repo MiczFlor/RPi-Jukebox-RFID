@@ -54,20 +54,18 @@ class phoniebox_rpc_server:
 
             print (client_request)
 
-            #lets make it jsonrpc https://www.jsonrpc.org/specification
+            #make it jsonrpc https://www.jsonrpc.org/specification ??
             #{"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
             #{"jsonrpc": "2.0", "result": 19, "id": 3}
+            #liked the object separation on that level:
+            #{'object':'','method':'','params':{},id:''}
 
-            #hm, overhead, + strucure, we should takeover id 
-
-            #{'object':'','method':'','params':{}}
-
-            client_object = client_request.get('obj')  #lets call it object
+            client_object = client_request.get('object')
             if (client_object != None):
-                client_command = client_request.get('cmd')  #lets call it method
+                client_command = client_request.get('method')
                 client_id = client_request.get('id')
                 if (client_command != None):
-                    client_param = client_request.get('param') #lets call it params
+                    client_param = client_request.get('params')
                     client_response['resp'] = self.execute(client_object,client_command,client_param)
                     client_response['id'] = client_id
 

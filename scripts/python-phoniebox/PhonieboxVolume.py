@@ -5,8 +5,7 @@ import alsaaudio
 class volume_control_alsa:
     def __init__(self):
          self.mixer = alsaaudio.Mixer('Master', 0)
-         self.volume = 0
-         #self.mixer.getvolume()
+         self.volume = self.mixer.getvolume()[0]
 
     def get(self, param):
         return ({'volume':self.volume})

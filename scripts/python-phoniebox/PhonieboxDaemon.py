@@ -4,7 +4,6 @@
 import threading
 import sys, os.path
 import signal
-from Phoniebox import Phoniebox
 from time import sleep, time
 
 #import gpio_control
@@ -16,69 +15,6 @@ from PhonieboxRpcServer import phoniebox_rpc_server
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
 defaultconfigFilePath = os.path.join(dir_path, 'phoniebox.conf')
-
-# watchdog blocks the script, so it cannot be used in the same file as the PhonieboxDaemon
-# from watchdog.observers import Observer
-# from watchdog.events import FileSystemEventHandler
-# from os.path import dirname
-
-# class FileModifiedHandler(FileSystemEventHandler):
-
-#    """ watch the given file for changes and execute callback function on modification """
-#    def __init__(self, file_path, callback):
-#        self.file_path = file_path
-#        self.callback = callback
-
-#        # set observer to watch for changes in the directory
-#        self.observer = Observer()
-#        self.observer.schedule(self, dirname(file_path), recursive=False)
-#        self.observer.start()
-#        try:
-#            while True:
-#                sleep(1)
-#        except KeyboardInterrupt:
-#            self.observer.stop()
-#        self.observer.join()
-#
-#    def on_modified(self, event):
-#        # only act on the change that we're looking for
-#        if not event.is_directory and event.src_path.endswith(self.file_path):
-#            daemon.log("cardAssignmentsFile modified!",3)
-#            self.callback() # call callback
-
-
-class PhonieboxDaemon(Phoniebox):
-    """ This subclass of Phoniebox is to be called directly, running as RFID reader daemon """
-
-    def __init__(self, configFilePath=defaultconfigFilePath):
-        Phoniebox.__init__(self, configFilePath)
-        self.lastplayedID = 0
-
-    def run(self):
-        # do things if killed
-        signal.signal(signal.SIGINT, self.signal_handler)
-        signal.signal(signal.SIGTERM, self.signal_handler)
-
-        # establish mpd connection
-        self.mpd_init_connection()
-        self.mpd_init_settings()
-        state = self.client.status()["state"]
-
-        daemon.play_alsa(daemon.get_setting("phoniebox", 'startup_sound'))
-        if state == "play":
-            self.client.play()
-
-        # launch watcher for config files, blocks the script
-        # TODO: it would be better to watch the changes with a second process that
-        # tells the PhonieboxDaemon to reload the config whenever needed.
-
-        # card_assignments_file = daemon.get_setting("phoniebox","card_assignments_file")
-        # cardAssignmentsWatchdog = FileModifiedH check for process existandler(card_assignments_file, self.update_cardAssignments)
-        # ConfigWatchdog = FileModifiedHandler(configFilePath, self.read_config)
-
-#        # start_reader runs an endless loop, nothing will be executed afterwards
-        daemon.start_reader()
-
 
 def signal_handler(signal, frame):
     """ catches signal and triggers the graceful exit """
@@ -94,26 +30,11 @@ def exit_gracefully(esignal, frame):
     #play stop (maybe)
     #shutdown ()
     
-    
-    #""" stop mpd and write cardAssignments to disk if daemon is stopped """
-    #self.mpd_connect_timeout()
-    #self.client.stop()
-    #self.client.disconnect()
-    # write config to update playstate
-    #self.write_new_cardAssignments()
-     # exit script
-
     print ("Exiting")
-    
     sys.exit(0)
-    #trigger halt of system?
 
 
-def startsound():
-    print ("Play Start Sound")
-    ##play start sound
-    ##use dub to play sound? -> benchmark could be used to play 440 hz or other music things
-
+def playstartsound():
     # import required libraries 
     from pydub import AudioSegment  
     from pydub.playback import play  
@@ -142,14 +63,13 @@ if __name__ == "__main__":
     #gpio_config.read(config_path)
 
     # Play Startup Sound
-    startsound_thread = threading.Thread(target=startsound)
+    startsound_thread = threading.Thread(target=playstartsound)
     startsound_thread.start()
 
 
     PhonieboxVolume.list_cards()
     PhonieboxVolume.list_mixers({ 'cardindex': 0 })
 
-    ##run zeromq_server as thread
     #initialize Phonibox objcts
     objects = {'volume':PhonieboxVolume.volume_control_alsa(),
                'player':PhonieboxPlayer.player_control()}
