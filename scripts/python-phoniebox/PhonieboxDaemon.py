@@ -33,17 +33,6 @@ def exit_gracefully(esignal, frame):
     print ("Exiting")
     sys.exit(0)
 
-
-def playstartsound():
-    # import required libraries 
-    from pydub import AudioSegment  
-    from pydub.playback import play  
-  
-    # Import an audio file  
-    wav_file = AudioSegment.from_file(file = "../../shared/startupsound.wav", format = "wav")  
-    play(wav_file)
-
-
 if __name__ == "__main__":
 
     # if called directly, launch Phoniebox.py as rfid-reader daemon
@@ -62,16 +51,17 @@ if __name__ == "__main__":
     #gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     #gpio_config.read(config_path)
 
+    volume_control_alsa = PhonieboxVolume.volume_control_alsa()
+    
     # Play Startup Sound
-    startsound_thread = threading.Thread(target=playstartsound)
+    startsound_thread = threading.Thread(target=volume_control_alsa.play_wave_file, args=["../../shared/startupsound.wav"])
     startsound_thread.start()
-
 
     PhonieboxVolume.list_cards()
     PhonieboxVolume.list_mixers({ 'cardindex': 0 })
 
     #initialize Phonibox objcts
-    objects = {'volume':PhonieboxVolume.volume_control_alsa(),
+    objects = {'volume':volume_control_alsa,
                'player':PhonieboxPlayer.player_control()}
 
     print ("Init Phonibox ZMQ Server ")
