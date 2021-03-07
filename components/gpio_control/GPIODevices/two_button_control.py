@@ -11,17 +11,17 @@ GPIO.setmode(GPIO.BCM)
 
 def functionCallTwoButtons(btn1, btn2, functionCall1, functionCall2, functionCallBothPressed=None):
     def functionCallTwoButtons(*args):
-        btn1_pin=btn1.pin
-        btn2_pin=btn2.pin
-        pressed_button=None
-        if len(args) > 0 and args[0] in (btn1_pin,btn2_pin):
+        btn1_pin = btn1.pin
+        btn2_pin = btn2.pin
+        pressed_button = None
+        if len(args) > 0 and args[0] in (btn1_pin, btn2_pin):
             logger.debug('Remove pin argument by TwoButtonCallbackFunctionHandler - args before: {}'.format(args))
-            pressed_button=args[0]
+            pressed_button = args[0]
             args = args[1:]
             logger.debug('args after: {}'.format(args))
         btn1_pressed = btn1.is_pressed
         btn2_pressed = btn2.is_pressed
-        logger.info('Btn1 {}, Btn2 {}-args:{}'.format(btn1_pressed,btn2_pressed,args))
+        logger.info('Btn1 {}, Btn2 {}-args:{}'.format(btn1_pressed, btn2_pressed, args))
         if btn1_pressed and btn2_pressed:
             logger.debug("Both buttons was pressed")
             if functionCallBothPressed is not None:

@@ -1,8 +1,8 @@
 import configparser
 import logging
 
-from mock import patch, MagicMock  
-from gpio_control import gpio_control   
+from mock import patch, MagicMock
+from gpio_control import gpio_control
 import function_calls
 
 # def test_functionCallTwoButtonsOnlyBtn2Pressed(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
@@ -30,7 +30,7 @@ logging.basicConfig(level='DEBUG')
 def testMain():
     config = configparser.ConfigParser()
     config.read('./gpio_settings_test.ini')
-   
+
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
     gpio_controler = gpio_control(phoniebox_function_calls)
 
