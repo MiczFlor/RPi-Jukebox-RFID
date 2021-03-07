@@ -10,20 +10,21 @@ from RPi import GPIO
 # from GPIODevices.VolumeControl import VolumeControl
 # from GPIODevices.led import LED, MPDStatusLED
 
+
 class gpio_control():
 
-    def __init__(self,function_calls):
+    def __init__(self, function_calls):
         self.devices = []
         self.function_calls = function_calls
-        
+
         GPIO.setmode(GPIO.BCM)
-        
+
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
 
-    def getFunctionCall(self,function_name):
+    def getFunctionCall(self, function_name):
         try:
             if function_name != 'None':
                 return getattr(self.function_calls, function_name)
@@ -31,11 +32,11 @@ class gpio_control():
             self.logger.error('Could not find FunctionCall {function_name}'.format(function_name=function_name))
         return lambda *args: None
 
-    def generate_device(self,config, deviceName):
+    def generate_device(self, config, deviceName):
         print(deviceName)
         device_type = config.get('Type')
         if deviceName.lower() == 'VolumeControl'.lower():
-            return VolumeControl(config,self.getFunctionCall,logger)
+            return VolumeControl(config, self.getFunctionCall, logger)
         elif device_type == 'TwoButtonControl':
             self.logger.info('adding TwoButtonControl')
             return TwoButtonControl(
@@ -76,7 +77,7 @@ class gpio_control():
                     name=deviceName)
         elif device_type == 'ShutdownButton':
             return ShutdownButton(pin=config.getint('Pin'),
-                                  action=self.getFunctionCall(config.get('functionCall',fallback='functionCallShutdown')),
+                                  action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown')),
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
                                   edge=config.get('edge', fallback='FALLING'),
@@ -86,7 +87,7 @@ class gpio_control():
         self.logger.warning('cannot find {}'.format(deviceName))
         return None
 
-    def get_all_devices(self,config):
+    def get_all_devices(self, config):
         self.logger.info(config.sections())
         for section in config.sections():
             if config.getboolean(section, 'enabled', fallback=False):
@@ -99,7 +100,7 @@ class gpio_control():
             else:
                 self.logger.info('Device {} not enabled'.format(section))
         return self.devices
-        
+
     def print_all_devices(self):
         for dev in self.devices:
             print(dev)
@@ -111,7 +112,7 @@ class gpio_control():
         except KeyboardInterrupt:
             pass
         self.logger.info('Exiting GPIO Control')
-        
+
 
 if __name__ == "__main__":
     config = configparser.ConfigParser(inline_comment_prefixes=";")
