@@ -29,6 +29,8 @@
 CMDVOLUP="%CMDVOLUP%"
 ### Volume down by one step
 CMDVOLDOWN="%CMDVOLDOWN%"
+### Switch between primary/secondary audio iFace
+CMDSWITCHAUDIOIFACE="%CMDSWITCHAUDIOIFACE%"
 ### Stop player
 CMDSTOP="%CMDSTOP%"
 ### Mute player
