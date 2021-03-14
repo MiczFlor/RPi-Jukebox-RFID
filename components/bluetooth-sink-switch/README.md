@@ -8,7 +8,7 @@ This component provides a mechanism to toggle between both audio sinks through a
 
 When a user powers on their Bluetooth headphones, they connect automatically to the Phoniebox. At the switch of the button (or card swipe, etc) the (already running) audio playback is transferred from the speakers to the headphones. This happens almost seamlessly. Parents feel an instant wave of relief at not having to listen to the 500th iteration of this month favourite song. The small user feels instantly proud at having working headphones much like the mom/dad always uses while doing home-office online meetings. If no Bluetooth headphones are connected, the audio sink toggle request defaults to speakers. An LED indicates the currently active audio sink.
 
-If the feature [bluetooth-buttons](../control/bluetooth-buttons) is enabled the audio stream is automatically switched over to bluetooth on connect and back to speakers on disconnect.
+If the feature [bluetooth-buttons](../controls/buttons-bluetooth-headphone) is enabled the audio stream is automatically switched over to bluetooth on connect and back to speakers on disconnect.
 
 If no bluetooth device is connected, the output defaults back to speakers. After boot-up the output is always speakers to make sure start-up sound are audiable and to avoid confusion.
 

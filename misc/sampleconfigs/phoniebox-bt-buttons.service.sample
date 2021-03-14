@@ -6,8 +6,8 @@ After=mpd.service
 User=pi
 Group=pi
 Restart=always
-WorkingDirectory=/home/pi/RPi-Jukebox-RFID/components/control/bluetooth-buttons
-ExecStart=/home/pi/RPi-Jukebox-RFID/components/control/bluetooth-buttons/bt-buttons.py
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID/components/controls/buttons-bluetooth-headphone
+ExecStart=/home/pi/RPi-Jukebox-RFID/components/controls/buttons-bluetooth-headphone/bt-buttons.py
 
 [Install]
 WantedBy=multi-user.target
