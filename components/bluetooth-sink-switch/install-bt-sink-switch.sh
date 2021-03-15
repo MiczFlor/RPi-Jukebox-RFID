@@ -49,4 +49,4 @@ chmod ugo+rw ${CONFFILE}
 sudo systemctl restart lighttpd.service
 
 # Final notes
-echo -e "\n\n\nIMPORTANT NOTE:\nPlease modify ${FILE} around line 20 for\n  led_pin=None\nto configure LED pin-out.\n Do nothing to leave it disabled."
+echo -e "\n\n\nFINAL NOTE:\nPlease check README.md for configuration of optional LED and GPIO toggle button."
