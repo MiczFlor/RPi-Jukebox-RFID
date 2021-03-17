@@ -110,18 +110,19 @@ $ ./install-bt-sink-switch.sh
 
 **Status LED**
 
-An optional status LED will be turned on if the audio sink is set to bluetooth. If a toggle command is issued, but no bluetooth device is connected, the LED will blink three times. Looks very neat, if you have a button with integrated LED. 
+An optional status LED will be turned on if the audio sink is set to bluetooth. If a toggle command is issued, but no bluetooth device is connected, the LED will blink three times. Looks very neat, if you have a button with integrated LED. Add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`, to use GPIO 13 as LED signal. It is `led_pin` the BCM number of the GPIO pin (i.e. 'led_pin = 13' means GPIO13) and defaults to None. Create the file, if it does not exist.
 
-Open `bt-sink-switch.py` and edit the following lines. (Default is `led_pin=None`)
-~~~python
-# Uses BCM GPIO numbering, i.e. 'led_pin = 6' means GPIO6
-# Set 'led_pin=None' to disable LED support (and no GPIO pin is blocked in this case)
-led_pin = 6
+**Important note**: Correct capitalization of [BluetoothToggleLed] is important!
+
+~~~
+[BluetoothToggleLed]
+enabled: True
+led_pin: 13
 ~~~
 
 **GPIO control**
 
-If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `gpio_settings.ini`
+If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`. Create it, if it does not exist.
 
 ~~~
 [BluetoothToggle]
