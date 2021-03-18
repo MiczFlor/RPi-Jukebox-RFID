@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 import sys
-
-sys.path.append(".")
-
 from evdev import categorize, ecodes, KeyEvent
 from io_buttons_usb_encoder import current_device, write_button_map
 import components.gpio_control.function_calls
 
+sys.path.append(".")
+
+
 try:
     functions = list(
         filter(lambda function_name: function_name.startswith("functionCall"),
-               dir(components.gpio_control.function_calls)))
+               dir(components.gpio_control.function_calls.phoniebox_function_calls)))
     button_map = {}
 
     print("")

@@ -160,6 +160,10 @@ if [ "$CARDID" ]; then
             # decrease volume by x% set in Audio_Volume_Change_Step
             $PATHDATA/playout_controls.sh -c=volumedown
             ;;
+        $CMDSWITCHAUDIOIFACE)
+            # switch between primary/secondary audio iFaces
+            $PATHDATA/playout_controls.sh -c=switchaudioiface
+	    ;;
         $CMDSTOP)
             # kill all running audio players
             $PATHDATA/playout_controls.sh -c=playerstop
@@ -286,6 +290,9 @@ if [ "$CARDID" ]; then
             ;;
         $CMDREADWIFIIP)
             $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
+            ;;
+        $CMDBLUETOOTHTOGGLE)
+            $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
             ;;
         *)
 

@@ -69,6 +69,7 @@ $lang['globalLang'] = "Sprache";
 $lang['globalLanguageSettings'] = "Spracheinstellungen";
 $lang['globalPriority'] = "Priorität";
 $lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Ausgabegeräte";
 
 // Player title HTML
 $lang['playerSeekBack'] = "Rückwärts spulen";
@@ -239,6 +240,7 @@ $lang['settingsWlanSendEmail'] = "E-Mail Adr.";
 $lang['settingsWlanSendON'] = "Ja, E-Mail senden.";
 $lang['settingsWlanSendOFF'] = "Nein, E-Mail nicht senden.";
 
+$lang['settingsVolumeManager'] = "Auswahl Volume Manager";
 
 $lang['settingsWlanReadNav'] = "Wlan IP vorlesen";
 $lang['settingsWlanReadInfo'] = "Wlan IP bei jedem Systemstart vorlesen? (nützlich wenn du deine Phoniebox in ein neues Wlan-Netzwerk mit dynamischer IP verbindest)";
@@ -259,6 +261,8 @@ $lang['infoMPDStatus'] = "MPD Server Status";
 $lang['infoDebugLogTail'] = "<b>DEBUG Logdatei</b>: Letzte 40 Zeilen";
 $lang['infoDebugLogClear'] = "Lösche Inhalt von debug.log";
 $lang['infoDebugLogSettings'] = "Debug Log Einstellungen";
+$lang['infoAudioActive'] = "Aktive Audioausgänge";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Ordnerverwaltung und Dateien hochladen

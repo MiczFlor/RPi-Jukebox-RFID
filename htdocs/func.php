@@ -296,7 +296,7 @@ function index_folders_print($item, $key)
         }
     }
     $playlist = $contentTree[$key]['path_rel'];
-    $id = str_replace(",", "", $contentTree[$key]['id']);
+    $id = $contentTree[$key]['id'];
 /**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???

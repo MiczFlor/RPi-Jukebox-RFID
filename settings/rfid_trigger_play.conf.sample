@@ -29,6 +29,8 @@
 CMDVOLUP="%CMDVOLUP%"
 ### Volume down by one step
 CMDVOLDOWN="%CMDVOLDOWN%"
+### Switch between primary/secondary audio iFace
+CMDSWITCHAUDIOIFACE="%CMDSWITCHAUDIOIFACE%"
 ### Stop player
 CMDSTOP="%CMDSTOP%"
 ### Mute player
@@ -47,6 +49,8 @@ CMDSEEKBACK="%CMDSEEKBACK%"
 CMDPAUSE="%CMDPAUSE%"
 ### Resume audio playout
 CMDPLAY="%CMDPLAY%"
+### Toggle between speakers and bluetooth headphones
+CMDBLUETOOTHTOGGLE="%CMDBLUETOOTHTOGGLE%"
 
 ## System
 ### Shutdown

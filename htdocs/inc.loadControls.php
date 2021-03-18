@@ -95,6 +95,7 @@ print '<a id="pause" onclick="pause();" class="btn btn-player-xl" title="' . $la
     }
 
     function pause() {
+        clearInterval(JUKEBOX.interval);
         executePlayerCommand('pause', () => {
             $('#play').css('display', 'inline-block');
             $('#pause').css('display', 'none');
