@@ -110,6 +110,12 @@ If this problem occurs, follow the steps in the next section (configure USB soun
     ```
     sudo nano /etc/modprobe.d/alsa-base.conf
     ```
+
+    If this file does not exist (you will notice an empty editor), check out this file ([Reference](https://raspberrypi.stackexchange.com/questions/39187/alsa-base-conf-file-missing))
+    ```
+    sudo nano /usr/share/alsa/alsa.conf
+    ```
+
 1. Find the following variables and change their value from `0` to `1`
     ```
     defaults.ctl.card 0
