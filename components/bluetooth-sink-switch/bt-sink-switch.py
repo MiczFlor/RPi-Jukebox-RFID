@@ -125,7 +125,7 @@ def bt_switch(cmd, led_pin=None):
     isSpeakerOn_console = subprocess.run("mpc outputs", shell=True, check=False, stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT)
     logger.debug(isSpeakerOn_console.stdout)
-    isSpeakerOn = re.search(b"1.*enabled", isSpeakerOn_console.stdout)
+    isSpeakerOn = re.search(b"^Output 1.*enabled", isSpeakerOn_console.stdout)
 
     # Figure out if a bluetooth device is connected (any device will do). Assume here that only speakers/headsets will be connected
     # -> No need for user to adapt MAC address
