@@ -6,8 +6,13 @@ import subprocess
 import time
 import re
 import signal
+import sys
 
-from Reader import Reader
+# Add the path for the reader modules to Python's search path
+# such the reader directory is searched after local dir, but before all others
+reader_path = os.path.realpath(os.path.realpath(os.path.dirname(__file__)) + '/../components/rfid-reader')
+sys.path.insert(1, reader_path)
+import readersupport
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -17,7 +22,9 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-reader = Reader()
+# Load the rfid reader module
+readersupport.logconsole.setLevel(logging.DEBUG)
+reader = readersupport.load_reader('../../settings/rfid_reader.ini')
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -92,7 +99,7 @@ while True:
     # cardid = reader.readCard()
     # See here for (German ;) details:
     # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
-    cardid = reader.reader.readCard()
+    cardid = reader.read_card()
 
     # disable the alarm after a successful read
     signal.alarm(0)
