@@ -26,6 +26,6 @@ Up to now the following input devices are implemented:
 * **TwoButtonControl**:
     This Device uses two Buttons and implements a third action if both buttons are pressed together.
     
-Each section needs to be activat by setting `enabled: True`.
+Each section needs to be activated by setting `enabled: True`.
 
 Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/example_configs/`.
