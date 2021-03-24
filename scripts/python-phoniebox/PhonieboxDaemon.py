@@ -6,15 +6,18 @@ import sys, os.path
 import signal
 from time import sleep, time
 
-#import gpio_control
-
 import PhonieboxVolume
 import PhonieboxPlayer
 from PhonieboxRpcServer import phoniebox_rpc_server
+from PhonieboxNvManager import nv_manager
 
-# get absolute path of this script
-dir_path = os.path.dirname(os.path.realpath(__file__))
-defaultconfigFilePath = os.path.join(dir_path, 'phoniebox.conf')
+sys.path.insert(0,'../../components/gpio_control')
+sys.path.insert(0,'../../components/rfid-reader')
+#print(sys.path)
+from PhonieboxRfidReader import RFID_Reader
+#import gpio_control
+
+g_nvm = None
 
 def signal_handler(signal, frame):
     """ catches signal and triggers the graceful exit """
@@ -27,6 +30,7 @@ def exit_gracefully(esignal, frame):
     #stop all threads
     
     #save all nv
+    g_nvm.save_all()
     #play stop (maybe)
     #shutdown ()
     
@@ -35,6 +39,9 @@ def exit_gracefully(esignal, frame):
 
 if __name__ == "__main__":
 
+    # get absolute path of this script
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    defaultconfigFilePath = os.path.join(dir_path, 'phoniebox.conf')
     # if called directly, launch Phoniebox.py as rfid-reader daemon
     # treat the first argument as defaultconfigFilePath if given
     if len(sys.argv) <= 1:
@@ -42,52 +49,50 @@ if __name__ == "__main__":
     else:
         configFilePath = sys.argv[1]
 
-    #sys.path.append(parentdir+"/scripts")
-    sys.path.insert(0,'../../gpio_control')
-    print(sys.path)
-
     #parse config
     #gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
     #gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     #gpio_config.read(config_path)
 
-    volume_control_alsa = PhonieboxVolume.volume_control_alsa()
-    
+    #read config to dictionary?
+    phoniebox_config = {}
+    phoniebox_config['audiofolders_path'] = "../../shared/"
+
     # Play Startup Sound
+    volume_control_alsa = PhonieboxVolume.volume_control_alsa()
     startsound_thread = threading.Thread(target=volume_control_alsa.play_wave_file, args=["../../shared/startupsound.wav"])
     startsound_thread.start()
 
-    PhonieboxVolume.list_cards()
-    PhonieboxVolume.list_mixers({ 'cardindex': 0 })
+    #Debug: List ALSA cards and mixers
+    #PhonieboxVolume.list_cards()
+    #PhonieboxVolume.list_mixers({ 'cardindex': 0 })
+
+    g_nvm = nv_manager()
+    
+
+    #phoniebox music player status
+    music_player_status = g_nvm.load("../../shared/music_player_status.json")
+    
+    #card id database
+    cardid_database = g_nvm.load("../../settings/phoniebox_cardid_database.json")
 
     #initialize Phonibox objcts
     objects = {'volume':volume_control_alsa,
-               'player':PhonieboxPlayer.player_control()}
+               'player':PhonieboxPlayer.player_control(music_player_status)}
 
-    print ("Init Phonibox ZMQ Server ")
+    print ("Init Phonibox RPC Server ")
     rpcs = phoniebox_rpc_server(objects)
     if rpcs != None:
         rpcs.connect()
-        #pc_t = threading.Thread(target=pc.process_queue)
-        #pc_t.start()
-
-
-    ##rfid
-    #card id will be linked directly with object call which are feeded into the mq
-    cardid_db = {'104,49914':{'object':'','method':'','params':{}},
-                 '103,12632':{'object':'','method':'','params':{}},
-                 '104,29698':{'object':'','method':'','params':{}},
-                 '108,07437':{'object':'','method':'','params':{}},
-                 '107,60360':{'object':'','method':'','params':{}},
-                 '106,64513':{'object':'','method':'','params':{}},
-                 '104,14891':{'object':'','method':'','params':{}},
-                 '103,24033':{'object':'','method':'','params':{}},
-                 '104,32860':{'object':'','method':'','params':{}}   }
 
     #rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-    rfid_reader = None
+    rfid_reader = RFID_Reader("Fake")
+    #rfid_reader = None
     if rfid_reader is not None:
-        rfid_reader.set_cardid_db()
+        print ("set db")
+        rfid_reader.set_cardid_db(cardid_database)
+        rfid_reader.reader.set_card_ids(list(cardid_database))     #just for Fake Reader
+        print ("set thread")
         rfid_thread = threading.Thread(target=rfid_reader.run)
         #rfid_t.start()
     else:
@@ -122,5 +127,5 @@ if __name__ == "__main__":
         if rfid_thread is not None:
             print ("Starting RFID Thread")
             rfid_thread.start()
-        print ("Starting ZMQ Server")
+        print ("Starting RPC Server")
         rpcs.server()

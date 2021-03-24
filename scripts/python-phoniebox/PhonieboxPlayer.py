@@ -4,7 +4,13 @@
 from mpd import MPDClient
 
 class player_control:
-    def __init__(self):
+    def __init__(self,music_player_status):
+        self.music_player_status = music_player_status
+        if not self.music_player_status:
+            self.music_player_status['player_status'] = {}
+            self.music_player_status['audio_folder_status'] = {}
+            self.music_player_status.save_to_json()
+
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command is handled seperately, default: None
@@ -43,6 +49,11 @@ class player_control:
     def get_current_song(self, param):
         return {'resp': self.mpd_client.currentsong()}
 
+    def map_filename_to_playlist_pos(self,filename):
+        print ("map_filename_to_playlist_pos not yet implemented")
+        #self.mpd_client.playlistfind()
+        return 0
+    
     def playlistaddplay(self, param):
         
             # add to playlist (and play)
@@ -54,19 +65,66 @@ class player_control:
         # Read the current config file (include will execute == read)
         #. "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
 
-        # load playlist
-        #mpc clear
-        #mpc load "${VALUE//\//SLASH}"
-        #if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> ${PATHDATA}/../logs/debug.log; fi
+        folder = param.get("folder")
 
+        if folder is not None:
+            # load playlist
+            #mpc clear
+            self.mpd_client.clear()
+            #mpc load "${VALUE//\//SLASH}"   
+            #why dealing with playlists? at least partially redundant with folder.config, so why not combine if needed
+            #alternative solution, just add folders recursively to quene
+            self.mpd_client.add(folder)
+
+            self.music_player_status['player_status']['last_played_folder'] = folder
+
+            current_status = self.music_player_status['audio_folder_status'].get(folder)
+            if current_status is None:
+                current_status = self.music_player_status['audio_folder_status'][folder] = {}
+
+            self.mpd_client.play()
+       
+        
+        if 0:
         # Change some settings according to current folder IF the folder.conf exists
         #. ${PATHDATA}/inc.settingsFolderSpecific.sh
 
         # check if we switch to single file playout
-        #${PATHDATA}/single_play.sh -c=single_check -d="${FOLDER}"
+        ##${PATHDATA}/single_play.sh -c=single_check -d="${FOLDER}" 
 
+            #single_check)
+            #Check if SINGLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
+            #if [ $SINGLE == "ON" ]
+            #then
+              #  mpc single on
+            #else
+              #  mpc single off
+            #fi
+        
+            if currecnt_status["SINGLE"] == "OFF":
+                self.mpd_client.single(0)
+            else:
+                self.mpd_client.single(1)
+        
         # check if we shuffle the playlist
         #${PATHDATA}/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
+            #shuffle_check)
+            ##Check if SHUFFLE is switched on. As this is called for each playlist change, it will overwrite temporary shuffle mode
+	        #if [ $SHUFFLE == "ON" ];
+	        #then 
+	        #	mpc shuffle
+	        #else
+	        #	mpc random off
+	        #fi
+            #;;
+
+            if currecnt_status["SHUFFLE"] == "OFF":
+                self.mpd_client.random(0)
+            else:
+                self.mpd_client.shuffle()
+
+        ## oh, player controls volume
+        #need a setter for mute/unmute from volume class
 
         # Unmute if muted
         #if [ -f $VOLFILE ]; then
@@ -79,17 +137,78 @@ class player_control:
           #  rm -f $VOLFILE
         #fi
 
+    
         # Now load and play
-        #if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
-        #${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
+        #${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}" 
+    
+        ## Check if RESUME is switched on
+        #if [ $RESUME == "ON" ] || [ $SINGLE == "ON" ];
+        #then
+        #   
+        #    # Check if we got a "savepos" command after the last "resume". Otherwise we assume that the playlist was played until the end.
+        #    # In this case, start the playlist from beginning 
+        #    if [ $PLAYSTATUS == "Stopped" ] 
+        #    then
+        #        # Get the playlist position of the file from mpd
+        #        # Alternative approach: "mpc searchplay xx && mpc seek yy" 
+        #        PLAYLISTPOS=$(echo -e playlistfind filename \"$CURRENTFILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
+        #        
+        #        # If the file is found, it is played from ELAPSED, otherwise start playlist from beginning. If we got a playlist position
+        #        # play from that position, not the saved one.
+        #        if [ ! -z $PLAYLISTPOS ] && [ -z $VALUE ] ;
+        #        then
+        #            # doesnt work correctly 
+        #            # echo -e seek $PLAYLISTPOS $ELAPSED \\nclose | nc -w 1 localhost 6600
+        #            # workaround, see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/878#issuecomment-672283454
+        #            echo -e "play $PLAYLISTPOS" | nc -w 1 localhost 6600
+        #            echo -e seekcur $ELAPSED \\nclose | nc -w 1 localhost 6600
+        #        else
+        #            echo -e "play $VALUE" | nc -w 1 localhost 6600
+        #        fi
+        #        # If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks), 
+        #        # there's no savepos event and we would resume at the last position anywhere in the playlist. 
+        #        # To catch these, we signal it to the next "resume" call via writing it to folder.conf that 
+        #        # we still assume that the audio is playing. 
+        #        # be anything here, as we won't use the information if "Playing" is found by "resume".
+        #        
+        #        # set the vars we need to change
+        #        PLAYSTATUS="Playing"
+        #        
+        #    else
+        #        # We assume that the playlist ran to the end the last time and start from the beginning.
+        #        # Or: playlist is playing and we've got a play from playlist position command.
+        #        echo -e "play $VALUE" | nc -w 1 localhost 6600
+        #    fi
+        #else
+        #    # if no last played data exists (resume play disabled), we play the playlist from the beginning or the given playlist position
+        #    echo -e "play $VALUE" | nc -w 1 localhost 6600
+        #fi
+
+            if currecnt_status["RESUME"] is not "OFF" or currecnt_status["SINGLE"] is not "OFF":
+                if currecnt_status["PLAYSTATUS"] is "Stopped":
+
+                    self.map_filename_to_playlist_pos()
+
+                    #PLAYLISTPOS=$(echo -e playlistfind filename \"$CURRENTFILENAME\"\\nclose | nc -w 1 localhost 6600 | grep -o -P '(?<=Pos: ).*')
+
+                    currecnt_status["PLAYSTATUS"] = "Playing"
+                else:
+                    self.mpd_client.play()  # what is in value here? songpos
+            else:
+                #Begins playing the playlist at song number SONGPOS.
+                self.mpd_client.play()  # what is in value here? songpos
 
         # write latest folder played to settings file
         #sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
-        #sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
-        #sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played
-    
-        self.mpd_client.add(uri)
-        self.mpd_client.load(name[123, start:end])
-    
+
         song = self.mpd_client.currentsong()
+        
+        current_status["CURRENTFILENAME"] = song.get('file')
+        current_status["ELAPSED"] = 0
+        current_status["PLAYSTATUS"] = "Stopped"
+        current_status["RESUME"] = "OFF"
+        current_status["SHUFFLE"] = "OFF"
+        current_status["LOOP"] = "OFF"
+        current_status["SINGLE"] = "OFF"
+
         return ({'song':song})

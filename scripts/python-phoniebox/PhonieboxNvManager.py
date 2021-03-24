@@ -1,48 +1,112 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import json
+import os
 
-#Non Volatile data storage
-# to avoid frequent file system writes to prevent sd card wereout this module should take care of non volatile data and their storage
-# preferably as human readable, probaly json
-# the idea is that submodules create an nv object, for data they like to store
-#the Idea is just to handle dictionaries, do we need data type awareness here?
-#this could offer the option, that instead of a central configuration, each subclass can handle its configuration on its own, with setter / getter methods
-class nv_object():
-    __instance = None
-    @staticmethod 
-    def getInstance():
-        """ Static access method. """
-        if nv_object.__instance == None:
-            nv_object()
-        return nv_object.__instance
+class nv_manager():
     def __init__(self):
-        """ Virtually private constructor. """
-        if nv_object.__instance != None:
-            raise Exception("This class is a singleton!")
-        else:
-            nv_object.__instance = self
+        self.all_nv_objects = []
 
-
-        nv_manager register new object
+    def load(self,default_filename,type=None):
+        new_nv_dict = nv_dict(default_filename)
+        self.all_nv_objects.append(new_nv_dict)
+        return new_nv_dict
     
-    def get()
+    def save_all(self):
+        for nv_obj in self.all_nv_objects:
+            #print ("Saving {} ".format(nv_obj))
+            nv_obj.save_to_json()
 
-    sef set(val)
+    
+            
 
+# Todo: add hashing support
 
-class nv_manager
-    __init__(file_name)
-
-    def register_new_nv_object:
+# this is inherting from dict
+# you should not do this! 
+# In this case it is ok since we are just adding methods, and are not overwriting any parent methods
+class nv_dict(dict):
+    def __init__(self,default_filename=None):
+        super().__init__()
         
+        self.default_filename=default_filename
 
-    def set_storage_frequncey:
+        if self.default_filename is not None:
+            if (os.path.isfile(self.default_filename) and os.access(self.default_filename, os.R_OK)):
+                self.init_from_json(self.default_filename)
+                self.default_filename_is_writeable = os.access(self.default_filename, os.W_OK)
+            else:
+                print ("File {} does not exist, creating it".format(self.default_filename))
+                #self['nv_dict_version'] = 1.0
+                self.default_filename_is_writeable = True
+                self.save_to_json()
+        self.dirty = False                
+            
+    def __setitem__(self, item, value):
+        self.dirty = True   #not working, see comment above, intention is to just write dicts which content has changed
+        super(nv_dict,self).__setitem__(item, value)
+    
+    def init_from_json(self,path=None,merge=False):
+        if merge is False:
+            self.clear()
+        self.update(json.load( open( path ) ))
 
-    read
-        # Read data from file:
-        data = json.load( open( "file_name.json" ) )
+    def save_to_json(self,filename=None):
+        #if self.dirty is True:
+        print ("Saving {} ".format(self))
+        
+        save_to_filename = None
+             if filename is not None:
+            if os.access(filename, os.W_OK) :
+                save_to_filename = filename
+        else :
+            if (self.default_filename_is_writeable):
+                save_to_filename = self.default_filename
+            
+        if save_to_filename is not None:
+            json.dump( self, open( save_to_filename, 'w' ), indent=2)
+            self.dirty = False
+            #do we need to close ?
+  
+if __name__ == "__main__":
+    
+    nvd = nv_dict()
 
-    write
-        # Serialize data into file:
-        json.dump( data, open( "file_name.json", 'w' ) )
+    nvd['a'] = 1
+    nvd['b'] = 2
+
+    nvd['c'] = {'abc':123}
+
+    nvd.save_to_json("test.json")
+    nvd['d'] = {'abc':987}  #will not be stored in test
+
+    nvd.save_to_json("test2.json")
+
+    print (nvd)
+
+    nvd.init_from_json("test.json")
+
+    print (nvd)
+
+    nvd2 = nv_dict(default_filename="test2.json")
+    nvd2['b'] = {"xyz":"a string"}
+    nvd2.save_to_json()
+
+    nvd3 = nv_dict(default_filename="test3.json")
+
+
+    
+    nvm = nv_manager()
+
+    nvd4 =nvm.load("test4.json")
+    nvd4['a'] = 'A'
+
+    print (nvm.all_nv_objects)
+
+    nvd5 =nvm.load("test5.json")
+    nvd5['B'] = 'B'
+
+    print (nvm.all_nv_objects) 
+
+    nvm.save_all()
+    

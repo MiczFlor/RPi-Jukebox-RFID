@@ -8,10 +8,13 @@
 import os.path
 import sys
 
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import logging
 
-from evdev import InputDevice, categorize, ecodes, list_devices
+sys.path.insert(0,'../')
+from phonie_access_objects import phoniebox_object_access_queue
+
+#from evdev import InputDevice, categorize, ecodes, list_devices
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +63,9 @@ class RFID_Reader(object):
         elif device_name == 'PN532':
             import RfidReader_PN532
             self.reader = Pn532Reader()
+        elif device_name == 'Fake':
+            from FakeRfidReader import FakeReader
+            self.reader = FakeReader()
         else:
             try:
                 device = [device for device in get_devices() if device.name == device_name][0]
@@ -70,32 +76,33 @@ class RFID_Reader(object):
         self.queue = phoniebox_object_access_queue()
         self.queue.connect()
         self._keep_running = True
-
-
+        self.cardnotification = None
+        self.valid_cardnotification = None
+        self.invalid_cardnotification = None
 
     def set_cardid_db(self,cardid_db):
         ##potentially dangerous for runtime updates, needs look?
         if cardid_db != None:
             self.cardid_db = cardid_db
 
-    def get_card_assignment(self,cardid)
+    def get_card_assignment(self,cardid):
         ##potentially dangerous for runtime updates, needs look?
-        card_assignment = self.cardid_db.get(cardid)
+        return self.cardid_db.get(cardid)
 
     def get_last_card_id(self):
         return self.last_card_id
 
-    def set_cardnotification(self, callback)
-        if is callable(callback):
+    def set_cardnotification(self, callback):
+        if callable(callback):
             self.cardnotification = callback
 
-    def set_valid_cardnotification(self, callback)
-        if is callable(callback):
+    def set_valid_cardnotification(self, callback):
+        if callable(callback):
             self.valid_cardnotification = callback
     
     
-    def set_invalid_cardnotification(self, callback)
-        if is callable(callback):
+    def set_invalid_cardnotification(self, callback):
+        if callable(callback):
             self.invalid_cardnotification = callback
 
     
@@ -106,17 +113,17 @@ class RFID_Reader(object):
 
         self._keep_running = True
         ##card_detection_sound = self.get_setting("phoniebox", "card_detection_sound")  <-- this module should not deciede about sound
-        debounce_time = self.get_setting("phoniebox", "debounce_time")
-        if debounce_time == -1:
-            debounce_time = 0.5
-        second_swipe_delay = self.get_setting("phoniebox", "second_swipe_delay")
-        if second_swipe_delay == -1:
-            second_swipe_delay = 0
-        store_card_assignments = self.get_setting("phoniebox", "store_card_assignments")
-        if store_card_assignments == -1:
-            store_card_assignments = 30
-        last_swipe = 0
-        last_write_card_assignments = 0
+        #debounce_time = self.get_setting("phoniebox", "debounce_time")
+        #if debounce_time == -1:
+        #    debounce_time = 0.5
+        #second_swipe_delay = self.get_setting("phoniebox", "second_swipe_delay")
+        #if second_swipe_delay == -1:
+        #    second_swipe_delay = 0
+        #store_card_assignments = self.get_setting("phoniebox", "store_card_assignments")
+        #if store_card_assignments == -1:
+        #    store_card_assignments = 30
+        #last_swipe = 0
+        #last_write_card_assignments = 0
 
         ## who does know about card ids?
         ##the reader?
@@ -127,7 +134,7 @@ class RFID_Reader(object):
         ##      -> Reader knows about IDs eecuitng a command, everything else is treted -> maybe
 
         while self._keep_running:               #since readCard is a blocking call, this will not work
-            cardid = reader.reader.readCard()  
+            cardid = self.reader.readCard()  
             self.last_card_id = cardid
 
             if self.cardnotification is not None:
@@ -137,7 +144,7 @@ class RFID_Reader(object):
 
             if card_assignment is not None:    
                 
-                #probably deal with 2nd wipe here
+                #probably deal with 2nd swipe here
                 
                 if self.valid_cardnotification is not None:
                     self.valid_cardnotification()

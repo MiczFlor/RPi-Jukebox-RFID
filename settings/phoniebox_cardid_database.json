@@ -1,0 +1,53 @@
+{
+  "104,49914": {
+    "object": "player",
+    "method": "playlistaddplay",
+    "params": {
+      "folder": "a/acdc"
+    }
+  },
+  "103,12632": {
+    "object": "player",
+    "method": "playlistaddplay",
+    "params": {
+      "folder": "r/roxette"
+    }
+  },
+  "104,29698": {
+    "object": "player",
+    "method": "playlistaddplay",
+    "params": {
+      "folder": "d/digger barnes/every story true"
+    }
+  },
+  "108,07437": {
+    "object": "",
+    "method": "",
+    "params": {}
+  },
+  "107,60360": {
+    "object": "",
+    "method": "",
+    "params": {}
+  },
+  "106,64513": {
+    "object": "",
+    "method": "",
+    "params": {}
+  },
+  "104,14891": {
+    "object": "",
+    "method": "",
+    "params": {}
+  },
+  "103,24033": {
+    "object": "",
+    "method": "",
+    "params": {}
+  },
+  "104,32860": {
+    "object": "",
+    "method": "",
+    "params": {}
+  }
+}
