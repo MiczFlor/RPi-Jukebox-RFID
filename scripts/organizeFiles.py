@@ -90,31 +90,60 @@ def _askFolderType(audioDir, d):
         print("ignoring folder.")
 
 
-def linkLooseFolders(shortcutsDir, audioDir, shortcuts, audioFolders):
+def linkLooseFolders(shortcutsDir, audioDir, shortcuts, audioFolders, latestRFIDFile):
     allShortcutsDirs = []
+    looseFolders = {}
+
     print("\n\n=== linking loose folders")
     for cardid, dirs in shortcuts.items():
         allShortcutsDirs.extend(dirs)
-    for d, hasFolderConf in audioFolders.items():
-        if d not in allShortcutsDirs:
-            cardid = input("\ncardid for [" + d + "]: ")
-            if len(cardid) == 0:
-                print("ok, ignoring this folder.")
-            else:
-                doit = True
-                if cardid in shortcuts:
-                    doit = False
-                    yn = input("WARNING: cardid already assigned to " + str(shortcuts[cardid]) + ". Override? [y/N] ")
-                    if yn == "y":
-                        doit = True
+    lc2 = 0
+    for d2, hasFolderConf2 in sorted(audioFolders.items()):
+        if d2 not in allShortcutsDirs:
+            looseFolders[lc2] = d2
+            lc2 = lc2 + 1
 
-                if doit:
-                    if not hasFolderConf:
-                        _askFolderType(audioDir=audioDir, d=d)
-                    with open(os.path.join(shortcutsDir, cardid), "w") as f:
-                        f.write(d)
-                else:
-                    print("skipping.")
+    while len(looseFolders) != 0:
+        print("\n== loose folders:")
+        for lc, d in looseFolders.items():
+            print(str(lc) + ": " + d)
+        selectedOption = input("\nplease select folder: ")
+        if len(selectedOption.strip()) == 0:
+            print("cancel.")
+            break
+        if not selectedOption.isnumeric():
+            print("invalid input.")
+            continue
+        selectedOptionInt = int(selectedOption)
+        if selectedOptionInt < 0 or selectedOptionInt not in looseFolders:
+            print("invalid input.")
+            continue
+
+        with open(latestRFIDFile, "r") as rf:
+            latestRFID = rf.read().strip()
+
+        d = looseFolders[selectedOptionInt]
+        cardid = input("\ncardid for \"" + d + "\" [" + latestRFID + "] (enter \"c\" to cancel): ")
+        if cardid == "c":
+            print("ok, ignoring this folder.")
+        else:
+            if len(cardid) == 0:
+                cardid = latestRFID
+            doit = True
+            if cardid in shortcuts:
+                doit = False
+                yn = input("WARNING: cardid already assigned to " + str(shortcuts[cardid]) + ". Override? [y/N] ")
+                if yn == "y":
+                    doit = True
+
+            if doit:
+                if not audioFolders[d]:
+                    _askFolderType(audioDir=audioDir, d=d)
+                with open(os.path.join(shortcutsDir, cardid), "w") as f:
+                    f.write(d)
+                looseFolders.pop(selectedOptionInt, None)
+            else:
+                print("skipping.")
     print("done.")
 
 
@@ -126,17 +155,45 @@ def fixFoldersWithoutFolderConf(audioDir, audioFolders):
     print("=== done.")
 
 
+def findDuplicateShortcuts(shortcuts):
+    print("\n\n=== Checking folders with multiple shortcuts ...")
+    linkedFolders = {}
+    for cardid, dirs in shortcuts.items():
+        for d in dirs:
+            if d not in linkedFolders:
+                linkedFolders[d] = []
+            linkedFolders[d].append(cardid)
+    for d, cardids in linkedFolders.items():
+        if len(cardids) > 1:
+            print("WARNING: multiple shortcuts for folder [" + d + "]: " + str(cardids))
+    print("=== done.")
+
+
 if __name__ == "__main__":
-    baseDir = "/home/pi/RPi-Jukebox-RFID/shared"
-    shortcutsDir = os.path.join(baseDir, "shortcuts")
-    audioDir = os.path.join(baseDir, "audiofolders")
+    baseDir = "/home/pi/RPi-Jukebox-RFID"
+    latestRFIDFile = os.path.join(baseDir, "settings", "Latest_RFID")
+    shortcutsDir = os.path.join(baseDir, "shared", "shortcuts")
+    audioDir = os.path.join(baseDir, "shared", "audiofolders")
 
     shortcuts = readShortcuts(shortcutsDir=shortcutsDir)
     audioFolders = readFolders(audioDir=audioDir)
 
-    linkLooseFolders(shortcutsDir=shortcutsDir, audioDir=audioDir, shortcuts=shortcuts, audioFolders=audioFolders)
+    print("===== shortcuts =====")
+    shortcutslist = []
+    for cardid, thefolders in sorted(shortcuts.items()):
+        for f in thefolders:
+            shortcutslist.append([cardid, f])
+    for e in sorted(shortcutslist, key=lambda x: x[1]):
+        print("\"" + e[1] + "\";\t\"" + e[0] + "\"")
+    print("==================================")
+
+    linkLooseFolders(shortcutsDir=shortcutsDir, audioDir=audioDir, shortcuts=shortcuts, audioFolders=audioFolders, latestRFIDFile=latestRFIDFile)
     fixBrokenShortcuts(shortcutsDir=shortcutsDir, shortcuts=shortcuts, audioFolders=audioFolders)
+
+    shortcuts2 = readShortcuts(shortcutsDir=shortcutsDir)
+    findDuplicateShortcuts(shortcuts)
 
     audioFolders2 = readFolders(audioDir=audioDir)
     fixFoldersWithoutFolderConf(audioDir=audioDir, audioFolders=audioFolders2)
+
 
