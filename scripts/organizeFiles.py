@@ -191,7 +191,7 @@ if __name__ == "__main__":
     fixBrokenShortcuts(shortcutsDir=shortcutsDir, shortcuts=shortcuts, audioFolders=audioFolders)
 
     shortcuts2 = readShortcuts(shortcutsDir=shortcutsDir)
-    findDuplicateShortcuts(shortcuts)
+    findDuplicateShortcuts(shortcuts=shortcuts2)
 
     audioFolders2 = readFolders(audioDir=audioDir)
     fixFoldersWithoutFolderConf(audioDir=audioDir, audioFolders=audioFolders2)
