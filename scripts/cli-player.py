@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     while True:
         i = input("select folder: ")
-        if len(i.strip()) == 0:
+        if i == "quit" or i == "exit":
             break
         if not i.isnumeric():
             print("not a number.")
