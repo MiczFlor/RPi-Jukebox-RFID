@@ -955,6 +955,39 @@ case $COMMAND in
             rfkill unblock wifi
         fi
         ;;
+    randomcard)
+        #activate a random card
+        NUM_CARDS=$(find $AUDIO_FOLDERS_PATH/../shortcuts/ -maxdepth 1 -name '[0-9]*' | wc -l)
+        dbg "NUM_CARDS: $NUM_CARDS"
+        if (($NUM_CARDS>0))
+        then
+            RANDOMCARDID=$(ls -d $AUDIO_FOLDERS_PATH/../shortcuts/[0-9]* | shuf -n 1 | xargs basename)
+            dbg "playing random card $RANDOMCARDID"
+            ${PATHDATA}/rfid_trigger_play.sh --cardid=$RANDOMCARDID
+        fi
+        ;;
+    randomfolder)
+        #play a random folder
+        NUM_FOLDERS=$(find $AUDIO_FOLDERS_PATH -mindepth 1 -maxdepth 1 -type d -printf '1' | wc -c)
+        dbg "NUM_FOLDERS: $NUM_FOLDERS"
+        if (($NUM_FOLDERS>0))
+        then
+            RANDOMFOLDER=$(ls -d $AUDIO_FOLDERS_PATH/*/ | shuf -n 1 | xargs -d '\n' basename)
+            dbg "playing random folder \"$RANDOMFOLDER\""
+            ${PATHDATA}/rfid_trigger_play.sh --dir="$RANDOMFOLDER"
+        fi
+        ;;
+    randomtrack)
+        #jump to a random track from the current playlist (without activating shuffle, i.e. maintaining track order)
+        NUM_TRACKS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
+        dbg "NUM_TRACKS: $NUM_TRACKS"
+        if(($NUM_TRACKS > 0))
+        then
+            RANDOMTRACK=$(((RANDOM%${NUM_TRACKS})+1))
+            dbg "playing random track $RANDOMTRACK"
+            mpc play ${RANDOMTRACK}
+        fi
+        ;;
     recordstart)
         #mkdir $AUDIOFOLDERSPATH/Recordings
         #kill the potential current playback
