@@ -15,7 +15,7 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
-def query_user_for_reader()  -> configparser.ConfigParser:
+def query_user_for_reader(no_dep_install=False) -> configparser.ConfigParser:
     """Searches for available Reader modules, dynamically loads them, and queries user for selection.
      If selected module has customization options query user for that, too.
 
@@ -37,11 +37,30 @@ def query_user_for_reader()  -> configparser.ConfigParser:
     logger.debug(f"reader_dirs = {reader_dirs}")
 
     reader_modules_candidates = []
+    # Try to load modules from all valid directories
+    # Module not found errors will be handled with "ignore" in case the user is interested in another module
+    # All other errors will NOT be handled and cause an exception. Modules that do no compile should not enter the repository!
     for reader_type in reader_dirs:
         try:
             reader_modules_candidates.append(importlib.import_module('..' + reader_type, reader_type + '.subpkg'))
         except ModuleNotFoundError as e:
-            logger.error("No reader module found in directory {reader_type}! Ignoring directory. \n\n")
+            # This can have two reasons:
+            # (1) The reader_type module itself cannot be found (for whatever unfathomable reason - the file could still be a directory)
+            # (2) The reader_type module has sub-dependencies which cannot be found
+            # In both cases continue, as it might not be the reader the user is interested in
+            if e.name == reader_type + '.' + reader_type:
+                logger.error(f"No reader module found in directory '{reader_type}'! Ignoring directory. \n\n")
+            else:
+                logger.error(f"\n\n{'='*80}\n"
+                             f"Sub-dependencies in '{reader_type}' not fulfilled. Ignoring directory.\n"
+                             f"{e.msg}\n"
+                             f"{'='*80}\n"
+                             "This usually means some dependencies are not installed.\n"
+                             "By this scripts convention, they should be enclosed in a try-catch block to allow partial "
+                             "loading of the module for user query before installing all dependencies.\n"
+                             "You may install the dependencies manually before re-executing this script by:\n"
+                             "'$ pip3 install -r requirements.txt' in the reader's submodule directory\n\n"
+                             f"{'='*80}\n")
 
     # Check all loaded modules for validity
     # Minimum requirement is a class with name 'Reader'
@@ -71,21 +90,24 @@ def query_user_for_reader()  -> configparser.ConfigParser:
     reader_select_name = reader_select_module.__name__.split('.')[1]
 
     # Automatically install dependencies for the selected reader module
-    if os.path.exists(reader_select_name + '/requirements.txt'):
-        print("Installing/Checking dependencies  ...\n")
-        quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
-        subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
-                             shell=True, check=False)
-        print("\nInstalling dependencies ... done!")
-    # Reload module to ensure all freshly installed dependencies are imported
-    logger.debug(f"Reloading selected module '{reader_select_module.__name__}' to ensure all dependencies are imported.")
-    try:
-        importlib.reload(reader_select_module)
-    except e:
-        logger.error("while reloading '{reader_select_module.__name__}'.\n"
-                     "This usually means, some dependencies are not installed.\n"
-                     "Ensure these are all installed ($pip3 install -r requirements.txt) in the reader's submodule directory\n\n")
-        raise e
+    if no_dep_install is not True:
+        if os.path.exists(reader_select_name + '/requirements.txt'):
+            # The python dependencies (if any)
+            print("Installing/Checking dependencies  ...\n{'='*80}\n")
+            quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
+            subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
+                           shell=True, check=False)
+            print(f"\n{'='*80}\nInstalling dependencies ... done!")
+            # Reload module to ensure all freshly installed dependencies are imported
+            logger.debug(f"Reloading selected module '{reader_select_module.__name__}' to ensure all dependencies are imported.")
+            # The module has been loaded before successfully, so it should do so here --> No exception handling necessary
+            importlib.reload(reader_select_module)
+        if os.path.exists(reader_select_name + '/setup.inc.sh'):
+            # The shell dependencies/settings (if any)
+            print(f"Executing shell support commands  ...\n{'='*80}\n")
+            subprocess.run('./setup.inc.sh', cwd=reader_select_name,
+                           shell=True, check=False)
+            print(f"\n{'='*80}\nExecuting shell support commands  ... done!\n")
 
     # Check if reader module has customization and if yes, query user for that
     reader_params = None
@@ -96,7 +118,7 @@ def query_user_for_reader()  -> configparser.ConfigParser:
 
     logger.debug(f"reader_params = {reader_params}")
 
-    # Put it together and write config file
+    # Put it together and return entire config
     config = configparser.ConfigParser()
     config.add_section('ReaderType')
     config['ReaderType']['reader_module'] = reader_select_name

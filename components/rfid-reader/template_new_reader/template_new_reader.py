@@ -11,7 +11,7 @@ File structure:
 - Single reader per directory
 - Directory name and file name are identical
   -> i.e. awesome_reader/awesome_reader.py
-- Note: We deviate slighlty from the python naming convention for modules here, as the module name is identical
+- Note: We deviate slightly from the python naming convention for modules here, as the module name is identical
  to directory name and that should be descriptive enough to know what is going on when looking at the file
  structure in git. Also it should specific enough to allow for later new module additions.
 - Naming scheme for the module
@@ -20,12 +20,13 @@ File structure:
   - e.g. pn532_spi/pn532_spi.py
   - ...
 - DO NOT use '-' in the filename! Even if that is the suggested naming convention in the Phoniebox project.
-  That is no a valid character in python for module names. It makes loading the module in statically a pain.
+  That is no a valid character in python for module names. It makes loading the module statically a pain.
 """
 
-# Standard imports from pyton packages
+# Standard imports from python packages
 import os
 import logging
+
 # IMPORTANT:
 # Wrap 3rd party imports that need only be installed when actually using this reader module in a try-except block
 # Reason: This way the module can be loaded and things like DESCRIPTION can be read-out even without installing
@@ -86,9 +87,9 @@ class Reader:
         - params may no always contain all expected key/value pairs. So you might use default fallback values or
         raise an error depending on the missing information
         """
-        # In the simplest form, w/o error checks and type conversion, this would simply by
-        # but I strongly encourage some logging and sanity checking :-)
-        the_3rd_party_reader(**params)
+        # In the simplest form, w/o error checks and type conversion, this would simply be to following.
+        # But I strongly encourage some logging and sanity checking :-)
+        # the_3rd_party_reader(**params)
 
     def read_card(self) -> str:
         """Blocking function that waits for a new card to appear and return the card's UID as string"""
