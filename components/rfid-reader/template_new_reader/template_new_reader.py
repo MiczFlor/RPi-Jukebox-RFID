@@ -45,7 +45,7 @@ except ModuleNotFoundError:
 # The logging level is also controlled from the readersupport module. It relies an the names below,
 # so please do not change them, or the logging control will be broken
 # Create logger
-logger = logging.getLogger(os.path.basename(__file__).ljust(20))
+logger = logging.getLogger(os.path.basename(__file__).ljust(25))
 logger.setLevel(logging.DEBUG)
 # Create console handler and set default level (may be overwritten by readersupport module)
 logconsole = logging.StreamHandler()
@@ -54,7 +54,7 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
-"""Provide a short title for this reader. 
+"""Provide a short title for this reader.
 This is what that user will see when asked for selecting his Reader
 So, be precise but readable."""
 DESCRIPTION = 'Template RFID Reader Module'
@@ -72,14 +72,28 @@ def query_customization() -> dict:
 
 class Reader:
     """The actual reader class that is used to read RFID cards.
-    It will be instantiated once and then read_card is called in an endless loop"""
+    It will be instantiated once and then read_card is called in an endless loop.
+    It will be used in a  mannser
+      with Redaer(params) as r:
+         ...
+    which ensures proper resource de-allocation. For this to work do not touch the functions
+    __enter__ and __exit__. Put all your cleanup code into cleanup(self)."""
+
+    def __enter__(self):
+        # Do not change anything here!
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # Do not change anything here!
+        logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
+        self.cleanup()
 
     def __init__(self, params: dict):
         """In the constructor, you will get a dictionary with all the customization options read for this reader from
         the configuration file. Note: all key/value pairs are string because they are read from file with configparser.
         You will need to do type conversion yourself.
         As you are dealing directly with potentially user-manipulated config information, it is
-        advisable to do some sanity checks and give userfull error messages. Even if you cannot recover gracefully,
+        advisable to do some sanity checks and give useful error messages. Even if you cannot recover gracefully,
         a good error message helps :-)
 
         Things to consider
@@ -90,6 +104,22 @@ class Reader:
         # In the simplest form, w/o error checks and type conversion, this would simply be to following.
         # But I strongly encourage some logging and sanity checking :-)
         # the_3rd_party_reader(**params)
+
+        # A very neat way is to read the params dict back into a configparser structure. This allows you to use the
+        # well-defined functions of the configparser for type conversion and fallback values.
+        # Here is an example to get the parameter 'device' (string) and 'timeout' (integer)
+        # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.get
+        # config = configparser.ConfigParser()
+        # config.read_dict({'params': params})
+        # device = config['params'].get('device', fallback='/dev/ttyS0')
+        # timeout = config['params'].getfloat('timeout', fallback=0.1)
+
+    def cleanup(self):
+        """The cleanup function: Free and release all resources used by this card reader. e.g. if you are using the
+        serial bus or GPIO pins.
+        Will be called implicitly via the __exit__ function
+        This function must exist! If there is nothing to do, just leave the pass statement in place below"""
+        pass
 
     def read_card(self) -> str:
         """Blocking function that waits for a new card to appear and return the card's UID as string"""

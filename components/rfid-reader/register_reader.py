@@ -20,17 +20,9 @@ if __name__ == '__main__':
                         action="store_true", default=False)
     args = parser.parse_args()
 
-    if args.nowarn is False:
-        if os.path.exists(cfg_file):
-            print(f"WARNING: This script will overwrite exiting configuration at '{cfg_file}'.")
-            ur = input("Continue? [y/N] ")
-            if ur.lower() != 'y':
-                print("Exiting")
-                sys.exit()
-
     rs.logconsole.setLevel(rs.logging.INFO)
     if args.verbosity is True:
         print("Setting logging level to DEBUG.")
         rs.logconsole.setLevel(rs.logging.DEBUG)
 
-    rs.write_config(cfg_file, rs.query_user_for_reader(no_dep_install=args.noinstall))
+    rs.write_config(cfg_file, rs.query_user_for_reader(no_dep_install=args.noinstall), nowarn=args.nowarn)

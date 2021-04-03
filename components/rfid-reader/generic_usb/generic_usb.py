@@ -5,7 +5,7 @@ import logging
 
 
 # Create logger
-logger = logging.getLogger(os.path.basename(__file__).ljust(20))
+logger = logging.getLogger(os.path.basename(__file__).ljust(25))
 logger.setLevel(logging.DEBUG)
 # Create console handler and set default level
 logconsole = logging.StreamHandler()
@@ -35,8 +35,16 @@ def query_customization():
 
 
 class Reader:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
+        self.cleanup()
+
     def __init__(self, params: dict):
-        logger.debug("Initializing reader {DESCRIPTION} from {__file_}}")
+        logger.debug(f"Initializing reader {DESCRIPTION} from {__file__}")
+        logger.debug(f"Parameters = {params}")
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
         if not params:
             logger.error("Params dictionary may not be empty! Mandatory key 'device_name' not given!")
@@ -48,12 +56,15 @@ class Reader:
         devices = get_devices()
         for device in devices:
             if device.name == device_name:
-                logger.debug(f"Inspecting device {device.name} at {device}")
+                logger.debug(f"Inspecting device '{device.name}' at '{device}'")
                 self.dev = device
                 break
         else:
             logger.error(f"Could not find the device '{device_name}'. Make sure is connected.")
             raise FileNotFoundError(f"Could not find the device '{device_name}'. Make sure is connected.")
+
+    def cleanup(self):
+        pass
 
     def read_card(self) -> str:
         stri = ''

@@ -14,17 +14,16 @@ reader_path = os.path.realpath(os.path.realpath(os.path.dirname(__file__)) + '/.
 sys.path.insert(1, reader_path)
 import readersupport
 
-logger = logging.getLogger()
+logger = logging.getLogger(os.path.basename(__file__).ljust(25))
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
+ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)-8s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S'))
 logger.addHandler(ch)
 
-# Load the rfid reader module
+# Load the rfid reader module and reader configuration
 readersupport.logconsole.setLevel(logging.DEBUG)
-reader = readersupport.load_reader('../../settings/rfid_reader.ini')
+reader_module, reader_params = readersupport.load_reader('../../settings/rfid_reader.ini')
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -83,43 +82,45 @@ def handler(signum, frame):
 # associate the handler to signal alarm
 signal.signal(signal.SIGALRM, handler)
 
-while True:
-    # slow down the card reading while loop
-    time.sleep(0.2)
+with reader_module.Reader(reader_params) as reader:
 
-    if swipe_or_place == "PLACENOTSWIPE":
-        # enable the signal alarm (if no card is present for 1 second)
-        signal.alarm(1)
+    while True:
+        # slow down the card reading while loop
+        time.sleep(0.2)
 
-    # reading the card id
-    # NOTE: it's been reported that KKMOON Reader might need the following line altered.
-    # Instead of:
-    # cardid = reader.reader.readCard()
-    # change the line to:
-    # cardid = reader.readCard()
-    # See here for (German ;) details:
-    # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
-    cardid = reader.read_card()
+        if swipe_or_place == "PLACENOTSWIPE":
+            # enable the signal alarm (if no card is present for 1 second)
+            signal.alarm(1)
 
-    # disable the alarm after a successful read
-    signal.alarm(0)
+        # reading the card id
+        # NOTE: it's been reported that KKMOON Reader might need the following line altered.
+        # Instead of:
+        # cardid = reader.reader.readCard()
+        # change the line to:
+        # cardid = reader.readCard()
+        # See here for (German ;) details:
+        # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
+        cardid = reader.read_card()
 
-    try:
-        # start the player script and pass on the cardid (but only if new card or otherwise
-        # "same_id_delay" seconds have passed)
-        if cardid is not None:
-            if cardid != previous_id or (time.time() - previous_time) >= float(same_id_delay) or cardid in str(ids):
-                logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
-                subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
-                previous_id = cardid
+        # disable the alarm after a successful read
+        signal.alarm(0)
 
-            else:
-                logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
-                    cardid=cardid,
-                    same_id_delay=same_id_delay
-                ))
+        try:
+            # start the player script and pass on the cardid (but only if new card or otherwise
+            # "same_id_delay" seconds have passed)
+            if cardid is not None:
+                if cardid != previous_id or (time.time() - previous_time) >= float(same_id_delay) or cardid in str(ids):
+                    logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
+                    subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
+                    previous_id = cardid
 
-            previous_time = time.time()
+                else:
+                    logger.debug('Ignoring Card id {cardid} due to same-card-delay, delay: {same_id_delay}'.format(
+                        cardid=cardid,
+                        same_id_delay=same_id_delay
+                    ))
 
-    except OSError as e:
-        logger.error('Execution failed: {e}'.format(e=e))
+                previous_time = time.time()
+
+        except OSError as e:
+            logger.error('Execution failed: {e}'.format(e=e))

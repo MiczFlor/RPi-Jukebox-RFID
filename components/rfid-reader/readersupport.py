@@ -6,7 +6,7 @@ import importlib
 import subprocess
 
 # Create logger
-logger = logging.getLogger(os.path.basename(__file__).ljust(20))
+logger = logging.getLogger(os.path.basename(__file__).ljust(25))
 logger.setLevel(logging.DEBUG)
 # Create console handler and set default level
 logconsole = logging.StreamHandler()
@@ -29,11 +29,13 @@ def query_user_for_reader(no_dep_install=False) -> configparser.ConfigParser:
     This script expects to reside in the directory with all the reader module subpackages. Otherwise you'll need
     to adjust sys.path"""
 
-    logger.debug(f"File location: {os.path.dirname(os.path.realpath(__file__))}")
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    logger.debug(f"File location: {script_dir}")
     # Get all local directories that conform to naming/structuring convention
     # Naming convention: modname/modname.py
-    reader_dirs = [x for x in os.listdir(os.path.dirname(os.path.realpath(__file__)))
-                   if (os.path.isdir(x) and os.path.exists(x + '/' + x + '.py'))]
+    print(f"{os.listdir(os.path.dirname(os.path.realpath(__file__)))}")
+    reader_dirs = [x for x in os.listdir(script_dir)
+                   if (os.path.isdir(script_dir + '/' + x) and os.path.exists(script_dir + '/' + x + '/' + x + '.py'))]
     logger.debug(f"reader_dirs = {reader_dirs}")
 
     reader_modules_candidates = []
@@ -127,13 +129,24 @@ def query_user_for_reader(no_dep_install=False) -> configparser.ConfigParser:
     return config
 
 
-def write_config(cfg_file: str, config : configparser.ConfigParser) -> None:
+def write_config(cfg_file: str, config: configparser.ConfigParser, nowarn=False) -> None:
     """Writes configuration to cfg_file
     cfg_file is an absolute path or relative to this (!) file's location
+    nowarn disables warning and user poll before overwriting existing configuration
     """
     # Make sure to locate cfg_file relative to this script's location independent of working directory
     if not os.path.isabs(cfg_file):
         cfg_file = os.path.dirname(os.path.realpath(__file__)) + '/' + cfg_file
+
+    if os.path.exists(cfg_file):
+        logger.debug(f"Existing user configuration found at {cfg_file}")
+        if nowarn is not True:
+            print(f"\n\nWARNING: Existing configuration found at '{cfg_file}'.")
+            ur = input("Overwrite? [y/N] ")
+            if ur.lower() != 'y':
+                logger.debug(f"Aborting on user request (response = '{ur}').")
+                print("Aborting...")
+                return
 
     with open(cfg_file, 'w') as f:
         config.write(f)
@@ -141,8 +154,8 @@ def write_config(cfg_file: str, config : configparser.ConfigParser) -> None:
 
 
 def load_reader(cfg_file):
-    """Read the config file and dynamically loads the corresponding reader module.
-    Returns an instance of the reader class from that module"""
+    """Read the config file and dynamically load the corresponding reader module.
+    Returns the loaded reader module reference and the reader params as tuple"""
     # Add the path for the reader modules to Python's search path
     # such the reader directory is searched after local dir, but before all others
     # Only necessary, if this script is located elsewhere
@@ -183,5 +196,5 @@ def load_reader(cfg_file):
     logger.debug(f"reader_module.__file__ = {reader_module}")
     logger.debug(f"dir(reader_module)     = {dir(reader_module)}")
 
-    return reader_module.Reader(reader_params)
+    return reader_module, reader_params
 
