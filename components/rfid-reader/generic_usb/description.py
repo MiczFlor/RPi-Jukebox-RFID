@@ -1,0 +1,1 @@
+DESCRIPTION = 'Generic USB Reader'

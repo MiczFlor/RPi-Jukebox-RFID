@@ -3,6 +3,7 @@ import select
 import os
 import logging
 
+from .description import DESCRIPTION
 
 # Create logger
 logger = logging.getLogger(os.path.basename(__file__).ljust(25))
@@ -14,16 +15,13 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
-DESCRIPTION = 'Generic USB Reader'
-
-
-def get_devices():
+def _get_devices():
     return [evdev.InputDevice(fn) for fn in evdev.list_devices()]
 
 
 def query_customization():
     print("\nChoose USB device from list:")
-    devices = get_devices()
+    devices = _get_devices()
     logger.debug(f"USB devices: {[x.name for x in devices]}")
     if len(devices) == 0:
         logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
@@ -53,8 +51,7 @@ class Reader:
             logger.error(f"Mandatory key 'device_name' not given in dictionary params!")
         device_name = params['device_name']
 
-        devices = get_devices()
-        for device in devices:
+        for device in _get_devices():
             if device.name == device_name:
                 logger.debug(f"Inspecting device '{device.name}' at '{device}'")
                 self.dev = device

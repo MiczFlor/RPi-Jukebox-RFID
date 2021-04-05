@@ -1,13 +1,15 @@
 """
-The RDM6300 / RDM630 connectied via serial UART port
+The RDM6300 / RDM630 connected via serial UART port
 
 The Rdm6300Reader supports 3 number formats for the card ID. See NUMBER_FORMAT below for details.
 
 """
 import os
 import logging
-import importlib
 import configparser
+import serial
+
+from .description import DESCRIPTION
 
 
 # Create logger
@@ -18,9 +20,6 @@ logconsole = logging.StreamHandler()
 logconsole.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)-8s: %(message)s', datefmt='%d.%m.%Y %H:%M:%S'))
 logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
-
-
-DESCRIPTION = 'RDM6300 via serial UART'
 
 NUMBER_FORMAT = ['card_id_dec',
                  'card_id_raw',
@@ -41,6 +40,24 @@ def query_customization() -> dict:
             'serial_timeout': 0.1}
 
 
+def convert_to_weigand26_when_checksum_ok(raw_card_id):
+    weigand26 = []
+    xor = 0
+    val = 0
+    chk = None
+    for i in range(0, len(raw_card_id) >> 1):
+        val = int(raw_card_id[i * 2:i * 2 + 2], 16)
+        if i < 5:
+            xor = xor ^ val
+            weigand26.append(val)
+        else:
+            chk = val
+    if chk == val:
+        return weigand26
+    else:
+        return None
+
+
 class Reader:
     def __enter__(self):
         return self
@@ -53,45 +70,30 @@ class Reader:
         logger.debug(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
         logger.debug(f"Parameters = {params}")
 
-        # Dynamically load the module only when needed (saves dependencies when only used in register_reader.py)
-        self.serial = importlib.import_module('serial')
-
         config = configparser.ConfigParser()
-        config.read_dict({'params': params})
+        if params is None:
+            config.read_dict({'params': {}})
+        else:
+            config.read_dict({'params': params})
         self.number_format = config['params'].get('number_format', fallback='card_id_dec')
-        device = config['params'].get('device', fallback='/dev/ttyS0')
-        baudrate = config['params'].getint('baudrate', fallback=9600)
-        serial_timeout = config['params'].getfloat('serial_timeout', fallback=0.1)
+        self.device = config['params'].get('device', fallback='/dev/ttyS0')
+        self.baudrate = config['params'].getint('baudrate', fallback=9600)
+        self.serial_timeout = config['params'].getfloat('serial_timeout', fallback=0.1)
 
-        if 'number_format' not in params:
-            logger.warning(f"Paramter 'number_format' not found in dictionary. Defaulting to {self.number_format}")
+        if 'number_format' not in config['params']:
+            logger.warning(f"Parameter 'number_format' not found in dictionary. Defaulting to '{self.number_format}'")
         if self.number_format not in NUMBER_FORMAT:
             logger.error(f"Unknown value in option: 'number_format={self.number_format}'. Defaulting to {NUMBER_FORMAT[0]}!")
             self.number_format = NUMBER_FORMAT[0]
 
         try:
-            self.rfid_serial = self.serial.Serial(device, baudrate, timeout=serial_timeout)
-        except self.serial.SerialException as e:
+            self.rfid_serial = serial.Serial(self.device, self.baudrate, timeout=self.serial_timeout)
+        except serial.SerialException as e:
             logger.error(e)
             raise e
 
     def cleanup(self):
         self.rfid_serial.close()
-
-    def convert_to_weigand26_when_checksum_ok(self, raw_card_id):
-        weigand26 = []
-        xor = 0
-        for i in range(0, len(raw_card_id) >> 1):
-            val = int(raw_card_id[i * 2:i * 2 + 2], 16)
-            if i < 5:
-                xor = xor ^ val
-                weigand26.append(val)
-            else:
-                chk = val
-        if chk == val:
-            return weigand26
-        else:
-            return None
 
     def read_card(self) -> str:
         byte_card_id = bytearray()
@@ -117,7 +119,7 @@ class Reader:
                     self.rfid_serial.reset_input_buffer()
 
                     if len(raw_card_id) == 12:
-                        w26 = self.convert_to_weigand26_when_checksum_ok(raw_card_id)
+                        w26 = convert_to_weigand26_when_checksum_ok(raw_card_id)
                         if w26 is not None:
 
                             if self.number_format == 'card_id_dec':
@@ -135,5 +137,5 @@ class Reader:
                 except ValueError as ve:
                     logger.error(ve)
 
-        except self.serial.SerialException as se:
+        except serial.SerialException as se:
             logger.error(se)
