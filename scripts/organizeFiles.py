@@ -4,6 +4,7 @@
 
 import sys
 import os
+import argparse
 
 
 musicConf = """CURRENTFILENAME="filename"
@@ -175,25 +176,49 @@ if __name__ == "__main__":
     shortcutsDir = os.path.join(baseDir, "shared", "shortcuts")
     audioDir = os.path.join(baseDir, "shared", "audiofolders")
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--baseDir", help="directory containing the phoniebox code; defaults to " + baseDir)
+    parser.add_argument("--latestRFIDFile", help="file storing the latest RFID card id; defaults to " + latestRFIDFile)
+    parser.add_argument("--shortcutsDir", help="directory containing the RFID card id shortcuts; defaults to " + shortcutsDir)
+    parser.add_argument("--audioDir", help="directory containing the audio files; defaults to " + audioDir)
+
+    parser.add_argument("--printShortcuts", help="print list of available shortcuts", action="store_true")
+    parser.add_argument("--linkLooseFolders", help="iterate through list of folders that are currently unbound to any card id and ask user whether to link them", action="store_true")
+    parser.add_argument("--fixBrokenShortcuts", help="find and delete dangling shortcuts ", action="store_true")
+    parser.add_argument("--findDuplicateShortcuts", help="find and delete duplicate shortcuts ", action="store_true")
+    parser.add_argument("--fixFoldersWithoutFolderConf", help="ask user whether folders without a folder.conf file should be either treated as a music album or an audio book", action="store_true")
+    args = parser.parse_args()
+
+    if args.baseDir:
+        baseDir = args.baseDir
+    if args.latestRFIDFile:
+        latestRFIDFile = args.latestRFIDFile
+    if args.shortcutsDir:
+        shortcutsDir = args.shortcutsDir
+    if args.audioDir:
+        audioDir = args.audioDir
+
     shortcuts = readShortcuts(shortcutsDir=shortcutsDir)
     audioFolders = readFolders(audioDir=audioDir)
 
-    print("===== shortcuts =====")
-    shortcutslist = []
-    for cardid, thefolders in sorted(shortcuts.items()):
-        for f in thefolders:
-            shortcutslist.append([cardid, f])
-    for e in sorted(shortcutslist, key=lambda x: x[1]):
-        print("\"" + e[1] + "\";\t\"" + e[0] + "\"")
-    print("==================================")
+    if args.printShortcuts:
+        print("===== shortcuts =====")
+        shortcutslist = []
+        for cardid, thefolders in sorted(shortcuts.items()):
+            for f in thefolders:
+                shortcutslist.append([cardid, f])
+        for e in sorted(shortcutslist, key=lambda x: x[1]):
+            print("\"" + e[1] + "\";\t\"" + e[0] + "\"")
+        print("==================================")
 
-    linkLooseFolders(shortcutsDir=shortcutsDir, audioDir=audioDir, shortcuts=shortcuts, audioFolders=audioFolders, latestRFIDFile=latestRFIDFile)
-    fixBrokenShortcuts(shortcutsDir=shortcutsDir, shortcuts=shortcuts, audioFolders=audioFolders)
-
-    shortcuts2 = readShortcuts(shortcutsDir=shortcutsDir)
-    findDuplicateShortcuts(shortcuts=shortcuts2)
-
-    audioFolders2 = readFolders(audioDir=audioDir)
-    fixFoldersWithoutFolderConf(audioDir=audioDir, audioFolders=audioFolders2)
-
+    if args.linkLooseFolders:
+        linkLooseFolders(shortcutsDir=shortcutsDir, audioDir=audioDir, shortcuts=shortcuts, audioFolders=audioFolders, latestRFIDFile=latestRFIDFile)
+    if args.fixBrokenShortcuts:
+        fixBrokenShortcuts(shortcutsDir=shortcutsDir, shortcuts=shortcuts, audioFolders=audioFolders)
+    if args.findDuplicateShortcuts:
+        shortcuts2 = readShortcuts(shortcutsDir=shortcutsDir)
+        findDuplicateShortcuts(shortcuts=shortcuts2)
+    if args.fixFoldersWithoutFolderConf:
+        audioFolders2 = readFolders(audioDir=audioDir)
+        fixFoldersWithoutFolderConf(audioDir=audioDir, audioFolders=audioFolders2)
 

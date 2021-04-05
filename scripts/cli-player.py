@@ -23,11 +23,13 @@ if __name__ == "__main__":
         lc2 = lc2 + 1
 
     while True:
-        i = input("select folder: ")
+        i = input("select folder / enter mpc command: ")
         if i == "quit" or i == "exit":
             break
         if not i.isnumeric():
-            print("not a number.")
+            if len(i.strip()) != 0:
+                print("mpc " + i)
+                subprocess.call(["mpc"] + i.split(" "))
             continue
         inum = int(i)
         if inum not in audioFolders:
