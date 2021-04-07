@@ -71,7 +71,7 @@ class TwoButtonControl:
         self.btn1 = SimpleButton(
             pin=bcmPin1,
             action=lambda *args: None,
-            name=name + 'Btn2',
+            name=name + 'Btn1',
             bouncetime=500,
             edge=GPIO.FALLING,
             hold_time=hold_time,
