@@ -75,7 +75,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 ## Install Phoniebox software
 
-If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/develop/docs/SPOTIFY-INTEGRATION.md).
+If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ).
 
 1. While shut down, disconnect mouse, keyboard and HDMI
 1. Connect RFID Reader
