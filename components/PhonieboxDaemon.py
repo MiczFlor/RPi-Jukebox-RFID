@@ -7,15 +7,11 @@ import signal
 from time import sleep, time
 
 import PhonieboxVolume
-import PhonieboxPlayer
-from PhonieboxRpcServer import phoniebox_rpc_server
+from player import PhonieboxPlayerMPD
+from rpc.PhonieboxRpcServer import phoniebox_rpc_server
 from PhonieboxNvManager import nv_manager
-
-sys.path.insert(0,'../../components/gpio_control')
-sys.path.insert(0,'../../components/rfid-reader')
-#print(sys.path)
-from PhonieboxRfidReader import RFID_Reader
-#import gpio_control
+from rfid_reader.PhonieboxRfidReader import RFID_Reader
+#from gpio_control import gpio_control
 
 g_nvm = None
 
@@ -56,11 +52,11 @@ if __name__ == "__main__":
 
     #read config to dictionary?
     phoniebox_config = {}
-    phoniebox_config['audiofolders_path'] = "../../shared/"
+    phoniebox_config['audiofolders_path'] = "../shared/"
 
     # Play Startup Sound
     volume_control_alsa = PhonieboxVolume.volume_control_alsa()
-    startsound_thread = threading.Thread(target=volume_control_alsa.play_wave_file, args=["../../shared/startupsound.wav"])
+    startsound_thread = threading.Thread(target=volume_control_alsa.play_wave_file, args=["../shared/startupsound.wav"])
     startsound_thread.start()
 
     #Debug: List ALSA cards and mixers
@@ -71,14 +67,14 @@ if __name__ == "__main__":
     
 
     #phoniebox music player status
-    music_player_status = g_nvm.load("../../shared/music_player_status.json")
+    music_player_status = g_nvm.load("../shared/music_player_status.json")
     
     #card id database
-    cardid_database = g_nvm.load("../../settings/phoniebox_cardid_database.json")
+    cardid_database = g_nvm.load("../settings/phoniebox_cardid_database.json")
 
     #initialize Phonibox objcts
     objects = {'volume':volume_control_alsa,
-               'player':PhonieboxPlayer.player_control(music_player_status)}
+               'player':PhonieboxPlayerMPD.player_control(music_player_status)}
 
     print ("Init Phonibox RPC Server ")
     rpcs = phoniebox_rpc_server(objects)

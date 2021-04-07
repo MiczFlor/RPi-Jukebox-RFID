@@ -11,8 +11,7 @@ import sys
 #import RPi.GPIO as GPIO
 import logging
 
-sys.path.insert(0,'../')
-from phonie_access_objects import phoniebox_object_access_queue
+from rpc.PhonieboxRpcClient import phoniebox_object_access_queue
 
 #from evdev import InputDevice, categorize, ecodes, list_devices
 
@@ -55,16 +54,16 @@ class RFID_Reader(object):
     def __init__(self,device_name,param=None):
 
         if device_name == 'MFRC522':
-            import RfidReader_RC522
+            from . import RfidReader_RC522
             self.reader = Mfrc522Reader()
         elif device_name == 'RDM6300':
-            import RfidReader_RDM6300
+            from . import RfidReader_RDM6300
             self.reader = Rdm6300Reader(param)
         elif device_name == 'PN532':
-            import RfidReader_PN532
+            from . import RfidReader_PN532
             self.reader = Pn532Reader()
         elif device_name == 'Fake':
-            from FakeRfidReader import FakeReader
+            from .FakeRfidReader import FakeReader
             self.reader = FakeReader()
         else:
             try:

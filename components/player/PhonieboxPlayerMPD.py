@@ -20,7 +20,7 @@ class player_control:
     def connect(self):
         self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
     
-    def _mpd_retry(self,mpd_cmd,params=None):
+    def mpd_retry(self,mpd_cmd,params=None):
         try:
             ret = mpd_cmd(params)
         except ConnectionError: 
@@ -66,6 +66,8 @@ class player_control:
         #. "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
 
         folder = param.get("folder")
+
+        print("playing folder: {}".format(folder))
 
         if folder is not None:
             # load playlist
@@ -212,3 +214,19 @@ class player_control:
         current_status["SINGLE"] = "OFF"
 
         return ({'song':song})
+
+
+    def playerstop(self,param):
+        status = self.mpd_client.status()
+        #current_status["ELAPSED"] = status.get('elapsed')
+        
+        # stop the player
+        self.mpd_client.stop()
+        #if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        return ({})
+
+    def playerstatus(self,param):
+        status = self.mpd_client.status()
+        for k in status:
+            print ("{} : {}".format(k,status.get(k)))
+        return (status)

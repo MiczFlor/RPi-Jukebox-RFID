@@ -3,21 +3,21 @@
     "object": "player",
     "method": "playlistaddplay",
     "params": {
-      "folder": "a/acdc"
+      "folder": "acdc"
     }
   },
   "103,12632": {
     "object": "player",
     "method": "playlistaddplay",
     "params": {
-      "folder": "r/roxette"
+      "folder": "roxette"
     }
   },
   "104,29698": {
     "object": "player",
     "method": "playlistaddplay",
     "params": {
-      "folder": "d/digger barnes/every story true"
+      "folder": "digger barnes/every story true"
     }
   },
   "108,07437": {

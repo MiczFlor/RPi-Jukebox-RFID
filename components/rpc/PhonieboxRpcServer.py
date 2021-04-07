@@ -28,13 +28,11 @@ class phoniebox_rpc_server:
             call_function = getattr(call_obj,cmd,None)
             if (call_function is not None): # is callable() ??
                 response = call_function(param)
-                print (response)
             else:
                 response = {'resp': "no valid commad"}
-                print (response)
         else:
             response = {'resp': "no valid obj"}
-            print (response)
+        #print (response)
         return response
 
     def terminate(self):
@@ -52,7 +50,7 @@ class phoniebox_rpc_server:
             client_request=json.loads(message)
             client_response = {}
 
-            print (client_request)
+            #print (client_request)
 
             #make it jsonrpc https://www.jsonrpc.org/specification ??
             #{"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
@@ -74,7 +72,7 @@ class phoniebox_rpc_server:
                 client_response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
                 print ("processing time: {:2.3f} ms".format(client_response['total_processing_time']))
 
-            print(client_response)
+            #print(client_response)
             #  Send reply back to client
             self.socket.send_string(json.dumps(client_response))
 

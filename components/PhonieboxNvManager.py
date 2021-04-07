@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-
+import hashlib
 class nv_manager():
     def __init__(self):
         self.all_nv_objects = []
@@ -40,7 +40,7 @@ class nv_dict(dict):
                 #self['nv_dict_version'] = 1.0
                 self.default_filename_is_writeable = True
                 self.save_to_json()
-        self.dirty = False                
+        self.initial_hash = self.hash()
             
     def __setitem__(self, item, value):
         self.dirty = True   #not working, see comment above, intention is to just write dicts which content has changed
@@ -51,22 +51,29 @@ class nv_dict(dict):
             self.clear()
         self.update(json.load( open( path ) ))
 
+    def hash(self):
+        return hashlib.md5(json.dumps(self).encode('UTF8')).digest() 
+    
     def save_to_json(self,filename=None):
-        #if self.dirty is True:
-        print ("Saving {} ".format(self))
-        
-        save_to_filename = None
-             if filename is not None:
-            if os.access(filename, os.W_OK) :
-                save_to_filename = filename
-        else :
-            if (self.default_filename_is_writeable):
-                save_to_filename = self.default_filename
-            
-        if save_to_filename is not None:
-            json.dump( self, open( save_to_filename, 'w' ), indent=2)
-            self.dirty = False
-            #do we need to close ?
+        actual_hash = self.hash()
+        if self.initial_hash != actual_hash:
+            self.initial_hash = actual_hash
+            print ("Saving {} ".format(self))
+
+            save_to_filename = None
+            if filename is not None:
+                if os.access(filename, os.W_OK) :
+                    save_to_filename = filename
+            else :
+                if (self.default_filename_is_writeable):
+                    save_to_filename = self.default_filename
+
+            if save_to_filename is not None:
+                with open(save_to_filename, 'w') as outfile:
+                    json.dump( self, outfile, indent=2)
+        else:
+            print ("dont need to save")
+                    
   
 if __name__ == "__main__":
     
