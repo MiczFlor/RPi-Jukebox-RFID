@@ -22,4 +22,4 @@ class colors:
 
     @staticmethod
     def print(color, *values, sep=' ', end='\n', file=sys.stdout, flush=False):
-        print(color, *values, Colors.reset, sep=sep, end=end, file=file, flush=flush)
+        print(color, *values, colors.reset, sep=sep, end=end, file=file, flush=flush)
