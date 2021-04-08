@@ -36,7 +36,7 @@ import logging
 # Add your imports here ...
 # import third_party_reader_module
 
-# Also import the description string into this module, to make everything avaiable in a single module w/o code duplication
+# Also import the description string into this module, to make everything available in a single module w/o code duplication
 # Leave this line as is!
 from .description import DESCRIPTION
 
@@ -84,7 +84,8 @@ class Reader:
         self.cleanup()
 
     def __init__(self, params: dict):
-        """In the constructor, you will get a dictionary with all the customization options read for this reader from
+        """In the constructor, you will get a dictionary with all the customization options read for this reader
+        (and only this reader) from
         the configuration file. Note: all key/value pairs are string because they are read from file with configparser.
         You will need to do type conversion yourself.
         As you are dealing directly with potentially user-manipulated config information, it is
@@ -121,7 +122,10 @@ class Reader:
 
     def read_card(self) -> str:
         """Blocking function that waits for a new card to appear and return the card's UID as string
-        This is were your main code goes :-)"""
+        This is were your main code goes :-)
+
+        This function must return a string with the card id
+        In case of error, it may return None or an empty string"""
         pass
 
 

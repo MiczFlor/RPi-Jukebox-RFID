@@ -9,6 +9,9 @@ import logging
 import configparser
 import serial
 
+import misc.inputminus as pyil
+from misc.simplecolors import colors
+
 from .description import DESCRIPTION
 
 
@@ -30,14 +33,16 @@ NUMBER_FORMAT_HELP = ['A 10 digit card ID e.g. 0006762840 (default)',
 
 
 def query_customization() -> dict:
-    print("Choose number format")
+    prompt_color=colors.lightgreen
+    print("Select number format:")
     for idx, val in enumerate(NUMBER_FORMAT):
-        print(f" {idx:2d}: {val:15}: {NUMBER_FORMAT_HELP[idx]}")
-    dev_id = int(input('\nChoose format: '))
+        print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{val:15}{colors.reset}: {NUMBER_FORMAT_HELP[idx]}")
+    dev_id = pyil.input_int("Number format?", blank=0, min=0, max=len(NUMBER_FORMAT)-1, prompt_color=prompt_color, prompt_hint=True)
     return {'number_format': NUMBER_FORMAT[dev_id],
             'device': '/dev/ttyS0',
             'baudrate': 9600,
-            'serial_timeout': 0.1}
+            'serial_timeout': 0.1,
+            'log_all_cards': 'false'}
 
 
 def convert_to_weigand26_when_checksum_ok(raw_card_id):
@@ -79,6 +84,7 @@ class Reader:
         self.device = config['params'].get('device', fallback='/dev/ttyS0')
         self.baudrate = config['params'].getint('baudrate', fallback=9600)
         self.serial_timeout = config['params'].getfloat('serial_timeout', fallback=0.1)
+        self.log_all_cards = config['params'].getboolean('log_all_cards', fallback=False)
 
         if 'number_format' not in config['params']:
             logger.warning(f"Parameter 'number_format' not found in dictionary. Defaulting to '{self.number_format}'")
@@ -132,6 +138,8 @@ class Reader:
                                 # this will return the raw (original) card ID e.g. 070067315809
                                 card_id = raw_card_id
 
+                            if self.log_all_cards:
+                                logger.debug(f"Card detected with ID = '{card_id}'")
                             return card_id
 
                 except ValueError as ve:

@@ -23,7 +23,8 @@ logger.addHandler(ch)
 
 # Load the rfid reader module and reader configuration
 readersupport.logconsole.setLevel(logging.DEBUG)
-reader_module, reader_params = readersupport.load_reader('../../settings/rfid_reader.ini')
+reader_cfg_file = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../settings/rfid_reader.ini')
+reader_module, reader_params = readersupport.load_reader(readersupport.read_config(reader_cfg_file))
 
 # get absolute path of this script
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -86,6 +87,7 @@ with reader_module.Reader(reader_params) as reader:
 
     while True:
         # slow down the card reading while loop
+        # in case card is placed permanently on reader
         time.sleep(0.2)
 
         if swipe_or_place == "PLACENOTSWIPE":
@@ -108,7 +110,8 @@ with reader_module.Reader(reader_params) as reader:
         try:
             # start the player script and pass on the cardid (but only if new card or otherwise
             # "same_id_delay" seconds have passed)
-            if cardid is not None:
+            # Test for empty strings or NoneType. Both are accepted for indicating that no card was found.
+            if cardid:
                 if cardid != previous_id or (time.time() - previous_time) >= float(same_id_delay) or cardid in str(ids):
                     logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                     subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)

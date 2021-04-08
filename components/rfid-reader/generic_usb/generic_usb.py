@@ -3,6 +3,9 @@ import select
 import os
 import logging
 
+import misc.inputminus as pyil
+from misc.simplecolors import colors
+
 from .description import DESCRIPTION
 
 # Create logger
@@ -20,15 +23,16 @@ def _get_devices():
 
 
 def query_customization():
-    print("\nChoose USB device from list:")
+    print("\nChoose USB device from list:\n")
     devices = _get_devices()
     logger.debug(f"USB devices: {[x.name for x in devices]}")
     if len(devices) == 0:
         logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
         return {'device_name': '__error_empty_device_list__'}
     for idx, val in enumerate(devices):
-        print(f" {idx:2d}: {val.name}")
-    dev_id = int(input('\nDevice Number: '))
+        print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{val.name}{colors.reset}")
+    print("")
+    dev_id = pyil.input_int("Device number?", min=0, max=len(devices)-1, prompt_color=colors.lightgreen, prompt_hint=True)
     return {'device_name': devices[dev_id].name}
 
 
