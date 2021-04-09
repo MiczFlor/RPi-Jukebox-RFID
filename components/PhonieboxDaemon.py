@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     #initialize Phonibox objcts
     objects = {'volume':volume_control_alsa,
-               'player':PhonieboxPlayerMPD.player_control(music_player_status)}
+               'player':PhonieboxPlayerMPD.player_control(music_player_status,volume_control_alsa)}
 
     print ("Init Phonibox RPC Server ")
     rpcs = phoniebox_rpc_server(objects)

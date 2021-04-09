@@ -50,7 +50,7 @@ class phoniebox_rpc_server:
             client_request=json.loads(message)
             client_response = {}
 
-            #print (client_request)
+            print (client_request)
 
             #make it jsonrpc https://www.jsonrpc.org/specification ??
             #{"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}

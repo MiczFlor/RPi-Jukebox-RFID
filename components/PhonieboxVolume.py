@@ -21,19 +21,33 @@ class volume_control_alsa:
             volume = -1
         return ({'volume':volume})
 
-    def inc(self, param):
-        volume = self.volume +3
+    def inc(self, param=None):
+        step = param.get('step')
+        if step is None:
+            step = 3
+        volume = self.volume +step
         if (volume > 100): volume = 100
         self.volume = volume
         self.mixer.setvolume(self.volume)
         return ({'volume':self.volume})
 
-    def dec(self, param):
-        volume = self.volume -3
+    def dec(self, param=None):
+        step = param.get('step')
+        if step is None:
+            step = 3
+        volume = self.volume -step
         if (volume < 0): volume = 0
         self.volume = volume
         self.mixer.setvolume(self.volume)
         return ({'volume':self.volume})
+
+    def mute(self,param=None):
+        self.mixer.setmute(1)
+        return ({})
+
+    def unmute(self,param=None):
+        self.mixer.setmute(0)
+        return ({})
 
     def play_wave_file(self,file_name):	
         import wave

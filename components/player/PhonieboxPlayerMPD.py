@@ -4,7 +4,8 @@
 from mpd import MPDClient
 
 class player_control:
-    def __init__(self,music_player_status):
+    def __init__(self,music_player_status,volume_control=None):
+        self.volume_control = volume_control
         self.music_player_status = music_player_status
         if not self.music_player_status:
             self.music_player_status['player_status'] = {}
@@ -44,8 +45,30 @@ class player_control:
         except  Exception as e:
             print(e)
         song = self.mpd_client.currentsong()
-        return ({'song':song})
+        return ({})
         
+    def stop(self,param):
+        self.mpd_client.stop()
+        return ({})
+
+    def pause(self, param):
+        self.mpd_client.pause(1)
+        return ({})
+
+    def prev(self, param):
+        self.mpd_client.previous()
+        return ({})
+
+    def next(self, param):
+        self.mpd_client.next()
+        return ({})
+
+    def seek(self, param):
+        val = param.get('time')
+        if val is not None:
+            self.mpd_client.seekcur(val)
+        return ({})
+
     def get_current_song(self, param):
         return {'resp': self.mpd_client.currentsong()}
 
@@ -118,7 +141,7 @@ class player_control:
 	        #else
 	        #	mpc random off
 	        #fi
-            #;;
+            #;;    def playerstop(self,param):
 
             if currecnt_status["SHUFFLE"] == "OFF":
                 self.mpd_client.random(0)
@@ -215,18 +238,11 @@ class player_control:
 
         return ({'song':song})
 
-
-    def playerstop(self,param):
-        status = self.mpd_client.status()
-        #current_status["ELAPSED"] = status.get('elapsed')
-        
-        # stop the player
-        self.mpd_client.stop()
-        #if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
-        return ({})
-
     def playerstatus(self,param):
-        status = self.mpd_client.status()
-        for k in status:
-            print ("{} : {}".format(k,status.get(k)))
+        status = self.mpd_client.currentsong()
+        status.update(self.mpd_client.status())
+        status['volume'] = self.volume_control.volume
+
+        #for k in status:
+        #    print ("{} : {}".format(k,status.get(k)))
         return (status)
