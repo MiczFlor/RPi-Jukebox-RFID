@@ -1,6 +1,8 @@
 <?php
 namespace JukeBox\Api;
 
+include ("zmq.php");
+
 /*
 * debug? Conf file line:
 * DEBUG_WebApp_API="TRUE"
@@ -26,34 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 function handleGet() {
-    $statusCommand = "echo 'playlistinfo\nclose' | nc -w 1 localhost 6600";
-    $playListInfoResponse = execSuccessfully($statusCommand);
-    $playList = array();
-    $albumLength = 0;
-    $track = array();
-    forEach($playListInfoResponse as $index => $record ) {
-        preg_match("/(?P<key>.+?): (?P<value>.*)/", $record, $match);
-        if ($match) {
-            $key = strtolower($match['key']);
-            $value = $match['value'];
-            if ("file" == $key) {
-                if ($track && $track['file'] != $value) {
-                    $playList['tracks'][] = $track;
-                }
-                $track = array();
-                $track[$key] = $value;
-
-            } else {
-                $track[$key] = $value;
-                $albumLength += ("time" == $key) ? $value : 0;
-            }
-        }
-        if ($index == array_key_last($playListInfoResponse) && !empty($track)) {
-            $playList['tracks'][] = $track;
-            $playList['albumLength'] = $albumLength;
-        }
-    }
-
+    $playlist_json = phonie_enquene(array('object'=>'player','method'=>'playlistinfo','param'=>''));
+    $playList = array("tracks" => json_decode ( $playlist_json,true)['resp']);
 
     /* sample array, uncomment for checking frontend *
     $playList = array(
@@ -77,6 +53,9 @@ function handleGet() {
         ),
     );
     /**/
+
+    //    file_put_contents("../../logs/debug.log", "\n  # \$playlistINFO:" . print_R($playList,true) , FILE_APPEND | LOCK_EX);
+
     header('Content-Type: application/json');
     echo json_encode($playList);
 }
@@ -88,6 +67,11 @@ function handlePut() {
     }
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
+
+    http_response_code(400);
+    echo "Not yet implemented";
+
+    /*
     if (validateRequest($json)) {
         $playlist = $json['playlist'];
         if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
@@ -99,6 +83,7 @@ function handlePut() {
             execScript("rfid_trigger_play.sh -d='{$playlist}'");
         }
     }
+    */
 }
 
 function validateRequest($json) {

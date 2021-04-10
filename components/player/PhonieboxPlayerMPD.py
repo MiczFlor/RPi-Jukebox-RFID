@@ -246,3 +246,7 @@ class player_control:
         #for k in status:
         #    print ("{} : {}".format(k,status.get(k)))
         return (status)
+
+    def playlistinfo(self,param):
+        playlistinfo = (self.mpd_client.playlistinfo())
+        return (playlistinfo)

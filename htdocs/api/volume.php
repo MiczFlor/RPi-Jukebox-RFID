@@ -19,18 +19,13 @@ if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $command = "playout_controls.sh -c=getvolume";
-    execAndEcho($command);
+    $json_response = phonie_enquene(array('object'=>'volume','method'=>'get'));
+    echo json_decode ( $json_response,true)['resp']['volume'];
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $body = file_get_contents('php://input');
     if (is_numeric($body)) {
-        #$command = "playout_controls.sh -c=setvolume -v=$body";
-        #execScript($command);
         echo $body;
-        $response = phonie_enquene(array('obj'=>'volume','cmd'=>'set','param'=>array('volume'=>(int)$body)));
-
-        #if ($response == NULL) {$response = "No Response receivd";};
-        #echo($response);
+        phonie_enquene(array('object'=>'volume','method'=>'set','params'=>array('volume'=>(int)$body)));
     } else {
         http_response_code(400);
     }

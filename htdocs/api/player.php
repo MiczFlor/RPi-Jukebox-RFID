@@ -125,8 +125,6 @@ function handleGet() {
         file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
     }
 
-    file_put_contents("../../logs/debug.log", "\n  # json response ".print_R($responseList,true), FILE_APPEND | LOCK_EX);
-
     header('Content-Type: application/json');
     echo json_encode($responseList);
 }
