@@ -11,13 +11,15 @@ class FakeReader:
     def create_ui(self):    
         self.root = Tk()
         self.root.title("Fake RFID Reader")
+        self.root.geometry("200x100")
+        self.root.geometry("-120+50")
 
         # Add a grid
         self.mainframe = Frame(self.root)
         self.mainframe.grid(column=0,row=0, sticky=(N,W,E,S) )
         self.mainframe.columnconfigure(0, weight = 1)
         self.mainframe.rowconfigure(0, weight = 1)
-        self.mainframe.pack(pady = 100, padx = 100)
+        self.mainframe.pack(pady = 20, padx = 1)
 
         # Create a Tkinter variable
         self.tkvar = StringVar(self.root)
@@ -28,6 +30,8 @@ class FakeReader:
 
         # link function to change dropdown
         self.tkvar.trace('w', self.change_dropdown)
+
+        self.root.lower()
 
      # on change dropdown value
     def change_dropdown(self,*args):
