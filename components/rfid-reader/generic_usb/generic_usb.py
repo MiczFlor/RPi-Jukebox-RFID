@@ -93,9 +93,15 @@ class Reader:
         logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
         self.cleanup()
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.read_card()
+
     def __init__(self, params: dict):
-        logger.debug(f"Initializing reader {DESCRIPTION} from {__file__}")
-        logger.debug(f"Parameters = {params}")
+        logger.info(f"Initializing reader {DESCRIPTION} from {__file__}")
+        logger.info(f"Parameters = {params}")
 
         # Key event codes return from evdev are numerical indexes, not decoded ASCII characters
         # Use a string to index with key event code to decode key event codeinto ASCII character

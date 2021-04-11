@@ -66,13 +66,15 @@ def query_customization() -> dict:
 class Reader:
     """The actual reader class that is used to read RFID cards.
     It will be instantiated once and then read_card() is called in an endless loop.
-    It will be used in a  manner
-      with Reader(params) as r:
-         ...
-    which ensures proper resource de-allocation. For this to work do not touch the functions
-    __enter__ and __exit__.
 
-    Put all your cleanup code into cleanup(self)."""
+    It will be used in a  manner
+      with Reader(params) as reader:
+        for card_id in reader:
+          ...
+    which ensures proper resource de-allocation. For this to work do not touch the functions
+    __enter__ and __exit__. Put all your cleanup code into cleanup(self).
+
+    Leave __iter__ and __next__ as they are. They are required for the iterator-style usage of this class"""
 
     def __enter__(self):
         # Do not change anything here!
@@ -82,6 +84,14 @@ class Reader:
         # Do not change anything here!
         logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
         self.cleanup()
+
+    def __iter__(self):
+        # Do not change anything here!
+        return self
+
+    def __next__(self):
+        # Do not change anything here! Put your card read-out code in to read_card()
+        return self.read_card()
 
     def __init__(self, params: dict):
         """In the constructor, you will get a dictionary with all the customization options read for this reader
@@ -97,6 +107,10 @@ class Reader:
         - params may no always contain all expected key/value pairs. So you might use default fallback values or
           raise an error depending on the missing information
         """
+        # Keep these lines for common status reporting
+        logger.info(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
+        logger.info(f"Parameters = {params}")
+
         # Example 1:
         # In the simplest form, w/o error checks and type conversion, this would simply be to following.
         # But I strongly encourage some logging and sanity checking :-)

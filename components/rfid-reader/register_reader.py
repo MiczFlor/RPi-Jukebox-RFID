@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--deps",
                         help="Install dependencies: (a)uto, (n)o, (q)uery [default]",
                         metavar="CHAR", choices=['a', 'q', 'n', 'auto', 'query', 'no'], default='q')
-    parser.add_argument("-o", "--outfile",
+    parser.add_argument("-c", "--conffile",
                         help=f"Output configuration file [default: '{cfg_file_default}']",
                         metavar="FILE", default=cfg_file_default)
     parser.add_argument("-se", "--service_enable",
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         rs.logconsole.setLevel(rs.logging.DEBUG)
 
     dinstall_lookup = {'a': 'auto', 'q': 'query', 'n': 'no', 'auto': 'auto', 'query': 'query', 'no': 'no'}
-    rs.write_config(args.outfile,
+    rs.write_config(args.conffile,
                     rs.query_user_for_reader(dependency_install=dinstall_lookup[args.deps]),
                     force_overwrite=args.force)
 

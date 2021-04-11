@@ -17,6 +17,68 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
+def reader_install_dependencies(reader_select_name: str) -> None:
+    """
+    Install dependencies for the selected reader module
+
+    :param reader_select_name: Name of the reader module
+    """
+    if os.path.exists(reader_select_name + '/requirements.txt'):
+        # The python dependencies (if any)
+        print(f"\nInstalling/Checking Python dependencies  ...\n")
+        if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
+                                                            prompt_color=colors.lightgreen, prompt_hint=True):
+            print(f"{'=' * 80}")
+            quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
+            subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
+                           shell=True, check=False)
+            print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
+    if os.path.exists(reader_select_name + '/setup.inc.sh'):
+        # The shell dependencies/settings (if any)
+        print(f"\n\nExecuting shell support commands by executing setup.inc.sh (i.e. configure system settings)...")
+        if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
+                                                            prompt_color=colors.lightgreen, prompt_hint=True):
+            print(f"{'=' * 80}")
+            subprocess.run('./setup.inc.sh', cwd=reader_select_name,
+                           shell=True, check=False)
+            print(f"\n{'=' * 80}\nExecuting shell support commands  ... done!\n")
+
+
+def reader_load_module(reader_name):
+    """
+    Load the module for the reader_name
+
+    A ModuleNotFoundError is unrecoverable, but we at least want to give some hint how to resolve that to the user
+    All other errors will NOT be handled. Modules that do not load due to compile errors have other problems
+
+    :param reader_name: Name of the reader to load the module for
+    :return: module
+    """
+    try:
+        reader_module = importlib.import_module('..' + reader_name, reader_name + '.subpkg')
+    except ModuleNotFoundError as e:
+        # This can have two reasons:
+        # (1) The reader_type module itself cannot be found (for whatever unfathomable reason after all the checks above)
+        # (2) The reader_type module has sub-dependencies which cannot be found
+        if e.name == reader_name + '.' + reader_name:
+            logger.critical(f"No reader module found in directory '{reader_name}'!\n\n")
+        else:
+            logger.critical(f"\n\n{'=' * 80}\n"
+                            f"Sub-dependencies in '{reader_name}' not fulfilled. This is an unrecoverable error!\n"
+                            f"{e.msg}\n"
+                            f"{'=' * 80}\n"
+                            "This usually means some dependencies are not installed.\n"
+                            "If this script is called with -d a, an attempt will be made to install the dependencies automatically\n"
+                            "You may install the dependencies manually before re-executing this script by:\n"
+                            "'$ pip3 install -r requirements.txt' in the reader's submodule directory and \n"
+                            "'$ ./setup.inc.sh'\n"
+                            "In case of doubt reboot!\n\n"
+                            f"{'=' * 80}\n")
+        # There is no possible graceful recovery from this
+        raise e
+    return reader_module
+
+
 def query_user_for_reader(dependency_install='query') -> dict:
     """Ask the user to select a RFID reader and prompt for the reader's configuration
 
@@ -78,96 +140,70 @@ def query_user_for_reader(dependency_install='query') -> dict:
             logger.warning(f"Module 'description.py' of reader subpackage '{reader_type}' is missing 'DESCRIPTION'. Spelling error?")
             reader_descriptions.append('(No description provided!)')
 
-    # List all modules and query user
-    print("Choose Reader Module from list:\n")
-    for idx, (des, mod) in enumerate(zip(reader_descriptions, reader_dirs)):
-        print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{des:40s}{colors.reset} (Module: {mod + '/' + mod + '.py'})")
-    print("")
-    reader_id = pyil.input_int("Reader module number?", min=0, max=len(reader_descriptions)-1, prompt_color=colors.lightgreen, prompt_hint=True)
-    # The (short) name of the selected reader module, which is identical to the directory name
-    reader_select_name = reader_dirs[reader_id]
+    # Prepare the configuration collector with the base values
+    config_dict = {'ReaderType': {'logger_level': 'info',
+                                  'log_ignored_cards': 'false'}}
 
-    # Automatically install dependencies for the selected reader module
-    if dependency_install != 'no':
-        if os.path.exists(reader_select_name + '/requirements.txt'):
-            # The python dependencies (if any)
-            print(f"\nInstalling/Checking Python dependencies  ...\n")
-            if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
-                                                                prompt_color=colors.lightgreen, prompt_hint=True):
-                print(f"{'='*80}")
-                quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
-                subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
-                               shell=True, check=False)
-                print(f"\n{'='*80}\nInstalling dependencies ... done!")
-        if os.path.exists(reader_select_name + '/setup.inc.sh'):
-            # The shell dependencies/settings (if any)
-            print(f"\n\nExecuting shell support commands by executing setup.inc.sh (i.e. configure system settings)...")
-            if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
-                                                                prompt_color=colors.lightgreen, prompt_hint=True):
-                print(f"{'=' * 80}")
-                subprocess.run('./setup.inc.sh', cwd=reader_select_name,
-                               shell=True, check=False)
-                print(f"\n{'='*80}\nExecuting shell support commands  ... done!\n")
+    # Ask the user to configure new RFID readers until he has enough of it
+    reader_select_name = []
+    while True:
+        # List all modules and query user
+        print("Choose Reader Module from list:\n")
+        for idx, (des, mod) in enumerate(zip(reader_descriptions, reader_dirs)):
+            print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{des:40s}{colors.reset} (Module: {mod + '/' + mod + '.py'})")
+        print("")
+        reader_id = pyil.input_int("Reader module number?", min=0, max=len(reader_descriptions)-1, prompt_color=colors.lightgreen, prompt_hint=True)
+        # The (short) name of the selected reader module, which is identical to the directory name
+        reader_select_name.append(reader_dirs[reader_id])
 
-    # Try to load the actual reader module for the first time (and only the selected one!)
-    # A ModuleNotFoundError is unrecoverable, but we at least want to give some hint how to resolve that to the user
-    # All other errors will NOT be handled. Modules that do not load due to compile errors have other problems
-    try:
-        reader_module = importlib.import_module('..' + reader_select_name, reader_select_name + '.subpkg')
-    except ModuleNotFoundError as e:
-        # This can have two reasons:
-        # (1) The reader_type module itself cannot be found (for whatever unfathomable reason after all the checks above)
-        # (2) The reader_type module has sub-dependencies which cannot be found
-        if e.name == reader_select_name + '.' + reader_select_name:
-            logger.critical(f"No reader module found in directory '{reader_select_name}'!\n\n")
+        # If this reader has not been selected before, install dependencies and load the module
+        if reader_select_name[-1] not in reader_select_name[:-1]:
+            # Auto install dependencies
+            if dependency_install != 'no':
+                reader_install_dependencies(reader_select_name[-1])
+
+        # Try to load the actual reader module for the first time (and only the selected one!)
+        # In case of multiple loads of the same module, import_module only returns the reference to the loaded module.
+        # --> No special loop handling necessary
+        reader_module = reader_load_module(reader_select_name[-1])
+        logger.debug(f"Loaded reader module: (Module: {reader_module.__name__} in {reader_module.__file__})")
+
+        # Check loaded module for validity
+        # Minimum requirement is a class with name 'Reader' (strictly speaking with functions read_card, _enter__, __exit__
+        # but we don't want to dig to deep, as the actual function cannot be checked here anyway)
+        if 'Reader' not in dir(reader_module):
+            logger.error(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
+            raise AttributeError(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
+
+        # Propagate logger level down to reader module (if available and correctly named)
+        try:
+            reader_module.logconsole.setLevel(logconsole.level)
+        except AttributeError:
+            pass
+
+        # Check if reader module has customization and if yes, query user for that
+        reader_params = None
+        if 'query_customization' in dir(reader_module):
+            print("\nEntering reader customization\n")
+            reader_params = reader_module.query_customization()
         else:
-            logger.critical(f"\n\n{'=' * 80}\n"
-                            f"Sub-dependencies in '{reader_select_name}' not fulfilled. This is an unrecoverable error!\n"
-                            f"{e.msg}\n"
-                            f"{'=' * 80}\n"
-                            "This usually means some dependencies are not installed.\n"
-                            "If this script is called with -d a, an attempt will be made to install the dependencies automatically\n"
-                            "You may install the dependencies manually before re-executing this script by:\n"
-                            "'$ pip3 install -r requirements.txt' in the reader's submodule directory and \n"
-                            "'$ ./setup.inc.sh'\n"
-                            "In case of doubt reboot!\n\n"
-                            f"{'=' * 80}\n")
-        # There is no possible graceful recovery from this
-        raise e
-    logger.debug(f"Loaded reader module: (Module: {reader_module.__name__} in {reader_module.__file__})")
+            logger.debug(f"Module {reader_module.__name__} has no user customization.")
+        logger.debug(f"reader_params = {reader_params}")
 
-    # Check loaded module for validity
-    # Minimum requirement is a class with name 'Reader' (strictly speaking with functions read_card, _enter__, __exit__
-    # but we don't want to dig to deep, as the actual function cannot be checked here anyway)
-    if 'Reader' not in dir(reader_module):
-        logger.error(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
-        raise AttributeError(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
+        # Add the reader to the config collector
+        config_dict['ReaderType'][f'reader_module{len(reader_select_name)-1:02d}'] = reader_select_name[-1]
+        if reader_params:
+            config_dict[f'reader_module{len(reader_select_name)-1:02d}'] = reader_params
 
-    # Propagate logger level down to reader module (if available and correctly named)
-    try:
-        reader_module.logconsole.setLevel(logconsole.level)
-    except AttributeError:
-        pass
+        if not pyil.input_yesno("\nDo you want to add another RFID reader? ", blank=False,
+                                prompt_color=colors.lightgreen, prompt_hint=True):
+            break
 
-    # Check if reader module has customization and if yes, query user for that
-    reader_params = None
-    if 'query_customization' in dir(reader_module):
-        print("\nEntering reader customization\n")
-        reader_params = reader_module.query_customization()
-    else:
-        logger.debug(f"Module {reader_module.__name__} has no user customization.")
-    logger.debug(f"reader_params = {reader_params}")
-
-    # Put it together and return entire config
-    # in a format suitable for direct ConfigParser consumption
-    config_dict = {'ReaderType': {'reader_module': reader_select_name}}
-    if reader_params:
-        config_dict[reader_select_name] = reader_params
     return config_dict
 
 
 def write_config(config_file: str, config_dict: dict, force_overwrite=False) -> None:
-    """Write configuration to cfg_file
+    """Write configuration to config_file
 
     :parameter config_file: relative or absolute path to config file
     :parameter config_dict: nested dict with configuration parameters for ConfigParser consumption
@@ -211,10 +247,13 @@ def read_config(config_file: str) -> dict:
 
 
 def load_reader(config_dict):
-    """Dynamically load the reader module based on the reader configuration
+    """Dynamically load all necessary reader modules based on the reader configuration
 
-    :return: the loaded reader module reference and the reader params as dict for the loaded reader
-    :rtype: (module, {parameter: value, ...})
+    :return: list of loaded reader module references and list reader params dict for each reader
+    Note that reader modules may appear multiple times in the reference list if there are multiple identical readers
+    configured. E.g. two USB readers. There are always as many reader_modules as reader_params as configured readers.
+    Even if the reader modules are identical. This eases processing of the return result
+    :rtype: [module1, module2, ...] [{parameter: value, ...}, {parameter: value, ...})
     """
     # Add the path for the reader modules to Python's search path
     # such the reader directory is searched after local dir, but before all others
@@ -227,26 +266,35 @@ def load_reader(config_dict):
     config = configparser.ConfigParser()
     config.read_dict(config_dict)
 
-    reader_type = config['ReaderType'].get('reader_module').lower()
-    reader_params = None
+    all_modules = []
+    all_params = []
 
-    if reader_type in config:
-        reader_params = {key: value for key, value in config[reader_type].items()}
+    for reader_inst in filter(lambda x: x.startswith('reader_module'), config['ReaderType'].keys()):
+        logger.debug(f"Processing reader instance '{reader_inst}'")
 
-    try:
-        reader_module = importlib.import_module('..' + reader_type, reader_type + '.subpkg')
-    except ModuleNotFoundError as e:
-        logger.error("No module found for {reader_type}! Spelling error?\n\n")
-        raise e
+        reader_type = config['ReaderType'].get(reader_inst).lower()
+        reader_params = None
 
-    # Propagate logger level down to reader module (if available and correctly named)
-    try:
-        reader_module.logconsole.setLevel(logconsole.level)
-    except AttributeError:
-        pass
+        if reader_inst in config:
+            reader_params = {key: value for key, value in config[reader_inst].items()}
 
-    logger.debug(f"reader_module.__file__ = {reader_module}")
-    logger.debug(f"dir(reader_module)     = {dir(reader_module)}")
+        try:
+            reader_module = importlib.import_module('..' + reader_type, reader_type + '.subpkg')
+        except ModuleNotFoundError as e:
+            logger.error("No module found for {reader_type}! Spelling error?\n\n")
+            raise e
 
-    return reader_module, reader_params
+        # Propagate logger level down to reader module (if available and correctly named)
+        try:
+            reader_module.logconsole.setLevel(logconsole.level)
+        except AttributeError:
+            pass
+
+        logger.debug(f"reader_module.__file__ = {reader_module}")
+        logger.debug(f"dir(reader_module)     = {dir(reader_module)}")
+
+        all_modules.append(reader_module)
+        all_params.append(reader_params)
+
+    return all_modules, all_params
 

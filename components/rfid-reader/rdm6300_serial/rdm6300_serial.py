@@ -71,9 +71,15 @@ class Reader:
         logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
         self.cleanup()
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.read_card()
+
     def __init__(self, params: dict):
-        logger.debug(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
-        logger.debug(f"Parameters = {params}")
+        logger.info(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
+        logger.info(f"Parameters = {params}")
 
         config = configparser.ConfigParser()
         if params is None:
