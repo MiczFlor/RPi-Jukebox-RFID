@@ -1,6 +1,8 @@
 <?php
 namespace JukeBox;
 
+require_once("api/zmq.php");
+
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
@@ -295,6 +297,7 @@ if(isset($_GET['delete']) && $_GET['delete'] == "delete") {
 *******************************************/
 
 $commandToAction = array(
+    /*
     'volume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=%s",            // change volume
     'maxvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=%s",      // change max volume
     'startupvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setstartupvolume -v=%s",      // change startup volume
@@ -310,16 +313,11 @@ $commandToAction = array(
     'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",
     'scan' => array(
         'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=scan > /dev/null 2>&1 &"   // scan the library
-    ),
-    'stop' => array(
-        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstop"                // stop playing
-    ),
-    'reboot' => array(
-        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=reboot > /dev/null 2>&1 &" // reboot the jukebox
-    ),
-    'shutdown' => array(
-        'true' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdown > /dev/null 2>&1 &"// shutdown the jukebox
-    ),
+    ),*/
+    'stop' => ['object'=>'player','method'=>'stop','param'=>''],                                            // stop playing
+    'reboot' => ['object'=>'system','method'=>'reboot','param'=>''],                                        // reboot the jukebox
+    'shutdown' => ['object'=>'system','method'=>'shutdown','param'=>''],                                    // shutdown the jukebox
+    /*
     'rfidstatus' => array(
         'turnon' => "/usr/bin/sudo /bin/systemctl start phoniebox-rfid-reader.service",                     // start the rfid service
         'turnoff' => "/usr/bin/sudo /bin/systemctl stop phoniebox-rfid-reader.service"                      // stop the rfid service
@@ -340,15 +338,14 @@ $commandToAction = array(
         "repeatoff" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerrepeat -v=off",
         "seekBack" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerseek -v=-15",
         "seekAhead" => "/usr/bin/sudo " . $conf['scripts_abs'] . "/playout_controls.sh -c=playerseek -v=+15",
-    ),
+    ),*/
 );
+
 foreach ($urlparams as $paramKey => $paramValue) {
-    if(isset($commandToAction[$paramKey]) && !is_array($commandToAction[$paramKey])) {
-        $exec = sprintf($commandToAction[$paramKey], $paramValue);
-        execAndRedirect($exec);
-    } elseif (isset($commandToAction[$paramKey]) && isset($commandToAction[$paramKey][$paramValue])) {
-        $exec = sprintf($commandToAction[$paramKey][$paramValue], $paramValue);
-        execAndRedirect($exec);
+    if(isset($commandToAction[$paramKey]) ) {
+        $json_response = phonie_enquene($commandToAction[$paramKey]);
+    } else {
+        error_log("calling script in inc_header via commandToAction: \"".$paramKey."\" Val:\"".$paramValue."\"", 0);
     }
 }
 

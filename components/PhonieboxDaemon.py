@@ -7,6 +7,7 @@ import signal
 from time import sleep, time
 
 import PhonieboxVolume
+import PhonieboxSystem
 from player import PhonieboxPlayerMPD
 from rpc.PhonieboxRpcServer import phoniebox_rpc_server
 from PhonieboxNvManager import nv_manager
@@ -55,16 +56,11 @@ if __name__ == "__main__":
     phoniebox_config['audiofolders_path'] = "../shared/"
 
     # Play Startup Sound
-    volume_control_alsa = PhonieboxVolume.volume_control_alsa()
-    startsound_thread = threading.Thread(target=volume_control_alsa.play_wave_file, args=["../shared/startupsound.wav"])
+    volume_control = PhonieboxVolume.volume_control_alsa(listcards=False)
+    startsound_thread = threading.Thread(target=volume_control.play_wave_file, args=["../shared/startupsound.wav"])
     startsound_thread.start()
 
-    #Debug: List ALSA cards and mixers
-    #PhonieboxVolume.list_cards()
-    #PhonieboxVolume.list_mixers({ 'cardindex': 0 })
-
     g_nvm = nv_manager()
-    
 
     #phoniebox music player status
     music_player_status = g_nvm.load("../shared/music_player_status.json")
@@ -73,8 +69,9 @@ if __name__ == "__main__":
     cardid_database = g_nvm.load("../settings/phoniebox_cardid_database.json")
 
     #initialize Phonibox objcts
-    objects = {'volume':volume_control_alsa,
-               'player':PhonieboxPlayerMPD.player_control(music_player_status,volume_control_alsa)}
+    objects = {'volume':volume_control,
+               'player':PhonieboxPlayerMPD.player_control(music_player_status,volume_control),
+               'system':PhonieboxSystem.system_control}
 
     print ("Init Phonibox RPC Server ")
     rpcs = phoniebox_rpc_server(objects)
@@ -83,14 +80,10 @@ if __name__ == "__main__":
 
     #rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
     rfid_reader = RFID_Reader("Fake")
-    #rfid_reader = None
     if rfid_reader is not None:
-        print ("set db")
         rfid_reader.set_cardid_db(cardid_database)
-        rfid_reader.reader.set_card_ids(list(cardid_database))     #just for Fake Reader
-        print ("set thread")
+        rfid_reader.reader.set_card_ids(list(cardid_database))     #just for Fake Reader to be aware of card numbers
         rfid_thread = threading.Thread(target=rfid_reader.run)
-        #rfid_t.start()
     else:
         rfid_thread = None
     
@@ -110,7 +103,6 @@ if __name__ == "__main__":
     else:
         gpio_thread = None
     
-    # signal.raise_signal(signum)
     # setup the signal listeners
     signal.signal(signal.SIGINT, exit_gracefully)
     signal.signal(signal.SIGTERM, exit_gracefully)

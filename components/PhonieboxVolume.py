@@ -3,10 +3,23 @@
 import alsaaudio
 
 class volume_control_alsa:
-    def __init__(self):
-         self.mixer = alsaaudio.Mixer('Master', 0)
-         self.volume = self.mixer.getvolume()[0]
+    def __init__(self, listcards=False):
+        if listcards is True:
+            self.list_cards_and_mixers()
+        self.mixer = alsaaudio.Mixer('Master', 0)
+        self.volume = self.mixer.getvolume()[0]
 
+    def list_cards_and_mixers(self):
+        print("Available sound cards:")
+        for i in alsaaudio.card_indexes():
+            (name, longname) = alsaaudio.card_name(i)
+            print("  %d: %s (%s)" % (i, name, longname))
+        
+        print("\nAvailable mixer controls:")
+        for m in alsaaudio.mixers(**{ 'cardindex': 0 }):
+            print("  '%s'" % m)
+
+    
     def get(self, param):
         return ({'volume':self.volume})
 
@@ -69,7 +82,7 @@ class volume_control_alsa:
 
             periodsize = f.getframerate() // 8
 
-            print('%d channels, %d sampling rate, format %d, periodsize %d\n' % (f.getnchannels(),f.getframerate(), format,	 periodsize))
+            #print('%d channels, %d sampling rate, format %d, periodsize %d\n' % (f.getnchannels(),f.getframerate(), format,	 periodsize))
 
             device = alsaaudio.PCM(channels=f.getnchannels(), rate=f.getframerate(), format=format, periodsize=periodsize, device="default")
     
@@ -79,14 +92,5 @@ class volume_control_alsa:
                 data = f.readframes(periodsize)
 
 
-def list_cards():
-    print("Available sound cards:")
-    for i in alsaaudio.card_indexes():
-        (name, longname) = alsaaudio.card_name(i)
-        print("  %d: %s (%s)" % (i, name, longname))
 
-def list_mixers(kwargs):
-    print("Available mixer controls:")
-    for m in alsaaudio.mixers(**kwargs):
-        print("  '%s'" % m)
 
