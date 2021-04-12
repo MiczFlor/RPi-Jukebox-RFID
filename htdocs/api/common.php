@@ -6,15 +6,6 @@ function execScript($command) {
     return execSuccessfully($absoluteCommand);
 }
 
-function execScriptWithoutCheck($command) {
-    global $debugLoggingConf;
-    if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function execScriptWithoutCheck: " . $command , FILE_APPEND | LOCK_EX);
-    }
-    $absoluteCommand = realpath(dirname(__FILE__) .'/../../scripts') ."/{$command}";
-    exec("sudo ".$absoluteCommand);
-}
-
 function execSuccessfully($command) {    
     global $debugLoggingConf;
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {

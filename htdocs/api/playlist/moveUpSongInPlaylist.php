@@ -4,7 +4,7 @@ namespace JukeBox\Api;
 /**
  * Moves a song within the current playlist up.
  */
-include('../common.php');
+require_once("../zmq.php");
 
 /*
 * debug? Conf file line:
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     if (is_numeric($body)) {
         // This script always returns with returncode 1, so we cannot check that the returncode is 0
-        execScriptWithoutCheck("playout_controls.sh -c=playermoveup -v='{$body}'");
+        phonie_enquene(['object'=>'player','method'=>'moveup','param'=>['songid'=>$body ]]);
     } else {
         http_response_code(400);
     }

@@ -13,6 +13,7 @@ $rfidAvailArr = rfidAvailArr();
 
 function rfidAvailArr() {
     $rfidAvailRaw = "";
+    /*
     $conf['conf_abs'] = realpath(getcwd().'/../settings/rfid_trigger_play.conf.sample');
     $fn = fopen($conf['conf_abs'],"r");
     while(! feof($fn))  {
@@ -23,7 +24,7 @@ function rfidAvailArr() {
         }
     }
     fclose($fn);
-    $rfidAvailArr = parse_ini_string($rfidAvailRaw); //print "<pre>"; print_r($rfidAvailArr); print "</pre>";
+    $rfidAvailArr = parse_ini_string($rfidAvailRaw); //print "<pre>"; print_r($rfidAvailArr); print "</pre>";*/
     return $rfidAvailArr;
 }
 /******************************************/
@@ -35,7 +36,8 @@ $rfidUsedArr = rfidUsedArr();
 
 function rfidUsedArr() {
     $rfidUsedRaw = "";
-    $fn = fopen("../settings/rfid_trigger_play.conf","r");
+    
+    /*$fn = fopen("../settings/rfid_trigger_play.conf","r");
     while(! feof($fn))  {
         $result = fgets($fn);
         // ignore commented and empty lines
@@ -44,7 +46,7 @@ function rfidUsedArr() {
         }
     }
     fclose($fn);
-    $rfidUsedArr = parse_ini_string($rfidUsedRaw); //print "<pre>"; print_r($rfidUsedArr); print "</pre>";
+    $rfidUsedArr = parse_ini_string($rfidUsedRaw); //print "<pre>"; print_r($rfidUsedArr); print "</pre>";*/
     return $rfidUsedArr;
 }
 /******************************************/

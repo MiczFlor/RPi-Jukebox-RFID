@@ -77,6 +77,22 @@ class player_control:
         #self.mpd_client.playlistfind()
         return 0
     
+    def remove(self, param):
+        print ("remove not yet implemented")
+        return ({})
+
+    def moveup(self, param):
+        print ("moveup not yet implemented")
+        return ({})
+
+    def movedown(self, param):
+        print ("movedown not yet implemented")
+        return ({})
+
+    def playsingle(self, param):
+        print ("playsingle not yet implemented")
+        return ({})    
+    
     def playlistaddplay(self, param):
         
             # add to playlist (and play)

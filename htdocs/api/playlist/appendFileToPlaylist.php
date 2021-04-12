@@ -4,7 +4,7 @@ namespace JukeBox\Api;
 /**
  * Appends a given file to the current playlist (and starts playing)
  */
-include('../common.php');
+require_once("../zmq.php");
 
 /*
 * debug? Conf file line:
@@ -21,12 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='{$body}'");
+    phonie_enquene(['object'=>'player','method'=>'playlistappend','param'=>['songid'=>$body ]]);
 } else {
   $file = $_GET["file"];
   if ($file !== "") {
     print "Playing file " . $file;
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='$file'");
+    phonie_enquene(['object'=>'player','method'=>'playlistappend','param'=>['songid'=>$file ]]);
+
+    require_once("../zmq.php");
   }else{
     http_response_code(405);
   }
