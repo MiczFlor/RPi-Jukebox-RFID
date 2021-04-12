@@ -17,31 +17,37 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
-def reader_install_dependencies(reader_select_name: str) -> None:
+def reader_install_dependencies(reader_select_name: str, dependency_install: str) -> None:
     """
     Install dependencies for the selected reader module
 
     :param reader_select_name: Name of the reader module
+    :parameter dependency_install: how to handle installing of dependencies
+                                   'query': query user (default)
+                                   'auto': automatically
+                                   'no': don't install dependencies
+
     """
-    if os.path.exists(reader_select_name + '/requirements.txt'):
-        # The python dependencies (if any)
-        print(f"\nInstalling/Checking Python dependencies  ...\n")
-        if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
-                                                            prompt_color=colors.lightgreen, prompt_hint=True):
-            print(f"{'=' * 80}")
-            quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
-            subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
-                           shell=True, check=False)
-            print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
-    if os.path.exists(reader_select_name + '/setup.inc.sh'):
-        # The shell dependencies/settings (if any)
-        print(f"\n\nExecuting shell support commands by executing setup.inc.sh (i.e. configure system settings)...")
-        if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
-                                                            prompt_color=colors.lightgreen, prompt_hint=True):
-            print(f"{'=' * 80}")
-            subprocess.run('./setup.inc.sh', cwd=reader_select_name,
-                           shell=True, check=False)
-            print(f"\n{'=' * 80}\nExecuting shell support commands  ... done!\n")
+    if dependency_install != 'no':
+        if os.path.exists(reader_select_name + '/requirements.txt'):
+            # The python dependencies (if any)
+            print(f"\nInstalling/Checking Python dependencies  ...\n")
+            if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
+                                                                prompt_color=colors.lightgreen, prompt_hint=True):
+                print(f"{'=' * 80}")
+                quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
+                subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
+                               shell=True, check=False)
+                print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
+        if os.path.exists(reader_select_name + '/setup.inc.sh'):
+            # The shell dependencies/settings (if any)
+            print(f"\n\nExecuting shell support commands by executing setup.inc.sh (i.e. configure system settings)...")
+            if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
+                                                                prompt_color=colors.lightgreen, prompt_hint=True):
+                print(f"{'=' * 80}")
+                subprocess.run('./setup.inc.sh', cwd=reader_select_name,
+                               shell=True, check=False)
+                print(f"\n{'=' * 80}\nExecuting shell support commands  ... done!\n")
 
 
 def reader_load_module(reader_name):
@@ -80,7 +86,8 @@ def reader_load_module(reader_name):
 
 
 def query_user_for_reader(dependency_install='query') -> dict:
-    """Ask the user to select a RFID reader and prompt for the reader's configuration
+    """
+    Ask the user to select a RFID reader and prompt for the reader's configuration
 
     This function performs the following steps, to find and present all available readers to the user
 
@@ -159,8 +166,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
         # If this reader has not been selected before, install dependencies and load the module
         if reader_select_name[-1] not in reader_select_name[:-1]:
             # Auto install dependencies
-            if dependency_install != 'no':
-                reader_install_dependencies(reader_select_name[-1])
+            reader_install_dependencies(reader_select_name[-1], dependency_install)
 
         # Try to load the actual reader module for the first time (and only the selected one!)
         # In case of multiple loads of the same module, import_module only returns the reference to the loaded module.
@@ -203,7 +209,8 @@ def query_user_for_reader(dependency_install='query') -> dict:
 
 
 def write_config(config_file: str, config_dict: dict, force_overwrite=False) -> None:
-    """Write configuration to config_file
+    """
+    Write configuration to config_file
 
     :parameter config_file: relative or absolute path to config file
     :parameter config_dict: nested dict with configuration parameters for ConfigParser consumption
@@ -227,7 +234,8 @@ def write_config(config_file: str, config_dict: dict, force_overwrite=False) -> 
 
 
 def read_config(config_file: str) -> dict:
-    """Read the configuration file
+    """
+    Read the configuration file
 
     :parameter config_file: relative or absolute path to config file
     :return: nested dict entire configuration that can be read back into ConfigParser
@@ -247,7 +255,8 @@ def read_config(config_file: str) -> dict:
 
 
 def load_reader(config_dict):
-    """Dynamically load all necessary reader modules based on the reader configuration
+    """
+    Dynamically load all necessary reader modules based on the reader configuration
 
     :return: list of loaded reader module references and list reader params dict for each reader
     Note that reader modules may appear multiple times in the reference list if there are multiple identical readers

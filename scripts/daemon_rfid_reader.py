@@ -174,7 +174,7 @@ def read_card_worker(reader_module, reader_params, global_params, timer_thread) 
                     except OSError as e:
                         logger.error(f"rfid_trigger_play.sh execution failed: {e}")
                 elif cfg_log_ignored_cards:
-                    logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({same_id_delay}s)")
+                    logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({cfg_same_id_delay}s)")
                 previous_time = time.time()
 
             # Slow down the card reading while loop in case card is placed permanently on reader
