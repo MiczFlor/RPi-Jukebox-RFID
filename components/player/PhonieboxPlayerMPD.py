@@ -36,12 +36,20 @@ class player_control:
         return ({'result':'mpd','version':self.mpd_client.mpd_version})
     
     def play(self, param):
+        
+        if param is not None and isinstance(param, dict):
+            songid = param.get("songid")
+            if songid is None:
+                songid = 1
+        else:
+            songid = 1
+
         try:
-            self.mpd_client.play()
+            self.mpd_client.play(songid)
         except ConnectionError: 
             print ("MPD Connection Error, retry")
             self.conncet()
-            self.mpd_client.play()
+            self.mpd_client.play(songid)
         except  Exception as e:
             print(e)
         song = self.mpd_client.currentsong()
@@ -81,12 +89,13 @@ class player_control:
         print ("remove not yet implemented")
         return ({})
 
-    def moveup(self, param):
-        print ("moveup not yet implemented")
-        return ({})
+    def move(self, param):
+        song_id = param.get("song_id")
+        step = param.get("step")
+        #MPDClient.playlistmove(name, from, to)
+        #MPDClient.swapid(song1, song2)
 
-    def movedown(self, param):
-        print ("movedown not yet implemented")
+        print ("move not yet implemented")
         return ({})
 
     def playsingle(self, param):

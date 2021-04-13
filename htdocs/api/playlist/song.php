@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     if (is_numeric($body)) {
         // This script always returns with returncode 1, so we cannot check that the returncode is 0
-        phonie_enquene(['object'=>'player','method'=>'play','param'=>['songid'=>$body ]]);
+        phonie_enquene(['object'=>'player','method'=>'play','params'=>['songid'=>$body ]]);
     } else {
         http_response_code(400);
     }
