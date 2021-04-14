@@ -1,7 +1,16 @@
+"""
+Zero 3rd-party dependency module to add colors to unix terminal output
+
+Yes, there are modules out there to do the same and they have more features.
+However, this is low-complexity and has zero dependencies
+"""
 import sys
 
 
 class colors:
+    """
+    Class as container for color constants
+    """
     reset = '\033[0m'
     bold = '\033[01m'
     black = '\033[30m'
@@ -22,4 +31,9 @@ class colors:
 
     @staticmethod
     def print(color, *values, sep=' ', end='\n', file=sys.stdout, flush=False):
+        """
+        Drop-in replacement for print with color choice and auto color reset for convenience
+
+        User just a regular print function, but with first parameter as color
+        """
         print(color, *values, colors.reset, sep=sep, end=end, file=file, flush=flush)

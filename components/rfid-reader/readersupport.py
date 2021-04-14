@@ -4,8 +4,8 @@ import os
 import importlib
 import subprocess
 
-from misc.simplecolors import colors
-import misc.inputminus as pyil
+from base.simplecolors import colors
+import base.inputminus as pyil
 
 # Create logger
 logger = logging.getLogger(os.path.basename(__file__).ljust(25))
@@ -163,9 +163,8 @@ def query_user_for_reader(dependency_install='query') -> dict:
         # The (short) name of the selected reader module, which is identical to the directory name
         reader_select_name.append(reader_dirs[reader_id])
 
-        # If this reader has not been selected before, install dependencies and load the module
+        # If this reader has not been selected before, auto install dependencies
         if reader_select_name[-1] not in reader_select_name[:-1]:
-            # Auto install dependencies
             reader_install_dependencies(reader_select_name[-1], dependency_install)
 
         # Try to load the actual reader module for the first time (and only the selected one!)
@@ -175,9 +174,9 @@ def query_user_for_reader(dependency_install='query') -> dict:
         logger.debug(f"Loaded reader module: (Module: {reader_module.__name__} in {reader_module.__file__})")
 
         # Check loaded module for validity
-        # Minimum requirement is a class with name 'Reader' (strictly speaking with functions read_card, _enter__, __exit__
-        # but we don't want to dig to deep, as the actual function cannot be checked here anyway)
-        if 'Reader' not in dir(reader_module):
+        # Minimum requirement is a class with name 'ReaderClass'
+        # (that is enough testing here, as we cannot check the functionality anyway)
+        if 'ReaderClass' not in dir(reader_module):
             logger.error(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
             raise AttributeError(f"Reader module '{reader_module.__name__}' is missing mandatory class named 'Reader'.")
 

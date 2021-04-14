@@ -4,8 +4,9 @@ import os
 import logging
 import configparser
 
-import misc.inputminus as pyil
-from misc.simplecolors import colors
+import base.inputminus as pyil
+from base.simplecolors import colors
+from base.reader_base import *
 
 from .description import DESCRIPTION
 
@@ -85,23 +86,9 @@ def query_customization():
             'log_all_keys': 'false'}
 
 
-class Reader:
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
-        self.cleanup()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return self.read_card()
-
+class ReaderClass(ReaderBaseClass):
     def __init__(self, params: dict):
-        logger.info(f"Initializing reader {DESCRIPTION} from {__file__}")
-        logger.info(f"Parameters = {params}")
+        super().__init__(description=DESCRIPTION, params=params, logger=logger)
 
         # Key event codes return from evdev are numerical indexes, not decoded ASCII characters
         # Use a string to index with key event code to decode key event codeinto ASCII character

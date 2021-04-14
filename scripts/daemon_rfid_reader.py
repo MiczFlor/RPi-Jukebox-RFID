@@ -159,7 +159,7 @@ def read_card_worker(reader_module, reader_params, global_params, timer_thread) 
         logger.debug(f"card_removal_timer_thread.native_id = {timer_thread.ident}")
         timer_thread.event.clear()
 
-    with reader_module.Reader(reader_params) as reader:
+    with reader_module.ReaderClass(reader_params) as reader:
         for card_id in reader:
             if timer_thread is not None:
                 timer_thread.event.set()

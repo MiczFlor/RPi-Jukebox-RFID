@@ -10,8 +10,9 @@ import configparser
 import RPi.GPIO as GPIO
 import pirc522
 
-import misc.inputminus as pyil
-from misc.simplecolors import colors
+import base.inputminus as pyil
+from base.simplecolors import colors
+from base.reader_base import *
 
 from .description import DESCRIPTION
 
@@ -70,23 +71,9 @@ def query_customization() -> dict:
             'log_all_cards': 'false'}
 
 
-class Reader:
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
-        self.cleanup()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        return self.read_card()
-
+class ReaderClass(ReaderBaseClass):
     def __init__(self, params: dict):
-        logger.info(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
-        logger.info(f"Parameters = {params}")
+        super().__init__(description=DESCRIPTION, params=params, logger=logger)
 
         config = configparser.ConfigParser()
         if params is None or len(params) == 0:

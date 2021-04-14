@@ -1,8 +1,25 @@
-from misc.simplecolors import colors
+"""
+Zero 3rd-party dependency module for user prompting
+
+Yes, there are modules out there to do the same and they have more features.
+However, this is low-complexity and has zero dependencies
+"""
+from base.simplecolors import colors
 
 
 def input_int(prompt, blank=None, min=None, max=None,
               prompt_color=None, prompt_hint=False) -> int:
+    """
+    Request an integer input from user
+
+    :param prompt: The prompt to display
+    :param blank: Value to return when user just hits enter. Leave at None, if blank is invalid
+    :param min: Minimum valid integer value (None disables this check)
+    :param max: Maximum valid integer value (None disables this check)
+    :param prompt_color: Color of the prompt. Color will be reset at end of prompt
+    :param prompt_hint: Append a 'hint' with [min...max, default=xx] to end of prompt
+    :return: integer value read from user input
+    """
     if min is not None and max is not None:
         if max < min:
             raise ValueError(f"min '{min}' must be smaller equal than max '{max}'")
@@ -34,6 +51,17 @@ def input_int(prompt, blank=None, min=None, max=None,
 
 def input_yesno(prompt, blank=None,
                 prompt_color=None, prompt_hint=False) -> bool:
+    """
+    Request a yes / no choice from user
+
+    Accepts multiple input for true/false and is case insensitive
+
+    :param prompt: The prompt to display
+    :param blank: Value to return when user just hits enter. Leave at None, if blank is invalid
+    :param prompt_color: Color of the prompt. Color will be reset at end of prompt
+    :param prompt_hint: Append a 'hint' with [y/n] to end of prompt. Default choice will be capitalized
+    :return: boolean value read from user input
+    """
     res_yes = ['y', 'yes', 't', 'true']
     res_no = ['n', 'no', 'f', 'false']
     if prompt_hint:

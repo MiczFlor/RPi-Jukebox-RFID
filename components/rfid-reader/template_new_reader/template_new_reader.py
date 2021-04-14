@@ -1,8 +1,9 @@
-"""Template for creating and integrating a new RFID Reader
+"""
+Template for creating and integrating a new RFID Reader
 
 This template provides the skeleton API for a new Reader.
 If you follow the conventions outlined below, your new reader will be picked up automatically
-There is no extra need to register the Reader with the Phoniebox. Just re-run ./register_reader.py
+There is no extra need to register the reader module with the Phoniebox. Just re-run ./register_reader.py
 
 Also have a look at the other reader subpackages to see how stuff works with an example
 
@@ -16,6 +17,7 @@ File structure:
 
 Note:
 - Single reader per directory / subpackage
+- reader module directory name and reader module file name must be identical
 - Obviously awesome_reader will be replaced with something more descriptive. The naming scheme for the subpackage is
   - <type_of_reader>_<io_bus>_<other_specials_like_special_lib>
   - e.g. generic_usb/generic_usb.py
@@ -30,11 +32,13 @@ Note:
 """
 
 # Standard imports from python packages
-import os
 import logging
 
 # Add your imports here ...
 # import third_party_reader_module
+
+# Import the ReaderBaseClass for common API. Leave as this line as it is!
+from base.reader_base import *
 
 # Also import the description string into this module, to make everything available in a single module w/o code duplication
 # Leave this line as is!
@@ -54,45 +58,37 @@ logger.addHandler(logconsole)
 
 
 def query_customization() -> dict:
-    """This function will be called during the configuration/setup phase when the user selects this reader module.
+    """
+    Query the user for reader parameter customization
+
+    This function will be called during the configuration/setup phase when the user selects this reader module.
     It must return all configuration parameters that are necessary to later use the Reader class.
     You can ask the user for selections and choices. And/or provide default values.
-    If your reader requires absolutely no configuration return {} or delete this function"""
+    If your reader requires absolutely no configuration return {} or delete this function
+    """
     # In the simplest form, this only provides default parameters and relies on the
     # user to modify the config file by hand, e.g. for a reset pin's location
     return {'reset_pin': '12'}
 
 
-class Reader:
-    """The actual reader class that is used to read RFID cards.
+class ReaderClass(ReaderBaseClass):
+    """
+    The actual reader class that is used to read RFID cards.
+
     It will be instantiated once and then read_card() is called in an endless loop.
 
     It will be used in a  manner
       with Reader(params) as reader:
         for card_id in reader:
           ...
-    which ensures proper resource de-allocation. For this to work do not touch the functions
-    __enter__ and __exit__. Put all your cleanup code into cleanup(self).
+    which ensures proper resource de-allocation. For this to work derive this class from ReaderBaseClass.
+    All the required interfaces are implemented there.
 
-    Leave __iter__ and __next__ as they are. They are required for the iterator-style usage of this class"""
-
-    def __enter__(self):
-        # Do not change anything here!
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        # Do not change anything here!
-        logger.debug(f"Cleaning up behind reader '{DESCRIPTION}'")
-        self.cleanup()
-
-    def __iter__(self):
-        # Do not change anything here!
-        return self
-
-    def __next__(self):
-        # Do not change anything here! Put your card read-out code in to read_card()
-        return self.read_card()
-
+    Put your code into these functions (see below for more information)
+      - __init__
+      - read_card
+      - cleanup
+    """
     def __init__(self, params: dict):
         """In the constructor, you will get a dictionary with all the customization options read for this reader
         (and only this reader) from
@@ -107,9 +103,8 @@ class Reader:
         - params may no always contain all expected key/value pairs. So you might use default fallback values or
           raise an error depending on the missing information
         """
-        # Keep these lines for common status reporting
-        logger.info(f"Initializing reader '{DESCRIPTION}' from '{__file__}'")
-        logger.info(f"Parameters = {params}")
+        # Initialize the super-class. Don't change anything here
+        super().__init__(description=DESCRIPTION, params=params, logger=logger)
 
         # Example 1:
         # In the simplest form, w/o error checks and type conversion, this would simply be to following.
@@ -128,16 +123,17 @@ class Reader:
         # timeout = config['params'].getfloat('timeout', fallback=0.1)
 
     def cleanup(self):
-        """The cleanup function: Free and release all resources used by this card reader. e.g. if you are using the
-        serial bus or GPIO pins.
+        """The cleanup function: free and release all resources used by this card reader (if any).
+
+        Put all your cleanup code here, e.g. if you are using the serial bus or GPIO pins.
         Will be called implicitly via the __exit__ function
         This function must exist! If there is nothing to do, just leave the pass statement in place below"""
         pass
 
     def read_card(self) -> str:
         """Blocking function that waits for a new card to appear and return the card's UID as string
-        This is were your main code goes :-)
 
+        This is were your main code goes :-)
         This function must return a string with the card id
         In case of error, it may return None or an empty string"""
         pass
