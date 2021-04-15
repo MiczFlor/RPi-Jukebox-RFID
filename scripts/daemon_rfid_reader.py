@@ -9,6 +9,10 @@ import sys
 import configparser
 import argparse
 import threading
+import signal
+from functools import partial
+
+import RPi.GPIO as gpio
 
 
 logger = logging.getLogger(os.path.basename(__file__).ljust(25))
@@ -83,6 +87,101 @@ def get_global_params() -> dict:
             'cmd_cards': cmd_cards}
 
 
+class PinActionClass(threading.Thread):
+    """
+    A thread to control a GPIO output pin to sound a buzzer or light an LED
+
+    An extra thread for a GPIO pin? Why so complicated?
+    Reason 1: This is a single thread for all RFID reader threads (if there is more than one), because we only
+    have a single GPIO pin and access must be properly sequenced to ensure it is reset after sounding the buzzer
+    Reason 2: The time the buzzer is sounded should be run in background to avoid extra delay between card placement and
+    card action however small the buzzer duration
+
+    Note: You can connect a LED or a Piezzo Buzzer. Only for reasons of simplicity, parameters are named 'buzzer'
+
+    The GPIO level is active high, after a card has been detected for the length of buzz_duration
+    """
+    def __init__(self, buzz_pin, buzz_duration, buzz_retrigger=True):
+        """
+
+        :param buzz_pin: The GPIO pin of the buzzer of LED
+        :param buzz_duration: The duration in sec the GPIO pin is high after a card has been detected (e.g. 0.2)
+        :param buzz_retrigger: If True, multiple cards within the buzz_duration start the buzzer time anew
+        """
+        threading.Thread.__init__(self)
+        logger.debug(f"PinActionClass started with buzz_pin={buzz_pin}, buzz_duration={buzz_duration}, buzz_retrigger={buzz_retrigger}")
+        self.trigger = threading.Event()
+        self.buzz_pin = buzz_pin
+        self.buzz_delay = buzz_duration
+        if buzz_retrigger:
+            self.run_action = self.run_retrigger
+        else:
+            self.run_action = self.run_single_trigger
+
+        # Initialize RPi.GPIO here, as this is only required when a buzzer is configured
+        gpio.setmode(gpio.BCM)
+        gpio.setup(self.buzz_pin, gpio.OUT, initial=gpio.LOW)
+        gpio.output(self.buzz_pin, gpio.LOW)
+
+    def run_retrigger(self) -> None:
+        """
+        The wait-for-trigger-and-do-it endless loop for the re-triggerable case
+        """
+        while True:
+            self.trigger.wait()
+            # Clear the trigger, so we can detect a new event while doing the pin high wait
+            self.trigger.clear()
+            gpio.output(self.buzz_pin, gpio.HIGH)
+            # Wait for duration unless, another trigger event already comes in
+            self.trigger.wait(self.buzz_delay)
+            # Set the pin low for a very small length of time, to provide a feedback that card re-trigger has happend
+            gpio.output(self.buzz_pin, gpio.LOW)
+            time.sleep(0.1)
+
+    def run_single_trigger(self) -> None:
+        """
+        The wait-for-trigger-and-do-it endless loop for the non re-triggerable case
+        """
+        while True:
+            self.trigger.wait()
+            gpio.output(self.buzz_pin, gpio.HIGH)
+            # A blocking wait to ignore changes on trigger
+            time.sleep(self.buzz_delay)
+            gpio.output(self.buzz_pin, gpio.LOW)
+            # Only clear the trigger after full delay time, to also clear any trigger that came in during the wait
+            self.trigger.clear()
+
+    def run(self):
+        self.run_action()
+
+    def cleanup(self):
+        """
+        The abort handler to ensure pin is low active on exit
+
+        Note: This does not get called automatically. It needs to be taken care of on program exit!
+        """
+        gpio.output(self.buzz_pin, gpio.LOW)
+        gpio.cleanup()
+
+
+def termination_handler(func, signal_number, frame) -> None:
+    """
+    Handler for termination signal
+
+    This is only be needed when GPIO pins are used, to ensure these are reset to low before exiting
+
+    :param func: The function to execute for cleanup before exiting the program. In the typical setup, this is PinActionClass.cleanup
+    :param signal_number: signal number
+    :param frame: stack frame index
+    """
+    logger.info(f"Termination handler: caught signal {signal_number}")
+    func()
+    if signal_number == signal.SIGINT:
+        raise KeyboardInterrupt
+    else:
+        sys.exit()
+
+
 class CardRemovalTimerClass(threading.Thread):
     """
     A timer watchdog thread that calls timeout_action on time-out
@@ -96,19 +195,19 @@ class CardRemovalTimerClass(threading.Thread):
         :param timeout_action: The function to execute on time-out
         """
         threading.Thread.__init__(self)
-        self.event = threading.Event()
+        self.trigger = threading.Event()
         self.timeout_action = timeout_action
 
     def run(self):
         logger.debug("CardRemovalTimerClass watchdog started")
-        has_timed_out = False
+        has_timed_out = True
         while True:
-            # Prevent max CPU by forced loop slow down when self.event.is_set() is permanently high
+            # Prevent max CPU by forced loop slow down when self.trigger.is_set() is permanently high
             time.sleep(0.2)
             # This is the actual timer:
-            # self.event.wait() aborts immediately when event.is_set becomes True
-            self.event.wait(2)
-            if self.event.is_set():
+            # self.trigger.wait() aborts immediately when trigger.is_set becomes True
+            self.trigger.wait(2)
+            if self.trigger.is_set():
                 has_timed_out = False
             else:
                 if not has_timed_out:
@@ -117,7 +216,7 @@ class CardRemovalTimerClass(threading.Thread):
                 has_timed_out = True
 
 
-def card_timeout_handler() -> None:
+def card_timeout_action() -> None:
     """
     The function defining the action on card removal in place-not-swipe mode
 
@@ -131,7 +230,8 @@ def card_timeout_handler() -> None:
         logger.info(f"Execution of Pause failed with {e}")
 
 
-def read_card_worker(reader_module, reader_params, global_params, timer_thread) -> None:
+def read_card_worker(reader_module, reader_params, global_params,
+                     timer_thread: CardRemovalTimerClass = None, action_thread: PinActionClass = None) -> None:
     """
     The actual wait-for-card-and-do-something endless loop routine
 
@@ -142,6 +242,7 @@ def read_card_worker(reader_module, reader_params, global_params, timer_thread) 
     :param reader_params: Parameters to be passed to the rfid reader
     :param global_params: Parameters controlling this function
     :param timer_thread: Optional timer for card removal detection in place-not-swipe mode
+    :param action_thread: Optional GPIO pin action thread
     :return: None
     """
     # Decode global configuration parameters
@@ -157,15 +258,22 @@ def read_card_worker(reader_module, reader_params, global_params, timer_thread) 
 
     if timer_thread is not None:
         logger.debug(f"card_removal_timer_thread.native_id = {timer_thread.ident}")
-        timer_thread.event.clear()
+        timer_thread.trigger.clear()
+
+    if action_thread is not None:
+        logger.debug(f"card_removal_action_thread.native_id = {action_thread.ident}")
+        action_thread.trigger.clear()
 
     with reader_module.ReaderClass(reader_params) as reader:
         for card_id in reader:
             if timer_thread is not None:
-                timer_thread.event.set()
+                timer_thread.trigger.set()
             # Test for empty strings or NoneType. Both are accepted for indicating that no card was found
             if card_id:
                 if card_id != previous_id or (time.time() - previous_time) >= cfg_same_id_delay or card_id in cfg_cmd_cards:
+                    # Do this first to provide fast audible/visual feed-back
+                    if action_thread:
+                        action_thread.trigger.set()
                     previous_id = card_id
                     logger.info(f"Trigger play card id = '{card_id}'")
                     try:
@@ -180,7 +288,7 @@ def read_card_worker(reader_module, reader_params, global_params, timer_thread) 
             # Slow down the card reading while loop in case card is placed permanently on reader
             time.sleep(0.2)
             if timer_thread is not None:
-                timer_thread.event.clear()
+                timer_thread.trigger.clear()
 
 
 def create_read_card_workers(reader_cfg_file, logger_level=None) -> None:
@@ -231,24 +339,42 @@ def create_read_card_workers(reader_cfg_file, logger_level=None) -> None:
     global_params = get_global_params()
     # Add the global parameters from the rfid_reader.ini file to the params struct for global parameters
     global_params['log_ignored_cards'] = config['ReaderType'].getboolean('log_ignored_cards', fallback=False)
+    # Add the buzzer parameters: If section is missing in file, add empty section here, so all default parameters are used
+    if 'BuzzOnCard' not in config.sections():
+        config.add_section('BuzzOnCard')
+    global_params['buzzer_enabled'] = config['BuzzOnCard'].getboolean('buzzer_enabled', fallback=False)
+    global_params['buzzer_pin'] = config['BuzzOnCard'].getint('buzzer_pin', fallback=0)
+    global_params['buzzer_duration'] = config['BuzzOnCard'].getfloat('buzzer_duration', fallback=0.3)
+    global_params['buzzer_retrigger'] = config['BuzzOnCard'].getboolean('buzzer_retrigger', fallback=True)
 
     card_removal_timer_thread = None
     # Only create the timer thread for card removal detection if we need it
     if global_params['place_not_swipe']:
-        card_removal_timer_thread = CardRemovalTimerClass(card_timeout_handler)
+        card_removal_timer_thread = CardRemovalTimerClass(card_timeout_action)
         card_removal_timer_thread.daemon = True
         card_removal_timer_thread.start()
+
+    pin_action_action_thread = None
+    # Only create the pin action thread if we need it
+    if global_params['buzzer_enabled']:
+        pin_action_action_thread = PinActionClass(global_params['buzzer_pin'], global_params['buzzer_duration'], global_params['buzzer_retrigger'])
+        # Catching the termination signal is only necessary, if we need to clean up GPIO pins
+        # If a gpio pin is used (e.g. a buzzer) we MUST ensure it is low before exiting the program no matter how (imagine the noise!)
+        signal.signal(signal.SIGTERM, partial(termination_handler, pin_action_action_thread.cleanup))
+        signal.signal(signal.SIGINT, partial(termination_handler, pin_action_action_thread.cleanup))
+        pin_action_action_thread.daemon = True
+        pin_action_action_thread.start()
 
     if len(reader_params) == 1:
         # The simple case: single rfid reader only
         logger.info(f"Single instance RFID reader")
-        read_card_worker(reader_module[0], reader_params[0], global_params, card_removal_timer_thread)
+        read_card_worker(reader_module[0], reader_params[0], global_params, card_removal_timer_thread, pin_action_action_thread)
     else:
         # The complicated case: multiple parallel rfid readers
         logger.info(f"Starting parallel threads for {len(reader_module)}  RFID readers")
 
         reader_threads = [threading.Thread(target=read_card_worker,
-                                           args=(rm, rp, global_params, card_removal_timer_thread)) for rm, rp in zip(reader_module, reader_params)]
+                                           args=(rm, rp, global_params, card_removal_timer_thread, pin_action_action_thread)) for rm, rp in zip(reader_module, reader_params)]
         # Start all threads
         for t in reader_threads:
             t.daemon = True
