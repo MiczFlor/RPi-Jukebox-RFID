@@ -5,7 +5,7 @@ It uses to a configuration file to configure the active devices.
 
 ## How to create and run the service?
 * The service can be activated during installation with the installscript.
-* If the service was not activated during installation, you can alternatively use `sudo install.sh` in this folder.
+* If the service was not activated during installation, you can alternatively use `sudo install.sh` in this folder (`components/gpio_control`).
 
 ## How to edit configuration files?
 The configuration file is located here: `~/RPi-Jukebox-RFID/settings/gpio_settings.ini` 
