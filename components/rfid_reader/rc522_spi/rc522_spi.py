@@ -12,7 +12,7 @@ import pirc522
 
 import base.inputminus as pyil
 from base.simplecolors import colors
-from base.reader_base import *
+from base.readerbase import *
 
 from .description import DESCRIPTION
 

@@ -17,11 +17,11 @@ logconsole.setLevel(logging.INFO)
 logger.addHandler(logconsole)
 
 
-def reader_install_dependencies(reader_select_name: str, dependency_install: str) -> None:
+def reader_install_dependencies(reader_path: str, dependency_install: str) -> None:
     """
     Install dependencies for the selected reader module
 
-    :param reader_select_name: Name of the reader module
+    :param reader_path: Path to the reader module
     :parameter dependency_install: how to handle installing of dependencies
                                    'query': query user (default)
                                    'auto': automatically
@@ -29,23 +29,23 @@ def reader_install_dependencies(reader_select_name: str, dependency_install: str
 
     """
     if dependency_install != 'no':
-        if os.path.exists(reader_select_name + '/requirements.txt'):
+        if os.path.exists(reader_path + '/requirements.txt'):
             # The python dependencies (if any)
             print(f"\nInstalling/Checking Python dependencies  ...\n")
             if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
                                                                 prompt_color=colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
                 quiet_level = '-q' if logconsole.level < logging.DEBUG else ''
-                subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_select_name,
+                subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_path,
                                shell=True, check=False)
                 print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
-        if os.path.exists(reader_select_name + '/setup.inc.sh'):
+        if os.path.exists(reader_path + '/setup.inc.sh'):
             # The shell dependencies/settings (if any)
             print(f"\n\nExecuting shell support commands by executing setup.inc.sh (i.e. configure system settings)...")
             if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
                                                                 prompt_color=colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
-                subprocess.run('./setup.inc.sh', cwd=reader_select_name,
+                subprocess.run('./setup.inc.sh', cwd=reader_path,
                                shell=True, check=False)
                 print(f"\n{'=' * 80}\nExecuting shell support commands  ... done!\n")
 
@@ -117,14 +117,14 @@ def query_user_for_reader(dependency_install='query') -> dict:
     :rtype: dict as {section: {parameter: value}}
     """
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    logger.debug(f"File location: {script_dir}")
+    package_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
+    logger.debug(f"Package location: {package_dir}")
     # Get all local directories (i.e subpackages) that conform to naming/structuring convention
     # Naming convention: modname/modname.py
-    reader_dirs = [x for x in os.listdir(script_dir)
-                   if (os.path.isdir(script_dir + '/' + x) and
-                       os.path.exists(script_dir + '/' + x + '/' + x + '.py') and
-                       os.path.isfile(script_dir + '/' + x + '/' + x + '.py'))]
+    reader_dirs = [x for x in os.listdir(package_dir)
+                   if (os.path.isdir(package_dir + '/' + x) and
+                       os.path.exists(package_dir + '/' + x + '/' + x + '.py') and
+                       os.path.isfile(package_dir + '/' + x + '/' + x + '.py'))]
     logger.debug(f"reader_dirs = {reader_dirs}")
 
     # Try to load the description modules from all valid directories (as this has no dependencies)
@@ -169,7 +169,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
 
         # If this reader has not been selected before, auto install dependencies
         if reader_select_name[-1] not in reader_select_name[:-1]:
-            reader_install_dependencies(reader_select_name[-1], dependency_install)
+            reader_install_dependencies(package_dir + '/' + reader_select_name[-1], dependency_install)
 
         # Try to load the actual reader module for the first time (and only the selected one!)
         # In case of multiple loads of the same module, import_module only returns the reference to the loaded module.

@@ -11,7 +11,7 @@ import serial
 
 import base.inputminus as pyil
 from base.simplecolors import colors
-from base.reader_base import *
+from base.readerbase import *
 
 from .description import DESCRIPTION
 
@@ -31,6 +31,9 @@ NUMBER_FORMAT = ['card_id_dec',
 NUMBER_FORMAT_HELP = ['A 10 digit card ID e.g. 0006762840 (default)',
                       'The raw (original) card ID e.g. 070067315809',
                       'The card ID as fraction e.g. 103,12632']
+NUMBER_FORMAT_HINT = ['This number is often printed on the back of the card and identical to the read-out from an USB reader',
+                      'Previously the only option of the RDM6300 reader. Choose this if you want to use an existing database',
+                      '']
 
 
 def query_customization() -> dict:
@@ -38,6 +41,7 @@ def query_customization() -> dict:
     print("Select number format:")
     for idx, val in enumerate(NUMBER_FORMAT):
         print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{val:15}{colors.reset}: {NUMBER_FORMAT_HELP[idx]}")
+        print(f"                      {colors.lightgrey}{NUMBER_FORMAT_HINT[idx]}{colors.reset}")
     dev_id = pyil.input_int("Number format?", blank=0, min=0, max=len(NUMBER_FORMAT)-1, prompt_color=prompt_color, prompt_hint=True)
     return {'number_format': NUMBER_FORMAT[dev_id],
             'device': '/dev/ttyS0',

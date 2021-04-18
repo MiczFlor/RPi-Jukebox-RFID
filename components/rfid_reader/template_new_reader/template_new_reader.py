@@ -38,7 +38,7 @@ import logging
 # import third_party_reader_module
 
 # Import the ReaderBaseClass for common API. Leave as this line as it is!
-from base.reader_base import *
+from base.readerbase import *
 
 # Also import the description string into this module, to make everything available in a single module w/o code duplication
 # Leave this line as is!

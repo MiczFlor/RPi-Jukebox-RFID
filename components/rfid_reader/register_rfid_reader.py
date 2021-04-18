@@ -4,7 +4,7 @@ import os
 import argparse
 import subprocess
 
-import readersupport as rs
+import base.readersupport as rs
 
 
 if __name__ == '__main__':
