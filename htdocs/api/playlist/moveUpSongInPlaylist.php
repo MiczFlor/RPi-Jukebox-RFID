@@ -4,7 +4,7 @@ namespace JukeBox\Api;
 /**
  * Moves a song within the current playlist up.
  */
-require_once("../zmq.php");
+require_once("../PhonieboxRpcClient.php");
 
 /*
 * debug? Conf file line:
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     if (is_numeric($body)) {
         // This script always returns with returncode 1, so we cannot check that the returncode is 0
-        phonie_enquene(['object'=>'player','method'=>'move','params'=>['songid'=>$body,'step' => 1 ]]);
+        PhonieboxRpcEnquene(['object'=>'player','method'=>'move','params'=>['songid'=>$body,'step' => 1 ]]);
     } else {
         http_response_code(400);
     }

@@ -1,7 +1,7 @@
 <?php
 namespace JukeBox;
 
-require_once("api/zmq.php");
+require_once("api/PhonieboxRpcClient.php");
 
 /**************************************************
 * VARIABLES
@@ -343,7 +343,7 @@ $commandToAction = array(
 
 foreach ($urlparams as $paramKey => $paramValue) {
     if(isset($commandToAction[$paramKey]) ) {
-        $json_response = phonie_enquene($commandToAction[$paramKey]);
+        $json_response = PhonieboxRpcEnquene($commandToAction[$paramKey]);
     } else {
         error_log("calling script in inc_header via commandToAction: \"".$paramKey."\" Val:\"".$paramValue."\"", 0);
     }

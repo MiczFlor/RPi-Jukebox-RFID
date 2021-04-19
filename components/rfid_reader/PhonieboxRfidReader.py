@@ -8,10 +8,9 @@
 import os.path
 import sys
 
-#import RPi.GPIO as GPIO
 import logging
 
-from rpc.PhonieboxRpcClient import phoniebox_object_access_queue
+from rpc.PhonieboxRpcClient import PhonieboxRpcClient
 
 #from evdev import InputDevice, categorize, ecodes, list_devices
 
@@ -72,8 +71,8 @@ class RFID_Reader(object):
             except IndexError:
                 sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
 
-        self.queue = phoniebox_object_access_queue()
-        self.queue.connect()
+        self.PhonieboxRpc = PhonieboxRpcClient()
+        self.PhonieboxRpc.connect()
         self._keep_running = True
         self.cardnotification = None
         self.valid_cardnotification = None
@@ -149,7 +148,8 @@ class RFID_Reader(object):
                     self.valid_cardnotification()
                 #queue = phoniebox_object_access_queue()
                 #queue.connect()
-                resp = self.queue.phonie_enqueue(card_assignment)
+                resp = self.PhonieboxRpc.enqueue(card_assignment)
+
                 
                 #hm, what to do with response here?
 

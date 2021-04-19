@@ -1,7 +1,7 @@
 <?php
 namespace JukeBox\Api;
 
-include ("zmq.php");
+require_once("PhonieboxRpcClient.php");
 
 /**
  * Retrieves and sets the volume.
@@ -19,13 +19,13 @@ if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $json_response = phonie_enquene(array('object'=>'volume','method'=>'get'));
+    $json_response = PhonieboxRpcEnquene(array('object'=>'volume','method'=>'get'));
     echo json_decode ( $json_response,true)['resp']['volume'];
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $body = file_get_contents('php://input');
     if (is_numeric($body)) {
         echo $body;
-        phonie_enquene(array('object'=>'volume','method'=>'set','params'=>array('volume'=>(int)$body)));
+        PhonieboxRpcEnquene(array('object'=>'volume','method'=>'set','params'=>array('volume'=>(int)$body)));
     } else {
         http_response_code(400);
     }

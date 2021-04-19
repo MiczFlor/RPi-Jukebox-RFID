@@ -21,9 +21,11 @@
     }
   },
   "108,07437": {
-    "object": "",
-    "method": "",
-    "params": {}
+    "object": "player",
+    "method": "playlistaddplay",
+    "params": {
+      "folder": "digger barnes"
+    }
   },
   "107,60360": {
     "object": "",

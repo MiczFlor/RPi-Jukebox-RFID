@@ -1,6 +1,6 @@
 <?php
 
-function phonie_enquene($request)
+function PhonieboxRpcEnquene($request)
 {
   $measure_round_trip_time = TRUE;
   

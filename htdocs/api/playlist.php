@@ -1,7 +1,7 @@
 <?php
 namespace JukeBox\Api;
 
-include ("zmq.php");
+require_once("PhonieboxRpcClient.php");
 
 /*
 * debug? Conf file line:
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 function handleGet() {
-    $playlist_json = phonie_enquene(array('object'=>'player','method'=>'playlistinfo','param'=>''));
+    $playlist_json = PhonieboxRpcEnquene(array('object'=>'player','method'=>'playlistinfo','param'=>''));
     $playList = array("tracks" => json_decode ( $playlist_json,true)['resp']);
 
     /* sample array, uncomment for checking frontend *

@@ -7,17 +7,26 @@ class player_control:
     def __init__(self,music_player_status,volume_control=None):
         self.volume_control = volume_control
         self.music_player_status = music_player_status
-        if not self.music_player_status:
-            self.music_player_status['player_status'] = {}
-            self.music_player_status['audio_folder_status'] = {}
-            self.music_player_status.save_to_json()
-
+        
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command is handled seperately, default: None
         self.connect()
-        print("Connected to MPD Version: "+self.mpd_client.mpd_version)
-
+        print("Connected to MPD Version: "+self.mpd_client.mpd_version)        
+        
+        if not self.music_player_status:
+            self.music_player_status['player_status'] = {}
+            self.music_player_status['audio_folder_status'] = {}
+            self.music_player_status.save_to_json()
+            self.current_folder_status = {}
+        else:
+            last_played_folder = self.music_player_status['player_status']['last_played_folder']
+            if last_played_folder is not None:
+                self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
+                self.mpd_client.clear()
+                self.mpd_client.add(last_played_folder)
+                print ("Last Played Folder: "+last_played_folder)
+            
     def connect(self):
         self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
     
@@ -77,6 +86,24 @@ class player_control:
             self.mpd_client.seekcur(val)
         return ({})
 
+    def replay(self, param):
+        return ({})
+
+    def repeatmode(self, param):
+        if param is not None and isinstance(param, dict):
+            mode = param.get("mode")
+
+            if mode == 'repeat' :
+                MPDClient.repeat(1)
+                MPDClient.single(0)
+            elif mode == 'single' :
+                MPDClient.repeat(1)
+                MPDClient.single(1)
+            else:
+                MPDClient.repeat(0)
+                MPDClient.single(0)
+        return ({})
+
     def get_current_song(self, param):
         return {'resp': self.mpd_client.currentsong()}
 
@@ -128,9 +155,9 @@ class player_control:
 
             self.music_player_status['player_status']['last_played_folder'] = folder
 
-            current_status = self.music_player_status['audio_folder_status'].get(folder)
-            if current_status is None:
-                current_status = self.music_player_status['audio_folder_status'][folder] = {}
+            self.current_folder_status = self.music_player_status['audio_folder_status'].get(folder)
+            if self.current_folder_status is None:
+                self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
 
             self.mpd_client.play()
        
@@ -253,13 +280,13 @@ class player_control:
 
         song = self.mpd_client.currentsong()
         
-        current_status["CURRENTFILENAME"] = song.get('file')
-        current_status["ELAPSED"] = 0
-        current_status["PLAYSTATUS"] = "Stopped"
-        current_status["RESUME"] = "OFF"
-        current_status["SHUFFLE"] = "OFF"
-        current_status["LOOP"] = "OFF"
-        current_status["SINGLE"] = "OFF"
+        self.current_folder_status["CURRENTFILENAME"] = song.get('file')
+        self.current_folder_status["ELAPSED"] = 0
+        self.current_folder_status["PLAYSTATUS"] = "Stopped"
+        self.current_folder_status["RESUME"] = "OFF"
+        self.current_folder_status["SHUFFLE"] = "OFF"
+        self.current_folder_status["LOOP"] = "OFF"
+        self.current_folder_status["SINGLE"] = "OFF"
 
         return ({'song':song})
 
@@ -267,6 +294,14 @@ class player_control:
         status = self.mpd_client.currentsong()
         status.update(self.mpd_client.status())
         status['volume'] = self.volume_control.volume
+
+        #for now use this to update the actual folder status (require web ui to run)
+        #finnaly a switch to asynio implementation makes sense, to handle the plloing independant
+        elapsed = status.get('elapsed')
+        if elapsed is not None:
+            self.current_folder_status["ELAPSED"] = elapsed
+            self.music_player_status['player_status']["CURRENTSONGPOS"] = status['song']
+            self.music_player_status['player_status']["CURRENTFILENAME"] = status['file']
 
         #for k in status:
         #    print ("{} : {}".format(k,status.get(k)))

@@ -6,7 +6,7 @@ namespace JukeBox\Api;
 /**
  * Moves a song within the current playlist down.
  */
-require_once("../zmq.php");
+require_once("../PhonieboxRpcClient.php");
 
 /*
 * debug? Conf file line:
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
     if (is_numeric($body)) {
-        phonie_enquene(['object'=>'player','method'=>'move','params'=>['songid'=>$body,'step' => -1 ]]);
+        PhonieboxRpcEnquene(['object'=>'player','method'=>'move','params'=>['songid'=>$body,'step' => -1 ]]);
     } else {
         http_response_code(400);
     }

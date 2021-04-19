@@ -6,7 +6,7 @@ import zmq
 import json
 import time
 
-class phoniebox_rpc_server:
+class PhonieboxRpcServer:
     
     def __init__(self,objects):
         self.objects = objects

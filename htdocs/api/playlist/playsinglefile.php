@@ -4,7 +4,7 @@ namespace JukeBox\Api;
 /**
  * Starts to play a single song in a new playlist.
  */
-require_once("../zmq.php");
+require_once("../PhonieboxRpcClient.php");
 
 /*
 * debug? Conf file line:
@@ -22,12 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
     // This script always returns with returncode 1, so we cannot check that the returncode is 0
-    phonie_enquene(['object'=>'player','method'=>'playsingle','param'=>['songid'=>$body ]]);
+    PhonieboxRpcEnquene(['object'=>'player','method'=>'playsingle','param'=>['songid'=>$body ]]);
 } else {
   $file = $_GET["file"];
   if ($file !== "") {
     print "Playing file " . $file;
-    phonie_enquene(['object'=>'player','method'=>'playsingle','param'=>['songid'=>$file ]]);
+    PhonieboxRpcEnquene(['object'=>'player','method'=>'playsingle','param'=>['songid'=>$file ]]);
   }else{
     http_response_code(405);
   }

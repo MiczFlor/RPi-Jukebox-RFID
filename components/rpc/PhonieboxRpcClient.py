@@ -1,7 +1,7 @@
 import zmq
 import json
 
-class phoniebox_object_access_queue:
+class PhonieboxRpcClient:
     
     def __init__(self):
         #self.objects = objects
@@ -16,7 +16,7 @@ class phoniebox_object_access_queue:
         self.queue.setsockopt(zmq.LINGER, 200)
         self.queue.connect(addr)
 
-    def phonie_enqueue(self, request):
+    def enqueue(self, request):
         #todo check reqest 
         print (request)
         self.queue.send_string(json.dumps(request))
@@ -34,10 +34,10 @@ class phoniebox_object_access_queue:
 
 if __name__ == "__main__":
     import time
-    test_objects = [{'obj':'volume','cmd':'get','param':None},
-                  {'obj':'volume','cmd':'set','param':{'volume':30}}, 
-                  {'obj':'volume','cmd':'set','param':{'volume':33}}, 
-                  {'obj':'volume','cmd':'set','param':{'volume':36}}] 
+    test_objects = [{'object':'volume','method':'get','params':None},
+                  {'object':'volume','method':'set','params':{'volume':30}}, 
+                  {'object':'volume','method':'set','params':{'volume':33}}, 
+                  {'object':'volume','method':'set','params':{'volume':36}}] 
     
     print ("Test Phonibox Object Acces Client")
     queue = phoniebox_object_access_queue()

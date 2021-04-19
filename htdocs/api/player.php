@@ -1,7 +1,7 @@
 <?php
 namespace JukeBox\Api;
 
-include ("zmq.php");
+require_once("PhonieboxRpcClient.php");
 
 /***
  * Allows to control the player by sending a command via PUT like 'play' or 'pause'.
@@ -13,14 +13,14 @@ $command_map = array(
         'play'=>['player','play',''],
         'next'=>['player','next',''],
         'prev'=>['player','prev',''],
-        'replay'=>'-c=playerreplay -v=playlist',
+        'replay'=>['player','replay',[]],
         'pause'=> ['player','pause',''],
-        'repeat'=>'-c=playerrepeat -v=playlist',
-        'single'=> 'playerrepeat -v=single',
-        'repeatoff'=>'playerrepeat -v=off',
+        'repeat'=> ['player','repeatmode',['mode'=>'repeat']],
+        'single'=> ['player','repeatmode',['mode'=>'single']],
+        'repeatoff'=>['player','repeatmode',['mode'=>'off']],
         'seekBack'=> ['player','seek',['time' => '-15']],
         'seekAhead'=> ['player','seek',['time' => '+15']],
-        'seekPosition' => 'playerseek',
+        'seekPosition' => ['player','seek',['time' => '0']],
         'stop'=>['player','stop',''],
         'mute'=> ['volume','mute',''],
         'volumeup'=> ['volume','inc',['step' => 5]],
@@ -67,7 +67,7 @@ function handlePut() {
         if (array_key_exists($inputCommand,$command_map)==True)
         {
             $cmd = $command_map[$inputCommand];
-            $response = phonie_enquene(array('object'=>$cmd[0],'method'=>$cmd[1],'params'=>$cmd[2]));
+            $response = PhonieboxRpcEnquene(array('object'=>$cmd[0],'method'=>$cmd[1],'params'=>$cmd[2]));
         }
         else
         {
@@ -85,7 +85,7 @@ function handleGet() {
     global $debugLoggingConf;
     global $globalConf;    
 
-    $json_response = phonie_enquene(array('object'=>'player','method'=>'playerstatus','param'=>''));
+    $json_response = PhonieboxRpcEnquene(array('object'=>'player','method'=>'playerstatus','param'=>''));
     $responseList = json_decode ( $json_response,true)['resp'];
 
     //so solltes es aussehen:

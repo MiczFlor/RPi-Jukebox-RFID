@@ -9,7 +9,7 @@ from time import sleep, time
 import PhonieboxVolume
 import PhonieboxSystem
 from player import PhonieboxPlayerMPD
-from rpc.PhonieboxRpcServer import phoniebox_rpc_server
+from rpc.PhonieboxRpcServer import PhonieboxRpcServer
 from PhonieboxNvManager import nv_manager
 from rfid_reader.PhonieboxRfidReader import RFID_Reader
 #from gpio_control import gpio_control
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                'system':PhonieboxSystem.system_control}
 
     print ("Init Phonibox RPC Server ")
-    rpcs = phoniebox_rpc_server(objects)
+    rpcs = PhonieboxRpcServer(objects)
     if rpcs != None:
         rpcs.connect()
 
