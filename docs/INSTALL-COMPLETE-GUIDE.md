@@ -21,16 +21,16 @@ Alternatively you can use an external sound card, but sometimes that doesn't see
 
 * [USB Sound Card](https://amzn.to/3djaKqC) * - [Alternative](https://amzn.to/3u8guth)
 
-You'll need a few other things for a one time set up only.
+## A) Terminal or B) Desktop?
+
+If you familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
+
+If you don't know what all this means, you'll need a few other things for a one time set up only and follow path [B].
 
 1. Second computer (Linux, Mac or Windows)
 1. USB Mouse and USB Keyboard
 1. Micro SD Card Reader
 1. Screen with HDMI connection
-
-Alternative: 
-* If you are able to connect your Raspberry Pi via a wired network interface (LAN), you can set it up via terminal (SSH) only.
-* It's also possible to set up a Pi with [WiFi and ssh](https://raspberrypi.stackexchange.com/questions/10251/prepare-sd-card-for-wifi-on-headless-pi/57023#57023).
 
 ## Install Raspberry Pi OS on a Micro SD card
 
@@ -41,10 +41,65 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Select **Raspberry Pi OS** as the operating system (Recommended)
 1. Select your Micro SD card (card will be formatted)
 1. Click `Write`
-1. Wait for the imaging process to be finished (it'll take a few minutes) and eject your SD card
+1. Wait for the imaging process to be finished (it'll take a few minutes)
 
-## Initial boot - Set up Wifi connection
+## Initial Boot
 
+### A) with Terminal
+
+1. Open a terminal of your choice
+1. Insert your card again if it has been ejected automatically
+1. Navigate to your SC card e.g., `cd /Volumes/boot` for Mac or `D:` for Windows
+1. Enable SSH by adding a simple file
+    ```
+    $ touch ssh
+    ```
+1. Set up your Wifi connection
+    * Mac
+        ```
+        $ nano wpa_supplicant.conf
+        ```
+    * Windows
+        ```
+        D:\> notepad wpa_supplicant.conf
+        ```
+1. Insert the following content, update your country, Wifi credentials and save the file.
+    ```
+    country=DE
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
+
+    network={
+        ssid="network-name"
+        psk="network-password"
+    }
+    ```
+1. Eject your SD card and insert it into your Raspberry Pi
+1. Start your Raspberry Pi by attaching a power supply
+1. Login into your Raspberry, username is `pi` and password is `raspberry`. If `raspberrypi.local` does not work, find out your Raspberry's IP address from your router.
+    ```
+    $ ssh pi@raspberrypi.local
+    ```
+1. Update the Pi's software. This may take a bit
+    ```
+    $ sudo apt update && sudo apt full-upgrade
+    ```
+1. Reboot with `sudo reboot`
+1. Login again with SSH and open the Raspberry config
+    ```
+    $ sudo raspi-config
+    ```
+1. Update the following settings
+    ```
+    1 System Options
+        S5 Boot / Auto Login -> B2 Console Autologin
+        S6 Network at Boot -> Yes
+    ```
+1. Close the settings panel with `<Finish>`
+
+### B) with Desktop, Mouse & Keyboard
+
+1. Safely eject your SD card from your computer
 1. Connect a USB mouse, a keyboard and a screen through HDMI
 1. Insert the Micro SD card
 1. Start your Raspberry Pi by attaching a power supply
@@ -64,12 +119,6 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
     1. Navigate to the `Interfaces` tab
     1. Select `Enabled` next to `SSH`
     1. Click `OK`
-1. Set up a static IP (optional, recommended)
-    1. Right click on the Wifi sympbol in the upper right corner of your application bar and choose `Wifi & Wired Network Settings`
-    1. Configure `interface` and `wlan0`
-    1. Check `Disabled IPv6` unless you want to provide a static IPv6 address
-    1. Fill out `IPv4` and `Router` (Gateway) options (keep `DNS Servers` and `DNS Search` empty)
-    1. Click `Apply` and `Close`
 1. Optional: If you like, you can **turn off Bluetooth** to reduce energy consumption (unless you want to use any Bluetooth devices with your Phoniebox)
 1. Shutdown your Raspberry Pi (`Application > Logout > Shutdown`)
 
@@ -83,7 +132,7 @@ If you want to install the **Spotify+ version**, [read this first](https://githu
 1. Boot your Raspberry Pi
 1. Open a terminal in your second computer and login via SSH using the `pi` user and your static IP address. If you see a question about authentication and fingerprint, type `yes` and hit `enter`
     ```
-    ssh pi@192.168.1.123
+    ssh pi@raspberrypi.local
     ```
 
 ### Using on-board headphone-jack for audio
@@ -96,19 +145,20 @@ If this problem occurs, follow the steps in the next section (configure USB soun
 
 ### Configure USB sound card (if you are using one)
 
-
-1. Configure your **USB sound card**. Check if your sound card has been detected
+1. Open the Raspberry config
     ```
-    cat /proc/asound/modules
-
-    // returns
-
-    0 snd_bcm2835
-    1 snd_usb_audio
+    $ sudo raspi-config
     ```
-1. To update the sound card priority order, edit the following file
+
+1. Update the following settings
     ```
-    sudo nano /etc/modprobe.d/alsa-base.conf
+    1 System Options
+        S2 Audio -> 1 USB Audio
+    ```
+1. Close the settings panel with `<Finish>`
+1. Make your soundcard the primary sound device. To update the sound card priority order, edit the following file:
+    ```
+    $ sudo nano /usr/share/alsa/alsa.conf
     ```
 1. Find the following variables and change their value from `0` to `1`
     ```
@@ -136,7 +186,7 @@ cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Juk
 
 1. `Yes` to `Continue interactive installation`
 1. `No` to the `Wifi Setting step` - it's already set!
-1. `Master` to `CONFIGURE AUDIO INTERFACE (iFace)`
+1. `Speaker` to `CONFIGURE AUDIO INTERFACE (iFace)`
 1. Setup Spotify (optional)
     1. You need to generate your personal Spotify client ID and secret
     1. Visit the [Mopidy Spotify Authentication Page](https://mopidy.com/ext/spotify/#authentication)
@@ -148,6 +198,7 @@ cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Juk
 1. `Yes` to `FOLDER CONTAINING AUDIO FILES`
 1. Optional: In this scenario, we do not install GPIO buttons, so feel free to choose `No`
 1. `Yes` to `Do you want to start the installation?`
+1. ... Wait a bit for the installation to happen ...
 1. `Yes` to `Have you connected your RFID reader?`
 1. `1` to select `1. USB-Reader`
 1. Choose the `#` that resonates with your RFID reader, in our case `HXGCoLtd Keyboard`
@@ -155,7 +206,7 @@ cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Juk
 
 ## Verify Phoniebox installation
 
-1. Open a browser in your computer and navigate to your static IP: `http://192.168.1.123`
+1. Open a browser in your computer and navigate to your static IP: `http://raspberrypi.local`
 1. You should see the Phoniebox UI
 1. In your navigation, choose `Card ID`
 1. Swipe one card near your RFID reader. If `Last used Chip ID` is automatically updated (you might hear a beep) and shows a number, your reader works
