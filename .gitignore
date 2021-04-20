@@ -20,6 +20,8 @@ scripts/deviceName.txt
 scripts/gpio-buttons.py
 settings/PhonieboxInstall.conf
 
+.vscode/
+
 shared/*
 playlists/*
 pythonenv*/*
