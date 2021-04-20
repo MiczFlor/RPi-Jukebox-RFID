@@ -33,7 +33,6 @@ $command_map = array(
 * DEBUG_WebApp_API="TRUE"
 */
 $debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
-$globalConf = parse_ini_file("../../settings/global.conf");
 
 if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
     file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
@@ -83,7 +82,6 @@ function handlePut() {
 
 function handleGet() {
     global $debugLoggingConf;
-    global $globalConf;    
 
     $json_response = PhonieboxRpcEnquene(array('object'=>'player','method'=>'playerstatus','param'=>''));
     $responseList = json_decode ( $json_response,true)['resp'];
