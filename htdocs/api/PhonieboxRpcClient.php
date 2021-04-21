@@ -1,5 +1,10 @@
 <?php
 
+/*
+depends on php-zmq
+apt-get install php-zmq 
+*/
+
 function PhonieboxRpcEnquene($request)
 {
   $measure_round_trip_time = TRUE;
