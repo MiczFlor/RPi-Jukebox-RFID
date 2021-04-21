@@ -188,6 +188,18 @@ if [ "$CARDID" ]; then
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
             ;;
+        $CMDRANDCARD)
+            # activate a random card
+            $PATHDATA/playout_controls.sh -c=randomcard
+            ;;
+        $CMDRANDFOLD)
+            # play a random folder
+            $PATHDATA/playout_controls.sh -c=randomfolder
+            ;;
+        $CMDRANDTRACK)
+            # jump to a random track in playlist (no shuffle mode required)
+            $PATHDATA/playout_controls.sh -c=randomtrack
+            ;;
         $CMDREWIND)
             # play the first track in playlist
             sudo $PATHDATA/playout_controls.sh -c=playerrewind
