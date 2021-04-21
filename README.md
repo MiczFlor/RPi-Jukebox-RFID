@@ -2,6 +2,8 @@ This Branch is an attempt to realize elements from the discussion which took pla
 
 This is the first attempt to a new structure, many things here are untested and error prone. This is still in the phase of orientation and proof of concept with trails and experiments in many directions which all have to be understood as base for discussion.
 
+In order to Focus on the actual topics many non needed/active items in this branch have been deleted. This doesn't mean existing parts are aboselte, things will be integrated step by step.
+
 #### These are the Fundamental Design Goals:
 
 - better maintainability
