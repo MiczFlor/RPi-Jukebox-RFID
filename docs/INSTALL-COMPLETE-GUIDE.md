@@ -1,14 +1,28 @@
 # How to set up a Phoniebox from scratch
 
-## What you need
+1. [What you need](#1-what-you-need)
+1. [Install Raspberry Pi OS](#2-install-raspberry-pi-os)
+1. [Initial Boot](#3-initial-boot)
+    * [a) with Terminal](#3a-with-terminal)
+    * [b) with Desktop, Mouse & Keyboard](#3b-with-desktop-mouse-keyboard)
+1. [Prepare hardware](#4-prepare-hardware)
+1. [Audio](#5-audio)
+    * [a) On-board headphone](#5a-on-board-headphone)
+    * [b) USB sound card](#5b-usb-sound-card)
+1. [Install Phoniebox software](#6-install-phoniebox-software)
+1. [Verify Phoniebox setup](#7-verify-phoniebox-setup)
+
+---
+
+## 1. What you need
 
 All parts marked with a star (*) are optional but improve the overall experience. All linked components are examples but have proven to work together. You are free to choose different equipment.
 
 1. [Micro SD Card](https://amzn.to/3do7KJr) (e.g. 32 GB)
 1. Raspberry Pi
-    * [Model 4 B](https://amzn.to/2M0xtfJ)
-    * [Model 3 B+](https://amzn.to/2NGL7Fa)
-    * (Model 1, 2, 3 and Zero are possible, but they are slow...)
+    * [Model 3 B+](https://amzn.to/2NGL7Fa) - recommended
+    * [Model 4 B](https://amzn.to/2M0xtfJ) - could be a little overhead
+    * (Model 1, 2, 3 and Zero are possible, but they are slower...)
 1. [USB RFID Reader](https://amzn.to/3s47Iun)
 1. [RFID Chips](https://amzn.to/3k78F2j) or [RFID Cards](https://amzn.to/3dplljG)
 1. [Speakers with 3.5mm jack](https://amzn.to/3dnhmnV)
@@ -21,18 +35,9 @@ Alternatively you can use an external sound card, but sometimes that doesn't see
 
 * [USB Sound Card](https://amzn.to/3djaKqC) * - [Alternative](https://amzn.to/3u8guth)
 
-## A) Terminal or B) Desktop?
+---
 
-If you familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
-
-If you don't know what all this means, you'll need a few other things for a one time set up only and follow path [B].
-
-1. Second computer (Linux, Mac or Windows)
-1. USB Mouse and USB Keyboard
-1. Micro SD Card Reader
-1. Screen with HDMI connection
-
-## Install Raspberry Pi OS on a Micro SD card
+## 2. Install Raspberry Pi OS
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi and install 
 
@@ -43,9 +48,15 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Click `Write`
 1. Wait for the imaging process to be finished (it'll take a few minutes)
 
-## Initial Boot
+---
 
-### A) with Terminal
+## 3. Initial Boot
+
+If you familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
+
+If you don't know what all this means, you'll need a few other things for a one time set up only and follow path [B].
+
+### 3a. with Terminal
 
 1. Open a terminal of your choice
 1. Insert your card again if it has been ejected automatically
@@ -97,8 +108,13 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
     ```
 1. Close the settings panel with `<Finish>`
 
-### B) with Desktop, Mouse & Keyboard
+### 3b. with Desktop, Mouse & Keyboard
 
+1. Grab the following hardware
+    1. Second computer (Linux, Mac or Windows)
+    1. USB Mouse and USB Keyboard
+    1. Micro SD Card Reader
+    1. Screen with HDMI connection
 1. Safely eject your SD card from your computer
 1. Connect a USB mouse, a keyboard and a screen through HDMI
 1. Insert the Micro SD card
@@ -122,7 +138,9 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Optional: If you like, you can **turn off Bluetooth** to reduce energy consumption (unless you want to use any Bluetooth devices with your Phoniebox)
 1. Shutdown your Raspberry Pi (`Application > Logout > Shutdown`)
 
-## Install Phoniebox software
+---
+
+## 4. Prepare hardware
 
 If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ).
 
@@ -135,15 +153,16 @@ If you want to install the **Spotify+ version**, [read this first](https://githu
     ssh pi@raspberrypi.local
     ```
 
-### Using on-board headphone-jack for audio
+---
 
-Note: Installing with an external monitor (HDMI) can create a problem if you use the mini-jack audio out. The problem is that if you plug in a HDMI monitor an additional sound output is added and the index changes. This bothering behavior was introduced, when Raspberry Pi separated headphones jack and HDMI into two different devices in May 2020.
+## 5. Audio
 
-See: [Troubleshooting: headphone audio unavailable after unplugging HDMI](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1300)
+### 5a. On-board headphone
 
-If this problem occurs, follow the steps in the next section (configure USB sound card).
+Installing with an external monitor (HDMI) can create a problem if you use the mini-jack audio out. The problem is that if you plug in a HDMI monitor an additional sound output is added and the index changes. This bothering behavior was introduced, when Raspberry Pi separated headphones jack and HDMI into two different devices in May 2020.
+Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1300)
 
-### Configure USB sound card (if you are using one)
+### 5b. USB sound card
 
 1. Open the Raspberry config
     ```
@@ -176,7 +195,9 @@ If this problem occurs, follow the steps in the next section (configure USB soun
     speaker-test -c2
     ```
 
-### Phoniebox Install Script
+---
+
+## 6. Install Phoniebox software
 
 Run the following command in your SSH terminal and follow the instructions
 
@@ -204,7 +225,9 @@ cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Juk
 1. Choose the `#` that resonates with your RFID reader, in our case `HXGCoLtd Keyboard`
 1. `Yes` to `Would you like to reboot now?`
 
-## Verify Phoniebox installation
+---
+
+## 7. Verify Phoniebox setup
 
 1. Open a browser in your computer and navigate to your static IP: `http://raspberrypi.local`
 1. You should see the Phoniebox UI
