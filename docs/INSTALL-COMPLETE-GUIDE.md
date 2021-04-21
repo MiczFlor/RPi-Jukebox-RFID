@@ -43,8 +43,8 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 1. Connect your Micro SD card (through a card reader) to your computer
 1. [Download](https://www.raspberrypi.org/software/) the [Raspberry Pi Imager](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/) and open it
-1. Select **Raspberry Pi OS** as the operating system (Recommended)
-1. Select your Micro SD card (card will be formatted)
+1. Select **Raspberry Pi OS** as the operating system
+1. Select your Micro SD card (your card will be formatted)
 1. Click `Write`
 1. Wait for the imaging process to be finished (it'll take a few minutes)
 
@@ -52,7 +52,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 ## 3. Initial Boot
 
-If you familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
+If you are familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
 
 If you don't know what all this means, you'll need a few other things for a one time set up only and follow path [B].
 
@@ -137,6 +137,7 @@ If you don't know what all this means, you'll need a few other things for a one 
     1. Click `OK`
 1. Optional: If you like, you can **turn off Bluetooth** to reduce energy consumption (unless you want to use any Bluetooth devices with your Phoniebox)
 1. Shutdown your Raspberry Pi (`Application > Logout > Shutdown`)
+1. Disconnect mouse, keyboard and HDMI
 
 ---
 
@@ -144,11 +145,11 @@ If you don't know what all this means, you'll need a few other things for a one 
 
 If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ).
 
-1. While shut down, disconnect mouse, keyboard and HDMI
-1. Connect RFID Reader
-1. Conntect USB Sound Card, plug in the 3.5" speakers with the Ground Loop Isolator in between. If you have chosen the example speakers from above, you can power them either through the Raspberry Pi or through an external power source.
+1. Connect the RFID Reader
+1. Conntect USB Sound Card if available
+1. Plug in the 3.5" speakers with the Ground Loop Isolator in between. If you have chosen the example speakers from above, you can power them either through the Raspberry Pi or through an external power source.
 1. Boot your Raspberry Pi
-1. Open a terminal in your second computer and login via SSH using the `pi` user and your static IP address. If you see a question about authentication and fingerprint, type `yes` and hit `enter`
+1. Open a terminal in your second computer and login via SSH using the `pi` user and default password `raspberry`. If you see a question about authentication and fingerprint, type `yes` and hit `enter`
     ```
     ssh pi@raspberrypi.local
     ```
