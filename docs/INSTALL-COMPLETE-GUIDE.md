@@ -4,7 +4,7 @@
 1. [Install Raspberry Pi OS](#2-install-raspberry-pi-os)
 1. [Initial Boot](#3-initial-boot)
     * [a) with Terminal](#3a-with-terminal)
-    * [b) with Desktop, Mouse & Keyboard](#3b-with-desktop-mouse-keyboard)
+    * [b) with Desktop, Mouse & Keyboard](#3b-with-desktop-mouse--keyboard)
 1. [Prepare hardware](#4-prepare-hardware)
 1. [Audio](#5-audio)
     * [a) On-board headphone](#5a-on-board-headphone)
