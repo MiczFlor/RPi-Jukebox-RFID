@@ -1,3 +1,4 @@
 /components/controls/buttons_usb_encoder/ @jeripeierSBB
+components/gpio_control/GPIODevices/two_button_luma_oled_control.py @micxer
 /scripts/installscripts/buster-install-default.sh @jeripeierSBB
 /scripts/installscripts/buster-install-default-with-autohotspot.sh @jeripeierSBB
