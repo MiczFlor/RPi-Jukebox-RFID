@@ -3,8 +3,6 @@
 1. [What you need](#1-what-you-need)
 1. [Install Raspberry Pi OS](#2-install-raspberry-pi-os)
 1. [Initial Boot](#3-initial-boot)
-    * [a) with Terminal](#3a-with-terminal)
-    * [b) with Desktop, Mouse & Keyboard](#3b-with-desktop-mouse--keyboard)
 1. [Prepare hardware](#4-prepare-hardware)
 1. [Audio](#5-audio)
     * [a) On-board headphone](#5a-on-board-headphone)
@@ -52,11 +50,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 ## 3. Initial Boot
 
-If you are familiar with your computer's terminal, like PuTTY for Windows or the Terminal for Mac, we suggest to take this approach. Follow path [A] in this documentation.
-
-If you don't know what all this means, you'll need a few other things for a one time set up only and follow path [B].
-
-### 3a. with Terminal
+You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proceed with the next steps.
 
 1. Open a terminal of your choice
 1. Insert your card again if it has been ejected automatically
@@ -87,7 +81,7 @@ If you don't know what all this means, you'll need a few other things for a one 
     ```
 1. Eject your SD card and insert it into your Raspberry Pi
 1. Start your Raspberry Pi by attaching a power supply
-1. Login into your Raspberry, username is `pi` and password is `raspberry`. If `raspberrypi.local` does not work, find out your Raspberry's IP address from your router.
+1. Login into your Raspberry Pi, username is `pi` and password is `raspberry`. If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
     ```
     $ ssh pi@raspberrypi.local
     ```
@@ -96,7 +90,7 @@ If you don't know what all this means, you'll need a few other things for a one 
     $ sudo apt update && sudo apt full-upgrade
     ```
 1. Reboot with `sudo reboot`
-1. Login again with SSH and open the Raspberry config
+1. Login again with SSH and open the Raspberry Pi config
     ```
     $ sudo raspi-config
     ```
@@ -107,43 +101,11 @@ If you don't know what all this means, you'll need a few other things for a one 
         S6 Network at Boot -> Yes
     ```
 1. Close the settings panel with `<Finish>`
-
-### 3b. with Desktop, Mouse & Keyboard
-
-1. Grab the following hardware
-    1. Second computer (Linux, Mac or Windows)
-    1. USB Mouse and USB Keyboard
-    1. Micro SD Card Reader
-    1. Screen with HDMI connection
-1. Safely eject your SD card from your computer
-1. Connect a USB mouse, a keyboard and a screen through HDMI
-1. Insert the Micro SD card
-1. Start your Raspberry Pi by attaching a power supply
-1. Walk through the "Welcome to Raspberry Pi" wizard (the content of this wizard might have changed after this tutorial was created!)
-    1. Set your locale
-    1. Change your password
-    1. Proceed with with screen settings
-    1. Select your Wifi Network (You are being asked in the Phoniebox install routine whether you want to set up your Wifi again, we will skip this step then)
-    1. Software Update (optional, recommended, takes a while)
-    1. Reboot
-1. Let's enable a few more settings
-    1. Launch `Raspberry Pi Configuration` from the `Preferences` menu
-    1. A window opens with the `System` tab selected
-    1. Select `To CLI` for `Boot` option
-    1. Select `Login as user 'pi'` for `Auto login` option
-    1. Select `Wait for network` for `Network at Boot` option (optional, required for Spotify+ version)
-    1. Navigate to the `Interfaces` tab
-    1. Select `Enabled` next to `SSH`
-    1. Click `OK`
-1. Optional: If you like, you can **turn off Bluetooth** to reduce energy consumption (unless you want to use any Bluetooth devices with your Phoniebox)
-1. Shutdown your Raspberry Pi (`Application > Logout > Shutdown`)
-1. Disconnect mouse, keyboard and HDMI
+1. Shutdown your Raspberry Pi with `sudo shutdown`
 
 ---
 
 ## 4. Prepare hardware
-
-If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ).
 
 1. Connect the RFID Reader
 1. Conntect USB Sound Card if available
@@ -165,7 +127,7 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
 
 ### 5b. USB sound card
 
-1. Open the Raspberry config
+1. Open the Raspberry Pi config
     ```
     $ sudo raspi-config
     ```
@@ -200,6 +162,8 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
 
 ## 6. Install Phoniebox software
 
+If you want to install the **Spotify+ version**, [read this first](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ).
+
 Run the following command in your SSH terminal and follow the instructions
 
 ```
@@ -230,7 +194,7 @@ cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Juk
 
 ## 7. Verify Phoniebox setup
 
-1. Open a browser in your computer and navigate to your static IP: `http://raspberrypi.local`
+1. Open a browser in your computer and navigate to your Raspberry Pi: `http://raspberrypi.local`
 1. You should see the Phoniebox UI
 1. In your navigation, choose `Card ID`
 1. Swipe one card near your RFID reader. If `Last used Chip ID` is automatically updated (you might hear a beep) and shows a number, your reader works
