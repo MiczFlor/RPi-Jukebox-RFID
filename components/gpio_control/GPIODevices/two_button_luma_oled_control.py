@@ -6,6 +6,7 @@ from subprocess import check_call
 from RPi import GPIO
 
 import os
+from pathlib import Path
 import logging
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,7 @@ class TwoButtonLumaOledControl:
     def callbackHandler(self, *args):
         if self.btn1.is_pressed and self.btn2.is_pressed:
             self.cycleMode()
+            return
 
         if self.mode == self.MODE_NORMAL:
             self.callRegularFunction(*args)
@@ -111,7 +113,10 @@ class TwoButtonLumaOledControl:
                 oledConfig.write(configfile)
 
     def showSpecialInfo(self):
-        os.mknod(self.SPECIALMARKER)
+        Path(self.SPECIALMARKER).touch()
 
     def hideSpecialInfo(self):
-        os.remove(self.SPECIALMARKER)
+        try:
+            os.remove(self.SPECIALMARKER)
+        except FileNotFoundError:
+            pass
