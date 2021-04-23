@@ -8,6 +8,7 @@ Group=pi
 Restart=always
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID
 ExecStart=/home/pi/RPi-Jukebox-RFID/scripts/daemon_rfid_reader.py
+Nice=-15
 
 [Install]
 WantedBy=multi-user.target
