@@ -90,7 +90,8 @@ class ReaderClass(ReaderBaseClass):
       - cleanup
     """
     def __init__(self, params: dict):
-        """In the constructor, you will get a dictionary with all the customization options read for this reader
+        """
+        In the constructor, you will get a dictionary with all the customization options read for this reader
         (and only this reader) from
         the configuration file. Note: all key/value pairs are string because they are read from file with configparser.
         You will need to do type conversion yourself.
@@ -123,19 +124,23 @@ class ReaderClass(ReaderBaseClass):
         # timeout = config['params'].getfloat('timeout', fallback=0.1)
 
     def cleanup(self):
-        """The cleanup function: free and release all resources used by this card reader (if any).
+        """
+        The cleanup function: free and release all resources used by this card reader (if any).
 
         Put all your cleanup code here, e.g. if you are using the serial bus or GPIO pins.
         Will be called implicitly via the __exit__ function
-        This function must exist! If there is nothing to do, just leave the pass statement in place below"""
+        This function must exist! If there is nothing to do, just leave the pass statement in place below
+        """
         pass
 
     def read_card(self) -> str:
-        """Blocking function that waits for a new card to appear and return the card's UID as string
+        """
+        Blocking function that waits for a new card to appear and return the card's UID as string
 
         This is were your main code goes :-)
         This function must return a string with the card id
-        In case of error, it may return None or an empty string"""
+        In case of error, it may return None or an empty string
+        """
         pass
 
 

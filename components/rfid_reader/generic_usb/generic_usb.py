@@ -1,6 +1,5 @@
 import evdev
 import select
-import os
 import logging
 import configparser
 
@@ -21,7 +20,21 @@ logger.addHandler(logconsole)
 
 
 def _get_devices():
+    """
+    Open all input devices for inspection
+    :return: List of input devices
+    """
     return [evdev.InputDevice(fn) for fn in evdev.list_devices()]
+
+
+def _close_devices(device_list) -> None:
+    """
+    Close listed input devices
+    :param device_list: List of opened input devices to be closed
+    :return: None
+    """
+    for d in device_list:
+        d.close()
 
 
 def _is_keyboard(device: evdev.InputDevice) -> bool:
@@ -44,45 +57,53 @@ def _is_keyboard(device: evdev.InputDevice) -> bool:
     device_key_list = device.capabilities()[evdev.ecodes.EV_KEY]
     is_keyboard_res = mandatory_keys.issubset(device_key_list) and reserved_key.isdisjoint(device_key_list)
     logger.debug(f"is_keyboard test for '{device.name}' at '{device.fn}' is '{is_keyboard_res}'")
-    return is_keyboard_res
+    return True
 
 
 def query_customization():
     print("\nChoose RFID device from USB device list:\n"
-          f"If your RFID reader appears multiple times ({colors.red}e.g. KKMoon{colors.reset}), "
-          f"select the one which has {colors.red}PASS{colors.reset} in the isKey column.\n"
+          "If you are planning to connect multiple USB Readers make sure ALL of them are connected before running this script!"
+          f"If your RFID reader appears multiple times ({colors.lightgreen}e.g. KKMoon{colors.reset}), "
+          f"select the one which has {colors.lightgreen}PASS{colors.reset} in the isKey column.\n"
           f"For the curious: isKey indicates a device capability check for required keys")
     devices = _get_devices()
     logger.debug(f"USB devices: {[x.name for x in devices]}")
     devices_is_key = [_is_keyboard(x) for x in devices]
-    print(f" {colors.lightgreen}ID{colors.reset}: {colors.red}isKey{colors.reset}: {colors.lightcyan}Name{colors.reset}")
+    print(f" {colors.lightgreen}ID{colors.reset}: {colors.lightgreen}isKey{colors.reset}: {colors.lightcyan}Name{colors.reset}")
     if len(devices) == 0:
         logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
         return {'device_name': '__error_empty_device_list__'}
     for idx, (dev, key) in enumerate(zip(devices, devices_is_key)):
         print(f" {colors.lightgreen}{idx:2d}{colors.reset}:"
-              f" {colors.red}{'PASS' if key else '    '}{colors.reset} : "
+              f" {colors.lightgreen}{'PASS' if key else '    '}{colors.reset} : "
               f"{colors.lightcyan}{colors.bold}{dev.name:20}{colors.reset}")
         print(f"              {colors.lightgrey}({dev.phys} // {dev.info}{colors.reset})")
     print("")
     dev_id = pyil.input_int("Device number?", min=0, max=len(devices)-1, prompt_color=colors.lightgreen, prompt_hint=True)
 
-    # USB input device is identified by dev.name and dev.phys. This should be unique (hopefully) but is not guaranteed
-    # In case it is not, we may still perform the is_keyboard check when initializing the reader and pick the device with the right keys.
-    # Note: I don't think this is necessary, when using name + pyhs for device identification.
-    # But you never know what is our there in the wild!
-    # Just in case those two values are ambiguous, lets turn on the keyboard check on reader initialization, as that is the
-    # the tried and proven code for KKMoon. But to avoid confusion and complexity, only do this when the device is not unique
-    key_check = False
-    if len([x for x in devices if x.name == devices[dev_id].name and x.phys == devices[dev_id].phys]) > 1:
-        print("\nUSB device disambiguation by key capability check on device required:\n"
-              f"Your selected RFID reader appears in the device list twice. This can happen with {colors.red}e.g. KKMoon{colors.reset}.\n"
-              "For these readers a key capability check must be activated to automatically select the correct USB device.\n")
-        key_check = pyil.input_yesno("Enable key capability check?", blank=True, prompt_color=colors.lightgreen, prompt_hint=True)
+    # dev.name is not unique in case
+    #   (a) the multiple identical devices are connected
+    #   (b) a device registers itself multiple times with different capabilities (e.g. KKMoon)
+    # dev.phys is unique down to the actual USB port used
+    #   i.e. if the device gets unplugged and re-plugged into a different USB port it will not be recognized again
+    # The solution is to use as little information as possible to identify the USB Reader
+    #   Pro: It does not matter which USB port is used, or if a USB hub is later inserted
+    #   Con: All RFID readers must be connected BEFORE running the query_customization, so we can identify possible duplicates
+    # "As little information as possible" means
+    #   (a) check if name is unique
+    #   (b) check if name + isKey is unique
+    #   (c) use full physical path
+    name_is_unique = len([d for d in devices if d.name == devices[dev_id].name]) == 1
+    key_check_is_unique = len([d for x, d in enumerate(devices)
+                              if d.name == devices[dev_id].name and devices_is_key[x] == devices_is_key[dev_id]]) == 1
+
+    _close_devices(devices)
 
     return {'device_name': devices[dev_id].name,
             'device_phys': devices[dev_id].phys,
-            'key_capability_check': key_check,
+            'key_check': devices_is_key[dev_id],
+            'name_is_unique': name_is_unique,
+            'key_check_is_unique': key_check_is_unique,
             'log_all_keys': 'false'}
 
 
@@ -91,7 +112,7 @@ class ReaderClass(ReaderBaseClass):
         super().__init__(description=DESCRIPTION, params=params, logger=logger)
 
         # Key event codes return from evdev are numerical indexes, not decoded ASCII characters
-        # Use a string to index with key event code to decode key event codeinto ASCII character
+        # Use a string to index with key event code to decode key event code into ASCII character
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
 
         if not params:
@@ -105,29 +126,42 @@ class ReaderClass(ReaderBaseClass):
             logger.error(f"Mandatory key 'device_name' not given in dictionary params!")
             raise KeyError(f"Mandatory key 'device_name' not given in dictionary params!")
         if 'device_phys' not in config['params']:
-            logger.error(f"Mandatory key 'device_phys' not given in dictionary params!")
-            raise KeyError(f"Mandatory key 'device_phys' not given in dictionary params!")
-        if 'key_capability_check' not in config['params']:
-            logger.warning(f"Key 'key_capability_check' not given in dictionary params! Using default value: 'false'.")
+            logger.error(f"Key 'device_phys' not given in dictionary params! Trying without...")
+        if 'key_capability' not in config['params']:
+            logger.warning(f"Key 'key_capability' not given in dictionary params! Using default value: 'true'.")
+        if 'name_is_unique' not in config['params']:
+            logger.warning(f"Key 'name_is_unique' not given in dictionary params! Using default value: 'true'.")
+        if 'key_check_is_unique' not in config['params']:
+            logger.warning(f"Key 'key_check_is_unique' not given in dictionary params! Using default value: 'true'.")
+
         device_name = config['params'].get('device_name')
-        device_phys = config['params'].get('device_phys')
-        key_check = config['params'].getboolean('key_capability_check', fallback=False)
+        device_phys = config['params'].get('device_phys', fallback='Empty')
+        key_check = config['params'].getboolean('key_check', fallback=True)
+        name_is_unique = config['params'].getboolean('name_is_unique', fallback=True)
+        key_check_is_unique = config['params'].getboolean('key_check_is_unique', fallback=True)
         self.log_all_keys = config['params'].getboolean('log_all_keys', fallback=False)
 
         device_list = _get_devices()
         logger.debug(f"Device list = {device_list}")
-        for device in device_list:
+        for idx, device in enumerate(device_list):
             logger.debug(f"Inspecting device '{device.name}' at '{device}'")
-            if device.name == device_name and device.phys == device_phys and (not key_check or _is_keyboard(device)):
+            # See comment in 'query_customization()' for this decision tree
+            if device.name == device_name and (name_is_unique or (key_check == _is_keyboard(device)
+                                                                  and (key_check_is_unique or device.phys == device_phys))):
                 logger.info(f"Device found. Opening device '{device.name}' at '{device}'")
                 self.dev = device
+                dev_idx = idx
                 break
         else:
+            _close_devices(device_list)
             logger.error(f"Could not find the device '{device_name}' ({device_phys}). Make sure it is connected.")
             raise FileNotFoundError(f"Could not find the device '{device_name}' ({device_phys}). Make sure it is connected.")
 
+        device_list.pop(dev_idx)
+        _close_devices(device_list)
+
     def cleanup(self):
-        pass
+        self.dev.close()
 
     def read_card(self) -> str:
         card_uid = ''

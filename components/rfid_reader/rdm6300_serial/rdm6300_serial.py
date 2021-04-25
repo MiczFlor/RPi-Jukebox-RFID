@@ -37,7 +37,7 @@ NUMBER_FORMAT_HINT = ['This number is often printed on the back of the card and 
 
 
 def query_customization() -> dict:
-    prompt_color=colors.lightgreen
+    prompt_color = colors.lightgreen
     print("Select number format:")
     for idx, val in enumerate(NUMBER_FORMAT):
         print(f" {colors.lightgreen}{idx:2d}{colors.reset}: {colors.lightcyan}{colors.bold}{val:15}{colors.reset}: {NUMBER_FORMAT_HELP[idx]}")
