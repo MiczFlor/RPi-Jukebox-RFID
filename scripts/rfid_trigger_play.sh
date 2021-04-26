@@ -377,19 +377,15 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
     if [ "$VALUE" == "recursive" ]; then
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%"
-        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive' > "${PLAYLISTPATH}"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%.m3u"
+        python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}" --recursive True
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" --list 'recursive' > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     else
         # set path to playlist
         # replace subfolder slashes with " % "
-        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
-        PLAYLISTNAME="${FOLDER//\//\ %\ }"
-        $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" > "${PLAYLISTPATH}"
+        PLAYLISTNAME="${FOLDER//\//\ %\ }.m3u"
+        python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}"
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
-        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "$PATHDATA/playlist_recursive_by_folder.php --folder \"${FOLDER}\" > \"${PLAYLISTPATH}\""   >> $PATHDATA/../logs/debug.log; fi
     fi
 
     # Second Swipe value
@@ -485,8 +481,11 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         #   with a possible "real" name for a folder
         # - with this new logic, there are no more SPECIALFORMAT playlists. Live streams and podcasts
         #   are now all unfolded into the playlist
-        # - creating the playlist is now done in the php script with parameters:
-        #   $PATHDATA/playlist_recursive_by_folder.php --folder "${FOLDER}" --list 'recursive'
+        # - creating the playlist is now done in the python3 script with parameters:
+        #   python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}"
+        #   recursively (including subfolders):
+        #   python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}" --recursive True
+        
 
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR FOLDER: $FOLDER"   >> $PATHDATA/../logs/debug.log; fi
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "  VAR PLAYLISTPATH: $PLAYLISTPATH"   >> $PATHDATA/../logs/debug.log; fi
