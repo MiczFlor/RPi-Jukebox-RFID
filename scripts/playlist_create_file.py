@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import sys
 import glob
@@ -9,9 +10,9 @@ import urllib.parse
 
 # Examples
 # Run like this:
-# python3 playlist_create_file.py --name_audiofolder 'SubMaster Whitespaces' --name_playlist 'the test.m3u'
+# ./playlist_create_file.py --name_audiofolder 'SubMaster Whitespaces' --name_playlist 'the test.m3u'
 # For playlists created from folder and recursive subfolders:
-# python3 playlist_create_file.py --name_audiofolder 'SubMaster Whitespaces' --name_playlist 'the test.m3u' --recursive True 
+# ./playlist_create_file.py --name_audiofolder 'SubMaster Whitespaces' --name_playlist 'the test.m3u' --recursive True 
 
 ####################################################
 # VARIABLES
@@ -32,6 +33,8 @@ args = parser.parse_args()
 # the variables we need to create and write the playlist:
 name_audiofolder = args.name_audiofolder
 name_playlist = args.name_playlist
+
+print("# name_audiofolder: " + name_audiofolder); print("# name_playlist: " + name_playlist)
 
 # reading config files
 myvars = {}
@@ -56,6 +59,10 @@ print("# Phoniebox edition: " + phoniebox_edition)
 print("# Debug: " + DEBUG_playlist_recursive_by_folder)
 print("# Path to audio: " + path_name_audio)
 print("# Name of playlist: " + path_name_playlist)
+
+if DEBUG_playlist_recursive_by_folder == "TRUE":
+    with open("../logs/debug.log", "a") as myfile:
+        myfile.write("########### SCRIPT playlist_create_file.py\n")
 
 
 # Check if recursion or not.

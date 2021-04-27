@@ -378,14 +378,18 @@ if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ];
         # set path to playlist
         # replace subfolder slashes with " % "
         PLAYLISTNAME="${FOLDER//\//\ %\ }-%RCRSV%.m3u"
-        python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}" --recursive True
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }-%RCRSV%.m3u"
+        ./playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}" --recursive True
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? YES"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "./playlist_create_file.py --name_audiofolder \"${FOLDER}\" --name_playlist \"${PLAYLISTNAME}\" --recursive True"   >> $PATHDATA/../logs/debug.log; fi
     else
         # set path to playlist
         # replace subfolder slashes with " % "
         PLAYLISTNAME="${FOLDER//\//\ %\ }.m3u"
-        python3 $PATHDATA/playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}"
+        PLAYLISTPATH="${PLAYLISTSFOLDERPATH}/${FOLDER//\//\ %\ }.m3u"
+        ./playlist_create_file.py --name_audiofolder "${FOLDER}" --name_playlist "${PLAYLISTNAME}"
         if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "recursive? NO"   >> $PATHDATA/../logs/debug.log; fi
+        if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "./playlist_create_file.py --name_audiofolder \"${FOLDER}\" --name_playlist \"${PLAYLISTNAME}"\"   >> $PATHDATA/../logs/debug.log; fi
     fi
 
     # Second Swipe value
