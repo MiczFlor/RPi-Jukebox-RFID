@@ -98,7 +98,7 @@ In the [Manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) you wi
 
 ## Contributing improvements
 
-Read the [CONTRIBUTING.md](docs/CONTRIBUTE.md) file for [more infos on how to contribute code](docs/CONTRIBUTE.md).
+Read the [CONTRIBUTING.md](CONTRIBUTING.md) file for [more infos on how to contribute code](CONTRIBUTING.md).
 
 ## Reporting bugs
 
@@ -136,7 +136,7 @@ There are many, many, many inspiring suggestions and solutions on the web to bri
 * Thanks to Andreas aka [hailogugo](https://github.com/hailogugo) for writing and testing the script for the [GPIO buttons as controllers for the jukebox](docs/GPIO-BUTTONS.md).
 * [Francisco Sahli's Music Cards: RFID cards + Spotify + Raspberry Pi](https://fsahli.wordpress.com/2015/11/02/music-cards-rfid-cards-spotify-raspberry-pi/) written in python, playing songs from Spotify. The code [music-cards](https://github.com/fsahli/music-cards) is on GitHub.
 * [Jeremy Lightsmith's rpi-jukebox](https://github.com/jeremylightsmith/rpi-jukebox) written in Python, using the mpg123 player
-* [Marco Wiedemeyer's Raspberry Pi Jukebox für Kinder (German)](https://mwiedemeyer.de/blog/post/Raspberry-Pi-Jukebox-fur-Kinder) written in mono, using the MPD player
+* [Marco Wiedemeyer's Raspberry Pi Jukebox für Kinder (German)](https://blog.mwiedemeyer.de/post/Raspberry-Pi-Jukebox-fur-Kinder/) written in mono, using the MPD player
 * [Marcus Nasarek's Kindgerechter Audioplayer mit dem Raspberry Pi (German)](http://www.raspberry-pi-geek.de/Magazin/2014/03/Kindgerechter-Audioplayer-mit-dem-Raspberry-Pi) triggered by QR codes via a camera instead of RFID cards, written in bash and using the xmms2 media player
 * [Huy Do's jukebox4kids / Jukebox für Kinder](http://www.forum-raspberrypi.de/Thread-projekt-jukebox4kids-jukebox-fuer-kinder) written in Python, [the code is on github](https://github.com/hdo/jukebox4kids)
 * [Willem van der Jagt's How I built an audio book reader for my nearly blind grandfather](http://willemvanderjagt.com/2014/08/16/audio-book-reader/) written in python and using the MDP player.
@@ -167,9 +167,9 @@ Here is a list of equipment needed. Chances are that you will find most of it in
 * [USB A Male to Female Extenstion Cable with Switch On/Off](http://amzn.to/2hHrvkG) | I placed this USB extension between the USB power adapter and the Phoniebox. This will allow you to switch the Phoniebox on and off easily.
 * [USB 2.0 Hub 4-port bus powered USB Adapter](http://amzn.to/2kXeErv) | Depending on your setup, you will need none, one or two of these. If you are using the external USB powered speakers, you need one to make sure the speakers get enough power. If you want to use the additional USB soundcard and have an older RPi, you might need a second one to make sure you can connect enough devices with the RPi.
 * Arcade Buttons / Tasten / Schalter (one of these might suit you)
-* * [Arcade Buttons / Tasten / Schalter ](https://amzn.to/2QMxe9r) if you want buttons for the GPIO control.
-* * [Set: Arcade Buttons / Tasten / Schalter ](https://amzn.to/2T81JTZ) GPIO Extension Board Starter Kit including cables and breadboard.
-* * [Touch Sensor / Kapazitive Touch Tasten ](https://amzn.to/2Vc4ntx) these are not buttons to press but to touch as GPIO controls.
+    * [Arcade Buttons / Tasten / Schalter ](https://amzn.to/2QMxe9r) if you want buttons for the GPIO control.
+    * [Set: Arcade Buttons / Tasten / Schalter ](https://amzn.to/2T81JTZ) GPIO Extension Board Starter Kit including cables and breadboard.
+    * [Touch Sensor / Kapazitive Touch Tasten ](https://amzn.to/2Vc4ntx) these are not buttons to press but to touch as GPIO controls.
 
 ### Special hardware
 
@@ -178,3 +178,4 @@ These are links to additional items, which will add an individual flavour to you
 * [Ground Loop Isolator / Entstörfilter Audio](https://amzn.to/2Kseo0L) this seems to [get rid off crackles in the audio out (a typical RPi problem)](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/341) 
 * [Rotary Encoder / Drehregler / Dial](https://amzn.to/2J34guF) for volume control. Read here for more information on how to [integrate the rotary dial](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/267) 
 * [HiFiBerry DAC+ Soundcard](https://amzn.to/2J36cU9) Read here for more information on how to [HifiBerry Soundcard integration](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#hifiberry-dac-soundcard-details)
+* [HDMI zu HDMI + Optisches SPDIF mit 3,5-mm-Stereo-HDMI Audio-Extractor | HDMI zu SPDIF Konverter](https://amzn.to/2DRWG3X) If you plan to use video, this might be the better solution than a USB soundcard or the hifiberry. If takes up some space, but will work with the HDMI audio out and split the signal to deliver audio through 3.5mm jack.

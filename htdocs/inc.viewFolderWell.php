@@ -24,7 +24,7 @@ if(in_array($audiofolderbasename, $shortcuts)) {
     }
     $ids = rtrim($ids, "| "); // get rid of trailing slash
 }
-parse_str($Audio_Folders_Path.'/'.$audiofolder.'/folder.conf', $folderConf);
+//parse_str($Audio_Folders_Path.'/'.$audiofolder.'/folder.conf', $folderConf);
 $folderConfRaw = file_get_contents($audiofolder.'/folder.conf');
 // if folder not empty, display play button and content
 if ($accordion != "<h4>".$lang['indexContainsFiles']."</h4><ul></ul>") {
@@ -43,7 +43,7 @@ if ($accordion != "<h4>".$lang['indexContainsFiles']."</h4><ul></ul>") {
     // do not show any if there is a live stream in the folder
     if (!in_array("livestream.txt", $files) ) {
         $foundResume = "OFF";
-        if( file_exists($audiofolder."/folder.conf") && strpos(file_get_contents($audiofolder."/folder.conf"),'RESUME="ON"') !== false) {
+        if( file_exists($audiofolder."/folder.conf") && strpos($folderConfRaw),'RESUME="ON"') !== false) {
             $foundResume = "ON";
         } else {
         }
@@ -59,7 +59,7 @@ if ($accordion != "<h4>".$lang['indexContainsFiles']."</h4><ul></ul>") {
     // do not show any if there is a live stream in the folder
     if (!in_array("livestream.txt", $files) ) {
         $foundShuffle = "OFF";
-        if( file_exists($audiofolder."/folder.conf") && strpos(file_get_contents($audiofolder."/folder.conf"),'SHUFFLE="ON"') !== false) {
+        if( file_exists($audiofolder."/folder.conf") && strpos($folderConfRaw),'SHUFFLE="ON"') !== false) {
             $foundShuffle = "ON";
         }
     }

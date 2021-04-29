@@ -40,6 +40,8 @@ if(isset($_POST['secondSwipe']) && trim($_POST['secondSwipe']) != "") {
             exec($exec);
         }
     }
+    // execute shell to create config file
+    exec($conf['scripts_abs']."/inc.writeGlobalConfig.sh");
 }
 ?>
         <!-- input-group --> 

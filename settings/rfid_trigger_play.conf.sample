@@ -28,6 +28,8 @@ CMDREBOOT="%CMDREBOOT%"
 # next and prev play the preivous or next track in the playlist (== folder & spotify)
 CMDNEXT="%CMDNEXT%"
 CMDPREV="%CMDPREV%"
+# The following command restarts the playlist from the beginning
+CMDREWIND="%CMDREWIND%"
 # seek ahead or back 15 seconds
 CMDSEEKFORW="%CMDSEEKFORW%"
 CMDSEEKBACK="%CMDSEEKBACK%"
