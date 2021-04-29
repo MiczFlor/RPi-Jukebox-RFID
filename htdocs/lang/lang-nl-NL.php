@@ -49,6 +49,7 @@ $lang['globalExternalInterfaces'] = "Externe apparaten en interfaces";
 $lang['globalIdleTime'] = "inactieve tijd";
 $lang['globalNotIdle'] = "niet inactief";
 $lang['globalGpioButtons'] = "GPIO knoppen";
+$lang['globalRotaryKnob'] = "Draaiknop";
 $lang['globalRfidReader'] = "RFID lezer";
 $lang['globalEnabled'] = "Ingeschakeld";
 $lang['globalDisabled'] = "Uitgeschakeld";
@@ -65,6 +66,11 @@ $lang['globalRepeat'] = "Herhalen";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
+$lang['globalAudioSink'] = "Audio Devices";
+
+$lang['playerFilePlayed'] = "is gespeeld";
+$lang['playerFileAdded'] = "is toegevoegd aan de playlist";
+$lang['playerFileDeleted'] = "is verwijderd";
 
 // Edition (classic, +spotify)
 $lang['globalEdition'] = "Editie";
@@ -76,6 +82,7 @@ $lang['navEditionPlusSpotify'] = "+Spotify";
 
 $lang['navBrand'] = "Phoniebox";
 $lang['navHome'] = "Home";
+$lang['navSearch'] = "Zoeken";
 $lang['navSettings'] = "Instellingen";
 $lang['navInfo'] = "Info";
 $lang['navShutdown'] = "Afsluiten";
@@ -103,6 +110,7 @@ $lang['cardRegisterErrorStreamOrAudio'] = "<p>Dit is niet genoeg! Voeg een URL t
 $lang['cardRegisterErrorExistingAndNew'] = "<p>Dit is te veel! Kies een bestaande map of maak een nieuwe map aan.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>Er bestaat al een map met dezelfde naam! Kies een andere.</p>";
 $lang['cardRegisterErrorSuggestFolder'] = "Er moet een mapnaam voor de stream worden gemaakt. Hieronder in het formulier heb ik een suggestie gedaan.";
+$lang['cardRegisterErrorConvertSpotifyURL'] = "Verkeerde spotify url, geconverteerd naar het juiste formaat";
 $lang['cardRegisterStream2Card'] = "Stream is gekoppeld aan kaart-ID.";
 $lang['cardRegisterFolder2Card'] = "De audiomap is nu gekoppeld aan kaart-ID";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube-audio wordt gedownload. Dit kan een paar minuten duren. U kunt het logbestand 'youtube-dl.log' in de gedeelde map controleren.</p>";
@@ -117,7 +125,7 @@ $lang['cardFormFolderLabel'] = "a) Link kaart naar audiomap";
 $lang['cardFormFolderSelectDefault'] = "Geen (Pulldown om een ​​map te selecteren)";
 $lang['cardFormStreamLabel'] = "b) ... of maak verbinding met de Stream-URL";
 $lang['cardFormStreamPlaceholderClassic'] = "Livestream: http(...).mp3 / .m3u / .ogg / ...";
-$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:(user:username:)album/track/playlist:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
+$lang['cardFormStreamPlaceholderPlusSpotify'] = "spotify:album/artist/playlist/track:### / Livestream: http(...).mp3 / .m3u / .ogg / ...";
 $lang['cardFormStreamHelp'] = "Voeg de URL toe voor spotify, podcast, webradio, stream of andere online media";
 $lang['cardFormStreamTypeSelectDefault'] = "Selecteer type";
 $lang['cardFormStreamTypeHelp'] = "Selecteer het type dat u toevoegt";
@@ -161,6 +169,12 @@ $lang['settingsSecondSwipeRestart'] = "afspeellijst opnieuw afspelen";
 $lang['settingsSecondSwipeSkipnext'] = "Ga naar het volgende nummer";
 $lang['settingsSecondSwipePause'] = "Schakelen tussen pauze / afspelen";
 $lang['settingsSecondSwipeNoAudioPlay'] = "Negeer audio playout-triggers, alleen systeemopdrachten";
+$lang['settingsSecondSwipePauseInfo'] = "Negeer het opnieuw scannen van dezelfde kaart voor:";
+$lang['second'] = "Seconde";
+$lang['seconds'] = "Seconden";
+$lang['settingsSecondSwipePauseControlsInfo'] = "Bepaalde functiekaarten (bijv. Volume omhoog / omlaag, volgende / vorige track, snel vooruit / terugspoelen) mogen geen vertraging hebben (zoals eerder ingesteld in de instelling):";
+$lang['settingsSecondSwipePauseControlsOn'] = "Functiekaarten zonder vertraging";
+$lang['settingsSecondSwipePauseControlsOff'] = "Functiekaarten met vertraging (seconden als voorheen)";
 $lang['settingsWebInterface'] = "Web Interface";
 $lang['settingsCoverInfo'] = "Wil je albumhoezen naast de albums en afspeellijsten op de hoofdpagina weergeven?";
 $lang['settingsShowCoverON'] = "Albumhoes laten zien";
@@ -172,9 +186,13 @@ $lang['settingsMessageLangfileNewItems'] = "Er zijn nieuwe taalitems in het oors
 */
 $lang['infoOsDistrib'] = "OS-distributie";
 $lang['infoOsCodename'] = "Codenaam";
+$lang['infoOsTemperature'] = "Temperatuur";
+$lang['infoOsThrottle'] = "Beperking";
 $lang['infoStorageUsed'] = "Opslag gebruik";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Folder Management and File Upload
@@ -199,6 +217,19 @@ $lang['manageFilesFoldersRenewDB'] = "Database vernieuwen";
 $lang['manageFilesFoldersLocalScan'] = "Scan muziekbibliotheek";
 $lang['manageFilesFoldersRenewDBinfo'] = "Scan uw muziekbibliotheek na het uploaden van nieuwe bestanden of het verplaatsen van mappen. De scan is niet nodig om muziek te horen, maar het is noodzakelijk om nummerinformatie te zien in de Web UI. Alleen nieuwe of verplaatste bestanden worden gescand. Terwijl de scan wordt uitgevoerd, wordt mopidy gestopt. Nadat de scan is voltooid, start de mopidy automatisch. U kunt de serverstatus zien in het gedeelte Info.";
 
+$lang['searchTitle'] = "Zoeken naar audiobestanden";
+$lang['searchExample'] = "z.B. Moonlight";
+$lang['searchSend'] = "Zoeken";
+$lang['searchResult'] = "Zoekresultaten:";
 
+/*
+* Filter
+*/
+$lang['filterall'] = "Toon alles";
+$lang['filterfile'] = "Bestanden";
+$lang['filterlivestream'] = "Livestream";
+$lang['filterpodcast'] = "Podcast";
+$lang['filterspotify'] = "Spotify";
+$lang['filteryoutube'] = "YouTube";
 ?>
 

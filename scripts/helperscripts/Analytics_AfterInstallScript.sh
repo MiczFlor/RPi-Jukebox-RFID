@@ -29,16 +29,16 @@ ls -lh /etc/lighttpd/lighttpd.conf
 echo "*** /etc/lighttpd/conf-available/15-fastcgi-php.conf"
 ls -lh /etc/lighttpd/conf-available/15-fastcgi-php.conf
 
-echo "*** /etc/php/7.0/fpm/php.ini"
-ls -lh /etc/php/7.0/fpm/php.ini
+echo "*** /etc/php/7.3/fpm/php.ini"
+ls -lh /etc/php/7.3/fpm/php.ini
 
 echo "*** /etc/sudoers"
 ls -lh /etc/sudoers
 
 echo "*** /etc/systemd/system/phoniebox*"
 ls -lh /etc/systemd/system/phoniebox-rfid-reader.service
-ls -lh /etc/systemd/system/phoniebox-startup-sound.service
-ls -lh /etc/systemd/system/phoniebox-gpio-buttons.service
+ls -lh /etc/systemd/system/phoniebox-startup-scripts.service
+ls -lh /etc/systemd/system/phoniebox-gpio-control.service
 ls -lh /etc/systemd/system/phoniebox-idle-watchdog.service
 
 echo "*** /etc/mpd.conf"
@@ -65,9 +65,6 @@ echo " "
 echo "*** /etc/locale.gen"
 ls -lh /etc/locale.gen
 
-echo "*** /etc/locale.gen"
-ls -lh /etc/locale.gen
-
 echo "*** /etc/mopidy/mopidy.conf"
 ls -lh /etc/mopidy/mopidy.conf
 sudo cat /etc/mopidy/mopidy.conf | grep username
@@ -81,5 +78,7 @@ sudo cat ~/.config/mopidy/mopidy.conf | grep username
 #sudo cat ~/.config/mopidy/mopidy.conf | grep password
 #sudo cat ~/.config/mopidy/mopidy.conf | grep client_id
 #sudo cat ~/.config/mopidy/mopidy.conf | grep client_secret
+
+sudo mopidyctl deps
 
 echo " "

@@ -1,3 +1,17 @@
+<style>
+         #phonieboxinfomessage {
+            display: none;
+            position: fixed;
+            width: 50%;
+            height: 100px;
+            left: 25%;
+            top: 40%;
+            z-index: 7000;
+         }
+</style>
+
+<div id="phonieboxinfomessage" class="alert-messages"></div>
+
 <nav class="navbar navbar-default" style="position: -webkit-sticky; position: sticky; top: 0; z-index: 1000;">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -21,7 +35,8 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href='index.php' class='mainMenu'><i class='mdi mdi-home'></i> <?php print $lang['navHome']; ?></a></li>
+        <li><a href='index.php' class='mainMenu'><i class='mdi mdi-play-circle'></i> <?php print $lang['navHome']; ?></a></li>
+        <li><a href='search.php' class='mainMenu'><i class='mdi mdi-magnify'></i> <?php print $lang['navSearch']; ?></a></li>
 	      <li><a href='settings.php' class='mainMenu'><i class='mdi mdi-settings'></i> <?php print $lang['navSettings']; ?></a></li>
         <li><a href='systemInfo.php' class='mainMenu'><i class='mdi mdi-information-outline'></i> <?php print $lang['navInfo']; ?></a></li>
         <li><a href='manageFilesFolders.php' class='mainMenu'><i class='mdi mdi-folder-upload'></i> <?php print $lang['manageFilesFoldersTitle']; ?></a></li>

@@ -106,7 +106,7 @@ sudo reboot
 
 # Upgrade from Version 1.1.1 to 1.1.7
 
-Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
+Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) and create pull requests so I can merge this with the core.
 
 Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
 
@@ -148,7 +148,7 @@ sudo systemctl enable rfid-reader
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 ~~~
 cd
-cd RPi-Jukebox-RFID
+cd /home/pi/RPi-Jukebox-RFID
 git fetch
 git checkout master
 git pull

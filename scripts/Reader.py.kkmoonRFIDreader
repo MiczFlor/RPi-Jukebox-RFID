@@ -1,20 +1,21 @@
-#!/usr/bin/env python2
-# This alternative Reader.py script was meant to fixes issues with 
+#!/usr/bin/env python3
+# This alternative Reader.py script was meant to fixes issues with
 # KKMOON RFID Reader which appears twice in the devices list as HID 413d:2107
 # and this required to check "if" the device is a keyboard.
 # Please use the github issue threads to share bugs and improvements
 # or create pull requests.
 
-import string
-#import csv
 import os.path
 import sys
+
 
 from evdev import InputDevice, categorize, ecodes, list_devices
 from select import select
 
+
 def get_devices():
     return [InputDevice(fn) for fn in list_devices()]
+
 
 class Reader:
 
@@ -33,27 +34,27 @@ class Reader:
         self.reserved_key = {0}
         if not os.path.isfile(path + '/deviceName.txt'):
             sys.exit('Please run RegisterDevice.py first')
-        else: 
-            with open(path + '/deviceName.txt','r') as f:
+        else:
+            with open(path + '/deviceName.txt', 'r') as f:
                 deviceName = f.read()
             devices = [InputDevice(fn) for fn in list_devices()]
             for device in devices:
                 if device.name == deviceName and self.is_Keyboard(device):
                     self.dev = device
-                    break         
+                    break
             try:
                 self.dev
             except:
                 sys.exit('Could not find the device %s\n. Make sure is connected' % deviceName)
-        
+
     def readCard(self):
-        stri=''
+        stri = ''
         key = ''
         while key != 'KEY_ENTER':
-           r,w,x = select([self.dev], [], [])
-           for event in self.dev.read():
-            if event.type==1 and event.value==1:
-                stri+=self.keys[ event.code ]
-                #print( keys[ event.code ] )
-                key = ecodes.KEY[ event.code ]
+            r, w, x = select([self.dev], [], [])
+            for event in self.dev.read():
+                if event.type == 1 and event.value == 1:
+                    stri += self.keys[event.code]
+                    # print( keys[ event.code ] )
+                    key = ecodes.KEY[event.code]
         return stri[:-1]

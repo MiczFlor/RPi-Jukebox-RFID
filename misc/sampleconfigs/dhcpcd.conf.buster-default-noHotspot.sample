@@ -1,0 +1,4 @@
+interface wlan0
+static ip_address=%WIFIip%/24
+static routers=%WIFIipRouter%
+static domain_name_servers=8.8.8.8 %WIFIipRouter%

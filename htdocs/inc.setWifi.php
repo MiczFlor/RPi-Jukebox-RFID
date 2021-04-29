@@ -4,67 +4,110 @@
 */
 $wpaconf = file_get_contents("/etc/wpa_supplicant/wpa_supplicant.conf");
 /*
-* get the lines we need (in a rough way...)
+* get the lines we need
 */
+$networks = array();
+$priorities = array();
+unset($temp_ssid);
+unset($temp_pass);
+unset($temp_prio);
 foreach(preg_split("/((\r?\n)|(\r\n?))/", $wpaconf) as $line){
     unset($temp);
-    $temp = explode("=", $line);
-    if(trim($temp[0]) == "ssid") {
-        $CONFssid = trim(trim($temp[1]), '"');
+
+    $line = trim($line);
+    if(substr($line, 0, 7) == "network") {
+        unset($temp_ssid);
+        unset($temp_pass);
+        unset($temp_prio);
+        continue;
     }
-    if(trim($temp[0]) == "psk") {
-        $CONFWIFIpass = trim(trim($temp[1]), '"');
-    }   
-} 
-/*
-* see if we got some values from the form
-*/
-if(trim($_POST['WIFIssid']) != "") {
-    $WIFIssid = trim($_POST['WIFIssid']);
-} else {
-    $WIFIssid = $CONFssid;
+
+    $temp = explode("=", $line);
+
+    if(count($temp) != 2) {
+        continue;
+    }
+
+    $key = trim($temp[0]);
+    $value = trim(trim($temp[1]), '"');
+
+    if($key == "ssid") {
+        $temp_ssid = $value;
+    } else if($key == "psk") {
+        $temp_pass = $value;
+    } else if($key == "priority") {
+        $temp_prio = $value;
+    }
+
+    if(isset($temp_ssid)) {
+        if(isset($temp_pass)) {
+            $networks[$temp_ssid] = $temp_pass;
+        }
+        if(isset($temp_prio)) {
+            $priorities[$temp_ssid] = $temp_prio;
+        }
+    }
 }
-if(trim($_POST['WIFIpass']) != "") {
-    $WIFIpass = trim($_POST['WIFIpass']);
-} else {
-    $WIFIpass = $CONFWIFIpass;
-}
+unset($temp_ssid);
+unset($temp_pass);
+unset($temp_prio);
+
+
+
+unset($exec);
+$exec="iwconfig wlan0 | grep ESSID | cut -d ':' -f 2";
+$active_essid = trim(exec($exec),'"');
+
 /*
 * Now we need to check if we need to create a new wpa_supplicant.conf
-* This is the case if either value coming from the form is different from
-* the current conf file
 */
 unset($exec);
-if($WIFIssid != $CONFssid || $WIFIpass != $CONFWIFIpass) {
+if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
+    $networks=array(); //clear
+    $priorities=array(); //clear
+
+    foreach ( $_POST as $post_key => $post_value ) {
+        if ( substr(trim($post_key), 0, 9) == "WIFIssid_" ) {
+            $WIFIssid = trim($post_value);
+            $post_key = "WIFIpass_".substr(trim($post_key), 9);
+            $post_value = $_POST[$post_key];
+            $WIFIpass = trim($post_value);
+            $post_key = "WIFIprio_".substr(trim($post_key), 9);
+            $post_value = $_POST[$post_key];
+            $WIFIprio = trim($post_value);
+
+            if ( isset($WIFIssid) && $WIFIssid != "") {
+                if(isset($WIFIpass) && strlen($WIFIpass) >= 8) {
+                    $networks[$WIFIssid] = $WIFIpass;
+                }
+                if(isset($WIFIprio) && $WIFIprio != "") {
+                    $priorities[$WIFIssid] = $WIFIprio;
+                }
+            }
+        }
+    }
+    $_POST=array(); //clear
+
     // make multiline bash
-    $exec = "bash <<'END'
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/wpa_supplicant.conf.stretch-default2.sample /etc/wpa_supplicant/wpa_supplicant.conf
-sudo sed -i 's/%WIFIssid%/'".$WIFIssid."'/' /etc/wpa_supplicant/wpa_supplicant.conf
-sudo sed -i 's/%WIFIpass%/'".$WIFIpass."'/' /etc/wpa_supplicant/wpa_supplicant.conf
-sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf
-sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf
-# restart wlan0
-# dunno how to do this on the command line. The following doesn't disconnect the WiFi:
-# sudo ip link set wlan0 down && sudo ip link set wlan0 up
-END";
-    passthru($exec);
-}
-    
-if($debug == "true") {
-    print "<pre>";
-    print "\$wpaconf:\n";
-    print $wpaconf;
-    print "\$WIFIssid: ".$WIFIssid."\n";
-    print "\$WIFIpass: ".$WIFIpass."\n";
-    print "\$_POST:\n";
-    print_r($_POST);
-    print "</pre>";
+    $exec  = "bash -e <<'END'\n";
+    $exec .= "echo 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=DE\n\n' | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf\n";
+    foreach ( $networks as $WIFIssid => $WIFIpass ) {
+        $WIFIprio = $priorities[$WIFIssid];
+        if (strlen($WIFIpass) < 64) {
+            $WIFIpass = trim(exec("wpa_passphrase '".$WIFIssid."' '".$WIFIpass."' | grep -v -F '#psk' | grep -F 'psk' | cut -d= -f2"));
+        }
+        $exec .= "echo 'network={\n\tssid=\"".$WIFIssid."\"\n\tpsk=".$WIFIpass."\n\tpriority=".$WIFIprio."\n}' | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf\n";
+    }
+
+    $exec .= "sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf\n";
+    $exec .= "sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf\n";
+    $exec .= "END\n";
+    exec($exec);
 }
 ?>
 
-        <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
-        
-        <fieldset>        
+<form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
+    <fieldset>
         <!-- Form Name -->
         <legend><?php print $lang['globalWifiNetwork']; ?></legend>
 <?php
@@ -74,42 +117,114 @@ if($debug == "true") {
         '.$lang['settingsWifiRestart'].'
         </div>';
     }
-?>        
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="WIFIssid"><?php print $lang['globalSSID']; ?></label>
-          <div class="col-md-6">
-          <input value="<?php
-            if(isset($WIFIssid) && $WIFIssid != "") {
-                print $WIFIssid;
-            }
-          ?>" id="WIFIssid" name="WIFIssid" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text" required="required">
-          <span class="help-block"><?php print $lang['settingsWifiSsidHelp']; ?></span>  
-          </div>
-        </div>
-        
-        <!-- Text input-->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="WIFIpass"><?php print $lang['globalPassword']; ?></label>
-          <div class="col-md-6">
-          <input value="<?php
-            if(isset($WIFIpass) && $WIFIpass != "") {
-                print $WIFIpass;
-            }
-          ?>" id="WIFIpass" name="WIFIpass" placeholder="" class="form-control input-md" type="password" required="required">
-          <span class="help-block"></span>  
-          </div>
-        </div>
-        
-        </fieldset>
-        
-        <!-- Button (Double) -->
-        <div class="form-group">
-          <label class="col-md-4 control-label" for="submit"></label>
-          <div class="col-md-8">
+    if(isset($active_essid) && $active_essid != "") {
+        print '
+        <div class="alert alert-info">
+        '.$lang['globalSSID'].': '.$active_essid.'
+        </div>';
+    }
+?>
+        <ul class="list-group">
+<?php
+    $network_index = 0;
+    foreach ( $networks as $WIFIssid => $WIFIpass ) {
+        $WIFIprio = $priorities[$WIFIssid];
+?>
+            <li class="list-group-item">
+                <div class="row">
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="WIFIssid_<?php print $network_index; ?>"><?php
+                            if(isset($WIFIssid) && isset($active_essid) && $WIFIssid == $active_essid) {
+                                print $lang['globalSSID']."*";
+                            } else {
+                                print $lang['globalSSID'];
+                            }
+                        ?></label>
+                        <div class="col-md-6">
+                            <input value="<?php
+                                if(isset($WIFIssid) && $WIFIssid != "") {
+                                    print $WIFIssid;
+                                }
+                            ?>" id="WIFIssid_<?php print $network_index; ?>" name="WIFIssid_<?php print $network_index; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="WIFIpass_<?php print $network_index; ?>"><?php print $lang['globalPassword']; ?></label>
+                        <div class="col-md-6">
+                            <input value="<?php
+                                if(isset($WIFIpass) && $WIFIpass != "") {
+                                    print $WIFIpass;
+                                }
+                            ?>" id="WIFIpass_<?php print $network_index; ?>" name="WIFIpass_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="WIFIprio_<?php print $network_index; ?>"><?php print $lang['globalPriority']; ?></label>
+                      <div class="col-md-6">
+                          <input value="<?php
+                              if(isset($WIFIprio) && $WIFIprio != "") {
+                                  print $WIFIprio;
+                              } else {
+                                  print 0;
+                              }
+                          ?>" id="WIFIprio_<?php print $network_index; ?>" name="WIFIprio_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100">
+                          <span class="help-block"></span>
+                      </div>
+                    </div>
+                </div>
+            </li>
+<?php
+        $network_index++;
+    }
+?>
+            <li class="list-group-item">
+                <div class="row">
+                    <!-- Text input-->
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="WIFIssid_<?php print $network_index; ?>"><?php print $lang['globalSSID']; ?></label>
+                      <div class="col-md-6">
+                          <input value="" id="WIFIssid_<?php print $network_index; ?>" name="WIFIssid_<?php print $network_index; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text">
+                          <span class="help-block"><?php print $lang['settingsWifiSsidHelp']; ?></span>
+                      </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="WIFIpass_<?php print $network_index; ?>"><?php print $lang['globalPassword']; ?></label>
+                      <div class="col-md-6">
+                          <input value="" id="WIFIpass_<?php print $network_index; ?>" name="WIFIpass_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63">
+                          <span class="help-block"><?php print $lang['settingsWifiPassHelp']; ?></span>
+                      </div>
+                    </div>
+
+                    <!-- Text input-->
+                    <div class="form-group">
+                      <label class="col-md-4 control-label" for="WIFIprio_<?php print $network_index; ?>"><?php print $lang['globalPriority']; ?></label>
+                      <div class="col-md-6">
+                          <input value="0" id="WIFIprio_<?php print $network_index; ?>" name="WIFIprio_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100">
+                          <span class="help-block"><?php print $lang['settingsWifiPrioHelp']; ?></span>
+                      </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </fieldset>
+
+    <!-- Button (Double) -->
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="submit"></label>
+        <div class="col-md-8">
             <button id="submitWifi" name="submitWifi" class="btn btn-success" value="submit"><?php print $lang['globalSubmit']; ?></button>
             <br clear='all'><br>
-          </div>
         </div>
+    </div>
 
-        </form>
+</form>

@@ -11,7 +11,8 @@ include("inc.header.php");
 
 /* NO CHANGES BENEATH THIS LINE ***********/
 
-$conf['url_abs']    = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
+$conf['url_abs']    = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
 
 /*******************************************
