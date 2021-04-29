@@ -50,6 +50,6 @@ class ShutdownButton(SimpleButton):
             self.when_pressed(*args)
 
     def __repr__(self):
-        return '<ShutdownButton-{}(pin {},hold_repeat={},hold_time={})>'.format(
-            self.name, self.pin, self.hold_repeat, self.hold_time
+        return '<ShutdownButton-{}(pin {},time_pressed={},iteration_time={},led_pin={})>'.format(
+            self.name, self.pin, self.time_pressed, self.iteration_time, self.led_pin
         )
