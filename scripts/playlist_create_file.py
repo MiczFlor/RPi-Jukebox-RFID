@@ -19,8 +19,8 @@ import urllib.parse
 # ignore files will these extensions in the results:
 ignore_file_extension = ('.conf', '.ini', '.jpg', '.db', '.dat')
 # config file location
-path_config ="../settings/global.conf"
-path_debug_config ="../settings/debugLogging.conf"
+path_config_global ="../settings/global.conf"
+path_config_debug ="../settings/debugLogging.conf"
 
 ###################################
 # parse variables from command line
@@ -37,23 +37,25 @@ name_playlist = args.name_playlist
 print("# name_audiofolder: " + name_audiofolder); print("# name_playlist: " + name_playlist)
 
 # reading config files
-myvars = {}
+conf = {}
 # global config
-with open(path_config) as myfile:
+with open(path_config_global) as myfile:
     for line in myfile:
-        name, var = line.partition("=")[::2]
-        myvars[name.strip()] = var.strip()
+        if not line.lstrip().startswith('#'):
+            name, var = line.partition("=")[::2]
+            conf[name.strip()] = var.strip()
 # debugging config
-with open(path_debug_config) as myfile:
+with open(path_config_debug) as myfile:
     for line in myfile:
-        name, var = line.partition("=")[::2]
-        myvars[name.strip()] = var.strip()
+        if not line.lstrip().startswith('#'):
+            name, var = line.partition("=")[::2]
+            conf[name.strip()] = var.strip()
 
 # get relevant vars from dictionary
-phoniebox_edition = myvars['EDITION'].strip('"')
-DEBUG_playlist_recursive_by_folder = myvars['DEBUG_playlist_recursive_by_folder_php'].strip('"')
-path_name_audio = myvars['AUDIOFOLDERSPATH'].strip('"') + "/" + name_audiofolder + "/"
-path_name_playlist = myvars['PLAYLISTSFOLDERPATH'].strip('"') + "/" + name_playlist
+phoniebox_edition = conf['EDITION'].strip('"')
+DEBUG_playlist_recursive_by_folder = conf['DEBUG_playlist_recursive_by_folder_php'].strip('"')
+path_name_audio = conf['AUDIOFOLDERSPATH'].strip('"') + "/" + name_audiofolder + "/"
+path_name_playlist = conf['PLAYLISTSFOLDERPATH'].strip('"') + "/" + name_playlist
 
 print("# Phoniebox edition: " + phoniebox_edition)
 print("# Debug: " + DEBUG_playlist_recursive_by_folder)
@@ -131,7 +133,7 @@ for dir_audio in dirs_audio:
 
 # now we need to make sure the local files work for Mopidy
 if phoniebox_edition == "plusSpotify":
-    playlist_files = [urllib.parse.quote(file.replace(myvars['AUDIOFOLDERSPATH'].strip('"') + "/", 'local:track:')) for file in playlist_files]
+    playlist_files = [urllib.parse.quote(file.replace(conf['AUDIOFOLDERSPATH'].strip('"') + "/", 'local:track:')) for file in playlist_files]
     playlist_files = [file.replace('local%3Atrack%3A', 'local:track:') for file in playlist_files]
     
 # write file to playlists folder
