@@ -36,6 +36,8 @@ def exit_gracefully(esignal, frame):
 
 if __name__ == "__main__":
 
+    home = '/home/pi/RPi-Jukebox-RFID'
+
     # get absolute path of this script
     dir_path = os.path.dirname(os.path.realpath(__file__))
     defaultconfigFilePath = os.path.join(dir_path, 'phoniebox.conf')
@@ -57,7 +59,7 @@ if __name__ == "__main__":
 
     # Play Startup Sound
     volume_control = PhonieboxVolume.volume_control_alsa(listcards=False)
-    startsound_thread = threading.Thread(target=volume_control.play_wave_file, args=["../shared/startupsound.wav"])
+    startsound_thread = threading.Thread(target=volume_control.play_wave_file, args=[home + "/shared/startupsound.wav"])
     startsound_thread.start()
 
     g_nvm = nv_manager()
