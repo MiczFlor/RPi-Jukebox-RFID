@@ -21,8 +21,6 @@ class PhonieboxRpcServer:
         for addr in addrs:
             self.socket.bind(addr)
         self.socket.setsockopt(zmq.LINGER, 200)
-        print("server zmq context")
-        print(self.context)
         return self.context
 
     def execute(self, obj, cmd, param):
