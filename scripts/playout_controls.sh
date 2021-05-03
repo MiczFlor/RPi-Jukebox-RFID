@@ -164,7 +164,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -n1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
@@ -1050,7 +1050,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
+        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -n1`
         ;;
     readwifiipoverspeaker)
         # will read out the IP address over the Pi's speaker.
