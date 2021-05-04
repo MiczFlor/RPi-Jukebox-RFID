@@ -3,7 +3,7 @@ FROM debian:buster
 # Prepare Raspberry Pi like environment
 
 # These are only dependencies that are required to get as close to the
-# Raspberry Pi environment as possible. They don't include Phoniebox
+# Raspberry Pi environment as possible. They don't include Jukebox
 # specific dependencies. They will be installed in a separate install script
 RUN apt-get update && apt-get install -y \
     alsa-utils \
@@ -14,18 +14,16 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
  
-RUN cd /home && mkdir pi
-ENV HOME /home/pi/RPi-Jukebox-RFID
-ENV DEV_FOLDER ${HOME}/docker-development
+RUN usermod -aG audio,pulse,pulse-access root
 
-RUN useradd --create-home --home-dir $HOME pi \
-    && usermod -aG audio,pulse,pulse-access pi \
-    && chown -R pi:pi $HOME
+ENV HOME /root
+ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
+ENV DEV_FOLDER ${INSTALLATION_DIR}/docker-development
 
-WORKDIR $HOME
+WORKDIR $INSTALLATION_DIR
 
-# Phoniebox
-# Install all Phoniebox dependencies
+# Jukebox
+# Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     gcc lighttpd php7.3-common php7.3-cgi php7.3 php-zmq at \
@@ -38,11 +36,11 @@ RUN apt-get update && apt-get install -qq -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
-COPY . .
+COPY . ${INSTALLATION_DIR}
 
-# Install Phoniebox
-RUN chmod +x ${DEV_FOLDER}/install-phoniebox.sh ${DEV_FOLDER}/start-phoniebox.sh
-RUN ${DEV_FOLDER}/install-phoniebox.sh
+# Install Jukebox
+RUN chmod +x ${DEV_FOLDER}/install-jukebox.sh ${DEV_FOLDER}/start-jukebox.sh
+RUN ${DEV_FOLDER}/install-jukebox.sh
 
-# Run Phoniebox
-CMD ${DEV_FOLDER}/start-phoniebox.sh && bash
+# Run Jukebox
+CMD ${DEV_FOLDER}/start-jukebox.sh && bash

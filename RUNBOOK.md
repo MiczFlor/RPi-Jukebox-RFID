@@ -34,11 +34,18 @@ $ docker run -it --rm \
     -v $(PWD)/htdocs:/home/pi/RPi-Jukebox-RFID/htdocs \
     -v $(PWD)/Phoniebox:/home/pi/RPi-Jukebox-RFID/Phoniebox \
     -v $(PWD)/shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders \
-    -v ~/.config/pulse:/home/pi/RPi-Jukebox-RFID/.config/pulse \
+    -v ~/.config/pulse:/root/.config/pulse \
     -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
     -e PULSE_SERVER=docker.for.mac.localhost \
     --name phoniebox-app phoniebox
 ```
+
+#### Resources & Troubleshooting
+
+* https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container
+* https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac
+* https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile
+
 
 ## Test
 
@@ -47,12 +54,9 @@ a tunnel into the Container with a `bash` commend. You can perform any kind of c
 there. Navigate to [http://localhost:8080](http://localhost:8080) which should show the 
 Phoniebox WebUI.
 
-## Resources & Troubleshooting
 
-* https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container
-* https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac
-* https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile
-
-### Further resources
+## Further resources
 
 * https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio
+* https://mpd.fandom.com/wiki/PulseAudio
+* https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/
