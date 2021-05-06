@@ -76,8 +76,9 @@ class gpio_control():
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
                                   edge=config.get('edge', fallback='FALLING'),
-                                  hold_repeat=config.getboolean('hold_repeat', False),
-                                  hold_time=config.getfloat('hold_time', fallback=0.3),
+                                  time_pressed=config.getfloat('time_pressed', fallback=2.0),
+                                  iteration_time=config.getfloat('iteration_time', fallback=0.2),
+                                  led_pin=config.getint('led_pin', fallback=None),
                                   pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
         self.logger.warning('cannot find {}'.format(deviceName))
         return None
