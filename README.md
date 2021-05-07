@@ -25,7 +25,7 @@ The work has taken place in the Components Folder, which has been renamed to Pho
 ### Architecture
 The Fundamental Architecture looks like:
 
-[![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggTFJcbldbV0VCIFVJXSAtLS0-fFpNUXwgWihwaG9uaWVib3ggcnBjIHNlcnZlcilcbkdbR1BJT10gLS0tPnxaTVF8IFpcblFbTVFUVF0gLS0tPnxaTVF8IFpcblJbUkZJRF0gLS0tPnxaTVF8IFpcblogLS0-IFBbUExBWUVSIE1QRCBDbGFzc10gLS0-IHB5dGhvbi1tcGQyLS0-IE1bTVBEXVxuXG5aIC0tPiBWW1ZPTFVNRSBDbGFzc10gLS0-IHB5YWxzYWF1ZGlvIC0tPiBBW0FMU0FdXG5aIC0tPiBTW1NZU1RFTV0gLS0-IGV4ZWMgLS0-IHN5c3RlbWRcblMgLS0-IENPTkZJRyAtLT4gZmlsZXN5c3RlbVxuUyAtLT4gZVtleGVjXSAtLT4gd2hhdGV2ZXJcblNoZWxsIC0tPiBCW0NMSV0gLS0-IHxaTVF8IFoiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)](https://mermaid-js.github.io/mermaid-live-editor/#/edit/eyJjb2RlIjoiZ3JhcGggTFJcbldbV0VCIFVJXSAtLS0-fFpNUXwgWihwaG9uaWVib3ggcnBjIHNlcnZlcilcbkdbR1BJT10gLS0tPnxaTVF8IFpcblFbTVFUVF0gLS0tPnxaTVF8IFpcblJbUkZJRF0gLS0tPnxaTVF8IFpcblogLS0-IFBbUExBWUVSIE1QRCBDbGFzc10gLS0-IHB5dGhvbi1tcGQyLS0-IE1bTVBEXVxuXG5aIC0tPiBWW1ZPTFVNRSBDbGFzc10gLS0-IHB5YWxzYWF1ZGlvIC0tPiBBW0FMU0FdXG5aIC0tPiBTW1NZU1RFTV0gLS0-IGV4ZWMgLS0-IHN5c3RlbWRcblMgLS0-IENPTkZJRyAtLT4gZmlsZXN5c3RlbVxuUyAtLT4gZVtleGVjXSAtLT4gd2hhdGV2ZXJcblNoZWxsIC0tPiBCW0NMSV0gLS0-IHxaTVF8IFoiLCJtZXJtYWlkIjp7InRoZW1lIjoiZGVmYXVsdCJ9LCJ1cGRhdGVFZGl0b3IiOmZhbHNlfQ)
+<img src="./docs/architecture.svg">
 
 
 ## PhonieboxDaemon:
@@ -45,10 +45,10 @@ This Daemon is so far:
 
 _Next Steps here:_
 
-- [ ] reading of Config File in order to allow distributed development
+- [X] reading of Config File in order to allow distributed development
 - [ ] Refactoring as class in order to allow the exit functions to take over more tasks
 - [ ] Add Logger ?
-- [ ] Add Command Line Interface to pass config etc. (e.g to be started by systemd)
+- [X] Add Command Line Interface to pass config etc. (e.g to be started by systemd)
 
 ### rpc/PhoniboxRpcServer.py
 

@@ -1,0 +1,17 @@
+[SYSTEM]
+BOX_NAME: PhonieBox
+
+[PLAYER]
+AUDIOFOLDERSPATH:"/home/pi/RPi-Jukebox-RFID/shared/"
+PLAYLISTSFOLDERPATH:"/home/pi/RPi-Jukebox-RFID/playlists"
+MUSIC_PLAYER_STATUS: /home/pi/RPi-Jukebox-RFID/shared/music_player_status.json
+
+[RFID]
+CARDID_DATABASE: /home/pi/RPi-Jukebox-RFID/settings/phoniebox_cardid_database.json
+
+[AUDIO]
+AUDIOCARDNAME:
+AUDIOIFACENAME:
+
+[GPIO]
+GPIO_CONFIG: 

@@ -4,6 +4,8 @@
 import threading
 import sys, os.path
 import signal
+import argparse
+import configparser
 from time import sleep, time
 
 import PhonieboxVolume
@@ -15,6 +17,7 @@ from rfid_reader.PhonieboxRfidReader import RFID_Reader
 #from gpio_control import gpio_control
 
 g_nvm = None
+g_zmq_context = None
 
 def signal_handler(signal, frame):
     """ catches signal and triggers the graceful exit """
@@ -34,28 +37,35 @@ def exit_gracefully(esignal, frame):
     print ("Exiting")
     sys.exit(0)
 
+def dump_config_options(phoniebox_config,filename):
+    print ("\nDumping configig option from File:"+ filename)
+    for section in phoniebox_config.sections():
+        print ("["+section+"]")
+        options = phoniebox_config.options(section)
+        for option in options:
+            print(option+" = "+phoniebox_config.get(section, option)) 
+    print ("\n")
+
 if __name__ == "__main__":
 
     home = '/home/pi/RPi-Jukebox-RFID'
 
     # get absolute path of this script
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    defaultconfigFilePath = os.path.join(dir_path, 'phoniebox.conf')
-    # if called directly, launch Phoniebox.py as rfid-reader daemon
-    # treat the first argument as defaultconfigFilePath if given
-    if len(sys.argv) <= 1:
-        configFilePath = defaultconfigFilePath
-    else:
-        configFilePath = sys.argv[1]
+    defaultconfigFilePath = os.path.join(dir_path, '../settings/phoniebox.conf')
 
-    #parse config
-    #gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
-    #gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
-    #gpio_config.read(config_path)
+    argparser = argparse.ArgumentParser(description='The PhonieboxDaemon')
+    argparser.add_argument('configuration_file', type=argparse.FileType('r'),nargs='?',default=defaultconfigFilePath)
+    argparser.add_argument('--verbose', '-v', action='count', default=0)
+    args = argparser.parse_args()
 
-    #read config to dictionary?
-    phoniebox_config = {}
-    phoniebox_config['audiofolders_path'] = "../shared/"
+    phoniebox_config = configparser.ConfigParser(inline_comment_prefixes=";")
+    phoniebox_config.read(args.configuration_file.name)
+
+    print ("Starting the "+ phoniebox_config.get('SYSTEM', 'BOX_NAME') +" Daemon")
+    
+    if args.verbose:
+        dump_config_options(phoniebox_config,args.configuration_file.name)
 
     # Play Startup Sound
     volume_control = PhonieboxVolume.volume_control_alsa(listcards=False)
@@ -65,10 +75,10 @@ if __name__ == "__main__":
     g_nvm = nv_manager()
 
     #phoniebox music player status
-    music_player_status = g_nvm.load("../shared/music_player_status.json")
+    music_player_status = g_nvm.load(phoniebox_config.get('PLAYER', 'MUSIC_PLAYER_STATUS'))
     
     #card id database
-    cardid_database = g_nvm.load("../settings/phoniebox_cardid_database.json")
+    cardid_database = g_nvm.load(phoniebox_config.get('RFID', 'CARDID_DATABASE'))
 
     #initialize Phonibox objcts
     objects = {'volume':volume_control,
@@ -78,10 +88,10 @@ if __name__ == "__main__":
     print ("Init Phonibox RPC Server ")
     rpcs = PhonieboxRpcServer(objects)
     if rpcs != None:
-        rpcs.connect()
+        g_zmq_context = rpcs.connect()
 
     #rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-    rfid_reader = RFID_Reader("Fake")
+    rfid_reader = RFID_Reader("Fake",zmq_context=g_zmq_context)
     if rfid_reader is not None:
         rfid_reader.set_cardid_db(cardid_database)
         rfid_reader.reader.set_card_ids(list(cardid_database))     #just for Fake Reader to be aware of card numbers
@@ -90,11 +100,10 @@ if __name__ == "__main__":
         rfid_thread = None
     
     ##initialize gpio
-    #gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
     gpio_config = None
     if gpio_config is not None:
-        gpio_config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
-        gpio_config.read(config_path)
+        gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
+        gpio_config.read(phoniebox_config.get('GPIO', 'GPIO_CONFIG'))
     
         phoniebox_function_calls = function_calls.phoniebox_function_calls()
         gpio_controler = gpio_control(phoniebox_function_calls)

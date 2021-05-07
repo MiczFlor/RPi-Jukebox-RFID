@@ -13,13 +13,15 @@ class PhonieboxRpcServer:
         self.context = None
         self._keep_running = True
         
-    def connect(self,addr= None):
-        if addr == None:
-            addr = "tcp://127.0.0.1:5555"
+    def connect(self,addrs= None):
+        if addrs == None:
+            addrs = ["tcp://127.0.0.1:5555","inproc://PhonieboxRpcServer"]
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
-        self.socket.bind(addr)
+        for addr in addrs:
+            self.socket.bind(addr)
         self.socket.setsockopt(zmq.LINGER, 200)
+        return self.context
 
     def execute(self, obj, cmd, param):
         call_obj = self.objects.get(obj)
