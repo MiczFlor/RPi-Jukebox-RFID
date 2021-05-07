@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: jukebox.Dockerfile
     container_name: jukebox
-    environment:
-      - PULSE_SERVER=docker.for.mac.localhost
+    devices:
+      - /dev/snd
     ports:
       - "8080:80"
     links:
@@ -16,9 +16,6 @@ services:
     volumes:
       - ./Phoniebox:/home/pi/RPi-Jukebox-RFID/Phoniebox
       - ./shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders
-      # For Mac
-      - ~/.config/pulse:/root/.config/pulse 
-      - /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse
   
   webui:
     build:
@@ -37,10 +34,8 @@ services:
       context: .
       dockerfile: mpd.Dockerfile
     container_name: mpd
-    # devices:
-    #   - /dev/snd
-    environment:
-      - PULSE_SERVER=docker.for.mac.localhost
+    devices:
+      - /dev/snd
     ports:
       - "6600:6600"
       - "8800:8800"
@@ -49,6 +44,3 @@ services:
       - ./shared/audiofolders:/root/.config/mpd/music:rw
       - ./shared/playlists:/root/.config/mpd/playlists:rw
       - ./docker-development/config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
-      # For Mac
-      - ~/.config/pulse:/root/.config/pulse 
-      - /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse
