@@ -16,7 +16,6 @@ from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 #from gpio_control import gpio_control
 
 g_nvm = None
-g_zmq_context = None
 
 def signal_handler(signal, frame):
     """ catches signal and triggers the graceful exit """
@@ -26,6 +25,7 @@ def signal_handler(signal, frame):
 def exit_gracefully(esignal, frame):
     print ("\nGot Signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
     
+    global g_nvm
     #stop all threads
     
     #save all nv
@@ -46,7 +46,10 @@ def dump_config_options(phoniebox_config,filename):
     print ("\n")
 
 def jukebox_daemon(configuration_file=None, verbose=0):
-    
+
+    global g_nvm
+    zmq_context = None
+
     phoniebox_config = configparser.ConfigParser(inline_comment_prefixes=";")
     phoniebox_config.read(configuration_file)
 
@@ -77,10 +80,10 @@ def jukebox_daemon(configuration_file=None, verbose=0):
     print ("Init Phonibox RPC Server ")
     rpcs = PhonieboxRpcServer(objects)
     if rpcs != None:
-        g_zmq_context = rpcs.connect()
+        zmq_context = rpcs.connect()
 
     #rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-    rfid_reader = RFID_Reader("Fake",zmq_context=g_zmq_context)
+    rfid_reader = RFID_Reader("Fake",zmq_context=zmq_context)
     if rfid_reader is not None:
         rfid_reader.set_cardid_db(cardid_database)
         rfid_reader.reader.set_card_ids(list(cardid_database))     #just for Fake Reader to be aware of card numbers
