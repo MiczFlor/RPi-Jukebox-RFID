@@ -24,9 +24,9 @@ if(!file_exists("config.php")) {
         // no config nor sample config found. die.
         print "<h1>Configuration file not found</h1>
             <p>The files 'config.php' and 'config.php.sample' were not found in the
-            directory 'htdocs'. Please download 'htdocs/config.php.sample' from the
+            directory 'ui'. Please download 'ui/config.php.sample' from the
             <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
-            copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
+            copy it locally to 'ui/config.php' and then adjust it to fit your system.</p>";
         die;
     } else {
         // no config but sample config found: make copy (and give warning)
@@ -34,24 +34,24 @@ if(!file_exists("config.php")) {
             // sample config can not be copied. die.
             print "<h1>Configuration file could not be created</h1>
                 <p>The file 'config.php' was not found in the
-                directory 'htdocs'. Attempting to create this file from 'config.php.sample'
+                directory 'ui'. Attempting to create this file from 'config.php.sample'
                 resulted in an error. </p>
                 <p>
                 Are the folder settings correct? You could try to run the following commands
                 inside the folder 'RPi-Jukebox-RFID' and then reload the page:<br/>
                 <pre>
-sudo chmod -R 775 htdocs/
-sudo chgrp -R www-data htdocs/
+sudo chmod -R 775 ui/
+sudo chgrp -R www-data ui/
                 </pre>
                 </p>
-                Alternatively, download 'htdocs/config.php.sample' from the
+                Alternatively, download 'ui/config.php.sample' from the
                 <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/'>online repository</a>,
-                copy it locally to 'htdocs/config.php' and then adjust it to fit your system.</p>";
+                copy it locally to 'ui/config.php' and then adjust it to fit your system.</p>";
             die;
         } else {
             $warning = "<h4>Configuration file created</h4>
                 <p>The file 'config.php' was not found in the
-                directory 'htdocs'. A copy of the sample file 'config.php.sample' was made automatically.
+                directory 'ui'. A copy of the sample file 'config.php.sample' was made automatically.
                 If you encounter any errors, edit the newly created 'config.php'.
                 </p>
             ";
@@ -80,16 +80,16 @@ $debugAvail = array(
 );
 $debugOptions = array("TRUE", "FALSE");
 
-if(!file_exists("../settings/debugLogging.conf")) {
+if(!file_exists("../../settings/debugLogging.conf")) {
     // create file
     $debugLoggingConf = "";
     foreach($debugAvail as $debugItem) {
         $debugLoggingConf .= $debugItem."=\"FALSE\"\n";
     }
-    file_put_contents("../settings/debugLogging.conf", $debugLoggingConf);
+    file_put_contents("../../settings/debugLogging.conf", $debugLoggingConf);
 }
 // read file
-$debugLoggingConf = parse_ini_file("../settings/debugLogging.conf");
+$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
 /*
 * DEBUGGING
 * for debugging, set following var to true.
@@ -132,21 +132,22 @@ function fileGetContentOrDefault($filename, $defaultValue)
 include("func.php");
 
 // path to script folder from github repo on RPi
-$conf['scripts_abs'] = realpath(getcwd().'/../scripts/');
+$conf['scripts_abs'] = realpath(getcwd().'/../../scripts/');
 // path to shared folder from github repo on RPi
-$conf['shared_abs'] = realpath(getcwd().'/../shared/');
+$conf['shared_abs'] = realpath(getcwd().'/../../shared/');
 // path to settings folder from github repo on RPi
-$conf['settings_abs'] = realpath(getcwd().'/../settings/');
+$conf['settings_abs'] = realpath(getcwd().'/../../settings/');
 
 /*
 * Vars from the settings folder
 */
+/*
 if(!file_exists($conf['settings_abs']."/global.conf")) {
     // execute shell to create config file
     // scripts/inc.writeGlobalConfig.sh
     exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
     exec("sudo chmod 777 ".$conf['settings_abs']."/global.conf");
-}
+}*/
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);

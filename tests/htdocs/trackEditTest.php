@@ -1,7 +1,7 @@
 <?php
 namespace JukeBox;
 
-require_once 'htdocs/utils/Files.php';
+require_once 'ui/utils/Files.php';
 use JukeBox\Utils\Files;
 
 use PHPUnit\Framework\TestCase;
@@ -90,7 +90,7 @@ class TrackEditTest extends TestCase {
         $post['folder'] = Files::buildPath(sys_get_temp_dir(), TrackEditTest::SOURCE_FOLDER_NAME);
         $conf['base_url']= "localhost";
 
-        require_once 'htdocs/trackEdit.php';
+        require_once 'ui/trackEdit.php';
         $this->assertEquals($_POST['folderNew'], $post['folder']);
         $this->assertTrue(is_file($_POST['folderNew'] . DIRECTORY_SEPARATOR . TrackEditTest::FILENAME));
     }
@@ -121,6 +121,6 @@ class TrackEditTest extends TestCase {
             }
         );
 
-        require_once 'htdocs/trackEdit.php';
+        require_once 'ui/trackEdit.php';
     }
 }

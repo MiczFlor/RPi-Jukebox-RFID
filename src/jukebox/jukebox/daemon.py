@@ -4,16 +4,15 @@
 import threading
 import sys, os.path
 import signal
-import argparse
 import configparser
 from time import sleep, time
 
-import PhonieboxVolume
-import PhonieboxSystem
-from player import PhonieboxPlayerMPD
-from rpc.PhonieboxRpcServer import PhonieboxRpcServer
-from PhonieboxNvManager import nv_manager
-from rfid_reader.PhonieboxRfidReader import RFID_Reader
+import jukebox.Volume
+import jukebox.System
+from player import PlayerMPD
+from jukebox.rpc.Server import PhonieboxRpcServer
+from jukebox.NvManager import nv_manager
+from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 #from gpio_control import gpio_control
 
 g_nvm = None
@@ -46,28 +45,20 @@ def dump_config_options(phoniebox_config,filename):
             print(option+" = "+phoniebox_config.get(section, option)) 
     print ("\n")
 
-if __name__ == "__main__":
-
-    # get absolute path of this script
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    defaultconfigFilePath = os.path.join(dir_path, '../settings/phoniebox.conf')
-
-    argparser = argparse.ArgumentParser(description='The PhonieboxDaemon')
-    argparser.add_argument('configuration_file', type=argparse.FileType('r'),nargs='?',default=defaultconfigFilePath)
-    argparser.add_argument('--verbose', '-v', action='count', default=0)
-    args = argparser.parse_args()
-
+def jukebox_daemon(configuration_file=None, verbose=0):
+    
     phoniebox_config = configparser.ConfigParser(inline_comment_prefixes=";")
-    phoniebox_config.read(args.configuration_file.name)
+    phoniebox_config.read(configuration_file)
 
     print ("Starting the "+ phoniebox_config.get('SYSTEM', 'BOX_NAME') +" Daemon")
     
-    if args.verbose:
+    if verbose:
         dump_config_options(phoniebox_config,args.configuration_file.name)
 
     # Play Startup Sound
-    volume_control = PhonieboxVolume.volume_control_alsa(listcards=False)
-    startsound_thread = threading.Thread(target=volume_control.play_wave_file, args=["../shared/startupsound.wav"])
+    volume_control = jukebox.Volume.volume_control_alsa(listcards=False)
+
+    startsound_thread = threading.Thread(target=volume_control.play_wave_file, args=[phoniebox_config.get('SYSTEM', 'STARTUP_SOUND')])
     startsound_thread.start()
 
     g_nvm = nv_manager()
@@ -80,8 +71,8 @@ if __name__ == "__main__":
 
     #initialize Phonibox objcts
     objects = {'volume':volume_control,
-               'player':PhonieboxPlayerMPD.player_control(music_player_status,volume_control),
-               'system':PhonieboxSystem.system_control}
+               'player':PlayerMPD.player_control(music_player_status,volume_control),
+               'system':jukebox.System.system_control}
 
     print ("Init Phonibox RPC Server ")
     rpcs = PhonieboxRpcServer(objects)

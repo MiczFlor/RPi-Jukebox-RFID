@@ -48,7 +48,7 @@ foreach($debugAvail as $debugItem) {
     print '
                     <!-- Text input-->
                     <div class="form-group">
-                      <label class="col-md-4 control-label" for="htdocs">'.$debugItem.'</label>
+                      <label class="col-md-4 control-label" for="ui">'.$debugItem.'</label>
                       <div class="col-md-6">
                         <select id="'.$debugItem.'" name="debugLogConf['.$debugItem.']" class="form-control">';
     foreach($debugOptions as $debugOptionVal) {

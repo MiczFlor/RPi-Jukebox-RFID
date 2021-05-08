@@ -7,10 +7,10 @@ require_once("PhonieboxRpcClient.php");
 * debug? Conf file line:
 * DEBUG_WebApp_API="TRUE"
 */
-$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+$debugLoggingConf = parse_ini_file("../../../settings/debugLogging.conf");
 if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
-    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
+    file_put_contents("../../../logs/debug.log", "\n# WebApp API # " . __FILE__ , FILE_APPEND | LOCK_EX);
+    file_put_contents("../../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'] , FILE_APPEND | LOCK_EX);
 }
 
 /***
