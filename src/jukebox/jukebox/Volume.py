@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import alsaaudio
 
+
 class volume_control_alsa:
     def __init__(self, listcards=False):
         if listcards is True:
@@ -14,55 +15,58 @@ class volume_control_alsa:
         for i in alsaaudio.card_indexes():
             (name, longname) = alsaaudio.card_name(i)
             print("  %d: %s (%s)" % (i, name, longname))
-        
+
         print("\nAvailable mixer controls:")
-        for m in alsaaudio.mixers(**{ 'cardindex': 0 }):
+        for m in alsaaudio.mixers(**{'cardindex': 0}):
             print("  '%s'" % m)
 
-    
     def get(self, param):
-        return ({'volume':self.volume})
+        return ({'volume': self.volume})
 
     def set(self, param):
         volume = param.get('volume')
         if isinstance(volume, int):
-            if (volume < 0): volume = 0;
-            if (volume > 100): volume = 100;
+            if (volume < 0):
+                volume = 0
+            if (volume > 100):
+                volume = 100
             self.volume = volume
             self.mixer.setvolume(self.volume)
         else:
             volume = -1
-        return ({'volume':volume})
+        return ({'volume': volume})
 
     def inc(self, param=None):
         step = param.get('step')
         if step is None:
             step = 3
-        volume = self.volume +step
-        if (volume > 100): volume = 100
+        volume = self.volume + step
+        if (volume > 100):
+            volume = 100
         self.volume = volume
         self.mixer.setvolume(self.volume)
-        return ({'volume':self.volume})
+        return ({'volume': self.volume})
 
     def dec(self, param=None):
         step = param.get('step')
         if step is None:
             step = 3
-        volume = self.volume -step
-        if (volume < 0): volume = 0
+        volume = self.volume - step
+        if (volume < 0):
+            volume = 0
         self.volume = volume
         self.mixer.setvolume(self.volume)
-        return ({'volume':self.volume})
+        return ({'volume': self.volume})
 
-    def mute(self,param=None):
+    def mute(self, param=None):
         self.mixer.setmute(1)
         return ({})
 
-    def unmute(self,param=None):
+    def unmute(self, param=None):
         self.mixer.setmute(0)
         return ({})
 
-    def play_wave_file(self,file_name):	
+    def play_wave_file(self, file_name):
         import wave
         with wave.open(file_name, 'rb') as f:
             format = None
@@ -82,15 +86,16 @@ class volume_control_alsa:
 
             periodsize = f.getframerate() // 8
 
-            #print('%d channels, %d sampling rate, format %d, periodsize %d\n' % (f.getnchannels(),f.getframerate(), format,	 periodsize))
+            # print('%d channels, %d sampling rate, format %d, periodsize %d\n'
+            #       % (f.getnchannels(),f.getframerate(), format, periodsize))
 
-            device = alsaaudio.PCM(channels=f.getnchannels(), rate=f.getframerate(), format=format, periodsize=periodsize, device="default")
-    
+            device = alsaaudio.PCM(channels=f.getnchannels(),
+                                    rate=f.getframerate(),
+                                    format=format,
+                                    periodsize=periodsize,
+                                    device="default")
+
             data = f.readframes(periodsize)
             while data:
                 device.write(data)
                 data = f.readframes(periodsize)
-
-
-
-
