@@ -206,7 +206,7 @@ if($_POST['ACTION'] == "trackMove") {
 * So there is help needed here. Until then, I am using an ugly solution to avoid '?':
 * search and replace for Umlaute (because besides the English speaking users, there are
 * mainly German speaking Phoniebox tinkerers.
-* The function is inside the file htdocs/func.php and used here to make the metadata
+* The function is inside the file ui/func.php and used here to make the metadata
 * human readable (yet not searcheable :)
 */
 if($_POST['ACTION'] == "trackUpdate") {

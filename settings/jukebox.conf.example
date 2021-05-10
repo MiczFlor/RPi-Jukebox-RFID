@@ -1,5 +1,6 @@
 [SYSTEM]
-BOX_NAME: PhonieBox
+BOX_NAME: JukeBox
+STARTUP_SOUND: /home/pi/RPi-Jukebox-RFID/resources/startupsound.wav
 
 [PLAYER]
 AUDIOFOLDERSPATH:"/home/pi/RPi-Jukebox-RFID/shared/"
