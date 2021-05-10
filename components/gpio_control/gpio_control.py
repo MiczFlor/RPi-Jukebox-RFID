@@ -55,7 +55,7 @@ class gpio_control():
                                 bouncetime=config.getint('bouncetime', fallback=500),
                                 antibouncehack=config.getboolean('antibouncehack', fallback=False),
                                 edge=config.get('edge', fallback='FALLING'),
-                                hold_repeat=config.getboolean('hold_repeat', False),
+                                hold_mode=config.get('hold_mode', fallback=None),
                                 hold_time=config.getfloat('hold_time', fallback=0.3),
                                 pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
         elif device_type == 'LED':

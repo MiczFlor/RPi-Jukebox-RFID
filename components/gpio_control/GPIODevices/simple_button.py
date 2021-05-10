@@ -53,6 +53,7 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
     startTime = time.perf_counter()
     # Continously check if time is not over
     while True:
+        time.sleep(0.1)
         currentState = GPIO.input(gpioChannel)
         if holdingTime < (time.perf_counter() - startTime):
             break
@@ -68,10 +69,10 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 class SimpleButton:
     def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False,
-                 edge=GPIO.FALLING, hold_time=.1, hold_repeat=False, pull_up_down=GPIO.PUD_UP):
+                 edge=GPIO.FALLING, hold_time=.3, hold_mode=None, pull_up_down=GPIO.PUD_UP):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
-        self.hold_repeat = hold_repeat
+        self.hold_mode = hold_mode
         self.pull_up = True
         self.pull_up_down = parse_pull_up_down(pull_up_down)
 
@@ -97,10 +98,11 @@ class SimpleButton:
             if inval != GPIO.LOW:
                 return None
 
-        if self.hold_repeat:
-            return self.holdAndRepeatHandler(*args)
-        logger.info('{}: execute callback'.format(self.name))
-        return self.when_pressed(*args)
+        if self.hold_mode in ('Repeat', 'Postpone'):
+            return self.longPressHandler(*args)
+        else:
+            logger.info('{}: execute callback'.format(self.name))
+            return self.when_pressed(*args)
 
     @property
     def when_pressed(self):
@@ -113,20 +115,30 @@ class SimpleButton:
         self._action = func
 
         GPIO.remove_event_detect(self.pin)
-        self._action = func
         logger.info('add new action')
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
 
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
-    def holdAndRepeatHandler(self, *args):
-        logger.info('{}: holdAndRepeatHandler'.format(self.name))
-        # Rise volume as requested
-        self.when_pressed(*args)
-        # Detect holding of button
-        while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+    def longPressHandler(self, *args):
+        logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
+        # instant action (except Postpone mode)
+        if self.hold_mode != "Postpone":
             self.when_pressed(*args)
+    
+        # action(s) after hold_time
+        if self.hold_mode == "Repeat":
+            # Repeated call of action (multiple times if button is held long enough)
+            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                self.when_pressed(*args)
+        
+        elif self.hold_mode == "Postpone":
+            # Postponed call of action (once)
+            if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                self.when_pressed(*args)
+            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                pass
 
     def __del__(self):
         logger.debug('remove event detection')
@@ -139,8 +151,8 @@ class SimpleButton:
         return GPIO.input(self.pin)
 
     def __repr__(self):
-        return '<SimpleButton-{}(pin={},edge={},hold_repeat={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
-            self.name, self.pin, print_edge_key(self.edge), self.hold_repeat, self.hold_time, self.bouncetime,self.antibouncehack,print_pull_up_down(self.pull_up_down)
+        return '<SimpleButton-{}(pin={},edge={},hold_mode={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+            self.name, self.pin, print_edge_key(self.edge), self.hold_mode, self.hold_time, self.bouncetime,self.antibouncehack,print_pull_up_down(self.pull_up_down)
         )
 
 
@@ -148,5 +160,5 @@ if __name__ == "__main__":
     print('please enter pin no to test')
     pin = int(input())
     func = lambda *args: print('FunctionCall with {}'.format(args))
-    btn = SimpleButton(pin=pin, action=func, hold_repeat=True)
+    btn = SimpleButton(pin=pin, action=func, hold_mode='Repeat')
     pause()

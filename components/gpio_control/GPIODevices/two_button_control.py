@@ -68,6 +68,7 @@ class TwoButtonControl:
         self.functionCallTwoBtns = functionCallTwoBtns
         self.bcmPin1 = bcmPin1
         self.bcmPin2 = bcmPin2
+        hold_mode = None if hold_repeat else 'Repeat'
         self.btn1 = SimpleButton(
             pin=bcmPin1,
             action=lambda *args: None,
@@ -75,13 +76,13 @@ class TwoButtonControl:
             bouncetime=500,
             edge=GPIO.FALLING,
             hold_time=hold_time,
-            hold_repeat=hold_repeat)
+            hold_mode=hold_mode)
         self.btn1.callback_with_pin_argument = True
 
         self.btn2 = SimpleButton(pin=bcmPin2,
                                  action=lambda *args: None,
                                  hold_time=hold_time,
-                                 hold_repeat=hold_repeat,
+                                 hold_mode=hold_mode,
                                  name=name + 'Btn2',
                                  bouncetime=500,
                                  edge=GPIO.FALLING)
