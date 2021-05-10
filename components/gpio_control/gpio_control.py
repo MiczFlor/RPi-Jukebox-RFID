@@ -76,8 +76,9 @@ class gpio_control():
                                   action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown')),
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
+                                  antibouncehack=config.getboolean('antibouncehack', fallback=False),
                                   edge=config.get('edge', fallback='FALLING'),
-                                  time_pressed=config.getfloat('time_pressed', fallback=2.0),
+                                  hold_time=config.getfloat('hold_time', fallback=3.0),
                                   iteration_time=config.getfloat('iteration_time', fallback=0.2),
                                   led_pin=config.getint('led_pin', fallback=None),
                                   pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))

@@ -1,25 +1,24 @@
-import math
 import time
 from RPi import GPIO
 import logging
 try:
-    from simple_button import SimpleButton
+    from simple_button import SimpleButton, print_edge_key, print_pull_up_down
 except ImportError:
-    from .simple_button import SimpleButton
+    from .simple_button import SimpleButton, print_edge_key, print_pull_up_down
 
 logger = logging.getLogger(__name__)
 
 
 class ShutdownButton(SimpleButton):
 
-    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING,
-                 led_pin=None, time_pressed=2, pull_up_down=GPIO.PUD_UP, iteration_time=.2):
+    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False, edge=GPIO.FALLING,
+                 led_pin=None, hold_time=3.0, pull_up_down=GPIO.PUD_UP, iteration_time=.2):
         self.led_pin = led_pin
-        self.time_pressed = time_pressed
         self.iteration_time = iteration_time
         if self.led_pin is not None:
             GPIO.setup(self.led_pin, GPIO.OUT)
-        super(ShutdownButton, self).__init__(pin=pin, action=action, name=name, bouncetime=bouncetime, edge=edge,
+        super(ShutdownButton, self).__init__(pin=pin, action=action, name=name, bouncetime=bouncetime,
+                                             antibouncehack=antibouncehack, edge=edge, hold_time=hold_time,
                                              pull_up_down=pull_up_down
                                              )
         pass
@@ -35,21 +34,22 @@ class ShutdownButton(SimpleButton):
             logger.debug('cannot set LED to {}: no LED pin defined'.format(status))
 
     def callbackFunctionHandler(self, *args):
-        cancelled = False
-        n_checks = math.ceil(self.time_pressed / self.iteration_time)
-        logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s: {}'.format(
-            self.time_pressed, self.iteration_time, n_checks
+        logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s'.format(
+            self.hold_time, self.iteration_time
         ))
-        for x in range(n_checks):
-            self.set_led(x & 1)
-            time.sleep(.2)
-            cancelled = not self.is_pressed
-            if cancelled:
+        t_passed = 0
+        led_state = True
+        while t_passed < self.hold_time:
+            self.set_led(led_state)
+            time.sleep(self.iteration_time)
+            t_passed += self.iteration_time
+            led_state = not led_state
+            if not self.is_pressed:
                 break
-        if not cancelled:
+        if t_passed >= self.hold_time:
             # trippel off period to indicate command accepted
-            time.sleep(.6)
             self.set_led(GPIO.HIGH)
+            time.sleep(.6)
             # leave it on for the moment, it will be off when the system is down
             self.when_pressed(*args)
         else:
@@ -57,6 +57,6 @@ class ShutdownButton(SimpleButton):
             self.set_led(GPIO.LOW)
 
     def __repr__(self):
-        return '<ShutdownButton-{}(pin {},time_pressed={},iteration_time={},led_pin={})>'.format(
-            self.name, self.pin, self.time_pressed, self.iteration_time, self.led_pin
+        return '<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+            self.name, self.pin, self.hold_time, self.iteration_time, self.led_pin, print_edge_key(self.edge), self.bouncetime,self.antibouncehack, print_pull_up_down(self.pull_up_down)
         )
