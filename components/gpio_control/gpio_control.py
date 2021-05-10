@@ -53,6 +53,7 @@ class gpio_control():
                                 action=self.getFunctionCall(config.get('functionCall')),
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
+                                antibouncehack=config.getboolean('antibouncehack', fallback=False),
                                 edge=config.get('edge', fallback='FALLING'),
                                 hold_repeat=config.getboolean('hold_repeat', False),
                                 hold_time=config.getfloat('hold_time', fallback=0.3),

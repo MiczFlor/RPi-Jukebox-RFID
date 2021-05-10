@@ -6,34 +6,44 @@ GPIO.setmode(GPIO.BCM)
 
 logger = logging.getLogger(__name__)
 
+map_edge_parse = {'falling':GPIO.FALLING, 'rising':GPIO.RISING, 'both':GPIO.BOTH}
+map_pull_parse = {'pull_up':GPIO.PUD_UP, 'pull_down':GPIO.PUD_DOWN, 'pull_off':GPIO.PUD_OFF}
+map_edge_print = {GPIO.FALLING: 'falling', GPIO.RISING: 'rising', GPIO.BOTH: 'both'}
+map_pull_print = {GPIO.PUD_UP:'pull_up', GPIO.PUD_DOWN: 'pull_down', GPIO.PUD_OFF: 'pull_off'}
 
 def parse_edge_key(edge):
     if edge in [GPIO.FALLING, GPIO.RISING, GPIO.BOTH]:
-        edge
-    elif edge.lower() == 'falling':
-        edge = GPIO.FALLING
-    elif edge.lower() == 'raising':
-        edge = GPIO.RISING
-    elif edge.lower() == 'both':
-        edge = GPIO.BOTH
-    else:
+        return edge
+    try:
+        result = map_edge_parse[edge.lower()]
+    except KeyError:
+        result = edge
         raise KeyError('Unknown Edge type {edge}'.format(edge=edge))
-    return edge
-
+    return result
 
 def parse_pull_up_down(pull_up_down):
     if pull_up_down in [GPIO.PUD_UP, GPIO.PUD_DOWN, GPIO.PUD_OFF]:
-        pull_up_down
-    elif pull_up_down.lower() == 'pull_up':
-        pull_up_down = GPIO.PUD_UP
-    elif pull_up_down.lower() == 'pull_down':
-        pull_up_down = GPIO.PUD_DOWN
-    elif pull_up_down.lower() == 'pull_off':
-        pull_up_down = GPIO.PUD_OFF
-    else:
+        return pull_up_down
+    try:
+        result = map_pull_parse[pull_up_down]
+    except KeyError:
+        result = pull_up_down
         raise KeyError('Unknown Pull Up/Down type {pull_up_down}'.format(pull_up_down=pull_up_down))
-    return pull_up_down
+    return result
 
+def print_edge_key(edge):
+    try:
+        result = map_edge_print[edge]
+    except KeyError:
+        result = edge
+    return result
+
+def print_pull_up_down(pull_up_down):
+    try:
+        result = map_pull_print[pull_up_down]
+    except KeyError:
+        result = pull_up_down
+    return result
 
 # This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
 # It checks if the GPIO is in the state since the function was called. If the state
@@ -57,8 +67,8 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class SimpleButton:
-    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, edge=GPIO.FALLING,
-                 hold_time=.1, hold_repeat=False, pull_up_down=GPIO.PUD_UP):
+    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False,
+                 edge=GPIO.FALLING, hold_time=.1, hold_repeat=False, pull_up_down=GPIO.PUD_UP):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_repeat = hold_repeat
@@ -68,6 +78,7 @@ class SimpleButton:
         self.pin = pin
         self.name = name
         self.bouncetime = bouncetime
+        self.antibouncehack = antibouncehack
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)
         self._action = action
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
@@ -79,6 +90,12 @@ class SimpleButton:
             logger.debug('Remove pin argument by callbackFunctionHandler - args before: {}'.format(args))
             args = args[1:]
             logger.debug('args after: {}'.format(args))
+
+        if self.antibouncehack: 
+            time.sleep(0.1)
+            inval = GPIO.input(self.pin)
+            if inval != GPIO.LOW:
+                return None
 
         if self.hold_repeat:
             return self.holdAndRepeatHandler(*args)
@@ -122,8 +139,8 @@ class SimpleButton:
         return GPIO.input(self.pin)
 
     def __repr__(self):
-        return '<SimpleButton-{}(pin {},hold_repeat={},hold_time={})>'.format(
-            self.name, self.pin, self.hold_repeat, self.hold_time
+        return '<SimpleButton-{}(pin={},edge={},hold_repeat={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+            self.name, self.pin, print_edge_key(self.edge), self.hold_repeat, self.hold_time, self.bouncetime,self.antibouncehack,print_pull_up_down(self.pull_up_down)
         )
 
 
