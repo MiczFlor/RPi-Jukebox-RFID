@@ -69,6 +69,21 @@ class phoniebox_function_calls:
     def functionCallPlayerSeekBack(self, *args):
         function_call("{command} -c=playerseek -v=-10".format(command=self.playout_control), shell=True)
 
+    def functionCallPlayerSeekFarFwd(self, *args):
+        function_call("{command} -c=playerseek -v=+60".format(command=self.playout_control), shell=True)
+
+    def functionCallPlayerSeekFarBack(self, *args):
+        function_call("{command} -c=playerseek -v=-60".format(command=self.playout_control), shell=True)
+
+    def functionCallPlayerRandomTrack(self, *args):
+        function_call("{command} -c=randomtrack".format(command=self.playout_control), shell=True)
+
+    def functionCallPlayerRandomCard(self, *args):
+        function_call("{command} -c=randomcard".format(command=self.playout_control), shell=True)
+
+    def functionCallPlayerRandomFolder(self, *args):
+        function_call("{command} -c=randomfolder".format(command=self.playout_control), shell=True)
+
     def functionCallBluetoothToggle(self, *args):
         function_call("{command} -c=bluetoothtoggle -v=toggle".format(command=self.playout_control), shell=True)
 

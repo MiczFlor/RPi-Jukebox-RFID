@@ -160,8 +160,6 @@ functionCallDown: functionCallVolD
 functionCallUp: functionCallVolU
 ```
 
-TODO: details ...
-
 ## StatusLED<a name="doc_sled"></a> 
 A  StatusLED can be created using an `ini` entry like this:
 ```
@@ -174,10 +172,55 @@ Pin: 14
 
 Note: If you prefer, you may also use `Type: MPDStatusLED` instead of `Type: StatusLED` - this makes no difference.
 
+## Further examples
+By tapping the potential of the features presented above, you can create buttons like this:
+
+### Play random tracks or folders
+If you have buttons to navigate to the next/previous track it might be a good idea to define that holding these buttons for a certain time (e.g. 2 seconds) will activate a random (surpise!) track or even folder/card. This might look like this
+
+```
+[NextOrRand]
+enabled: True
+Type:  Button
+Pin: 24
+pull_up_down: pull_up
+hold_time: 2.0
+hold_mode: SecondFunc
+functionCall: functionCallPlayerNext
+functionCall2: functionCallPlayerRandomTrack
+
+[PrevOrRand]
+enabled: True
+Type:  Button
+Pin: 25
+pull_up_down: pull_up
+hold_time: 2.0
+hold_mode: SecondFunc
+functionCall: functionCallPlayerPrev
+functionCall2: functionCallPlayerRandomFolder
+```
+
+### Short and long jumps
+If you are using two buttons to jump backwards or forwards within the current track, you can use the repeated hold action to allow larger jumps:
+```
+[SkipForward]
+enabled: True
+Type:  Button
+Pin: 24
+pull_up_down: pull_up
+hold_time: 5.0
+hold_mode: SecondFuncRepeat
+functionCall: functionCallPlayerSeekFwd
+functionCall2: functionCallPlayerSeekFarFwd
+```
+In this example, a short press initiates a short jump forward by 10 seconds (functionCallPlayerSeekFwd) while holding the button will cause further, longer jumps. In this case it will cause a jump of 1 minute forward  (functionCallPlayerSeekFarFwd) every 5 seconds. If you wish, you can adjust these values in `components/gpio_control/function_calls.py`.
+For jumping backwards, this can be done equivalently (see [function list below](#doc_funcs)).
+
+
 ## Functions<a name="doc_funcs"></a> 
 The available functions are defined/implemented in `components/gpio_control/function_calls.py`:
 * **functionCallShutdown**: System shutdown
-* **functionCallVolU**: Volupe up
+* **functionCallVolU**: Volume up
 * **functionCallVolD**: Volume down
 * **functionCallVol0**: Mute
 * **functionCallPlayerNext**: Next track
@@ -191,7 +234,11 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallPlayerStop**: Stop Player
 * **functionCallPlayerSeekFwd**: Seek 10 seconds forward
 * **functionCallPlayerSeekBack**: Seek 10 seconds backward
-
+* **functionCallPlayerSeekFarFwd**: Seek 1 minute forward
+* **functionCallPlayerSeekFarBack**: Seek 1 minute backward
+* **functionCallPlayerRandomTrack**: Jumps to random track (within current playlist)
+* **functionCallPlayerRandomCard**: Activate a random card
+* **functionCallPlayerRandomFolder**: Play a random folder
 
 ## Troubleshooting<a name="doc_trouble"></a> 
 If you encounter bouncing effects with your buttons like unrequested/double actions after releasing a button, you can try to set `antibouncehack` to True:
