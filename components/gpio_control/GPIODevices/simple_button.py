@@ -68,8 +68,8 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class SimpleButton:
-    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False,
-                 edge=GPIO.FALLING, hold_time=.3, hold_mode=None, pull_up_down=GPIO.PUD_UP):
+    def __init__(self, pin, action=lambda *args: None, action2=lambda *args: None, name=None,
+                 bouncetime=500, antibouncehack=False, edge=GPIO.FALLING, hold_time=.3, hold_mode=None, pull_up_down=GPIO.PUD_UP):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_mode = hold_mode
@@ -82,6 +82,7 @@ class SimpleButton:
         self.antibouncehack = antibouncehack
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)
         self._action = action
+        self._action2 = action2
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
         self.callback_with_pin_argument = False
@@ -98,7 +99,7 @@ class SimpleButton:
             if inval != GPIO.LOW:
                 return None
 
-        if self.hold_mode in ('Repeat', 'Postpone'):
+        if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc'):
             return self.longPressHandler(*args)
         else:
             logger.info('{}: execute callback'.format(self.name))
@@ -108,6 +109,11 @@ class SimpleButton:
     def when_pressed(self):
         logger.info('{}: action'.format(self.name))
         return self._action
+
+    @property
+    def when_held(self):
+        logger.info('{}: action2'.format(self.name))
+        return self._action2
 
     @when_pressed.setter
     def when_pressed(self, func):
@@ -129,14 +135,21 @@ class SimpleButton:
     
         # action(s) after hold_time
         if self.hold_mode == "Repeat":
-            # Repeated call of action (multiple times if button is held long enough)
+            # Repeated call of main action (multiple times if button is held long enough)
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_pressed(*args)
         
         elif self.hold_mode == "Postpone":
-            # Postponed call of action (once)
+            # Postponed call of main action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_pressed(*args)
+            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                pass
+                
+        elif self.hold_mode == "SecondFunc":
+            # Call of secondary action (once)
+            if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                self.when_held(*args)
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 pass
 

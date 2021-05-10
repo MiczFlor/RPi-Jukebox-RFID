@@ -51,6 +51,7 @@ class gpio_control():
         elif device_type in ('Button', 'SimpleButton'):
             return SimpleButton(config.getint('Pin'),
                                 action=self.getFunctionCall(config.get('functionCall')),
+                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None')),
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
                                 antibouncehack=config.getboolean('antibouncehack', fallback=False),
