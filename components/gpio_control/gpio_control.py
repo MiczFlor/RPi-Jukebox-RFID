@@ -44,9 +44,12 @@ class gpio_control():
                 self.getFunctionCall(config.get('functionCall1')),
                 self.getFunctionCall(config.get('functionCall2')),
                 functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons')),
-                pull_up=config.getboolean('pull_up', fallback=True),
-                hold_repeat=config.getboolean('hold_repeat', False),
+                pull_up_down=config.get('pull_up_down', fallback='pull_up'),
+                hold_mode=config.get('hold_mode', fallback=None),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
+                bouncetime=config.getint('bouncetime', fallback=500),
+                edge=config.get('edge', fallback='falling'),
+                antibouncehack=config.getboolean('antibouncehack', fallback=False),
                 name=deviceName)
         elif device_type in ('Button', 'SimpleButton'):
             return SimpleButton(config.getint('Pin'),
@@ -55,10 +58,10 @@ class gpio_control():
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
                                 antibouncehack=config.getboolean('antibouncehack', fallback=False),
-                                edge=config.get('edge', fallback='FALLING'),
+                                edge=config.get('edge', fallback='falling'),
                                 hold_mode=config.get('hold_mode', fallback=None),
                                 hold_time=config.getfloat('hold_time', fallback=0.3),
-                                pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
+                                pull_up_down=config.get('pull_up_down', fallback='pull_up'))
         elif device_type == 'LED':
             return LED(config.getint('Pin'),
                                 name=deviceName,
@@ -78,11 +81,11 @@ class gpio_control():
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
                                   antibouncehack=config.getboolean('antibouncehack', fallback=False),
-                                  edge=config.get('edge', fallback='FALLING'),
+                                  edge=config.get('edge', fallback='falling'),
                                   hold_time=config.getfloat('hold_time', fallback=3.0),
                                   iteration_time=config.getfloat('iteration_time', fallback=0.2),
                                   led_pin=config.getint('led_pin', fallback=None),
-                                  pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
+                                  pull_up_down=config.get('pull_up_down', fallback='pull_up'))
         self.logger.warning('cannot find {}'.format(deviceName))
         return None
 

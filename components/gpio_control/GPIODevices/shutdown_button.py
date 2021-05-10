@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 class ShutdownButton(SimpleButton):
 
-    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False, edge=GPIO.FALLING,
-                 led_pin=None, hold_time=3.0, pull_up_down=GPIO.PUD_UP, iteration_time=.2):
+    def __init__(self, pin, action=lambda *args: None, name=None, bouncetime=500, antibouncehack=False, edge='falling',
+                 led_pin=None, hold_time=3.0, pull_up_down='pull_up', iteration_time=.2):
         self.led_pin = led_pin
         self.iteration_time = iteration_time
         if self.led_pin is not None:

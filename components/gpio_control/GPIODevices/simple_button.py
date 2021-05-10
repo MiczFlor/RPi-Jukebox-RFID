@@ -69,7 +69,7 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 class SimpleButton:
     def __init__(self, pin, action=lambda *args: None, action2=lambda *args: None, name=None,
-                 bouncetime=500, antibouncehack=False, edge=GPIO.FALLING, hold_time=.3, hold_mode=None, pull_up_down=GPIO.PUD_UP):
+                 bouncetime=500, antibouncehack=False, edge='falling', hold_time=.3, hold_mode=None, pull_up_down='pull_up'):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_mode = hold_mode
