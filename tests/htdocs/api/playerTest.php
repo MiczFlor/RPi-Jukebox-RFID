@@ -16,7 +16,7 @@ class PlayerTest extends TestCase {
                 "DEBUG_WebApp_API" => "FALSE"
             ));
         $_SERVER['REQUEST_METHOD'] = '';
-        require_once 'htdocs/api/player.php';
+        require_once 'ui/api/player.php';
     }
 
     public function testReturnHandleGet() {

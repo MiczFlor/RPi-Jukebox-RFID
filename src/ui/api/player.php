@@ -32,11 +32,11 @@ $command_map = array(
 * debug? Conf file line:
 * DEBUG_WebApp_API="TRUE"
 */
-$debugLoggingConf = parse_ini_file("../../settings/debugLogging.conf");
+$debugLoggingConf = parse_ini_file("../../../settings/debugLogging.conf");
 
 if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-    file_put_contents("../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
-    file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
+    file_put_contents("../../../logs/debug.log", "\n# WebApp API # " . __FILE__, FILE_APPEND | LOCK_EX);
+    file_put_contents("../../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
 }
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     handlePut();
@@ -50,13 +50,13 @@ function handlePut() {
     global $debugLoggingConf;
     global $command_map;
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handlePut() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../../logs/debug.log", "\n  # function handlePut() ", FILE_APPEND | LOCK_EX);
     }
 
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # \$json['command']:" . $json['command'], FILE_APPEND | LOCK_EX);
+        file_put_contents("../../../logs/debug.log", "\n  # \$json['command']:" . $json['command'], FILE_APPEND | LOCK_EX);
     }
     $inputCommand = $json['command'];
     $inputValue = $json['value'] ?? "";
@@ -119,8 +119,8 @@ function handleGet() {
     */
 
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);
-        file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
+        file_put_contents("../../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
     }
 
     header('Content-Type: application/json');

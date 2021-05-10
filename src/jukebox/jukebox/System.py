@@ -4,13 +4,13 @@
 class system_control:
     def __init__(self):
         self.init = 1
-         
+
     def shutdown(self, param=None):
-        print ("shutdown")
+        print("shutdown")
         return ({})
 
     def reboot(self, param=None):
-        print ("reboot")
+        print("reboot")
         return ({})
 
     def settings_get(self, param):

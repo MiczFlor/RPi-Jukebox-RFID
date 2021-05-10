@@ -16,7 +16,7 @@ class PlayListTest extends TestCase {
                 "DEBUG_WebApp_API" => "FALSE"
             ));
         $_SERVER['REQUEST_METHOD'] = '';
-        require_once 'htdocs/api/playlist.php';
+        require_once 'ui/api/playlist.php';
     }
 
     /**

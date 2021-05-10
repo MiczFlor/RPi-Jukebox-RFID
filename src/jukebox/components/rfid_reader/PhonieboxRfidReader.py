@@ -10,7 +10,7 @@ import sys
 
 import logging
 
-from rpc.PhonieboxRpcClient import PhonieboxRpcClient
+from jukebox.rpc.client import PhonieboxRpcClient
 
 #from evdev import InputDevice, categorize, ecodes, list_devices
 
