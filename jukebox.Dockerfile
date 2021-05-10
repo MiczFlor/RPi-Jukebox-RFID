@@ -27,7 +27,7 @@ WORKDIR $INSTALLATION_DIR
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    gcc lighttpd php7.3-common php7.3-cgi php7.3 php-zmq at \
+    gcc lighttpd at \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
     python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 #samba samba-common-bin
@@ -38,7 +38,6 @@ RUN apt-get update && apt-get install -qq -y \
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
 COPY . ${INSTALLATION_DIR}
-COPY ./misc/audiofiletype02.wav ./shared/startupsound.wav
 
 # Install Jukebox
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/Phoniebox/requirements.txt
@@ -46,5 +45,4 @@ RUN chmod +x ${DEV_FOLDER}/install-jukebox.sh ${DEV_FOLDER}/start-jukebox.sh
 RUN ${DEV_FOLDER}/install-jukebox.sh
 
 # Run Jukebox
-# CMD ${DEV_FOLDER}/start-jukebox.sh
-CMD bash
+CMD python ${INSTALLATION_DIR}/Phoniebox/PhonieboxDaemon.py

@@ -15,7 +15,7 @@ services:
     tty: true
     volumes:
       - ./Phoniebox:/home/pi/RPi-Jukebox-RFID/Phoniebox
-      - ./shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders
+      - ./shared:/home/pi/RPi-Jukebox-RFID/shared
   
   webui:
     build:
@@ -28,6 +28,8 @@ services:
     tty: true
     volumes:
       - ./htdocs:/home/pi/RPi-Jukebox-RFID/htdocs
+      - ./settings:/home/pi/RPi-Jukebox-RFID/settings
+      - ./shared:/home/pi/RPi-Jukebox-RFID/shared
 
   mpd:
     build:
