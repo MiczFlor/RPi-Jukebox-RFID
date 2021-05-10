@@ -99,7 +99,7 @@ class SimpleButton:
             if inval != GPIO.LOW:
                 return None
 
-        if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc'):
+        if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc', 'SecondFuncRepeat'):
             return self.longPressHandler(*args)
         else:
             logger.info('{}: execute callback'.format(self.name))
@@ -132,7 +132,7 @@ class SimpleButton:
         # instant action (except Postpone mode)
         if self.hold_mode != "Postpone":
             self.when_pressed(*args)
-    
+        
         # action(s) after hold_time
         if self.hold_mode == "Repeat":
             # Repeated call of main action (multiple times if button is held long enough)
@@ -145,14 +145,19 @@ class SimpleButton:
                 self.when_pressed(*args)
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 pass
-                
+        
         elif self.hold_mode == "SecondFunc":
             # Call of secondary action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 pass
-
+        
+        elif self.hold_mode == "SecondFuncRepeat":
+            # Repeated call of secondary action (multiple times if button is held long enough)
+            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                self.when_held(*args)
+        
     def __del__(self):
         logger.debug('remove event detection')
         GPIO.remove_event_detect(self.pin)
