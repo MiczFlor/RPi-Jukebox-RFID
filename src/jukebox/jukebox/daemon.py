@@ -75,9 +75,12 @@ class JukeBox:
         # load card id database
         cardid_database = self.nvm.load(self.config.get('RFID', 'CARDID_DATABASE'))
 
+        # MPD Configs
+        mpd_host = self.config.get('SYSTEM', 'MPD_HOST')
+
         # initialize Jukebox objcts
         objects = {'volume': volume_control,
-                   'player': PlayerMPD.player_control(music_player_status, volume_control),
+                   'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
                    'system': jukebox.System.system_control}
 
         if self.verbose:
