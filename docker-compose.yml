@@ -14,7 +14,8 @@ services:
       - mpd
     tty: true
     volumes:
-      - ./Phoniebox:/home/pi/RPi-Jukebox-RFID/Phoniebox
+      - ./src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
+      - ./settings:/home/pi/RPi-Jukebox-RFID/settings
       - ./shared:/home/pi/RPi-Jukebox-RFID/shared
   
   webui:
@@ -27,7 +28,7 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ./htdocs:/home/pi/RPi-Jukebox-RFID/htdocs
+      - ./src/ui:/home/pi/RPi-Jukebox-RFID/src/ui
       - ./settings:/home/pi/RPi-Jukebox-RFID/settings
       - ./shared:/home/pi/RPi-Jukebox-RFID/shared
 

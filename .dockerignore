@@ -1,4 +1,3 @@
-htdocs
-Phoniebox
-!Phoniebox/requirements.txt
+src
+!src/jukebox/requirements.txt
 shared/audiofolders

@@ -12,12 +12,11 @@ WORKDIR $INSTALLATION_DIR
 
 COPY . ${INSTALLATION_DIR}
 
-RUN chmod +x ${DEV_FOLDER}/install-jukebox.sh ${DEV_FOLDER}/start-webui.sh
-RUN ${DEV_FOLDER}/install-jukebox.sh
+RUN chmod +x ${DEV_FOLDER}/start-webui.sh
 
-COPY ./misc/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
-COPY ./misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
-COPY ./misc/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
+COPY ./resources/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
+COPY ./resources/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
+COPY ./resources/sampleconfigs/php.ini.buster-default.sample /etc/php/7.3/cgi/php.ini
 RUN mkdir ${INSTALLATION_DIR}/htdocs && \
     chown -R root:www-data ${INSTALLATION_DIR}/htdocs && \
     chmod -R 750 ${INSTALLATION_DIR}/htdocs
