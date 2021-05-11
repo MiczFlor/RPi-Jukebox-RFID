@@ -6,7 +6,6 @@ import sys
 import signal
 import configparser
 
-
 import jukebox.Volume
 import jukebox.System
 from player import PlayerMPD
@@ -77,9 +76,12 @@ def jukebox_daemon(configuration_file, verbose=0):
     # load card id database
     cardid_database = g_nvm.load(phoniebox_config.get('RFID', 'CARDID_DATABASE'))
 
+    # MPD Configs
+    mpd_host = phoniebox_config.get('SYSTEM', 'MPD_HOST')
+
     # initialize Jukebox objcts
     objects = {'volume': volume_control,
-               'player': PlayerMPD.player_control(music_player_status, volume_control),
+               'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
                'system': jukebox.System.system_control}
 
     print("Init Jukebox RPC Server ")

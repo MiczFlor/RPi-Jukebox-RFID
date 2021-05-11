@@ -5,7 +5,8 @@ from mpd import MPDClient
 
 
 class player_control:
-    def __init__(self, music_player_status, volume_control=None):
+    def __init__(self, mpd_host, music_player_status, volume_control=None):
+        self.mpd_host = mpd_host
         self.volume_control = volume_control
         self.music_player_status = music_player_status
 
@@ -29,7 +30,7 @@ class player_control:
                 print("Last Played Folder: " + last_played_folder)
 
     def connect(self):
-        self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
+        self.mpd_client.connect(self.mpd_host, 6600)
 
     def mpd_retry(self, mpd_cmd, params=None):
         try:
