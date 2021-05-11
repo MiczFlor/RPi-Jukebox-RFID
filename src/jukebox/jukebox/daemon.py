@@ -6,123 +6,121 @@ import sys
 import signal
 import configparser
 
-
 import jukebox.Volume
 import jukebox.System
 from player import PlayerMPD
-from jukebox.rpc.Server import PhonieboxRpcServer
+from jukebox.rpc.Server import RpcServer
 from jukebox.NvManager import nv_manager
 from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 # from gpio_control import gpio_control
 
-g_nvm = None
 
+class JukeBox:
+    def __init__(self, configuration_file, verbose=0):
+        self.verbose = verbose
+        self.nvm = nv_manager()
+        self.zmq_context = None
 
-def signal_handler(signal, frame):
-    """ catches signal and triggers the graceful exit """
-    print("Caught signal {}, exiting...".format(signal))
-    exit_gracefully(signal, frame)
+        self.config = configparser.ConfigParser(inline_comment_prefixes=";")
+        self.config.read(configuration_file)
 
+        print("Starting the " + self.config.get('SYSTEM', 'BOX_NAME') + " Daemon")
 
-def exit_gracefully(esignal, frame):
-    print("\nGot Signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
+        if verbose > 1:
+            self.dump_config_options(self.config, configuration_file)
 
-    global g_nvm
-    # TODO: stop all threads
+        # setup the signal listeners
+        signal.signal(signal.SIGINT, self.signal_handler)
+        signal.signal(signal.SIGTERM, self.signal_handler)
 
-    # save all nonvolatile data
-    g_nvm.save_all()
-    # TODO: play stop (maybe)
-    # TODO: implement shutdown ()
+    def dump_config_options(self, config, filename):
+        print("\nDumping configig option from File:" + filename)
+        for section in config.sections():
+            print("[" + section + "]")
+            options = config.options(section)
+            for option in options:
+                print(option + " = " + config.get(section, option))
+            print("\n")
 
-    print("Exiting")
-    sys.exit(0)
+    def signal_handler(self, esignal, frame):
+        # catches signal and triggers the graceful exit
+        print("------------------------\nCaught signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
+        self.exit_gracefully()
 
+    def exit_gracefully(self):
+        # TODO: play stop
+        # TODO: Iterate over objects and tell them to exit
+        # TODO: stop all threads
 
-def dump_config_options(phoniebox_config, filename):
-    print("\nDumping configig option from File:" + filename)
-    for section in phoniebox_config.sections():
-        print("[" + section + "]")
-        options = phoniebox_config.options(section)
-        for option in options:
-            print(option + " = " + phoniebox_config.get(section, option))
-    print("\n")
+        # save all nonvolatile data
+        self.nvm.save_all()
 
+        # TODO: implement shutdown ()
 
-def jukebox_daemon(configuration_file, verbose=0):
+        if self.verbose:
+            print("Exiting")
+        sys.exit(0)
 
-    global g_nvm
-    zmq_context = None
+    def run(self):
+        # Play Startup Sound
+        volume_control = jukebox.Volume.volume_control_alsa(listcards=False)
 
-    phoniebox_config = configparser.ConfigParser(inline_comment_prefixes=";")
-    phoniebox_config.read(configuration_file)
+        startsound_thread = threading.Thread(target=volume_control.play_wave_file,
+                                             args=[self.config.get('SYSTEM', 'STARTUP_SOUND')])
+        startsound_thread.start()
 
-    print("Starting the " + phoniebox_config.get('SYSTEM', 'BOX_NAME') + " Daemon")
+        # load music player status
+        music_player_status = self.nvm.load(self.config.get('PLAYER', 'MUSIC_PLAYER_STATUS'))
 
-    if verbose:
-        dump_config_options(phoniebox_config, configuration_file)
+        # load card id database
+        cardid_database = self.nvm.load(self.config.get('RFID', 'CARDID_DATABASE'))
 
-    # Play Startup Sound
-    volume_control = jukebox.Volume.volume_control_alsa(listcards=False)
+        # initialize Jukebox objcts
+        objects = {'volume': volume_control,
+                   'player': PlayerMPD.player_control(music_player_status, volume_control),
+                   'system': jukebox.System.system_control}
 
-    startsound_thread = threading.Thread(target=volume_control.play_wave_file,
-                                         args=[phoniebox_config.get('SYSTEM', 'STARTUP_SOUND')])
-    startsound_thread.start()
+        if self.verbose:
+            print("Init Jukebox RPC Server ")
+        rpcserver = RpcServer(objects)
+        if rpcserver is not None:
+            self.zmq_context = rpcserver.connect()
 
-    g_nvm = nv_manager()
+        # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
+        rfid_reader = RFID_Reader("Fake", zmq_context=self.zmq_context)
+        if rfid_reader is not None:
+            rfid_reader.set_cardid_db(cardid_database)
+            rfid_reader.reader.set_card_ids(list(cardid_database))     # just for Fake Reader to be aware of card ids
+            rfid_thread = threading.Thread(target=rfid_reader.run)
+        else:
+            rfid_thread = None
 
-    # load music player status
-    music_player_status = g_nvm.load(phoniebox_config.get('PLAYER', 'MUSIC_PLAYER_STATUS'))
+        # initialize gpio
+        # TODO: GPIO not yet integrated
+        gpio_config = None
+        if gpio_config is not None:
+            gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
+            gpio_config.read(self.config.get('GPIO', 'GPIO_CONFIG'))
 
-    # load card id database
-    cardid_database = g_nvm.load(phoniebox_config.get('RFID', 'CARDID_DATABASE'))
+            # phoniebox_function_calls = function_calls.phoniebox_function_calls()
+            # gpio_controler = gpio_control(phoniebox_function_calls)
 
-    # initialize Jukebox objcts
-    objects = {'volume': volume_control,
-               'player': PlayerMPD.player_control(music_player_status, volume_control),
-               'system': jukebox.System.system_control}
+            # devices = gpio_controler.get_all_devices(config)
+            # gpio_controler.print_all_devices()
+            # gpio_thread = threading.Thread(target=gpio_controler.gpio_loop)
+        else:
+            gpio_thread = None
 
-    print("Init Jukebox RPC Server ")
-    rpcs = PhonieboxRpcServer(objects)
-    if rpcs is not None:
-        zmq_context = rpcs.connect()
-
-    # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-    rfid_reader = RFID_Reader("Fake", zmq_context=zmq_context)
-    if rfid_reader is not None:
-        rfid_reader.set_cardid_db(cardid_database)
-        rfid_reader.reader.set_card_ids(list(cardid_database))     # just for Fake Reader to be aware of card numbers
-        rfid_thread = threading.Thread(target=rfid_reader.run)
-    else:
-        rfid_thread = None
-
-    # initialize gpio
-    # TODO: GPIO not yet integreted
-    gpio_config = None
-    if gpio_config is not None:
-        gpio_config = configparser.ConfigParser(inline_comment_prefixes=";")
-        gpio_config.read(phoniebox_config.get('GPIO', 'GPIO_CONFIG'))
-
-        # phoniebox_function_calls = function_calls.phoniebox_function_calls()
-        # gpio_controler = gpio_control(phoniebox_function_calls)
-
-        # devices = gpio_controler.get_all_devices(config)
-        # gpio_controler.print_all_devices()
-        # gpio_thread = threading.Thread(target=gpio_controler.gpio_loop)
-    else:
-        gpio_thread = None
-
-    # setup the signal listeners
-    signal.signal(signal.SIGINT, exit_gracefully)
-    signal.signal(signal.SIGTERM, exit_gracefully)
-
-    # Start threads and RPC Server
-    if rpcs is not None:
-        if gpio_thread is not None:
-            print("Starting GPIO Thread")
-            gpio_thread.start()
-        if rfid_thread is not None:
-            print("Starting RFID Thread")
-            rfid_thread.start()
-        print("Starting RPC Server")
-        rpcs.server()
+        # Start threads and RPC Server
+        if rpcserver is not None:
+            if gpio_thread is not None:
+                if self.verbose:
+                    print("Starting GPIO Thread")
+                gpio_thread.start()
+            if rfid_thread is not None:
+                if self.verbose:
+                    print("Starting RFID Thread")
+                rfid_thread.start()
+            if self.verbose:
+                print("Starting RPC Server")
+            rpcserver.run()

@@ -15,4 +15,5 @@ if __name__ == "__main__":
 
     args = argparser.parse_args()
 
-    jukebox.daemon.jukebox_daemon(args.configuration_file.name)
+    jukebox = jukebox.daemon.JukeBox(args.configuration_file.name, args.verbose)
+    jukebox.run()
