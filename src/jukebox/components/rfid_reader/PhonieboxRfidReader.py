@@ -10,7 +10,7 @@ import sys
 
 import logging
 
-from jukebox.rpc.client import PhonieboxRpcClient
+from jukebox.rpc.client import RpcClient
 
 #from evdev import InputDevice, categorize, ecodes, list_devices
 
@@ -71,7 +71,7 @@ class RFID_Reader(object):
             except IndexError:
                 sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
 
-        self.PhonieboxRpc = PhonieboxRpcClient()
+        self.PhonieboxRpc = RpcClient()
         self.PhonieboxRpc.connect(zmq_context=zmq_context)
         self._keep_running = True
         self.cardnotification = None

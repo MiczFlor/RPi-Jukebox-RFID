@@ -2,15 +2,14 @@ import zmq
 import json
 
 
-class PhonieboxRpcClient:
-
+class RpcClient:
     def __init__(self):
         self.context = None
 
     def connect(self, addr=None, zmq_context=None):
         if zmq_context is not None:
             self.context = zmq_context
-            local_addr = "inproc://PhonieboxRpcServer"
+            local_addr = "inproc://JukeBoxRpcServer"
         else:
             self.context = zmq.Context()
             local_addr = "tcp://127.0.0.1:5555"
@@ -48,7 +47,7 @@ if __name__ == "__main__":
                   {'object': 'volume', 'method': 'set', 'params': {'volume': 36}}]
 
     print("Test Jukebox Object Acces Client")
-    rpc = PhonieboxRpcClient()
+    rpc = RpcClient()
     print("connect")
     rpc.connect()
 
