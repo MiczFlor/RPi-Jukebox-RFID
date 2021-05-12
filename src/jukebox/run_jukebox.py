@@ -112,7 +112,9 @@ def main():
     else:
         logger = logger_configure(args.logger)
 
-    jukebox.daemon.jukebox_daemon(args.conf.name)
+    logger.info("Starting Jukebox Daemon")
+    jukebox = jukebox.daemon.JukeBox(args.conf.name, 1 if (args.verbose is not None and args.verbose > 1) else 0)
+    jukebox.run()
 
 
 if __name__ == "__main__":

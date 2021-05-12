@@ -1,5 +1,6 @@
 [SYSTEM]
 BOX_NAME: JukeBox
+MPD_HOST: localhost
 STARTUP_SOUND: /home/pi/RPi-Jukebox-RFID/resources/startupsound.wav
 
 [PLAYER]

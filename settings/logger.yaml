@@ -37,7 +37,6 @@ filters:
   colorize:
     # This filter adds all colors from simplecolors by using %(colorname)c or {colorname} in formatter string
     # It also adds the keyword {levelnameColored} which auto-colores the levelname depending on severity
-#    "()": __main__.ColorFilter
     "()": misc.loggingext.ColorFilter
     enable: True
     color_levelname: True
@@ -46,8 +45,8 @@ loggers:
     level: DEBUG
     handlers: [console, debug_file_handler, error_file_handler]
     propagate: no
-  top.subfile:
-    level: WARNING
+  jb.daemon:
+    level: DEBUG
 root:
   level: DEBUG
 #  handlers: [console]
