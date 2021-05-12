@@ -1,0 +1,8 @@
+# YAML
+ruamel.yaml
+
+# Linting
+flake8
+
+pyalsaaudio
+pyzmq
