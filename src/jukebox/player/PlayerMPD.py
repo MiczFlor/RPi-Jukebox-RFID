@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from mpd import MPDClient
+import logging
+
+logger = logging.getLogger('jb.PlayerMPD')
 
 
 class player_control:
@@ -14,7 +17,7 @@ class player_control:
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command
         self.connect()
-        print("Connected to MPD Version: " + self.mpd_client.mpd_version)
+        logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
         if not self.music_player_status:
             self.music_player_status['player_status'] = {}
@@ -27,7 +30,7 @@ class player_control:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
                 self.mpd_client.clear()
                 self.mpd_client.add(last_played_folder)
-                print("Last Played Folder: " + last_played_folder)
+                logger.info(f"Last Played Folder: {last_played_folder}")
 
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
@@ -36,11 +39,11 @@ class player_control:
         try:
             ret = mpd_cmd(params)
         except ConnectionError:
-            print("MPD Connection Error, retry")
+            logger.error("MPD Connection Error, retry")
             self.conncet()
             ret = mpd_cmd(params)
         except Exception as e:
-            print(e)
+            logger.error(f"{e}")
         return ret
 
     def get_player_type_and_version(self, param):
@@ -58,11 +61,11 @@ class player_control:
         try:
             self.mpd_client.play(songid)
         except ConnectionError:
-            print("MPD Connection Error, retry")
+            logger.error("MPD Connection Error, retry")
             self.conncet()
             self.mpd_client.play(songid)
         except Exception as e:
-            print(e)
+            logger.error(f"{e}")
 
         return ({})
 
@@ -110,12 +113,12 @@ class player_control:
         return {'resp': self.mpd_client.currentsong()}
 
     def map_filename_to_playlist_pos(self, filename):
-        print("map_filename_to_playlist_pos not yet implemented")
+        logger.error("map_filename_to_playlist_pos not yet implemented")
         # self.mpd_client.playlistfind()
         return 0
 
     def remove(self, param):
-        print("remove not yet implemented")
+        logger.error("remove not yet implemented")
         return ({})
 
     def move(self, param):
@@ -124,11 +127,11 @@ class player_control:
         # MPDClient.playlistmove(name, from, to)
         # MPDClient.swapid(song1, song2)
 
-        print("move not yet implemented")
+        logger.error("move not yet implemented")
         return ({})
 
     def playsingle(self, param):
-        print("playsingle not yet implemented")
+        logger.error("playsingle not yet implemented")
         return ({})
 
     def playlistaddplay(self, param):
@@ -143,7 +146,7 @@ class player_control:
 
         folder = param.get("folder")
 
-        print("playing folder: {}".format(folder))
+        logger.info(f"playing folder: {folder}")
 
         if folder is not None:
             # load playlist

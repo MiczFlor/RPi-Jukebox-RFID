@@ -38,7 +38,7 @@ def main():
     else:
         logger = misc.loggingext.configure_from_file(args.logger)
 
-    logger.info("Starting Jukebox Daemon")
+        logger.info("Starting Jukebox Daemon")
     myjukebox = jukebox.daemon.JukeBox(args.conf.name)
     myjukebox.run()
 
