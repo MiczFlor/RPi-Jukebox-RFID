@@ -1,19 +1,47 @@
+#!/usr/bin/env python3
+"""
+Top-level entry point for the JukeBox Core demon
+
+"""
 import os.path
 import argparse
+import logging
+import logging.config
 import jukebox.daemon
+import misc.loggingext
+
+
+def main():
+    # Get absolute path of this script
+    script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../settings/jukebox.conf'))
+    default_cfg_logger = os.path.abspath(os.path.join(script_path, '../../settings/logger.yaml'))
+
+    argparser = argparse.ArgumentParser(description='The JukeboxDaemon')
+    argparser.add_argument('-conf', '-c', type=argparse.FileType('r'), default=default_cfg_jukebox,
+                           help=f"jukebox configuration file [default: '{default_cfg_jukebox}'",
+                           metavar="FILE")
+    verbose_group = argparser.add_mutually_exclusive_group()
+    verbose_group.add_argument("-l", "--logger",
+                               help=f"logger configuration file [default: '{default_cfg_logger}']",
+                               metavar="FILE", default=default_cfg_logger)
+    verbose_group.add_argument('-v', '--verbose', action='count', default=None,
+                               help="increase logger verbosity level from warning to info (-v) to debug (-vv)")
+    verbose_group.add_argument('-q', '--quiet', action='count', default=None,
+                               help="decrease logger verbosity level from warning to error (-q) to critical (-qq)")
+    args = argparser.parse_args()
+
+    if args.verbose is not None:
+        logger = misc.loggingext.configure_default({1: logging.INFO, 2: logging.DEBUG}[min(args.verbose, 2)])
+    elif args.quiet is not None:
+        logger = misc.loggingext.configure_default({1: logging.ERROR, 2: logging.CRITICAL}[min(args.quiet, 2)])
+    else:
+        logger = misc.loggingext.configure_from_file(args.logger)
+
+    logger.info("Starting Jukebox Daemon")
+    myjukebox = jukebox.daemon.JukeBox(args.conf.name)
+    myjukebox.run()
 
 
 if __name__ == "__main__":
-
-    # get absolute path of this script
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    defaultconfigFilePath = os.path.join(dir_path, '../../settings/jukebox.conf')
-
-    argparser = argparse.ArgumentParser(description='The JukeboxDaemon')
-    argparser.add_argument('configuration_file', type=argparse.FileType('r'), nargs='?', default=defaultconfigFilePath)
-    argparser.add_argument('--verbose', '-v', action='count', default=0)
-
-    args = argparser.parse_args()
-
-    jukebox = jukebox.daemon.JukeBox(args.configuration_file.name, args.verbose)
-    jukebox.run()
+    main()

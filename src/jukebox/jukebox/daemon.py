@@ -5,6 +5,7 @@ import threading
 import sys
 import signal
 import configparser
+import logging
 
 import jukebox.Volume
 import jukebox.System
@@ -14,10 +15,11 @@ from jukebox.NvManager import nv_manager
 from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 # from gpio_control import gpio_control
 
+logger = logging.getLogger('jb.daemon')
+
 
 class JukeBox:
-    def __init__(self, configuration_file, verbose=0):
-        self.verbose = verbose
+    def __init__(self, configuration_file):
         self.nvm = nv_manager()
         self.zmq_context = None
 
@@ -26,7 +28,7 @@ class JukeBox:
 
         print("Starting the " + self.config.get('SYSTEM', 'BOX_NAME') + " Daemon")
 
-        if verbose > 1:
+        if logger.isEnabledFor(logging.DEBUG):
             self.dump_config_options(self.config, configuration_file)
 
         # setup the signal listeners
@@ -57,8 +59,7 @@ class JukeBox:
 
         # TODO: implement shutdown ()
 
-        if self.verbose:
-            print("Exiting")
+        logger.info("Exiting")
         sys.exit(0)
 
     def run(self):
@@ -83,8 +84,7 @@ class JukeBox:
                    'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
                    'system': jukebox.System.system_control}
 
-        if self.verbose:
-            print("Init Jukebox RPC Server ")
+        logger.info("Init Jukebox RPC Server")
         rpcserver = RpcServer(objects)
         if rpcserver is not None:
             self.zmq_context = rpcserver.connect()
@@ -117,13 +117,10 @@ class JukeBox:
         # Start threads and RPC Server
         if rpcserver is not None:
             if gpio_thread is not None:
-                if self.verbose:
-                    print("Starting GPIO Thread")
+                logger.debug("Starting GPIO Thread")
                 gpio_thread.start()
             if rfid_thread is not None:
-                if self.verbose:
-                    print("Starting RFID Thread")
+                logger.debug("Starting RFID Thread")
                 rfid_thread.start()
-            if self.verbose:
-                print("Starting RPC Server")
+            logger.debug("Starting RPC Server")
             rpcserver.run()
