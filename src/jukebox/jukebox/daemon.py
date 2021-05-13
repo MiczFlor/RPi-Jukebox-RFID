@@ -46,8 +46,7 @@ class JukeBox:
 
     def signal_handler(self, esignal, frame):
         # catches signal and triggers the graceful exit
-        logger.info("Caught signal {} ({}) \n {}".
-                    format(signal.Signals(esignal).name, esignal, frame))
+        logger.info("Caught signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
         self.exit_gracefully()
 
     def exit_gracefully(self):
