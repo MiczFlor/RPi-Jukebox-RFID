@@ -1,5 +1,8 @@
 import zmq
 import json
+import logging
+
+logger = logging.getLogger('jb.rpc_client')
 
 
 class RpcClient:
@@ -24,16 +27,16 @@ class RpcClient:
 
     def enqueue(self, request):
         # TODO: check reqest
-        print(request)
+
         self.queue.send_string(json.dumps(request))
 
-        print("send:", request)
+        logger.debug(f"send: {request}")
 
         try:
             server_response = self.queue.recv()
         except Exception as e:
-            print("somethng went wrong:")
-            print(e)
+            logger.error("exception while waiting for rpc-server response")
+            logger.error(f"{e}")
             server_response = None
 
         return server_response

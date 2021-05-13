@@ -4,6 +4,9 @@
 import nanotime
 import zmq
 import json
+import logging
+
+logger = logging.getLogger('jb.rpc_server')
 
 
 class RpcServer:
@@ -52,7 +55,7 @@ class RpcServer:
             client_request = json.loads(message)
             client_response = {}
 
-            print(client_request)
+            logger.debug(client_request)
 
             # in difference to jsonrpc https://www.jsonrpc.org/specification
             # {"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
@@ -71,9 +74,9 @@ class RpcServer:
             client_tsp = client_request.get('tsp')
             if (client_tsp is not None):
                 client_response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
-                print("processing time: {:2.3f} ms".format(client_response['total_processing_time']))
+                logger.debug("processing time: {:2.3f} ms".format(client_response['total_processing_time']))
 
-            # print(client_response)
+            logger.debug(client_response)
             #  Send reply back to client
             self.socket.send_string(json.dumps(client_response))
 
