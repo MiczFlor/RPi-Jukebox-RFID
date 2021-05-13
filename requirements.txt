@@ -4,5 +4,5 @@ ruamel.yaml
 # Linting
 flake8
 
-pyalsaaudio
+# pyalsaaudio
 pyzmq
