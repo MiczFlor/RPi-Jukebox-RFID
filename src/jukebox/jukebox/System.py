@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import logging
+
+logger = logging.getLogger('jb.system')
+
 
 class system_control:
     def __init__(self):
         self.init = 1
 
     def shutdown(self, param=None):
-        print("shutdown")
+        logger.info("shutdown")
         return ({})
 
     def reboot(self, param=None):
-        print("reboot")
+        logger.info("reboot")
         return ({})
 
     def settings_get(self, param):

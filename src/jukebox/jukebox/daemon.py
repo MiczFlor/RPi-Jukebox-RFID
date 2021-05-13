@@ -26,7 +26,7 @@ class JukeBox:
         self.config = configparser.ConfigParser(inline_comment_prefixes=";")
         self.config.read(configuration_file)
 
-        print("Starting the " + self.config.get('SYSTEM', 'BOX_NAME') + " Daemon")
+        logger.info("Starting the " + self.config.get('SYSTEM', 'BOX_NAME') + " Daemon")
 
         if logger.isEnabledFor(logging.DEBUG):
             self.dump_config_options(self.config, configuration_file)
@@ -46,7 +46,8 @@ class JukeBox:
 
     def signal_handler(self, esignal, frame):
         # catches signal and triggers the graceful exit
-        print("------------------------\nCaught signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
+        logger.info("Caught signal {} ({}) \n {}".
+                    format(signal.Signals(esignal).name, esignal, frame))
         self.exit_gracefully()
 
     def exit_gracefully(self):
