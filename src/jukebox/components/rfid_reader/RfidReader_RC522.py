@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Mfrc522Reader(object):
     def __init__(self):
         import pirc522
