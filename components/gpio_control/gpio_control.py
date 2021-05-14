@@ -7,7 +7,7 @@ from GPIODevices import *
 import function_calls
 from signal import pause
 from RPi import GPIO
-# from GPIODevices.VolumeControl import VolumeControl
+from config_compatibility import ConfigCompatibilityChecks
 
 
 class gpio_control():
@@ -34,9 +34,7 @@ class gpio_control():
     def generate_device(self, config, deviceName):
         print(deviceName)
         device_type = config.get('Type')
-        if deviceName.lower() == 'VolumeControl'.lower():
-            return VolumeControl(config, self.getFunctionCall, logger)
-        elif device_type == 'TwoButtonControl':
+        if device_type == 'TwoButtonControl':
             self.logger.info('adding TwoButtonControl')
             return TwoButtonControl(
                 config.getint('Pin1'),
@@ -69,10 +67,10 @@ class gpio_control():
         elif device_type in ('StatusLED', 'MPDStatusLED'):
             return StatusLED(config.getint('Pin'), name=deviceName)
         elif device_type == 'RotaryEncoder':
-            return RotaryEncoder(config.getint('pinUp'),
-                    config.getint('pinDown'),
-                    self.getFunctionCall(config.get('functionCallUp')),
-                    self.getFunctionCall(config.get('functionCallDown')),
+            return RotaryEncoder(config.getint('Pin1'),
+                    config.getint('Pin2'),
+                    self.getFunctionCall(config.get('functionCall1')),
+                    self.getFunctionCall(config.get('functionCall2')),
                     config.getfloat('timeBase', fallback=0.1),
                     name=deviceName)
         elif device_type == 'ShutdownButton':
@@ -117,9 +115,11 @@ class gpio_control():
 
 
 if __name__ == "__main__":
-    config = configparser.ConfigParser(inline_comment_prefixes=";")
+    config = configparser.ConfigParser(inline_comment_prefixes=";", delimiters=(':', '='))
     config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     config.read(config_path)
+    
+    ConfigCompatibilityChecks(config, config_path)
 
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
     gpio_controler = gpio_control(phoniebox_function_calls)

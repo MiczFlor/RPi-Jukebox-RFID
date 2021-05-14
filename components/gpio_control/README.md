@@ -137,13 +137,13 @@ enabled: True
 Type: TwoButtonControl
 Pin1: 5
 Pin2: 6
-hold_time: 0.3
 hold_mode: Repeat
-functionCall1: functionCallVolD
-functionCall2: functionCallVolU
+hold_time: 0.3
+functionCall1: functionCallVolU
+functionCall2: functionCallVolD
 functionCallTwoButtons: functionCallVol0
 ```
-In this example, the volume will be in-/decreased step-wise using intervals of 0.3 seconds while the respective button is held. If both buttons are pushed simultaneously, the player is muted (volume 0).
+In this example, the volume will be in-/decreased step-wise using intervals of 0.3 seconds while the respective button is held. If both buttons are pushed simultaneously, the player is muted (volume 0). In this example, Pin1 is used for increasing the volume, while Pin2 decreases it.
 
 Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**
 
@@ -151,20 +151,24 @@ Furthermore, the following settings can be used as described for the [regular bu
 ## RotaryEncoder<a name="doc_rotary"></a> 
 A  RotaryEncoder can be created using an `ini` entry like this:
 ```
+[VolumeControl]
 enabled: True
 Type: RotaryEncoder
-PinUp: 7
-PinDown: 8
+Pin1: 7
+Pin2: 8
 timeBase: 0.02
-functionCallDown: functionCallVolD
-functionCallUp: functionCallVolU
+functionCall1: functionCallVolU
+functionCall2: functionCallVolD
 ```
+
+Pin1 and FunctionCall1 correspond to rotary direction "up", while Pin2 and FunctionCall2 correspond to "down".
+Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
 
 ## StatusLED<a name="doc_sled"></a> 
 A  StatusLED can be created using an `ini` entry like this:
 ```
 [StatusLED]
-enable: True
+enabled: True
 Type: StatusLED
 Pin: 14
 ```
