@@ -8,14 +8,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class Pn532Reader:
     def __init__(self):
         from py532lib.i2c import Pn532_i2c
         from py532lib.mifare import Mifare
-        pn532 = Pn532_i2c()
+        Pn532_i2c()
         self.device = Mifare()
         self.device.SAMconfigure()
-        self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
+        self.device.set_max_retries(Mifare.MIFARE_WAIT_FOR_ENTRY)
 
     def readCard(self):
         return str(+int('0x' + self.device.scan_field().hex(), 0))
