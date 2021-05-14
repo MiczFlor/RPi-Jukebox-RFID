@@ -40,10 +40,12 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 COPY . ${INSTALLATION_DIR}
 
 # Install Jukebox
-RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/src/jukebox/requirements.txt
+RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
 RUN chmod +x ${DEV_FOLDER}/install-jukebox.sh ${DEV_FOLDER}/start-jukebox.sh
 RUN ${DEV_FOLDER}/install-jukebox.sh
 
 # Run Jukebox
 # CMD bash
+EXPOSE 5555
+
 CMD python ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py

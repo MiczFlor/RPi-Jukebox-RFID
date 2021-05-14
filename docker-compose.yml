@@ -9,7 +9,7 @@ services:
     devices:
       - /dev/snd
     ports:
-      - "8080:80"
+      - "5555:5555"
     links:
       - mpd
     tty: true
@@ -25,6 +25,8 @@ services:
     container_name: webui
     ports:
       - "8000:80"
+    links:
+      - jukebox
     restart: unless-stopped
     tty: true
     volumes:

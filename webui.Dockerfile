@@ -21,4 +21,4 @@ RUN mkdir ${INSTALLATION_DIR}/htdocs && \
     chown -R root:www-data ${INSTALLATION_DIR}/htdocs && \
     chmod -R 750 ${INSTALLATION_DIR}/htdocs
 
-CMD ${DEV_FOLDER}/start-webui.sh && /bin/bash
+CMD ${DEV_FOLDER}/start-webui.sh && tail -f /var/log/lighttpd/error.log
