@@ -9,7 +9,7 @@ Depending on your host environment (Mac, Linux or Windows), you might need to ad
 1. Install required software
     * Linux: [Docker](https://docs.docker.com/engine/install/debian/), [Compose](https://docs.docker.com/compose/install/)
     * Mac: [Docker & Compose](https://docs.docker.com/docker-for-mac/install/), [pulseaudio](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html)
-    * Windows: // TODO
+    * Windows: [Docker & Compose](https://docs.docker.com/docker-for-windows/install/), [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
 1. Pull the Phoniebox repository
 1. Change into the root folder of your repository
 1. Change into the `shared` folder and create a folder called `audiofolders`
@@ -24,8 +24,8 @@ Run all Docker containers at once. Based on your host system (Mac or Windows), y
 ### Linux
 
 ```
-$ docker-compose build
-$ docker-compose up
+$ docker-compose -f docker-compose.yml -f docker-compose.linux.yml build
+$ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
 ...
 $ docker-compose down
 ```
@@ -43,9 +43,25 @@ $ docker-compose down
 
 ### Windows
 
-It's complicated.
+1. Download [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
+1. Uncompress somewhere in your user folder
+1. Edit `$INSTALL_DIR/etc/pulse/default.pa`
+1. Add the following line
+    ```
+    load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+    ```
+1. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the following line and change it to: 
+    ```
+    exit-idle-time = -1
+    ```
+1. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
 
-// TODO
+```
+$ docker-compose -f docker-compose.yml -f docker-compose.windows.yml build
+$ docker-compose -f docker-compose.yml -f docker-compose.windows.yml up
+...
+$ docker-compose down
+```
 
 ## Test & Develop
 
@@ -87,7 +103,10 @@ $ docker run -it --rm \
 
 #### Windows
 
-* https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host
+* https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host#
+* https://arnav.jain.se/2020/enable-audio--video-in-docker-container/
+* https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/
+* https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html
 
 #### Audio
 * https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio

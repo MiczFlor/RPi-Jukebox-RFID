@@ -3,15 +3,15 @@ version: "3.9"
 services:
   jukebox:
     environment:
-      - PULSE_SERVER=docker.for.mac.localhost
+      - PULSE_SERVER=tcp:host.docker.internal:4713
     volumes:
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse
   
   mpd:
     environment:
-      - PULSE_SERVER=docker.for.mac.localhost
+      - PULSE_SERVER=host.docker.internal
     volumes:
-      - ./docker-development/config/docker.mac.mpd.conf:/root/.config/mpd/mpd.conf:rw
+      - ./docker-development/config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse

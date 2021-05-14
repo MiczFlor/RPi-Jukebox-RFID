@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: jukebox.Dockerfile
     container_name: jukebox
-    devices:
-      - /dev/snd
     ports:
       - "5555:5555"
     links:
@@ -39,8 +37,6 @@ services:
       context: .
       dockerfile: mpd.Dockerfile
     container_name: mpd
-    devices:
-      - /dev/snd
     ports:
       - "6600:6600"
       - "8800:8800"
