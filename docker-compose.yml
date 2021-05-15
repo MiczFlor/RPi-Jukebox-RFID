@@ -6,10 +6,8 @@ services:
       context: .
       dockerfile: jukebox.Dockerfile
     container_name: jukebox
-    devices:
-      - /dev/snd
     ports:
-      - "8080:80"
+      - "5555:5555"
     links:
       - mpd
     tty: true
@@ -25,6 +23,8 @@ services:
     container_name: webui
     ports:
       - "8000:80"
+    links:
+      - jukebox
     restart: unless-stopped
     tty: true
     volumes:
@@ -37,8 +37,6 @@ services:
       context: .
       dockerfile: mpd.Dockerfile
     container_name: mpd
-    devices:
-      - /dev/snd
     ports:
       - "6600:6600"
       - "8800:8800"

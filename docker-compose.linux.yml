@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  jukebox:
+    devices:
+      - /dev/snd
+
+  mpd:
+    devices:
+      - /dev/snd

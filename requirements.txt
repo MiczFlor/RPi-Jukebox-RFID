@@ -4,5 +4,19 @@ ruamel.yaml
 # Linting
 flake8
 
-# pyalsaaudio
+# Jukebox
+pyalsaaudio
+mock
+py532lib
+pytest
+nanotime
+python_mpd2
+components
+evdev
+numpy
+paho_mqtt
+pyserial
 pyzmq
+RPi
+smbus
+
