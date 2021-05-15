@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  jukebox:
+    build:
+      context: ../
+      dockerfile: ./docker/jukebox.Dockerfile
+    container_name: jukebox
+    ports:
+      - "5555:5555"
+    links:
+      - mpd
+    tty: true
+    volumes:
+      - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
+      - ../settings:/home/pi/RPi-Jukebox-RFID/settings
+      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+  
+  webui:
+    build:
+      context: ../
+      dockerfile: ./docker/webui.Dockerfile
+    container_name: webui
+    ports:
+      - "8000:80"
+    links:
+      - jukebox
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../src/ui:/home/pi/RPi-Jukebox-RFID/src/ui
+      - ../settings:/home/pi/RPi-Jukebox-RFID/settings
+      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+
+  mpd:
+    build:
+      context: ../
+      dockerfile: ./docker/mpd.Dockerfile
+    container_name: mpd
+    ports:
+      - "6600:6600"
+      - "8800:8800"
+    restart: unless-stopped
+    volumes:
+      - ../shared/audiofolders:/root/.config/mpd/music:rw
+      - ../shared/playlists:/root/.config/mpd/playlists:rw
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw

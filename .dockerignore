@@ -1,3 +1,5 @@
+docker
+!docker/scripts
+docs
 src
-!src/jukebox/requirements.txt
 shared/audiofolders

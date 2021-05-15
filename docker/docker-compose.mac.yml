@@ -12,6 +12,6 @@ services:
     environment:
       - PULSE_SERVER=host.docker.internal
     volumes:
-      - ./docker-development/config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
+      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse

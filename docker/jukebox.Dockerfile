@@ -19,7 +19,7 @@ RUN usermod -aG audio,pulse,pulse-access root
 ENV HOME /root
 ENV MPD_HOST mpd
 ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
-ENV DEV_FOLDER ${INSTALLATION_DIR}/docker-development
+ENV DOCKER_DIR ${INSTALLATION_DIR}/docker
 
 WORKDIR $INSTALLATION_DIR
 
@@ -41,8 +41,8 @@ COPY . ${INSTALLATION_DIR}
 
 # Install Jukebox
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
-RUN chmod +x ${DEV_FOLDER}/install-jukebox.sh ${DEV_FOLDER}/start-jukebox.sh
-RUN ${DEV_FOLDER}/install-jukebox.sh
+RUN chmod +x ${DOCKER_DIR}/scripts/install-jukebox.sh ${DOCKER_DIR}/scripts/start-jukebox.sh
+RUN ${DOCKER_DIR}/scripts/install-jukebox.sh
 
 # Run Jukebox
 # CMD bash

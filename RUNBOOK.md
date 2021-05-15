@@ -19,15 +19,19 @@ Depending on your host environment (Mac, Linux or Windows), you might need to ad
 
 In contrairy to how everything is set up on the Raspberry, it's good practice to isolate different components in different Docker images. They can be run individually or in combination. To do that, we use `docker-compose` (newer versions of Docker can also use `docker compose`)
 
-Run all Docker containers at once. Based on your host system (Mac or Windows), you need to load an override as well.
+Run all Docker containers at once. Based on your host system, you need to load the override as well.
 
 ### Linux
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.linux.yml build
-$ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
-...
-$ docker-compose down
+// Build Images
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
+
+// Run Docker Environment
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
+
+// Shuts down Docker containers and Docker network
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
 ```
 
 ### Mac
@@ -35,10 +39,14 @@ $ docker-compose down
 Remember, pulseaudio is a prerequisite.
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.mac.yml build
-$ docker-compose -f docker-compose.yml -f docker-compose.mac.yml up
-...
-$ docker-compose down
+// Build Images
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+
+// Run Docker Environment
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+
+// Shuts down Docker containers and Docker network
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
 ```
 
 ### Windows
@@ -55,12 +63,17 @@ $ docker-compose down
     exit-idle-time = -1
     ```
 1. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
+1. Run `cocker-compose`
 
 ```
-$ docker-compose -f docker-compose.yml -f docker-compose.windows.yml build
-$ docker-compose -f docker-compose.yml -f docker-compose.windows.yml up
-...
-$ docker-compose down
+// Build Images
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+
+// Run Docker Environment
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+
+// Shuts down Docker containers and Docker network
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
 ```
 
 ## Test & Develop
@@ -83,13 +96,13 @@ Run an indidual Docker container, e.g. `jukebox`. Similarly you could run `mpd` 
 The following command can be run on a Mac.
 
 ```
-$ docker build -f jukebox.Dockerfile -t jukebox .
+$ docker build -f docker/jukebox.Dockerfile -t jukebox .
 $ docker run -it --rm \
-    -v $(PWD)/Phoniebox:/home/pi/RPi-Jukebox-RFID/Phoniebox \
+    -v $(PWD)/src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox \
     -v $(PWD)/shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders \
     -v ~/.config/pulse:/root/.config/pulse \
     -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
-    -e PULSE_SERVER=docker.for.mac.localhost \
+    -e PULSE_SERVER=tcp:host.docker.internal:4713 \
     --name jukebox jukebox
 ```
 

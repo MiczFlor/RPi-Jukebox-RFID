@@ -9,4 +9,4 @@ services:
     environment:
       - PULSE_SERVER=tcp:host.docker.internal:4713
     volumes:
-      - ./docker-development/config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
+      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
