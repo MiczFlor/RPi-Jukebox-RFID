@@ -43,7 +43,7 @@ class player_control:
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
 
-    def mpd_retry_with_mutex(self, mpd_cmd, params=None):
+    def mpd_retry_with_mutex(self, mpd_cmd, param1=None, param2=None):
         '''
         This method adds thread saftey for acceses to mpd via a mutex lock,
         it shall be used for each access to mpd to ensure thread safety
@@ -53,10 +53,12 @@ class player_control:
         with self.mpd_mutex:
             while retry:
                 try:
-                    if params is None:
-                        ret = mpd_cmd()
+                    if param2 is not None:
+                        ret = mpd_cmd(param1, param2)
+                    elif param1 is not None:
+                        ret = mpd_cmd(param1)
                     else:
-                        ret = mpd_cmd(params)
+                        ret = mpd_cmd()
                     break
                 except ConnectionError:     # TODO: this is not working properly yet, we are alwas anding up in the Exception!
                     logger.info(f"MPD Connection Error, retry {retry}")
@@ -86,13 +88,20 @@ class player_control:
         if self.mpd_status.get('song') != self.old_song:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
+            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mpd_status['song']
+            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
 
         self.mpd_status['volume'] = self.volume_control.volume
 
-        if self.mpd_status.get('elapsed') is not None:
+        if self.mpd_status.get('file') is not None:
+            self.current_folder_status["CURRENTFILENAME"] = self.mpd_status['file']
+            self.current_folder_status["CURRENTSONGPOS"] = self.mpd_status['song']
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
-            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
+            self.current_folder_status["PLAYSTATUS"] = self.mpd_status['state']
+            self.current_folder_status["RESUME"] = "OFF"
+            self.current_folder_status["SHUFFLE"] = "OFF"
+            self.current_folder_status["LOOP"] = "OFF"
+            self.current_folder_status["SINGLE"] = "OFF"
 
         # the repetation is intentionally at the end, to avoid overruns in case of delays caused by communication
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
@@ -102,7 +111,6 @@ class player_control:
         return ({'result': 'mpd', 'version': self.mpd_retry_with_mutex(self.mpd_client.mpd_version)})
 
     def play(self, param):
-
         if param is not None and isinstance(param, dict):
             songid = param.get("songid")
             if songid is None:
@@ -187,6 +195,13 @@ class player_control:
         logger.error("playsingle not yet implemented")
         return ({})
 
+    def resume(self, param):
+        songpos = self.current_folder_status["CURRENTSONGPOS"]
+        elapsed = self.current_folder_status["ELAPSED"]
+        self.mpd_retry_with_mutex(self.mpd_client.seek, songpos, elapsed)
+        self.mpd_retry_with_mutex(self.mpd_client.play)
+        return ({})
+
     def playlistaddplay(self, param):
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
@@ -214,6 +229,8 @@ class player_control:
             self.current_folder_status = self.music_player_status['audio_folder_status'].get(folder)
             if self.current_folder_status is None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
+            # else:
+            # TODO: implement resume
 
             self.mpd_retry_with_mutex(self.mpd_client.play)
 
@@ -337,18 +354,7 @@ class player_control:
 
         # write latest folder played to settings file
         # sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
-
-        song = self.mpd_retry_with_mutex(self.mpd_client.currentsong)
-
-        self.current_folder_status["CURRENTFILENAME"] = song.get('file')
-        self.current_folder_status["ELAPSED"] = 0
-        self.current_folder_status["PLAYSTATUS"] = "Stopped"
-        self.current_folder_status["RESUME"] = "OFF"
-        self.current_folder_status["SHUFFLE"] = "OFF"
-        self.current_folder_status["LOOP"] = "OFF"
-        self.current_folder_status["SINGLE"] = "OFF"
-
-        return ({'song': song})
+        return ({})
 
     def playerstatus(self, param):
         return (self.mpd_status)

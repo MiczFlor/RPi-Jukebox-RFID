@@ -50,16 +50,25 @@ class JukeBox:
         self.exit_gracefully()
 
     def exit_gracefully(self):
-        # TODO: play stop
-        # TODO: Iterate over objects and tell them to exit
-        # TODO: stop all threads
+
+        shutdown_sound_thread = threading.Thread(target=self.objects['volume'].play_wave_file,
+                                                 args=[self.config.get('SYSTEM', 'SHUTDOWN_SOUND')])
+        shutdown_sound_thread.start()
 
         # save all nonvolatile data
         self.nvm.save_all()
 
+        self.objects['player'].stop(None)
+
+        # TODO: Iterate over objects and tell them to exit
+        # TODO: stop all threads
+
+        # wait for shutdown sound to complete
+        shutdown_sound_thread.join()
+        logger.info("Exiting")
+
         # TODO: implement shutdown ()
 
-        logger.info("Exiting")
         sys.exit(0)
 
     def run(self):
@@ -80,12 +89,12 @@ class JukeBox:
         mpd_host = self.config.get('SYSTEM', 'MPD_HOST')
 
         # initialize Jukebox objcts
-        objects = {'volume': volume_control,
-                   'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
-                   'system': jukebox.System.system_control}
+        self.objects = {'volume': volume_control,
+                        'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
+                        'system': jukebox.System.system_control}
 
         logger.info("Init Jukebox RPC Server")
-        rpcserver = RpcServer(objects)
+        rpcserver = RpcServer(self.objects)
         if rpcserver is not None:
             self.zmq_context = rpcserver.connect()
 
