@@ -92,8 +92,8 @@ def two_button_controller():
                                                functionCallBtn1=mockedFunction1,
                                                functionCallBtn2=mockedFunction2,
                                                functionCallTwoBtns=mockedFunction3,
-                                               pull_up=True,
-                                               hold_repeat=False,
+                                               pull_up_down='pull_up',
+                                               hold_mode=None,
                                                hold_time=0.3,
                                                name='TwoButtonControl')
 
@@ -105,8 +105,8 @@ class TestTwoButtonControl:
                                             functionCallBtn1=mockedFunction1,
                                             functionCallBtn2=mockedFunction2,
                                             functionCallTwoBtns=mockedFunction3,
-                                            pull_up=True,
-                                            hold_repeat=False,
+                                            pull_up_down='pull_up',
+                                            hold_mode=None,
                                             hold_time=0.3,
                                             name='TwoButtonControl')
 
@@ -152,5 +152,5 @@ class TestTwoButtonControl:
         assert mockedFunction3.call_count == 2
 
     def test_repr(self, two_button_controller):
-        expected = "<TwoBtnControl-TwoButtonControl(1, 2,two_buttons_action=True)>"
+        expected = "<TwoBtnControl-TwoButtonControl(1, 2,two_buttons_action=True,hold_mode=None,hold_time=0.3,edge=falling,bouncetime=500,antibouncehack=False,pull_up_down=pull_up)>"
         assert repr(two_button_controller) == expected

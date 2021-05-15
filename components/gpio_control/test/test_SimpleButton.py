@@ -53,7 +53,7 @@ class TestButton:
         GPIO.LOW = 0
         GPIO.input.side_effect = [False, False, False, True]
         simple_button.hold_time = 0
-        simple_button.hold_repeat = True
+        simple_button.hold_mode = 'Repeat'
         calls = mockedAction.call_count
         simple_button.callbackFunctionHandler(simple_button.pin)
         assert mockedAction.call_count - calls == 4

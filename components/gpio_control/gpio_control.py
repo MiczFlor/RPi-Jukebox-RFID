@@ -7,7 +7,7 @@ from GPIODevices import *
 import function_calls
 from signal import pause
 from RPi import GPIO
-# from GPIODevices.VolumeControl import VolumeControl
+from config_compatibility import ConfigCompatibilityChecks
 
 
 class gpio_control():
@@ -34,9 +34,7 @@ class gpio_control():
     def generate_device(self, config, deviceName):
         print(deviceName)
         device_type = config.get('Type')
-        if deviceName.lower() == 'VolumeControl'.lower():
-            return VolumeControl(config, self.getFunctionCall, logger)
-        elif device_type == 'TwoButtonControl':
+        if device_type == 'TwoButtonControl':
             self.logger.info('adding TwoButtonControl')
             return TwoButtonControl(
                 config.getint('Pin1'),
@@ -44,19 +42,24 @@ class gpio_control():
                 self.getFunctionCall(config.get('functionCall1')),
                 self.getFunctionCall(config.get('functionCall2')),
                 functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons')),
-                pull_up=config.getboolean('pull_up', fallback=True),
-                hold_repeat=config.getboolean('hold_repeat', False),
+                pull_up_down=config.get('pull_up_down', fallback='pull_up'),
+                hold_mode=config.get('hold_mode', fallback=None),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
+                bouncetime=config.getint('bouncetime', fallback=500),
+                edge=config.get('edge', fallback='falling'),
+                antibouncehack=config.getboolean('antibouncehack', fallback=False),
                 name=deviceName)
         elif device_type in ('Button', 'SimpleButton'):
             return SimpleButton(config.getint('Pin'),
                                 action=self.getFunctionCall(config.get('functionCall')),
+                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None')),
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
-                                edge=config.get('edge', fallback='FALLING'),
-                                hold_repeat=config.getboolean('hold_repeat', False),
+                                antibouncehack=config.getboolean('antibouncehack', fallback=False),
+                                edge=config.get('edge', fallback='falling'),
+                                hold_mode=config.get('hold_mode', fallback=None),
                                 hold_time=config.getfloat('hold_time', fallback=0.3),
-                                pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
+                                pull_up_down=config.get('pull_up_down', fallback='pull_up'))
         elif device_type == 'LED':
             return LED(config.getint('Pin'),
                                 name=deviceName,
@@ -64,10 +67,10 @@ class gpio_control():
         elif device_type in ('StatusLED', 'MPDStatusLED'):
             return StatusLED(config.getint('Pin'), name=deviceName)
         elif device_type == 'RotaryEncoder':
-            return RotaryEncoder(config.getint('pinUp'),
-                    config.getint('pinDown'),
-                    self.getFunctionCall(config.get('functionCallUp')),
-                    self.getFunctionCall(config.get('functionCallDown')),
+            return RotaryEncoder(config.getint('Pin1'),
+                    config.getint('Pin2'),
+                    self.getFunctionCall(config.get('functionCall1')),
+                    self.getFunctionCall(config.get('functionCall2')),
                     config.getfloat('timeBase', fallback=0.1),
                     name=deviceName)
         elif device_type == 'ShutdownButton':
@@ -75,11 +78,12 @@ class gpio_control():
                                   action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown')),
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
-                                  edge=config.get('edge', fallback='FALLING'),
-                                  time_pressed=config.getfloat('time_pressed', fallback=2.0),
+                                  antibouncehack=config.getboolean('antibouncehack', fallback=False),
+                                  edge=config.get('edge', fallback='falling'),
+                                  hold_time=config.getfloat('hold_time', fallback=3.0),
                                   iteration_time=config.getfloat('iteration_time', fallback=0.2),
                                   led_pin=config.getint('led_pin', fallback=None),
-                                  pull_up_down=config.get('pull_up_down', fallback=GPIO.PUD_UP))
+                                  pull_up_down=config.get('pull_up_down', fallback='pull_up'))
         self.logger.warning('cannot find {}'.format(deviceName))
         return None
 
@@ -111,9 +115,11 @@ class gpio_control():
 
 
 if __name__ == "__main__":
-    config = configparser.ConfigParser(inline_comment_prefixes=";")
+    config = configparser.ConfigParser(inline_comment_prefixes=";", delimiters=(':', '='))
     config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     config.read(config_path)
+    
+    ConfigCompatibilityChecks(config, config_path)
 
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
     gpio_controler = gpio_control(phoniebox_function_calls)
