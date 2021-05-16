@@ -1,6 +1,9 @@
 name: Test Install Scripts on Docker
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+        - 'future3/**'
 
 jobs:
 
