@@ -1,5 +1,17 @@
 {
-  "104,49914": {
+  "VolumeUp": {
+    "object": "volume",
+    "method": "set_volume",
+    "params": {
+      "volume": 12
+    }
+  },
+  "VolumeMute": {
+    "object": "volume",
+    "method": "mute",
+    "params": {}
+  },
+    "104,49914": {
     "object": "player",
     "method": "playlistaddplay",
     "params": {

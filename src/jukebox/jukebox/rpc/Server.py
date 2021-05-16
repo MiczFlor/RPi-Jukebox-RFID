@@ -32,7 +32,7 @@ class RpcServer:
         if (call_obj is not None):
             call_function = getattr(call_obj, cmd, None)
             if (call_function is not None):  # better to check with is callable() ??
-                response = call_function(param)
+                response = call_function(**param)
             else:
                 response = {'resp': "no valid commad"}
         else:

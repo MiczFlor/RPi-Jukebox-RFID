@@ -6,6 +6,7 @@ import sys
 import signal
 import configparser
 import logging
+import importlib
 
 import jukebox.Volume
 import jukebox.System
@@ -15,7 +16,10 @@ from jukebox.NvManager import nv_manager
 from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 # from gpio_control import gpio_control
 
+import jukebox.cfghandler
+
 logger = logging.getLogger('jb.daemon')
+cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class JukeBox:
@@ -26,10 +30,13 @@ class JukeBox:
         self.config = configparser.ConfigParser(inline_comment_prefixes=";")
         self.config.read(configuration_file)
 
-        logger.info("Starting the " + self.config.get('SYSTEM', 'BOX_NAME') + " Daemon")
+        jukebox.cfghandler.load_yaml(cfg, '../../settings/jukebox.yaml')
 
-        if logger.isEnabledFor(logging.DEBUG):
-            self.dump_config_options(self.config, configuration_file)
+        logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
+        logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
+
+        # if logger.isEnabledFor(logging.DEBUG):
+        #     self.dump_config_options(self.config, configuration_file)
 
         # setup the signal listeners
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -53,6 +60,7 @@ class JukeBox:
         # TODO: play stop
         # TODO: Iterate over objects and tell them to exit
         # TODO: stop all threads
+        logger.info("Exiting")
 
         # save all nonvolatile data
         self.nvm.save_all()
@@ -63,26 +71,43 @@ class JukeBox:
         sys.exit(0)
 
     def run(self):
-        # Play Startup Sound
-        volume_control = jukebox.Volume.volume_control_alsa(listcards=False)
+        objects = {}
+        if 'volume' in cfg['modules']:
+            try:
+                m_volume = importlib.import_module(cfg['modules']['volume'], 'pkg.subpkg')
+            except Exception as e:
+                logger.error(f"Failed to load volume module: {cfg['modules']['volume']}. Trying without...")
+                logger.error(f"Reason: {e}")
+            else:
+                objects['volume'] = m_volume.init()
+                if 'startup_sound' in cfg['system']:
+                    startsound_thread = threading.Thread(target=m_volume.play_wave,
+                                                         args=[cfg['system']['startup_sound']],
+                                                         name='StartSound')
+                    startsound_thread.daemon = True
+                    startsound_thread.start()
+                else:
+                    logger.debug("No startup sound in config file")
 
-        startsound_thread = threading.Thread(target=volume_control.play_wave_file,
-                                             args=[self.config.get('SYSTEM', 'STARTUP_SOUND')])
-        startsound_thread.start()
+        # Play Startup Sound
+        # volume_control = jukebox.Volume.volume_control_alsa(listcards=False)
+        #
+        # startsound_thread = threading.Thread(target=volume_control.play_wave_file,
+        #                                      args=[self.config.get('SYSTEM', 'STARTUP_SOUND')])
+        # startsound_thread.start()
 
         # load music player status
-        music_player_status = self.nvm.load(self.config.get('PLAYER', 'MUSIC_PLAYER_STATUS'))
-
-        # load card id database
+        # music_player_status = self.nvm.load(self.config.get('PLAYER', 'MUSIC_PLAYER_STATUS'))
+        #
+        # # load card id database
         cardid_database = self.nvm.load(self.config.get('RFID', 'CARDID_DATABASE'))
-
-        # MPD Configs
-        mpd_host = self.config.get('SYSTEM', 'MPD_HOST')
+        #
+        # # MPD Configs
+        # mpd_host = self.config.get('SYSTEM', 'MPD_HOST')
 
         # initialize Jukebox objcts
-        objects = {'volume': volume_control,
-                   'player': PlayerMPD.player_control(mpd_host, music_player_status, volume_control),
-                   'system': jukebox.System.system_control}
+        # objects = {'player': PlayerMPD.player_control(mpd_host, music_player_status, None),
+        #            'system': jukebox.System.system_control}
 
         logger.info("Init Jukebox RPC Server")
         rpcserver = RpcServer(objects)

@@ -11,24 +11,25 @@ class nv_manager():
         new_nv_dict = nv_dict(default_filename)
         self.all_nv_objects.append(new_nv_dict)
         return new_nv_dict
-    
+
     def save_all(self):
         for nv_obj in self.all_nv_objects:
             #print ("Saving {} ".format(nv_obj))
             nv_obj.save_to_json()
 
-    
-            
+
+
 
 # Todo: add hashing support
 
 # this is inherting from dict
-# you should not do this! 
+# you should not do this!
 # In this case it is ok since we are just adding methods, and are not overwriting any parent methods
 class nv_dict(dict):
     def __init__(self,default_filename=None):
         super().__init__()
-        
+
+        self.initial_hash = None
         self.default_filename=default_filename
 
         if self.default_filename is not None:
@@ -41,19 +42,19 @@ class nv_dict(dict):
                 self.default_filename_is_writeable = True
                 self.save_to_json()
         self.initial_hash = self.hash()
-            
+
     def __setitem__(self, item, value):
         self.dirty = True   #not working, see comment above, intention is to just write dicts which content has changed
         super(nv_dict,self).__setitem__(item, value)
-    
+
     def init_from_json(self,path=None,merge=False):
         if merge is False:
             self.clear()
         self.update(json.load( open( path ) ))
 
     def hash(self):
-        return hashlib.md5(json.dumps(self).encode('UTF8')).digest() 
-    
+        return hashlib.md5(json.dumps(self).encode('UTF8')).digest()
+
     def save_to_json(self,filename=None):
         actual_hash = self.hash()
         if self.initial_hash != actual_hash:
@@ -73,10 +74,10 @@ class nv_dict(dict):
                     json.dump( self, outfile, indent=2)
         else:
             print ("dont need to save")
-                    
-  
+
+
 if __name__ == "__main__":
-    
+
     nvd = nv_dict()
 
     nvd['a'] = 1
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     nvd3 = nv_dict(default_filename="test3.json")
 
 
-    
+
     nvm = nv_manager()
 
     nvd4 =nvm.load("test4.json")
@@ -113,7 +114,6 @@ if __name__ == "__main__":
     nvd5 =nvm.load("test5.json")
     nvd5['B'] = 'B'
 
-    print (nvm.all_nv_objects) 
+    print (nvm.all_nv_objects)
 
     nvm.save_all()
-    
