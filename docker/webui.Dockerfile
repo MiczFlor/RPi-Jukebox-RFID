@@ -6,13 +6,13 @@ RUN apt-get update && apt-get install -qq -y \
 
 ENV HOME /root
 ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
-ENV DEV_FOLDER ${INSTALLATION_DIR}/docker-development
+ENV DOCKER_DIR ${INSTALLATION_DIR}/docker
 
 WORKDIR $INSTALLATION_DIR
 
 COPY . ${INSTALLATION_DIR}
 
-RUN chmod +x ${DEV_FOLDER}/start-webui.sh
+RUN chmod +x ${DOCKER_DIR}/scripts/start-webui.sh
 
 COPY ./resources/sampleconfigs/lighttpd.conf.buster-default.sample /etc/lighttpd/lighttpd.conf
 COPY ./resources/sampleconfigs/15-fastcgi-php.conf.buster-default.sample /etc/lighttpd/conf-available/15-fastcgi-php.conf
@@ -21,4 +21,4 @@ RUN mkdir ${INSTALLATION_DIR}/htdocs && \
     chown -R root:www-data ${INSTALLATION_DIR}/htdocs && \
     chmod -R 750 ${INSTALLATION_DIR}/htdocs
 
-CMD ${DEV_FOLDER}/start-webui.sh && tail -f /var/log/lighttpd/error.log
+CMD ${DOCKER_DIR}/scripts/start-webui.sh && tail -f /var/log/lighttpd/error.log
