@@ -17,6 +17,7 @@ from datetime import datetime
 from shutil import copyfile
 from subprocess import Popen, PIPE
 from mpd import MPDClient
+from inc_functions import *
 
 # LOGGING
 logging.basicConfig(
@@ -58,16 +59,21 @@ logger = logging.getLogger('rfid_trigger_play.py')
 ignore_file_extension = ('.conf', '.ini', '.jpg', '.db', '.dat')
 
 # The absolute path to the folder which contains all the scripts
-path_scripts=str(pathlib.Path(__file__).parent.absolute())
+path_current_dir_absolute=str(pathlib.Path(__file__).parent.absolute())
 
 # config file location
-path_config_global = path_scripts + "/../settings/global.conf"
-path_config_debug = path_scripts + "/../settings/debugLogging.conf"
-path_config_rfid = path_scripts + "/../settings/rfid_trigger_play.conf"
-path_dir_settings = path_scripts + "/../settings"
-path_txt_latestID = path_scripts + "/../shared/latestID.txt"
-path_dir_shortcuts = path_scripts + "/../shared/shortcuts"
-path_dir_playlists = path_scripts + "/../playlists"
+path_dir_root = os.path.abspath(path_current_dir_absolute + "/..")
+path_dir_audiofolders = os.path.abspath(path_dir_root + "/shared/audiofolders")
+path_dir_settings = os.path.abspath(path_dir_root + "/settings")
+path_file_debuglog = os.path.abspath(path_dir_root + "/logs/debug.log")
+path_config_global = os.path.abspath(path_dir_settings + "/global.conf")
+path_config_debug = os.path.abspath(path_dir_settings + "/debugLogging.conf")
+path_config_rfid = os.path.abspath(path_dir_settings + "/rfid_trigger_play.conf")
+path_txt_latestID = os.path.abspath(path_dir_root + "/shared/latestID.txt")
+path_dir_shortcuts = os.path.abspath(path_dir_root + "/shared/shortcuts")
+path_dir_playlists = os.path.abspath(path_dir_root + "/playlists")
+# read three config files into one dictionary
+conf = conf_read_bash([path_config_global, path_config_debug, path_config_rfid])
 
 ###################################
 # parse variables from command line
