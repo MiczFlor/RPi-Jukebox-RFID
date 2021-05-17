@@ -79,7 +79,11 @@ __status__ = "Draft"
 # playout_pause_force
 # playout_pause_toggle
 # playout_playlist_clear
+# playout_playlist_load
 # playout_playlist_loop
+# playout_playlist_replay
+# playout_playlist_shuffle
+# playout_playlist_track_append
 # playout_playlist_track_movedown
 # playout_playlist_track_moveup
 # playout_playlist_track_remove
@@ -88,6 +92,7 @@ __status__ = "Draft"
 # playout_restart
 # playout_resume_play
 # playout_stop
+# playout_track_single
 # playout_volume_down
 # playout_volume_get
 # playout_volume_set
