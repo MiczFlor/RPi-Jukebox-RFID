@@ -26,22 +26,32 @@ class RpcServer:
         self.socket.setsockopt(zmq.LINGER, 200)
         return self.context
 
-    def execute(self, obj, cmd, param):
-        call_obj = self.objects.get(obj)
-
-        if (call_obj is not None):
-            call_function = getattr(call_obj, cmd, None)
-            if (call_function is not None):  # better to check with is callable() ??
-                response = call_function(**param)
-            else:
-                response = {'resp': "no valid commad"}
-        else:
-            response = {'resp': "no valid obj"}
-        # print (response)
-        return response
-
     def terminate(self):
         self._keep_running = False
+
+    def execute(self, module, method, args, kwargs):
+        """
+        Call the method in module with args and kwargs
+
+        Arguments and keyword arguments will be unpacked when calling the function
+        :param module: The plugin module
+        :param method: The registers function within the plugin module
+        :param args: Set with arguments passed to the function. Pass empty set if unneeded
+        :param kwargs: Dict with keyword arguments. Pass an empty dict if unneeded
+        :return: The return value of the method in the RPC protocol format or an error message
+        """
+        if module in self.objects:
+            method_attr = getattr(self.objects[module], method, None)
+            if callable(method_attr):
+                try:
+                    response = {'result': method_attr(*args, **kwargs)}
+                except Exception as e:
+                    response = {'error': {'code': -1, 'message': f"Error while executing method: '{method_attr}' in '{module}'. Reason: {e}"}}
+            else:
+                response = {'error': {'code': -1, 'message': f"Method not callable: '{method}' in '{module}'"}}
+        else:
+            response = {'error': {'code': -1, 'message': f"Unknown plugin object: '{module}'"}}
+        return response
 
     def run(self):
         self._keep_running = True
@@ -53,31 +63,36 @@ class RpcServer:
             nt = nanotime.now().nanoseconds()
 
             client_request = json.loads(message)
-            client_response = {}
 
-            logger.debug(client_request)
+            logger.debug(f"Request: {client_request}")
 
             # in difference to jsonrpc https://www.jsonrpc.org/specification
             # {"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
             # a additional required parameter "object" is used:
             # {'object':'','method':'','params':{},id:''}
+            module = client_request.get('object')
+            if module is not None:
+                method = client_request.get('method')
+                if method is not None:
+                    args = client_request.get('args', set())
+                    kwargs = client_request.get('kwargs', {})
+                    response = self.execute(module, method, args, kwargs)
+                else:
+                    response = {'error': {'code': -1, 'message': "Missing mandatory parameter 'method'."}}
+            else:
+                response = {'error': {'code': -1, 'message': "Missing mandatory parameter 'object'."}}
 
-            client_object = client_request.get('object')
-            if (client_object is not None):
-                client_command = client_request.get('method')
-                client_id = client_request.get('id')
-                if (client_command is not None):
-                    client_param = client_request.get('params')
-                    client_response['resp'] = self.execute(client_object, client_command, client_param)
-                    client_response['id'] = client_id
+            if 'tsp' in client_request:
+                response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
+                logger.debug("Execute: Processing time: {:2.3f} ms".format(response['total_processing_time']))
 
-            client_tsp = client_request.get('tsp')
-            if (client_tsp is not None):
-                client_response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
-                logger.debug("processing time: {:2.3f} ms".format(client_response['total_processing_time']))
+            if 'id' in client_request:
+                response['id'] = client_request.get('id')
 
-            logger.debug(client_response)
+            if 'error' in response:
+                logger.error(f"Execute: {response['error']['message']}")
+
+            logger.debug(f"Execute: {response}")
+
             #  Send reply back to client
-            self.socket.send_string(json.dumps(client_response))
-
-        return (1)
+            self.socket.send_string(json.dumps(response))

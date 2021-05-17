@@ -1,67 +1,89 @@
 {
-  "VolumeUp": {
+  "VolumeUp (kwargs)": {
     "object": "volume",
     "method": "set_volume",
-    "params": {
+    "kwargs": {
       "volume": 12
     }
   },
-  "VolumeMute": {
+  "VolumeUp (args)": {
+    "object": "volume",
+    "method": "set_volume",
+    "args": [12]
+  },
+  "VolumeUp (error in args)": {
+    "object": "volume",
+    "method": "set_volume",
+    "args": ["12b"]
+  },
+  "VolumeMute (empty kwargs)": {
     "object": "volume",
     "method": "mute",
-    "params": {}
+    "kwargs": {}
+  },
+  "VolumeUnMute (no args)": {
+    "object": "volume",
+    "method": "mute"
+  },
+  "No Method": {
+    "object": "volume",
+    "method": "does_not_exist"
+  },
+  "No Module": {
+    "object": "some_fantasy",
+    "method": "does_not_exist"
   },
     "104,49914": {
     "object": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "acdc"
     }
   },
   "103,12632": {
     "object": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "roxette"
     }
   },
   "104,29698": {
     "object": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "digger barnes/every story true"
     }
   },
   "108,07437": {
     "object": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "digger barnes"
     }
   },
   "107,60360": {
     "object": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "106,64513": {
     "object": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "104,14891": {
     "object": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "103,24033": {
     "object": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "104,32860": {
     "object": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   }
 }

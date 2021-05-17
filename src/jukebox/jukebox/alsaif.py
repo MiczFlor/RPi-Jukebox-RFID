@@ -19,6 +19,7 @@ class AlsaCtrl:
         return self.mixer.getvolume()[0]
 
     def set_volume(self, volume):
+        logger.debug(f"Set Volume = {volume}")
         if 0 <= volume <= 100:
             self.mixer.setvolume(volume)
         else:
@@ -26,6 +27,7 @@ class AlsaCtrl:
         return self.get_volume()
 
     def mute(self, mute_on=True):
+        logger.debug(f"Set Mute = {mute_on}")
         self.mixer.setmute(1 if mute_on else 0)
 
 
