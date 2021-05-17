@@ -6,10 +6,11 @@ services:
       context: ../
       dockerfile: ./docker/jukebox.Dockerfile
     container_name: jukebox
-    ports:
-      - "5555:5555"
     links:
       - mpd
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
     tty: true
     volumes:
       - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
@@ -21,10 +22,10 @@ services:
       context: ../
       dockerfile: ./docker/webui.Dockerfile
     container_name: webui
-    ports:
-      - "8000:80"
     links:
       - jukebox
+    ports:
+      - "8000:80"
     restart: unless-stopped
     tty: true
     volumes:
