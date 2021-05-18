@@ -9,6 +9,9 @@ git+git://github.com/lthiery/SPI-Py.git#egg=spi-py
 youtube_dl
 pyserial
 RPi.GPIO
+python-mpd2
+pyalsaaudio
+ruamel.yaml
 
 # Type checking for python
 # typing
