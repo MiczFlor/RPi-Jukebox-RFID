@@ -8,7 +8,7 @@ This component provides a mechanism to toggle between both audio sinks through a
 
 When a user powers on their Bluetooth headphones, they connect automatically to the Phoniebox. At the switch of the button (or card swipe, etc) the (already running) audio playback is transferred from the speakers to the headphones. This happens almost seamlessly. Parents feel an instant wave of relief at not having to listen to the 500th iteration of this month favourite song. The small user feels instantly proud at having working headphones much like the mom/dad always uses while doing home-office online meetings. If no Bluetooth headphones are connected, the audio sink toggle request defaults to speakers. An LED indicates the currently active audio sink.
 
-If the feature [bluetooth-buttons](../control/bluetooth-buttons) is enabled the audio stream is automatically switched over to bluetooth on connect and back to speakers on disconnect.
+If the feature [bluetooth-buttons](../controls/buttons-bluetooth-headphone) is enabled the audio stream is automatically switched over to bluetooth on connect and back to speakers on disconnect.
 
 If no bluetooth device is connected, the output defaults back to speakers. After boot-up the output is always speakers to make sure start-up sound are audiable and to avoid confusion.
 
@@ -110,18 +110,19 @@ $ ./install-bt-sink-switch.sh
 
 **Status LED**
 
-An optional status LED will be turned on if the audio sink is set to bluetooth. If a toggle command is issued, but no bluetooth device is connected, the LED will blink three times. Looks very neat, if you have a button with integrated LED. 
+An optional status LED will be turned on if the audio sink is set to bluetooth. If a toggle command is issued, but no bluetooth device is connected, the LED will blink three times. Looks very neat, if you have a button with integrated LED. Add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`, to use GPIO 13 as LED signal. It is `led_pin` the BCM number of the GPIO pin (i.e. 'led_pin = 13' means GPIO13) and defaults to None. Create the file, if it does not exist.
 
-Open `bt-sink-switch.py` and edit the following lines. (Default is `led_pin=None`)
-~~~python
-# Uses BCM GPIO numbering, i.e. 'led_pin = 6' means GPIO6
-# Set 'led_pin=None' to disable LED support (and no GPIO pin is blocked in this case)
-led_pin = 6
+**Important note**: Correct capitalization of [BluetoothToggleLed] is important!
+
+~~~
+[BluetoothToggleLed]
+enabled: True
+led_pin: 13
 ~~~
 
 **GPIO control**
 
-If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `gpio_settings.ini`
+If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`. Create it, if it does not exist.
 
 ~~~
 [BluetoothToggle]

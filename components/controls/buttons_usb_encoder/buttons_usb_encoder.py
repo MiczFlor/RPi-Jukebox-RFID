@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
+
+sys.path.append(".") # This command should be before imports of components
+
 import logging
 from evdev import categorize, ecodes, KeyEvent
 from io_buttons_usb_encoder import button_map, current_device

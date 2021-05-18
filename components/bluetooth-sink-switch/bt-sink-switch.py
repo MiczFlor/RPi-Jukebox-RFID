@@ -2,7 +2,8 @@
 """
 Provides bt_switch (see below) as function and callable script
 
-If called as script, configure led_pin according to your set-up
+If called as script, the configuration of led_pin reflecting audio sink status is read from ../../settings/gpio_settings.ini'
+See function get_led_pin_configuration for details. If no configuration file is found led_pin is None
 
 Usage:
 $ bt-sink-switch cmd [debug]
@@ -14,11 +15,9 @@ import sys
 import re
 import subprocess
 import logging
+import os
+import configparser
 
-# If called as script, this variable will set GPIO number of the LED to reflect sink status
-# Uses BCM GPIO numbering, i.e. 'led_pin = 6' means GPIO6
-# Set 'led_pin=None' to disable LED support (and no GPIO pin is blocked in this case)
-led_pin = None
 
 # Create logger
 logger = logging.getLogger('bt-sink-switch.py')
@@ -126,7 +125,7 @@ def bt_switch(cmd, led_pin=None):
     isSpeakerOn_console = subprocess.run("mpc outputs", shell=True, check=False, stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT)
     logger.debug(isSpeakerOn_console.stdout)
-    isSpeakerOn = re.search(b"1.*enabled", isSpeakerOn_console.stdout)
+    isSpeakerOn = re.search(b"^Output 1.*enabled", isSpeakerOn_console.stdout)
 
     # Figure out if a bluetooth device is connected (any device will do). Assume here that only speakers/headsets will be connected
     # -> No need for user to adapt MAC address
@@ -176,11 +175,55 @@ def bt_switch(cmd, led_pin=None):
         logger.debug(b'LED off: ' + proc.stdout)
 
 
+def get_led_pin_config(cfg_file):
+    """Read the led pin for reflecting current sink status from cfg_file which is a Python configparser file
+
+    cfg_file is relative to this script's location or an absolute path
+
+    The file must contain the entry
+
+    [BluetoothToggleLed]
+    enabled = True
+    led_pin = 6
+
+    where
+    - led_pin is the BCM number of the GPIO pin (i.e. 'led_pin = 6' means GPIO6) and defaults to None
+    - enabled can be used to temporarily disable the LED
+
+    Note: Capitalization of [BluetoothToggleLed] is important!"""
+
+    # Make sure to locate cfg_file relative to this script's location independent of working directory
+    if not os.path.isabs(cfg_file):
+        cfg_file = os.path.dirname(os.path.realpath(__file__)) + '/' + cfg_file
+    logger.debug(f"Reading config file: '{cfg_file}'")
+    cfg = configparser.ConfigParser()
+    cfg_file_success = cfg.read(cfg_file)
+    if not cfg_file_success:
+        logger.debug(f"Could not read '{cfg_file}'. Continue with default values (i.e. led off).")
+
+    section_name = 'BluetoothToggleLed'
+    led_pin = None
+    if section_name in cfg:
+        if cfg[section_name].getboolean('enabled', fallback=False):
+            led_pin = cfg[section_name].getint('led_pin', fallback=None)
+            if not led_pin:
+                logger.warning(f"Could not find 'led_pin' or could not read integer value")
+            elif not 1 <= led_pin <= 27:
+                logger.warning(f"Ignoring out of range pin number: {led_pin}.")
+                led_pin = None
+    else:
+        logger.debug(f"No section {section_name} found. Defaulting to led_pin = None")
+
+    logger.debug(f"Using LED pin = {led_pin}")
+    return led_pin
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3:
         logconsole.setLevel(logging.DEBUG)
 
     if 2 <= len(sys.argv) <= 3:
-        bt_switch(sys.argv[1], led_pin)
+        cfg_led_pin = get_led_pin_config('../../settings/gpio_settings.ini')
+        bt_switch(sys.argv[1], cfg_led_pin)
     else:
         bt_usage(sys.argv[0])

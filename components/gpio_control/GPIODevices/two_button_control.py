@@ -1,7 +1,7 @@
 try:
-    from simple_button import SimpleButton
+    from simple_button import SimpleButton, print_edge_key, print_pull_up_down
 except ImportError:
-    from .simple_button import SimpleButton
+    from .simple_button import SimpleButton, print_edge_key, print_pull_up_down
 from RPi import GPIO
 import logging
 logger = logging.getLogger(__name__)
@@ -59,32 +59,43 @@ class TwoButtonControl:
                  functionCallBtn1,
                  functionCallBtn2,
                  functionCallTwoBtns=None,
-                 pull_up=True,
-                 hold_repeat=True,
+                 pull_up_down='pull_up',
+                 hold_mode=None,
                  hold_time=0.3,
+                 bouncetime=500,
+                 antibouncehack=False, 
+                 edge='falling', 
                  name='TwoButtonControl'):
+        self.bcmPin1 = bcmPin1
+        self.bcmPin2 = bcmPin2
         self.functionCallBtn1 = functionCallBtn1
         self.functionCallBtn2 = functionCallBtn2
         self.functionCallTwoBtns = functionCallTwoBtns
-        self.bcmPin1 = bcmPin1
-        self.bcmPin2 = bcmPin2
+        self.pull_up_down=pull_up_down
+        self.hold_mode=hold_mode
+        self.hold_time=hold_time
+        self.bouncetime=bouncetime
+        self.antibouncehack=antibouncehack 
+        self.edge=edge
         self.btn1 = SimpleButton(
             pin=bcmPin1,
-            action=lambda *args: None,
-            name=name + 'Btn2',
-            bouncetime=500,
-            edge=GPIO.FALLING,
+            name=name + 'Btn1',
+            bouncetime=bouncetime,
+            antibouncehack=antibouncehack,
+            edge=edge,
             hold_time=hold_time,
-            hold_repeat=hold_repeat)
+            hold_mode=hold_mode,
+            pull_up_down=pull_up_down)
         self.btn1.callback_with_pin_argument = True
 
         self.btn2 = SimpleButton(pin=bcmPin2,
-                                 action=lambda *args: None,
-                                 hold_time=hold_time,
-                                 hold_repeat=hold_repeat,
                                  name=name + 'Btn2',
-                                 bouncetime=500,
-                                 edge=GPIO.FALLING)
+                                 bouncetime=bouncetime,
+                                 antibouncehack=antibouncehack,
+                                 edge=edge,
+                                 hold_time=hold_time,
+                                 hold_mode=hold_mode,
+                                 pull_up_down=pull_up_down)
         self.btn2.callback_with_pin_argument = True
         generatedTwoButtonFunctionCall = functionCallTwoButtons(self.btn1,
                                                                 self.btn2,
@@ -100,11 +111,11 @@ class TwoButtonControl:
 
     def __repr__(self):
         two_btns_action = self.functionCallTwoBtns is not None
-        return '<TwoBtnControl-{name}({bcmPin1}, {bcmPin2},two_buttons_action={two_btns_action})>'.format(
-            name=self.name,
-            bcmPin1=self.bcmPin1,
-            bcmPin2=self.bcmPin2,
-            two_btns_action=two_btns_action
+        return '<TwoBtnControl-{}({}, {},two_buttons_action={},hold_mode={},hold_time={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+            self.name, self.bcmPin1, self.bcmPin2, two_btns_action,
+            self.hold_mode, self.hold_time, print_edge_key(self.edge),
+            self.bouncetime, self.antibouncehack,
+            print_pull_up_down(self.pull_up_down)
         )
 
 

@@ -18,6 +18,7 @@ settings/version
 htdocs/config.php
 scripts/deviceName.txt
 scripts/gpio-buttons.py
+settings/PhonieboxInstall.conf
 
 shared/*
 playlists/*

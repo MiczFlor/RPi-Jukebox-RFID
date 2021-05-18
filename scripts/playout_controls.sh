@@ -69,6 +69,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordplaylatest
 # readwifiipoverspeaker
 # bluetoothtoggle
+# switchaudioiface
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -95,6 +96,9 @@ fi
 # this file does not need to exist
 # it will be created or deleted by this script
 VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
+
+# path to file storing the current audio iFace name
+IFACEFILE=${PATHDATA}/../settings/Audio_iFace_Name
 
 #############################################################
 
@@ -984,6 +988,39 @@ case $COMMAND in
             rfkill unblock wifi
         fi
         ;;
+    randomcard)
+        #activate a random card
+        NUM_CARDS=$(find $AUDIO_FOLDERS_PATH/../shortcuts/ -maxdepth 1 -name '[0-9]*' | wc -l)
+        dbg "NUM_CARDS: $NUM_CARDS"
+        if (($NUM_CARDS>0))
+        then
+            RANDOMCARDID=$(ls -d $AUDIO_FOLDERS_PATH/../shortcuts/[0-9]* | shuf -n 1 | xargs basename)
+            dbg "playing random card $RANDOMCARDID"
+            ${PATHDATA}/rfid_trigger_play.sh --cardid=$RANDOMCARDID
+        fi
+        ;;
+    randomfolder)
+        #play a random folder
+        NUM_FOLDERS=$(find $AUDIO_FOLDERS_PATH -mindepth 1 -maxdepth 1 -type d -printf '1' | wc -c)
+        dbg "NUM_FOLDERS: $NUM_FOLDERS"
+        if (($NUM_FOLDERS>0))
+        then
+            RANDOMFOLDER=$(ls -d $AUDIO_FOLDERS_PATH/*/ | shuf -n 1 | xargs -d '\n' basename)
+            dbg "playing random folder \"$RANDOMFOLDER\""
+            ${PATHDATA}/rfid_trigger_play.sh --dir="$RANDOMFOLDER"
+        fi
+        ;;
+    randomtrack)
+        #jump to a random track from the current playlist (without activating shuffle, i.e. maintaining track order)
+        NUM_TRACKS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
+        dbg "NUM_TRACKS: $NUM_TRACKS"
+        if(($NUM_TRACKS > 0))
+        then
+            RANDOMTRACK=$(((RANDOM%${NUM_TRACKS})+1))
+            dbg "playing random track $RANDOMTRACK"
+            mpc play ${RANDOMTRACK}
+        fi
+        ;;
     recordstart)
         #mkdir $AUDIOFOLDERSPATH/Recordings
         #kill the potential current playback
@@ -1026,6 +1063,36 @@ case $COMMAND in
     bluetoothtoggle)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         $PATHDATA/../components/bluetooth-sink-switch/bt-sink-switch.py $VALUE
+        ;;
+    switchaudioiface)
+        # will switch between primary/secondary audio iFace (e.g. speaker/headphones), if exist
+        dbg "   ${COMMAND}"
+        if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+            NEXTAUDIOIFACE=$(((${AUDIOIFACEACTIVE}+1) % 2))
+            if [ -f ${IFACEFILE}_${NEXTAUDIOIFACE} ]; then
+                NEXTAUDIOIFACENAME=`<${IFACEFILE}_${NEXTAUDIOIFACE}`
+                if [ -f ${VOLFILE}_${NEXTAUDIOIFACE} ]; then
+                    NEXTAUDIOIFACEVOL=`<${VOLFILE}_${NEXTAUDIOIFACE}`
+                else
+                    NEXTAUDIOIFACEVOL=${AUDIOVOLMAXLIMIT}
+                fi
+                # store current volume
+                amixer sget \'${AUDIOIFACENAME}\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])' > ${VOLFILE}_${AUDIOIFACEACTIVE}
+                # unmute next audio iFace
+                amixer sset \'${NEXTAUDIOIFACENAME}\' ${NEXTAUDIOIFACEVOL}%
+                # mute current audio iFace
+                amixer sset \'${AUDIOIFACENAME}\' 0%
+                # store new active audio iFace
+                cp ${IFACEFILE}_${NEXTAUDIOIFACE} ${IFACEFILE}
+                echo "${NEXTAUDIOIFACE}" > ${PATHDATA}/../settings/Audio_iFace_Active
+                # create global config file because individual setting got changed (time consuming)
+                . ${PATHDATA}/inc.writeGlobalConfig.sh
+            else
+                dbg "Cannot switch audio iFace. ${IFACEFILE}_${NEXTAUDIOIFACE} does not exist."
+            fi
+        else
+            dbg "Command requires \"amixer\" as volume manager."
+        fi
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE

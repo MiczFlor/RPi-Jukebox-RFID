@@ -120,6 +120,16 @@ fi
 AUDIOIFACENAME=`cat $PATHDATA/../settings/Audio_iFace_Name`
 
 ##############################################
+# Audio_iFace_Active
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_iFace_Active ]; then
+    echo "0" > $PATHDATA/../settings/Audio_iFace_Active
+    chmod 777 $PATHDATA/../settings/Audio_iFace_Active
+fi
+# 2. then|or read value from file
+AUDIOIFACEACTIVE=`cat $PATHDATA/../settings/Audio_iFace_Active`
+
+##############################################
 # Volume_Manager (mpd or amixer)
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Volume_Manager ]; then
@@ -313,6 +323,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # SECONDSWIPEPAUSE
 # SECONDSWIPEPAUSECONTROLS
 # AUDIOIFACENAME
+# AUDIOIFACEACTIVE
 # VOLUMEMANAGER
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
@@ -348,6 +359,7 @@ echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSE=\"${SECONDSWIPEPAUSE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSECONTROLS=\"${SECONDSWIPEPAUSECONTROLS}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOIFACEACTIVE=\"${AUDIOIFACEACTIVE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLUMEMANAGER=\"${VOLUMEMANAGER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"

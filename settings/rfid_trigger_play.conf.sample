@@ -29,6 +29,8 @@
 CMDVOLUP="%CMDVOLUP%"
 ### Volume down by one step
 CMDVOLDOWN="%CMDVOLDOWN%"
+### Switch between primary/secondary audio iFace
+CMDSWITCHAUDIOIFACE="%CMDSWITCHAUDIOIFACE%"
 ### Stop player
 CMDSTOP="%CMDSTOP%"
 ### Mute player
@@ -37,6 +39,12 @@ CMDMUTE="%CMDMUTE%"
 CMDNEXT="%CMDNEXT%"
 ### Skip previous track
 CMDPREV="%CMDPREV%"
+### Activate random card
+CMDRANDCARD="%CMDRANDCARD%"
+### Play random folder
+CMDRANDFOLD="%CMDRANDFOLD%"
+### Jump to random track
+CMDRANDTRACK="%CMDRANDTRACK%"
 ### Restart the playlist
 CMDREWIND="%CMDREWIND%"
 ### Seek ahead 15 sec.
