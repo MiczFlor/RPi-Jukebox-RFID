@@ -9,11 +9,11 @@ import logging
 import logging.config
 import pathlib
 import argparse
-import yaml
 import subprocess 
 import alsaaudio
 # regular expression
 import re 
+from ruamel.yaml import YAML
 from pprint import pprint
 from functions import *
 from PlayoutControl_Class import PlayoutControl
@@ -39,6 +39,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--cardid')
 parser.add_argument('-c', '--command')#, required=True)
 parser.add_argument('-dn', '--dirpath')
+parser.add_argument('-fn', '--filename')
+parser.add_argument('-fp', '--filepath')
 parser.add_argument('-pn', '--playlistname')
 parser.add_argument('-pp', '--playlistpos')
 parser.add_argument('-v', '--value')
@@ -68,6 +70,7 @@ playProcess = PlayoutControl(path_dir_root)
 # ./PlayoutControl_CLI.py -c playlist_loop -v playlist
 # ./PlayoutControl_CLI.py -c playlist_loop -v track
 # ./PlayoutControl_CLI.py -c playlist_loop -v off
+# ./PlayoutControl_CLI.py -c playlist_load_play -d "ZZZ/SubMaster/bbb-AudioFormatsTest" --playlistname "ZZZ % SubMaster % bbb-AudioFormatsTest"
 
 # ./PlayoutControl_CLI.py -c volume_up
 # ./PlayoutControl_CLI.py -c volume_down
@@ -127,11 +130,18 @@ if(args_main['command']):
 
     elif(args_main['command'] == "playout_position_save"):
         playProcess.playout_position_save()
+
     elif(args_main['command'] == "playout_resume_play"):
         args_func = {}
         args_func['playlistname'] = args_main['playlistname']
         args_func['dirpath'] = args_main['dirpath']
         playProcess.playout_resume_play(args_func) 
+
+    elif(args_main['command'] == "playlist_load_play"):
+        args_func = {}
+        args_func['playlistname'] = args_main['playlistname']
+        args_func['dirpath'] = args_main['dirpath']
+        playProcess.playout_playlist_load_play(args_func) 
 
     elif(args_main['command'] == "playlist_clear"):
         playProcess.playout_playlist_clear()
@@ -228,9 +238,9 @@ if(args_main['command']):
         logger.debug('command: ' + args_main['command'] + ' not found')
 
 print("Available methods:")
-method_list = [func for func in dir(playProcess) if callable(getattr(playProcess, func))]
-for i in method_list:
-    print("# " + i)
-#pprint(vars(playProcess))
+#method_list = [func for func in dir(playProcess) if callable(getattr(playProcess, func))]
+#for i in method_list:
+#    print("# " + i)
+##pprint(vars(playProcess))
 
 

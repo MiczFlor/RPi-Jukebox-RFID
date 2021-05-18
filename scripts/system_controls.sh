@@ -389,64 +389,6 @@ case $COMMAND in
         # This command may be called with ./playout_controls.sh -c=playershuffle
         mpc shuffle
         ;;
-    playlistaddplay)
-        # add to playlist (and play)
-        # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
-        # FOLDER = rel path from audiofolders
-        # VALUE = name of playlist
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay playlist name VALUE: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   playlistaddplay FOLDER: $FOLDER" >> ${PATHDATA}/../logs/debug.log; fi
-
-        # NEW VERSION:
-        # Read the current config file (include will execute == read)
-        . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-
-        # load playlist
-        mpc clear
-        mpc load "${VALUE//\//SLASH}"
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH} >> ${PATHDATA}/../logs/debug.log; fi
-
-        # Change some settings according to current folder IF the folder.conf exists
-        #. ${PATHDATA}/inc.settingsFolderSpecific.sh
-
-        # check if we switch to single file playout
-        ${PATHDATA}/single_play.sh -c=single_check -d="${FOLDER}"
-
-        # check if we shuffle the playlist
-        ${PATHDATA}/shuffle_play.sh -c=shuffle_check -d="${FOLDER}"
-
-        # Unmute if muted
-        if [ -f $VOLFILE ]; then
-            # $VOLFILE DOES exist == audio off
-            # read volume level from $VOLFILE and set as percent
-            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
-            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
-            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
-            # delete $VOLFILE
-            rm -f $VOLFILE
-        fi
-
-        # Now load and play
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"" >> ${PATHDATA}/../logs/debug.log; fi
-        ${PATHDATA}/resume_play.sh -c=resume -d="${FOLDER}"
-
-        # write latest folder played to settings file
-        sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
-        sudo chown pi:www-data ${PATHDATA}/../settings/Latest_Folder_Played
-        sudo chmod 777 ${PATHDATA}/../settings/Latest_Folder_Played
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  VAR Latest_Folder_Played: ${FOLDER}" >> ${PATHDATA}/../logs/debug.log; fi
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "  # end playout_controls.sh playlistaddplay" >> ${PATHDATA}/../logs/debug.log; fi
-
-        # OLD VERSION (pre 20190302 - delete once the new version really seems to work):
-        # call shuffle_check HERE to enable/disable folder-based shuffling
-        # (mpc shuffle is different to random, because when you shuffle before playing,
-        # you start your playlist with a different track EVERYTIME. With random you EVER
-        # has the first song and random from track 2.
-        #mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/shuffle_play.sh -c=shuffle_check && ${PATHDATA}/single_play.sh -c=single_check && ${PATHDATA}/resume_play.sh -c=resume
-        #mpc load "${VALUE//\//SLASH}" && ${PATHDATA}/single_play.sh -c=single_check  && ${PATHDATA}/resume_play.sh -c=resume
-
-        ;;
     setidletime)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         # write new value to file

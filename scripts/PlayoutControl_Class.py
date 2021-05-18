@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# requirements:
+# (additional) requirements:
 # pip3 install python-mpd2
 # pip3 install pyalsaaudio
-# YAML: https://yaml.readthedocs.io/en/latest/install.html
+# pip3 install ruamel.yaml
+#   https://yaml.readthedocs.io/en/latest/install.html
 
 __name__ = "PlayoutControl"
 __author__ = "Micz Flor"
@@ -106,7 +107,7 @@ __status__ = "Draft"
 # read_config_rfidcontrol_dict
 # read_file_latest_folder_played
 # read_file_volume_level
-# read_folder_config_path
+# read_path_folder_config
 # read_mpd_vars
 # sys_config_value_get
 # sys_config_value_set
@@ -144,9 +145,10 @@ path_file_debuglog = os.path.abspath(path_dir_root + "/logs/debug.log")
 
 class PlayoutControl:
 
-    def __init__(self, path_dir_root=path_dir_root):
+    def __init__(self, path_dir_root):
 
         # vars
+        self.path_dir_root = path_dir_root
         self.path_dir_settings = os.path.abspath(path_dir_root + "/settings")
         self.path_config_global_bash = os.path.abspath(self.path_dir_settings + "/global.conf")
         self.path_config_global_yaml = os.path.abspath(self.path_dir_settings + "/global.conf.yaml")
@@ -199,6 +201,183 @@ class PlayoutControl:
         self.mpd_client.close()  # send the close command
         self.mpd_client.disconnect()
 
+
+    def playout_playlist_load_play(self, args_func):
+        '''
+        Complete procedure to play playlist: clear, load, resume playout.
+        '''
+
+        if(args_func['dirpath']):
+            self.logger.debug("args_func['dirpath']: '%s'" % (args_func['dirpath']))
+        else:
+            self.logger.error("ERROR: args_func['dirpath'] not given.")
+            sys.exit()
+        if(args_func['playlistname']):
+            self.logger.debug("args_func['playlistname']: '%s'" % (args_func['playlistname']))
+        else:
+            self.logger.warning("WARNING: args_func['playlistname'] not given.")
+
+        if(self.read_config_folder_dict(args_func['dirpath'])):
+            self.logger.debug("Success: path to folder conf file")
+            self.logger.debug(self.conf['folder'])
+        else:
+            self.logger.error("Error: folder conf file not found")
+
+        # read (usual) vars from mpd:
+        self.read_mpd_vars()
+        self.logger.debug("Coming back from self.read_mpd_vars()")
+        self.logger.debug(self.mpd_status)
+
+        # unmute if mute
+        if(self.read_file_volume_level()):
+            # audio off => bc file exists (containing volume level to keep in mind)
+            self.logger.debug(
+                "Mute? True! -> Action: unmute. Audio level read from 'Audio_Volume_Level' : '%s'" %
+                (self.audio_volume_level_file))
+            volume_now = self.audio_volume_level_file
+            # set volume
+            self.playout_volume_set(int(volume_now))
+            # remove file 'Audio_Volume_Level'
+            os.remove(self.path_dir_settings + "/Audio_Volume_Level")
+
+        # open new mpd_client to be used in this method:
+        self.mpd_client = MPDClient()               # create client object
+        self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+        self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
+        self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600                    
+
+        # load playlist
+        self.mpd_client.clear()                         # clear cue
+        self.mpd_client.load(args_func['playlistname'])  # load playlist
+        
+        self.logger.debug("Single and/or shuffle?")
+        if(self.conf['folder']['SINGLE'] == "ON"):
+            self.logger.debug("['SINGLE'] == 'ON' => self.mpd_client.single(1)")
+            self.mpd_client.single(1)
+        else:
+            self.logger.debug("['SINGLE'] == 'OFF' => self.mpd_client.single(0)")
+            self.mpd_client.single(0)
+
+        if(self.conf['folder']['SHUFFLE'] == "ON"):
+            self.logger.debug("['SHUFFLE'] == 'ON' => self.mpd_client.shuffle()")
+            self.mpd_client.shuffle()
+        else:
+            self.logger.debug("['SHUFFLE'] == 'OFF' => self.mpd_client.random(0)")
+            self.mpd_client.random(0)
+
+        # close and disconnect from mpd
+        self.mpd_client.close()  # send the close command
+        self.mpd_client.disconnect()
+
+        # Save what we know:
+        subprocess.run("echo \"" + args_func['playlistname'] + "\" > " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
+        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
+        subprocess.run("echo \"" + args_func['dirpath'] + "\" > " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
+        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
+
+        # bc of "resume" at saved point, don't simply: print(self.mpd_client.play())
+        self.logger.debug("RE-ROUTE: Calling self.playout_resume_play(args_func)")
+        self.playout_resume_play(args_func)
+
+        self.logger.debug("RETURN from self.playout_resume_play(args_func)")
+
+    def playout_resume_play(self, args_func):
+
+        if(args_func['dirpath']):
+            self.logger.debug("args_func['dirpath']: '%s'" % (args_func['dirpath']))
+            # folder conf read
+            self.read_config_folder_dict(args_func['dirpath'])
+            self.logger.debug("self.conf['folder']:")
+            self.logger.debug(self.conf['folder'])
+        else:
+            self.logger.error("ERROR: args_func['dirpath'] not given.")
+            sys.exit()
+
+        # open new mpd_client to be used in this method:
+        self.mpd_client = MPDClient()               # create client object
+        self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+        self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
+        self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600                    
+        
+        # Check if RESUME is switched on
+        if(self.conf['folder']['RESUME'] == "ON" or self.conf['folder']['SINGLE'] == "ON"):
+            self.logger.debug("1.IF: self.conf['folder']['RESUME'] == 'ON' or self.conf['folder']['SINGLE'] == 'ON'")
+            # will generate variables:
+            #CURRENTFILENAME
+            #ELAPSED
+            #PLAYSTATUS
+        
+            # Check if we got a "savepos" command after the last "resume". 
+            # Otherwise we assume that the playlist was played until the end.
+            # In this case, start the playlist from beginning 
+            if(self.conf['folder']['PLAYSTATUS'] == "Stopped"):
+                self.logger.debug("2.IF: self.conf['folder']['PLAYSTATUS'] == 'Stopped'")
+
+                # Get the playlist position of the file from mpd
+                mpd_playlistfind = self.mpd_client.playlistfind("file", self.conf['folder']['CURRENTFILENAME'])
+                self.logger.debug("self.conf['folder']['CURRENTFILENAME']: '%s'" % (self.conf['folder']['CURRENTFILENAME']))
+                self.logger.debug(mpd_playlistfind)
+
+                # If the file is found, it is played from ELAPSED, otherwise start playlist from beginning.
+                # If we got a playlist position, play from that position, not the saved one.
+                
+                # Did we get the playlist position of the file from mpd?
+                if(len(mpd_playlistfind) > 0):
+                    self.logger.debug(
+                        "3.IF: Playlist position: mpd_playlistfind[0]['pos']: '%s'" %
+                        (mpd_playlistfind[0]['pos']))
+
+                    # doesnt work correctly 
+                    # echo -e seek $PLAYLISTPOS $ELAPSED \\nclose | nc -w 1 localhost 6600
+                    # workaround, see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/878#issuecomment-672283454
+                    self.mpd_client.play(mpd_playlistfind[0]['pos'])  # playlist from position
+                    # seek time in current file (needs float() ???)
+                    self.mpd_client.seekcur(float(self.conf['folder']['ELAPSED']))
+                else:
+                    self.logger.debug("3.ELSE: len(mpd_playlistfind) == 0")
+                    # echo -e "play $VALUE" | nc -w 1 localhost 6600
+
+            # NOTE: the following comment is from the original shell script. And I don't get it...
+            # Wouldn't it be enough to write this just before we start playing below?
+            
+            ## If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks), 
+            ## there's no savepos event and we would resume at the last position anywhere in the playlist. 
+            ## To catch these, we signal it to the next "resume" call via writing it to folder.conf that 
+            ## we still assume that the audio is playing. 
+            ## be anything here, as we won't use the information if "Playing" is found by "resume".
+            ## set the vars we need to change
+            ## PLAYSTATUS="Playing"
+            ## now calling a script which will only replace these new vars in folder.conf
+            ## (see script for details)
+            ## . $PATHDATA/inc.writeFolderConfig.sh
+            
+            else:                
+                self.logger.debug("2.ELSE: self.conf['folder']['PLAYSTATUS'] != 'Stopped'")
+    
+                # We assume that the playlist ran to the end the last time and start from the beginning.
+                # Or: playlist is playing and we've got a play from playlist position command.
+                # echo -e "play $VALUE" | nc -w 1 localhost 6600
+
+        else:
+            self.logger.debug("1.IF: self.conf['folder']['RESUME'] == 'ON' or self.conf['folder']['SINGLE'] == 'ON'")
+            # if no last played data exists (resume play disabled), 
+            # we play the playlist from the beginning or the given playlist position
+            # echo -e "play $VALUE" | nc -w 1 localhost 6600
+
+        # Write to folder conf that we are now playing
+        # get full folder path: self.folder_config_path
+        self.read_path_folder_config(args_func['dirpath'])
+        folder_config_new = {}  # *new* variables for folder.conf
+        folder_config_new['PLAYSTATUS'] = "Playing"
+        self.write_config_folder(self.folder_config_path, folder_config_new)
+        
+        # PLAY
+        self.mpd_client.play()
+
+        # close and disconnect from mpd
+        self.mpd_client.close()  # send the close command
+        self.mpd_client.disconnect()
+
     def playout_playlist_load(self, playlist_name):
         '''
         Clears current playout queue and loads playlist from file (by name).
@@ -218,6 +397,7 @@ class PlayoutControl:
         self.mpd_client.close()  # send the close command
         self.mpd_client.disconnect()
 
+
     def playout_playlist_replay(self):
         '''
         Re-start current playout queue from first track.
@@ -235,6 +415,7 @@ class PlayoutControl:
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
         self.mpd_client.disconnect()
+
 
     def playout_track_single(self, file_name):
         '''
@@ -373,7 +554,8 @@ class PlayoutControl:
                 self.playout_volume_set(int(volume_now))
                 # remove file 'Audio_Volume_Level'
                 os.remove(self.path_dir_settings + "/Audio_Volume_Level")
-            # skip to next track
+            
+            self.logger.debug("skip to next track")
             self.mpd_client.next()
 
         # close and disconnect from mpd
@@ -461,7 +643,7 @@ class PlayoutControl:
         # The dirpath is read from the latest settings/Latest_Folder_Played
         if(self.read_file_latest_folder_played()):
             self.logger.debug("Latest_Folder_Played: " + self.folder_name)
-            # self.read_folder_config_path(self.folder_name)
+            # self.read_path_folder_config(self.folder_name)
             if(self.read_config_folder_dict(self.folder_name)):
                 if(self.conf['folder']['RESUME'] == "ON" or self.conf['folder']['SINGLE'] == "ON"):
                     self.read_config_global_dict()  # read global and debug conf
@@ -480,105 +662,9 @@ class PlayoutControl:
         else:
             self.logger.error("ERROR: settings file 'Latest_Folder_Played' not found or readable")
 
-    def playout_resume_play(self, args_func):
-
-        if(args_func['dirpath']):
-            self.logger.debug("args_func['dirpath']: '%s'" % (args_func['dirpath']))
-        else:
-            self.logger.error("ERROR: args_func['dirpath'] not given.")
-            sys.exit()
-        if(args_func['playlistname']):
-            self.logger.debug("args_func['playlistname']: '%s'" % (args_func['playlistname']))
-        else:
-            self.logger.warning("WARNING: args_func['playlistname'] not given.")
-
-        # folder conf read
-        self.read_config_folder_dict(args_func['dirpath'])
-        self.logger.debug("self.conf['folder']:")
-        self.logger.debug(self.conf['folder'])
-
-        # read (usual) vars from mpd:
-        self.read_mpd_vars()
-        # open new mpd_client to be used in this method:
-        self.mpd_client = MPDClient()               # create client object
-        self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
-        self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
-        self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
-        # take a look
-        mpd_playlistfind = self.mpd_client.playlistfind("file", self.conf['folder']['CURRENTFILENAME'])
-        self.logger.debug("self.mpd_client.playlistfind('file', self.conf['folder']['CURRENTFILENAME'])")
-        self.logger.debug(mpd_playlistfind)
-        self.logger.debug("self.conf['folder']['CURRENTFILENAME']: '%s'" % (self.conf['folder']['CURRENTFILENAME']))
-        self.logger.debug(mpd_playlistfind)
-
-        if(self.conf['folder']['RESUME'] == "ON" or self.conf['folder']['SINGLE'] == "ON"):
-
-            # We know *resume* is an issue (RESUME|SINGLE==ON). What are our ideal options?
-            #   1.  Playlist was stopped with 'playout_saveposition' => we have a good folder conf file
-            #       TRUE IF self.conf['folder']['PLAYSTATUS'] == "Stopped"
-            #   2.  Found position in playlist for self.conf['folder']['CURRENTFILENAME']
-            #       FALSE IF len(mpd_playlistfind) == 0
-            #   3.  Found elapsed time of file from last playout
-            #       TRUE IF self.conf['folder']['ELAPSED'] (exists and float)
-            # Otherwise we assume that the playlist was played until the end.
-            # In this case, start the playlist from beginning
-
-            if(self.conf['folder']['PLAYSTATUS'] == "Stopped"):
-                self.logger.debug("Folder conf file seems valid (self.conf['folder']['PLAYSTATUS'] == 'Stopped').")
-                # Did we get the playlist position of the file from mpd?
-
-                if(len(mpd_playlistfind) == 0):
-                    self.logger.debug("No playlist position. Try loading playlist.")
-                    if(args_func['playlistname']):
-                        self.mpd_client.clear()                         # clear cue
-                        self.mpd_client.load(args_func['playlistname'])  # load playlist
-                        self.mpd_client.play()                          # play
-                    else:
-                        self.logger.error("ERROR: No playlistname, no position. We know too little to do anything.")
-
-                else:
-                    # If the file is found, it is played from ELAPSED, otherwise start playlist from beginning.
-                    # WARNING: what if the file is in the playlist more than once???
-                    #          Currently we take the first (0) match: mpd_playlistfind[0]['pos']
-                    self.logger.debug(
-                        "Playlist position: mpd_playlistfind[0]['pos']: '%s'" %
-                        (mpd_playlistfind[0]['pos']))
-                    self.mpd_client.play(mpd_playlistfind[0]['pos'])  # playlist from position
-                    # seek time in current file (needs float() ???)
-                    self.mpd_client.seekcur(float(self.conf['folder']['ELAPSED']))
-
-                # NOTE: If the playlist ends without any stop/shutdown/new swipe (you've listened to all of the tracks),
-                # there's no savepos event and we would resume at the last position anywhere in the playlist.
-
-            else:
-                self.logger.debug("Folder conf file seems invalid (self.conf['folder']['PLAYSTATUS'] != 'Stopped').")
-                # We assume that the playlist ran to the end the last time and start from the beginning.
-                # Or: playlist is playing and we've got a play from playlist position command.
-                if(args_func['playlistname']):
-                    self.mpd_client.clear()                         # clear cue
-                    self.mpd_client.load(args_func['playlistname'])  # load playlist
-                    self.mpd_client.play()                          # play
-                else:
-                    self.mpd_client.play()  # play whatever is loaded
-        else:
-            # if no last played data exists (resume play disabled),
-            # we play the playlist from the beginning or the given playlist position
-            if(args_func['playlistname']):
-                self.mpd_client.clear()                         # clear cue
-                self.mpd_client.load(args_func['playlistname'])  # load playlist
-                self.mpd_client.play()                          # play
-            else:
-                self.mpd_client.play()                          # play whatever is loaded
-
-        if(self.mpd_client.status()['state'] == "play"):
-            # Save to folder conf that we are "Playing" (not "Stopped")
-            folder_config_new = {}  # *new* variables for folder.conf
-            folder_config_new['PLAYSTATUS'] = "Playing"
-            self.write_config_folder(self.folder_config_path, folder_config_new)
-
-        # close and disconnect from mpd
-        self.mpd_client.close()  # send the close command
-        self.mpd_client.disconnect()
+    def write_file_single_value(self, file_name, file_content):
+        write_file = open(self.path_dir_settings + file_name, "w")
+        write_file.write(str(file_content))
 
     def write_config_folder(self, folder_config_path, folder_config_new):
 
@@ -713,7 +799,7 @@ class PlayoutControl:
                ):
                 if(args_func['value'] == "ON" or args_func['value'] == "OFF"):
                     if(args_func['dirpath']):
-                        if(self.read_folder_config_path(args_func['dirpath'])):
+                        if(self.read_path_folder_config(args_func['dirpath'])):
                             self.logger.debug(
                                 'Try switching folder conf "' +
                                 args_func['command'] +
@@ -747,11 +833,11 @@ class PlayoutControl:
     ######################################################
     # read (return) values (as string, int, float or dict)
     # all values are assigned to self AND(!) returned or False
-    # e.g. read_folder_config_path          => string: absolute path to config file for folder
+    # e.g. read_path_folder_config          => string: absolute path to config file for folder
     # e.g. read_config_global_dict          => dictionary: config as key => value pairs
     # e.g. read_file_latest_folder_played   => string: path of latest folder (or subfolder with relative path)
 
-    def read_folder_config_path(self, dirpath):
+    def read_path_folder_config(self, dirpath):
         folder_config_path = self.conf['global']['AUDIO_FOLDER_PATH'] + "/" + dirpath
         self.logger.debug("folder_config_path: " + folder_config_path)
         if(Path(folder_config_path).is_dir()):
@@ -782,13 +868,24 @@ class PlayoutControl:
             self.logger.error("ERROR: file not found: " + self.path_dir_settings + "/Latest_Folder_Played")
             return(False)
 
+    def read_file_latest_playlist_played(self):
+
+        # Get folder name of currently played audio
+        try:
+            with open(self.path_dir_settings + "/Latest_Playlist_Played", 'r') as file:
+                self.folder_name = file.read().strip()
+                return(self.folder_name)
+        except IOError:
+            self.logger.error("ERROR: file not found: " + self.path_dir_settings + "/Latest_Playlist_Played")
+            return(False)
+
     def read_config_folder_dict(self, dirpath):
 
-        if(self.read_folder_config_path(dirpath)):
+        if(self.read_path_folder_config(dirpath)):
             self.logger.debug("Try to read file config: " + self.folder_config_path)
             try:
                 with open(self.folder_config_path) as f:
-                    self.logger.debug("TRUE (file found): '%s' (value: '%s')" % (self.folder_config_path, f))
+                    self.logger.debug("TRUE (file found): '%s'" % (self.folder_config_path))
             except IOError:
                 self.logger.debug("FALSE (file not found): " + self.folder_config_path)
                 # create default folder conf file => dict for attributes empty

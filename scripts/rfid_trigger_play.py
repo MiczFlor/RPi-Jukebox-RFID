@@ -21,7 +21,7 @@ from inc_functions import *
 
 # LOGGING
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s [%(threadName)-12.12s] - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("../logs/debug.log"),
@@ -56,7 +56,7 @@ logger = logging.getLogger('rfid_trigger_play.py')
 # VARIABLES
 
 # ignore files will these extensions in the results:
-ignore_file_extension = ('.conf', '.ini', '.jpg', '.db', '.dat')
+ignore_file_extension = ('.conf', '.ini', '.jpg', '.db', '.dat', '.*~')
 
 # The absolute path to the folder which contains all the scripts
 path_current_dir_absolute=str(pathlib.Path(__file__).parent.absolute())
@@ -78,13 +78,14 @@ conf = conf_read_bash([path_config_global, path_config_debug, path_config_rfid])
 ###################################
 # parse variables from command line
 parser = argparse.ArgumentParser()
-parser.add_argument('-i', '--cardid', required=True)
+parser.add_argument('-i', '--cardid')
 parser.add_argument('-c', '--command')
 parser.add_argument('-d', '--dir')
 parser.add_argument('-v', '--value')
 args = parser.parse_args()
+args_main = vars(args)
 logger.debug('arguments passed on to script:')
-logger.debug(args)
+logger.debug(args_main)
 
 # Set the date and time of now
 now_string = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -125,335 +126,353 @@ if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
     logger.debug(conf)
 
 #####################################################################
-# We must have a card ID because the argument is required (see above)
+# We might have a card ID, we might not (only folder -d)
 
-# Write info to file, making it easer to monitor cards
-with open(path_txt_latestID, "w") as f:
-    f.write("Card ID '" + args.cardid + "' was used at '" + now_string + "'.")
-with open(path_dir_settings + "/Latest_RFID", "w") as f:
-    f.write(args.cardid)
+if(args_main['cardid']):    
+    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+        logger.debug("Card ID given: '%s'" % (args_main['cardid']))
 
-# If the input is of 'special' use, don't treat it like a trigger to play audio.
-# Special uses are for example volume changes, skipping, muting sound.
-# NOTE: we need to check if the key exists, because older installations might not have
-# the key in their copied config file. If we don't, the script will throw an error.
-if('CMDSHUFFLE' in conf):
-    if(args.cardid == conf['CMDSHUFFLE']):
-        # toggles shuffle mode  (random on/off)
-        subprocess.run("./playout_controls.sh -c=playershuffle", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL30' in conf):
-    if(args.cardid == conf['CMDMAXVOL30']):
-        # limit volume to 30%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=30", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL50' in conf):
-    if(args.cardid == conf['CMDMAXVOL50']):
-        # limit volume to 50%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=50", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL75' in conf):
-    if(args.cardid == conf['CMDMAXVOL75']):
-        # limit volume to 75%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=75", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL80' in conf):
-    if(args.cardid == conf['CMDMAXVOL80']):
-        # limit volume to 80%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=80", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL85' in conf):
-    if(args.cardid == conf['CMDMAXVOL85']):
-        # limit volume to 85%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=85", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL90' in conf):
-    if(args.cardid == conf['CMDMAXVOL90']):
-        # limit volume to 90%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=90", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL95' in conf):
-    if(args.cardid == conf['CMDMAXVOL95']):
-        # limit volume to 95%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=95", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMAXVOL100' in conf):
-    if(args.cardid == conf['CMDMAXVOL100']):
-        # limit volume to 100%
-        subprocess.run("./playout_controls.sh -c=setmaxvolume -v=100", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDMUTE' in conf):
-    if(args.cardid == conf['CMDMUTE']):
-        # amixer sset 'PCM' 0%
-        subprocess.run("./playout_controls.sh -c=mute", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL30' in conf):
-    if(args.cardid == conf['CMDVOL30']):
-        # set volume to 30%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=30", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL50' in conf):
-    if(args.cardid == conf['CMDVOL50']):
-        # set volume to 50%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=50", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL75' in conf):
-    if(args.cardid == conf['CMDVOL75']):
-        # set volume to 75%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=75", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL80' in conf):
-    if(args.cardid == conf['CMDVOL80']):
-        # set volume to 80%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=80", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL85' in conf):
-    if(args.cardid == conf['CMDVOL85']):
-        # set volume to 85%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=85", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL90' in conf):
-    if(args.cardid == conf['CMDVOL90']):
-        # set volume to 90%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=90", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL95' in conf):
-    if(args.cardid == conf['CMDVOL95']):
-        # set volume to 95%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=95", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOL100' in conf):
-    if(args.cardid == conf['CMDVOL100']):
-        # set volume to 100%
-        subprocess.run("./playout_controls.sh -c=setvolume -v=100", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOLUP' in conf):
-    if(args.cardid == conf['CMDVOLUP']):
-        # increase volume by x% set in Audio_Volume_Change_Step
-        subprocess.run("./playout_controls.sh -c=volumeup", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDVOLDOWN' in conf):
-    if(args.cardid == conf['CMDVOLDOWN']):
-        # decrease volume by x% set in Audio_Volume_Change_Step
-        subprocess.run("./playout_controls.sh -c=volumedown", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDSWITCHAUDIOIFACE' in conf):
-    if(args.cardid == conf['CMDSWITCHAUDIOIFACE']):
-        # switch between primary/secondary audio iFaces
-        subprocess.run("./playout_controls.sh -c=switchaudioiface", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDSTOP' in conf):
-    if(args.cardid == conf['CMDSTOP']):
-        # kill all running audio players
-        subprocess.run("./playout_controls.sh -c=playerstop", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDSHUTDOWN' in conf):
-    if(args.cardid == conf['CMDSHUTDOWN']):
-        # shutdown the RPi nicely
-        subprocess.run("./playout_controls.sh -c=shutdown", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDREBOOT' in conf):
-    if(args.cardid == conf['CMDREBOOT']):
-        # reboot the RPi 
-        subprocess.run("./playout_controls.sh -c=reboot", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDNEXT' in conf):
-    if(args.cardid == conf['CMDNEXT']):
-        # play next track in playlist 
-        subprocess.run("./playout_controls.sh -c=playernext", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDPREV' in conf):
-    if(args.cardid == conf['CMDPREV']):
-        # play previous track in playlist 
-        subprocess.run("./playout_controls.sh -c=playerprev", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDRANDCARD' in conf):
-    if(args.cardid == conf['CMDRANDCARD']):
-        # activate a random card 
-        subprocess.run("./playout_controls.sh -c=randomcard", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDRANDFOLD' in conf):
-    if(args.cardid == conf['CMDRANDFOLD']):
-        # play a random folder 
-        subprocess.run("./playout_controls.sh -c=randomfolder", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDRANDTRACK' in conf):
-    if(args.cardid == conf['CMDRANDTRACK']):
-        # jump to a random track in playlist (no shuffle mode required) 
-        subprocess.run("./playout_controls.sh -c=randomtrack", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDREWIND' in conf):
-    if(args.cardid == conf['CMDREWIND']):
-        # play the first track in playlist 
-        subprocess.run("./playout_controls.sh -c=playerrewind", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDSEEKFORW' in conf):
-    if(args.cardid == conf['CMDSEEKFORW']):
-        # jump 15 seconds ahead 
-        subprocess.run("./playout_controls.sh -c=playerseek -v=+15", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDSEEKBACK' in conf):
-    if(args.cardid == conf['CMDSEEKBACK']):
-        # jump 15 seconds back 
-        subprocess.run("./playout_controls.sh -c=playerseek -v=-15", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDPAUSE' in conf):
-    if(args.cardid == conf['CMDPAUSE']):
-        # pause current track 
-        subprocess.run("./playout_controls.sh -c=playerpause", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDPLAY' in conf):
-    if(args.cardid == conf['CMDPLAY']):
-        # play / resume current track 
-        subprocess.run("./playout_controls.sh -c=playerplay", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('STOPAFTER5' in conf):
-    if(args.cardid == conf['STOPAFTER5']):
-        # stop player after -v minutes 
-        subprocess.run("./playout_controls.sh -c=playerstopafter -v=5", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('STOPAFTER15' in conf):
-    if(args.cardid == conf['STOPAFTER15']):
-        # stop player after -v minutes 
-        subprocess.run("./playout_controls.sh -c=playerstopafter -v=15", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('STOPAFTER30' in conf):
-    if(args.cardid == conf['STOPAFTER30']):
-        # stop player after -v minutes 
-        subprocess.run("./playout_controls.sh -c=playerstopafter -v=30", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('STOPAFTER60' in conf):
-    if(args.cardid == conf['STOPAFTER60']):
-        # stop player after -v minutes 
-        subprocess.run("./playout_controls.sh -c=playerstopafter -v=60", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNAFTER5' in conf):
-    if(args.cardid == conf['SHUTDOWNAFTER5']):
-        # shutdown RPi after -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownafter -v=5", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNAFTER15' in conf):
-    if(args.cardid == conf['SHUTDOWNAFTER15']):
-        # shutdown RPi after -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownafter -v=15", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNAFTER30' in conf):
-    if(args.cardid == conf['SHUTDOWNAFTER30']):
-        # shutdown RPi after -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownafter -v=30", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNAFTER60' in conf):
-    if(args.cardid == conf['SHUTDOWNAFTER60']):
-        # shutdown RPi after -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownafter -v=60", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNVOLUMEREDUCTION10' in conf):
-    if(args.cardid == conf['SHUTDOWNVOLUMEREDUCTION10']):
-        # reduce volume until shutdown in -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=10", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNVOLUMEREDUCTION15' in conf):
-    if(args.cardid == conf['SHUTDOWNVOLUMEREDUCTION15']):
-        # reduce volume until shutdown in -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=15", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNVOLUMEREDUCTION30' in conf):
-    if(args.cardid == conf['SHUTDOWNVOLUMEREDUCTION30']):
-        # reduce volume until shutdown in -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=30", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('SHUTDOWNVOLUMEREDUCTION60' in conf):
-    if(args.cardid == conf['SHUTDOWNVOLUMEREDUCTION60']):
-        # reduce volume until shutdown in -v minutes 
-        subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=60", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('ENABLEWIFI' in conf):
-    if(args.cardid == conf['ENABLEWIFI']):
-        subprocess.run("./playout_controls.sh -c=enablewifi", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('DISABLEWIFI' in conf):
-    if(args.cardid == conf['DISABLEWIFI']):
-        subprocess.run("./playout_controls.sh -c=disablewifi", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('TOGGLEWIFI' in conf):
-    if(args.cardid == conf['TOGGLEWIFI']):
-        subprocess.run("./playout_controls.sh -c=togglewifi", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDPLAYCUSTOMPLS' in conf):
-    if(args.cardid == conf['CMDPLAYCUSTOMPLS']):
-        subprocess.run("./playout_controls.sh -c=playlistaddplay -v=PhonieCustomPLS -d=PhonieCustomPLS", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('RECORDSTART600' in conf):
-    if(args.cardid == conf['RECORDSTART600']):
-        # start recorder for -v seconds 
-        subprocess.run("./playout_controls.sh -c=recordstart -v=600", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('RECORDSTART60' in conf):
-    if(args.cardid == conf['RECORDSTART60']):
-        # start recorder for -v seconds 
-        subprocess.run("./playout_controls.sh -c=recordstart -v=60", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('RECORDSTART10' in conf):
-    if(args.cardid == conf['RECORDSTART10']):
-        # start recorder for -v seconds 
-        subprocess.run("./playout_controls.sh -c=recordstart -v=10", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('RECORDSTOP' in conf):
-    if(args.cardid == conf['RECORDSTOP']):
-        # start recorder for -v seconds 
-        subprocess.run("./playout_controls.sh -c=recordstop", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('RECORDPLAYBACKLATEST' in conf):
-    if(args.cardid == conf['RECORDPLAYBACKLATEST']):
-        # play the latest recording 
-        subprocess.run("./playout_controls.sh -c=recordplaylatest", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDREADWIFIIP' in conf):
-    if(args.cardid == conf['CMDREADWIFIIP']):
-        # read the current WiFi IP address over the speaker 
-        subprocess.run("./playout_controls.sh -c=readwifiipoverspeaker", shell=True)
-        quit() # exit script, because we did what we wanted to do
-if('CMDBLUETOOTHTOGGLE' in conf):
-    if(args.cardid == conf['CMDBLUETOOTHTOGGLE']):
-        subprocess.run("./playout_controls.sh -c=bluetoothtoggle -v=toggle", shell=True)
-        quit() # exit script, because we did what we wanted to do
+    # Write info to file, making it easer to monitor cards
+    with open(path_txt_latestID, "w") as f:
+        f.write("Card ID '" + args_main['cardid'] + "' was used at '" + now_string + "'.")
+    with open(path_dir_settings + "/Latest_RFID", "w") as f:
+        f.write(args_main['cardid'])
+    
+    # If the input is of 'special' use, don't treat it like a trigger to play audio.
+    # Special uses are for example volume changes, skipping, muting sound.
+    # NOTE: we need to check if the key exists, because older installations might not have
+    # the key in their copied config file. If we don't, the script will throw an error.
+    if('CMDSHUFFLE' in conf):
+        if(args_main['cardid'] == conf['CMDSHUFFLE']):
+            # toggles shuffle mode  (random on/off)
+            subprocess.run("./playout_controls.sh -c=playershuffle", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL30' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL30']):
+            # limit volume to 30%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=30", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL50' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL50']):
+            # limit volume to 50%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=50", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL75' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL75']):
+            # limit volume to 75%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=75", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL80' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL80']):
+            # limit volume to 80%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=80", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL85' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL85']):
+            # limit volume to 85%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=85", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL90' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL90']):
+            # limit volume to 90%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=90", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL95' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL95']):
+            # limit volume to 95%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=95", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMAXVOL100' in conf):
+        if(args_main['cardid'] == conf['CMDMAXVOL100']):
+            # limit volume to 100%
+            subprocess.run("./playout_controls.sh -c=setmaxvolume -v=100", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDMUTE' in conf):
+        if(args_main['cardid'] == conf['CMDMUTE']):
+            # amixer sset 'PCM' 0%
+            subprocess.run("./playout_controls.sh -c=mute", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL30' in conf):
+        if(args_main['cardid'] == conf['CMDVOL30']):
+            # set volume to 30%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=30", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL50' in conf):
+        if(args_main['cardid'] == conf['CMDVOL50']):
+            # set volume to 50%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=50", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL75' in conf):
+        if(args_main['cardid'] == conf['CMDVOL75']):
+            # set volume to 75%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=75", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL80' in conf):
+        if(args_main['cardid'] == conf['CMDVOL80']):
+            # set volume to 80%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=80", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL85' in conf):
+        if(args_main['cardid'] == conf['CMDVOL85']):
+            # set volume to 85%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=85", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL90' in conf):
+        if(args_main['cardid'] == conf['CMDVOL90']):
+            # set volume to 90%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=90", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL95' in conf):
+        if(args_main['cardid'] == conf['CMDVOL95']):
+            # set volume to 95%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=95", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOL100' in conf):
+        if(args_main['cardid'] == conf['CMDVOL100']):
+            # set volume to 100%
+            subprocess.run("./playout_controls.sh -c=setvolume -v=100", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOLUP' in conf):
+        if(args_main['cardid'] == conf['CMDVOLUP']):
+            # increase volume by x% set in Audio_Volume_Change_Step
+            subprocess.run("./playout_controls.sh -c=volumeup", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDVOLDOWN' in conf):
+        if(args_main['cardid'] == conf['CMDVOLDOWN']):
+            # decrease volume by x% set in Audio_Volume_Change_Step
+            subprocess.run("./playout_controls.sh -c=volumedown", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDSWITCHAUDIOIFACE' in conf):
+        if(args_main['cardid'] == conf['CMDSWITCHAUDIOIFACE']):
+            # switch between primary/secondary audio iFaces
+            subprocess.run("./playout_controls.sh -c=switchaudioiface", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDSTOP' in conf):
+        if(args_main['cardid'] == conf['CMDSTOP']):
+            # kill all running audio players
+            subprocess.run("./playout_controls.sh -c=playerstop", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDSHUTDOWN' in conf):
+        if(args_main['cardid'] == conf['CMDSHUTDOWN']):
+            # shutdown the RPi nicely
+            subprocess.run("./playout_controls.sh -c=shutdown", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDREBOOT' in conf):
+        if(args_main['cardid'] == conf['CMDREBOOT']):
+            # reboot the RPi 
+            subprocess.run("./playout_controls.sh -c=reboot", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDNEXT' in conf):
+        if(args_main['cardid'] == conf['CMDNEXT']):
+            # play next track in playlist 
+            subprocess.run("./playout_controls.sh -c=playernext", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDPREV' in conf):
+        if(args_main['cardid'] == conf['CMDPREV']):
+            # play previous track in playlist 
+            subprocess.run("./playout_controls.sh -c=playerprev", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDRANDCARD' in conf):
+        if(args_main['cardid'] == conf['CMDRANDCARD']):
+            # activate a random card 
+            subprocess.run("./playout_controls.sh -c=randomcard", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDRANDFOLD' in conf):
+        if(args_main['cardid'] == conf['CMDRANDFOLD']):
+            # play a random folder 
+            subprocess.run("./playout_controls.sh -c=randomfolder", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDRANDTRACK' in conf):
+        if(args_main['cardid'] == conf['CMDRANDTRACK']):
+            # jump to a random track in playlist (no shuffle mode required) 
+            subprocess.run("./playout_controls.sh -c=randomtrack", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDREWIND' in conf):
+        if(args_main['cardid'] == conf['CMDREWIND']):
+            # play the first track in playlist 
+            subprocess.run("./playout_controls.sh -c=playerrewind", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDSEEKFORW' in conf):
+        if(args_main['cardid'] == conf['CMDSEEKFORW']):
+            # jump 15 seconds ahead 
+            subprocess.run("./playout_controls.sh -c=playerseek -v=+15", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDSEEKBACK' in conf):
+        if(args_main['cardid'] == conf['CMDSEEKBACK']):
+            # jump 15 seconds back 
+            subprocess.run("./playout_controls.sh -c=playerseek -v=-15", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDPAUSE' in conf):
+        if(args_main['cardid'] == conf['CMDPAUSE']):
+            # pause current track 
+            subprocess.run("./playout_controls.sh -c=playerpause", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDPLAY' in conf):
+        if(args_main['cardid'] == conf['CMDPLAY']):
+            # play / resume current track 
+            subprocess.run("./playout_controls.sh -c=playerplay", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('STOPAFTER5' in conf):
+        if(args_main['cardid'] == conf['STOPAFTER5']):
+            # stop player after -v minutes 
+            subprocess.run("./playout_controls.sh -c=playerstopafter -v=5", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('STOPAFTER15' in conf):
+        if(args_main['cardid'] == conf['STOPAFTER15']):
+            # stop player after -v minutes 
+            subprocess.run("./playout_controls.sh -c=playerstopafter -v=15", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('STOPAFTER30' in conf):
+        if(args_main['cardid'] == conf['STOPAFTER30']):
+            # stop player after -v minutes 
+            subprocess.run("./playout_controls.sh -c=playerstopafter -v=30", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('STOPAFTER60' in conf):
+        if(args_main['cardid'] == conf['STOPAFTER60']):
+            # stop player after -v minutes 
+            subprocess.run("./playout_controls.sh -c=playerstopafter -v=60", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNAFTER5' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNAFTER5']):
+            # shutdown RPi after -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownafter -v=5", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNAFTER15' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNAFTER15']):
+            # shutdown RPi after -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownafter -v=15", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNAFTER30' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNAFTER30']):
+            # shutdown RPi after -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownafter -v=30", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNAFTER60' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNAFTER60']):
+            # shutdown RPi after -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownafter -v=60", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNVOLUMEREDUCTION10' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNVOLUMEREDUCTION10']):
+            # reduce volume until shutdown in -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=10", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNVOLUMEREDUCTION15' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNVOLUMEREDUCTION15']):
+            # reduce volume until shutdown in -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=15", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNVOLUMEREDUCTION30' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNVOLUMEREDUCTION30']):
+            # reduce volume until shutdown in -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=30", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('SHUTDOWNVOLUMEREDUCTION60' in conf):
+        if(args_main['cardid'] == conf['SHUTDOWNVOLUMEREDUCTION60']):
+            # reduce volume until shutdown in -v minutes 
+            subprocess.run("./playout_controls.sh -c=shutdownvolumereduction -v=60", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('ENABLEWIFI' in conf):
+        if(args_main['cardid'] == conf['ENABLEWIFI']):
+            subprocess.run("./playout_controls.sh -c=enablewifi", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('DISABLEWIFI' in conf):
+        if(args_main['cardid'] == conf['DISABLEWIFI']):
+            subprocess.run("./playout_controls.sh -c=disablewifi", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('TOGGLEWIFI' in conf):
+        if(args_main['cardid'] == conf['TOGGLEWIFI']):
+            subprocess.run("./playout_controls.sh -c=togglewifi", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDPLAYCUSTOMPLS' in conf):
+        if(args_main['cardid'] == conf['CMDPLAYCUSTOMPLS']):
+            subprocess.run("./playout_controls.sh -c=playlistaddplay -v=PhonieCustomPLS -d=PhonieCustomPLS", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('RECORDSTART600' in conf):
+        if(args_main['cardid'] == conf['RECORDSTART600']):
+            # start recorder for -v seconds 
+            subprocess.run("./playout_controls.sh -c=recordstart -v=600", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('RECORDSTART60' in conf):
+        if(args_main['cardid'] == conf['RECORDSTART60']):
+            # start recorder for -v seconds 
+            subprocess.run("./playout_controls.sh -c=recordstart -v=60", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('RECORDSTART10' in conf):
+        if(args_main['cardid'] == conf['RECORDSTART10']):
+            # start recorder for -v seconds 
+            subprocess.run("./playout_controls.sh -c=recordstart -v=10", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('RECORDSTOP' in conf):
+        if(args_main['cardid'] == conf['RECORDSTOP']):
+            # start recorder for -v seconds 
+            subprocess.run("./playout_controls.sh -c=recordstop", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('RECORDPLAYBACKLATEST' in conf):
+        if(args_main['cardid'] == conf['RECORDPLAYBACKLATEST']):
+            # play the latest recording 
+            subprocess.run("./playout_controls.sh -c=recordplaylatest", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDREADWIFIIP' in conf):
+        if(args_main['cardid'] == conf['CMDREADWIFIIP']):
+            # read the current WiFi IP address over the speaker 
+            subprocess.run("./playout_controls.sh -c=readwifiipoverspeaker", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    if('CMDBLUETOOTHTOGGLE' in conf):
+        if(args_main['cardid'] == conf['CMDBLUETOOTHTOGGLE']):
+            subprocess.run("./playout_controls.sh -c=bluetoothtoggle -v=toggle", shell=True)
+            quit() # exit script, because we did what we wanted to do
+    
+    ################################################################
+    # We checked if the card was a special command, seems it wasn't.
+    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+        log_message = "Card ID is not linked to a system command"
+        logger.info(log_message)
+    
+    # Now we expect it to be a trigger for one or more audio file(s).
+    # Let's look at the ID, write a bit of log information and then try to play audio.
+    
+    # Look for human readable shortcut in folder 'shortcuts'
+    path_shortcut_id = path_dir_shortcuts + "/" + args_main['cardid']
+    
+    # check if CARDID has a text file by the same name - which would contain the human readable folder name    
+    if Path(path_shortcut_id).is_file():
+        # file exists
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.debug("CARDID does exist as file in shortcuts folder")
+        # Read human readable shortcut from file
+        folder_name = Path(path_shortcut_id).read_text().strip()
+        # Add info into the log, making it easer to monitor cards
+        with open(path_txt_latestID, "a") as f:
+            f.write("\nThis ID has been used before.")
+    else:
+        # file does NOT exist
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.debug("CARDID does NOT exist as file in shortcuts folder")
+        # Human readable shortcut does not exist, so create one with the content $CARDID
+        # this file can later be edited manually over the samba network
+        with open(path_shortcut_id, "w") as f:
+            f.write(args_main['cardid'])
+        # Add info into the log, making it easer to monitor cards
+        with open(path_txt_latestID, "a") as f:
+            f.write("\nThis ID was used for the first time.")
+        # Create human readable shortcut from card id
+        folder_name = args_main['cardid']
+    
+    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+        logger.debug("Folder name found: " + folder_name)
 
-################################################################
-# We checked if the card was a special command, seems it wasn't.
-if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
-    log_message = "Card ID is not linked to a system command"
-    logger.info(log_message)
-
-# Now we expect it to be a trigger for one or more audio file(s).
-# Let's look at the ID, write a bit of log information and then try to play audio.
-
-# Look for human readable shortcut in folder 'shortcuts'
-path_shortcut_id = path_dir_shortcuts + "/" + args.cardid
-
-# check if CARDID has a text file by the same name - which would contain the human readable folder name    
-if Path(path_shortcut_id).is_file():
-    # file exists
-    logger.debug("CARDID does exist as file in shortcuts folder")
-    # Read human readable shortcut from file
-    folder_name = Path(path_shortcut_id).read_text().strip()
-    # Add info into the log, making it easer to monitor cards
-    with open(path_txt_latestID, "a") as f:
-        f.write("\nThis ID has been used before.")
 else:
-    # file does NOT exist
-    logger.debug("CARDID does NOT exist as file in shortcuts folder")
-    # Human readable shortcut does not exist, so create one with the content $CARDID
-    # this file can later be edited manually over the samba network
-    with open(path_shortcut_id, "w") as f:
-        f.write(args.cardid)
-    # Add info into the log, making it easer to monitor cards
-    with open(path_txt_latestID, "a") as f:
-        f.write("\nThis ID was used for the first time.")
-    # Create human readable shortcut from card id
-    folder_name = args.cardid
+    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+        logger.debug('Card ID not given, check if directory given')
+    if(not args_main['dir']):
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.debug('No directory given, there is nothing to do...')
+    else:
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.debug("Directory given: '%s'" % (args_main['dir']))
+        folder_name = args_main['dir']
 
-if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
-    logger.debug("Folder name found: " + folder_name)
 
 ##############################################################
 # We should now have a folder name with the audio files.
@@ -493,8 +512,9 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
         # we have to keep track of it via the Latest_Folder_Played / Latest_Playlist_Played file
         folder_last_played_name = Path(path_dir_settings + "/Latest_Folder_Played").read_text().strip()
         playlist_last_played_name = Path(path_dir_settings + "/Latest_Playlist_Played").read_text().strip()
-        logger.info("folder_last_played_name: " + folder_last_played_name)
-        logger.info("playlist_last_played_name: " + playlist_last_played_name)
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.info("folder_last_played_name: " + folder_last_played_name)
+            logger.info("playlist_last_played_name: " + playlist_last_played_name)
         
         #####################
         # CREATE THE PLAYLIST
@@ -515,9 +535,15 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
             dirs_audio = [path_folder_name]
             # replace subfolder slashes with " % "
 
+        if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+            logger.debug("Folders to check for audio (dirs_audio):")
+            logger.debug(dirs_audio)
+
         # go through folders
         playlist_files = [] # final playlist
         for dir_audio in dirs_audio:
+            if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+                logger.info("Collecting audio in folder: '%s'" % (dir_audio))
             playlist_files_temp = [] # temporary playlist for each folder
             if Path(dir_audio + '/livestream.txt').is_file():
                 #######################
@@ -564,6 +590,7 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
                 # playlist_files = glob.glob(path_name_audio + '/**/*.[!t]*', recursive=True)
                 playlist_files_temp = [file for file in playlist_files_all if not file.endswith(ignore_file_extension)]
                 # merge files into master playlist
+                playlist_files_temp.sort()
                 playlist_files += playlist_files_temp
         
         # now we need to make sure the local files work for Mopidy
@@ -620,9 +647,17 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
             elif(conf['SECONDSWIPE'] == "SKIPNEXT"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                     logger.debug("SKIPNEXT => Skip to next track")
-                #  
-                # We will not play the playlist but skip to the next track
-                # $PATHDATA/playout_controls.sh -c=playernext
+                # End of playlist? if no 'song' is given in 'mpd_status'
+                if('song' not in mpd_status):
+                    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+                       logger.debug("Playlist ended, so start from top")
+                    # Assuming the playlist ended, second swipe will restart (not skip)
+                else:
+                    # We will not play the playlist but skip to the next track
+                    playlist_play = "ignore" # don't play playlist below
+                    if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
+                        logger.debug("mpd playing, so skip")
+                    subprocess.run("./PlayoutControl_CLI.py -c playout_next", shell=True)
         
             elif(conf['SECONDSWIPE'] == "PAUSE"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
@@ -632,15 +667,8 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
                     logger.debug("no playlist")
                 else:
                     playlist_play = "ignore" # don't play playlist below
-                    # check where we are and toggle
-                    if mpd_status['state'] == "play":
-                        # MPD state play
-                        logger.debug("mpd playing")
-                        subprocess.run("./playout_controls.sh -c=playerpause", shell=True)
-                    else:
-                        # MPD state NOT play
-                        logger.debug("mpd NOT playing")
-                        subprocess.run("./playout_controls.sh -c=playerplay", shell=True)
+                    # play / pause toggle
+                    subprocess.run("./PlayoutControl_CLI.py -c playout_pause_toggle", shell=True)
         
             elif(conf['SECONDSWIPE'] == "PLAY"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
@@ -673,12 +701,11 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
                 logger.debug("Play playlist from top:" + playlist_name)
             # PLAY playlist
             # $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
-            subprocess.run("./playout_controls.sh -c=playlistaddplay -v=\"" + playlist_name + "\" -d=\"" + folder_name + "\"", shell=True)
-            subprocess.run("sudo echo \"" + playlist_name + "\" > ../settings/Latest_Playlist_Played", shell=True)
+            subprocess.run("./PlayoutControl_CLI.py -c playlist_load_play -pn \"" + playlist_name + "\" -d \"" + folder_name + "\"", shell=True)
+            # subprocess.run("./playout_controls.sh -c=playlistaddplay -v=\"" + playlist_name + "\" -d=\"" + folder_name + "\"", shell=True)
             with open(path_dir_settings + "/Latest_RFID", "w") as f:
                 f.write(playlist_name)
-            subprocess.run("sudo chown pi:www-data ../settings/Latest_Playlist_Played", shell=True)
-            subprocess.run("sudo chmod 777 ../settings/Latest_Playlist_Played", shell=True)
+            subprocess.run("sudo chmod 777 " + path_dir_settings + "/Latest_RFID", shell=True)
 
 else:
     # Given directory doesn't exist
