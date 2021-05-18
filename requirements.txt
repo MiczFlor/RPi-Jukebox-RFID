@@ -16,7 +16,7 @@ evdev
 numpy
 paho_mqtt
 pyserial
-pyzmq
+# pyzmq
 RPi
 smbus
 

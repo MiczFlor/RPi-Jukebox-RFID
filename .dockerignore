@@ -1,5 +1,16 @@
+.git
+.dockerignore
+.DS_Store
+
+# Application
 docker
 !docker/scripts
 docs
 src
 shared/audiofolders
+
+# webapp
+!src/webapp
+src/webapp/node_modules
+src/webapp/npm-debug.log
+src/webapp/build

@@ -71,19 +71,27 @@ class player_control:
 
     def stop(self, param):
         self.mpd_client.stop()
-        return ({})
+        song = self.mpd_client.currentsong()
+
+        return ({'song': song})
 
     def pause(self, param):
         self.mpd_client.pause(1)
-        return ({})
+        song = self.mpd_client.currentsong()
+
+        return ({'song': song})
 
     def prev(self, param):
         self.mpd_client.previous()
-        return ({})
+        song = self.mpd_client.currentsong()
+
+        return ({'song': song})
 
     def next(self, param):
         self.mpd_client.next()
-        return ({})
+        song = self.mpd_client.currentsong()
+
+        return ({'song': song})
 
     def seek(self, param):
         val = param.get('time')

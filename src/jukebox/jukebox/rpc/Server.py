@@ -18,7 +18,7 @@ class RpcServer:
 
     def connect(self, addrs=None):
         if addrs is None:
-            addrs = ["tcp://*:5555", "inproc://JukeBoxRpcServer"]
+            addrs = ["tcp://*:5555", "inproc://JukeBoxRpcServer", "ws://*:5556"]
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
         for addr in addrs:

@@ -27,7 +27,7 @@ WORKDIR $INSTALLATION_DIR
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    gcc lighttpd at \
+    gcc lighttpd at wget \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
     python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 #samba samba-common-bin
@@ -40,12 +40,23 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 COPY . ${INSTALLATION_DIR}
 
 # Install Jukebox
-RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
-RUN chmod +x ${DOCKER_DIR}/scripts/install-jukebox.sh ${DOCKER_DIR}/scripts/start-jukebox.sh
-RUN ${DOCKER_DIR}/scripts/install-jukebox.sh
+ENV ZMQ_VERSION 4.3.4
+ENV PREFIX /usr/local
+
+RUN wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+    tar -xzf libzmq.tar.gz; \
+    zeromq-${ZMQ_VERSION}/configure --prefix=${PREFIX} --enable-drafts; \
+    make -j && make install; \
+    pip3 install -v --pre pyzmq \
+        --install-option=--enable-drafts \
+        --install-option=--zmq=${PREFIX}; \
+    pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
+
+# RUN chmod +x ${DOCKER_DIR}/scripts/install-jukebox.sh ${DOCKER_DIR}/scripts/start-jukebox.sh
+# RUN ${DOCKER_DIR}/scripts/install-jukebox.sh
 
 # Run Jukebox
 # CMD bash
-EXPOSE 5555
+EXPOSE 5555 5556
 
 CMD python ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py
