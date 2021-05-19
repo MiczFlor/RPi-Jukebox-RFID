@@ -1,8 +1,10 @@
 import React, { useState, useContext, useCallback, useEffect, useRef } from 'react';
-import { SocketContext } from '../context/socket';
+import { SocketContext } from '../../context/socket';
 
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+
+import Display from './display'
 
 const Player = () => {
   const socket = useContext(SocketContext);
@@ -11,11 +13,10 @@ const Player = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const hasListRef = useRef();
   hasListRef.current = hasList;
-  
+
+
   useEffect(() => {
-    socket.on('message', (msg) => {
-      console.log(new TextDecoder().decode(msg));
-    });
+    socket.send(JSON.stringify({object: 'player', method: 'playerstatus', params: {}}));
   }, [socket]);
 
   const play = useCallback(() => {
@@ -71,7 +72,7 @@ const Player = () => {
   const previous = useCallback(() => {
     const obj = JSON.stringify({
       "object": "player",
-      "method": "previous",
+      "method": "prev",
       "params": {}
     });
 
@@ -90,11 +91,7 @@ const Player = () => {
 
   return (
     <div id="player">
-      <Box my={4}>
-        <p>
-          Playing: 
-        </p>
-      </Box>
+      <Display />
       <Box my={4}>
         <Button variant="contained" onClick={previous}>Previous</Button>
         {!isPlaying && <Button variant="contained" onClick={play}>Play</Button>}

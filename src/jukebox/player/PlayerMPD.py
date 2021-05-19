@@ -67,31 +67,33 @@ class player_control:
         except Exception as e:
             logger.error(f"{e}")
 
-        return ({})
+        song = self.mpd_client.currentsong()
+
+        return ({'object': 'player', 'method': 'stop', 'params': song})
 
     def stop(self, param):
         self.mpd_client.stop()
         song = self.mpd_client.currentsong()
 
-        return ({'song': song})
+        return ({'object': 'player', 'method': 'stop', 'params': song})
 
     def pause(self, param):
         self.mpd_client.pause(1)
         song = self.mpd_client.currentsong()
 
-        return ({'song': song})
+        return ({'object': 'player', 'method': 'pause', 'params': song})
 
     def prev(self, param):
         self.mpd_client.previous()
         song = self.mpd_client.currentsong()
 
-        return ({'song': song})
+        return ({'object': 'player', 'method': 'prev', 'params': song})
 
     def next(self, param):
         self.mpd_client.next()
         song = self.mpd_client.currentsong()
 
-        return ({'song': song})
+        return ({'object': 'player', 'method': 'next', 'params': song})
 
     def seek(self, param):
         val = param.get('time')
@@ -303,7 +305,7 @@ class player_control:
         self.current_folder_status["LOOP"] = "OFF"
         self.current_folder_status["SINGLE"] = "OFF"
 
-        return ({'song': song})
+        return ({'object': 'player', 'method': 'playlistaddplay', 'params': song})
 
     def playerstatus(self, param):
         status = self.mpd_client.currentsong()
@@ -320,8 +322,8 @@ class player_control:
 
         # for k in status:
         #    print ("{} : {}".format(k,status.get(k)))
-        return (status)
+        return ({'object': 'player', 'method': 'playerstatus', 'params': status})
 
     def playlistinfo(self, param):
         playlistinfo = (self.mpd_client.playlistinfo())
-        return (playlistinfo)
+        return ({'object': 'player', 'method': 'playlistinfo', 'params': playlistinfo})

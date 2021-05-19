@@ -2,7 +2,7 @@ import React from 'react';
 import { SocketContext, socket_req } from './context/socket';
 
 import Container from '@material-ui/core/Container';
-import Player from './components/Player';
+import Player from './components/Player/index';
 
 function App() {
   return (
