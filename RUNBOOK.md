@@ -23,16 +23,36 @@ Run all Docker containers at once. Based on your host system, you need to load t
 
 ### Linux
 
+
 ```
 // Build Images
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
 
 // Run Docker Environment
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
 
 // Shuts down Docker containers and Docker network
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
 ```
+
+Note: if you have `mpd` running on your system, you need to stop it using:
+
+~~~
+$ sudo systemctl stop mpd.socket
+$ sudo mpd --kill
+~~~
+
+Otherwise you might get the error message:
+
+~~~
+$ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
+Starting mpd ... 
+Starting mpd ... error
+(...)
+Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already in use
+~~~
+
+Read these threads for details: [thread 1](https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd) and [thread 2](https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755)
 
 ### Mac
 
