@@ -81,6 +81,7 @@ __status__ = "Draft"
 # playout_pause_toggle
 # playout_playlist_clear
 # playout_playlist_load
+# playout_playlist_load_play
 # playout_playlist_loop
 # playout_playlist_replay
 # playout_playlist_shuffle
@@ -100,15 +101,15 @@ __status__ = "Draft"
 # playout_volume_set_raw
 # playout_volume_system_set
 # playout_volume_up
-# read_config_bash
 # read_config_debug_dict
 # read_config_folder_dict
 # read_config_global_dict
 # read_config_rfidcontrol_dict
 # read_file_latest_folder_played
+# read_file_latest_playlist_played
 # read_file_volume_level
-# read_path_folder_config
 # read_mpd_vars
+# read_path_folder_config
 # sys_config_value_get
 # sys_config_value_set
 # sys_idle_shutdown_get
@@ -124,6 +125,7 @@ __status__ = "Draft"
 # sys_volume_system_set
 # write_config_folder
 # write_config_global
+# write_file_single_value
 
 import os
 import sys
@@ -674,13 +676,13 @@ class PlayoutControl:
         # folder conf default values: read from sample config file
         # Note: this sample config file needs to be extended as new features are implemented
         folder_config_default = {}
-        folder_config_default = self.read_config_bash([path_dir_root + "/misc/sampleconfigs/folder.conf.sample"])
+        folder_config_default = read_config_bash([path_dir_root + "/misc/sampleconfigs/folder.conf.sample"])
 
         # read current values (if file exists)
         folder_config_current = {}
         if(Path(folder_config_path).is_file()):
             self.logger.debug("Current folder conf file found.")
-            folder_config_current = self.read_config_bash([folder_config_path])
+            folder_config_current = read_config_bash([folder_config_path])
         else:
             self.logger.debug("Current folder conf file NOT found: no values read from file.")
 
@@ -708,21 +710,6 @@ class PlayoutControl:
 
         # make it readable and writeable for everyone
         subprocess.run(['chmod', '0766', self.folder_config_path])
-
-    def read_config_bash(self, paths_all):
-
-        # paths_all must be a list like [a, b, c]
-        conf = {}
-        for path_config in paths_all:
-            # read config
-            with open(path_config) as myfile:
-                for line in myfile:
-                    if not line.lstrip().startswith('#'):
-                        name, var = line.partition("=")[::2]
-                        conf[name.strip()] = var.strip()
-        # strip " off values in dictionary conf
-        conf = {k: v.strip('"') for (k, v) in conf.items()}
-        return conf
 
     def read_mpd_vars(self):
 
@@ -892,7 +879,7 @@ class PlayoutControl:
                 self.write_config_folder(self.folder_config_path, {})
 
             # read config file for folder
-            self.conf['folder'] = self.read_config_bash([self.folder_config_path])
+            self.conf['folder'] = read_config_bash([self.folder_config_path])
             return(self.conf['folder'])
         else:
             return(False)
@@ -901,7 +888,7 @@ class PlayoutControl:
 
         # this is a wrapper for reading config vars global and debugging
         # currently read_config_bash is used to read the vars from version 2.x
-        self.conf['debug'] = self.read_config_bash([self.path_config_debug])
+        self.conf['debug'] = read_config_bash([self.path_config_debug])
 
     def read_config_global_dict(self):
 
@@ -911,7 +898,8 @@ class PlayoutControl:
         # legacy bash format exists? Yes: read, convert, delete
         if(Path(self.path_config_global_bash).is_file()):
             self.logger.debug("Found legacy global.conf file from bash")
-            self.conf['global'] = self.read_config_bash([self.path_config_global_bash])
+            self.conf['global'] = read_config_bash([self.path_config_global_bash])
+            self.logger.debug(self.conf['global'])
 
             # Start the future now...: convert some of the old naming into new naming
             if('AUDIOVOLCHANGESTEP' in self.conf['global']):
@@ -954,7 +942,7 @@ class PlayoutControl:
 
         # this is a wrapper for reading all config vars
         # currently read_config_bash is used to read the vars from version 2.x
-        self.conf['rfidcontrol'] = self.read_config_bash([self.path_config_rfid])
+        self.conf['rfidcontrol'] = read_config_bash([self.path_config_rfid])
         return(self.conf['rfidcontrol'])
 
     def playout_volume_get(self):

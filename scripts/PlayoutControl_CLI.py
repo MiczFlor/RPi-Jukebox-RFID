@@ -9,10 +9,10 @@ import logging
 import logging.config
 import pathlib
 import argparse
-import subprocess 
+import subprocess
 import alsaaudio
 # regular expression
-import re 
+import re
 from ruamel.yaml import YAML
 from pprint import pprint
 from functions import *
@@ -50,7 +50,6 @@ args_main = vars(args)
 logger.debug('arguments passed on to script:')
 logger.debug(args_main)
 
-playProcess = PlayoutControl(path_dir_root)
 
 # Folder config file sys_switches:
 # ./PlayoutControl_CLI.py -c switch_folder_RESUME -v OFF -d "ZZZ/SubMaster Whitespaces/bbb-AudioFormatsTest"
@@ -117,130 +116,176 @@ if(args_main['key']):
             args_main['key'] = float(args_main['key'])
     logger.debug('New type: %s' % (type(args_main['key'])))
 
-if(args_main['command']):
-    # COMMAND given
-    logger.debug('Try command: ' + args_main['command'])
-    if(args_main['command'].startswith("switch_")):
-        # SWITCH attempt
-        args_func = {}
-        args_func['command'] = args_main['command']
-        args_func['value'] = args_main['value']
-        args_func['dirpath'] = args_main['dirpath']
-        playProcess.sys_switches(args_func) 
+#####################################
+# START actual command line interface
 
-    elif(args_main['command'] == "playout_position_save"):
-        playProcess.playout_position_save()
+def PlayoutControl_cli(args_main):
+    if(args_main['command']):
+        # COMMAND given
+        logger.debug('Try command: ' + args_main['command'])
+        if(args_main['command'].startswith("switch_")):
+            # SWITCH attempt
+            args_func = {}
+            args_func['command'] = args_main['command']
+            args_func['value'] = args_main['value']
+            args_func['dirpath'] = args_main['dirpath']
+            playProcess.sys_switches(args_func)
+            return
 
-    elif(args_main['command'] == "playout_resume_play"):
-        args_func = {}
-        args_func['playlistname'] = args_main['playlistname']
-        args_func['dirpath'] = args_main['dirpath']
-        playProcess.playout_resume_play(args_func) 
+        elif(args_main['command'] == "playout_position_save"):
+            playProcess.playout_position_save()
+            return
 
-    elif(args_main['command'] == "playlist_load_play"):
-        args_func = {}
-        args_func['playlistname'] = args_main['playlistname']
-        args_func['dirpath'] = args_main['dirpath']
-        playProcess.playout_playlist_load_play(args_func) 
+        elif(args_main['command'] == "playout_resume_play"):
+            args_func = {}
+            args_func['playlistname'] = args_main['playlistname']
+            args_func['dirpath'] = args_main['dirpath']
+            playProcess.playout_resume_play(args_func)
+            return
 
-    elif(args_main['command'] == "playlist_clear"):
-        playProcess.playout_playlist_clear()
-    elif(args_main['command'] == "playlist_shuffle"):
-        playProcess.playout_playlist_shuffle()
-    elif(args_main['command'] == "playlist_replay"):
-        playProcess.playout_playlist_replay()
-    elif(args_main['command'] == "playlist_track_movedown"):
-        playProcess.playout_playlist_track_movedown(args_main['value'])
-    elif(args_main['command'] == "playlist_track_moveup"):
-        playProcess.playout_playlist_track_moveup(args_main['value'])
-    elif(args_main['command'] == "playlist_track_remove"):
-        playProcess.playout_playlist_track_remove(args_main['value'])
-    elif(args_main['command'] == "playlist_loop"):
-        playProcess.playout_playlist_loop(args_main['value'])
-    elif(args_main['command'] == "playlist_load"):
-        playProcess.playout_playlist_load(args_main['playlistname'])
-    elif(args_main['command'] == "playlist_track_append"):
-        playProcess.playout_playlist_track_append(args_main['value'])
+        elif(args_main['command'] == "playlist_load_play"):
+            args_func = {}
+            args_func['playlistname'] = args_main['playlistname']
+            args_func['dirpath'] = args_main['dirpath']
+            playProcess.playout_playlist_load_play(args_func)
+            return
 
-    elif(args_main['command'] == "volume_get"):
-        print(playProcess.playout_volume_get())
-    elif(args_main['command'] == "volume_set"):
-        playProcess.playout_volume_set(args_main['value'])
-    elif(args_main['command'] == "volume_system_set"):
-        playProcess.playout_volume_system_set()
+        elif(args_main['command'] == "playlist_clear"):
+            playProcess.playout_playlist_clear()
+            return
+        elif(args_main['command'] == "playlist_shuffle"):
+            playProcess.playout_playlist_shuffle()
+            return
+        elif(args_main['command'] == "playlist_replay"):
+            playProcess.playout_playlist_replay()
+            return
+        elif(args_main['command'] == "playlist_track_movedown"):
+            playProcess.playout_playlist_track_movedown(args_main['value'])
+            return
+        elif(args_main['command'] == "playlist_track_moveup"):
+            playProcess.playout_playlist_track_moveup(args_main['value'])
+            return
+        elif(args_main['command'] == "playlist_track_remove"):
+            playProcess.playout_playlist_track_remove(args_main['value'])
+            return
+        elif(args_main['command'] == "playlist_loop"):
+            playProcess.playout_playlist_loop(args_main['value'])
+            return
+        elif(args_main['command'] == "playlist_load"):
+            playProcess.playout_playlist_load(args_main['playlistname'])
+            return
+        elif(args_main['command'] == "playlist_track_append"):
+            playProcess.playout_playlist_track_append(args_main['value'])
+            return
 
-    elif(args_main['command'] == "volume_up"):
-        playProcess.playout_volume_up()
-    elif(args_main['command'] == "volume_down"):
-        playProcess.playout_volume_down()
+        elif(args_main['command'] == "volume_get"):
+            print(playProcess.playout_volume_get())
+            return
+        elif(args_main['command'] == "volume_set"):
+            playProcess.playout_volume_set(args_main['value'])
+            return
+        elif(args_main['command'] == "volume_system_set"):
+            playProcess.playout_volume_system_set()
+            return
 
-    elif(args_main['command'] == "playout_mute_toggle"):
-        playProcess.playout_mute_toggle()
-    elif(args_main['command'] == "playout_mute_status"):
-        if(playProcess.playout_mute_status()):
-            print("True is mute")
+        elif(args_main['command'] == "volume_up"):
+            playProcess.playout_volume_up()
+            return
+        elif(args_main['command'] == "volume_down"):
+            playProcess.playout_volume_down()
+            return
+
+        elif(args_main['command'] == "playout_mute_toggle"):
+            playProcess.playout_mute_toggle()
+            return
+        elif(args_main['command'] == "playout_mute_status"):
+            if(playProcess.playout_mute_status()):
+                print("True is mute")
+            else:
+                print("False is not mute")
+            return
+
+        elif(args_main['command'] == "sys_volume_max_set"):
+            playProcess.sys_volume_max_set(args_main['value'])
+            return
+        elif(args_main['command'] == "sys_volume_max_get"):
+            print(playProcess.sys_volume_max_get())
+            return
+
+        elif(args_main['command'] == "sys_volume_min_set"):
+            playProcess.sys_volume_min_set(args_main['value'])
+            return
+        elif(args_main['command'] == "sys_volume_min_get"):
+            print(playProcess.sys_volume_min_get())
+            return
+
+        elif(args_main['command'] == "sys_volume_system_set"):
+            playProcess.sys_volume_system_set(args_main['value'])
+            return
+        elif(args_main['command'] == "sys_volume_system_get"):
+            print(playProcess.sys_volume_system_get())
+            return
+
+        elif(args_main['command'] == "sys_idle_shutdown_set"):
+            playProcess.sys_idle_shutdown_set(args_main['value'])
+            return
+        elif(args_main['command'] == "sys_idle_shutdown_get"):
+            print(playProcess.sys_idle_shutdown_get())
+            return
+
+        elif(args_main['command'] == "sys_volume_step_set"):
+            playProcess.sys_volume_step_set(args_main['value'])
+            return
+        elif(args_main['command'] == "sys_volume_step_get"):
+            print(playProcess.sys_volume_step_get())
+            return
+
+        elif(args_main['command'] == "playout_stop"):
+            playProcess.playout_stop()
+            return
+        elif(args_main['command'] == "playout_next"):
+            playProcess.playout_next()
+            return
+        elif(args_main['command'] == "playout_restart"):
+            playProcess.playout_restart()
+            return
+        elif(args_main['command'] == "playout_pause_toggle"):
+            playProcess.playout_pause_toggle()
+            return
+        elif(args_main['command'] == "playout_pause_force"):
+            if(args_main['value']):
+                wait_seconds = int(args_main['value'])
+            else:
+                wait_seconds = 0
+            playProcess.playout_pause_force(wait_seconds)
+            return
+        elif(args_main['command'] == "playout_track_single"):
+            playProcess.playout_track_single(args_main['value'])
+            return
+
+        elif(args_main['command'] == "sys_config_value_set"):
+            args_func = {}
+            args_func['key'] = args_main['key']
+            args_func['value'] = args_main['value']
+            playProcess.sys_config_value_set(args_func)
+            return
+        elif(args_main['command'] == "sys_config_value_get"):
+            args_func = {}
+            args_func['key'] = args_main['key']
+            print(playProcess.sys_config_value_get(args_func))
+            return
+
         else:
-            print("False is not mute")
+            logger.debug('command: ' + args_main['command'] + ' not found')
 
-    elif(args_main['command'] == "sys_volume_max_set"):
-        playProcess.sys_volume_max_set(args_main['value'])
-    elif(args_main['command'] == "sys_volume_max_get"):
-        print(playProcess.sys_volume_max_get())
+playProcess = PlayoutControl(path_dir_root)
 
-    elif(args_main['command'] == "sys_volume_min_set"):
-        playProcess.sys_volume_min_set(args_main['value'])
-    elif(args_main['command'] == "sys_volume_min_get"):
-        print(playProcess.sys_volume_min_get())
-
-    elif(args_main['command'] == "sys_volume_system_set"):
-        playProcess.sys_volume_system_set(args_main['value'])
-    elif(args_main['command'] == "sys_volume_system_get"):
-        print(playProcess.sys_volume_system_get())
-
-    elif(args_main['command'] == "sys_idle_shutdown_set"):
-        playProcess.sys_idle_shutdown_set(args_main['value'])
-    elif(args_main['command'] == "sys_idle_shutdown_get"):
-        print(playProcess.sys_idle_shutdown_get())
-
-    elif(args_main['command'] == "sys_volume_step_set"):
-        playProcess.sys_volume_step_set(args_main['value'])
-    elif(args_main['command'] == "sys_volume_step_get"):
-        print(playProcess.sys_volume_step_get())
-
-    elif(args_main['command'] == "playout_stop"):
-        playProcess.playout_stop()
-    elif(args_main['command'] == "playout_next"):
-        playProcess.playout_next()
-    elif(args_main['command'] == "playout_restart"):
-        playProcess.playout_restart()
-    elif(args_main['command'] == "playout_pause_toggle"):
-        playProcess.playout_pause_toggle()
-    elif(args_main['command'] == "playout_pause_force"):
-        if(args_main['value']):
-            wait_seconds = int(args_main['value'])
-        else:
-            wait_seconds = 0
-        playProcess.playout_pause_force(wait_seconds)
-    elif(args_main['command'] == "playout_track_single"):
-        playProcess.playout_track_single(args_main['value'])
-
-    elif(args_main['command'] == "sys_config_value_set"):
-        args_func = {}
-        args_func['key'] = args_main['key']
-        args_func['value'] = args_main['value']
-        playProcess.sys_config_value_set(args_func)
-    elif(args_main['command'] == "sys_config_value_get"):
-        args_func = {}
-        args_func['key'] = args_main['key']
-        print(playProcess.sys_config_value_get(args_func))
-
-    else:           
-        logger.debug('command: ' + args_main['command'] + ' not found')
+PlayoutControl_cli(args_main)
 
 print("Available methods:")
 #method_list = [func for func in dir(playProcess) if callable(getattr(playProcess, func))]
 #for i in method_list:
 #    print("# " + i)
-##pprint(vars(playProcess))
+#pprint(vars(playProcess))
 
 

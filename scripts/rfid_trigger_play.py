@@ -17,7 +17,7 @@ from datetime import datetime
 from shutil import copyfile
 from subprocess import Popen, PIPE
 from mpd import MPDClient
-from inc_functions import *
+from functions import *
 
 # LOGGING
 logging.basicConfig(
@@ -73,7 +73,7 @@ path_txt_latestID = os.path.abspath(path_dir_root + "/shared/latestID.txt")
 path_dir_shortcuts = os.path.abspath(path_dir_root + "/shared/shortcuts")
 path_dir_playlists = os.path.abspath(path_dir_root + "/playlists")
 # read three config files into one dictionary
-conf = conf_read_bash([path_config_global, path_config_debug, path_config_rfid])
+conf = read_config_bash([path_config_global, path_config_debug, path_config_rfid])
 
 ###################################
 # parse variables from command line
@@ -99,28 +99,6 @@ else:
     logger.debug("rfid_trigger_play.conf does NOT exist, copying from settings dir")
     copyfile(path_dir_settings + "/rfid_trigger_play.conf.sample", path_config_rfid)
 
-# Read config files for global, debug and rfid
-conf = {}
-# global config
-with open(path_config_global) as myfile:
-    for line in myfile:
-        if not line.lstrip().startswith('#'):
-            name, var = line.partition("=")[::2]
-            conf[name.strip()] = var.strip()
-# debugging config
-with open(path_config_debug) as myfile:
-    for line in myfile:
-        if not line.lstrip().startswith('#'):
-            name, var = line.partition("=")[::2]
-            conf[name.strip()] = var.strip()
-# debugging rfid
-with open(path_config_rfid) as myfile:
-    for line in myfile:
-        if not line.lstrip().startswith('#'):
-            name, var = line.partition("=")[::2]
-            conf[name.strip()] = var.strip()
-# strip " off values in dictionary conf
-conf = {k: v.strip('"') for (k, v) in conf.items()}
 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
     logger.debug('configuration found in conf files for global.conf, debugLogging.conf, rfid_trigger_play.conf:')
     logger.debug(conf)
