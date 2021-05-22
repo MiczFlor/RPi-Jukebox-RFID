@@ -1,5 +1,5 @@
-const encode = (obj) => {
-
+const encodeMessage = (obj) => {
+  return JSON.stringify(obj);
 }
 
 const decodeMessage = (msg) => {
@@ -11,5 +11,5 @@ const decodeMessage = (msg) => {
 
 export {
   decodeMessage,
-  encode,
+  encodeMessage,
 }

@@ -3,6 +3,7 @@ import { SocketContext } from '../../context/socket';
 import { decodeMessage } from '../../utils/socketMessage';
 
 import Box from '@material-ui/core/Box';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const Display = () => {
   const socket = useContext(SocketContext);
@@ -26,6 +27,7 @@ const Display = () => {
   return (
     <Box my={4}>
       <p>Playing: {response.title}</p>
+      <LinearProgress variant="determinate" value="40" />
     </Box>
   );
 };

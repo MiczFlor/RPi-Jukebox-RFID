@@ -1,5 +1,6 @@
-import React, { useState, useContext, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { SocketContext } from '../../context/socket';
+import { encodeMessage } from '../../utils/socketMessage';
 
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -11,82 +12,83 @@ const Player = () => {
 
   const [hasList, setHasList] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const hasListRef = useRef();
-  hasListRef.current = hasList;
-
 
   useEffect(() => {
-    socket.send(JSON.stringify({object: 'player', method: 'playerstatus', params: {}}));
+    socket.send(
+      encodeMessage({object: 'player', method: 'playerstatus', params: {}})
+    );
   }, [socket]);
 
   const play = useCallback(() => {
     console.log('hasList', hasList);
     let obj;
 
-    if(hasListRef.current) {
-      obj = JSON.stringify({
+    if(hasList) {
+      obj = {
         "object": "player",
         "method": "play",
         "params": {}
-      });
+      };
     }
 
-    if(!hasListRef.current) {
-      obj = JSON.stringify({
+    if(!hasList) {
+      obj = {
         "object": "player",
         "method": "playlistaddplay",
         "params": {
           "folder": "kita1"
         }
-      });
+      };
 
       setHasList(true);
     }
 
     setIsPlaying(true);
-    socket.send(obj);
-  }, []);
+    socket.send(encodeMessage(obj));
+  }, [hasList]);
 
   const stop = useCallback(() => {
-    const obj = JSON.stringify({
+    const obj = {
       "object": "player",
       "method": "stop",
       "params": {}
-    });
+    };
 
     setIsPlaying(false);
-    socket.send(obj);
+    socket.send(encodeMessage(obj));
   }, []);
 
   const pause = useCallback(() => {
-    const obj = JSON.stringify({
+    const obj = {
       "object": "player",
       "method": "pause",
       "params": {}
-    });
+    };
 
     setIsPlaying(false);
-    socket.send(obj);
+    socket.send(encodeMessage(obj));
   }, []);
 
   const previous = useCallback(() => {
-    const obj = JSON.stringify({
+    const obj = {
       "object": "player",
       "method": "prev",
       "params": {}
-    });
+    };
 
-    socket.send(obj);
+    setIsPlaying(true);
+    socket.send(encodeMessage(obj));
   }, []);
 
   const next = useCallback(() => {
-    const obj = JSON.stringify({
+    const obj = {
       "object": "player",
       "method": "next",
       "params": {}
-    });
+    };
 
-    socket.send(obj);
+    setIsPlaying(true);
+    socket.send(encodeMessage(obj));
   }, []);
 
   return (

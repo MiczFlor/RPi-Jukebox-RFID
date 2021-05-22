@@ -50,26 +50,27 @@ class player_control:
         return ({'result': 'mpd', 'version': self.mpd_client.mpd_version})
 
     def play(self, param):
-
         if param is not None and isinstance(param, dict):
             songid = param.get("songid")
             if songid is None:
-                songid = 1
+                songid = 0
         else:
-            songid = 1
+            songid = 0
 
         try:
-            self.mpd_client.play(songid)
+            self.mpd_client.play() if songid == 0 else self.mpd_client.play(songid)
+
         except ConnectionError:
             logger.error("MPD Connection Error, retry")
             self.conncet()
-            self.mpd_client.play(songid)
+            self.mpd_client.play(songid) if songid == 0 else self.mpd_client.play()
+
         except Exception as e:
             logger.error(f"{e}")
 
         song = self.mpd_client.currentsong()
 
-        return ({'object': 'player', 'method': 'stop', 'params': song})
+        return ({'object': 'player', 'method': 'play', 'params': song})
 
     def stop(self, param):
         self.mpd_client.stop()
