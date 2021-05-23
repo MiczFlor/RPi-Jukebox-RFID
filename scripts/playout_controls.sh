@@ -912,7 +912,7 @@ case $COMMAND in
         ;;
     playlistappend)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         # Unmute if muted
         if [ -f $VOLFILE ]; then
             # $VOLFILE DOES exist == audio off
@@ -933,7 +933,7 @@ case $COMMAND in
     playsinglefile)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc clear
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         mpc repeat off
         mpc single on
         # Unmute if muted
