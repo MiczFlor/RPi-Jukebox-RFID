@@ -43,7 +43,8 @@ COPY . ${INSTALLATION_DIR}
 ENV ZMQ_VERSION 4.3.4
 ENV PREFIX /usr/local
 
-RUN wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+RUN cd ${HOME} && mkdir libzmq && cd libzmq; \
+    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
     tar -xzf libzmq.tar.gz; \
     zeromq-${ZMQ_VERSION}/configure --prefix=${PREFIX} --enable-drafts; \
     make -j && make install; \

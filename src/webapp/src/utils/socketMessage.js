@@ -1,4 +1,5 @@
 const encodeMessage = (obj) => {
+  console.log('encodeMessage', obj);
   return JSON.stringify(obj);
 }
 

@@ -1,32 +1,22 @@
-import React, { useCallback, useContext, useEffect, useState} from 'react';
-import { SocketContext } from '../../context/socket';
-import { decodeMessage } from '../../utils/socketMessage';
+import React, { useContext } from 'react';
+
+import { PlayerStatusContext } from '../../context/playerStatus';
 
 import Box from '@material-ui/core/Box';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 const Display = () => {
-  const socket = useContext(SocketContext);
+  const [ playerStatus ] = useContext(PlayerStatusContext);
 
-  const [response, setResponse] = useState({});
-
-  // const getPlayerStatus
-
-  const handleDisplayUpdate = useCallback((msg) => {
-    const { object, params } = decodeMessage(msg);
-    
-    if(object === 'player') {
-      setResponse(params);
-    }
-  });
-
-  useEffect(() => {
-    socket.on('message', handleDisplayUpdate);
-  }, [socket]);
+  const { params: { status } } = playerStatus;
 
   return (
     <Box my={4}>
-      <p>Playing: {response.title}</p>
+      {
+        status?.songid ?
+        <p>{status?.title}</p> :
+        <p>No song in queue</p>
+      }
       <LinearProgress variant="determinate" value="40" />
     </Box>
   );
