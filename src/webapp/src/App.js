@@ -1,16 +1,15 @@
 import React from 'react';
-import { SocketContext, socket_req } from './context/socket';
+import SocketProvider from './context/sockets';
 
-import Container from '@material-ui/core/Container';
-import Player from './components/Player/index';
+import Player from './components/Player';
+import Navigation from './components/Navigation';
 
 function App() {
   return (
-    <SocketContext.Provider value={socket_req}>
-      <Container maxWidth="sm">
-        <Player />
-      </Container>
-    </SocketContext.Provider>
+    <SocketProvider>
+      <Navigation />
+      <Player />
+    </SocketProvider>
   );
 }
 

@@ -1,73 +1,69 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
-import { PlayerStatusContext } from '../../context/playerStatus';
+import SocketContext from '../../context/sockets/context';
+import { execCommand } from '../../sockets/emit';
 
-import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import PlayCircleFilledRoundedIcon from '@material-ui/icons/PlayCircleFilledRounded';
+import PauseCircleFilledRoundedIcon from '@material-ui/icons/PauseCircleFilledRounded';
+import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded';
+import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded';
 
 const Controls = () => {
-  const [ playerStatus, updatePlayerStatus ] = useContext(PlayerStatusContext);
-  
-  const { params: { status } } = playerStatus;
-  
-  const isPlaying = status.state === 'play' ? true : false;
-  const hasPlaylist = parseInt(status.playlistlength) > 0;
+  const { playerStatus: { status } } = useContext(SocketContext);
+
+  // const [isPlaying, setIsPlaying] = useState(status?.state === 'play' ? true : false);
+  // const [hasPlaylist, setHasPlaylist] = useState(parseInt(status?.playlistlength) > 0);
+
+  // console.log(isPlaying, hasPlaylist);
+
+  const isPlaying = status?.state === 'play' ? true : false;
+  const hasPlaylist = parseInt(status?.playlistlength) > 0;
 
   const play = () => {
-    const newPlayerStatus = hasPlaylist
-      ? {
-        "object": "player",
-        "method": "play",
-        "params": {}
-      }
-      : {
-        "object": "player",
-        "method": "playlistaddplay",
-        "params": {
-          "folder": "kita1"
-        }
-      };
+    const folder = 'kita1';
 
-    updatePlayerStatus(newPlayerStatus);
+    const method = hasPlaylist ? 'play' : 'playlistaddplay';
+    const params = method === 'play' ? {} : { folder };
+
+    execCommand('player', method, params);
   };
 
   const pause = () => {
-    const newPlayerStatus = {
-      "object": "player",
-      "method": "pause",
-      "params": {}
-    };
-
-    updatePlayerStatus(newPlayerStatus);
+    execCommand('player', 'pause');
   };
 
   const previous = () => {
-    const newPlayerStatus = {
-      "object": "player",
-      "method": "prev",
-      "params": {}
-    };
-    
-    updatePlayerStatus(newPlayerStatus);
+    execCommand('player', 'prev');
   };
 
   const next = () => {
-    const newPlayerStatus = {
-      "object": "player",
-      "method": "next",
-      "params": {}
-    };
-
-    updatePlayerStatus(newPlayerStatus);
+    execCommand('player', 'next');
   };
 
   return (
-    <Box my={4}>
-      <Button variant="contained" onClick={previous}>Previous</Button>
-      {!isPlaying && <Button variant="contained" onClick={play}>Play</Button>}
-      {isPlaying && <Button variant="contained" onClick={pause}>Pause</Button>}
-      <Button variant="contained" onClick={next}>Next</Button>
-    </Box>
+    <Grid container direction="row" justify="center" alignItems="center">
+      <IconButton aria-label="Previous" onClick={previous}>
+        <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
+      </IconButton>
+      {
+        !isPlaying &&
+        <IconButton aria-label="Play" onClick={play}>
+          <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
+        </IconButton>
+      }
+      {
+        isPlaying &&
+        <IconButton aria-label="Pause" onClick={pause}>
+          <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
+        </IconButton>
+      }
+      <IconButton aria-label="Next" onClick={next}>
+        <SkipNextRoundedIcon style={{ fontSize: 35 }} />
+      </IconButton>
+    </Grid>
   );
 };
 
