@@ -17,11 +17,11 @@ services:
       - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
       - ../settings:/home/pi/RPi-Jukebox-RFID/settings
       - ../shared:/home/pi/RPi-Jukebox-RFID/shared
-  
+
   webapp:
     build:
       context: ../
-      dockerfile: ./docker/webapp.Dockerfile 
+      dockerfile: ./docker/webapp.Dockerfile
     container_name: webapp
     environment:
       - CHOKIDAR_USEPOLLING=true
@@ -33,22 +33,6 @@ services:
     volumes:
       - ../src/webapp:/home/pi/RPi-Jukebox-RFID/webapp
       - /home/pi/RPi-Jukebox-RFID/webapp/node_modules
-
-  # webui:
-  #   build:
-  #     context: ../
-  #     dockerfile: ./docker/webui.Dockerfile
-  #   container_name: webui
-  #   links:
-  #     - jukebox
-  #   ports:
-  #     - "8000:80"
-  #   restart: unless-stopped
-  #   tty: true
-  #   volumes:
-  #     - ../src/ui:/home/pi/RPi-Jukebox-RFID/src/ui
-  #     - ../settings:/home/pi/RPi-Jukebox-RFID/settings
-  #     - ../shared:/home/pi/RPi-Jukebox-RFID/shared
 
   mpd:
     build:
