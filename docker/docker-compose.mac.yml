@@ -7,7 +7,7 @@ services:
     volumes:
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse:/etc/pulse
-  
+
   mpd:
     environment:
       - PULSE_SERVER=tcp:host.docker.internal:4713

@@ -48,7 +48,7 @@ const Controls = () => {
 
   return (
     <Grid container direction="row" justify="center" alignItems="center">
-      <IconButton aria-label="Previous" onClick={previous}>
+      <IconButton aria-label="Skip previous track" onClick={previous}>
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
       {
@@ -63,7 +63,7 @@ const Controls = () => {
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
-      <IconButton aria-label="Next" onClick={next}>
+      <IconButton aria-label="Skip next track" onClick={next}>
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
     </Grid>

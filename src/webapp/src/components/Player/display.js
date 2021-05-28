@@ -45,8 +45,9 @@ const Display = () => {
   }, isRunning ? delay : null);
 
   useEffect(() => {
-    setTimeElapsed(parseFloat(status?.elapsed));
     setIsRunning(status?.state === 'play' ? true : false);
+    setTimeElapsed(parseFloat(status?.elapsed));
+    setProgress(normalise(timeTotal, timeElapsed));
   }, [status])
 
   return (
