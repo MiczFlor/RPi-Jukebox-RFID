@@ -1,9 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import SocketContext from '../../context/sockets/context';
 import { execCommand } from '../../sockets/emit';
 
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import PlayCircleFilledRoundedIcon from '@material-ui/icons/PlayCircleFilledRounded';
@@ -14,32 +13,36 @@ import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded';
 const Controls = () => {
   const { playerStatus: { status } } = useContext(SocketContext);
 
-  // const [isPlaying, setIsPlaying] = useState(status?.state === 'play' ? true : false);
-  // const [hasPlaylist, setHasPlaylist] = useState(parseInt(status?.playlistlength) > 0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasPlaylist, setHasPlaylist] = useState(false);
 
-  // console.log(isPlaying, hasPlaylist);
-
-  const isPlaying = status?.state === 'play' ? true : false;
-  const hasPlaylist = parseInt(status?.playlistlength) > 0;
+  useEffect(() => {
+    setIsPlaying(status?.state === 'play' ? true : false);
+    setHasPlaylist(parseInt(status?.playlistlength) > 0);
+  }, [status]);
 
   const play = () => {
-    const folder = 'kita1';
+    const folder = 'kita2';
 
     const method = hasPlaylist ? 'play' : 'playlistaddplay';
     const params = method === 'play' ? {} : { folder };
 
+    setIsPlaying(true);
     execCommand('player', method, params);
   };
 
   const pause = () => {
+    setIsPlaying(false);
     execCommand('player', 'pause');
   };
 
   const previous = () => {
+    setIsPlaying(true);
     execCommand('player', 'prev');
   };
 
   const next = () => {
+    setIsPlaying(true);
     execCommand('player', 'next');
   };
 

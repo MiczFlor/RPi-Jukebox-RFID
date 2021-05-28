@@ -9,7 +9,7 @@ const SocketProvider = ({ children }) => {
     playerStatus: DEFAULT_PLAYER_STATUS,
   });
 
-  useEffect(() => initSockets({ setValue }), [initSockets]);
+  useEffect(() => initSockets({ setValue }), []);
 
   return(
       <SocketContext.Provider value={value}>
