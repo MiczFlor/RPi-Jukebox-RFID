@@ -1,55 +1,89 @@
 {
-  "104,49914": {
-    "object": "player",
+  "VolumeUp (kwargs)": {
+    "plugin": "volume",
+    "method": "set_volume",
+    "kwargs": {
+      "volume": 12
+    }
+  },
+  "VolumeUp (args)": {
+    "plugin": "volume",
+    "method": "set_volume",
+    "args": [12]
+  },
+  "VolumeUp (error in args)": {
+    "plugin": "volume",
+    "method": "set_volume",
+    "args": ["12b"]
+  },
+  "VolumeMute (empty kwargs)": {
+    "plugin": "volume",
+    "method": "mute",
+    "kwargs": {}
+  },
+  "VolumeUnMute (no args)": {
+    "plugin": "volume",
+    "method": "mute"
+  },
+  "No Method": {
+    "plugin": "volume",
+    "method": "does_not_exist"
+  },
+  "No Module": {
+    "plugin": "some_fantasy",
+    "method": "does_not_exist"
+  },
+    "104,49914": {
+    "plugin": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "acdc"
     }
   },
   "103,12632": {
-    "object": "player",
+    "plugin": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "roxette"
     }
   },
   "104,29698": {
-    "object": "player",
+    "plugin": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "digger barnes/every story true"
     }
   },
   "108,07437": {
-    "object": "player",
+    "plugin": "player",
     "method": "playlistaddplay",
-    "params": {
+    "kwargs": {
       "folder": "digger barnes"
     }
   },
   "107,60360": {
-    "object": "",
+    "plugin": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "106,64513": {
-    "object": "",
+    "plugin": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "104,14891": {
-    "object": "",
+    "plugin": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "103,24033": {
-    "object": "",
+    "plugin": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   },
   "104,32860": {
-    "object": "",
+    "plugin": "",
     "method": "",
-    "params": {}
+    "kwargs": {}
   }
 }
