@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Cover from './cover';
 import Display from './display';
 import Controls from './controls';
+import Volume from './volume';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -23,6 +24,7 @@ const Player = () => {
         <Cover />
         <Display />
         <Controls />
+        <Volume />
       </Paper>
     </div>
   );
