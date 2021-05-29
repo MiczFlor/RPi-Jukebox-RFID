@@ -1,13 +1,20 @@
 system:
     box_name : Jukebox
     startup_sound: ../../resources/startupsound.wav
+    audiofolder_path: ../../shared
+    playlistfolder_path: ../../playlists
 player:
-    music_player_status: ../../shared/music_player_status.json
+    status_file: ../../shared/music_player_status.json
 modules:
     volume: jukebox.alsaif
     player: jukebox.mpd
+    others: [rfid]
 mpd:
     host: localhost
 alsaif:
     mixer: Master
     start_sound_device: default
+rpc:
+    port_cmd: 5555
+rfid:
+    cardid_database: ../../settings/phoniebox_cardid_database.json

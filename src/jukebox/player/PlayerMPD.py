@@ -25,7 +25,7 @@ class player_control:
             self.music_player_status.save_to_json()
             self.current_folder_status = {}
         else:
-            last_played_folder = self.music_player_status['player_status']['last_played_folder']
+            last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
             if last_played_folder is not None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
                 self.mpd_client.clear()

@@ -142,26 +142,29 @@ class ConfigHandler:
 
     def getn(self, *keys, default=None):
         """
-        Get the value at arbitrary hierarchy depth. Return default if last key not present
+        Get the value at arbitrary hierarchy depth. Return default if key not present
 
-        Note that default only refers to the lowest hierarchy level. All upper levels MUST exist
-        else a KeyError is raised
+        Note: that default value is returned no matter at which hierarchy level the path aborts
         """
         with self._lock:
             if len(keys) == 1:
                 return self._data.get(keys[0], default)
             else:
-                tmp = self._data[keys[0]]
-                for nk in keys[1:-1]:
-                    tmp = tmp[nk]
-                return tmp.get(keys[-1], default)
+                try:
+                    tmp = self._data[keys[0]]
+                    for nk in keys[1:-1]:
+                        tmp = tmp[nk]
+                except KeyError as e:
+                    return default
+                else:
+                    return tmp.get(keys[-1], default)
 
-    def setndefault(self, *keys, value):
+    def setndefault(self, *keys, value, create=False):
         """
         Set the key = value pair at arbitrary hierarchy depth unless the key already exists
 
         Note: default only refers to the lowest hierarchy level. All upper levels MUST exist
-        else a KeyError is raised.
+        else a KeyError is raised. That is because we cannot know which types the levels should consist of
         """
         if len(keys) == 1:
             return self._data.setdefault(keys[0], value)
@@ -263,5 +266,5 @@ def write_yaml(cfg, filename, only_if_changed=False, *args, **kwargs) -> None:
                     yaml.dump(cfg._data, stream, *args, **kwargs)
         else:
             logger.info(f"({cfg.name}) "
-                        f"Not writing to file as data has unchanged status set (use only_if_changed=True to override)")
+                        f"Not writing to file as data has unchanged status set (use only_if_changed=False to override)")
 

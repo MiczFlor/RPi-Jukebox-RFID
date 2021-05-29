@@ -10,6 +10,10 @@ logger = logging.getLogger('jb.alsaif')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
+def clamp(n, minn, maxn):
+    return min(max(n, minn), maxn)
+
+
 class AlsaCtrl:
     def __init__(self):
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
@@ -20,15 +24,21 @@ class AlsaCtrl:
 
     def set_volume(self, volume):
         logger.debug(f"Set Volume = {volume}")
-        if 0 <= volume <= 100:
-            self.mixer.setvolume(volume)
-        else:
-            logger.warning(f"set_volume: volume out-of-range: f{volume}")
+        if not 0 <= volume <= 100:
+            logger.warning(f"set_volume: volume out-of-range: {volume}")
+            volume = clamp(volume, 0, 100)
+        self.mixer.setvolume(volume)
         return self.get_volume()
 
     def mute(self, mute_on=True):
         logger.debug(f"Set Mute = {mute_on}")
         self.mixer.setmute(1 if mute_on else 0)
+
+    def inc_volume(self, step=3):
+        self.set_volume(self.get_volume() + step)
+
+    def dec_volume(self, step=3):
+        self.set_volume(self.get_volume() - step)
 
 
 def _play_wave_core(filename):
@@ -87,6 +97,8 @@ def init():
     else:
         callables.set_volume = alsactrl.set_volume
         callables.get_volume = alsactrl.get_volume
+        callables.inc_volume = alsactrl.dec_volume
+        callables.dec_volume = alsactrl.inc_volume
         callables.mute = partial(alsactrl.mute, True)
         callables.unmute = partial(alsactrl.mute, False)
     callables.play_wave = play_wave

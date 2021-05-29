@@ -5,26 +5,24 @@ import nanotime
 import zmq
 import json
 import logging
+import jukebox.cfghandler
 
 logger = logging.getLogger('jb.rpc_server')
+cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class RpcServer:
-
-    def __init__(self, objects):
-        self.objects = objects
-        self.context = None
-        self._keep_running = True
-
-    def connect(self, addrs=None):
-        if addrs is None:
-            addrs = ["tcp://*:5555", "inproc://JukeBoxRpcServer"]
-        self.context = zmq.Context()
+    def __init__(self, objects, context=None):
+        # Get the global context (will be created if non-existing)
+        self.context = context or zmq.Context.instance()
         self.socket = self.context.socket(zmq.REP)
-        for addr in addrs:
-            self.socket.bind(addr)
+        self.socket.bind('inproc://JukeBoxRpcServer')
+        port = cfg.getn('rpc', 'port_cmd', default=5555)
+        self.socket.bind(f'tcp://*:{port}')
         self.socket.setsockopt(zmq.LINGER, 200)
-        return self.context
+        self.objects = objects
+        self._keep_running = True
+        logger.info(f"Connected to port '{port}'")
 
     def terminate(self):
         self._keep_running = False
@@ -70,7 +68,7 @@ class RpcServer:
             # {"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
             # a additional required parameter "object" is used:
             # {'object':'','method':'','params':{},id:''}
-            module = client_request.get('object')
+            module = client_request.get('plugin')
             if module is not None:
                 method = client_request.get('method')
                 if method is not None:
