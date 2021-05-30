@@ -15,6 +15,7 @@ alsaif:
     mixer: Master
     start_sound_device: default
 rpc:
-    port_cmd: 5555
+    tcp_port: 5555
+    websocket_port: 5556
 rfid:
     cardid_database: ../../settings/phoniebox_cardid_database.json
