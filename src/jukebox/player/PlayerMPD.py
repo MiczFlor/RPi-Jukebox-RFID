@@ -73,7 +73,7 @@ class player_control:
                         logger.error(f"{e}")
                         ret = {}
                         break
-            return ret
+        return ret
 
     def _mpd_status_poll(self):
         '''
@@ -114,43 +114,33 @@ class player_control:
         else:
             self.mpd_retry_with_mutex(self.mpd_client.play, songid)
 
-        song = self.mpd_client.currentsong()
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'play', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'play', 'params': {'song': status, 'status': status}})
 
     def stop(self, param):
         self.mpd_retry_with_mutex(self.mpd_client.stop)
-        song = self.mpd_client.currentsong()
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'stop', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'stop', 'params': {'song': status, 'status': status}})
 
     def pause(self, param):
         self.mpd_retry_with_mutex(self.mpd_client.pause, 1)
-        song = self.mpd_client.currentsong()
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'pause', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'pause', 'params': {'song': status, 'status': status}})
 
     def prev(self, param):
         self.mpd_retry_with_mutex(self.mpd_client.previous)
-        song = self.mpd_client.currentsong()
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'prev', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'prev', 'params': {'song': status, 'status': status}})
 
     def next(self, param):
         self.mpd_retry_with_mutex(self.mpd_client.next)
-        song = self.mpd_client.currentsong()
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'next', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
 
     def seek(self, param):
         val = param.get('time')
@@ -180,10 +170,9 @@ class player_control:
         return ({})
 
     def get_current_song(self, param):
-        song = self.mpd_retry_with_mutex(self.mpd_client.currentsong)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'next', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
 
     def map_filename_to_playlist_pos(self, filename):
         logger.error("map_filename_to_playlist_pos not yet implemented")
@@ -372,16 +361,14 @@ class player_control:
         self.current_folder_status["SHUFFLE"] = "OFF"
         self.current_folder_status["LOOP"] = "OFF"
         self.current_folder_status["SINGLE"] = "OFF"
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'playlistaddplay', 'params': { 'song': song, 'status': status }})
+        return ({'object': 'player', 'method': 'playlistaddplay', 'params': {'song': status, 'status': status}})
 
     def playerstatus(self, param):
-        time.sleep(0.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'playerstatus', 'params': { 'status': status }})
+        return ({'object': 'player', 'method': 'playerstatus', 'params': {'song': status, 'status': status}})
 
     def playlistinfo(self, param):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
