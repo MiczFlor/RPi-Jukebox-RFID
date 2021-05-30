@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 
+import Cover from './cover';
 import Display from './display';
 import Controls from './controls';
+import Volume from './volume';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -14,20 +15,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const Player = () => {
   const classes = useStyles();
 
   return (
     <div id="player">
-      <Grid container direction="row" justify="center" alignItems="center">
-        <Grid item xs={6}>
-          <Paper className={classes.paper}>
-            <Display />
-            <Controls />
-          </Paper>
-        </Grid>
-      </Grid>
+      <Paper className={classes.paper}>
+        <Cover />
+        <Display />
+        <Controls />
+        <Volume />
+      </Paper>
     </div>
   );
 };

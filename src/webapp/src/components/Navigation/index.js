@@ -1,37 +1,38 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-// import Button from '@material-ui/core/Button';
-// import IconButton from '@material-ui/core/IconButton';
-// import MenuIcon from '@material-ui/icons/Menu';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import HomeIcon from '@material-ui/icons/Home';
+import MusicNoteIcon from '@material-ui/icons/MusicNote';
+import SettingsIcon from '@material-ui/icons/Settings';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
+const useStyles = makeStyles({
+  stickToBottom: {
+    width: '100%',
+    position: 'fixed',
+    bottom: 0,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+});
 
-export default function ButtonAppBar() {
+export default function Navigation() {
   const classes = useStyles();
+  const [value, setValue] = React.useState(0);
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            Phoniebox
-          </Typography>
-        </Toolbar>
-      </AppBar>
-    </div>
+    <BottomNavigation
+      value={value}
+      onChange={(event, newValue) => {
+        setValue(newValue);
+      }}
+      showLabels
+      className={classes.stickToBottom}
+    >
+      <BottomNavigationAction label="Start" icon={<HomeIcon />} />
+      <BottomNavigationAction label="Library" icon={<MusicNoteIcon />} />
+      <BottomNavigationAction label="Cards" icon={<BookmarksIcon />} />
+      <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
+    </BottomNavigation>
   );
 }
