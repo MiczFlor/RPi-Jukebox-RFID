@@ -48,6 +48,8 @@ class player_control:
         This method adds thread saftey for acceses to mpd via a mutex lock,
         it shall be used for each access to mpd to ensure thread safety
         In case of a communication error the connection will be reestablished and the pending command will be repeated 2 times
+
+        I think this should be refactored to a decorator
         '''
         retry = 2
         with self.mpd_mutex:
@@ -87,7 +89,7 @@ class player_control:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
 
-        self.mpd_status['volume'] = self.volume_control.volume
+        self.mpd_status['volume'] = self.volume_control.get_volume()
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -98,45 +100,40 @@ class player_control:
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
         return ()
 
-    def get_player_type_and_version(self, param):
+    def get_player_type_and_version(self):
         return ({'result': 'mpd', 'version': self.mpd_retry_with_mutex(self.mpd_client.mpd_version)})
 
-    def play(self, param):
+    def play(self, songid=None):
 
-        if param is not None and isinstance(param, dict):
-            songid = param.get("songid")
-            if songid is None:
-                songid = 1
-        else:
+        if songid is None:
             songid = 1
 
         self.mpd_retry_with_mutex(self.mpd_client.play, songid)
 
         return ({})
 
-    def stop(self, param):
+    def stop(self):
         self.mpd_retry_with_mutex(self.mpd_client.stop)
         return ({})
 
-    def pause(self, param):
+    def pause(self):
         self.mpd_retry_with_mutex(self.mpd_client.pause, 1)
         return ({})
 
-    def prev(self, param):
+    def prev(self):
         self.mpd_retry_with_mutex(self.mpd_client.previous)
         return ({})
 
-    def next(self, param):
+    def next(self):
         self.mpd_retry_with_mutex(self.mpd_client.next)
         return ({})
 
-    def seek(self, param):
-        val = param.get('time')
-        if val is not None:
-            self.mpd_retry_with_mutex(self.mpd_client.seekcur, val)
+    def seek(self, time):
+        if time is not None:
+            self.mpd_retry_with_mutex(self.mpd_client.seekcur, time)
         return ({})
 
-    def replay(self, param):
+    def replay(self):
         return ({})
 
     def repeatmode(self, param):
@@ -187,7 +184,7 @@ class player_control:
         logger.error("playsingle not yet implemented")
         return ({})
 
-    def playlistaddplay(self, param):
+    def playlistaddplay(self, folder):
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
@@ -196,8 +193,6 @@ class player_control:
         # NEW VERSION:
         # Read the current config file (include will execute == read)
         # . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-
-        folder = param.get("folder")
 
         logger.info(f"playing folder: {folder}")
 
@@ -350,9 +345,9 @@ class player_control:
 
         return ({'song': song})
 
-    def playerstatus(self, param):
+    def playerstatus(self):
         return (self.mpd_status)
 
-    def playlistinfo(self, param):
+    def playlistinfo(self):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
         return (playlistinfo)
