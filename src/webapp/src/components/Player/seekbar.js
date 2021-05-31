@@ -3,8 +3,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import SocketContext from '../../context/sockets/context';
 import { execCommand } from '../../sockets/emit';
 import useInterval from '../../hooks/useInterval';
+import { toHHMMSS } from '../utils';
 
+import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
+import Typography from '@material-ui/core/Typography';
 
 const SeekBar = () => {
   const { playerStatus: { status } } = useContext(SocketContext);
@@ -46,13 +49,31 @@ const SeekBar = () => {
   }, [status]);
 
   return (
-    <Slider
-      value={progress}
-      onChange={seekToPosition}
-      onChangeCommitted={playFromNewTime}
-      disabled={!status?.title}
-      aria-labelledby="Song position"
-    />
+    <>
+      <Grid container direction="row" justify="space-between" alignItems="center">
+        <Grid item>
+          <Typography color="textSecondary">
+            {toHHMMSS(parseInt(timeElapsed))}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography color="textSecondary">
+            -{toHHMMSS(parseInt(timeTotal)-parseInt(timeElapsed))}
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid container>
+        <Grid item xs>
+          <Slider
+            value={progress}
+            onChange={seekToPosition}
+            onChangeCommitted={playFromNewTime}
+            disabled={!status?.title}
+            aria-labelledby="Song position"
+          />
+        </Grid>
+      </Grid>
+    </>
   );
 };
 
