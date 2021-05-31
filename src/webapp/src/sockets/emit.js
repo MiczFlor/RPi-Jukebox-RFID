@@ -5,11 +5,11 @@ const sendRequest = (obj) => {
   socket_req.send(encodeMessage(obj));
 }
 
-const execCommand = (object, method, params = {}) => {
+const execCommand = (plugin, method, kwargs = {}) => {
   const payload = {
-    object,
+    plugin,
     method,
-    params,
+    kwargs,
   };
 
   sendRequest(payload);

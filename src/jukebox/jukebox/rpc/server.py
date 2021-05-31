@@ -20,19 +20,19 @@ class RpcServer:
         # Inproc
         inproc_address = 'inproc://JukeBoxRpcServer'
         self.socket.bind(inproc_address)
-        logger.info(f"Connected to port '{inproc_address}'")
+        logger.debug(f"Connected to address '{inproc_address}'")
 
         # TCP
         tcp_port = cfg.getn('rpc', 'tcp_port', default=5555)
         tcp_address = f'tcp://*:{tcp_port}'
         self.socket.bind(tcp_address)
-        logger.info(f"Connected to port '{tcp_address}'")
+        logger.debug(f"Connected to address '{tcp_address}'")
 
         # WebSocket
         websocket_port = cfg.getn('rpc', 'websocket_port', default=5556)
         websocket_address = f'ws://*:{websocket_port}'
         self.socket.bind(websocket_address)
-        logger.info(f"Connected to port '{websocket_address}'")
+        logger.debug(f"Connected to address '{websocket_address}'")
 
         ## socket options
         self.socket.setsockopt(zmq.LINGER, 200)

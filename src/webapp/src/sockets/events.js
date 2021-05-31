@@ -13,4 +13,8 @@ export const socketEvents = ({ setValue }) => {
       throw new Error('Received socket message does not match the required format.');
     }
   });
+
+  socket_req.on('terminated', (msg) => {
+    throw new Error('Socket connection was terminated.', msg);
+  });
 };

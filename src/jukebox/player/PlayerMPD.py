@@ -142,11 +142,14 @@ class player_control:
 
         return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
 
-    def seek(self, param):
-        val = param.get('time')
-        if val is not None:
-            self.mpd_retry_with_mutex(self.mpd_client.seekcur, val)
-        return ({})
+    def seek(self, newTime):
+        if newTime is not None:
+            self.mpd_retry_with_mutex(self.mpd_client.seekcur, newTime)
+
+        time.sleep(.3)
+        status = self.mpd_status
+
+        return ({'object': 'player', 'method': 'seek', 'params': {'status': status}})
 
     def replay(self, param):
         return ({})
@@ -172,7 +175,7 @@ class player_control:
     def get_current_song(self, param):
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'next', 'params': {'status': status}})
 
     def map_filename_to_playlist_pos(self, filename):
         logger.error("map_filename_to_playlist_pos not yet implemented")
