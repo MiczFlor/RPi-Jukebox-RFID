@@ -16,13 +16,29 @@ class RpcServer:
         # Get the global context (will be created if non-existing)
         self.context = context or zmq.Context.instance()
         self.socket = self.context.socket(zmq.REP)
-        self.socket.bind('inproc://JukeBoxRpcServer')
-        port = cfg.getn('rpc', 'port_cmd', default=5555)
-        self.socket.bind(f'tcp://*:{port}')
+
+        # Inproc
+        inproc_address = 'inproc://JukeBoxRpcServer'
+        self.socket.bind(inproc_address)
+        logger.info(f"Connected to port '{inproc_address}'")
+
+        # TCP
+        tcp_port = cfg.getn('rpc', 'tcp_port', default=5555)
+        tcp_address = f'tcp://*:{tcp_port}'
+        self.socket.bind(tcp_address)
+        logger.info(f"Connected to port '{tcp_address}'")
+
+        # WebSocket
+        websocket_port = cfg.getn('rpc', 'websocket_port', default=5556)
+        websocket_address = f'ws://*:{websocket_port}'
+        self.socket.bind(websocket_address)
+        logger.info(f"Connected to port '{websocket_address}'")
+
+        ## socket options
         self.socket.setsockopt(zmq.LINGER, 200)
         self.objects = objects
         self._keep_running = True
-        logger.info(f"Connected to port '{port}'")
+        logger.info('All socket connections initialized')
 
     def terminate(self):
         self._keep_running = False
@@ -64,9 +80,7 @@ class RpcServer:
             logger.debug(f"Request: {client_request}")
 
             # in difference to jsonrpc https://www.jsonrpc.org/specification
-            # {"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}
-            # a additional required parameter "object" is used:
-            # {'object':'','method':'','params':{},id:''}
+            # {'plugin': '', 'method':'', 'args': { //optional }, 'kwargs': { //optional }}
             module = client_request.get('plugin')
             if module is not None:
                 method = client_request.get('method')
@@ -77,7 +91,7 @@ class RpcServer:
                 else:
                     response = {'error': {'code': -1, 'message': "Missing mandatory parameter 'method'."}}
             else:
-                response = {'error': {'code': -1, 'message': "Missing mandatory parameter 'object'."}}
+                response = {'error': {'code': -1, 'message': "Missing mandatory parameter 'plugin'."}}
 
             if 'tsp' in client_request:
                 response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
