@@ -53,3 +53,6 @@ composer.phar
 
 components/cli_client/pbc
 
+# NEW gitignore
+
+node_modules/

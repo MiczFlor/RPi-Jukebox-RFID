@@ -1,25 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import SocketContext from '../../context/sockets/context';
-import { execCommand } from '../../sockets/emit';
+import PlayerstatusContext from '../../context/playerstatus/context';
 import useInterval from '../../hooks/useInterval';
-import { toHHMMSS } from '../utils';
+import {
+  positionToTime,
+  timeToPosition,
+  toHHMMSS,
+} from '../utils';
 
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 
 const SeekBar = () => {
-  const { playerStatus: { status } } = useContext(SocketContext);
-  const timeTotal = parseFloat(status?.duration) || 0;
+  const { playerstatus, postJukeboxCommand } = useContext(PlayerstatusContext);
 
-  const [timeElapsed, setTimeElapsed] = useState(parseFloat(status?.elapsed) || 0);
+  const [isRunning, setIsRunning] = useState(playerstatus?.state === 'play' ? true : false);
   const [progress, setProgress] = useState(0);
-  const [delay] = useState(1000);
-  const [isRunning, setIsRunning] = useState(status?.state === 'play' ? true : false);
-
-  const timeToPosition = (duration, elapsed) => elapsed * 100 / duration;
-  const positionToTime = (duration, position) => duration * position / 100;
+  const [progressBarDelay] = useState(1000); // TODO: make it dynamic to have smoother progress
+  const [timeElapsed, setTimeElapsed] = useState(parseFloat(playerstatus?.elapsed) || 0);
+  const timeTotal = parseFloat(playerstatus?.duration) || 0;
 
   const updateTimeAndPosition = (newTime) => {
     setTimeElapsed(newTime);
@@ -27,7 +27,7 @@ const SeekBar = () => {
   };
 
   // Handle seek events when sliding the progress bar
-  const seekToPosition = (event, newPosition) => {
+  const handleSeekToPosition = (event, newPosition) => {
     setIsRunning(false);
     updateTimeAndPosition(positionToTime(timeTotal, newPosition));
   };
@@ -35,18 +35,18 @@ const SeekBar = () => {
   // Only send commend to backend when user committed to new position
   // We don't send it while seeking (too many useless requests)
   const playFromNewTime = () => {
-    execCommand('player', 'seek', { newTime: timeElapsed.toFixed(3) });
+    postJukeboxCommand('player', 'seek', { newTime: timeElapsed.toFixed(3) });
   };
 
   // Update progess bar every second
   useInterval(() => {
     updateTimeAndPosition(parseFloat(timeElapsed) + 1);
-  }, isRunning ? delay : null);
+  }, isRunning ? progressBarDelay : null);
 
   useEffect(() => {
-    setIsRunning(status?.state === 'play' ? true : false);
-    updateTimeAndPosition(status?.elapsed);
-  }, [status]);
+    setIsRunning(playerstatus?.state === 'play' ? true : false);
+    updateTimeAndPosition(playerstatus?.elapsed);
+  }, [playerstatus]);
 
   return (
     <>
@@ -66,9 +66,9 @@ const SeekBar = () => {
         <Grid item xs>
           <Slider
             value={progress}
-            onChange={seekToPosition}
+            onChange={handleSeekToPosition}
             onChangeCommitted={playFromNewTime}
-            disabled={!status?.title}
+            disabled={!playerstatus?.title}
             aria-labelledby="Song position"
           />
         </Grid>

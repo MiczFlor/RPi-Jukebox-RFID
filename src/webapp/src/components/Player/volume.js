@@ -39,7 +39,7 @@ VolumeLabel.propTypes = {
 const Volume = () => {
   const classes = useStyles();
   const [volumeOff, setVolumeOff] = React.useState(false);
-  const [volumeMax, setVolumeMax] = React.useState(75);
+  const [volumeMax] = React.useState(75);
 
   const [volume, setVolume] = React.useState(30);
 

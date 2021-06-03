@@ -1,3 +1,6 @@
+const positionToTime = (duration, position) => duration * position / 100;
+const timeToPosition = (duration, elapsed) => elapsed * 100 / duration;
+
 const toHHMMSS = (seconds) => {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
@@ -10,5 +13,7 @@ const toHHMMSS = (seconds) => {
 }
 
 export {
+  positionToTime,
+  timeToPosition,
   toHHMMSS,
 }

@@ -2,17 +2,49 @@ import * as zmq from 'jszmq';
 
 import { WEBSOCKET_ENDPOINT } from '../config';
 import { socketEvents } from './events';
-import { getPlayerStatus } from './emit';
+import { decodeMessage, encodeMessage } from './utils';
 
-const socket_req = zmq.socket('req');
-socket_req.connect(WEBSOCKET_ENDPOINT);
+const socket_sub = zmq.socket('sub');
+// socket_sub.subscribe('A');
+socket_sub.connect(WEBSOCKET_ENDPOINT);
 
-const initSockets = ({ setValue }) => {
-  socketEvents({ setValue });
-  getPlayerStatus();
+const initSockets = ({ setState }) => {
+  socketEvents({ setState });
 };
+
+const socketRequest = (payload) => (
+  new Promise((resolve, reject) => {
+    socketRequest.server = zmq.socket('req');
+
+    socketRequest.server.on('message', (msg) => {
+      // TODO: Should be corrected!
+      const { object, method, params = {} } = decodeMessage(msg);
+
+      socketRequest.server.close();
+
+      if (object && method && params) {
+        resolve(params);
+      }
+      else {
+        reject('Received socket message does not match the required format.');
+      }
+    });
+
+    socketRequest.server.onerror = function (err) {
+      socketRequest.server.close();
+      console.error("socket connection error : ", err);
+      reject(err);
+    };
+
+    socketRequest.server.connect(WEBSOCKET_ENDPOINT);
+    socketRequest.server.send(encodeMessage(payload));
+  })
+);
 
 export {
-  socket_req,
+  socket_sub,
+  socketRequest,
   initSockets,
 };
+
+

@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import SocketContext from '../../context/sockets/context';
-import { execCommand } from '../../sockets/emit';
+import PlayerstatusContext from '../../context/playerstatus/context';
 
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,40 +10,40 @@ import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded';
 import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded';
 
 const Controls = () => {
-  const { playerStatus: { status } } = useContext(SocketContext);
+  const { playerstatus, postJukeboxCommand  } = useContext(PlayerstatusContext);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasPlaylist, setHasPlaylist] = useState(false);
-
-  useEffect(() => {
-    setIsPlaying(status?.state === 'play' ? true : false);
-    setHasPlaylist(parseInt(status?.playlistlength) > 0);
-  }, [status]);
 
   const play = () => {
     const folder = 'kita2';
 
     const method = hasPlaylist ? 'play' : 'playlistaddplay';
-    const params = method === 'play' ? {} : { folder };
+    const kwargs = method === 'play' ? {} : { folder };
 
     setIsPlaying(true);
-    execCommand('player', method, params);
+    postJukeboxCommand('player', method, kwargs);
   };
 
   const pause = () => {
     setIsPlaying(false);
-    execCommand('player', 'pause');
+    postJukeboxCommand('player', 'pause');
   };
 
   const previous = () => {
     setIsPlaying(true);
-    execCommand('player', 'prev');
+    postJukeboxCommand('player', 'prev');
   };
 
   const next = () => {
     setIsPlaying(true);
-    execCommand('player', 'next');
+    postJukeboxCommand('player', 'next');
   };
+
+  useEffect(() => {
+    setIsPlaying(playerstatus?.state === 'play' ? true : false);
+    setHasPlaylist(parseInt(playerstatus?.playlistlength) > 0);
+  }, [playerstatus]);
 
   return (
     <Grid container direction="row" justify="center" alignItems="center">

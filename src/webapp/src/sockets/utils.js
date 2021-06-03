@@ -6,11 +6,20 @@ const encodeMessage = (obj) => {
 
 const decodeMessage = (msg) => {
   const { result } = JSON.parse(new TextDecoder().decode(msg));
-  console.log('decodeMessage', result);
+  // console.log('decodeMessage', result);
   return result;
+}
+
+const preparePayload = (plugin, method, kwargs = {}) => {
+  return {
+    plugin,
+    method,
+    kwargs,
+  };
 }
 
 export {
   decodeMessage,
   encodeMessage,
+  preparePayload,
 }
