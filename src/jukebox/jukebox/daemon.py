@@ -87,7 +87,7 @@ class JukeBox:
         mpd_host = cfg.getn('mpd', 'host')
 
         # initialize Jukebox objcts
-        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, None)
+        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, objects['volume'])
         objects['system'] = jukebox.System.system_control
 
         logger.info("Init Jukebox RPC Server")
