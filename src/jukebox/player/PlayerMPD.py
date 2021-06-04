@@ -10,7 +10,8 @@ logger = logging.getLogger('jb.PlayerMPD')
 
 
 class player_control:
-    def __init__(self, mpd_host, music_player_status, volume_control=None):
+    def __init__(self, mpd_host, music_player_status, volume_control, pubsubserver):
+        self.pubsubserver = pubsubserver
         self.mpd_host = mpd_host
         self.volume_control = volume_control
         self.music_player_status = music_player_status
@@ -86,6 +87,7 @@ class player_control:
         if self.mpd_status.get('song') != self.old_song:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
+            self.pubsubserver.publish('playerstatus', self.mpd_status)
 
         self.mpd_status['volume'] = self.volume_control.get_volume()
 

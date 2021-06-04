@@ -7,13 +7,13 @@ import signal
 import configparser
 import logging
 import importlib
-
 import zmq
 
 import jukebox.Volume
 import jukebox.System
 from player import PlayerMPD
 from jukebox.rpc.server import RpcServer
+from jukebox.pubsub.server import PubSubServer
 from jukebox.NvManager import nv_manager
 from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 # from gpio_control import gpio_control
@@ -29,7 +29,13 @@ class JukeBox:
         self.nvm = nv_manager()
         self.configuration_file = configuration_file
 
-        jukebox.cfghandler.load_yaml(cfg, '../../settings/jukebox.yaml')
+        self.pubsubserver = PubSubServer()
+        if self.pubsubserver is not None:
+            self.pubsubserver_thread = threading.Thread(target=self.pubsubserver.pulse)
+        else:
+            self.pubsubserver_thread = None
+
+        jukebox.cfghandler.load_yaml(cfg, './settings/jukebox.yaml')
 
         logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
         logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
@@ -87,7 +93,7 @@ class JukeBox:
         mpd_host = cfg.getn('mpd', 'host')
 
         # initialize Jukebox objcts
-        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, objects['volume'])
+        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, objects['volume'], self.pubsubserver)
         objects['system'] = jukebox.System.system_control
 
         logger.info("Init Jukebox RPC Server")
@@ -101,6 +107,7 @@ class JukeBox:
             rfid_thread = threading.Thread(target=rfid_reader.run)
         else:
             rfid_thread = None
+
 
         # initialize gpio
         # TODO: GPIO not yet integrated
@@ -127,5 +134,10 @@ class JukeBox:
             if rfid_thread is not None:
                 logger.debug("Starting RFID Thread")
                 rfid_thread.start()
-            logger.debug("Starting RPC Server")
+            if self.pubsubserver_thread is not None:
+                logger.debug("Starting PubSub Server")
+                self.pubsubserver_thread.start()
+
+            logger.debug("Starting RPC Server ...")
             rpcserver.run()
+

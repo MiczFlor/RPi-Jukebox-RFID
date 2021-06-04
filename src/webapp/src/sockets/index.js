@@ -1,12 +1,13 @@
 import * as zmq from 'jszmq';
 
-import { WEBSOCKET_ENDPOINT } from '../config';
+import { PUBSUB_ENDPOINT, REQRES_ENDPOINT } from '../config';
 import { socketEvents } from './events';
 import { decodeMessage, encodeMessage } from './utils';
 
-const socket_sub = zmq.socket('sub');
-// socket_sub.subscribe('A');
-socket_sub.connect(WEBSOCKET_ENDPOINT);
+const socket_sub = new zmq.Sub();
+socket_sub.subscribe('ping');
+socket_sub.subscribe('playerstatus');
+socket_sub.connect(PUBSUB_ENDPOINT);
 
 const initSockets = ({ setState }) => {
   socketEvents({ setState });
@@ -36,7 +37,7 @@ const socketRequest = (payload) => (
       reject(err);
     };
 
-    socketRequest.server.connect(WEBSOCKET_ENDPOINT);
+    socketRequest.server.connect(REQRES_ENDPOINT);
     socketRequest.server.send(encodeMessage(payload));
   })
 );
