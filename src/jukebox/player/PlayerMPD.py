@@ -136,25 +136,22 @@ class player_control:
     def replay(self):
         return ({})
 
-    def repeatmode(self, param):
-        if param is not None and isinstance(param, dict):
-            mode = param.get("mode")
+    def repeatmode(self, mode):
+        if mode == 'repeat':
+            repeat = 1
+            single = 0
+        elif mode == 'single':
+            repeat = 1
+            single = 1
+        else:
+            repeat = 0
+            single = 0
 
-            if mode == 'repeat':
-                repeat = 1
-                single = 0
-            elif mode == 'single':
-                repeat = 1
-                single = 1
-            else:
-                repeat = 0
-                single = 0
-
-            self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
-            self.mpd_retry_with_mutex(self.mpd_client.single, single)
+        self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
+        self.mpd_retry_with_mutex(self.mpd_client.single, single)
         return ({})
 
-    def get_current_song(self, param):
+    def get_current_song(self):
         return {'resp': self.mpd_retry_with_mutex(self.mpd_client.currentsong)}
 
     def map_filename_to_playlist_pos(self, filename):
@@ -162,11 +159,11 @@ class player_control:
         # self.mpd_client.playlistfind()
         return 0
 
-    def remove(self, param):
+    def remove(self):
         logger.error("remove not yet implemented")
         return ({})
 
-    def move(self, param):
+    def move(self):
         # song_id = param.get("song_id")
         # step = param.get("step")
         # MPDClient.playlistmove(name, from, to)
@@ -175,12 +172,12 @@ class player_control:
         logger.error("move not yet implemented")
         return ({})
 
-    def test_mutex(self, param):
+    def test_mutex(self, delay):
         self.mpd_mutex.acquire()
-        time.sleep(1)
+        time.sleep(delay)
         self.mpd_mutex.release()
 
-    def playsingle(self, param):
+    def playsingle(self):
         logger.error("playsingle not yet implemented")
         return ({})
 
