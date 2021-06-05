@@ -4,9 +4,14 @@ import { PUBSUB_ENDPOINT, REQRES_ENDPOINT } from '../config';
 import { socketEvents } from './events';
 import { decodeMessage, encodeMessage } from './utils';
 
+const SUBSCRIPTIONS = ['ping', 'playerstatus'];
+
 const socket_sub = new zmq.Sub();
-socket_sub.subscribe('ping');
-socket_sub.subscribe('playerstatus');
+
+SUBSCRIPTIONS.forEach(
+  (topic) => socket_sub.subscribe(topic)
+);
+
 socket_sub.connect(PUBSUB_ENDPOINT);
 
 const initSockets = ({ setState }) => {

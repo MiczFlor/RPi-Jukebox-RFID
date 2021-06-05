@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
@@ -29,10 +30,30 @@ export default function Navigation() {
       showLabels
       className={classes.stickToBottom}
     >
-      <BottomNavigationAction label="Start" icon={<HomeIcon />} />
-      <BottomNavigationAction label="Library" icon={<MusicNoteIcon />} />
-      <BottomNavigationAction label="Cards" icon={<BookmarksIcon />} />
-      <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
+      <BottomNavigationAction
+        component={Link}
+        to="/"
+        label="Start"
+        icon={<HomeIcon />}
+      />
+      <BottomNavigationAction
+        component={Link}
+        to="/library"
+        label="Library"
+        icon={<MusicNoteIcon />}
+      />
+      <BottomNavigationAction
+        component={Link}
+        to="/cards"
+        label="Cards"
+        icon={<BookmarksIcon />}
+      />
+      <BottomNavigationAction
+        component={Link}
+        to="/settings"
+        label="Settings"
+        icon={<SettingsIcon />}
+      />
     </BottomNavigation>
   );
 }

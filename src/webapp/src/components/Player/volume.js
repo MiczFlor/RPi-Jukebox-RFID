@@ -40,6 +40,7 @@ const Volume = () => {
   const classes = useStyles();
   const [volumeOff, setVolumeOff] = React.useState(false);
   const [volumeMax] = React.useState(75);
+  const [volumeStep] = React.useState(1);
 
   const [volume, setVolume] = React.useState(30);
 
@@ -69,6 +70,7 @@ const Volume = () => {
             onChange={updateVolume}
             disabled={volumeOff}
             marks={[ { value: volumeMax } ]}
+            step={volumeStep}
             aria-labelledby="volume slider"
           />
         </Grid>

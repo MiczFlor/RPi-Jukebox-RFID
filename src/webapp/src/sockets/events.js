@@ -18,6 +18,9 @@ export const socketEvents = ({ setState }) => {
 
       case 'ping':
         console.log('ping');
+        break;
+      default:
+        break;
     }
   });
 };
