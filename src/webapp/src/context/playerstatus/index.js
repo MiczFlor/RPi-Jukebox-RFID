@@ -23,7 +23,7 @@ const PlayerstatusProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    initSockets({ setState }); // TODO: PubSub
+    initSockets({ setState });
     postJukeboxCommand('player', 'playerstatus');
   }, []);
 
