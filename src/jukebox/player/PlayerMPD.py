@@ -224,12 +224,10 @@ class player_control:
         # folder = param.get("folder")
 
         logger.info(f"playing folder: {folder}")
+        self.mpd_retry_with_mutex(self.mpd_client.clear)
 
         if folder is not None:
-            # load playlist
-            self.mpd_retry_with_mutex(self.mpd_client.clear)
-
-            # TODO: why dealing with playlists? at least partially redundant with folder.config,
+                # TODO: why dealing with playlists? at least partially redundant with folder.config,
             # so why not combine if needed alternative solution, just add folders recursively to quene
             self.mpd_retry_with_mutex(self.mpd_client.add, folder)
 
@@ -362,6 +360,8 @@ class player_control:
         # write latest folder played to settings file
         # sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
 
+        time.sleep(0.3)
+
         song = self.mpd_retry_with_mutex(self.mpd_client.currentsong)
 
         self.current_folder_status["CURRENTFILENAME"] = song.get('file')
@@ -373,7 +373,6 @@ class player_control:
         self.current_folder_status["SINGLE"] = "OFF"
         status = self.mpd_status
 
-        time.sleep(0.3)
 
         return ({'object': 'player', 'method': 'playlistaddplay', 'params': {'status': status}})
 
@@ -385,3 +384,19 @@ class player_control:
     def playlistinfo(self, param):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
         return ({'object': 'player', 'method': 'playlistinfo', 'params': playlistinfo})
+
+    # Attention: MPD.listal will consume a lot of memory with large libs.. should be refactored at some point
+    def list_all_dirs(self):
+        list = self.mpd_retry_with_mutex(self.mpd_client.listall)
+        # list = [entry for entry in list if 'directory' in entry]
+
+        return ({'object': 'player', 'method': 'listall', 'params': {'list': list}})
+
+    def list_albums(self):
+        albums = self.mpd_retry_with_mutex(self.mpd_client.lsinfo)
+        # albums = filter(lambda x: x, albums)
+
+        time.sleep(0.3)
+
+        return ({'object': 'player', 'method': 'list_albums', 'params': {'albums': albums}})
+

@@ -9,9 +9,8 @@ import logging
 import importlib
 import zmq
 
-import jukebox.System
-import jukebox.FileSystem
 import jukebox.Volume
+import jukebox.System
 from player import PlayerMPD
 from jukebox.rpc.server import RpcServer
 from jukebox.pubsub.server import PubSubServer
@@ -93,13 +92,9 @@ class JukeBox:
         # MPD Configs
         mpd_host = cfg.getn('mpd', 'host')
 
-        # Audiofolder
-        audiofolder_path = cfg['system'].get('audiofolder_path')
-
         # initialize Jukebox objcts
         objects['system'] = jukebox.System.system_control
         objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, objects['volume'], self.pubsubserver)
-        objects['filesystem'] = jukebox.FileSystem.filesystem_control(audiofolder_path)
 
         logger.info("Init Jukebox RPC Server")
         rpcserver = RpcServer(objects)

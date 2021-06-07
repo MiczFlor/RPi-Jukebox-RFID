@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
 import {
+  Button,
   Card,
   CardContent,
   CardMedia,
   CircularProgress,
   makeStyles,
-  TextField
+  TextField,
+  Typography
 } from '@material-ui/core';
 
 import { socketRequest } from '../../sockets';
 import { preparePayload } from '../../sockets/utils';
 import noCover from '../../assets/noCover.jpg';
+import PlayerstatusContext from '../../context/playerstatus/context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '10px',
   },
   content: {
-    flex: '1 0 auto',
+    flex: '1',
   },
   cover: {
     width: 100,
@@ -27,42 +30,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FolderCard = ({ classes, folder }) => {
-  const { label } = folder;
+const DirectoryCard = ({ classes, directory, play }) => {
+  const tree = directory.split('/');
+  const folder = tree.pop();
+  const parentPath = tree.join('/');
 
   return (
     <Card className={classes.root} variant="outlined">
       <CardMedia className={classes.cover} image={noCover}></CardMedia>
-      <CardContent className={classes.content}>{label}</CardContent>
+      <CardContent className={classes.content}>
+        <Typography variant="subtitle1" display="block" gutterBottom>{folder}</Typography>
+        <Typography variant="overline" display="block" gutterBottom>{parentPath}</Typography>
+        <Button variant="outlined" onClick={e => play(directory)}>Play</Button>
+      </CardContent>
     </Card>
   );
 };
 
 const Library = () => {
   const classes = useStyles();
+  const { postJukeboxCommand  } = useContext(PlayerstatusContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const play = (folder) => {
+    console.log(folder);
+    postJukeboxCommand('player', 'playlistaddplay', { folder });
+  }
+
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const labelBySearchQuery = ({ label }) => {
+  const directoryNameBySearchQuery = ({ directory }) => {
     if (searchQuery === '') return true;
-    return label.includes(searchQuery);
+    return directory.toLowerCase().includes(searchQuery.toLowerCase());
   };
 
   useEffect(() => {
-    const getFlattenListOfFolders = async () => {
-      const payload = preparePayload('filesystem', 'get_all_folders_flattened', {});
-      const { folders = [] } = await socketRequest(payload);
+    const getFlattenListOfDirectories = async () => {
+      const payload = preparePayload('player', 'list_all_dirs', {});
+      const { list = [] } = await socketRequest(payload);
 
-      setFolders(folders);
+      setFolders(list.filter(entry => !!entry.directory));
     };
 
-    getFlattenListOfFolders();
+    getFlattenListOfDirectories();
     setIsLoading(false);
   }, [isLoading]);
 
@@ -81,14 +96,20 @@ const Library = () => {
       {
         !isLoading &&
         folders
-          .filter(labelBySearchQuery)
-          .map((folder) =>
-            <FolderCard
-              key={folder.path}
-              folder={folder}
+          .filter(directoryNameBySearchQuery)
+          .map(({ directory }) =>
+            <DirectoryCard
+              key={directory}
+              directory={directory}
               classes={classes}
+              play={play}
             />
           )
+      }
+      {
+        !isLoading &&
+        !folders.filter(directoryNameBySearchQuery).length &&
+        <Typography variant="overline" display="block" gutterBottom>Nothing found</Typography>
       }
     </div>
   );
