@@ -174,6 +174,7 @@ class PlayoutControl:
         self.conf = {}
         self.read_config_global_dict()
 
+
     def playout_playlist_loop(self, loop):
 
         # open new mpd_client to be used in this method:
@@ -249,8 +250,8 @@ class PlayoutControl:
         self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600                    
 
         # load playlist
-        self.mpd_client.clear()                         # clear cue
-        self.mpd_client.load(args_func['playlistname'])  # load playlist
+        self.mpd_client.clear() # clear queue
+        self.mpd_client.load(args_func['playlistname']) # load playlist
         
         self.logger.debug("Single and/or shuffle?")
         if(self.conf['folder']['SINGLE'] == "ON"):
@@ -270,12 +271,6 @@ class PlayoutControl:
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
         self.mpd_client.disconnect()
-
-        # Save what we know:
-        subprocess.run("echo \"" + args_func['playlistname'] + "\" > " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
-        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
-        subprocess.run("echo \"" + args_func['dirpath'] + "\" > " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
-        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
 
         # bc of "resume" at saved point, don't simply: print(self.mpd_client.play())
         self.logger.debug("RE-ROUTE: Calling self.playout_resume_play(args_func)")
@@ -300,10 +295,22 @@ class PlayoutControl:
         self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
         self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600                    
+
+        # avoid errors, check if exists and then if value
+        if("value" in args_func):
+            self.logger.debug("args_func['value'] found: '%s'" % (args_func['value']))
+            resume_argument = args_func['value']
+        else:                    
+            resume_argument = "NO_RESUME"
+        self.logger.debug("resume_argument set to: '%s'" % (resume_argument))
         
         # Check if RESUME is switched on
-        if(self.conf['folder']['RESUME'] == "ON" or self.conf['folder']['SINGLE'] == "ON"):
-            self.logger.debug("1.IF: self.conf['folder']['RESUME'] == 'ON' or self.conf['folder']['SINGLE'] == 'ON'")
+        if(
+            self.conf['folder']['RESUME'] == "ON" or 
+            self.conf['folder']['SINGLE'] == "ON" or
+            resume_argument == "RESUME"
+        ):
+            self.logger.debug("1.IF: [ 'RESUME' | 'SINGLE' | ['value'] == 'RESUME' ]")
             # will generate variables:
             #CURRENTFILENAME
             #ELAPSED
@@ -338,6 +345,8 @@ class PlayoutControl:
                 else:
                     self.logger.debug("3.ELSE: len(mpd_playlistfind) == 0")
                     # echo -e "play $VALUE" | nc -w 1 localhost 6600
+                    # PLAY
+                    self.mpd_client.play()
 
             # NOTE: the following comment is from the original shell script. And I don't get it...
             # Wouldn't it be enough to write this just before we start playing below?
@@ -359,12 +368,16 @@ class PlayoutControl:
                 # We assume that the playlist ran to the end the last time and start from the beginning.
                 # Or: playlist is playing and we've got a play from playlist position command.
                 # echo -e "play $VALUE" | nc -w 1 localhost 6600
+                # PLAY
+                self.mpd_client.play()
 
         else:
-            self.logger.debug("1.IF: self.conf['folder']['RESUME'] == 'ON' or self.conf['folder']['SINGLE'] == 'ON'")
+            self.logger.debug("1.ELSE: self.conf['folder']['RESUME'] == 'ON' or self.conf['folder']['SINGLE'] == 'ON'")
             # if no last played data exists (resume play disabled), 
             # we play the playlist from the beginning or the given playlist position
             # echo -e "play $VALUE" | nc -w 1 localhost 6600
+            # PLAY
+            self.mpd_client.play()
 
         # Write to folder conf that we are now playing
         # get full folder path: self.folder_config_path
@@ -373,8 +386,11 @@ class PlayoutControl:
         folder_config_new['PLAYSTATUS'] = "Playing"
         self.write_config_folder(self.folder_config_path, folder_config_new)
         
-        # PLAY
-        self.mpd_client.play()
+        # Save what we know:
+        subprocess.run("echo \"" + args_func['playlistname'] + "\" > " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
+        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
+        subprocess.run("echo \"" + args_func['dirpath'] + "\" > " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
+        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
 
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
@@ -460,7 +476,7 @@ class PlayoutControl:
 
     def playout_playlist_shuffle(self):
 
-        self.logger.debug("Shuffle loaded playlist")
+        self.logger.debug("Shuffle loaded playlist (not changing settings in folder config!)")
         # open new mpd_client to be used in this method:
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
@@ -538,6 +554,7 @@ class PlayoutControl:
 
     def playout_next(self):
 
+        self.logger.info("Skip to next track")
         # open new mpd_client to be used in this method:
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
@@ -566,6 +583,7 @@ class PlayoutControl:
 
     def playout_prev(self):
 
+        self.logger.info("Skip to previous track")
         # open new mpd_client to be used in this method:
         self.mpd_client = MPDClient()               # create client object
         self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
@@ -835,13 +853,12 @@ class PlayoutControl:
 
     def read_file_volume_level(self):
 
-        # Get folder name of currently played audio
         try:
             with open(self.path_dir_settings + "/Audio_Volume_Level", 'r') as file:
                 self.audio_volume_level_file = file.read().strip()
                 return(self.audio_volume_level_file)
         except IOError:
-            self.logger.error("ERROR: file not found: " + self.path_dir_settings + "/Audio_Volume_Level")
+            self.logger.info("INFO: file not found: " + self.path_dir_settings + "/Audio_Volume_Level")
             return(False)
 
     def read_file_latest_folder_played(self):
@@ -922,6 +939,10 @@ class PlayoutControl:
                 self.conf['global']['AUDIO_IFACE_NAME'] = self.conf['global'].pop('AUDIOIFACENAME')
             if('IDLETIMESHUTDOWN' in self.conf['global']):
                 self.conf['global']['SHUTDOWN_IDLE_TIME'] = self.conf['global'].pop('IDLETIMESHUTDOWN')
+
+            # Start the future now...: convert some of the old naming into new naming
+            self.conf['global'] = config_key_conversion(self.conf['global'])
+            #print(self.conf)
 
         # self.write_config_global()
         return(self.conf['global'])
@@ -1019,6 +1040,7 @@ class PlayoutControl:
 
     def sys_volume_max_set(self, volume_max_new):
 
+        self.logger.debug("Setting maximum volume to '%s'." % volume_max_new)
         # change settings for 'maximum jukebox volume' and (if needed) 'system volume on startup'
         if(volume_max_new <= int(self.conf['global']['VOL_LIMIT_MIN'])):
             self.logger.error("ERROR: new volume maximum limit < minimum limit (%s < %s)" %
@@ -1211,12 +1233,7 @@ class PlayoutControl:
         self.mpd_client.close()  # send the close command
         self.mpd_client.disconnect()
 
-    def playout_pause_force(self, seconds_wait):
-
-        # the waiting was part of the original shell command
-        # don't know what it was needed for
-        # possibly comment out and see if somebody complains?
-        time.sleep(int(seconds_wait))
+    def playout_play_force(self):
 
         # open new mpd_client to be used in this method:
         self.mpd_client = MPDClient()               # create client object
@@ -1224,7 +1241,34 @@ class PlayoutControl:
         self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
         self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
 
-        self.mpd_client.pause()
+        # unmute if mute
+        self.playout_unmute_force()
+
+        self.mpd_client.play()
+
+        # close and disconnect from mpd
+        self.mpd_client.close()  # send the close command
+        self.mpd_client.disconnect()
+
+    def playout_pause_force(self):
+
+        self.logger.debug("Force player into 'pause' state")
+        # The process here:
+        # * if mute: unmute (like: put in ready-to-go position)
+        # * if not pause: pause
+        # open new mpd_client to be used in this method:
+        self.mpd_client = MPDClient()               # create client object
+        self.mpd_client.timeout = 10                # network timeout in seconds (floats allowed), default: None
+        self.mpd_client.idletimeout = None          # timeout for fetching the result of the idle command
+        self.mpd_client.connect("localhost", 6600)  # connect to localhost:6600
+
+        self.logger.debug("mpd_client.status()['state']: '%s'" % (self.mpd_client.status()['state']))
+        # unmute if mute
+        self.playout_unmute_force()
+
+        if(self.mpd_client.status()['state'] != "pause"):
+            self.logger.debug("setting mpd_client.status()['state'] to 'pause'")
+            self.mpd_client.pause()
 
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
@@ -1234,7 +1278,7 @@ class PlayoutControl:
 
         # see if we can read the audio level from the file
         if(self.read_file_volume_level()):
-            # audio off => bc file
+            # audio off (mute) => bc file
             self.logger.debug(
                 "Mute? True! -> Action: unmute. Audio level read from 'Audio_Volume_Level' : %s" %
                 (self.audio_volume_level_file))
@@ -1255,6 +1299,41 @@ class PlayoutControl:
             # use method playout_volume_set_raw to force ZERO as volume
             # method playout_volume_set does change the argument to match range set in config
             self.playout_volume_set_raw(0)
+
+    def playout_mute_force(self):
+
+        file_Audio_Volume_Level = Path(self.path_dir_settings + "/Audio_Volume_Level")
+        if file_Audio_Volume_Level.is_file():
+            self.logger.debug("File 'Audio_Volume_Level' exists.")
+        else:
+            # audio on (not mute) => bc no file Audio_Volume_Level
+            self.logger.debug("File 'Audio_Volume_Level' does not exist.")
+            # write value to file
+            volume_now = self.playout_volume_get()
+            self.logger.debug(self.path_dir_settings + "/Audio_Volume_Level")
+            write_audio_volume_level_file = open(self.path_dir_settings + "/Audio_Volume_Level", "w")
+            write_audio_volume_level_file.write(str(volume_now))
+            # mute => volume 0%
+            # use method playout_volume_set_raw to force ZERO as volume
+            # method playout_volume_set does change the argument to match range set in config
+            self.playout_volume_set_raw(0)
+
+    def playout_unmute_force(self):
+
+        # see if we can read the audio level from the file
+        if(self.read_file_volume_level()):
+            # audio off (mute) => bc file
+            self.logger.debug(
+                "Mute? True! -> Action: unmute. Audio level read from 'Audio_Volume_Level' : %s" %
+                (self.audio_volume_level_file))
+            volume_now = self.audio_volume_level_file
+            # set volume
+            self.playout_volume_set(int(volume_now))
+            # remove file 'Audio_Volume_Level'
+            os.remove(self.path_dir_settings + "/Audio_Volume_Level")
+        else:
+            # audio on => bc no file Audio_Volume_Level
+            self.logger.debug("Mute? False! -> No action required.")
 
     def playout_mute_status(self):
 

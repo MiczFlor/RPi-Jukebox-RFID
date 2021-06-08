@@ -33,8 +33,12 @@ CMDVOLDOWN="%CMDVOLDOWN%"
 CMDSWITCHAUDIOIFACE="%CMDSWITCHAUDIOIFACE%"
 ### Stop player
 CMDSTOP="%CMDSTOP%"
-### Mute player
+### Mute player (toggle)
 CMDMUTE="%CMDMUTE%"
+### Mute player (force to mute)
+CMDMUTEFORCE="%CMDMUTEFORCE%"
+### Un-mute player (force to un-mute)
+CMDUNMUTEFORCE="%CMDUNMUTEFORCE%"
 ### Skip next track
 CMDNEXT="%CMDNEXT%"
 ### Skip previous track
@@ -51,8 +55,10 @@ CMDREWIND="%CMDREWIND%"
 CMDSEEKFORW="%CMDSEEKFORW%"
 ### Seek back 15 sec.
 CMDSEEKBACK="%CMDSEEKBACK%"
-### Pause player
+### Pause player (toggle play/pause)
 CMDPAUSE="%CMDPAUSE%"
+### Pause player (force to pause)
+CMDPAUSEFORCE="%CMDPAUSEFORCE%"
 ### Resume audio playout
 CMDPLAY="%CMDPLAY%"
 ### Toggle between speakers and bluetooth headphones

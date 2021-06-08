@@ -20,28 +20,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # reboot
 # scan
 # getchapters
-# playerstop
 # playerstopafter
-# playernext
-# playerprev
 # playernextchapter
 # playerprevchapter
-# playerrewind
-# playerpause
-# playerpauseforce
-# playerplay
-# playerremove
-# playermoveup
-# playermovedown
-# playerreplay
-# playerrepeat
-# playershuffle
-# playlistclear
-# playlistaddplay
-# playlistadd
-# playlistappend
-# playlistreset
-# playsinglefile
 # disablewifi
 # enablewifi
 # togglewifi
@@ -320,38 +301,6 @@ case $COMMAND in
           dbg "next chapter not available, last chapter already playing"
         fi
         ;;
-    playerplay)
-        # play / resume current track
-        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Attempting to play: $VALUE" >> ${PATHDATA}/../logs/debug.log; fi
-        # May be called with e.g. -v=1 to start a track in the middle of the playlist.
-        # Note: the numbering of the tracks starts with 0, so -v=1 starts the second track
-        # of the playlist
-        # Another note: "mpc play 1" starts the first track (!)
-
-        # Change some settings according to current folder IF the folder.conf exists
-        . ${PATHDATA}/inc.settingsFolderSpecific.sh
-
-        # Unmute if muted
-        if [ -f $VOLFILE ]; then
-            # $VOLFILE DOES exist == audio off
-            # read volume level from $VOLFILE and set as percent
-            echo -e setvol `<$VOLFILE`\\nclose | nc -w 1 localhost 6600
-            # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
-            # amixer sset \'$AUDIOIFACENAME\' `<$VOLFILE`%
-            # delete $VOLFILE
-            rm -f $VOLFILE
-        fi
-
-        # No checking for resume if the audio is paused, just unpause it
-        PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
-        if [ "$PLAYSTATE" == "pause" ]
-        then
-            echo -e "play $VALUE\nclose" | nc -w 1 localhost 6600
-        else
-            #${PATHDATA}/resume_play.sh -c=resume -v=$VALUE
-            mpc play $VALUE
-        fi
-        ;;
     playerseek)
         # jumps back and forward in track.
         # Usage: ./playout_controls.sh -c=playerseek -v=+15 to jump 15 seconds ahead
@@ -382,12 +331,6 @@ case $COMMAND in
           NEW_POS=$(($CUR_POS + $VALUE))
           echo -e "seekcur $NEW_POS\nclose" | nc -w 1 localhost 6600
         fi
-        ;;
-    playershuffle)
-        # toogles shuffle mode on/off (not only the current playlist but for the whole mpd)
-        # this is why a check if "random on" has to be done for shutdown and reboot
-        # This command may be called with ./playout_controls.sh -c=playershuffle
-        mpc shuffle
         ;;
     setidletime)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
