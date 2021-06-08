@@ -4,7 +4,6 @@
 import threading
 import sys
 import signal
-import configparser
 import logging
 import importlib
 
@@ -29,7 +28,7 @@ class JukeBox:
         self.nvm = nv_manager()
         self.configuration_file = configuration_file
 
-        jukebox.cfghandler.load_yaml(cfg, '../../settings/jukebox.yaml')
+        jukebox.cfghandler.load_yaml(cfg, self.configuration_file)
 
         logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
         logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
@@ -87,7 +86,7 @@ class JukeBox:
         mpd_host = cfg.getn('mpd', 'host')
 
         # initialize Jukebox objcts
-        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, None)
+        objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, objects['volume'])
         objects['system'] = jukebox.System.system_control
 
         logger.info("Init Jukebox RPC Server")
