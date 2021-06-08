@@ -14,7 +14,7 @@ import {
 import { socketRequest } from '../../sockets';
 import { preparePayload } from '../../sockets/utils';
 import noCover from '../../assets/noCover.jpg';
-import PlayerstatusContext from '../../context/playerstatus/context';
+import PlayerContext from '../../context/player/context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,16 +49,14 @@ const DirectoryCard = ({ classes, directory, play }) => {
 
 const Library = () => {
   const classes = useStyles();
-  const { postJukeboxCommand  } = useContext(PlayerstatusContext);
+  const {
+    play,
+    state: { playerstatus },
+  } = useContext(PlayerContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-
-  const play = (folder) => {
-    console.log(folder);
-    postJukeboxCommand('player', 'playlistaddplay', { folder });
-  }
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
@@ -99,18 +97,19 @@ const Library = () => {
           .filter(directoryNameBySearchQuery)
           .map(({ directory }) =>
             <DirectoryCard
-              key={directory}
-              directory={directory}
               classes={classes}
+              directory={directory}
+              key={directory}
               play={play}
+              playerstatus={playerstatus}
             />
           )
       }
-      {
+      {/* {
         !isLoading &&
         !folders.filter(directoryNameBySearchQuery).length &&
         <Typography variant="overline" display="block" gutterBottom>Nothing found</Typography>
-      }
+      } */}
     </div>
   );
 };

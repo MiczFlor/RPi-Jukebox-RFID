@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import PlayerstatusContext from '../../context/playerstatus/context';
-import useInterval from '../../hooks/useInterval';
+import PlayerContext from '../../context/player/context';
 import {
-  positionToTime,
-  timeToPosition,
+  progressToTime,
+  timeToProgress,
   toHHMMSS,
 } from '../utils';
 
@@ -13,39 +12,43 @@ import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
 
 const SeekBar = () => {
-  const { playerstatus, postJukeboxCommand } = useContext(PlayerstatusContext);
+  const {
+    seek,
+    state,
+  } = useContext(PlayerContext)
+  const {
+    playerstatus,
+  } = state;
 
-  const [isRunning, setIsRunning] = useState(playerstatus?.state === 'play' ? true : false);
+  const [isSeeking, setIsSeeking] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [progressBarDelay] = useState(1000); // TODO: make it dynamic to have smoother progress
   const [timeElapsed, setTimeElapsed] = useState(parseFloat(playerstatus?.elapsed) || 0);
   const timeTotal = parseFloat(playerstatus?.duration) || 0;
 
-  const updateTimeAndPosition = (newTime) => {
+  const updateTimeAndProgress = (newTime) => {
     setTimeElapsed(newTime);
-    setProgress(timeToPosition(timeTotal, newTime));
+    setProgress(timeToProgress(timeTotal, newTime));
   };
 
   // Handle seek events when sliding the progress bar
   const handleSeekToPosition = (event, newPosition) => {
-    setIsRunning(false);
-    updateTimeAndPosition(positionToTime(timeTotal, newPosition));
+    setIsSeeking(true);
+    updateTimeAndProgress(progressToTime(timeTotal, newPosition));
   };
 
   // Only send commend to backend when user committed to new position
   // We don't send it while seeking (too many useless requests)
   const playFromNewTime = () => {
-    postJukeboxCommand('player', 'seek', { newTime: timeElapsed.toFixed(3) });
+    seek(timeElapsed);
+    setIsSeeking(false);
   };
 
-  // Update progess bar every second
-  useInterval(() => {
-    updateTimeAndPosition(parseFloat(timeElapsed) + 1);
-  }, isRunning ? progressBarDelay : null);
-
   useEffect(() => {
-    setIsRunning(playerstatus?.state === 'play' ? true : false);
-    updateTimeAndPosition(playerstatus?.elapsed);
+    // Avoid updating time and progress when user is seeking to new
+    // song position
+    if (!isSeeking) {
+      updateTimeAndProgress(playerstatus?.elapsed);
+    }
   }, [playerstatus]);
 
   return (

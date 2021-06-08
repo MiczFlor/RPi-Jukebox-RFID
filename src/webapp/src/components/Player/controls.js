@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
-import PlayerstatusContext from '../../context/playerstatus/context';
+import PlayerContext from '../../context/player/context';
 
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -10,39 +10,19 @@ import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded';
 import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded';
 
 const Controls = () => {
-  const { playerstatus, postJukeboxCommand  } = useContext(PlayerstatusContext);
+  const {
+    play,
+    pause,
+    previous,
+    next,
+    state,
+    setState,
+  } = useContext(PlayerContext);
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [hasPlaylist, setHasPlaylist] = useState(false);
-
-  const play = () => {
-    const folder = 'kita2';
-
-    const method = hasPlaylist ? 'play' : 'playlistaddplay';
-    const kwargs = method === 'play' ? {} : { folder };
-
-    setIsPlaying(true);
-    postJukeboxCommand('player', method, kwargs);
-  };
-
-  const pause = () => {
-    setIsPlaying(false);
-    postJukeboxCommand('player', 'pause');
-  };
-
-  const previous = () => {
-    setIsPlaying(true);
-    postJukeboxCommand('player', 'prev');
-  };
-
-  const next = () => {
-    setIsPlaying(true);
-    postJukeboxCommand('player', 'next');
-  };
+  const { isPlaying, playerstatus } = state;
 
   useEffect(() => {
-    setIsPlaying(playerstatus?.state === 'play' ? true : false);
-    setHasPlaylist(parseInt(playerstatus?.playlistlength) > 0);
+    setState({ ...state, isPlaying: playerstatus?.state === 'play' ? true : false });
   }, [playerstatus]);
 
   return (
@@ -52,7 +32,7 @@ const Controls = () => {
       </IconButton>
       {
         !isPlaying &&
-        <IconButton aria-label="Play" onClick={play}>
+        <IconButton aria-label="Play" onClick={e => play()}>
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }

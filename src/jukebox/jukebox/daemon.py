@@ -28,14 +28,9 @@ class JukeBox:
     def __init__(self, configuration_file):
         self.nvm = nv_manager()
         self.configuration_file = configuration_file
+        jukebox.cfghandler.load_yaml(cfg, '../../settings/jukebox.yaml')
 
         self.pubsubserver = PubSubServer()
-        if self.pubsubserver is not None:
-            self.pubsubserver_thread = threading.Thread(target=self.pubsubserver.pulse)
-        else:
-            self.pubsubserver_thread = None
-
-        jukebox.cfghandler.load_yaml(cfg, './settings/jukebox.yaml')
 
         logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
         logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
@@ -134,9 +129,6 @@ class JukeBox:
             if rfid_thread is not None:
                 logger.debug("Starting RFID Thread")
                 rfid_thread.start()
-            if self.pubsubserver_thread is not None:
-                logger.debug("Starting PubSub Server")
-                self.pubsubserver_thread.start()
 
             logger.debug("Starting RPC Server ...")
             rpcserver.run()

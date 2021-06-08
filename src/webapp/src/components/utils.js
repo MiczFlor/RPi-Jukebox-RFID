@@ -1,5 +1,5 @@
-const positionToTime = (duration, position) => duration * position / 100;
-const timeToPosition = (duration, elapsed) => elapsed * 100 / duration;
+const progressToTime = (duration, progress) => duration * progress / 100;
+const timeToProgress = (duration, elapsed) => elapsed * 100 / duration;
 
 const toHHMMSS = (seconds) => {
   const h = Math.floor(seconds / 3600);
@@ -8,12 +8,12 @@ const toHHMMSS = (seconds) => {
   return [
     h,
     m > 9 ? m : (h ? '0' + m : m || '0'),
-    s > 9 ? s : '0' + s
+    s > 9 ? s : '0' + (isNaN(s) ? '0' : s)
   ].filter(Boolean).join(':');
 }
 
 export {
-  positionToTime,
-  timeToPosition,
+  progressToTime,
+  timeToProgress,
   toHHMMSS,
 }

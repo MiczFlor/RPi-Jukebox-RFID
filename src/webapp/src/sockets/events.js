@@ -16,9 +16,6 @@ export const socketEvents = ({ setState }) => {
         console.error('[PubSub][playerstatus] Payload missing');
         break;
 
-      case 'ping':
-        console.log('ping');
-        break;
       default:
         break;
     }

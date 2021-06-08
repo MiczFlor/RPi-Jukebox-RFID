@@ -87,7 +87,6 @@ class player_control:
         if self.mpd_status.get('song') != self.old_song:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
-            self.pubsubserver.publish('playerstatus', self.mpd_status)
 
         self.mpd_status['volume'] = self.volume_control.get_volume()
 
@@ -97,6 +96,7 @@ class player_control:
             self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
 
         # the repetation is intentionally at the end, to avoid overruns in case of delays caused by communication
+        self.pubsubserver.publish('playerstatus', self.mpd_status)
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
         return ()
 
@@ -399,4 +399,3 @@ class player_control:
         time.sleep(0.3)
 
         return ({'object': 'player', 'method': 'list_albums', 'params': {'albums': albums}})
-

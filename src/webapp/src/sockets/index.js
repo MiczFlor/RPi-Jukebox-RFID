@@ -4,7 +4,7 @@ import { PUBSUB_ENDPOINT, REQRES_ENDPOINT } from '../config';
 import { socketEvents } from './events';
 import { decodeMessage, encodeMessage } from './utils';
 
-const SUBSCRIPTIONS = ['ping', 'playerstatus'];
+const SUBSCRIPTIONS = ['playerstatus'];
 
 const socket_sub = new zmq.Sub();
 

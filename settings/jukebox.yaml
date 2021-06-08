@@ -17,5 +17,8 @@ alsaif:
 rpc:
     tcp_port: 5555
     websocket_port: 5556
+pubsub:
+    websocket_port: 5557
+
 rfid:
     cardid_database: ../../settings/phoniebox_cardid_database.json

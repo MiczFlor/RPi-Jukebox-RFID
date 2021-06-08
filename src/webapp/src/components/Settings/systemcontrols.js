@@ -9,10 +9,10 @@ import {
   Grid,
 } from '@material-ui/core';
 
-import PlayerstatusContext from '../../context/playerstatus/context';
+import PlayerContext from '../../context/player/context';
 
 const SystemControls = () => {
-  const { postJukeboxCommand  } = useContext(PlayerstatusContext);
+  const { state: { postJukeboxCommand } } = useContext(PlayerContext);
 
   const reboot = () => {
     console.log('reboot');

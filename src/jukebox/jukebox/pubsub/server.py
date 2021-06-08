@@ -26,8 +26,3 @@ class PubSubServer:
     def publish(self, topic, payload = {}):
         self.socket.send_string("%s %s" % (topic, json.dumps(payload)))
         logger.debug("%s %s" % (topic, payload))
-
-    def pulse(self):
-        while True:
-            self.publish("ping", json.dumps({ 'topic': 'ping' }))
-            time.sleep(5)
