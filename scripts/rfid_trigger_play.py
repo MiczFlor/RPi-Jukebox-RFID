@@ -288,7 +288,7 @@ if(args_main['cardid']):
             quit() # exit script, because we did what we wanted to do
     if('CMDPAUSE' in conf):
         if(args_main['cardid'] == conf['CMDPAUSE']):
-            # force pause current track 
+            # toggle pause of current playback 
             playProcess.playout_pause_toggle()
             # subprocess.run("./playout_controls.sh -c=playerpause", shell=False)
             quit() # exit script, because we did what we wanted to do
@@ -645,7 +645,7 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
 
         # Setting a VAR to start "play playlist from start"
         # This will be changed in the following checks "if this is the second swipe"
-        playlist_play = "from_top"
+        playlist_play = "default"
         
         ####################################
         # Check if the second swipe happened
@@ -671,9 +671,9 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
             if(conf['SECONDSWIPE'] == "RESTART"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                     logger.debug("RESTART => Re-start playlist")
-                # PLAY playlist
-                # do nothing, because the playlist will be played from top at the end of this file
-                # because still: playlist_play = "from_top"
+                # PLAY playlist from beginning
+                playProcess.playout_restart()
+                playlist_play = "ignore" # don't play playlist below
         
             elif(conf['SECONDSWIPE'] == "SKIPNEXT"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
@@ -688,26 +688,30 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
                     playlist_play = "ignore" # don't play playlist below
                     if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                         logger.debug("mpd playing, so skip")
-                    subprocess.run("./PlayoutControl_CLI.py -c playout_next", shell=False)
+                    playProcess.playout_next()
+                    playlist_play = "ignore" # don't play playlist below
         
             elif(conf['SECONDSWIPE'] == "PAUSE"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                     logger.debug("PAUSE => Toggle pause / play")
                 # if playlist_length == 0 do always play, bc first swipe after reboot
-                if float(mpd_status['playlistlength']) == 0:
+                if mpd_status['playlistlength'] == 0:
                     logger.debug("no playlist")
                 else:
                     playlist_play = "ignore" # don't play playlist below
                     # play / pause toggle
-                    subprocess.run("./PlayoutControl_CLI.py -c playout_pause_toggle", shell=False)
+                    playProcess.playout_pause_toggle()
         
             elif(conf['SECONDSWIPE'] == "PLAY"):
                 if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                     logger.debug("PLAY => Resume playback")
-                # -c=playerplay will assure `resume playback`
-                # subprocess.run("./playout_controls.sh -c=playerplay", shell=False)
                 # same as normal playout PLUS: forcing *resume*
-                subprocess.run("./PlayoutControl_CLI.py -c playlist_load_play -pn \"" + playlist_name + "\" -d \"" + folder_name + "\" -v \"RESUME\"", shell=False)
+                args_func = {}
+                args_func['dirpath'] = folder_name
+                args_func['playlistname'] = playlist_name
+                args_func['value'] = "RESUME"
+
+                playProcess.playout_resume_play(args_func)
                 playlist_play = "ignore" # don't play playlist below
         
             elif(conf['SECONDSWIPE'] == "NOAUDIOPLAY"):
@@ -718,7 +722,7 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
                     if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                         logger.debug("Playlist will be played, because playlist ended")
                     # do nothing, because the playlist will be played from top at the end of this file
-                    # because still: playlist_play = "from_top"
+                    # because still: playlist_play = "default"
                 else:
                     playlist_play = "ignore" # don't play playlist below
         else:
@@ -729,19 +733,21 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
         ###########################
         
         # now see if we need to play the playlist or if it has been played already as part of second swipe?
-        if(playlist_play == "from_top"):
+        if(playlist_play == "default"):
             if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                 logger.debug("Play playlist from top:" + playlist_name)
 
             # Save the name of the playlist before we leave
             with open(path_dir_settings + "/Latest_Playlist_Played", "w") as f:
                 f.write(playlist_name)
-            subprocess.run("sudo chmod 777 " + path_dir_settings + "/Latest_Playlist_Played", shell=False)
+            os.chmod(path_dir_settings + "/Latest_Playlist_Played", 0o0777)
 
             # PLAY playlist
-            # $PATHDATA/playout_controls.sh -c=playlistaddplay -v="${PLAYLISTNAME}" -d="${FOLDER}"
-            subprocess.run("./PlayoutControl_CLI.py -c playlist_load_play -pn \"" + playlist_name + "\" -d \"" + folder_name + "\"", shell=False)
-            # subprocess.run("./playout_controls.sh -c=playlistaddplay -v=\"" + playlist_name + "\" -d=\"" + folder_name + "\"", shell=False)
+            args_func = {}
+            args_func['dirpath'] = folder_name
+            args_func['playlistname'] = playlist_name
+            playProcess.playout_playlist_load_play(args_func)
+            logger.debug("Executed: playProcess.playout_playlist_load_play")
 
 else:
     # Given directory doesn't exist

@@ -387,10 +387,12 @@ class PlayoutControl:
         self.write_config_folder(self.folder_config_path, folder_config_new)
         
         # Save what we know:
-        subprocess.run("echo \"" + args_func['playlistname'] + "\" > " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
-        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Playlist_Played", shell=True)
-        subprocess.run("echo \"" + args_func['dirpath'] + "\" > " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
-        subprocess.run("chmod 777 " + self.path_dir_settings + "/Latest_Folder_Played", shell=True)
+        with open(path_dir_settings + "/Latest_Playlist_Played", "w") as f:
+            f.write(args_func['playlistname'])
+        os.chmod(self.path_dir_settings + "/Latest_Playlist_Played", 0o0777)
+        with open(path_dir_settings + "/Latest_Folder_Played", "w") as f:
+            f.write(args_func['dirpath'])
+        os.chmod(self.path_dir_settings + "/Latest_Folder_Played", 0o0777)
 
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
@@ -629,8 +631,8 @@ class PlayoutControl:
                 self.playout_volume_set(int(volume_now))
                 # remove file 'Audio_Volume_Level'
                 os.remove(self.path_dir_settings + "/Audio_Volume_Level")
-            # skip to next track
-            self.mpd_client.play(0)  # 0 or 1 ???
+
+        self.mpd_client.play(0)  # 0 or 1 ???
 
         # close and disconnect from mpd
         self.mpd_client.close()  # send the close command
