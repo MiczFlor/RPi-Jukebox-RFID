@@ -49,6 +49,8 @@ class player_control:
         This method adds thread saftey for acceses to mpd via a mutex lock,
         it shall be used for each access to mpd to ensure thread safety
         In case of a communication error the connection will be reestablished and the pending command will be repeated 2 times
+
+        I think this should be refactored to a decorator
         '''
         retry = 2
         with self.mpd_mutex:
@@ -100,7 +102,7 @@ class player_control:
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
         return ()
 
-    def get_player_type_and_version(self, param):
+    def get_player_type_and_version(self):
         return ({'result': 'mpd', 'version': self.mpd_retry_with_mutex(self.mpd_client.mpd_version)})
 
     def play(self, songid=None):
@@ -158,25 +160,22 @@ class player_control:
 
         return ({'object': 'player', 'method': 'seek', 'params': {'status': status}})
 
-    def replay(self, param):
+    def replay(self):
         return ({})
 
-    def repeatmode(self, param):
-        if param is not None and isinstance(param, dict):
-            mode = param.get("mode")
+    def repeatmode(self, mode):
+        if mode == 'repeat':
+            repeat = 1
+            single = 0
+        elif mode == 'single':
+            repeat = 1
+            single = 1
+        else:
+            repeat = 0
+            single = 0
 
-            if mode == 'repeat':
-                repeat = 1
-                single = 0
-            elif mode == 'single':
-                repeat = 1
-                single = 1
-            else:
-                repeat = 0
-                single = 0
-
-            self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
-            self.mpd_retry_with_mutex(self.mpd_client.single, single)
+        self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
+        self.mpd_retry_with_mutex(self.mpd_client.single, single)
         return ({})
 
     def get_current_song(self, param):
@@ -189,11 +188,11 @@ class player_control:
         # self.mpd_client.playlistfind()
         return 0
 
-    def remove(self, param):
+    def remove(self):
         logger.error("remove not yet implemented")
         return ({})
 
-    def move(self, param):
+    def move(self):
         # song_id = param.get("song_id")
         # step = param.get("step")
         # MPDClient.playlistmove(name, from, to)
@@ -202,12 +201,12 @@ class player_control:
         logger.error("move not yet implemented")
         return ({})
 
-    def test_mutex(self, param):
+    def test_mutex(self, delay):
         self.mpd_mutex.acquire()
-        time.sleep(1)
+        time.sleep(delay)
         self.mpd_mutex.release()
 
-    def playsingle(self, param):
+    def playsingle(self):
         logger.error("playsingle not yet implemented")
         return ({})
 
@@ -220,8 +219,6 @@ class player_control:
         # NEW VERSION:
         # Read the current config file (include will execute == read)
         # . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
-
-        # folder = param.get("folder")
 
         logger.info(f"playing folder: {folder}")
         self.mpd_retry_with_mutex(self.mpd_client.clear)
@@ -381,7 +378,7 @@ class player_control:
 
         return ({'object': 'player', 'method': 'playerstatus', 'params': {'status': status}})
 
-    def playlistinfo(self, param):
+    def playlistinfo(self):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
         return ({'object': 'player', 'method': 'playlistinfo', 'params': playlistinfo})
 

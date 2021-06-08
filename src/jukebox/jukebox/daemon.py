@@ -4,7 +4,6 @@
 import threading
 import sys
 import signal
-import configparser
 import logging
 import importlib
 import zmq
@@ -28,7 +27,8 @@ class JukeBox:
     def __init__(self, configuration_file):
         self.nvm = nv_manager()
         self.configuration_file = configuration_file
-        jukebox.cfghandler.load_yaml(cfg, '../../settings/jukebox.yaml')
+
+        jukebox.cfghandler.load_yaml(cfg, self.configuration_file)
 
         self.pubsubserver = PubSubServer()
 

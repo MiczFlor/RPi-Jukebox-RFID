@@ -15,7 +15,7 @@ def main():
     # Get absolute path of this script
     script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
     working_path = os.path.abspath(os.getcwd())
-    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../settings/jukebox.conf'))
+    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../settings/jukebox.yaml'))
     default_cfg_logger = os.path.abspath(os.path.join(script_path, '../../settings/logger.yaml'))
 
     argparser = argparse.ArgumentParser(description='The JukeboxDaemon')
@@ -41,7 +41,8 @@ def main():
 
     logger.info("Starting Jukebox Daemon")
     if working_path != script_path:
-        logger.warning("It is working_path != script_path. If you have relative filenames in your config, they may not be found!")
+        logger.warning("It is working_path != script_path."
+                       "If you have relative filenames in your config, they may not be found!")
         logger.warning(f"working_path: '{working_path}'")
         logger.warning(f"script_path : '{script_path}'")
     myjukebox = jukebox.daemon.JukeBox(args.conf.name)

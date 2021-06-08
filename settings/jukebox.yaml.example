@@ -1,6 +1,7 @@
 system:
     box_name : Jukebox
     startup_sound: ../../resources/startupsound.wav
+    shutdown_sound: ../../resources/shutdownsound.wav
     audiofolder_path: ../../shared
     playlistfolder_path: ../../playlists
 player:
@@ -21,4 +22,4 @@ pubsub:
     websocket_port: 5557
 
 rfid:
-    cardid_database: ../../settings/phoniebox_cardid_database.json
+    cardid_database: ../../settings/jukebox_cardid_database.json
