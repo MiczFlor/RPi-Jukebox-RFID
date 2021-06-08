@@ -9,13 +9,13 @@ class system_control:
     def __init__(self):
         self.init = 1
 
-    def shutdown(self, param=None):
+    def shutdown():
         logger.info("shutdown")
-        return ({})
+        return ({'object': 'system', 'method': 'shutdown'})
 
-    def reboot(self, param=None):
+    def reboot():
         logger.info("reboot")
-        return ({})
+        return ({'object': 'system', 'method': 'reboot'})
 
     def settings_get(self, param):
         return ({})

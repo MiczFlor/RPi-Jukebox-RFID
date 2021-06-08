@@ -50,7 +50,7 @@ class UsbReader(object):
 
 
 class RFID_Reader(object):
-    def __init__(self, device_name, param=None, zmq_context=None):
+    def __init__(self, device_name, zmq_address, param=None, zmq_context=None):
 
         if device_name == 'MFRC522':
             from .RfidReader_RC522 import Mfrc522Reader
@@ -71,8 +71,8 @@ class RFID_Reader(object):
             except IndexError:
                 sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
 
-        self.PhonieboxRpc = RpcClient()
-        self.PhonieboxRpc.connect(zmq_context=zmq_context)
+        self.PhonieboxRpc = RpcClient(context=zmq_context)
+        self.PhonieboxRpc.connect(zmq_address)
         self._keep_running = True
         self.cardnotification = None
         self.valid_cardnotification = None

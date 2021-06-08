@@ -11,6 +11,7 @@ services:
     ports:
       - 5555:5555
       - 5556:5556
+      - 5557:5557
     restart: unless-stopped
     tty: true
     volumes:

@@ -1,8 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
+import Tooltip from '@material-ui/core/Tooltip';
 import VolumeDownIcon from '@material-ui/icons/VolumeDown';
 import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
@@ -14,9 +16,32 @@ const useStyles = makeStyles({
   },
 });
 
+function VolumeLabel(props) {
+  const { children, open, value } = props;
+
+  return (
+    <Tooltip
+      open={open}
+      enterTouchDelay={100}
+      placement="top"
+      title={value}>
+      {children}
+    </Tooltip>
+  );
+}
+
+VolumeLabel.propTypes = {
+  children: PropTypes.element.isRequired,
+  open: PropTypes.bool.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
 const Volume = () => {
   const classes = useStyles();
   const [volumeOff, setVolumeOff] = React.useState(false);
+  const [volumeMax] = React.useState(75);
+  const [volumeStep] = React.useState(1);
+
   const [volume, setVolume] = React.useState(30);
 
   const toggleVolumeOff = () => {
@@ -24,7 +49,9 @@ const Volume = () => {
   };
 
   const updateVolume = (event, newVolume) => {
-    setVolume(newVolume);
+    if (newVolume <= volumeMax) {
+      setVolume(newVolume);
+    }
   }
 
   return (
@@ -38,10 +65,13 @@ const Volume = () => {
         </Grid>
         <Grid item xs>
           <Slider
+            ValueLabelComponent={VolumeLabel}
             value={volume}
             onChange={updateVolume}
             disabled={volumeOff}
-            aria-labelledby="continuous-slider"
+            marks={[ { value: volumeMax } ]}
+            step={volumeStep}
+            aria-labelledby="volume slider"
           />
         </Grid>
       </Grid>

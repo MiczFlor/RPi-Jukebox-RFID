@@ -1,0 +1,25 @@
+system:
+    box_name : Jukebox
+    startup_sound: ../../resources/startupsound.wav
+    shutdown_sound: ../../resources/shutdownsound.wav
+    audiofolder_path: ../../shared
+    playlistfolder_path: ../../playlists
+player:
+    status_file: ../../shared/music_player_status.json
+modules:
+    volume: jukebox.alsaif
+    player: jukebox.mpd
+    others: [rfid]
+mpd:
+    host: localhost
+alsaif:
+    mixer: Master
+    start_sound_device: default
+rpc:
+    tcp_port: 5555
+    websocket_port: 5556
+pubsub:
+    websocket_port: 5557
+
+rfid:
+    cardid_database: ../../settings/jukebox_cardid_database.json

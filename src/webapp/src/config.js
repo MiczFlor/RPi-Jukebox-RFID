@@ -1,8 +1,8 @@
-const WEBSOCKET_ENDPOINT = 'ws://0.0.0.0:5556';
+const REQRES_ENDPOINT = 'ws://0.0.0.0:5556';
+const PUBSUB_ENDPOINT = 'ws://0.0.0.0:5557';
 
 const DEFAULT_PLAYER_STATUS = {
-  params: {
-    song: {},
+  kwargs: {
     status: {
       consume: "0",
       mixrampdb: "0.000000",
@@ -19,5 +19,6 @@ const DEFAULT_PLAYER_STATUS = {
 
 export {
   DEFAULT_PLAYER_STATUS,
-  WEBSOCKET_ENDPOINT,
+  PUBSUB_ENDPOINT,
+  REQRES_ENDPOINT,
 }

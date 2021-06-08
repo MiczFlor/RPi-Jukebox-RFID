@@ -1,16 +1,23 @@
-import { socket_req } from './index';
-import { decodeMessage } from './utils';
+import { socket_sub } from './index';
+import { decodePubSubMessage } from './utils';
 
-export const socketEvents = ({ setValue }) => {
-  socket_req.on('message', (msg) => {
-    const { object, method, params } = decodeMessage(msg);
+export const socketEvents = ({ setState }) => {
+  socket_sub.on('message', (msg) => {
+    const message = decodePubSubMessage(msg);
 
-    if (object && method && params) {
-      const playerStatus = params;
-      setValue(state => { return { ...state, playerStatus } });
-    }
-    else {
-      throw new Error('Received socket message does not match the required format.');
+    switch(message?.topic) {
+      case 'playerstatus':
+        const { playerstatus } = message;
+
+        if (playerstatus) {
+          setState(state => { return { ...state, playerstatus } });
+          break;
+        }
+        console.error('[PubSub][playerstatus] Payload missing');
+        break;
+
+      default:
+        break;
     }
   });
 };

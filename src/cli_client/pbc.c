@@ -106,27 +106,27 @@ void * connect_and_send_request(t_request * tr)
 {
     char json_request[MAX_REQEST_STRLEN];
     char json_response[MAX_REQEST_STRLEN];
-    char params[MAX_STRLEN * 8];
+    char kwargs[MAX_STRLEN * 8];
     size_t json_len;
     int n;
 
     if (tr->num_params > 0)
     {
-        sprintf(params, "\"params\":{");
+        sprintf(kwargs, "\"kwargs\":{");
         
         for (n = 0;n < tr->num_params;)
         {
-            strcat(params,tr->params[n]);
+            strcat(kwargs,tr->params[n]);
             n++;
-            if (n < tr->num_params) strcat(params,",");
+            if (n < tr->num_params) strcat(kwargs,",");
         }
 
-        strcat(params,"},");
+        strcat(kwargs,"},");
 
     }
-    else params[0] = 0;
+    else sprintf(kwargs, "\"kwargs\":{},");
 
-    snprintf(json_request,MAX_REQEST_STRLEN,"{\"object\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,params,123);
+    snprintf(json_request,MAX_REQEST_STRLEN,"{\"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,kwargs,123);
     json_len = strlen(json_request);
     
     if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);

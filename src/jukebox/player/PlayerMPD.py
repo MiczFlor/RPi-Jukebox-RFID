@@ -10,7 +10,8 @@ logger = logging.getLogger('jb.PlayerMPD')
 
 
 class player_control:
-    def __init__(self, mpd_host, music_player_status, volume_control=None):
+    def __init__(self, mpd_host, music_player_status, volume_control, pubsubserver):
+        self.pubsubserver = pubsubserver
         self.mpd_host = mpd_host
         self.volume_control = volume_control
         self.music_player_status = music_player_status
@@ -27,7 +28,7 @@ class player_control:
             self.music_player_status.save_to_json()
             self.current_folder_status = {}
         else:
-            last_played_folder = self.music_player_status['player_status']['last_played_folder']
+            last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
             if last_played_folder is not None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
                 self.mpd_client.clear()
@@ -48,6 +49,8 @@ class player_control:
         This method adds thread saftey for acceses to mpd via a mutex lock,
         it shall be used for each access to mpd to ensure thread safety
         In case of a communication error the connection will be reestablished and the pending command will be repeated 2 times
+
+        I think this should be refactored to a decorator
         '''
         retry = 2
         with self.mpd_mutex:
@@ -87,7 +90,7 @@ class player_control:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
 
-        self.mpd_status['volume'] = self.volume_control.volume
+        self.mpd_status['volume'] = self.volume_control.get_volume()
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -95,18 +98,15 @@ class player_control:
             self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
 
         # the repetation is intentionally at the end, to avoid overruns in case of delays caused by communication
+        self.pubsubserver.publish('playerstatus', self.mpd_status)
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
         return ()
 
-    def get_player_type_and_version(self, param):
+    def get_player_type_and_version(self):
         return ({'result': 'mpd', 'version': self.mpd_retry_with_mutex(self.mpd_client.mpd_version)})
 
-    def play(self, param):
-        if param is not None and isinstance(param, dict):
-            songid = param.get("songid")
-            if songid is None:
-                songid = 0
-        else:
+    def play(self, songid=None):
+        if songid is None:
             songid = 0
 
         if songid == 0:
@@ -114,76 +114,85 @@ class player_control:
         else:
             self.mpd_retry_with_mutex(self.mpd_client.play, songid)
 
+        time.sleep(.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'play', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'play', 'params': {'status': status}})
 
-    def stop(self, param):
+    def stop(self):
         self.mpd_retry_with_mutex(self.mpd_client.stop)
+
+        time.sleep(.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'stop', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'stop', 'params': {'status': status}})
 
-    def pause(self, param):
+    def pause(self):
         self.mpd_retry_with_mutex(self.mpd_client.pause, 1)
+
+        time.sleep(.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'pause', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'pause', 'params': {'status': status}})
 
-    def prev(self, param):
+    def prev(self):
         self.mpd_retry_with_mutex(self.mpd_client.previous)
+
+        time.sleep(.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'prev', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'prev', 'params': {'status': status}})
 
-    def next(self, param):
+    def next(self):
         self.mpd_retry_with_mutex(self.mpd_client.next)
+
+        time.sleep(.3)
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'next', 'params': {'status': status}})
 
-    def seek(self, param):
-        val = param.get('time')
-        if val is not None:
-            self.mpd_retry_with_mutex(self.mpd_client.seekcur, val)
+    def seek(self, newTime):
+        if newTime is not None:
+            self.mpd_retry_with_mutex(self.mpd_client.seekcur, newTime)
+
+        time.sleep(.3)
+        status = self.mpd_status
+
+        return ({'object': 'player', 'method': 'seek', 'params': {'status': status}})
+
+    def replay(self):
         return ({})
 
-    def replay(self, param):
-        return ({})
+    def repeatmode(self, mode):
+        if mode == 'repeat':
+            repeat = 1
+            single = 0
+        elif mode == 'single':
+            repeat = 1
+            single = 1
+        else:
+            repeat = 0
+            single = 0
 
-    def repeatmode(self, param):
-        if param is not None and isinstance(param, dict):
-            mode = param.get("mode")
-
-            if mode == 'repeat':
-                repeat = 1
-                single = 0
-            elif mode == 'single':
-                repeat = 1
-                single = 1
-            else:
-                repeat = 0
-                single = 0
-
-            self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
-            self.mpd_retry_with_mutex(self.mpd_client.single, single)
+        self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
+        self.mpd_retry_with_mutex(self.mpd_client.single, single)
         return ({})
 
     def get_current_song(self, param):
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'next', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'next', 'params': {'status': status}})
 
     def map_filename_to_playlist_pos(self, filename):
         logger.error("map_filename_to_playlist_pos not yet implemented")
         # self.mpd_client.playlistfind()
         return 0
 
-    def remove(self, param):
+    def remove(self):
         logger.error("remove not yet implemented")
         return ({})
 
-    def move(self, param):
+    def move(self):
         # song_id = param.get("song_id")
         # step = param.get("step")
         # MPDClient.playlistmove(name, from, to)
@@ -192,16 +201,16 @@ class player_control:
         logger.error("move not yet implemented")
         return ({})
 
-    def test_mutex(self, param):
+    def test_mutex(self, delay):
         self.mpd_mutex.acquire()
-        time.sleep(1)
+        time.sleep(delay)
         self.mpd_mutex.release()
 
-    def playsingle(self, param):
+    def playsingle(self):
         logger.error("playsingle not yet implemented")
         return ({})
 
-    def playlistaddplay(self, param):
+    def playlistaddplay(self, folder):
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
         # FOLDER = rel path from audiofolders
@@ -211,15 +220,11 @@ class player_control:
         # Read the current config file (include will execute == read)
         # . "$AUDIOFOLDERSPATH/$FOLDER/folder.conf"
 
-        folder = param.get("folder")
-
         logger.info(f"playing folder: {folder}")
+        self.mpd_retry_with_mutex(self.mpd_client.clear)
 
         if folder is not None:
-            # load playlist
-            self.mpd_retry_with_mutex(self.mpd_client.clear)
-
-            # TODO: why dealing with playlists? at least partially redundant with folder.config,
+                # TODO: why dealing with playlists? at least partially redundant with folder.config,
             # so why not combine if needed alternative solution, just add folders recursively to quene
             self.mpd_retry_with_mutex(self.mpd_client.add, folder)
 
@@ -352,6 +357,8 @@ class player_control:
         # write latest folder played to settings file
         # sudo echo ${FOLDER} > ${PATHDATA}/../settings/Latest_Folder_Played
 
+        time.sleep(0.3)
+
         song = self.mpd_retry_with_mutex(self.mpd_client.currentsong)
 
         self.current_folder_status["CURRENTFILENAME"] = song.get('file')
@@ -363,13 +370,29 @@ class player_control:
         self.current_folder_status["SINGLE"] = "OFF"
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'playlistaddplay', 'params': {'song': status, 'status': status}})
 
-    def playerstatus(self, param):
+        return ({'object': 'player', 'method': 'playlistaddplay', 'params': {'status': status}})
+
+    def playerstatus(self):
         status = self.mpd_status
 
-        return ({'object': 'player', 'method': 'playerstatus', 'params': {'song': status, 'status': status}})
+        return ({'object': 'player', 'method': 'playerstatus', 'params': {'status': status}})
 
-    def playlistinfo(self, param):
+    def playlistinfo(self):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
         return ({'object': 'player', 'method': 'playlistinfo', 'params': playlistinfo})
+
+    # Attention: MPD.listal will consume a lot of memory with large libs.. should be refactored at some point
+    def list_all_dirs(self):
+        list = self.mpd_retry_with_mutex(self.mpd_client.listall)
+        # list = [entry for entry in list if 'directory' in entry]
+
+        return ({'object': 'player', 'method': 'listall', 'params': {'list': list}})
+
+    def list_albums(self):
+        albums = self.mpd_retry_with_mutex(self.mpd_client.lsinfo)
+        # albums = filter(lambda x: x, albums)
+
+        time.sleep(0.3)
+
+        return ({'object': 'player', 'method': 'list_albums', 'params': {'albums': albums}})
