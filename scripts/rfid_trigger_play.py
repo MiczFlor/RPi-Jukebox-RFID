@@ -632,6 +632,11 @@ if folder_name and os.path.exists(path_folder_name) and os.path.isdir(path_folde
             if conf['DEBUG_rfid_trigger_play_sh'] == "TRUE":
                 logger.debug("Written playlist to file: '%s':" % (path_dir_playlists + "/" + playlist_name + ".m3u"))
                 logger.debug(playlist_files)
+                
+        ############################################
+        # SAVE PLAYLIST POSITION OF CURRENT PLAYLIST
+        # ??? this does not work yet... ???
+        playProcess.playout_position_save()
 
         ##############
         # SECOND SWIPE
