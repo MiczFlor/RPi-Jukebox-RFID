@@ -1,23 +1,7 @@
 # These files are created automatically or on individual purpose of the user. They shall not be push to the repository
-settings/Audio_Folders_Path
-settings/Audio_Volume_Change_Step
-settings/Audio_iFace_Name
-settings/cover.jpg
-settings/edition
-settings/Idle_Time_Before_Shutdown
-settings/Latest_Folder_Played
-settings/Latest_Played_File
-settings/Latest_Playlist_Played
-settings/Latest_RFID
-settings/Max_Volume_Limit
-settings/Playlists_Folders_Path
-settings/rfid_trigger_play.conf
-settings/Second_Swipe
-settings/ShowCover
-settings/version
-htdocs/config.php
-scripts/deviceName.txt
-scripts/gpio-buttons.py
+settings/jukebox.yaml
+settings/jukebox_cardid_database.json
+src/cli_client/pbc
 
 shared/*
 playlists/*
@@ -50,5 +34,3 @@ composer.phar
 
 # End of https://www.gitignore.io/api/composer
 
-
-components/cli_client/pbc
