@@ -101,7 +101,7 @@ class JukeBox:
 
         # initialize Jukebox objcts
         self.objects['system'] = jukebox.System.system_control
-        self.objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status, 
+        self.objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status,
                                                             self.objects['volume'], self.pubsubserver)
 
         logger.info("Init Jukebox RPC Server")
