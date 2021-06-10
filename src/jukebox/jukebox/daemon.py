@@ -49,11 +49,11 @@ class JukeBox:
         # TODO: Iterate over objects and tell them to exit
         # TODO: stop all threads
 
-        self.objects['player'].stop(None)
+        self.objects['player'].stop()
 
         if 'shutdown_sound' in cfg['system'] and self.objects['volume'] is not None:
             shutdown_sound_thread = threading.Thread(target=self.objects['volume'].play_wave,
-                                                         args=[self.config.get('SYSTEM', 'SHUTDOWN_SOUND')],
+                                                         args=[cfg['system']['shutdown_sound']],
                                                          name='ShutdownSound')
             shutdown_sound_thread.daemon = True
             shutdown_sound_thread.start()
