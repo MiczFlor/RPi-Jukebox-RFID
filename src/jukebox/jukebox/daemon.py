@@ -8,6 +8,7 @@ import logging
 import importlib
 import zmq
 
+import jukebox.alsaif
 import jukebox.Volume
 import jukebox.System
 from player import PlayerMPD
@@ -100,15 +101,17 @@ class JukeBox:
         mpd_host = cfg.getn('mpd', 'host')
 
         # initialize Jukebox objcts
+        self.objects['alsaif'] = jukebox.alsaif.AlsaCtrl()
         self.objects['system'] = jukebox.System.system_control
         self.objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status,
-                                                            self.objects['volume'], self.pubsubserver)
+                                                            self.objects['alsaif'], self.pubsubserver)
 
         logger.info("Init Jukebox RPC Server")
         rpcserver = RpcServer(self.objects)
 
         # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-        rfid_reader = RFID_Reader("Fake", zmq_address='inproc://JukeBoxRpcServer', zmq_context=zmq.Context.instance())
+        # rfid_reader = RFID_Reader("Fake", zmq_address='inproc://JukeBoxRpcServer', zmq_context=zmq.Context.instance())
+        rfid_reader = None
         if rfid_reader is not None:
             rfid_reader.set_cardid_db(cardid_database)
             rfid_reader.reader.set_card_ids(list(cardid_database))     # just for Fake Reader to be aware of card ids

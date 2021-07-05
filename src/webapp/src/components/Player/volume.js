@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+
+import PlayerContext from '../../context/player/context';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -38,37 +40,61 @@ VolumeLabel.propTypes = {
 
 const Volume = () => {
   const classes = useStyles();
-  const [volumeOff, setVolumeOff] = React.useState(false);
-  const [volumeMax] = React.useState(75);
-  const [volumeStep] = React.useState(1);
+  const {
+    setVolume,
+    state,
+    toggleMuteVolume,
+  } = useContext(PlayerContext);
 
-  const [volume, setVolume] = React.useState(30);
+  const { volume } = state.playerstatus || {};
 
-  const toggleVolumeOff = () => {
-    setVolumeOff(!volumeOff);
+  const [isChangingVolume, setIsChangingVolume] = useState(false);
+  const [_volume, _setVolume] = useState(volume)
+
+  const [volumeMute, setVolumeMute] = useState(false);
+  const [volumeMax] = useState(75);
+  const [volumeStep] = useState(1);
+
+  const toggleVolumeMute = () => {
+    setVolumeMute(!volumeMute);
+    toggleMuteVolume(!volumeMute)
   };
 
-  const updateVolume = (event, newVolume) => {
+  const updateVolume = () => {
+    setVolume(_volume);
+    // Delay the next command to avoid jumping slide control
+    setTimeout(() => setIsChangingVolume(false), 500);
+  }
+
+  const handleVolumeChange = (event, newVolume) => {
+    setIsChangingVolume(true);
     if (newVolume <= volumeMax) {
-      setVolume(newVolume);
+      _setVolume(newVolume);
     }
   }
+
+  useEffect(() => {
+    if (!isChangingVolume) {
+      _setVolume(volume);
+    }
+  }, [isChangingVolume, volume]);
 
   return (
     <div className={classes.volume}>
       <Grid container spacing={2} direction="row" justify="center" alignItems="center">
-        <Grid item onClick={toggleVolumeOff}>
-          {volumeOff && <VolumeOffIcon />}
-          {!volumeOff && volume === 0 && <VolumeMuteIcon />}
-          {!volumeOff && volume > 0 && volume < 50 && <VolumeDownIcon />}
-          {!volumeOff && volume >= 50 && <VolumeUpIcon />}
+        <Grid item onClick={toggleVolumeMute}>
+          {volumeMute && <VolumeOffIcon />}
+          {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
+          {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
+          {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
         </Grid>
         <Grid item xs>
           <Slider
             ValueLabelComponent={VolumeLabel}
-            value={volume}
-            onChange={updateVolume}
-            disabled={volumeOff}
+            value={_volume || 0}
+            onChange={handleVolumeChange}
+            onChangeCommitted={updateVolume}
+            disabled={volumeMute}
             marks={[ { value: volumeMax } ]}
             step={volumeStep}
             aria-labelledby="volume slider"

@@ -23,16 +23,21 @@ const socketRequest = (payload) => (
     socketRequest.server = zmq.socket('req');
 
     socketRequest.server.on('message', (msg) => {
-      // TODO: Should be corrected!
-      const { object, method, params = {} } = decodeMessage(msg);
+      const { error, result } = decodeMessage(msg);
+
+      if (error && error.message) {
+        return reject(error.message);
+      }
+
+      const { object, method, params = {} } = result;
 
       socketRequest.server.close();
 
       if (object && method && params) {
-        resolve(params);
+        return resolve(params);
       }
       else {
-        reject('Received socket message does not match the required format.');
+        return reject('Received socket message does not match the required format.');
       }
     });
 

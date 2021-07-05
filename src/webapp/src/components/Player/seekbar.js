@@ -15,10 +15,9 @@ const SeekBar = () => {
   const {
     seek,
     state,
-  } = useContext(PlayerContext)
-  const {
-    playerstatus,
-  } = state;
+  } = useContext(PlayerContext);
+
+  const { playerstatus } = state;
 
   const [isSeeking, setIsSeeking] = useState(false);
   const [progress, setProgress] = useState(0);

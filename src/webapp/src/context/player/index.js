@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { DEFAULT_PLAYER_STATUS } from '../../config';
 import PlayerContext from './context';
@@ -83,6 +83,17 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('player', 'seek', { newTime: newTime.toFixed(3) });
   }
 
+  const setVolume = (volume) => {
+    if (state.requestInFlight) return;
+
+    postJukeboxCommand('alsaif', 'set_volume', { volume });
+  }
+
+  const toggleMuteVolume = (mute_on) => {
+    if (state.requestInFlight) return;
+
+    postJukeboxCommand('alsaif', 'mute', { mute_on });
+  }
 
   // Initialize sockets for player context
   useEffect(() => {
@@ -95,8 +106,10 @@ const PlayerProvider = ({ children }) => {
     play,
     previous,
     seek,
+    setState,
+    setVolume,
     state,
-    setState
+    toggleMuteVolume,
   };
 
   return(

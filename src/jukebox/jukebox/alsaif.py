@@ -28,11 +28,12 @@ class AlsaCtrl:
             logger.warning(f"set_volume: volume out-of-range: {volume}")
             volume = clamp(volume, 0, 100)
         self.mixer.setvolume(volume)
-        return self.get_volume()
+        return  ({'object': 'alsaif', 'method': 'set_volume', 'params': {'volume': self.get_volume()}})
 
     def mute(self, mute_on=True):
         logger.debug(f"Set Mute = {mute_on}")
         self.mixer.setmute(1 if mute_on else 0)
+        return  ({'object': 'alsaif', 'method': 'mute', 'params': {'mute_on': mute_on}})
 
     def inc_volume(self, step=3):
         self.set_volume(self.get_volume() + step)

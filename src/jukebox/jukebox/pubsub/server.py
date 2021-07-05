@@ -24,4 +24,4 @@ class PubSubServer:
 
     def publish(self, topic, payload={}):
         self.socket.send_string("%s %s" % (topic, json.dumps(payload)))
-        logger.debug("%s %s" % (topic, payload))
+        # logger.debug("%s %s" % (topic, payload))

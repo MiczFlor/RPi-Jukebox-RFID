@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import PlayerContext from '../../context/player/context';
 
@@ -19,20 +19,28 @@ const Controls = () => {
     setState,
   } = useContext(PlayerContext);
 
-  const { isPlaying, playerstatus } = state;
+  const {
+    isPlaying,
+    playerstatus,
+    songIsScheduled
+  } = state;
 
   useEffect(() => {
-    setState({ ...state, isPlaying: playerstatus?.state === 'play' ? true : false });
+    setState({
+      ...state,
+      isPlaying: playerstatus?.state === 'play' ? true : false,
+      songIsScheduled: playerstatus?.songid ? true : false,
+    });
   }, [playerstatus]);
 
   return (
     <Grid container direction="row" justify="center" alignItems="center">
-      <IconButton aria-label="Skip previous track" onClick={previous}>
+      <IconButton aria-label="Skip previous track" onClick={previous} disabled={!songIsScheduled}>
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
       {
         !isPlaying &&
-        <IconButton aria-label="Play" onClick={e => play()}>
+        <IconButton aria-label="Play" onClick={e => play()} disabled={!songIsScheduled}>
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
@@ -42,7 +50,7 @@ const Controls = () => {
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
-      <IconButton aria-label="Skip next track" onClick={next}>
+      <IconButton aria-label="Skip next track" onClick={next} disabled={!songIsScheduled}>
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
     </Grid>
