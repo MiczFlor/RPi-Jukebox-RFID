@@ -11,6 +11,7 @@ GIT_BRANCH="future3/webapp"
 
 # Log installation for debugging reasons
 INSTALLATION_LOGFILE="$HOME_DIR/INSTALL-$INSTALL_ID.log"
+# Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
 
@@ -18,8 +19,8 @@ echo "Log start: $INSTALL_ID"
 
 # Welcome Screen
 welcome() {
-    clear
-echo "#####################################################
+  clear
+  echo "#####################################################
 #    ___  __ ______  _  __________ ____   __  _  _  #
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
@@ -27,9 +28,10 @@ echo "#####################################################
 #                                                   #
 #####################################################
 
-You are turning your Raspberry Pi into a Phoniebox. Good choice!" 1>&3
+You are turning your Raspberry Pi into a Phoniebox. Good choice!
+Do you want to install? [Y/n]" 1>&3
 
-  read -rp "Do you want to install? [Y/n] " response 1>&3
+  read -rp "Do you want to install? [Y/n] " response
   case "$response" in
     [nN][oO]|[nN])
       exit
@@ -64,7 +66,7 @@ update_os() {
 
 # Install Dependencies
 install_jukebox_dependencies() {
-  echo "Install Jukebox dependencies" | tee /dev/fd/3
+  echo "Install Jukebox OS dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     at git wget \
     mpd mpc \
@@ -118,7 +120,7 @@ install_jukebox_dependencies() {
     # TODO: Only required when ZMQ is compiled on RPi, currently disabled
     # zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
     # make -j && make install
-    pip3 install setuptools # Required for the following command to work, not sure why
+    pip3 install -q setuptools # Required for the following command to work, not sure why
     pip3 install -q --pre pyzmq --install-option=--enable-drafts --install-option=--zmq=bundled
   else
     echo "  Skipping. pyzmq already installed" | tee /dev/fd/3
@@ -225,4 +227,6 @@ runtime=$((end-start))
 ((h=${runtime}/3600))
 ((m=(${runtime}%3600)/60))
 ((s=${runtime}%60))
-echo "Done (in ${h}h ${m}m ${s}s)." | tee /dev/fd/3
+
+echo "Installation done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
+echo "Open http://raspberrypi.local in your browser to get started."
