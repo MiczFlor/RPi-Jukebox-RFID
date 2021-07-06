@@ -25,7 +25,7 @@ welcome() {
 #   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
 #  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
 # /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-#                                                   #
+# future3                                           #
 #####################################################
 
 You are turning your Raspberry Pi into a Phoniebox. Good choice!
@@ -156,9 +156,11 @@ install_jukebox() {
   pip3 install -q --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
 
   # Install Node dependencies
+  # TODO: Avoid building the app locally
+  # Instead implement a Github Action that prebuilds on commititung a git tag
   echo "  Install web application" | tee /dev/fd/3
   cd ${INSTALLATION_DIR}/src/webapp
-  npm install --silent && npm install --silent react-scripts@3.4.1 -g
+  npm install --production --silent
   rm -rf build
   npm run build
 }
