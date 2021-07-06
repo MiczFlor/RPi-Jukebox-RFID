@@ -201,9 +201,22 @@ EOF
   fi
 }
 
-welcome()
-set_raspi_config()
-update_os()
-install_jukebox_dependencies()
-configure_samba()
-install_jukebox()
+main() {
+  welcome()
+  set_raspi_config()
+  update_os()
+  install_jukebox_dependencies()
+  configure_samba()
+  install_jukebox()
+}
+
+start=$(date +%s)
+
+main
+
+end=$(date +%s)
+runtime=$((end-start))
+((h=${runtime}/3600))
+((m=(${runtime}%3600)/60))
+((s=${runtime}%60))
+echo "Done (in ${h}h ${m}m ${s}s)."
