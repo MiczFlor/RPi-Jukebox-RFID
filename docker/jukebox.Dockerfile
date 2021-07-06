@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM i386/debian:buster-slim
 
 # Prepare Raspberry Pi like environment
 
