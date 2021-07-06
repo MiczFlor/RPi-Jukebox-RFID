@@ -14,9 +14,9 @@ INSTALLATION_LOGFILE="$HOME_DIR/INSTALL-$INSTALL_ID.log"
 # Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
+echo "Logging to $INSTALLATION_LOGFILE" 1>&3
 
 ### Method definitions
-
 # Welcome Screen
 welcome() {
   clear
@@ -231,4 +231,4 @@ runtime=$((end-start))
 ((s=${runtime}%60))
 
 echo "Installation done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
-echo "Open http://raspberrypi.local in your browser to get started."
+echo "Open http://raspberrypi.local in your browser to get started." 1>&3
