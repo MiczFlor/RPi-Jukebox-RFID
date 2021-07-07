@@ -128,17 +128,17 @@ install_jukebox() {
   if ! pip3 list | grep -F pyzmq >> /dev/null; then
     cd ${HOME_DIR} && mkdir libzmq && cd libzmq
     # TODO: Official release fails to compile on RPi (RPi freezes) - check TEMP solution
-    # wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
+    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
 
     # TEMP: A compiled version has been uploaded to Google Drive
     # Once found a proper solution, this should be removed
     # Download from Google Drive: https://medium.com/@acpanjan/download-google-drive-files-using-wget-3c2c025a8b99
-    wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
+    # wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
     tar -xzf libzmq.tar.gz
 
     # TODO: Only required when ZMQ is compiled on RPi, currently disabled
-    # zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
-    # make -j && make install
+    zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
+    make -j && make install
     pip3 install -q setuptools # Required for the following command to work, not sure why
     pip3 install -q --pre pyzmq --install-option=--enable-drafts --install-option=--zmq=bundled
   else
