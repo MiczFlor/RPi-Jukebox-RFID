@@ -1,4 +1,4 @@
-FROM i386/debian:buster-slim
+FROM arm32v7/debian:buster-slim
 
 RUN set -eux ; \
     apt-get update && apt-get install -y \
