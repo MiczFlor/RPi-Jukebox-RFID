@@ -9,6 +9,16 @@ INSTALLATION_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
 GIT_BRANCH="future3/webapp"
 
+# $1->start, $2->end
+calc_runtime_and_print () {
+  runtime=$(($2-$1))
+  ((h=${runtime}/3600))
+  ((m=(${runtime}%3600)/60))
+  ((s=${runtime}%60))
+
+  echo "Done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
+}
+
 ### Method definitions
 # Welcome Screen
 welcome() {
@@ -53,19 +63,25 @@ set_raspi_config() {
 
 # Update System
 update_os() {
+  local time_start=$(date +%s)
+
   echo "Updating Raspberry Pi OS" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade > /dev/null; sudo apt-get -qq -y autoremove > /dev/null
+
+  calc_runtime_and_print time_start $(date +%s)
 }
 
 # Install Dependencies
 install_jukebox_dependencies() {
+  local time_start=$(date +%s)
+
   echo "Install Jukebox OS dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     at git wget \
     mpd mpc \
     mpg123 \
     samba samba-common-bin \
-    python3 python3-dev python3-pip python3-mutagen python3-gpiozero \
+    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg \
     alsa-tools \
     --no-install-recommends \
@@ -85,14 +101,17 @@ install_jukebox_dependencies() {
     sudo npm update --silent -g
   else
     echo "  Install NodeJS" | tee /dev/fd/3
-    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - > /dev/null
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g n npm pm2 serve
   fi
+
+  calc_runtime_and_print time_start $(date +%s)
 }
 
 # Install Jukebox
 install_jukebox() {
+  local time_start=$(date +%s)
   echo "Install Jukebox" | tee /dev/fd/3
   cd ${HOME_DIR}
 
@@ -112,48 +131,52 @@ install_jukebox() {
       git pull
     fi
   else
-    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
+    git clone --depth 1 ${GIT_URL} --branch "${GIT_BRANCH}"
   fi
 
   # Install Python dependencies
-  echo "  Install Python dependencies" | tee /dev/fd/3
+  echo "  Install Python dependencies"
   # ZMQ
   # Because the latest stable release of ZMQ does not support WebSockets
   # we need to compile the latest version in Github
   # As soon WebSockets support is stable in ZMQ, this can be removed
-  echo "    Install pyzmq" | tee /dev/fd/3
-  ZMQ_VERSION="4.3.4"
-  ZMQ_PREFIX="/usr/local"
+  # Sources:
+  # https://pyzmq.readthedocs.io/en/latest/draft.html
+  # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
+  echo "    Install pyzmq"
+  ZMQ_DIR="libzmq"
+  PREFIX="/usr/local"
 
   if ! pip3 list | grep -F pyzmq >> /dev/null; then
-    cd ${HOME_DIR} && mkdir libzmq && cd libzmq
-    # TODO: Official release fails to compile on RPi (RPi freezes) - check TEMP solution
-    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
-
-    # TEMP: A compiled version has been uploaded to Google Drive
-    # Once found a proper solution, this should be removed
-    # Download from Google Drive: https://medium.com/@acpanjan/download-google-drive-files-using-wget-3c2c025a8b99
-    # wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1iMieMzIOY-mpm37SVrgdhpjeyHZJKIdI" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
+    cd ${HOME} && mkdir ${ZMQ_DIR} && cd ${ZMQ_DIR}
+    # Download pre-compiled libzmq armv6 from Google Drive
+    # https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
+    wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
     tar -xzf libzmq.tar.gz
+    rm -f libzmq.tar.gz
+    cp -rf * ${PREFIX}/
 
-    # TODO: Only required when ZMQ is compiled on RPi, currently disabled
-    zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
-    make -j && make install
-    pip3 install -q setuptools # Required for the following command to work, not sure why
-    pip3 install -q --pre pyzmq --install-option=--enable-drafts --install-option=--zmq=bundled
+    pip3 install -q --pre pyzmq \
+      --install-option=--enable-drafts \
+      --install-option=--zmq=${PREFIX}
   else
-    echo "    Skipping. pyzmq already installed" | tee /dev/fd/3
+    echo "      Skipping. pyzmq already installed"
   fi
+
+  echo "    Install requirements"
+  cd ${INSTALLATION_DIR}
   pip3 install -q --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
 
   # Install Node dependencies
   # TODO: Avoid building the app locally
   # Instead implement a Github Action that prebuilds on commititung a git tag
-  echo "  Install web application" | tee /dev/fd/3
+  echo "  Install web application"
   cd ${INSTALLATION_DIR}/src/webapp
   npm install --production --silent
   rm -rf build
   npm run build
+
+  calc_runtime_and_print time_start $(date +%s)
 }
 
 # Samba configuration settings
@@ -203,12 +226,16 @@ EOF
 }
 
 main() {
+  local time_start=$(date +%s)
+
   welcome
   set_raspi_config
-  # update_os
+  update_os
   install_jukebox_dependencies
   configure_samba
   install_jukebox
+
+  calc_runtime_and_print time_start $(date +%s)
 }
 
 ### RUN INSTALLATION
@@ -219,15 +246,6 @@ INSTALLATION_LOGFILE="$HOME_DIR/INSTALL-$INSTALL_ID.log"
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
 
-start=$(date +%s)
-
 main
 
-end=$(date +%s)
-runtime=$((end-start))
-((h=${runtime}/3600))
-((m=(${runtime}%3600)/60))
-((s=${runtime}%60))
-
-echo "Installation done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
 echo "Open http://raspberrypi.local in your browser to get started." 1>&3
