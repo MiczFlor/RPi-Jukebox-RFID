@@ -26,9 +26,9 @@ WORKDIR $INSTALLATION_DIR
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    gcc at wget \
+    at wget gcc \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
-    python3 python3-dev python3-pip python3-mutagen python3-gpiozero
+    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero
 #samba samba-common-bin
 #raspberrypi-kernel-headers
 #resolvconf
@@ -39,24 +39,38 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 COPY . ${INSTALLATION_DIR}
 
 # Install Jukebox
-ENV ZMQ_VERSION 4.3.4
-# ENV ZMQ_VERSION master
-ENV PREFIX /usr/local
-
-# Compile ZMQ
-RUN cd ${HOME} && mkdir libzmq && cd libzmq; \
-    # wget https://github.com/zeromq/libzmq/archive/refs/heads/master.tar.gz -O libzmq.tar.gz; \
-    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+# Install libzmq with Websocket support from pre-compiled source
+ENV ZMQ_TMP_DIR libzmq
+ENV ZMQ_PREFIX /usr/local
+RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
+    wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt; \
     tar -xzf libzmq.tar.gz; \
-    zeromq-${ZMQ_VERSION}/configure --prefix=${PREFIX} --enable-drafts; \
-    make -j && make install; \
-    pip3 install -v --pre pyzmq \
+    rm -f libzmq.tar.gz; \
+    cp -rf * ${ZMQ_PREFIX}/
+
+# Install libzmq with Websocket and compile
+# ENV LIBSODIUM_VERSION 1.0.18
+# ENV ZMQ_VERSION 4.3.4
+# RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
+#     wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz; \
+#     tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz; \
+#     cd libsodium-${LIBSODIUM_VERSION}/; \
+#     ./configure; \
+#     make && make install
+# RUN cd ${HOME}/${ZMQ_TMP_DIR}; \
+#     wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+#     tar -xzf libzmq.tar.gz; \
+#     zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
+#     make && make install;
+
+RUN pip3 install --pre pyzmq \
         --install-option=--enable-drafts \
-        --install-option=--zmq=${PREFIX}; \
-    pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
+        --install-option=--zmq=${ZMQ_PREFIX}
+
+RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
+
+EXPOSE 5555 5556
 
 # Run Jukebox
 # CMD bash
-EXPOSE 5555 5556
-
 CMD python ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py

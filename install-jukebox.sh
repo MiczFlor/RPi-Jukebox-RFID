@@ -95,12 +95,12 @@ install_jukebox_dependencies() {
 
   # Install Node
   if which node > /dev/null; then
-    echo "  Found existing NodeJS. Hence, updating NodeJS" | tee /dev/fd/3
+    echo "  Found existing NodeJS. Hence, updating NodeJS"
     sudo npm cache clean -f
     sudo n --quiet latest
     sudo npm update --silent -g
   else
-    echo "  Install NodeJS" | tee /dev/fd/3
+    echo "  Install NodeJS"
     curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - > /dev/null
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g n npm pm2 serve
@@ -127,7 +127,7 @@ install_jukebox() {
       git reset --hard origin/$GIT_BRANCH
     else
       # No changes
-      echo "  Updating version" | tee /dev/fd/3
+      echo "  Updating version"
       git pull
     fi
   else
@@ -144,21 +144,21 @@ install_jukebox() {
   # https://pyzmq.readthedocs.io/en/latest/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "    Install pyzmq"
-  ZMQ_DIR="libzmq"
-  PREFIX="/usr/local"
+  ZMQ_TMP_DIR="libzmq"
+  ZMQ_PREFIX="/usr/local"
 
   if ! pip3 list | grep -F pyzmq >> /dev/null; then
-    cd ${HOME} && mkdir ${ZMQ_DIR} && cd ${ZMQ_DIR}
+    cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}
     # Download pre-compiled libzmq armv6 from Google Drive
     # https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
     wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
     tar -xzf libzmq.tar.gz
     rm -f libzmq.tar.gz
-    cp -rf * ${PREFIX}/
+    sudo rsync -a * ${ZMQ_PREFIX}/
 
     pip3 install -q --pre pyzmq \
       --install-option=--enable-drafts \
-      --install-option=--zmq=${PREFIX}
+      --install-option=--zmq=${ZMQ_PREFIX}
   else
     echo "      Skipping. pyzmq already installed"
   fi
