@@ -15,8 +15,8 @@ def main():
     # Get absolute path of this script
     script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
     working_path = os.path.abspath(os.getcwd())
-    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../settings/jukebox.yaml'))
-    default_cfg_logger = os.path.abspath(os.path.join(script_path, '../../settings/logger.yaml'))
+    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../shared/settings/jukebox.yaml'))
+    default_cfg_logger = os.path.abspath(os.path.join(script_path, '../../shared/settings/logger.yaml'))
 
     argparser = argparse.ArgumentParser(description='The JukeboxDaemon')
     argparser.add_argument('-conf', '-c', type=argparse.FileType('r'), default=default_cfg_jukebox,

@@ -1,12 +1,11 @@
-# These files are created automatically or on individual purpose of the user. They shall not be push to the repository
-settings/jukebox.yaml
-settings/jukebox_cardid_database.json
-src/cli_client/pbc
+# Shared folder
+/shared/audiofolders/*
+/shared/playlists/*
+/shared/settings/*
+/shared/*.*
 
-shared/*
-playlists/*
-pythonenv*/*
-logs/*
+# Application
+/src/cli_client/pbc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -20,17 +19,5 @@ __pycache__/
 *.vscode
 .DS_Store
 
-
-# Created by https://www.gitignore.io/api/composer
-# Edit at https://www.gitignore.io/?templates=composer
-
-### Composer ###
-composer.phar
-/vendor/
-
-# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
-
-# End of https://www.gitignore.io/api/composer
-
+# Keep folders with .gitkeep
+!/**/.gitkeep

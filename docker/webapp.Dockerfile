@@ -1,4 +1,4 @@
-FROM arm32v7/node:alpine
+FROM node:alpine
 
 ENV HOME /root
 ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
