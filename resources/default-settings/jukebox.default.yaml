@@ -2,16 +2,16 @@ system:
     box_name : Jukebox
     startup_sound: ../../resources/startupsound.wav
     shutdown_sound: ../../resources/shutdownsound.wav
-    audiofolder_path: ../../shared
-    playlistfolder_path: ../../playlists
+    audiofolder_path: ../../shared/audiofolders
+    playlistfolder_path: ../../shared/playlists
 player:
-    status_file: ./shared/music_player_status.json
+    status_file: ../../shared/settings/music_player_status.json
 modules:
     volume: jukebox.alsaif
     player: jukebox.mpd
     others: [rfid]
 mpd:
-    host: mpd
+    host: localhost
 alsaif:
     mixer: Master
     start_sound_device: default
