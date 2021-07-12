@@ -11,6 +11,7 @@ import zmq
 
 import jukebox.Volume
 import jukebox.System
+import jukebox.plugin as plugin
 from player import PlayerMPD
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
@@ -58,6 +59,30 @@ class JukeBox:
         sys.exit(0)
 
     def run(self):
+
+        plugins_named = cfg.get('newmodules', default=[])
+        plugins_other = plugins_named.pop('others', [])
+
+        for module_name, package_name in plugins_named.items():
+            try:
+                plugin.load(package_name, module_name)
+            except Exception as e:
+                logger.error(f"Failed to load module: {package_name} as {module_name}. Trying without...")
+                logger.error(f"Reason: {e}")
+
+        for package_name in plugins_other:
+            try:
+                plugin.load(package_name)
+            except Exception as e:
+                logger.error(f"Failed to load module: {package_name} as {module_name}. Trying without...")
+                logger.error(f"Reason: {e}")
+
+        # Play the startup sound
+        if 'startup_sound' in cfg['system'] and plugin.exists('volume', 'play_wave'):
+            plugin.call_ignore_errors('volume', 'play_wave', args=[cfg['system']['startup_sound']], as_thread=True)
+        else:
+            logger.debug("No startup sound in config file or no plugin for startup sound loaded")
+
         objects = {}
         if 'volume' in cfg['modules']:
             try:
@@ -67,14 +92,14 @@ class JukeBox:
                 logger.error(f"Reason: {e}")
             else:
                 objects['volume'] = m_volume.init()
-                if 'startup_sound' in cfg['system']:
-                    startsound_thread = threading.Thread(target=m_volume.play_wave,
-                                                         args=[cfg['system']['startup_sound']],
-                                                         name='StartSound')
-                    startsound_thread.daemon = True
-                    startsound_thread.start()
-                else:
-                    logger.debug("No startup sound in config file")
+                # if 'startup_sound' in cfg['system']:
+                #     startsound_thread = threading.Thread(target=m_volume.play_wave,
+                #                                          args=[cfg['system']['startup_sound']],
+                #                                          name='StartSound')
+                #     startsound_thread.daemon = True
+                #     startsound_thread.start()
+                # else:
+                #     logger.debug("No startup sound in config file")
 
         # load music player status
         music_player_status = self.nvm.load(cfg.getn('player', 'status_file'))
@@ -90,7 +115,7 @@ class JukeBox:
         objects['system'] = jukebox.System.system_control
 
         logger.info("Init Jukebox RPC Server")
-        rpcserver = RpcServer(objects)
+        rpcserver = RpcServer()
 
         # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
         rfid_reader = RFID_Reader("Fake", zmq_address='inproc://JukeBoxRpcServer', zmq_context=zmq.Context.instance())
