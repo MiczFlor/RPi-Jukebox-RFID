@@ -4,7 +4,6 @@
 
 # Application
 docker
-!docker/scripts
 docs
 src
 shared/audiofolders

@@ -16,7 +16,6 @@ services:
     tty: true
     volumes:
       - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
-      - ../settings:/home/pi/RPi-Jukebox-RFID/settings
       - ../shared:/home/pi/RPi-Jukebox-RFID/shared
 
   webapp:
