@@ -1,7 +1,7 @@
 system:
     box_name : Jukebox
-    startup_sound: ../../resources/startupsound.wav
-    shutdown_sound: ../../resources/shutdownsound.wav
+    startup_sound: ../../resources/audio/startupsound.wav
+    shutdown_sound: ../../resources/audio/shutdownsound.wav
     audiofolder_path: ../../shared/audiofolders
     playlistfolder_path: ../../shared/playlists
 player:

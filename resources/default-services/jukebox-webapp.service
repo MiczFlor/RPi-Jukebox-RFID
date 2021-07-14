@@ -1,0 +1,15 @@
+[Unit]
+Description=Jukebox Webapp
+After=jukebox-daemon.service
+Requires=jukebox-daemon.service
+
+[Service]
+ExecStart=sudo serve -s -n build -l 80
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/webapp
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

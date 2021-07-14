@@ -22,17 +22,28 @@ calc_runtime_and_print () {
 ### Method definitions
 # Welcome Screen
 welcome() {
-  clear
-  echo "#####################################################
-#    ___  __ ______  _  __________ ____   __  _  _  #
-#   / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ ) #
-#  / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (  #
-# /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_) #
-# future3                                           #
-#####################################################
+  clear 1>&3
+  echo "#########################################################
+#                                                       #
+#      ___  __ ______  _  __________ ____   __  _  _    #
+#     / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ )   #
+#    / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (    #
+#   /_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_)   #
+#   future3                                             #
+#                                                       #
+#########################################################
 
-You are turning your Raspberry Pi into a Phoniebox. Good choice!
-Do you want to install? [Y/n]" 1>&3
+You are turning your Raspberry Pi into a Phoniebox.
+Good choice!
+
+Depending on your hardware, this installation might last
+around 60 minutes. It updates OS packages, installs
+Phoniebox dependencies and registers settings. Be patient
+and don't let your computer go to sleep. It might
+disconnect your SSH connection and might interupt the
+installation process.
+
+Let's set up your Phoniebox now?! [Y/n]" 1>&3
 
   read -rp "Do you want to install? [Y/n] " response
   case "$response" in
@@ -50,12 +61,16 @@ set_raspi_config() {
   echo "Set default raspi-config" | tee /dev/fd/3
   # Source: https://raspberrypi.stackexchange.com/a/66939
   # Autologin
+  echo "  * Enable Autologin for 'pi' user"
   sudo raspi-config nonint do_boot_behaviour B2
   # Wait for network at boot
+  echo "  * Enable 'Wait for network at boot'"
   sudo raspi-config nonint do_boot_wait 1
   # power management of wifi: switch off to avoid disconnecting
+  echo "  * Disable Wifi power management to avoid disconnecting"
   sudo iwconfig wlan0 power off
   # Switch off Bluetooth to save energy
+  echo "  * Disable Bluetooth service to save energy"
   sudo systemctl stop bluetooth
   # Skip interactive Samba WINS config dialog
   echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
@@ -103,7 +118,7 @@ install_jukebox_dependencies() {
     echo "  Install NodeJS"
     curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - > /dev/null
     sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g n npm pm2 serve
+    sudo npm install --silent -g n npm serve
   fi
 
   calc_runtime_and_print time_start $(date +%s)
@@ -112,6 +127,7 @@ install_jukebox_dependencies() {
 # Install Jukebox
 install_jukebox() {
   local time_start=$(date +%s)
+
   echo "Install Jukebox" | tee /dev/fd/3
   cd ${HOME_DIR}
 
@@ -208,21 +224,49 @@ configure_samba() {
   create mask=0777
   directory mask=0777
   public=no
-
-# if the audiofiles are not in 'shared', we need this
-[phoniebox_audiofiles]
-  comment= Pi Jukebox
-  path=${INSTALLATION_DIR}/shared/audiofolders
-  browseable=Yes
-  writeable=Yes
-  only guest=no
-  create mask=0777
-  directory mask=0777
-  public=no
 EOF
 
     sudo chmod 644 $SMB_CONF
   fi
+}
+
+register_system_services() {
+  local time_start=$(date +%s)
+
+  echo "Register system services" | tee /dev/fd/3
+  sudo cp -f ${INSTALLATION_DIR}/resources/default-services/jukebox-*.service /lib/systemd/system
+  sudo chmod 644 /lib/systemd/system/jukebox-*.service
+
+  sudo systemctl enable jukebox-daemon.service
+  sudo systemctl enable jukebox-webapp.service
+
+  sudo systemctl daemon-reload
+
+  # We don't start the services now, we wait for the reboot
+  calc_runtime_and_print time_start $(date +%s)
+}
+
+finish() {
+  echo "Installation complete!
+
+In order to start, you need to reboot your Raspberry Pi.
+Thi will disconnect your SSH connection.
+
+Then you can open http://raspberrypi.local in your browser
+to get started. Don't forget to upload files via Samba.
+
+Do you want to reboot now? [Y/n]" 1>&3
+
+  read -rp "Do you want to install? [Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      exit
+      ;;
+    *)
+      echo "Rebooting ..." 1>&3
+      sudo reboot
+      ;;
+  esac
 }
 
 main() {
@@ -234,6 +278,8 @@ main() {
   install_jukebox_dependencies
   configure_samba
   install_jukebox
+  register_system_services
+  finish
 
   calc_runtime_and_print time_start $(date +%s)
 }
@@ -247,5 +293,3 @@ exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
 
 main
-
-echo "Open http://raspberrypi.local in your browser to get started." 1>&3
