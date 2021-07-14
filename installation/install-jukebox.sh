@@ -246,6 +246,16 @@ register_system_services() {
   calc_runtime_and_print time_start $(date +%s)
 }
 
+register_jukebox_settings() {
+  echo "Register Jukebox settings" | tee /dev/fd/3
+
+  # TODO
+  # Ask for Jukebox Name
+  # Ask for Jukebox hostname to replace raspberry.local
+
+  cp -f ${INSTALLATION_DIR}/resources/default-settings/jukebox.default.yaml ${INSTALLATION_DIR}/shared/settings/jukebox.yaml
+}
+
 finish() {
   echo "Installation complete!
 
@@ -279,9 +289,11 @@ main() {
   configure_samba
   install_jukebox
   register_system_services
-  finish
+  register_jukebox_settings
 
   calc_runtime_and_print time_start $(date +%s)
+
+  finish
 }
 
 ### RUN INSTALLATION

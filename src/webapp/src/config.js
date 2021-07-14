@@ -1,5 +1,9 @@
-const REQRES_ENDPOINT = 'ws://0.0.0.0:5556';
-const PUBSUB_ENDPOINT = 'ws://0.0.0.0:5557';
+const HOST = (window.location.hostname === 'localhost') ?
+  '0.0.0.0' :
+  window.location.hostname;
+
+const REQRES_ENDPOINT = `ws://${HOST}:5556`;
+const PUBSUB_ENDPOINT = `ws://${HOST}:5557`;
 
 const DEFAULT_PLAYER_STATUS = {
   kwargs: {
