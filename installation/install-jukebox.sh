@@ -40,8 +40,8 @@ Depending on your hardware, this installation might last
 around 60 minutes. It updates OS packages, installs
 Phoniebox dependencies and registers settings. Be patient
 and don't let your computer go to sleep. It might
-disconnect your SSH connection and might interupt the
-installation process.
+disconnect your SSH connection causing the interuption of
+the installation process.
 
 Let's set up your Phoniebox now?! [Y/n]" 1>&3
 
@@ -61,16 +61,16 @@ set_raspi_config() {
   echo "Set default raspi-config" | tee /dev/fd/3
   # Source: https://raspberrypi.stackexchange.com/a/66939
   # Autologin
-  echo "  * Enable Autologin for 'pi' user"
+  echo "  * Enable Autologin for 'pi' user" 1>&3
   sudo raspi-config nonint do_boot_behaviour B2
   # Wait for network at boot
-  echo "  * Enable 'Wait for network at boot'"
+  echo "  * Enable 'Wait for network at boot'" 1>&3
   sudo raspi-config nonint do_boot_wait 1
   # power management of wifi: switch off to avoid disconnecting
-  echo "  * Disable Wifi power management to avoid disconnecting"
+  echo "  * Disable Wifi power management to avoid disconnecting" 1>&3
   sudo iwconfig wlan0 power off
   # Switch off Bluetooth to save energy
-  echo "  * Disable Bluetooth service to save energy"
+  echo "  * Disable Bluetooth service to save energy" 1>&3
   sudo systemctl stop bluetooth
   # Skip interactive Samba WINS config dialog
   echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
