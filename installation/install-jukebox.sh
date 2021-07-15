@@ -64,18 +64,19 @@ Let's set up your Phoniebox now?! [Y/n]" 1>&3
 set_raspi_config() {
   echo "Set default raspi-config" | tee /dev/fd/3
   # Source: https://raspberrypi.stackexchange.com/a/66939
+
   # Autologin
   echo "  * Enable Autologin for 'pi' user" 1>&3
   sudo raspi-config nonint do_boot_behaviour B2
+
   # Wait for network at boot
-  echo "  * Enable 'Wait for network at boot'" 1>&3
-  sudo raspi-config nonint do_boot_wait 1
+  # echo "  * Enable 'Wait for network at boot'" 1>&3
+  # sudo raspi-config nonint do_boot_wait 1
+
   # power management of wifi: switch off to avoid disconnecting
   echo "  * Disable Wifi power management to avoid disconnecting" 1>&3
   sudo iwconfig wlan0 power off
-  # Switch off Bluetooth to save energy
-  echo "  * Disable Bluetooth service to save energy" 1>&3
-  sudo systemctl stop bluetooth
+
   # Skip interactive Samba WINS config dialog
   echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 }
@@ -246,10 +247,11 @@ register_jukebox_settings() {
 
 register_system_services() {
   local time_start=$(date +%s)
+  local systemd_path="/lib/systemd/system"
 
   echo "Register system services" | tee /dev/fd/3
-  sudo cp -f ${INSTALLATION_DIR}/resources/default-services/jukebox-*.service /lib/systemd/system
-  sudo chmod 644 /lib/systemd/system/jukebox-*.service
+  sudo cp -f ${INSTALLATION_DIR}/resources/default-services/jukebox-*.service ${systemd_path}
+  sudo chmod 644 ${systemd_path}/jukebox-*.service
 
   sudo systemctl enable jukebox-daemon.service
   sudo systemctl enable jukebox-webapp.service
@@ -258,24 +260,24 @@ register_system_services() {
 
   echo "Configure MPD"
   # TODO: Could this be read from the jukebox.yaml?
-  local mpd_conf_path = "${SETTINGS_DIR}/mpd.conf"
-  local audiofolders_path = "${SHARED_DIR}/audiofolders"
-  local playlists_path = "${SHARED_DIR}/playlists"
-  local alsa_mixer_control = "Headphone"
+  local mpd_conf_path="${SETTINGS_DIR}/mpd.conf"
+  local audiofolders_path="${SHARED_DIR}/audiofolders"
+  local playlists_path="${SHARED_DIR}/playlists"
+  local alsa_mixer_control="Headphone"
 
   sudo systemctl stop mpd.service
 
   # Prepare new mpd.conf
   sudo cp -f ${INSTALLATION_DIR}/resources/default-settings/mpd.default.conf ${mpd_conf_path}
-  sudo sed -i 's/%%JUKEBOX_AUDIOFOLDERS_PATH%%/'"$audiofolders_path"'/' ${mpd_conf_path}
-  sudo sed -i 's/%%JUKEBOX_PLAYLISTS_PATH%%/'"$audiofolders_path"'/' ${mpd_conf_path}
-  sudo sed -i 's/%%JUKEBOX_ALSA_MIXER_CONTROL%%/'"$alsa_mixer_control"'/' ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$audiofolders_path"'|' ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$playlists_path"'|' ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$alsa_mixer_control"'|' ${mpd_conf_path}
 
   # Reload mpd
   # Make original file unreachable
-  sudo cp -f /etc/mpd.conf /etc/mpd.conf.orig
+  sudo mv -f /etc/mpd.conf /etc/mpd.conf.orig
   # Update mpd.service file to use Jukebox mpd.conf
-  sudo sed -i 's/$MPDCONF/'"$mpd_conf_path"'/' /lib/systemd/system/mpd.service
+  sudo sed -i 's|$MPDCONF|'"$mpd_conf_path"'|' ${systemd_path}/mpd.service
   sudo systemctl daemon-reload
   sudo systemctl start mpd.service
   mpc update
