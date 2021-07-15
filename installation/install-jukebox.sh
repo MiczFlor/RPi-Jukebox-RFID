@@ -4,8 +4,12 @@ export LC_ALL=C
 
 # Constants
 INSTALL_ID=$(date +%s)
+
 HOME_DIR="/home/pi"
 INSTALLATION_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+SHARED_DIR="${INSTALLATION_DIR}/shared"
+SETTINGS_DIR="${SHARED_DIR}/settings"
+
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
 GIT_BRANCH="future3/webapp"
 
@@ -230,6 +234,16 @@ EOF
   fi
 }
 
+register_jukebox_settings() {
+  echo "Register Jukebox settings" | tee /dev/fd/3
+
+  # TODO
+  # Ask for Jukebox Name
+  # Ask for Jukebox hostname to replace raspberry.local
+
+  cp -f ${INSTALLATION_DIR}/resources/default-settings/jukebox.default.yaml ${SETTINGS_DIR}/jukebox.yaml
+}
+
 register_system_services() {
   local time_start=$(date +%s)
 
@@ -242,18 +256,32 @@ register_system_services() {
 
   sudo systemctl daemon-reload
 
+  echo "Configure MPD"
+  # TODO: Could this be read from the jukebox.yaml?
+  local mpd_conf_path = "${SETTINGS_DIR}/mpd.conf"
+  local audiofolders_path = "${SHARED_DIR}/audiofolders"
+  local playlists_path = "${SHARED_DIR}/playlists"
+  local alsa_mixer_control = "Headphone"
+
+  sudo systemctl stop mpd.service
+
+  # Prepare new mpd.conf
+  sudo cp -f ${INSTALLATION_DIR}/resources/default-settings/mpd.default.conf ${mpd_conf_path}
+  sudo sed -i 's/%%JUKEBOX_AUDIOFOLDERS_PATH%%/'"$audiofolders_path"'/' ${mpd_conf_path}
+  sudo sed -i 's/%%JUKEBOX_PLAYLISTS_PATH%%/'"$audiofolders_path"'/' ${mpd_conf_path}
+  sudo sed -i 's/%%JUKEBOX_ALSA_MIXER_CONTROL%%/'"$alsa_mixer_control"'/' ${mpd_conf_path}
+
+  # Reload mpd
+  # Make original file unreachable
+  sudo cp -f /etc/mpd.conf /etc/mpd.conf.orig
+  # Update mpd.service file to use Jukebox mpd.conf
+  sudo sed -i 's/$MPDCONF/'"$mpd_conf_path"'/' /lib/systemd/system/mpd.service
+  sudo systemctl daemon-reload
+  sudo systemctl start mpd.service
+  mpc update
+
   # We don't start the services now, we wait for the reboot
   calc_runtime_and_print time_start $(date +%s)
-}
-
-register_jukebox_settings() {
-  echo "Register Jukebox settings" | tee /dev/fd/3
-
-  # TODO
-  # Ask for Jukebox Name
-  # Ask for Jukebox hostname to replace raspberry.local
-
-  cp -f ${INSTALLATION_DIR}/resources/default-settings/jukebox.default.yaml ${INSTALLATION_DIR}/shared/settings/jukebox.yaml
 }
 
 finish() {
@@ -279,7 +307,7 @@ Do you want to reboot now? [Y/n]" 1>&3
   esac
 }
 
-main() {
+install() {
   local time_start=$(date +%s)
 
   welcome
@@ -288,8 +316,8 @@ main() {
   install_jukebox_dependencies
   configure_samba
   install_jukebox
-  register_system_services
   register_jukebox_settings
+  register_system_services
 
   calc_runtime_and_print time_start $(date +%s)
 
@@ -304,4 +332,4 @@ INSTALLATION_LOGFILE="$HOME_DIR/INSTALL-$INSTALL_ID.log"
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
 
-main
+install
