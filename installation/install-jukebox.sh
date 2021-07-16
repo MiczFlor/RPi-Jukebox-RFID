@@ -5,10 +5,10 @@ export LC_ALL=C
 # Constants
 INSTALL_ID=$(date +%s)
 
-HOME_PATH="/home/pi"
-INSTALLATION_PATH="$HOME_PATH/RPi-Jukebox-RFID"
-SHARED_PATH="$INSTALLATION_PATH/shared"
-SETTINGS_PATH="$SHARED_PATH/settings"
+HOME_DIR="/home/pi"
+INSTALLATION_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+SHARED_DIR="${INSTALLATION_DIR}/shared"
+SETTINGS_DIR="${SHARED_DIR}/settings"
 
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
 GIT_BRANCH="future3/webapp"
@@ -16,9 +16,9 @@ GIT_BRANCH="future3/webapp"
 # $1->start, $2->end
 calc_runtime_and_print () {
   runtime=$(($2-$1))
-  ((h=$runtime/3600))
-  ((m=($runtime%3600)/60))
-  ((s=$runtime%60))
+  ((h=${runtime}/3600))
+  ((m=(${runtime}%3600)/60))
+  ((s=${runtime}%60))
 
   echo "Done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
 }
@@ -96,7 +96,7 @@ install_jukebox_dependencies() {
   local time_start=$(date +%s)
 
   echo "Install Jukebox OS dependencies" | tee /dev/fd/3
-  sudo apt-get -qq -y install \
+  sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     at git wget \
     mpd mpc \
     mpg123 \
@@ -108,7 +108,7 @@ install_jukebox_dependencies() {
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages > /dev/null
-  sudo apt-get --qq clean && rm -rf /var/lib/apt/lists/*
+  sudo rm -rf /var/lib/apt/lists/*
 
   # Install Python
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -116,7 +116,6 @@ install_jukebox_dependencies() {
   # Install Node
   if which node > /dev/null; then
     echo "  Found existing NodeJS. Hence, updating NodeJS"
-    sudo npm install --silent -g n
     sudo npm cache clean -f
     sudo n --quiet latest
     sudo npm update --silent -g
@@ -124,8 +123,7 @@ install_jukebox_dependencies() {
     echo "  Install NodeJS"
     curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - > /dev/null
     sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm serve
-    sudo npm cache clean -f
+    sudo npm install --silent -g n npm serve
   fi
 
   calc_runtime_and_print time_start $(date +%s)
@@ -136,10 +134,10 @@ install_jukebox() {
   local time_start=$(date +%s)
 
   echo "Install Jukebox" | tee /dev/fd/3
-  cd ${HOME_PATH}
+  cd ${HOME_DIR}
 
-  if [ -d "$INSTALLATION_PATH" ]; then
-    cd $INSTALLATION_PATH
+  if [ -d "$INSTALLATION_DIR" ]; then
+    cd ${INSTALLATION_DIR}
     if [[ `git status --porcelain` ]]; then
       echo "  Found local changes in git repository. Moving them to backup branch 'local-backup-$INSTALL_ID' and git stash" | tee /dev/fd/3
       # Changes
@@ -154,7 +152,7 @@ install_jukebox() {
       git pull
     fi
   else
-    git clone --depth 1 $GIT_URL --branch $GIT_BRANCH
+    git clone --depth 1 ${GIT_URL} --branch "${GIT_BRANCH}"
   fi
 
   # Install Python dependencies
@@ -167,34 +165,34 @@ install_jukebox() {
   # https://pyzmq.readthedocs.io/en/latest/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "    Install pyzmq"
-  ZMQ_TMP_PATH="libzmq"
+  ZMQ_TMP_DIR="libzmq"
   ZMQ_PREFIX="/usr/local"
 
   if ! pip3 list | grep -F pyzmq >> /dev/null; then
-    cd $HOME && mkdir $ZMQ_TMP_PATH && cd $ZMQ_TMP_PATH
+    cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}
     # Download pre-compiled libzmq armv6 from Google Drive
     # https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
     wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
     tar -xzf libzmq.tar.gz
     rm -f libzmq.tar.gz
-    sudo rsync -a * $ZMQ_PREFIX/
+    sudo rsync -a * ${ZMQ_PREFIX}/
 
     pip3 install -q --pre pyzmq \
       --install-option=--enable-drafts \
-      --install-option=--zmq=$ZMQ_PREFIX
+      --install-option=--zmq=${ZMQ_PREFIX}
   else
     echo "      Skipping. pyzmq already installed"
   fi
 
   echo "    Install requirements"
-  cd $INSTALLATION_PATH
-  pip3 install -q --no-cache-dir -r $INSTALLATION_PATH/requirements.txt
+  cd ${INSTALLATION_DIR}
+  pip3 install -q --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
 
   # Install Node dependencies
   # TODO: Avoid building the app locally
   # Instead implement a Github Action that prebuilds on commititung a git tag
   echo "  Install web application"
-  cd $INSTALLATION_PATH/src/webapp
+  cd ${INSTALLATION_DIR}/src/webapp
   npm install --production --silent
   rm -rf build
   npm run build
@@ -214,7 +212,7 @@ configure_samba() {
     echo "  Skipping. Already set up!" | tee /dev/fd/3
   else
     # Create Samba user
-    (echo $SMB_PASSWD; echo $SMB_PASSWD) | sudo smbpasswd -s -a $SMB_USER
+    (echo "${SMB_PASSWD}"; echo "${SMB_PASSWD}") | sudo smbpasswd -s -a $SMB_USER
 
     sudo chown root:root $SMB_CONF
     sudo chmod 777 $SMB_CONF
@@ -224,7 +222,7 @@ configure_samba() {
 ## Jukebox Samba Config
 [phoniebox]
   comment= Pi Jukebox
-  path=$SHARED_PATH
+  path=${INSTALLATION_DIR}/shared
   browseable=Yes
   writeable=Yes
   only guest=no
@@ -244,16 +242,16 @@ register_jukebox_settings() {
   # Ask for Jukebox Name
   # Ask for Jukebox hostname to replace raspberry.local
 
-  cp -f $INSTALLATION_PATH/resources/default-settings/jukebox.default.yaml $SETTINGS_PATH/jukebox.yaml
+  cp -f ${INSTALLATION_DIR}/resources/default-settings/jukebox.default.yaml ${SETTINGS_DIR}/jukebox.yaml
 }
 
 register_system_services() {
   local time_start=$(date +%s)
-  local SYSTEMD_PATH="/lib/systemd/system"
+  local systemd_path="/lib/systemd/system"
 
   echo "Register system services" | tee /dev/fd/3
-  sudo cp -f $INSTALLATION_PATH/resources/default-services/jukebox-*.service $SYSTEMD_PATH
-  sudo chmod 644 $SYSTEMD_PATH/jukebox-*.service
+  sudo cp -f ${INSTALLATION_DIR}/resources/default-services/jukebox-*.service ${systemd_path}
+  sudo chmod 644 ${systemd_path}/jukebox-*.service
 
   sudo systemctl enable jukebox-daemon.service
   sudo systemctl enable jukebox-webapp.service
@@ -262,24 +260,24 @@ register_system_services() {
 
   echo "Configure MPD"
   # TODO: Could this be read from the jukebox.yaml?
-  local MPD_CONF_PATH="$SETTINGS_PATH/mpd.conf"
-  local AUDIOFOLDERS_PATH="$SHARED_PATH/audiofolders"
-  local PLAYLISTS_PATH="$SHARED_PATH/playlists"
-  local ALSA_MIXER_CONTROL="Headphone"
+  local mpd_conf_path="${SETTINGS_DIR}/mpd.conf"
+  local audiofolders_path="${SHARED_DIR}/audiofolders"
+  local playlists_path="${SHARED_DIR}/playlists"
+  local alsa_mixer_control="Headphone"
 
   sudo systemctl stop mpd.service
 
   # Prepare new mpd.conf
-  sudo cp -f $INSTALLATION_PATH/resources/default-settings/mpd.default.conf $MPD_CONF_PATH
-  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' $MPD_CONF_PATH
-  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' $MPD_CONF_PATH
-  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' $MPD_CONF_PATH
+  sudo cp -f ${INSTALLATION_DIR}/resources/default-settings/mpd.default.conf ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$audiofolders_path"'|' ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$playlists_path"'|' ${mpd_conf_path}
+  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$alsa_mixer_control"'|' ${mpd_conf_path}
 
   # Reload mpd
   # Make original file unreachable
   sudo mv -f /etc/mpd.conf /etc/mpd.conf.orig
   # Update mpd.service file to use Jukebox mpd.conf
-  sudo sed -i 's|$MPDCONF|'"$MPD_CONF_PATH"'|' ${SYSTEMD_PATH}/mpd.service
+  sudo sed -i 's|$MPDCONF|'"$mpd_conf_path"'|' ${systemd_path}/mpd.service
   sudo systemctl daemon-reload
   sudo systemctl start mpd.service
   mpc update
@@ -316,7 +314,7 @@ install() {
 
   welcome
   set_raspi_config
-  # update_os
+  update_os
   install_jukebox_dependencies
   configure_samba
   install_jukebox
@@ -331,9 +329,9 @@ install() {
 ### RUN INSTALLATION
 
 # Log installation for debugging reasons
-INSTALLATION_LOGFILE="$HOME_PATH/INSTALL-$INSTALL_ID.log"
+INSTALLATION_LOGFILE="$HOME_DIR/INSTALL-$INSTALL_ID.log"
 # Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
-exec 3>&1 1>>$INSTALLATION_LOGFILE 2>&1
+exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: $INSTALL_ID"
 
 install
