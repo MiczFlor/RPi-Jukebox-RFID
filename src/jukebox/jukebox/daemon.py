@@ -60,29 +60,21 @@ class JukeBox:
 
     def run(self):
 
-        plugins_named = cfg.get('newmodules', default=[])
-        plugins_other = plugins_named.pop('others', [])
+        plugin.load_all()
 
-        for module_name, package_name in plugins_named.items():
-            try:
-                plugin.load(package_name, module_name)
-            except Exception as e:
-                logger.error(f"Failed to load module: {package_name} as {module_name}. Trying without...")
-                logger.error(f"Reason: {e}")
+        print(f"Callables = {plugin.callables}")
+        print(f"{plugin.modules['volume'].factory.list()}")
 
-        for package_name in plugins_other:
-            try:
-                plugin.load(package_name)
-            except Exception as e:
-                logger.error(f"Failed to load module: {package_name} as {module_name}. Trying without...")
-                logger.error(f"Reason: {e}")
+        # Testcode for switching to another volume control service ...
+        # plugin.modules['volume'].factory.set_active("alsa2")
+        # print(f"Callables = {plugin.callables}")
 
-        # Play the startup sound
-        if 'startup_sound' in cfg['system'] and plugin.exists('volume', 'play_wave'):
-            plugin.call_ignore_errors('volume', 'play_wave', args=[cfg['system']['startup_sound']], as_thread=True)
+        if 'startup_sound' in cfg['jingle']:
+            plugin.call_ignore_errors('jingle', 'play_startup', as_thread=True)
         else:
-            logger.debug("No startup sound in config file or no plugin for startup sound loaded")
+            logger.debug("No startup sound in config file")
 
+        # Old code
         objects = {}
         if 'volume' in cfg['modules']:
             try:

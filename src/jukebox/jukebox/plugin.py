@@ -3,8 +3,16 @@ import inspect
 import functools
 import logging
 import threading
+import jukebox.cfghandler
 
 logger = logging.getLogger('jb.plugin')
+cfg = jukebox.cfghandler.get_handler('jukebox')
+
+# package: Python package to load as plugin
+# plugin : Name of the above plugin
+# obj    : An object from the plugin that can be access through RPC (function or class instance)
+# name   : The name of the above object
+# method : In case the object is a class instance a bound method to call from the class instance
 
 # ---------------------------------------------------------------------------
 # Storage
@@ -28,24 +36,24 @@ current_module = 'default'
 # ---------------------------------------------------------------------------
 
 
-def _enlist(obj, name, plugin_name):
+def _enlist(obj, obj_name, module_name, *, replace=False):
     """
     Enlist the object into global callables register
     :param obj: Object to enlist
-    :param name: Enlist with this name
+    :param obj_name: Enlist with this name
     :return: The object again
     """
-    if name in callables[plugin_name]:
-        msg = f"There is an object with the same name '{name}' already registered in module '{plugin_name}'"
+    if (replace is False) and (obj_name in callables[module_name]):
+        msg = f"There is an object with the same name '{obj_name}' already registered in module '{module_name}'"
         logger.error(msg)
         raise NameError(msg)
-    if plugin_name == 'default':
-        logger.warning(f"Plugin name is 'default'! While enlisting {name}.")
-    callables[plugin_name][name] = obj
+    if module_name == 'default':
+        logger.warning(f"Plugin name is 'default'! While enlisting {obj_name}.")
+    callables[module_name][obj_name] = obj
     return obj
 
 
-def _register_obj(obj, name_as=None, module_name=None):
+def _register_obj(obj, name_as=None, module_name=None, *, replace=False):
     """
     Register a non-class object for the (current) plugin module. It is recommended to use the generic 'register' function.
 
@@ -53,7 +61,8 @@ def _register_obj(obj, name_as=None, module_name=None):
     - function in decorator style (cannot use name_as and module_name)
     - function as dynamic function style
     - bound method as dynamic function style
-    - class instance as dynamic function style
+    - class instance as dynamic function style. Methods of class instances are only made callable,
+    if they are tagged with the decorator @plugin.tag!
 
     :param obj: Function to register
     :param name_as: Register with this name, if None the name is that of the function. Only of not used as decorator
@@ -82,14 +91,17 @@ def _register_obj(obj, name_as=None, module_name=None):
                      f"with type {type(obj)}")
     else:
         raise TypeError(f"Trying to register object with incompatible type: '{type(obj)}")
-    return _enlist(obj, name, module_name)
+    return _enlist(obj, name, module_name, replace=replace)
 
 
-def _register_class(cls):
+def _register_class(cls, auto_tag=False):
     """
     Decorator for classes: Classes will auto-register when initialized
 
     The decorated class will have two additional parameters in the constructor: see below!
+
+    Methods are not automatically made callable through RPC! Only those methods tagged
+    with the decorator @plugin.tag can be called through the RPC.
 
     Developers note:
     It is not guaranteed that the instantiation takes place during the loading of the module.
@@ -101,7 +113,7 @@ def _register_class(cls):
     """
     @functools.wraps(cls, updated=())
     class IClass(cls):
-        decorated = 1
+        plugin_decorated = 1
         plugin_module = current_module
 
         def __init__(self, *args, plugin_name, plugin_register=True, **kwargs):
@@ -118,6 +130,14 @@ def _register_class(cls):
                          f"in module {IClass.plugin_module} as '{plugin_name}'")
             if plugin_register:
                 _register_obj(self, plugin_name, IClass.plugin_module)
+
+    # Auto-tag all functions and methods (except __init__)
+    if auto_tag:
+        logger.debug(f"Auto-tagging all methods and functions of class '{IClass.__name__}'")
+        for m in [*inspect.getmembers(IClass, predicate=inspect.ismethod),
+                  *inspect.getmembers(IClass, predicate=inspect.isfunction)]:
+            if m[0] != '__init__':
+                setattr(m[1], 'plugin_callable', True)
 
     return IClass
 
@@ -154,14 +174,51 @@ def load(name, load_as=None):
     callables[current_module] = {}
     try:
         modules[current_module] = importlib.import_module(f'components.{name}', 'pkg')
-        if hasattr(modules[current_module], 'init'):
-            modules[current_module].init()
+        if hasattr(modules[current_module], 'initialize'):
+            modules[current_module].initialize()
     except Exception as e:
         logger.error(f"Failed to load volume module_name: {name}")
         logger.error(f"Reason: {e}")
         raise e
     finally:
         current_module = 'default'
+
+
+def finalize():
+    """Calls the finalize() function of all modules
+
+    This function must called after all modules have been loaded.
+    In case modules need to do some final setup stuff in dependence of other moduels
+    """
+    # TODO: Order of modules in dictionary:
+    # OK, for Python >= 3.7. Check this in code or use OrdredDict directly?
+    # https: // realpython.com / python - ordereddict /
+    for mod in modules.values():
+        if hasattr(mod, 'finalize'):
+            mod.finalize()
+
+
+def load_all():
+    plugins_named = cfg.get('newmodules', default=[])
+    plugins_other = cfg.getn('newmodules', 'others', default=[])
+
+    for module_name, package_name in plugins_named.items():
+        if module_name != 'others':
+            try:
+                load(package_name, module_name)
+            except Exception as e:
+                logger.error(f"Failed to load module: {package_name} as {module_name}. Trying without...")
+                logger.error(f"Reason: {e}")
+                raise e
+
+    for package_name in plugins_other:
+        try:
+            load(package_name)
+        except Exception as e:
+            logger.error(f"Failed to load module: {package_name} as {package_name}. Trying without...")
+            logger.error(f"Reason: {e}")
+
+    finalize()
 
 
 def call(module_name, obj_name, method_name=None, *, args=(), kwargs=None, as_thread=False):
@@ -172,14 +229,7 @@ def call(module_name, obj_name, method_name=None, *, args=(), kwargs=None, as_th
         where obj_name is a function or a callable instance of a class
     - module_name.obj_name.method_name(*args, **kwargs)
         where obj_name is a class instance
-    - module_name.obj_name().method_name(*args, **kwargs)
-        where obj_name is a callable instance of a class, and method_name is invoked on whatever it returns
-        (this allows for factory patterns: obj_name is a factory getter with default value)
-        How to differentiate: if obj_name is callable? -> Careful with classes that contain __call__ but also provide other
-        methods that need to be accessible through the RPC
-        --> Does not work out, the factory needs to be accessible for set/get_default and list ...
-    - module_name.obj_name(*args2, **kwargs2).method_name(*args, **kwargs)
-        Not callable at the moment ...
+        and method_name must have the attribute 'plugin_callable' = True
 
     Developers notes:
         There is no logger in this function as they all belong uplevel where the exceptions are handled
@@ -208,7 +258,7 @@ def call(module_name, obj_name, method_name=None, *, args=(), kwargs=None, as_th
     # In RPC context we want to be able to call:
     # - functions
     # - class instances that have a __call__ function
-    # - arbitrary methods from class instances
+    # - arbitrary methods from class instances except those starting with '_'
     # but not
     # - classes themselves (i.e. the initializer) as the reference to the instance in not stored
     #   (and these can only be registered by circumventing the use of the register functions!)
@@ -222,6 +272,10 @@ def call(module_name, obj_name, method_name=None, *, args=(), kwargs=None, as_th
             raise AttributeError(f"Object '{obj_name}' in module '{module_name}' has no attribute '{method_name}'")
         if not callable(func):
             raise TypeError(f"Attribute '{method_name}' not callable of object '{obj_name}' in module '{module_name}'")
+        print(f"{func.__name__} :: {hasattr(func, 'plugin_callable')}")
+        if not getattr(func, 'plugin_callable', False):
+            raise TypeError(f"Attribute '{method_name}' not tagged as RPC callable of object '{obj_name}' "
+                            f"in module '{module_name}'")
 
     if as_thread is True:
         l_thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True)
@@ -255,6 +309,7 @@ def call_ignore_errors(module_name, obj_name, method_name=None, *, args=(), kwar
 def exists(module_name, obj_name=None, method_name=None):
     """
     Check if the plugin element is registered
+    (and tagged callable in case of methods)
 
     :return: Boolean
     """
@@ -265,13 +320,59 @@ def exists(module_name, obj_name=None, method_name=None):
             return False
         if method_name is not None:
             obj = callables[module_name][obj_name]
-            return hasattr(obj, method_name)
+            method = getattr(obj, method_name, None)
+            return getattr(method, 'plugin_callable', False)
     elif method_name is not None:
         return False
     return True
 
 
-def register(arg1, arg2=None, arg3=None):
+def delete(module_name, obj_name=None):
+    if exists(module_name, obj_name):
+        if obj_name is None:
+            callables.__delitem__(module_name)
+        else:
+            callables[module_name].__delitem__(obj_name)
+
+
+def register(obj=None, *, name=None, module=None, auto_tag=None, replace=False):
+    if obj is None:
+        # Attention: very strong Decorator Voodoo:
+        # Case A: Used as 2-level decorator around a function
+        # If the first argument is a string, we assume this is used as decorator with params (hopefully around a function)
+        # 2-level decorator means
+        #   arg1: name under which the func shall be registered
+        #   arg2: for cross-module registering: function shall be registered under this module name rather than current_module
+        #   The actual function must be extracted by an inner decorator
+        # Misuse: if used as decorator with params, but on a class or a method --> special error message for easier debug
+        def inner_function(func):
+            # This error would also be caught in register_obj, but with a very misleading error message
+            # as the root cause is very different.
+            if inspect.isfunction(func):
+                return _register_obj(func, name_as=name, module_name=module, replace=replace)
+            elif inspect.isclass(func):
+                return _register_class(func, auto_tag=auto_tag)
+            else:
+                raise TypeError(f"Decorator takes no arguments on object : '{func.__name__}' of type '{type(func)}")
+            # if not inspect.isfunction(func):
+            #     raise TypeError(f"Decorator takes no arguments on object : '{func.__name__}' of type '{type(func)}")
+            # return _register_obj(func, arg1, arg2)
+        return inner_function
+    elif inspect.isclass(obj):
+        # Case B: 1-level decorator around a class
+        return _register_class(obj, auto_tag=auto_tag)
+    else:
+        # Throw it at object registration
+        # Case C.1: Used as 1-level decorator on a function: arg1 function, arg2, arg3 are default (None)
+        # Case D.1: Used as 1-level decorator on an unbound method inside a class: This is an error caught by register_obj
+        # Case E.1: Used as function to register a function
+        # Case E.2: Used as function to register an entire class instance
+        # Case E.3: Used as function to register a bound method
+        #         : arg1 is obj, arg2 may be new register_as name, arg3 may be module_name
+        return _register_obj(obj, name_as=name, module_name=module, replace=replace)
+
+
+def register_old(arg1, arg2=None, arg3=None):
     """
     A generic decorator / run-time function to register plugin module callables
 
@@ -295,7 +396,7 @@ def register(arg1, arg2=None, arg3=None):
     _register_obj and _register_class! But see these functions for additional documentation
 
     Example: Decorate a function for auto-registering under it's own name
-    >>> import plugin
+    >>> import jukebox.plugin as plugin
     >>> @plugin.register
     >>> def func1(param):
     >>>     pass
@@ -364,9 +465,15 @@ def register(arg1, arg2=None, arg3=None):
         def inner_function(func):
             # This error would also be caught in register_obj, but with a very misleading error message
             # as the root cause is very different.
-            if not inspect.isfunction(func):
+            if inspect.isfunction(func):
+                return _register_obj(func, arg1, arg2)
+            elif inspect.isclass(func):
+                return _register_class(func, arg1)
+            else:
                 raise TypeError(f"Decorator takes no arguments on object : '{func.__name__}' of type '{type(func)}")
-            return _register_obj(func, arg1, arg2)
+            # if not inspect.isfunction(func):
+            #     raise TypeError(f"Decorator takes no arguments on object : '{func.__name__}' of type '{type(func)}")
+            # return _register_obj(func, arg1, arg2)
         return inner_function
     elif inspect.isclass(arg1):
         # Case B: Decorator around a class
@@ -380,3 +487,23 @@ def register(arg1, arg2=None, arg3=None):
         # Case E.3: Used as function to register a bound method
         #         : arg1 is obj, arg2 may be new register_as name, arg3 may be module_name
         return _register_obj(arg1, arg2, arg3)
+
+
+# def replace(obj, obj_name=None, module_name=None):
+#     _register_obj(obj, obj_name, module_name, replace=True)
+
+
+def tag(func):
+    """
+    Method decorator for tagging a method as callable by the RPC
+
+    Note that the instantiated class must still be registered as plugin object
+    (either with the class decorator or dynamically)
+    :param func: function to decorate
+    :return: the function
+    """
+    logger.debug(f"-------------------- Tagging {func.__qualname__} ...")
+    if not (inspect.isfunction(func) and func.__qualname__ != func.__name__):
+        raise AttributeError("plugin.tag is a decorator only for unbound class methods")
+    setattr(func, 'plugin_callable', True)
+    return func

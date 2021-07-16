@@ -73,7 +73,7 @@ class RpcServer:
             # Note the difference in response behavior
             # A response will ALWAYS be send, independent of presence of 'id'
             # This is a ZeroMQB REQ/REP pattern requirement!
-            # But if 'id' is omitted, this will always be None! Unless an error occured, then the error is returned
+            # But if 'id' is omitted, this will always be None! Unless an error occurred, then the error is returned
             # The absence of 'id' indicates that the requester is not interested in the response
             module = client_request.get('plugin')
             if module is not None:
