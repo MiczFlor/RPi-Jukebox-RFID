@@ -13,3 +13,5 @@
 
 4. Restart the phoniebox-rfid-reader service:
    - `sudo systemctl restart phoniebox-rfid-reader.service`
+
+Be aware that unlike a few other installations with this card reader the phoniebox requires the IRQ pin to be connected (on the raspberry pi and zero normaly to GPIO 24 or PIN 18).
