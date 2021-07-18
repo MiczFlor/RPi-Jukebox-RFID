@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import nanotime
@@ -6,7 +5,7 @@ import zmq
 import json
 import logging
 import jukebox.cfghandler
-import jukebox.plugin as plugin
+import jukebox.plugs as plugs
 
 logger = logging.getLogger('jb.rpc_server')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -61,36 +60,36 @@ class RpcServer:
             # Based on jsonrpc https://www.jsonrpc.org/specification
             # But with different elements
             # {
-            #   'plugin'   : str # The plugin name of the loaded module,
-            #   'object'   : str # The callable object (e.g. function) or class instance,
-            #   'method'   : str # (optional) The method of the class instance,
-            #   'args'     : [ ] # (optional) positional arguments as list,
-            #   'kwargs'   : { } # (optional) keyword arguments as dictionary
-            #   'as_thread': true/false # (optional) start call in separate thread
-            #   'id'       : Any # (optional) Round-trip id for response
-            #   'tsp'      : Any # (optional) measure and return total processing time for the call request
+            #   'package'  : str  # The plugin package loaded from python module
+            #   'plugin'   : str  # The plugin object to be accessed from the package (i.e. function or class instance)
+            #   'method'   : str  # (optional) The method of the class instance
+            #   'args'     : [ ]  # (optional) Positional arguments as list
+            #   'kwargs'   : { }  # (optional) Keyword arguments as dictionary
+            #   'as_thread': bool # (optional) start call in separate thread
+            #   'id'       : Any  # (optional) Round-trip id for response
+            #   'tsp'      : Any  # (optional) measure and return total processing time for the call request
             # }
             # Note the difference in response behavior
             # A response will ALWAYS be send, independent of presence of 'id'
             # This is a ZeroMQB REQ/REP pattern requirement!
-            # But if 'id' is omitted, this will always be None! Unless an error occurred, then the error is returned
+            # But if 'id' is omitted, this will always be 'None'! Unless an error occurred, then the error is returned
             # The absence of 'id' indicates that the requester is not interested in the response
-            module = client_request.get('plugin')
-            if module is not None:
-                obj = client_request.get('object')
-                if obj is not None:
+            package = client_request.get('package')
+            if package is not None:
+                plugin = client_request.get('plugin')
+                if plugin is not None:
                     method = client_request.get('method', None)
-                    args = client_request.get('args', set())
+                    args = client_request.get('args', tuple())
                     kwargs = client_request.get('kwargs', {})
                     as_thread = client_request.get('as_thread', False)
                     try:
-                        result = plugin.call(module, obj, method, args=args, kwargs=kwargs, as_thread=as_thread)
+                        result = plugs.call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread)
                     except Exception as e:
                         error = e.__str__()
                 else:
-                    error = "Missing mandatory parameter 'object'."
+                    error = "Missing mandatory parameter 'plugin'."
             else:
-                error = "Missing mandatory parameter 'plugin'."
+                error = "Missing mandatory parameter 'package'."
 
             if error is not None:
                 logger.error(f"Execute error: {error} in request {client_request}")

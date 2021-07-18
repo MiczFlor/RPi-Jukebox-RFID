@@ -11,7 +11,7 @@ import zmq
 
 import jukebox.Volume
 import jukebox.System
-import jukebox.plugin as plugin
+import jukebox.plugs as plugin
 from player import PlayerMPD
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
@@ -60,10 +60,17 @@ class JukeBox:
 
     def run(self):
 
-        plugin.load_all()
+        # Load the plugins
+        plugins_named = cfg.getn('newmodules', 'named', default={})
+        plugins_other = cfg.getn('newmodules', 'others', default=[])
+        plugin.load_all_named(plugins_named, prefix='components')
+        plugin.load_all_unnamed(plugins_other, prefix='components')
+        plugin.load_all_finalize()
 
-        print(f"Callables = {plugin.callables}")
-        print(f"{plugin.modules['volume'].factory.list()}")
+        # Initial testing code:
+        # print(f"Callables = {plugin._PLUGINS}")
+        # print(f"{plugin.modules['volume'].factory.list()}")
+        # print(f"Volume factory = {plugin.get('volume', 'factory').list()}")
 
         # Testcode for switching to another volume control service ...
         # plugin.modules['volume'].factory.set_active("alsa2")
@@ -74,7 +81,8 @@ class JukeBox:
         else:
             logger.debug("No startup sound in config file")
 
-        # Old code
+        # ---------------------------------------------------
+        # Old-style code
         objects = {}
         if 'volume' in cfg['modules']:
             try:
@@ -84,14 +92,6 @@ class JukeBox:
                 logger.error(f"Reason: {e}")
             else:
                 objects['volume'] = m_volume.init()
-                # if 'startup_sound' in cfg['system']:
-                #     startsound_thread = threading.Thread(target=m_volume.play_wave,
-                #                                          args=[cfg['system']['startup_sound']],
-                #                                          name='StartSound')
-                #     startsound_thread.daemon = True
-                #     startsound_thread.start()
-                # else:
-                #     logger.debug("No startup sound in config file")
 
         # load music player status
         music_player_status = self.nvm.load(cfg.getn('player', 'status_file'))

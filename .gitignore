@@ -35,7 +35,7 @@ __pycache__/
 *.idea
 *.vscode
 .DS_Store
-
+**/.mypy_cache
 
 # Created by https://www.gitignore.io/api/composer
 # Edit at https://www.gitignore.io/?templates=composer

@@ -3,7 +3,7 @@ import logging
 import wave
 import os
 import jukebox.cfghandler
-import jukebox.plugin as plugin
+import jukebox.plugs as plugin
 
 logger = logging.getLogger('jb.alsaif')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -90,6 +90,7 @@ class AlsaWave:
                 device.write(data)
                 data = f.readframes(periodsize)
 
+    @plugin.tag
     def play(self, filename):
         if os.path.exists(filename) and os.path.isfile(filename):
             logger.debug("Playing wave file")
@@ -122,10 +123,10 @@ class AlsaWaveBuilder:
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
 
-
+@plugin.initialize
 def initialize():
-    vmod = plugin.modules['volume']
+    vmod = plugin.get('volume')
     vmod.factory.register("alsa", AlsaCtrlBuilder())
 
-    vmod = plugin.modules['jingle']
+    vmod = plugin.get('jingle')
     vmod.factory.register("wav", AlsaWaveBuilder())

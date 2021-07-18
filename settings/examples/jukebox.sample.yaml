@@ -1,11 +1,20 @@
 system:
     box_name : Jukebox
-    startup_sound: ../../resources/startupsound.wav
-    shutdown_sound: ../../resources/shutdownsound.wav
     audiofolder_path: ../../shared
     playlistfolder_path: ../../playlists
+jingle:
+    startup_sound: ../../resources/startupsound.wav
+    # startup_sound: ../../resources/number10.mp3
+    shutdown_sound: ../../resources/shutdownsound.wav
+    # call_parameters: [-d 2]
+    service: auto
 player:
     status_file: ../../shared/music_player_status.json
+newmodules:
+    named:
+        volume: volume # Load this first
+        jingle: jingle
+    others: [alsaif, alsa2]
 modules:
     volume: jukebox.alsaif
     player: jukebox.mpd
@@ -14,7 +23,9 @@ mpd:
     host: localhost
 alsaif:
     mixer: Master
-    start_sound_device: default
+    jingle_device: default
+volume:
+    interface: alsa
 rpc:
     tcp_port: 5555
     websocket_port: 5556
