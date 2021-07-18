@@ -3,18 +3,18 @@ system:
     audiofolder_path: ../../shared
     playlistfolder_path: ../../playlists
 jingle:
-    startup_sound: ../../resources/audio/startupsound.wav
+    startup_sound: ../../resources/startupsound.wav
     # startup_sound: ../../resources/number10.mp3
-    shutdown_sound: ../../resources/audio/shutdownsound.wav
+    shutdown_sound: ../../resources/shutdownsound.wav
     # call_parameters: [-d 2]
     service: auto
 player:
-    status_file: ../../shared/settings/music_player_status.json
+    status_file: ../../shared/music_player_status.json
 newmodules:
     named:
         volume: volume # Load this first
         jingle: jingle
-    others: [alsaif]
+    others: [alsaif, alsa2]
 modules:
     volume: jukebox.alsaif
     player: jukebox.mpd
@@ -22,7 +22,7 @@ modules:
 mpd:
     host: localhost
 alsaif:
-    mixer: Headphone
+    mixer: Master
     jingle_device: default
 volume:
     interface: alsa
@@ -30,7 +30,4 @@ rpc:
     tcp_port: 5555
     websocket_port: 5556
 rfid:
-    cardid_database: ../../shared/settings/jukebox_cardid_database.json
-pubsub:
-    websocket_port: 5557
-
+    cardid_database: ../../settings/jukebox_cardid_database.json

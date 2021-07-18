@@ -71,8 +71,9 @@ class RFID_Reader(object):
             except IndexError:
                 sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
 
-        self.PhonieboxRpc = RpcClient(context=zmq_context)
-        self.PhonieboxRpc.connect(zmq_address)
+        self.PhonieboxRpc = RpcClient(zmq_address, zmq_context,
+                                      default_ignore_errors=True,
+                                      logger=logging.getLogger("jb.rfid.rpc_client"))
         self._keep_running = True
         self.cardnotification = None
         self.valid_cardnotification = None
@@ -123,7 +124,7 @@ class RFID_Reader(object):
                 if self.valid_cardnotification is not None:
                     self.valid_cardnotification()
                 resp = self.PhonieboxRpc.enqueue(card_assignment)
-                logger.debug(resp)
+                logger.debug(f"Response: '{resp}'")
             else:
                 if self.invalid_cardnotification is not None:
                     self.invalid_cardnotification()
