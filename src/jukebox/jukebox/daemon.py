@@ -14,7 +14,6 @@ import jukebox.System
 import jukebox.plugs as plugin
 from player import PlayerMPD
 from jukebox.rpc.server import RpcServer
-from jukebox.pubsub.server import PubSubServer
 from jukebox.NvManager import nv_manager
 from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
 # from gpio_control import gpio_control
@@ -32,8 +31,6 @@ class JukeBox:
 
         jukebox.cfghandler.load_yaml(cfg, self.configuration_file)
 
-        self.pubsubserver = PubSubServer()
-
         logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
         logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
 
@@ -50,15 +47,13 @@ class JukeBox:
     def exit_gracefully(self):
         # TODO: Iterate over objects and tell them to exit
         # TODO: stop all threads
+        # TODO: This check what happens with Threads here ...
 
-        self.objects['player'].stop()
+        plugin.call_ignore_errors('player', 'ctrl', 'stop')
 
-        if 'shutdown_sound' in cfg['system'] and self.objects['volume'] is not None:
-            shutdown_sound_thread = threading.Thread(target=self.objects['volume'].play_wave,
-                                                         args=[cfg['system']['shutdown_sound']],
-                                                         name='ShutdownSound')
-            shutdown_sound_thread.daemon = True
-            shutdown_sound_thread.start()
+        if 'shutdown_sound' in cfg['jingle']:
+            shutdown_sound_thread = plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True)
+            plugin.call_ignore_errors('jingle', 'play_shutdown')
         else:
             logger.debug("No shutdown sound in config file")
 
@@ -67,7 +62,7 @@ class JukeBox:
         jukebox.cfghandler.write_yaml(cfg, self.configuration_file, only_if_changed=True)
 
         # wait for shutdown sound to complete
-        shutdown_sound_thread.join()
+        # shutdown_sound_thread.join()
         logger.info("Exiting")
 
         # TODO: implement shutdown ()
@@ -75,8 +70,8 @@ class JukeBox:
 
     def run(self):
         # Load the plugins
-        plugins_named = cfg.getn('newmodules', 'named', default={})
-        plugins_other = cfg.getn('newmodules', 'others', default=[])
+        plugins_named = cfg.getn('modules', 'named', default={})
+        plugins_other = cfg.getn('modules', 'others', default=[])
         plugin.load_all_named(plugins_named, prefix='components')
         plugin.load_all_unnamed(plugins_other, prefix='components')
         plugin.load_all_finalize()
@@ -95,40 +90,15 @@ class JukeBox:
         else:
             logger.debug("No startup sound in config file")
 
-        # ---------------------------------------------------
-        # Old-style code
-        objects = {}
-        if 'volume' in cfg['modules']:
-            try:
-                m_volume = importlib.import_module(cfg['modules']['volume'], 'pkg.subpkg')
-            except Exception as e:
-                logger.error(f"Failed to load volume module: {cfg['modules']['volume']}. Trying without...")
-                logger.error(f"Reason: {e}")
-                self.objects['volume'] = None
-            else:
-                objects['volume'] = m_volume.init()
-
-        # load music player status
-        music_player_status = self.nvm.load(cfg.getn('player', 'status_file'))
-
         # load card id database
         cardid_database = self.nvm.load(cfg.getn('rfid', 'cardid_database'))
-
-        # MPD Configs
-        mpd_host = cfg.getn('mpd', 'host')
-
-        # initialize Jukebox objcts
-        self.objects['alsaif'] = jukebox.alsaif.AlsaCtrl()
-        self.objects['system'] = jukebox.System.system_control
-        self.objects['player'] = PlayerMPD.player_control(mpd_host, music_player_status,
-                                                            self.objects['alsaif'], self.pubsubserver)
 
         logger.info("Init Jukebox RPC Server")
         rpcserver = RpcServer()
 
+        rfid_reader = None
         # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
         # rfid_reader = RFID_Reader("Fake", zmq_address='inproc://JukeBoxRpcServer', zmq_context=zmq.Context.instance())
-        rfid_reader = None
         if rfid_reader is not None:
             rfid_reader.set_cardid_db(cardid_database)
             rfid_reader.reader.set_card_ids(list(cardid_database))     # just for Fake Reader to be aware of card ids

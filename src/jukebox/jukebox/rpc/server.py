@@ -85,14 +85,14 @@ class RpcServer:
                     try:
                         result = plugs.call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread)
                     except Exception as e:
-                        error = e.__str__()
+                        error = f"{e.__class__.__name__}: {e.__str__()}"
                 else:
                     error = "Missing mandatory parameter 'plugin'."
             else:
                 error = "Missing mandatory parameter 'package'."
 
             if error is not None:
-                logger.error(f"Execute error: {error} in request {client_request}")
+                logger.error(f"Request {client_request} got error: {error}")
                 response = {'error': {'code': -1, 'message': error}}
                 if 'id' in client_request:
                     response['id'] = client_request.get('id')

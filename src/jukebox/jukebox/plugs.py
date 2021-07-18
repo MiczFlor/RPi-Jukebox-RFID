@@ -357,7 +357,7 @@ def register(plugin: Optional[Callable] = None, *,
     The functions comes in five distinct signatures for 5 use cases:
     (A) @plugs.register: decorator for a class w/o any arguments
     (B) @plugs.register: decorator for a function w/o any arguments
-    (C) @plugs.register(name=name, package=package): decorator for a class with 1 or 2 arguments
+    (C) @plugs.register(auto_tag=bool): decorator for a class with 1 arguments
     (D) @plugs.register(name=name, package=package): decorator for a function with 1 or 2 arguments
     (E) plugs.register(plugin, name=name, package=package): run-time registration of
         - function
@@ -559,12 +559,13 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
     :param plugin: Function name or instance name of a class
     :param method: Method name when accessing a class instance' method. Leave at None if unneeded.
     :param as_thread: Run the callable in separate daemon thread.
-    There is no return value from the callable in this case! Also note that Exceptions in the Thread must be handled
-    in the Thread and are not propagated to the main Thread. All threads are started as daemon threads with terminate
-    upon main program termination. There is not stop-thread mechanism. This is intended for short lived threads.
+    There is no return value from the callable in this case! The return value is the thread object.
+    Also note that Exceptions in the Thread must be handled in the Thread and are not propagated to the main Thread.
+    All threads are started as daemon threads with terminate upon main program termination.
+    There is not stop-thread mechanism. This is intended for short lived threads.
     :param args: Arguments passed to callable
     :param kwargs: Keyword arguments passed to callable
-    :return: The return value from the called function (if not started as thread)
+    :return: The return value from the called function, or, if started as thread the thread object
     """
     if logger_call.isEnabledFor(logging.DEBUG):
         m = f".{method}" if method is not None else ''
@@ -584,7 +585,7 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
     if as_thread is True:
         l_thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True)
         l_thread.start()
-        return
+        return l_thread
     else:
         return func(*args, **kwargs)
 

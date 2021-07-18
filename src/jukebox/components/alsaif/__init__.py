@@ -23,9 +23,11 @@ class AlsaCtrl:
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)
 
+    @plugin.tag
     def get_volume(self):
         return self.mixer.getvolume()[0]
 
+    @plugin.tag
     def set_volume(self, volume):
         logger.debug(f"Set Volume = {volume}")
         if not 0 <= volume <= 100:
@@ -39,12 +41,15 @@ class AlsaCtrl:
         logger.debug(f"Set Mute = {mute_on}")
         self.mixer.setmute(1 if mute_on else 0)
 
+    @plugin.tag
     def unmute(self):
         self.mute(mute_on=False)
 
+    @plugin.tag
     def inc_volume(self, step=3):
         self.set_volume(self.get_volume() + step)
 
+    @plugin.tag
     def dec_volume(self, step=3):
         self.set_volume(self.get_volume() - step)
 
