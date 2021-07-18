@@ -10,15 +10,12 @@ jingle:
     service: auto
 player:
     status_file: ../../shared/settings/music_player_status.json
-newmodules:
+modules:
     named:
         volume: volume # Load this first
         jingle: jingle
+        player: playermpd
     others: [alsaif]
-modules:
-    volume: jukebox.alsaif
-    player: jukebox.mpd
-    others: [rfid]
 mpd:
     host: localhost
 alsaif:
