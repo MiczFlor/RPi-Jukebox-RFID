@@ -10,16 +10,16 @@ Depending on your host environment (Mac, Linux or Windows), you might need to ad
     * Linux: [Docker](https://docs.docker.com/engine/install/debian/), [Compose](https://docs.docker.com/compose/install/)
     * Mac: [Docker & Compose](https://docs.docker.com/docker-for-mac/install/), [pulseaudio](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html)
     * Windows: [Docker & Compose](https://docs.docker.com/docker-for-windows/install/), [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
-1. Pull the Phoniebox repository
-1. Change into the root folder of your repository
-1. Change into the `shared` folder and create a folder called `audiofolders`
-1. Copy a set of MP3 files into this folder
+1. Pull the Phoniebox repository: `git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git`
+1. Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders` and copy a set of MP3 files into this folder
 
 ## Run development environment
 
-In contrairy to how everything is set up on the Raspberry, it's good practice to isolate different components in different Docker images. They can be run individually or in combination. To do that, we use `docker-compose` (newer versions of Docker can also use `docker compose`)
+In contrairy to how everything is set up on the Raspberry Pi, it's good practice to isolate different components in different Docker images. They can be run individually or in combination. To do that, we use `docker-compose` (newer versions of Docker can also use `docker compose`).
 
 Run all Docker containers at once. Based on your host system, you need to load the override as well.
+
+> During the build process, some binaries are being compiled. Depending your host environment, the Docker allocated Memory and Swap space might not be enough. Consider assigning more Memory and Swap space within Docker (Preferences > Resources, [Source](https://github.com/docker/cli/issues/2971#issuecomment-832865510)) if building fails. Don't forget to restart Docker!
 
 ### Linux
 
@@ -36,7 +36,7 @@ $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml
 
 ### Mac
 
-Remember, pulseaudio is a prerequisite.
+Remember, pulseaudio is a prerequisite. [Follow these instructions](https://stackoverflow.com/a/50939994/1062438) for Mac hosts.
 
 ```
 // Build Images
@@ -58,7 +58,7 @@ $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml d
     ```
     load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
     ```
-1. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the following line and change it to: 
+1. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the following line and change it to:
     ```
     exit-idle-time = -1
     ```
@@ -67,23 +67,20 @@ $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml d
 
 ```
 // Build Images
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml build
 
 // Run Docker Environment
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml up
 
 // Shuts down Docker containers and Docker network
-$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
+$ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml down
 ```
 
 ## Test & Develop
 
-The Dockerfile is defined to start all Phoniebox related services. 
-At the moment, the `jukebox` container just starts into a `bash` state. You need to
-tunnel into the container and start the jukebox daemon manually.
+The Dockerfile is defined to start all Phoniebox related services.
 
-Navigate to [`http://localhost:8000`](http://localhost:8000) which should show the 
-WebUI.
+Open [`http://localhost:3001`](http://localhost:3001) in your browser to see the web application.
 
 ---
 
@@ -91,7 +88,7 @@ WebUI.
 
 ### Individual Docker Image
 
-Run an indidual Docker container, e.g. `jukebox`. Similarly you could run `mpd` or `webui`.
+Run an indidual Docker container, e.g. `jukebox`. Similarly you could run `mpd` or `webapp`.
 
 The following command can be run on a Mac.
 
