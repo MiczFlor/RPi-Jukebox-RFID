@@ -23,4 +23,4 @@ VOLUME ${HOME}/.config/mpd
 
 EXPOSE 6600
 
-CMD [ ! -s ~/.config/mpd/pid ] && mpd --stdout --no-daemon /root/.config/mpd/mpd.conf
+CMD [ ! -s ~/.config/mpd/pid ] && mpd --stdout --no-daemon ${HOME}/.config/mpd/mpd.conf

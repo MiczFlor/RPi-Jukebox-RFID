@@ -38,4 +38,3 @@ pubsub:
     websocket_port: 5557
 rfid:
     cardid_database: ../../shared/settings/jukebox_cardid_database.json
-

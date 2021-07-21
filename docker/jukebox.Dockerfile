@@ -16,11 +16,9 @@ RUN apt-get update && apt-get install -y \
 RUN usermod -aG audio,pulse,pulse-access root
 
 ENV HOME /root
-ENV MPD_HOST mpd
-ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
-ENV DOCKER_DIR ${INSTALLATION_DIR}/docker
+ENV INSTALLATION_PATH /home/pi/RPi-Jukebox-RFID
 
-WORKDIR $INSTALLATION_DIR
+WORKDIR $INSTALLATION_PATH
 
 # Jukebox
 # Install all Jukebox dependencies
@@ -36,7 +34,7 @@ RUN apt-get update && apt-get install -qq -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
-COPY . ${INSTALLATION_DIR}
+COPY . ${INSTALLATION_PATH}
 
 # Install Jukebox
 # Install libzmq with Websocket support from pre-compiled source
@@ -51,16 +49,15 @@ RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
     tar -xzf libzmq.tar.gz; \
     rm -f libzmq.tar.gz; \
     zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
-    make -j && make install
+    make && make install
 
 RUN pip3 install --pre pyzmq \
     --install-option=--enable-drafts \
-    --install-option=--zmq=${ZMQ_PREFIX}
-
-RUN pip3 install --no-cache-dir -r ${INSTALLATION_DIR}/requirements.txt
+    --install-option=--zmq=${ZMQ_PREFIX}; \
+    pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 EXPOSE 5555 5556
 
 # Run Jukebox
 # CMD bash
-CMD python ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py
+CMD python ${INSTALLATION_PATH}/src/jukebox/run_jukebox.py
