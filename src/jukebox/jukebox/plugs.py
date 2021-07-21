@@ -129,6 +129,8 @@ class PluginPackageClass:
         self._initializer: List[Callable] = []
         # List of functions called after ALL modules have been loaded
         self._finalizer: List[Callable] = []
+        # List of functions called at exit of main program
+        self._atexit: List[Callable] = []
 
     @property
     def loaded_from(self):
@@ -168,6 +170,14 @@ class PluginPackageClass:
     def finalizer(self, value):
         self._finalizer = value
 
+    @property
+    def atexit(self):
+        return self._atexit
+
+    @atexit.setter
+    def atexit(self, value):
+        self._atexit = value
+
 
 # Maintain a list of all loaded paackges with their loaded plugin callables and further information
 # Maps loaded_as -> plugins, where PluginPackageClass contains all information about the loaded plugins from that package
@@ -182,16 +192,9 @@ def _deduce_package_origin(obj: Any) -> Union[str, None]:
     """
     Given an object try to find which python package it belongs to in plugs.py terms
 
-    Developers note: This "deduction" mechanism in conjunction with "prefix" in the load function
-    is responsible for the non-ability to handle multiple hierarchies in storing the references to package paths
-
     :return: None if failed for up level error handling / Exception raising
     """
-    plugin_origin = getattr(obj, '__module__', None)
-    if plugin_origin is None:
-        return None
-    _, _, plugin_origin = plugin_origin.rpartition('.')
-    return plugin_origin
+    return getattr(obj, '__module__', None)
 
 
 def _enlist(package, plugin_obj, plugin_name, *, replace=False):
@@ -320,7 +323,7 @@ def register(plugin: Callable) -> Callable:
 
 
 @overload
-def register(plugin: Type) -> Type:
+def register(plugin: Type) -> Any:
     """Signature: 1-level decorator around a class"""
     pass
 
@@ -445,6 +448,27 @@ def finalize(func: Callable) -> Callable:
     return func
 
 
+def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
+    """
+    Decorator for functions that shall be called by the plugs package directly after at exit of program.
+
+    Important: There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
+    during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
+    shutdown handler.
+
+    The atexit-functions are called with a single integer argument, which is passed down from plugin.exit(int)
+    It is intended for passing down the signal number that initiated the program termination
+
+    :param func: Function to decorate
+    :return: The Function itself
+    """
+    plugin_origin = _deduce_package_origin(func)
+    if plugin_origin is None:
+        raise TypeError(f"Could not deduce corresponding package of {func}")
+    _PLUGINS[_PACKAGE_MAP[plugin_origin]].atexit.append(func)
+    return func
+
+
 def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = None):
     """
     Loads a python package as plugin package
@@ -455,24 +479,22 @@ def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = No
     Decorator @finalizer can be used to tag functions that shall be called after ALL plugin packges have been loaded
     Instead of using @initializer, you may of course use __init__.py
 
-    Python packages may be loaded under a different plugs package name. Note that the plugs package name does not support
-    hierarchy information. That means a python subpackage components.feature must be loaded as 'feature'
-
-    Python packages must be unique and the name under which they are loaded as plugin package also.
+    Python packages may be loaded under a different plugs package name. Python packages must be unique and the name under
+    which they are loaded as plugin package also.
 
     :param package: Python package to load as plugin package
     :param load_as: Plugin package registration name. If None the name is the python's package simple name
     :param prefix: Prefix to python package to create fully qualified name. This is used only to locate the python package
-    and ignored otherwise. Useful if all the plugin module are in a separate folder
+    and ignored otherwise. Useful if all the plugin module are in a dedicated folder
     :return:
     """
     load_as = load_as or package
-    qual_package = package
     if prefix is not None:
-        qual_package = f"{prefix}.{package}"
-    logger.info(f"Loading plugin '{qual_package}' as '{load_as}'")
+        package = f"{prefix}.{package}"
+
+    logger.info(f"Loading plugin '{package}' as '{load_as}'")
     if package in _PACKAGE_MAP:
-        msg = f"Package '{qual_package}' already loaded as '{_PACKAGE_MAP[package]}'. Cannot be loaded twice!"
+        msg = f"Package '{package}' already loaded as '{_PACKAGE_MAP[package]}'. Cannot be loaded twice!"
         logger.error(msg)
         raise NameError(msg)
     if load_as in _PLUGINS:
@@ -483,13 +505,13 @@ def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = No
     _PACKAGE_MAP[package] = load_as
     _PLUGINS[load_as] = PluginPackageClass(package)
     try:
-        _PLUGINS[load_as].module = importlib.import_module(f'{qual_package}', 'pkg')
+        _PLUGINS[load_as].module = importlib.import_module(f'{package}', 'pkg')
         setattr(_PLUGINS[load_as].module, 'plugs_loaded_as', load_as)
     except Exception as e:
         # Clear the failed plugin registration
         _PLUGINS.__delitem__(load_as)
         _PACKAGE_MAP.__delitem__(package)
-        logger.error(f"Failed to load package: {qual_package}")
+        logger.error(f"Failed to load package: {package}")
         logger.error(f"Reason: {e.__class__.__name__}: {e}")
         raise e
 
@@ -538,6 +560,22 @@ def load_all_finalize():
         for func in pack.finalizer:
             logger.debug(f"Package load finalizer: calling {loaded_as}.{func.__name__}()")
             func()
+
+
+def close_down(signal: int):
+    """
+    Calls all functions registered with @atexit from all loaded modules in reverse order of module load order
+
+    Modules are processed in reverse order. Several at-exit tagged functions of a single module are processed
+    in the order of registration.
+
+    :return:
+    """
+    assert sys.version_info.major >= 3 and sys.version_info.minor >= 7
+    for loaded_as, pack in reversed(list(_PLUGINS.items())):
+        for func in pack.atexit:
+            logger.debug(f"Package closing atexit: calling {loaded_as}.{func.__name__}({signal})")
+            func(signal)
 
 
 def call(package: str, plugin: str, method: Optional[str] = None, *,
@@ -658,3 +696,31 @@ def delete(package: str, plugin: Optional[str] = None, ignore_errors=False):
     elif not ignore_errors:
         p = "" if plugin is None else f".{plugin}"
         raise NameError(f"Not registered: '{package}{p}'. Cannot delete it!")
+
+
+def dump_plugins(stream):
+    """Write a human readable summary of all plugin callables to stream"""
+    width = 127
+    print('*' * width, file=stream)
+    print("Loaded plugins:", file=stream)
+    print('*' * width, file=stream)
+    for package, plugins in _PLUGINS.items():
+        description = (plugins.module.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+        print(f"Package: '{package}' loaded from: '{plugins.loaded_from}'", file=stream)
+        print(f"    {description}\n", file=stream)
+        for name, obj in _PLUGINS[package].plugins.items():
+            description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+            t = f"{name} [instance]"
+            if callable(obj):
+                t = f"{name}{inspect.signature(obj)}"
+            print(f"    {t:29}: {description}", file=stream)
+            if not callable(obj):
+                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                    if hasattr(fobj, 'plugs_callable'):
+                        description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                        sign = f"{fname}{inspect.signature(fobj)}"
+                        print(f"        {sign:25}: {description}", file=stream)
+                print("", file=stream)
+        print("", file=stream)
+    print('*' * width, file=stream)

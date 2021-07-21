@@ -22,10 +22,13 @@
 #
 # Contributing author(s):
 # - Christian Banz
+"""
+Jingle Playback Factory for extensible run-time support of various file types
+"""
 
 import os.path
+import signal
 import logging
-import subprocess
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 
@@ -34,6 +37,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class JingleFactory:
+    """Jingle Factory"""
 
     def __init__(self):
         self._builders = {}
@@ -46,6 +50,7 @@ class JingleFactory:
         return self._builders.get(key)()
 
     def list(self):
+        """List the available volume services"""
         return self._builders.keys()
 
     def auto(self, filename):
@@ -60,52 +65,50 @@ class JingleFactory:
         return self.get(key)
 
 
-factory = JingleFactory()
+factory: JingleFactory
+
+
+@plugin.initialize
+def initialize():
+    global factory
+    factory = JingleFactory()
 
 
 @plugin.register
 def play(filename):
+    """Play the jingle using the configured jingle service"""
     global factory
     factory.auto(filename).play(filename)
 
 
 @plugin.register
 def play_startup():
+    """Play the startup sound (using jingle.play)"""
     play(cfg['jingle']['startup_sound'])
 
 
 @plugin.register
 def play_shutdown():
+    """Play the shutdown sound (using jingle.play)"""
     play(cfg['jingle']['shutdown_sound'])
 
 
-# ---------------------------------------------------------------------------
-# MP3 Jingle Service
-# ---------------------------------------------------------------------------
-# A generic mp3 player service for the jingle playback
-
-@plugin.register(auto_tag=True)
-class JingleMp3Play:
-
-    def play(self, filename):
-        subargs = cfg['jingle'].get('call_parameters', [])
-        res = subprocess.run(['mpg123', '-q', *subargs, filename], capture_output=True)
-        if res.stderr != b'':
-            logger.error(f"Playing MP3: {res.stderr}")
+@plugin.finalize
+def finalize():
+    if 'startup_sound' in cfg['jingle']:
+        plugin.call_ignore_errors('jingle', 'play_startup', as_thread=True)
+    else:
+        logger.debug("No startup sound in config file")
 
 
-class JingleMp3PlayBuilder:
-
-    def __init__(self):
-        """
-        Builder instantiates JingleMp3Play during init and not during first call because
-        we want JingleMp3Play registers as plugin function in any case if this plugin is loaded
-        (and not only on first use!)
-        """
-        self._instance = JingleMp3Play(plugin_name='mp3jingle', plugin_register=True)
-
-    def __call__(self, *args, **kwargs):
-        return self._instance
-
-
-factory.register("mp3", JingleMp3PlayBuilder())
+@plugin.atexit
+def atexit(esignal: int):
+    # Only play the shutdown sound when terminated with a proper command. Not on Ctrl-C (faster exit for developers :-)
+    if esignal == signal.SIGTERM:
+        if 'shutdown_sound' in cfg['jingle']:
+            # Currently cannot start playing in separate thread, as jukebox.exit_handler has no way of knowing that it
+            # should wait for this thread. So for now just play it in calling thread
+            # plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True)
+            play_shutdown()
+        else:
+            logger.debug("No shutdown sound in config file")

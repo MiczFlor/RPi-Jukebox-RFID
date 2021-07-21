@@ -6,7 +6,7 @@ import json
 import logging
 import jukebox.cfghandler
 
-logger = logging.getLogger('jb.pubsub_server')
+logger = logging.getLogger('jb.pubsub.server')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 

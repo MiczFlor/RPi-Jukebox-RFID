@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+"""
+Package for interfacing with the MPD Music Player Daemon
+"""
 import mpd
 import threading
 import logging
@@ -12,17 +14,15 @@ import jukebox.pubsub as pubsub
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
-# TODO: self.nvm = nv_manager() orphaned it will not save it status to file on exit
-# Solution: We need a plugin shutdown callable that gets registered during the plugin load
-# (we need it anyway. e.g for stopping the music, for disconneting to the MPDClient, etc...)
 
-@plugs.register(auto_tag=True)
 class PlayerMPD:
+    """Interface to MPD Music Player Daemon"""
+
     def __init__(self):
         self.nvm = nv_manager()
         self.pubsubserver = pubsub.get_publisher()
-        self.mpd_host = cfg.getn('mpd', 'host')
-        self.music_player_status = self.nvm.load(cfg.getn('player', 'status_file'))
+        self.mpd_host = cfg.getn('playermpd', 'host')
+        self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
 
         self.mpd_client = mpd.MPDClient()
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
@@ -47,7 +47,19 @@ class PlayerMPD:
         self.mpd_status = {}
         self.mpd_status_poll_interval = 0.25
         self.mpd_mutex = threading.Lock()
+        self.status_is_closing = False
         self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+
+    def exit(self):
+        logger.debug("Exit routine of playermpd started")
+        self.status_is_closing = True
+        # Need to make sure we are not in the process of a status poll
+        # This currently causes 250 ms delay in shutdown (which otherwise takes 6 ms)
+        # --> Change it (self.status_thread.cancel() ?)
+        time.sleep(self.mpd_status_poll_interval)
+        # self.status_thread.cancel()
+        self.mpd_client.disconnect()
+        self.nvm.save_all()
 
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
@@ -100,7 +112,13 @@ class PlayerMPD:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
 
-        self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
+        # This will log all plugin calls in logger and spams the debug messages which might be needed to debug actual issues:
+        # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
+        # Do the same, but prevent the debug logging:
+        try:
+            self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
+        except Exception as e:
+            pass
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -118,11 +136,14 @@ class PlayerMPD:
             self.current_folder_status["SINGLE"] = "OFF"
         # the repetation is intentionally at the end, to avoid overruns in case of delays caused by communication
         self.pubsubserver.publish('playerstatus', self.mpd_status)
-        self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+        if self.status_is_closing is False:
+            self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
+    @plugs.tag
     def get_player_type_and_version(self):
         return self.mpd_retry_with_mutex(self.mpd_client.mpd_version)
 
+    @plugs.tag
     def play(self, songid=None):
         if songid is None:
             songid = 0
@@ -136,6 +157,7 @@ class PlayerMPD:
 
         return status
 
+    @plugs.tag
     def stop(self):
         self.mpd_retry_with_mutex(self.mpd_client.stop)
 
@@ -143,6 +165,7 @@ class PlayerMPD:
 
         return status
 
+    @plugs.tag
     def pause(self):
         self.mpd_retry_with_mutex(self.mpd_client.pause, 1)
 
@@ -150,22 +173,27 @@ class PlayerMPD:
 
         return status
 
+    @plugs.tag
     def prev(self):
         self.mpd_retry_with_mutex(self.mpd_client.previous)
         return self.mpd_status
 
+    @plugs.tag
     def next(self):
         self.mpd_retry_with_mutex(self.mpd_client.next)
         return self.mpd_status
 
+    @plugs.tag
     def seek(self, new_time):
         if new_time is not None:
             self.mpd_retry_with_mutex(self.mpd_client.seekcur, new_time)
         return self.mpd_status
 
+    @plugs.tag
     def replay(self):
         raise NotImplementedError
 
+    @plugs.tag
     def repeatmode(self, mode):
         if mode == 'repeat':
             repeat = 1
@@ -181,16 +209,20 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.single, single)
         return None
 
+    @plugs.tag
     def get_current_song(self, param):
         return self.mpd_status
 
+    @plugs.tag
     def map_filename_to_playlist_pos(self, filename):
         # self.mpd_client.playlistfind()
         raise NotImplementedError
 
+    @plugs.tag
     def remove(self):
         raise NotImplementedError
 
+    @plugs.tag
     def move(self):
         # song_id = param.get("song_id")
         # step = param.get("step")
@@ -203,15 +235,18 @@ class PlayerMPD:
         time.sleep(delay)
         self.mpd_mutex.release()
 
+    @plugs.tag
     def playsingle(self):
         raise NotImplementedError
 
+    @plugs.tag
     def resume(self):
         songpos = self.current_folder_status["CURRENTSONGPOS"]
         elapsed = self.current_folder_status["ELAPSED"]
         self.mpd_retry_with_mutex(self.mpd_client.seek, songpos, elapsed)
         self.mpd_retry_with_mutex(self.mpd_client.play)
 
+    @plugs.tag
     def playlistaddplay(self, folder):
         # add to playlist (and play)
         # this command clears the playlist, loads a new playlist and plays it. It also handles the resume play feature.
@@ -233,19 +268,23 @@ class PlayerMPD:
 
         return self.mpd_status
 
+    @plugs.tag
     def playerstatus(self):
         return self.mpd_status
 
+    @plugs.tag
     def playlistinfo(self):
         playlistinfo = (self.mpd_retry_with_mutex(self.mpd_client.playlistinfo))
         return playlistinfo
 
     # Attention: MPD.listal will consume a lot of memory with large libs.. should be refactored at some point
+    @plugs.tag
     def list_all_dirs(self):
         result = self.mpd_retry_with_mutex(self.mpd_client.listall)
         # list = [entry for entry in list if 'directory' in entry]
         return result
 
+    @plugs.tag
     def list_albums(self):
         albums = self.mpd_retry_with_mutex(self.mpd_client.lsinfo)
         # albums = filter(lambda x: x, albums)
@@ -256,5 +295,11 @@ class PlayerMPD:
 
 
 # The initializer stuff gets executed directly
-player_ctrl = PlayerMPD(plugin_name='ctrl', plugin_register=False)
+player_ctrl = PlayerMPD()
 plugs.register(player_ctrl, name='ctrl')
+
+
+@plugs.atexit
+def atexit(signal: int):
+    global player_ctrl
+    player_ctrl.exit()

@@ -15,6 +15,7 @@ def clamp(n, minn, maxn):
 
 
 class AlsaCtrl:
+
     def __init__(self):
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)

@@ -1,7 +1,6 @@
+"""ALSA Volume Control Plugin Package for volume.VolumeFactory"""
 import alsaaudio
 import logging
-import wave
-import os
 import jukebox.cfghandler
 import jukebox.plugs as plugin
 
@@ -19,6 +18,8 @@ def clamp(n, minn, maxn):
 
 
 class AlsaCtrl:
+    """ALSA Volume Control"""
+
     def __init__(self):
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)
@@ -66,72 +67,10 @@ class AlsaCtrlBuilder:
 
 
 # ---------------------------------------------------------------------------
-# Jingle Service for WAVE by ALSA
-# ---------------------------------------------------------------------------
-
-@plugin.register
-class AlsaWave:
-    fmt_lookup = {1: alsaaudio.PCM_FORMAT_U8,
-                  2: alsaaudio.PCM_FORMAT_S16_LE,
-                  3: alsaaudio.PCM_FORMAT_S24_3LE,
-                  4: alsaaudio.PCM_FORMAT_S32_LE}
-
-    @classmethod
-    def _play_wave_core(cls, filename):
-        with wave.open(filename, 'rb') as f:
-            width = f.getsampwidth()
-            if width not in AlsaWave.fmt_lookup:
-                raise ValueError('Unsupported format')
-            device_name = cfg.setndefault('alsaif', 'jingle_device', value='default')
-            periodsize = f.getframerate() // 8
-            device = alsaaudio.PCM(channels=f.getnchannels(),
-                                   rate=f.getframerate(),
-                                   format=AlsaWave.fmt_lookup[width],
-                                   periodsize=periodsize,
-                                   device=device_name)
-
-            data = f.readframes(periodsize)
-            while data:
-                device.write(data)
-                data = f.readframes(periodsize)
-
-    @plugin.tag
-    def play(self, filename):
-        if os.path.exists(filename) and os.path.isfile(filename):
-            logger.debug("Playing wave file")
-            try:
-                AlsaWave._play_wave_core(filename)
-            except Exception as e:
-                logger.error(f"{type(e)}: {e}")
-        else:
-            logger.error(f"File does not exist: '{filename}'")
-            raise KeyError(f"File does not exist: '{filename}'")
-
-
-class AlsaWaveBuilder:
-
-    def __init__(self):
-        """
-        Builder instantiates AlsaWave during init and not during first call because
-        we want AlsaWave registers as plugin function in any case if this plugin is loaded
-        (and not only on first use!)
-        """
-        self._instance = AlsaWave(plugin_name='alsawave', plugin_register=True)
-
-    def __call__(self, *args, **kwargs):
-        # if not self._instance:
-        #     self._instance = AlsaWave(plugin_name='alsawave', plugin_register=True)
-        return self._instance
-
-
-# ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
 
 @plugin.initialize
 def initialize():
-    vmod = plugin.get('volume')
-    vmod.factory.register("alsa", AlsaCtrlBuilder())
-
-    vmod = plugin.get('jingle')
-    vmod.factory.register("wav", AlsaWaveBuilder())
+    volume = plugin.get('volume')
+    volume.factory.register("alsa", AlsaCtrlBuilder())

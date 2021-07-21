@@ -43,7 +43,7 @@ def configure_default(level=logging.DEBUG, name='jb'):
     console = logging.StreamHandler(sys.stdout)
     console.setLevel(level)
     formatter = logging.Formatter(
-        fmt='{asctime} - {lineno:4}:{filename:20} - {name} - {threadName:10} - {levelnameColored:8} - '
+        fmt='{asctime} - {lineno:4}:{filename:15} - {name:20} - {threadName:15} - {levelnameColored:8} - '
             '{lightcyan}{message}{reset}',
         datefmt='%d.%m.%Y %H:%M:%S',
         style='{')

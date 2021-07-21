@@ -22,7 +22,9 @@
 #
 # Contributing author(s):
 # - Christian Banz
-
+"""
+Volume Control Factory for run-time switching of volume control plugin
+"""
 import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
@@ -33,6 +35,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 @plugin.register
 class VolumeFactory:
+    """Volume Factory"""
 
     def __init__(self):
         self._builders = {}
@@ -44,29 +47,31 @@ class VolumeFactory:
     def get(self, key):
         return self._builders.get(key)()
 
+    @plugin.tag
     def list(self):
+        """List the available volume services"""
         return self._builders.keys()
 
     @plugin.tag
     def set_active(self, key):
+        """Set the active volume service which gets registered as 'ctrl'"""
         logger.debug("Set active '{key}' in VolumeFactory")
-        # plugin.replace(self.get(key), module_name="volume", obj_name="ctrl")
         plugin.register(self.get(key), package="volume", name="ctrl", replace=True)
 
 
-factory = None
+factory: VolumeFactory
 
 
 @plugin.initialize
 def initialize():
     global factory
-    logger.debug("Initialize ...")
+    logger.debug("Initialize volume factory")
     factory = VolumeFactory(plugin_name='factory')
 
 
 @plugin.finalize
 def finalize():
-    logger.debug("------------------- Finalize ...")
+    logger.debug("Finalize volume factory set up")
     interface_name = cfg.getn('volume', 'interface', default=None)
     if interface_name is not None:
         factory.set_active(interface_name)

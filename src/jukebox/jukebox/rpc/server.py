@@ -7,7 +7,7 @@ import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 
-logger = logging.getLogger('jb.rpc_server')
+logger = logging.getLogger('jb.rpc.server')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
@@ -40,10 +40,12 @@ class RpcServer:
         logger.info('All socket connections initialized')
 
     def terminate(self):
+        logger.info("Closing RPC Server")
         self._keep_running = False
 
     def run(self):
         self._keep_running = True
+        logger.info("RPC Servers started")
         # TODO: check if connected, otherwise connect or exit?
 
         while self._keep_running:

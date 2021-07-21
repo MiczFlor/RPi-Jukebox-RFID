@@ -12,7 +12,7 @@ class RpcClient:
                  logger=None):
         self.logger = logger
         if logger is None:
-            self.logger = logging.getLogger('jb.rpc_client')
+            self.logger = logging.getLogger('jb.rpc.client')
         # Get the global context (will be created if non-existing)
         self.context = context or zmq.Context.instance()
         self.queue = self.context.socket(zmq.REQ)
