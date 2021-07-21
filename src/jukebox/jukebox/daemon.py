@@ -91,35 +91,6 @@ class JukeBox:
         print(msg)
         logger.info(msg)
 
-    def signal_handler_v1(self, esignal, frame):
-        # catches signal and triggers the graceful exit
-        logger.info("Caught signal {} ({}) \n {}".format(signal.Signals(esignal).name, esignal, frame))
-        self.exit_gracefully()
-
-    def exit_gracefully_v1(self):
-        # TODO: Iterate over objects and tell them to exit
-        # TODO: stop all threads
-        # TODO: This check what happens with Threads here ...
-
-        plugin.call_ignore_errors('player', 'ctrl', 'stop')
-
-        if 'shutdown_sound' in cfg['jingle']:
-            shutdown_sound_thread = plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True)
-            plugin.call_ignore_errors('jingle', 'play_shutdown')
-        else:
-            logger.debug("No shutdown sound in config file")
-
-        # save all nonvolatile data
-        self.nvm.save_all()
-        jukebox.cfghandler.write_yaml(cfg, self.configuration_file, only_if_changed=True)
-
-        # wait for shutdown sound to complete
-        # shutdown_sound_thread.join()
-        logger.info("Exiting")
-
-        # TODO: implement shutdown ()
-        sys.exit(0)
-
     def run(self):
         time_start = time.time_ns()
         # Load the plugins
