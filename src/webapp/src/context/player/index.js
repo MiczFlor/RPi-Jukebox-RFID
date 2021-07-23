@@ -34,7 +34,7 @@ const PlayerProvider = ({ children }) => {
 
     // requestInFlight is required to prevent sending requests
     // to the server while another request is still being
-    // processed this can happen when users click an action in
+    // processed. This can happen when users click an action in
     // a very fast manner
     requestInFlight: false,
 
@@ -95,6 +95,22 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('alsaif', 'mute', { mute_on });
   }
 
+  const repeat = (repeat, single) => {
+    if (state.requestInFlight) return;
+
+    let mode = null;
+    if (!repeat && !single) mode = 'repeat';
+    if (repeat && !single) mode = 'single';
+
+    postJukeboxCommand('player', 'repeatmode', { mode });
+  }
+
+  const shuffle = (random) => {
+    if (state.requestInFlight) return;
+
+    postJukeboxCommand('player', 'shuffle', { random });
+  }
+
   // Initialize sockets for player context
   useEffect(() => {
     initSockets({ setState });
@@ -110,6 +126,8 @@ const PlayerProvider = ({ children }) => {
     setVolume,
     state,
     toggleMuteVolume,
+    repeat,
+    shuffle,
   };
 
   return(
