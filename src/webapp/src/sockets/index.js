@@ -1,8 +1,13 @@
+import { v4 as uuidv4 } from 'uuid';
 import * as zmq from 'jszmq';
 
 import { PUBSUB_ENDPOINT, REQRES_ENDPOINT } from '../config';
 import { socketEvents } from './events';
-import { decodeMessage, encodeMessage } from './utils';
+import {
+  decodeMessage,
+  encodeMessage,
+  preparePayload
+} from './utils';
 
 const SUBSCRIPTIONS = ['playerstatus'];
 
@@ -18,36 +23,45 @@ const initSockets = ({ setState }) => {
   socketEvents({ setState });
 };
 
-const socketRequest = (payload) => (
+// const socketRequest = (payload) => (
+const socketRequest = (_package, method, kwargs, plugin = 'ctrl') => (
   new Promise((resolve, reject) => {
+    const requestId = uuidv4();
+
     socketRequest.server = zmq.socket('req');
 
     socketRequest.server.on('message', (msg) => {
-      const { error, result } = decodeMessage(msg);
+      const { id, error, result } = decodeMessage(msg);
 
       if (error && error.message) {
         return reject(error.message);
       }
 
-      const { object, method, params = {} } = result;
-
       socketRequest.server.close();
 
-      if (object && method && params) {
-        return resolve(params);
+      if (id && id === requestId) {
+        return resolve(result);
       }
       else {
-        return reject('Received socket message does not match the required format.');
+        return reject('Received socket message ID does not match sender ID.');
       }
     });
 
     socketRequest.server.onerror = function (err) {
       socketRequest.server.close();
-      console.error("socket connection error : ", err);
+      console.error('socket connection error: ', err);
       reject(err);
     };
 
     socketRequest.server.connect(REQRES_ENDPOINT);
+
+    const payload = preparePayload(
+      _package,
+      method,
+      kwargs,
+      requestId,
+      plugin,
+    );
     socketRequest.server.send(encodeMessage(payload));
   })
 );

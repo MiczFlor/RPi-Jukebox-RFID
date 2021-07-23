@@ -6,12 +6,12 @@ const encodeMessage = (obj) => {
 
 const decodeMessage = (msg) => {
   const {
+    id = undefined,
     error = undefined,
     result = undefined,
   } = JSON.parse(new TextDecoder().decode(msg));
 
-  // console.log('decodeMessage', result, error);
-  return { result, error };
+  return { id, result, error };
 }
 
 const decodePubSubMessage = (msg) => {
@@ -26,8 +26,16 @@ const decodePubSubMessage = (msg) => {
   return { topic, [topic]: payload };
 }
 
-const preparePayload = (plugin, method, kwargs = {}) => {
+const preparePayload = (
+  _package,
+  method,
+  kwargs = {},
+  requestId,
+  plugin,
+) => {
   return {
+    id: requestId,
+    package: _package,
     plugin,
     method,
     kwargs,
