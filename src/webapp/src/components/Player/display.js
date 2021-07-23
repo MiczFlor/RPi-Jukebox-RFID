@@ -3,16 +3,17 @@ import React, { useContext } from 'react';
 import PlayerContext from '../../context/player/context';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
-  bar: {
-    transition: 'none',
+  wrapper: {
+    marginBottom: 15,
+    marginTop: 15,
   },
   divider: {
-    marginLeft: '5px',
-    marginRight: '5px',
+    marginLeft: 5,
+    marginRight: 5,
   },
   dontBreak: {
     whiteSpace: 'nowrap',
@@ -27,7 +28,7 @@ const Display = () => {
   const { state: { playerstatus } } = useContext(PlayerContext);
 
   return (
-    <Box my={4}>
+    <Grid container className={classes.wrapper}>
       <Typography className={classes.dontBreak} component="h5" variant="h5">
         {playerstatus?.songid ? (playerstatus?.title || 'Unknown title' ) : 'No song in queue' }
       </Typography>
@@ -36,7 +37,7 @@ const Display = () => {
         <span className={classes.divider}>&bull;</span>
         {playerstatus?.songid && (playerstatus?.album || playerstatus?.file) }
       </Typography>
-    </Box>
+    </Grid>
   );
 };
 

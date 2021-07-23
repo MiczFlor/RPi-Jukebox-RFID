@@ -10,8 +10,17 @@ import {
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  timeIndicator: {
+    marginTop: -20,
+  },
+}));
 
 const SeekBar = () => {
+  const classes = useStyles();
+
   const {
     seek,
     state,
@@ -52,18 +61,6 @@ const SeekBar = () => {
 
   return (
     <>
-      <Grid container direction="row" justify="space-between" alignItems="center">
-        <Grid item>
-          <Typography color="textSecondary">
-            {toHHMMSS(parseInt(timeElapsed))}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Typography color="textSecondary">
-            -{toHHMMSS(parseInt(timeTotal)-parseInt(timeElapsed))}
-          </Typography>
-        </Grid>
-      </Grid>
       <Grid container>
         <Grid item xs>
           <Slider
@@ -73,6 +70,25 @@ const SeekBar = () => {
             disabled={!playerstatus?.title}
             aria-labelledby="Song position"
           />
+        </Grid>
+      </Grid>
+      <Grid
+        alignItems="center"
+        className={classes.timeIndicator}
+        container
+        direction="row"
+        justify="space-between"
+      >
+        <Grid item>
+          <Typography color="textSecondary">
+            {toHHMMSS(parseInt(timeElapsed))}
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography color="textSecondary">
+            {/* -{toHHMMSS(parseInt(timeTotal)-parseInt(timeElapsed))} */}
+            {toHHMMSS(parseInt(timeTotal))}
+          </Typography>
         </Grid>
       </Grid>
     </>

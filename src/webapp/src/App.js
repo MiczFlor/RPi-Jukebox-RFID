@@ -8,7 +8,13 @@ import Routes from './routes';
 function App() {
   return (
     <PlayerProvider>
-      <Grid container direction="row" justify="center" alignItems="center">
+      <Grid
+        alignItems="center"
+        container
+        direction="row"
+        id="routes"
+        justify="center"
+      >
         <Routes />
       </Grid>
     </PlayerProvider>
