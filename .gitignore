@@ -4,6 +4,9 @@
 /shared/settings/*
 /shared/*.*
 
+# Default logger file output location
+logs
+
 # Application
 /src/cli_client/pbc
 
@@ -18,6 +21,8 @@ __pycache__/
 *.idea
 *.vscode
 .DS_Store
+**/.mypy_cache
 
 # Keep folders with .gitkeep
 !/**/.gitkeep
+

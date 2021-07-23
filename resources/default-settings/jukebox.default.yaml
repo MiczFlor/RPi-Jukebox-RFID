@@ -1,25 +1,40 @@
 system:
     box_name : Jukebox
-    startup_sound: /home/pi/RPi-Jukebox-RFID/resources/audio/startupsound.wav
-    shutdown_sound: /home/pi/RPi-Jukebox-RFID/resources/audio/shutdownsound.wav
-    audiofolder_path: /home/pi/RPi-Jukebox-RFID/shared/audiofolders
-    playlists_path: /home/pi/RPi-Jukebox-RFID/shared/playlists
-player:
-    status_file: /home/pi/RPi-Jukebox-RFID/shared/settings/music_player_status.json
+    audiofolder_path: ../../shared
+    playlistfolder_path: ../../playlists
 modules:
-    volume: jukebox.alsaif
-    player: jukebox.mpd
-    others: [rfid]
-mpd:
+    named:
+        volume: volume # Load this first
+        jingle: jingle
+        player: playermpd
+    others:
+        - alsaif
+        - alsaif.alsawave
+        - jingle.jinglemp3
+    # Write a reference of all loaded plugin callables to this file (comment out disables)
+    reference_out: ../../shared/settings/plugin_reference.txt
+volume:
+    interface: alsa
+jingle:
+    startup_sound: ../../resources/audio/startupsound.wav
+    # startup_sound: ../../resources/audio/startupsound.mp3
+    shutdown_sound: ../../resources/audio/shutdownsound.wav
+    # Use file ending to choose player from available jingle services
+    service: auto
+jinglemp3:
+    # These parameters are passed to the mpeg123 player (e.g. [-d 2])
+    call_parameters: []
+playermpd:
     host: localhost
+    status_file: ../../shared/settings/music_player_status.json
 alsaif:
     mixer: Headphone
-    start_sound_device: default
+alsawave:
+    device: default
 rpc:
     tcp_port: 5555
     websocket_port: 5556
 pubsub:
     websocket_port: 5557
-
 rfid:
-    cardid_database: /home/pi/RPi-Jukebox-RFID/shared/settings/jukebox_cardid_database.json
+    cardid_database: ../../shared/settings/jukebox_cardid_database.json

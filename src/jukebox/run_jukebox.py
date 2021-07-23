@@ -27,13 +27,16 @@ def main():
                                help=f"logger configuration file [default: '{default_cfg_logger}']",
                                metavar="FILE", default=default_cfg_logger)
     verbose_group.add_argument('-v', '--verbose', action='count', default=None,
-                               help="increase logger verbosity level from warning to info (-v) to debug (-vv)")
+                               help="increase logger verbosity level from warning to info (-v) to debug (-vv) "
+                                    "to see all plugin calls and not only errors (-vvv)")
     verbose_group.add_argument('-q', '--quiet', action='count', default=None,
                                help="decrease logger verbosity level from warning to error (-q) to critical (-qq)")
     args = argparser.parse_args()
 
     if args.verbose is not None:
         logger = misc.loggingext.configure_default({1: logging.INFO, 2: logging.DEBUG}[min(args.verbose, 2)])
+        if args.verbose < 3:
+            misc.loggingext.configure_default(logging.ERROR, name='jb.plugin.call')
     elif args.quiet is not None:
         logger = misc.loggingext.configure_default({1: logging.ERROR, 2: logging.CRITICAL}[min(args.quiet, 2)])
     else:

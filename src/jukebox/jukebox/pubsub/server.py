@@ -6,7 +6,7 @@ import json
 import logging
 import jukebox.cfghandler
 
-logger = logging.getLogger('jb.pubsub_server')
+logger = logging.getLogger('jb.pubsub.server')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
@@ -22,6 +22,8 @@ class PubSubServer:
         self.socket.bind(websocket_address)
         logger.debug(f"Connected to '{websocket_address}'")
 
-    def publish(self, topic, payload={}):
+    def publish(self, topic, payload=None):
+        if payload is None:
+            payload = {}
         self.socket.send_string("%s %s" % (topic, json.dumps(payload)))
         # logger.debug("%s %s" % (topic, payload))
