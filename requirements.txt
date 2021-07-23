@@ -1,23 +1,21 @@
-# YAML
-ruamel.yaml
-
 # Linting
 flake8
 
 # Jukebox
 # sudo apt install libasound2-dev required on some machines
-pyalsaaudio
-mock
-py532lib
-pytest
-nanotime
-python_mpd2
 components
 evdev
+eyed3
+mock
+nanotime
 numpy
 paho_mqtt
+py532lib # RFID Reader
+pyalsaaudio
 pyserial
+pytest
+python_mpd2
 # pyzmq
-RPi
-smbus
-
+# RPi.GPIO
+ruamel.yaml
+# smbus
