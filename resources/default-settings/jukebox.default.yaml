@@ -7,6 +7,7 @@ modules:
         volume: volume # Load this first
         jingle: jingle
         player: playermpd
+        rfid: rfid.reader
     others:
         - alsaif
         - alsaif.alsawave
@@ -37,5 +38,5 @@ rpc:
 pubsub:
     websocket_port: 5557
 rfid:
-    cardid_database: ../../shared/settings/jukebox_cardid_database.json
-
+    reader_config: ../../shared/settings/rfid.yaml
+    card_database: ../../shared/settings/cards.yaml

@@ -55,7 +55,7 @@ class VolumeFactory:
     @plugin.tag
     def set_active(self, key):
         """Set the active volume service which gets registered as 'ctrl'"""
-        logger.debug("Set active '{key}' in VolumeFactory")
+        logger.debug(f"Set active '{key}' in VolumeFactory")
         plugin.register(self.get(key), package="volume", name="ctrl", replace=True)
 
 

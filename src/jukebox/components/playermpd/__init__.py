@@ -117,7 +117,7 @@ class PlayerMPD:
         # Do the same, but prevent the debug logging:
         try:
             self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
-        except Exception as e:
+        except Exception:
             pass
 
         if self.mpd_status.get('elapsed') is not None:
@@ -300,6 +300,6 @@ plugs.register(player_ctrl, name='ctrl')
 
 
 @plugs.atexit
-def atexit(signal: int):
+def atexit(**ignored_kwargs):
     global player_ctrl
     player_ctrl.exit()

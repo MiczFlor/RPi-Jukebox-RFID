@@ -52,4 +52,3 @@ def print(color: Colors, *values, sep=' ', end='\n', file=sys.stdout, flush=Fals
     Use just as a regular print function, but with first parameter as color
     """
     return builtins.print(color, *values, Colors.reset, sep=sep, end=end, file=file, flush=flush)
-

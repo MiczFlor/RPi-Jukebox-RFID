@@ -102,13 +102,10 @@ def finalize():
 
 
 @plugin.atexit
-def atexit(esignal: int):
+def atexit(signal_id: int, **ignored_kwargs):
     # Only play the shutdown sound when terminated with a proper command. Not on Ctrl-C (faster exit for developers :-)
-    if esignal == signal.SIGTERM:
+    if signal_id == signal.SIGTERM:
         if 'shutdown_sound' in cfg['jingle']:
-            # Currently cannot start playing in separate thread, as jukebox.exit_handler has no way of knowing that it
-            # should wait for this thread. So for now just play it in calling thread
-            # plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True)
-            play_shutdown()
+            return plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True, thread_name='ShutdownSound')
         else:
             logger.debug("No shutdown sound in config file")

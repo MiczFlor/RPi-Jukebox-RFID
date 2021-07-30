@@ -111,6 +111,35 @@ logger_call = logging.getLogger('jb.plugin.call')
 PluginType = Callable[..., Any]
 
 
+# ---------------------------------------------------------------------------
+# Global thread-related stuff
+# ---------------------------------------------------------------------------
+# Module level-lock for serializing execution calls via call(...)
+# Non-reentrant should be sufficient, but let's stay on the safe side for now
+_lock_module = threading.RLock()
+
+
+def _acquire_lock():
+    """
+    Acquire the module-level lock for serializing access to shared data.
+
+    This should be released with _releaseLock().
+    """
+    if _lock_module:
+        _lock_module.acquire()
+
+
+def _release_lock():
+    """
+    Release the module-level lock acquired by calling _acquireLock().
+    """
+    if _lock_module:
+        _lock_module.release()
+
+
+# ---------------------------------------------------------------------------
+# Internals
+# ---------------------------------------------------------------------------
 class PluginPackageClass:
     """
     A local data class for holding all information about a loaded plugin package
@@ -315,6 +344,10 @@ def _register_class(cls: Type, auto_tag: bool = False) -> Type:
 
     return IClass
 
+
+# ---------------------------------------------------------------------------
+# Interface
+# ---------------------------------------------------------------------------
 
 @overload
 def register(plugin: Callable) -> Callable:
@@ -562,7 +595,7 @@ def load_all_finalize():
             func()
 
 
-def close_down(signal: int):
+def close_down(**kwargs) -> Any:
     """
     Calls all functions registered with @atexit from all loaded modules in reverse order of module load order
 
@@ -571,39 +604,21 @@ def close_down(signal: int):
 
     :return:
     """
+    results = []
     assert sys.version_info.major >= 3 and sys.version_info.minor >= 7
     for loaded_as, pack in reversed(list(_PLUGINS.items())):
         for func in pack.atexit:
-            logger.debug(f"Package closing atexit: calling {loaded_as}.{func.__name__}({signal})")
-            func(signal)
+            logger.debug(f"Package closing atexit: calling {loaded_as}.{func.__name__}({kwargs})")
+            results.append(func(**kwargs))
+    return results
 
 
-def call(package: str, plugin: str, method: Optional[str] = None, *,
-         args=(), kwargs=None, as_thread: bool = False) -> Any:
+def _call(package: str, plugin: str, method: Optional[str] = None, *,
+          args=(), kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
     """
-    Call a function/method from the loaded plugins
+    The internals of the call functionality. See call(...) for documentation!
 
-    - package.plugin(*args, **kwargs)
-        where plugin is a function or a callable instance of a class
-    - package.plugin.method(*args, **kwargs)
-        where plugin is a class instance
-        and method must have the attribute 'plugin_callable' = True
-
-    Developers notes:
-        There is no logger in this function as they all belong up-level where the exceptions are handled
-        If you want logger messages instead of exceptions, use call_ignore_errors
-
-    :param package: Name of the plugin package in which to look for function/class instance
-    :param plugin: Function name or instance name of a class
-    :param method: Method name when accessing a class instance' method. Leave at None if unneeded.
-    :param as_thread: Run the callable in separate daemon thread.
-    There is no return value from the callable in this case! The return value is the thread object.
-    Also note that Exceptions in the Thread must be handled in the Thread and are not propagated to the main Thread.
-    All threads are started as daemon threads with terminate upon main program termination.
-    There is not stop-thread mechanism. This is intended for short lived threads.
-    :param args: Arguments passed to callable
-    :param kwargs: Keyword arguments passed to callable
-    :return: The return value from the called function, or, if started as thread the thread object
+    This low-level core is not thread safe!
     """
     if logger_call.isEnabledFor(logging.DEBUG):
         m = f".{method}" if method is not None else ''
@@ -621,22 +636,58 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
             raise TypeError(f"Attribute '{package}.{plugin}.{method}' not tagged as plugin callable")
 
     if as_thread is True:
-        l_thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True)
+        l_thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True, name=thread_name)
         l_thread.start()
         return l_thread
     else:
         return func(*args, **kwargs)
 
 
+def call(package: str, plugin: str, method: Optional[str] = None, *,
+         args=(), kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
+    """
+    Call a function/method from the loaded plugins
+
+    - package.plugin(*args, **kwargs)
+        where plugin is a function or a callable instance of a class
+    - package.plugin.method(*args, **kwargs)
+        where plugin is a class instance
+        and method must have the attribute 'plugin_callable' = True
+
+    Calls are serialized by a thread lock. The thread lock is shared with call_ignore_errors.
+
+    Developers notes:
+        There is no logger in this function as they all belong up-level where the exceptions are handled
+        If you want logger messages instead of exceptions, use call_ignore_errors
+
+    :param package: Name of the plugin package in which to look for function/class instance
+    :param plugin: Function name or instance name of a class
+    :param method: Method name when accessing a class instance' method. Leave at None if unneeded.
+    :param as_thread: Run the callable in separate daemon thread.
+    There is no return value from the callable in this case! The return value is the thread object.
+    Also note that Exceptions in the Thread must be handled in the Thread and are not propagated to the main Thread.
+    All threads are started as daemon threads with terminate upon main program termination.
+    There is not stop-thread mechanism. This is intended for short lived threads.
+    :param thread_name: Name of the thread
+    :param args: Arguments passed to callable
+    :param kwargs: Keyword arguments passed to callable
+    :return: The return value from the called function, or, if started as thread the thread object
+    """
+    with _lock_module:
+        result = _call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread, thread_name=thread_name)
+    return result
+
+
 def call_ignore_errors(package: str, plugin: str, method: Optional[str] = None, *,
-                       args=(), kwargs=None, as_thread: bool = False) -> Any:
+                       args=(), kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
     """
     Call a function/method from the loaded plugins ignoring all raised Exceptions
 
     Errors get logged. See call for parameter documentation.
     """
+    _acquire_lock()
     try:
-        result = call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread)
+        result = _call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread, thread_name=thread_name)
     except Exception as e:
         result = None
         name = f'{package}.{plugin}'
@@ -644,6 +695,8 @@ def call_ignore_errors(package: str, plugin: str, method: Optional[str] = None, 
             name += f'.{method}'
         logger.error(f"Ignoring failed call: '{name}(args={args}, kwargs={kwargs})'")
         logger.error(f"Reason: {e.__class__.__name__}: {e}")
+    finally:
+        _release_lock()
     return result
 
 

@@ -14,6 +14,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 class RpcServer:
     def __init__(self, context=None):
         # Get the global context (will be created if non-existing)
+        logger.info("Init RPC Server")
         self.context = context or zmq.Context.instance()
         self.socket = self.context.socket(zmq.REP)
 
@@ -68,22 +69,23 @@ class RpcServer:
             #   'args'     : [ ]  # (optional) Positional arguments as list
             #   'kwargs'   : { }  # (optional) Keyword arguments as dictionary
             #   'as_thread': bool # (optional) start call in separate thread
-            #   'id'       : Any  # (optional) Round-trip id for response
-            #   'tsp'      : Any  # (optional) measure and return total processing time for the call request
+            #   'id'       : Any  # (optional) Round-trip id for response (may not be None)
+            #   'tsp'      : Any  # (optional) measure and return total processing time for the call request (may not be None)
             # }
             # Note the difference in response behavior
             # A response will ALWAYS be send, independent of presence of 'id'
             # This is a ZeroMQB REQ/REP pattern requirement!
             # But if 'id' is omitted, this will always be 'None'! Unless an error occurred, then the error is returned
             # The absence of 'id' indicates that the requester is not interested in the response
-            package = client_request.get('package')
+            # If present, 'id' and 'tsp' may not be None. If they are None, there are treated as if non-existing.
+            package = client_request.pop('package', default=None)
             if package is not None:
-                plugin = client_request.get('plugin')
+                plugin = client_request.pop('plugin', default=None)
                 if plugin is not None:
-                    method = client_request.get('method', None)
-                    args = client_request.get('args', tuple())
-                    kwargs = client_request.get('kwargs', {})
-                    as_thread = client_request.get('as_thread', False)
+                    method = client_request.pop('method', None)
+                    args = client_request.pop('args', tuple())
+                    kwargs = client_request.pop('kwargs', {})
+                    as_thread = client_request.pop('as_thread', False)
                     try:
                         result = plugs.call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread)
                     except Exception as e:
@@ -93,19 +95,23 @@ class RpcServer:
             else:
                 error = "Missing mandatory parameter 'package'."
 
+            request_id = client_request.pop('id', None)
             if error is not None:
                 logger.error(f"Request {client_request} got error: {error}")
                 response = {'error': {'code': -1, 'message': error}}
-                if 'id' in client_request:
+                if request_id is not None:
                     response['id'] = client_request.get('id')
-            elif 'id' in client_request:
+            elif request_id is not None:
                 response = {'result': result, 'id': client_request.get('id')}
             else:
                 response = {'result': None}
 
-            if 'tsp' in client_request:
+            if client_request.pop('tsp', None) is not None:
                 response['total_processing_time'] = (nt - int(client_request['tsp'])) / 1000000
                 logger.debug("Execute: Processing time: {:2.3f} ms".format(response['total_processing_time']))
+
+            if len(client_request) != 0:
+                logger.warning(f"Ignoring unknown request keys: {client_request.keys()}")
 
             #  Send reply back to client
             logger.debug(f"Sending response: {response}")
