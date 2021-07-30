@@ -20,7 +20,7 @@ class volume_control_alsa:
         for m in alsaaudio.mixers(**{'cardindex': 0}):
             print("  '%s'" % m)
 
-    def get(self, param):
+    def get(self):
         return ({'volume': self.volume})
 
     def set(self, param):

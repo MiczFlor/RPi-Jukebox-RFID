@@ -8,18 +8,18 @@ It uses to a configuration file to configure the active devices.
 * If the service was not activated during installation, you can alternatively use `sudo install.sh` in this folder.
 
 ## How to edit configuration files?
-The configuration file is located here: `~/RPi-Jukebox-RFID/settings/gpio_settings.ini` 
+The configuration file is located here: `~/RPi-Jukebox-RFID/shared/settings/gpio_settings.ini`
 Editing the configuration file and restarting the service with `sudo systemctl restart phoniebox-gpio-control` will activate the new settings.
 
-In the following the different devices are described. 
+In the following the different devices are described.
 Each device can have actions which correspond to function calls.
 Up to now the following input devices are implemented:
-* **Button**: 
-   A simple button which has a hold and repeat functionality as well as a delayed action. 
+* **Button**:
+   A simple button which has a hold and repeat functionality as well as a delayed action.
    It can be configured using the keywords: Pin (**use GPIO number here**), hold_time, functionCall
 
 * **RotaryEncoder**:
-    Control of a rotary encoder, for example KY040, see also in 
+    Control of a rotary encoder, for example KY040, see also in
     [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume)
     it can be configured using pinA (**use GPIO number here**), pinB (**use GPIO number here**), functionCallIncr, functionCallDecr, timeBase=0.1
 

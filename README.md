@@ -13,7 +13,7 @@ In order to Focus on the actual topics many non needed/active items in this bran
 #### To achieve this, the current direction is:
 
 - avoid shell script invocation during runtime
-- establish a socket based API 
+- establish a socket based API
 - re-implement the core functionality in python
 
 ### What has been realized so far:
@@ -47,7 +47,7 @@ _Next Steps here:_
 
 - [X] reading of Config File in order to allow distributed development
 - [ ] Refactoring as class in order to allow the exit functions to take over more tasks
-- [ ] Add Logger ?
+- [X] Add Logger
 - [X] Add Command Line Interface to pass config etc. (e.g to be started by systemd)
 
 ### rpc/PhoniboxRpcServer.py
