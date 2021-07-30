@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core';
 
 import { socketRequest } from '../../sockets';
-import { preparePayload } from '../../sockets/utils';
 import noCover from '../../assets/noCover.jpg';
 import PlayerContext from '../../context/player/context';
 
@@ -69,15 +68,14 @@ const Library = () => {
 
   useEffect(() => {
     const getFlattenListOfDirectories = async () => {
-      const payload = preparePayload('player', 'list_all_dirs', {});
-      const { list = [] } = await socketRequest(payload);
+      const list = await socketRequest('player', 'list_all_dirs');
 
       setFolders(list.filter(entry => !!entry.directory));
     };
 
     getFlattenListOfDirectories();
     setIsLoading(false);
-  }, [isLoading]);
+  }, []);
 
   return (
     <div id="library">

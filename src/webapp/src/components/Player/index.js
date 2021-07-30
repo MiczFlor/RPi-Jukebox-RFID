@@ -11,7 +11,6 @@ import Volume from './volume';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    marginTop: '20px',
     padding: '20px',
   },
 }));
@@ -20,14 +19,12 @@ const Player = () => {
   const classes = useStyles();
 
   return (
-    <div id="player">
-      <Paper className={classes.paper}>
-        <Cover />
-        <Display />
-        <SeekBar />
-        <Controls />
-        <Volume />
-      </Paper>
+    <div id="player" className={classes.paper}>
+      <Cover />
+      <Display />
+      <SeekBar />
+      <Controls />
+      <Volume />
     </div>
   );
 };

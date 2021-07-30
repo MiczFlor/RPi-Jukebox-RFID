@@ -3,14 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { DEFAULT_PLAYER_STATUS } from '../../config';
 import PlayerContext from './context';
 import { initSockets, socketRequest } from '../../sockets';
-import { preparePayload } from '../../sockets/utils';
 
 const PlayerProvider = ({ children }) => {
-  const postJukeboxCommand = async (plugin, method, kwargs = {}) => {
+  const postJukeboxCommand = async (_package, method, kwargs) => {
     setState({ ...state, requestInFlight: true });
 
-    const payload = preparePayload(plugin, method, kwargs);
-    const { status } = await socketRequest(payload);
+    const { status } = await socketRequest(_package, method, kwargs);
 
     if(!status) {
       // TODO: Implement error handling as this shouldn't happen
@@ -34,7 +32,7 @@ const PlayerProvider = ({ children }) => {
 
     // requestInFlight is required to prevent sending requests
     // to the server while another request is still being
-    // processed this can happen when users click an action in
+    // processed. This can happen when users click an action in
     // a very fast manner
     requestInFlight: false,
 
@@ -77,22 +75,38 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('player', 'next');
   };
 
-  const seek = (newTime) => {
+  const seek = (new_time) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('player', 'seek', { newTime: newTime.toFixed(3) });
+    postJukeboxCommand('player', 'seek', { new_time: new_time.toFixed(3) });
   }
 
   const setVolume = (volume) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('alsaif', 'set_volume', { volume });
+    postJukeboxCommand('volume', 'set_volume', { volume });
   }
 
   const toggleMuteVolume = (mute_on) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('alsaif', 'mute', { mute_on });
+    postJukeboxCommand('volume', 'mute', { mute_on });
+  }
+
+  const repeat = (repeat, single) => {
+    if (state.requestInFlight) return;
+
+    let mode = null;
+    if (!repeat && !single) mode = 'repeat';
+    if (repeat && !single) mode = 'single';
+
+    postJukeboxCommand('player', 'repeatmode', { mode });
+  }
+
+  const shuffle = (random) => {
+    if (state.requestInFlight) return;
+
+    postJukeboxCommand('player', 'shuffle', { random });
   }
 
   // Initialize sockets for player context
@@ -110,6 +124,8 @@ const PlayerProvider = ({ children }) => {
     setVolume,
     state,
     toggleMuteVolume,
+    repeat,
+    shuffle,
   };
 
   return(

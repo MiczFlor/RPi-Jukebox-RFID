@@ -5,8 +5,9 @@
 # Application
 docker
 docs
+installation
 src
-shared/audiofolders
+shared
 
 # webapp
 !src/webapp

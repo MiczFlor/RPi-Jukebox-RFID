@@ -165,8 +165,12 @@ class player_control:
 
         return ({'object': 'player', 'method': 'seek', 'params': {'status': status}})
 
-    def replay(self):
-        return ({})
+    def shuffle(self, random):
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0 )
+
+        status = self.mpd_status
+
+        return ({'object': 'player', 'method': 'shuffle', 'params': {'status': status}})
 
     def repeatmode(self, mode):
         if mode == 'repeat':
@@ -181,7 +185,10 @@ class player_control:
 
         self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
         self.mpd_retry_with_mutex(self.mpd_client.single, single)
-        return ({})
+
+        status = self.mpd_status
+
+        return ({'object': 'player', 'method': 'repeatmode', 'params': {'status': status}})
 
     def get_current_song(self, param):
         status = self.mpd_status

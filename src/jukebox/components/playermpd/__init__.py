@@ -190,8 +190,10 @@ class PlayerMPD:
         return self.mpd_status
 
     @plugs.tag
-    def replay(self):
-        raise NotImplementedError
+    def shuffle(self, random):
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
+
+        return self.mpd_status
 
     @plugs.tag
     def repeatmode(self, mode):
@@ -207,7 +209,8 @@ class PlayerMPD:
 
         self.mpd_retry_with_mutex(self.mpd_client.repeat, repeat)
         self.mpd_retry_with_mutex(self.mpd_client.single, single)
-        return None
+
+        return self.mpd_status
 
     @plugs.tag
     def get_current_song(self, param):
