@@ -71,6 +71,7 @@ def initialize():
 
 @plugin.finalize
 def finalize():
+    global factory
     logger.debug("Finalize volume factory set up")
     interface_name = cfg.getn('volume', 'interface', default=None)
     if interface_name is not None:
