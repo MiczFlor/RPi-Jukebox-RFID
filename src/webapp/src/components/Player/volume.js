@@ -74,34 +74,33 @@ const Volume = () => {
   }
 
   useEffect(() => {
+    // Only trigger API when not dragging volume bar
     if (!isChangingVolume) {
       _setVolume(volume);
     }
   }, [isChangingVolume, volume]);
 
   return (
-    <div className={classes.volume}>
-      <Grid container spacing={2} direction="row" justify="center" alignItems="center">
-        <Grid item onClick={toggleVolumeMute}>
-          {volumeMute && <VolumeOffIcon />}
-          {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
-          {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
-          {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
-        </Grid>
-        <Grid item xs>
-          <Slider
-            ValueLabelComponent={VolumeLabel}
-            value={_volume || 0}
-            onChange={handleVolumeChange}
-            onChangeCommitted={updateVolume}
-            disabled={volumeMute}
-            marks={[ { value: volumeMax } ]}
-            step={volumeStep}
-            aria-labelledby="volume slider"
-          />
-        </Grid>
+    <Grid container direction="row" justify="center" alignItems="center" className={classes.volume}>
+      <Grid item onClick={toggleVolumeMute}>
+        {volumeMute && <VolumeOffIcon />}
+        {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
+        {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
+        {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
       </Grid>
-    </div>
+      <Grid item xs>
+        <Slider
+          ValueLabelComponent={VolumeLabel}
+          value={_volume || 0}
+          onChange={handleVolumeChange}
+          onChangeCommitted={updateVolume}
+          disabled={volumeMute}
+          marks={[ { value: volumeMax } ]}
+          step={volumeStep}
+          aria-labelledby="volume slider"
+        />
+      </Grid>
+    </Grid>
   );
 }
 

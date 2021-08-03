@@ -6,6 +6,7 @@ import {
   CardContent,
   CardMedia,
   CircularProgress,
+  Grid,
   makeStyles,
   TextField,
   Typography
@@ -18,7 +19,7 @@ import PlayerContext from '../../context/player/context';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    marginTop: '10px',
+    height: '100%'
   },
   content: {
     flex: '1',
@@ -27,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
     width: 100,
     height: 100,
   },
+  searchInput: {
+    width: '100%',
+    marginBottom: 10,
+  }
 }));
 
 const DirectoryCard = ({ classes, directory, play }) => {
@@ -35,14 +40,16 @@ const DirectoryCard = ({ classes, directory, play }) => {
   const parentPath = tree.join('/');
 
   return (
-    <Card className={classes.root} variant="outlined">
-      <CardMedia className={classes.cover} image={noCover}></CardMedia>
-      <CardContent className={classes.content}>
-        <Typography variant="subtitle1" display="block" gutterBottom>{folder}</Typography>
-        <Typography variant="overline" display="block" gutterBottom>{parentPath}</Typography>
-        <Button variant="outlined" onClick={e => play(directory)}>Play</Button>
-      </CardContent>
-    </Card>
+    <Grid item xs={12} sm={6}>
+      <Card className={classes.root} variant="outlined">
+        <CardMedia className={classes.cover} image={noCover}></CardMedia>
+        <CardContent className={classes.content}>
+          <Typography variant="subtitle1" display="block" gutterBottom>{folder}</Typography>
+          <Typography variant="overline" display="block" gutterBottom>{parentPath}</Typography>
+          <Button variant="outlined" onClick={e => play(directory)}>Play</Button>
+        </CardContent>
+      </Card>
+    </Grid>
   );
 };
 
@@ -80,28 +87,37 @@ const Library = () => {
   return (
     <div id="library">
       <form noValidate autoComplete="off">
-        <TextField
-          id="outlined-basic"
-          label="Search"
-          variant="outlined"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
+        <Grid container>
+          <Grid item xs={12}>
+            <TextField
+              className={classes.searchInput}
+              id="outlined-basic"
+              label="Search"
+              variant="outlined"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </Grid>
+        </Grid>
       </form>
       {isLoading && <CircularProgress />}
       {
         !isLoading &&
-        folders
-          .filter(directoryNameBySearchQuery)
-          .map(({ directory }) =>
-            <DirectoryCard
-              classes={classes}
-              directory={directory}
-              key={directory}
-              play={play}
-              playerstatus={playerstatus}
-            />
-          )
+        <Grid container spacing={1}>
+        {
+          folders
+            .filter(directoryNameBySearchQuery)
+            .map(({ directory }) =>
+              <DirectoryCard
+                classes={classes}
+                directory={directory}
+                key={directory}
+                play={play}
+                playerstatus={playerstatus}
+              />
+            )
+        }
+        </Grid>
       }
       {/* {
         !isLoading &&
