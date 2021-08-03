@@ -76,9 +76,6 @@ set_raspi_config() {
   # power management of wifi: switch off to avoid disconnecting
   echo "  * Disable Wifi power management to avoid disconnecting" 1>&3
   sudo iwconfig wlan0 power off
-
-  # Skip interactive Samba WINS config dialog
-  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 }
 
 # Update System
@@ -94,6 +91,9 @@ update_os() {
 # Install Dependencies
 install_jukebox_dependencies() {
   local time_start=$(date +%s)
+
+  # Skip interactive Samba WINS config dialog
+  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 
   echo "Install Jukebox OS dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
@@ -287,6 +287,56 @@ register_system_services() {
   calc_runtime_and_print time_start $(date +%s)
 }
 
+# Reduce the amount of time for the Raspberry to boot
+optimize_boot_time() {
+  # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
+
+  local DHCP_CONF="/etc/dhcpcd.conf"
+
+  echo "Optimize boot time" | tee /dev/fd/3
+
+  echo "  * Disable hciuart.service" 1>&3
+  sudo systemctl disable hciuart.service
+
+  echo "  * Disable keyboard-setup.service" 1>&3
+  sudo systemctl disable keyboard-setup.service
+
+  echo "  * Disable triggerhappy.service" 1>&3
+  sudo systemctl disable triggerhappy.service
+
+  # Static IP Address and DHCP optimizations
+  echo "  * Set static IP address and disabling IPV6" 1>&3
+
+  # Reference: https://unix.stackexchange.com/a/307790/478030
+  INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+
+  # Reference: https://serverfault.com/a/31179/431930
+  GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
+
+  # Using the dynamically assigned IP address as it is the best guess to be free
+  # Reference: https://unix.stackexchange.com/a/48254/478030
+  CURRENT_IP_ADDRESS=$(hostname -I)
+  echo "    * ${INTERFACE} is the default network interface" 1>&3
+  echo "    * ${GATEWAY} is the Router Gateway address" 1>&3
+  echo "    * Using ${CURRENT_IP_ASDDRESS} as the static IP for now" 1>&3
+
+  sudo cat << EOF >> $DHCP_CONF
+
+#######################
+# Jukebox DHCP Config #
+#######################
+interface ${INTERFACE}
+static ip_address=${CURRENT_IP_ADDRESS}/24
+static routers=${GATEWAY}
+static domain_name_servers=${GATEWAY}
+
+noarp
+ipv4only
+noipv6
+EOF
+
+}
+
 finish() {
   echo "Installation complete!
 
@@ -321,6 +371,7 @@ install() {
   install_jukebox
   register_jukebox_settings
   register_system_services
+  optimize_boot_time
 
   calc_runtime_and_print time_start $(date +%s)
 
