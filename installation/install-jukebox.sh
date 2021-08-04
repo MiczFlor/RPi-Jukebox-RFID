@@ -333,7 +333,7 @@ optimize_boot_time() {
     CURRENT_IP_ADDRESS=$(hostname -I)
     echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
     echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
-    echo "    * Using ${CURRENT_IP_ASDDRESS} as the static IP for now" | tee /dev/fd/3
+    echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
 
     sudo cat << EOF >> $DHCP_CONF
 
