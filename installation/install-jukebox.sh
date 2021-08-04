@@ -159,7 +159,7 @@ install_jukebox() {
   fi
 
   # Install Python dependencies
-  echo "  Install Python dependencies"
+  echo "  Install Python dependencies" | tee /dev/fd/3
   # ZMQ
   # Because the latest stable release of ZMQ does not support WebSockets
   # we need to compile the latest version in Github
@@ -194,7 +194,7 @@ install_jukebox() {
   # Install Node dependencies
   # TODO: Avoid building the app locally
   # Instead implement a Github Action that prebuilds on commititung a git tag
-  echo "  Install web application"
+  echo "  Install web application" | tee /dev/fd/3
   cd ${INSTALLATION_PATH}/src/webapp
   npm ci --prefer-offline --no-audit --production
   rm -rf build
@@ -266,7 +266,7 @@ register_system_services() {
 
   sudo systemctl daemon-reload
 
-  echo "Configure MPD"
+  echo "Configure MPD" | tee /dev/fd/3
   # TODO: Could this be read from the jukebox.yaml?
   local MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
   local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
@@ -318,25 +318,26 @@ optimize_boot_time() {
 
   # Static IP Address and DHCP optimizations
   echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
+  if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
+    echo "    Skipping. Already set up!" | tee /dev/fd/3
+  else
+    # DHCP has not been configured
+    # Reference: https://unix.stackexchange.com/a/307790/478030
+    INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
 
-  # Reference: https://unix.stackexchange.com/a/307790/478030
-  INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+    # Reference: https://serverfault.com/a/31179/431930
+    GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
 
-  # Reference: https://serverfault.com/a/31179/431930
-  GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
+    # Using the dynamically assigned IP address as it is the best guess to be free
+    # Reference: https://unix.stackexchange.com/a/48254/478030
+    CURRENT_IP_ADDRESS=$(hostname -I)
+    echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
+    echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
+    echo "    * Using ${CURRENT_IP_ASDDRESS} as the static IP for now" | tee /dev/fd/3
 
-  # Using the dynamically assigned IP address as it is the best guess to be free
-  # Reference: https://unix.stackexchange.com/a/48254/478030
-  CURRENT_IP_ADDRESS=$(hostname -I)
-  echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
-  echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
-  echo "    * Using ${CURRENT_IP_ASDDRESS} as the static IP for now" | tee /dev/fd/3
+    sudo cat << EOF >> $DHCP_CONF
 
-  sudo cat << EOF >> $DHCP_CONF
-
-#######################
-# Jukebox DHCP Config #
-#######################
+## Jukebox DHCP Config
 interface ${INTERFACE}
 static ip_address=${CURRENT_IP_ADDRESS}/24
 static routers=${GATEWAY}
@@ -346,6 +347,8 @@ noarp
 ipv4only
 noipv6
 EOF
+
+  fi
 
   echo "DONE: optimize_boot_time"
 }
