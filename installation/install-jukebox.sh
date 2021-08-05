@@ -13,6 +13,10 @@ SETTINGS_PATH="${SHARED_PATH}/settings"
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
 GIT_BRANCH="future3/develop"
 
+# Settings
+DISABLE_BOOT_SCREEN=true
+DISABLE_BOOT_LOGS_PRINT=true
+
 # $1->start, $2->end
 calc_runtime_and_print () {
   runtime=$(($2-$1))
@@ -348,6 +352,25 @@ ipv4only
 noipv6
 EOF
 
+  fi
+
+  # Disable RPi rainbow screen
+  if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
+    echo "  * Disable RPi rainbow screen" | tee /dev/fd/3
+    BOOT_CONFIG='/boot/config.txt'
+    sudo cat << EOF >> $BOOT_CONFIG
+
+## Jukebox Settings
+disable_splash=1
+
+EOF
+  fi
+
+  # Disable boot logs
+  if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
+    echo "  * Disable boot logs" | tee /dev/fd/3
+    BOOT_CMDLINE='/boot/cmdline.txt'
+    sudo sed -i "$ s/$/ consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram/" $BOOT_CMDLINE
   fi
 
   echo "DONE: optimize_boot_time"
