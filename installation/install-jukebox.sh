@@ -26,7 +26,7 @@ calc_runtime_and_print () {
   ((m=(${runtime}%3600)/60))
   ((s=${runtime}%60))
 
-  echo "Done in ${h}h ${m}m ${s}s." | tee /dev/fd/3
+  echo "Done in ${h}h ${m}m ${s}s."
 }
 
 ### Method definitions
@@ -427,12 +427,15 @@ EOF
 }
 
 finish() {
-  echo "Installation complete!
+  echo "
+---
+
+Installation complete!
 
 In order to start, you need to reboot your Raspberry Pi.
-Thi will disconnect your SSH connection.
+Your SSH connection will disconnect.
 
-Then you can open http://raspberrypi.local in your browser
+After the reboot, open http://raspberrypi.local in a browser
 to get started. Don't forget to upload files via Samba.
 
 Do you want to reboot now? [Y/n]" 1>&3
@@ -463,9 +466,10 @@ install() {
   install_jukebox
   register_jukebox_settings
   register_system_services
+  setup_kiosk_mode
   optimize_boot_time
 
-  calc_runtime_and_print time_start $(date +%s)
+  calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
 
   finish
 }
