@@ -17,6 +17,7 @@ GIT_BRANCH="future3/develop"
 ENABLE_STATIC_IP=true
 DISABLE_BOOT_SCREEN=true
 DISABLE_BOOT_LOGS_PRINT=true
+ENABLE_KIOSK_MODE=false       # Allow web application to be shown via a display attached to RPi
 
 # $1->start, $2->end
 calc_runtime_and_print () {
@@ -300,6 +301,46 @@ register_system_services() {
   echo "DONE: register_system_services"
 }
 
+setup_kiosk_mode() {
+  if [ "$ENABLE_KIOSK_MODE" = true ] ; then
+    local time_start=$(date +%s)
+    echo "Setup Kiosk Mode" | tee /dev/fd/3
+
+    # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
+    sudo apt-get install -y -qq --no-install-recommends \
+      xserver-xorg \
+      x11-xserver-utils \
+      xinit \
+      openbox \
+      chromium-browser \
+      lightdm
+
+    # Automatically login and start xserver
+    sudo raspi-config nonint do_boot_behaviour B4
+
+    local OPENBOX_AUTOSTART='/etc/xdg/openbox/autostart'
+    sudo cat << EOF >> $OPENBOX_AUTOSTART
+
+## Jukebox Kiosk Mide
+# Disable screen saver / power management
+xset s off
+xset s noblank
+xset -dpms
+
+# Start Browser
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
+chromium-browser --disable-infobars --kiosk 'http://localhost'
+
+EOF
+
+    sudo touch /etc/chromium-browser/customizations/01-disable-update-check;echo CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\" | sudo tee /etc/chromium-browser/customizations/01-disable-update-check
+
+  else
+    echo "Kiosk mode not enabled. Skipping installation."
+  fi
+}
+
 # Reduce the amount of time for the Raspberry to boot
 optimize_boot_time() {
   # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
@@ -316,6 +357,9 @@ optimize_boot_time() {
 
   echo "  * Disable triggerhappy.service" | tee /dev/fd/3
   sudo systemctl disable triggerhappy.service
+
+  echo "  * Disable raspi-config.service" | tee /dev/fd/3
+  sudo systemctl disable raspi-config.service
 
   echo "  * Disable apt-daily.service & apt-daily-upgrade.service" | tee /dev/fd/3
   sudo systemctl disable apt-daily.service
