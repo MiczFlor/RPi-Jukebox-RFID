@@ -301,6 +301,8 @@ register_system_services() {
 }
 
 setup_kiosk_mode() {
+  local time_start=$(date +%s)
+
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then
     local time_start=$(date +%s)
     echo "Setup Kiosk Mode" | tee /dev/fd/3
@@ -308,49 +310,41 @@ setup_kiosk_mode() {
     # Resource:
     # https://blog.r0b.io/post/minimal-rpi-kiosk/
     sudo apt-get -qq -y install --no-install-recommends \
-      xserver-xorg-video-all \
-      xserver-xorg-input-all \
-      xserver-xorg-core \
-      xinit \
+      xserver-xorg \
       x11-xserver-utils \
-      chromium-browser \
-      unclutter
+      xinit \
+      openbox \
+      chromium-browser
 
-    local BASHRC='/home/pi/.bash_profile'
-    sudo cat << EOF >> $BASHRC
+    local _DISPLAY='$DISPLAY'
+    local _XDG_VTNR='$XDG_VTNR'
+    cat << EOF >> /home/pi/.bashrc
 
 ## Jukebox kiosk autostart
-if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
-then
-  startx
-fi
+[[ -z $_DISPLAY && $_XDG_VTNR -eq 1 ]] && startx -- -nocursor
 
 EOF
 
-    local XINITRC='/home/pi/.xinitrc'
-    sudo cat << EOF >> $XINITRC
+    local XINITRC='/etc/xdg/openbox/autostart'
+    cat << EOF | sudo tee -a $XINITRC
 
-## Jukebox Kiosk Mide
-#!/usr/bin/env sh
-xset -dpms
+## Jukebox Kiosk Mode
+# Disable any form of screen saver / screen blanking / power management
 xset s off
 xset s noblank
+xset -dpms
 
-unclutter &
-chromium-browser https://localhost \
-  --start-fullscreen \
-  --kiosk \
-  --incognito \
-  --noerrdialogs \
-  --disable-translate \
-  --no-first-run \
-  --fast \
-  --fast-start \
+# Start Chromium in kiosk mode
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
+chromium-browser http://localhost \
   --disable-infobars \
-  --disable-features=TranslateUI \
-  --disk-cache-dir=/dev/null \
-  --overscroll-history-navigation=0 \
-  --disable-pinch
+  --disable-pinch \
+  --disable-translate \
+  --kiosk \
+  --noerrdialogs \
+  --no-first-run
+
 EOF
 
     # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
@@ -359,14 +353,16 @@ EOF
   else
     echo "Kiosk mode not enabled. Skipping installation."
   fi
+
+  calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: setup_kiosk_mode"
 }
 
 # Reduce the amount of time for the Raspberry to boot
 optimize_boot_time() {
+  local time_start=$(date +%s)
+
   # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
-
-  local DHCP_CONF="/etc/dhcpcd.conf"
-
   echo "Optimize boot time" | tee /dev/fd/3
 
   echo "  * Disable hciuart.service" | tee /dev/fd/3
@@ -386,6 +382,8 @@ optimize_boot_time() {
   sudo systemctl disable apt-daily-upgrade.service
 
   # Static IP Address and DHCP optimizations
+  local DHCP_CONF="/etc/dhcpcd.conf"
+
   if [ "$ENABLE_STATIC_IP" = true ] ; then
     echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
     if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
@@ -443,11 +441,15 @@ EOF
     sudo sed -i "$ s/$/ consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram/" $BOOT_CMDLINE
   fi
 
+
+  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: optimize_boot_time"
 }
 
 cleanup() {
   sudo rm -rf /var/lib/apt/lists/*
+
+  echo "DONE: cleanup"
 }
 
 finish() {
