@@ -11,7 +11,7 @@ SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
-GIT_BRANCH="future3/webapp"
+GIT_BRANCH="future3/develop"
 
 # $1->start, $2->end
 calc_runtime_and_print () {
