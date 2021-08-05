@@ -115,7 +115,6 @@ install_jukebox_dependencies() {
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages > /dev/null
-  sudo rm -rf /var/lib/apt/lists/*
 
   # Install Python
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -306,34 +305,55 @@ setup_kiosk_mode() {
     local time_start=$(date +%s)
     echo "Setup Kiosk Mode" | tee /dev/fd/3
 
-    # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
-    sudo apt-get install -y -qq --no-install-recommends \
-      xserver-xorg \
-      x11-xserver-utils \
+    # Resource:
+    # https://blog.r0b.io/post/minimal-rpi-kiosk/
+    sudo apt-get -qq -y install --no-install-recommends \
+      xserver-xorg-video-all \
+      xserver-xorg-input-all \
+      xserver-xorg-core \
       xinit \
-      openbox \
+      x11-xserver-utils \
       chromium-browser \
-      lightdm
+      unclutter
 
-    # Automatically login and start xserver
-    sudo raspi-config nonint do_boot_behaviour B4
+    local BASHRC='/home/pi/.bash_profile'
+    sudo cat << EOF >> $BASHRC
 
-    local OPENBOX_AUTOSTART='/etc/xdg/openbox/autostart'
-    sudo cat << EOF >> $OPENBOX_AUTOSTART
-
-## Jukebox Kiosk Mide
-# Disable screen saver / power management
-xset s off
-xset s noblank
-xset -dpms
-
-# Start Browser
-sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
-sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
-chromium-browser --disable-infobars --kiosk 'http://localhost'
+## Jukebox kiosk autostart
+if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
+then
+  startx
+fi
 
 EOF
 
+    local XINITRC='/home/pi/.xinitrc'
+    sudo cat << EOF >> $XINITRC
+
+## Jukebox Kiosk Mide
+#!/usr/bin/env sh
+xset -dpms
+xset s off
+xset s noblank
+
+unclutter &
+chromium-browser https://localhost \
+  --start-fullscreen \
+  --kiosk \
+  --incognito \
+  --noerrdialogs \
+  --disable-translate \
+  --no-first-run \
+  --fast \
+  --fast-start \
+  --disable-infobars \
+  --disable-features=TranslateUI \
+  --disk-cache-dir=/dev/null \
+  --overscroll-history-navigation=0 \
+  --disable-pinch
+EOF
+
+    # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
     sudo touch /etc/chromium-browser/customizations/01-disable-update-check;echo CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\" | sudo tee /etc/chromium-browser/customizations/01-disable-update-check
 
   else
@@ -385,7 +405,7 @@ optimize_boot_time() {
       echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
       echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
 
-      sudo cat << EOF >> $DHCP_CONF
+      cat << EOF | sudo tee -a $DHCP_CONF
 
 ## Jukebox DHCP Config
 interface ${INTERFACE}
@@ -408,7 +428,7 @@ EOF
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
     echo "  * Disable RPi rainbow screen" | tee /dev/fd/3
     BOOT_CONFIG='/boot/config.txt'
-    sudo cat << EOF >> $BOOT_CONFIG
+    cat << EOF | sudo tee -a $BOOT_CONFIG
 
 ## Jukebox Settings
 disable_splash=1
@@ -424,6 +444,10 @@ EOF
   fi
 
   echo "DONE: optimize_boot_time"
+}
+
+cleanup() {
+  sudo rm -rf /var/lib/apt/lists/*
 }
 
 finish() {
@@ -468,6 +492,7 @@ install() {
   register_system_services
   setup_kiosk_mode
   optimize_boot_time
+  cleanup
 
   calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
 
