@@ -54,5 +54,5 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 Run the following command in your SSH terminal and follow the instructions
 
 ```
-cd; rm -f install-jukebox.sh; wget --quiet https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh; chmod +x install-jukebox.sh; ./install-jukebox.sh
+cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```

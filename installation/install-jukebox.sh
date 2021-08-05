@@ -76,9 +76,6 @@ set_raspi_config() {
   # power management of wifi: switch off to avoid disconnecting
   echo "  * Disable Wifi power management to avoid disconnecting" 1>&3
   sudo iwconfig wlan0 power off
-
-  # Skip interactive Samba WINS config dialog
-  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 }
 
 # Update System
@@ -89,11 +86,15 @@ update_os() {
   sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade > /dev/null; sudo apt-get -qq -y autoremove > /dev/null
 
   calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: update_os"
 }
 
 # Install Dependencies
 install_jukebox_dependencies() {
   local time_start=$(date +%s)
+
+  # Skip interactive Samba WINS config dialog
+  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 
   echo "Install Jukebox OS dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
@@ -128,6 +129,7 @@ install_jukebox_dependencies() {
   fi
 
   calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: install_jukebox_dependencies"
 }
 
 # Install Jukebox
@@ -157,7 +159,7 @@ install_jukebox() {
   fi
 
   # Install Python dependencies
-  echo "  Install Python dependencies"
+  echo "  Install Python dependencies" | tee /dev/fd/3
   # ZMQ
   # Because the latest stable release of ZMQ does not support WebSockets
   # we need to compile the latest version in Github
@@ -178,7 +180,7 @@ install_jukebox() {
     rm -f libzmq.tar.gz
     sudo rsync -a * ${ZMQ_PREFIX}/
 
-    pip3 install -q --pre pyzmq \
+    pip3 install --pre pyzmq \
       --install-option=--enable-drafts \
       --install-option=--zmq=${ZMQ_PREFIX}
   else
@@ -187,18 +189,19 @@ install_jukebox() {
 
   echo "    Install requirements"
   cd ${INSTALLATION_PATH}
-  pip3 install -q --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+  pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
   # Install Node dependencies
   # TODO: Avoid building the app locally
   # Instead implement a Github Action that prebuilds on commititung a git tag
-  echo "  Install web application"
+  echo "  Install web application" | tee /dev/fd/3
   cd ${INSTALLATION_PATH}/src/webapp
-  npm install --production --silent
+  npm ci --prefer-offline --no-audit --production
   rm -rf build
   npm run build
 
   calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: install_jukebox"
 }
 
 # Samba configuration settings
@@ -234,6 +237,8 @@ EOF
 
     sudo chmod 644 $SMB_CONF
   fi
+
+  echo "DONE: configure_samba"
 }
 
 register_jukebox_settings() {
@@ -244,6 +249,8 @@ register_jukebox_settings() {
   # Ask for Jukebox hostname to replace raspberry.local
 
   cp -f ${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml ${SETTINGS_PATH}/jukebox.yaml
+
+  echo "DONE: register_jukebox_settings"
 }
 
 register_system_services() {
@@ -259,7 +266,7 @@ register_system_services() {
 
   sudo systemctl daemon-reload
 
-  echo "Configure MPD"
+  echo "Configure MPD" | tee /dev/fd/3
   # TODO: Could this be read from the jukebox.yaml?
   local MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
   local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
@@ -285,6 +292,65 @@ register_system_services() {
 
   # We don't start the services now, we wait for the reboot
   calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: register_system_services"
+}
+
+# Reduce the amount of time for the Raspberry to boot
+optimize_boot_time() {
+  # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
+
+  local DHCP_CONF="/etc/dhcpcd.conf"
+
+  echo "Optimize boot time" | tee /dev/fd/3
+
+  echo "  * Disable hciuart.service" | tee /dev/fd/3
+  sudo systemctl disable hciuart.service
+
+  echo "  * Disable keyboard-setup.service" | tee /dev/fd/3
+  sudo systemctl disable keyboard-setup.service
+
+  echo "  * Disable triggerhappy.service" | tee /dev/fd/3
+  sudo systemctl disable triggerhappy.service
+
+  echo "  * Disable apt-daily.service & apt-daily-upgrade.service" | tee /dev/fd/3
+  sudo systemctl disable apt-daily.service
+  sudo systemctl disable apt-daily-upgrade.service
+
+  # Static IP Address and DHCP optimizations
+  echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
+  if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
+    echo "    Skipping. Already set up!" | tee /dev/fd/3
+  else
+    # DHCP has not been configured
+    # Reference: https://unix.stackexchange.com/a/307790/478030
+    INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+
+    # Reference: https://serverfault.com/a/31179/431930
+    GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
+
+    # Using the dynamically assigned IP address as it is the best guess to be free
+    # Reference: https://unix.stackexchange.com/a/48254/478030
+    CURRENT_IP_ADDRESS=$(hostname -I)
+    echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
+    echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
+    echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
+
+    sudo cat << EOF >> $DHCP_CONF
+
+## Jukebox DHCP Config
+interface ${INTERFACE}
+static ip_address=${CURRENT_IP_ADDRESS}/24
+static routers=${GATEWAY}
+static domain_name_servers=${GATEWAY}
+
+noarp
+ipv4only
+noipv6
+EOF
+
+  fi
+
+  echo "DONE: optimize_boot_time"
 }
 
 finish() {
@@ -301,10 +367,13 @@ Do you want to reboot now? [Y/n]" 1>&3
   read -rp "Do you want to install? [Y/n] " response
   case "$response" in
     [nN][oO]|[nN])
+      echo "Reboot aborted" | tee /dev/fd/3
+      echo "DONE: finish"
       exit
       ;;
     *)
-      echo "Rebooting ..." 1>&3
+      echo "Rebooting ..." | tee /dev/fd/3
+      echo "DONE: finish"
       sudo reboot
       ;;
   esac
@@ -321,6 +390,7 @@ install() {
   install_jukebox
   register_jukebox_settings
   register_system_services
+  optimize_boot_time
 
   calc_runtime_and_print time_start $(date +%s)
 
