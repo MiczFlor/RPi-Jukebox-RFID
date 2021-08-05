@@ -14,6 +14,7 @@ GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
 GIT_BRANCH="future3/develop"
 
 # Settings
+ENABLE_STATIC_IP=true
 DISABLE_BOOT_SCREEN=true
 DISABLE_BOOT_LOGS_PRINT=true
 
@@ -321,25 +322,26 @@ optimize_boot_time() {
   sudo systemctl disable apt-daily-upgrade.service
 
   # Static IP Address and DHCP optimizations
-  echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
-  if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
-    echo "    Skipping. Already set up!" | tee /dev/fd/3
-  else
-    # DHCP has not been configured
-    # Reference: https://unix.stackexchange.com/a/307790/478030
-    INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+  if [ "$ENABLE_STATIC_IP" = true ] ; then
+    echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
+    if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
+      echo "    Skipping. Already set up!" | tee /dev/fd/3
+    else
+      # DHCP has not been configured
+      # Reference: https://unix.stackexchange.com/a/307790/478030
+      INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
 
-    # Reference: https://serverfault.com/a/31179/431930
-    GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
+      # Reference: https://serverfault.com/a/31179/431930
+      GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
 
-    # Using the dynamically assigned IP address as it is the best guess to be free
-    # Reference: https://unix.stackexchange.com/a/48254/478030
-    CURRENT_IP_ADDRESS=$(hostname -I)
-    echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
-    echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
-    echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
+      # Using the dynamically assigned IP address as it is the best guess to be free
+      # Reference: https://unix.stackexchange.com/a/48254/478030
+      CURRENT_IP_ADDRESS=$(hostname -I)
+      echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
+      echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
+      echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
 
-    sudo cat << EOF >> $DHCP_CONF
+      sudo cat << EOF >> $DHCP_CONF
 
 ## Jukebox DHCP Config
 interface ${INTERFACE}
@@ -350,8 +352,12 @@ static domain_name_servers=${GATEWAY}
 noarp
 ipv4only
 noipv6
+
 EOF
 
+    fi
+  else
+    echo "  * Skipped static IP address and disabling IPV6"
   fi
 
   # Disable RPi rainbow screen
