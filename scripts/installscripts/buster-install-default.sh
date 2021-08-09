@@ -793,7 +793,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-tools lsof
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-tools lsof
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -802,7 +802,7 @@ install_main() {
     ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
     # use python3.7 as default
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
     # Get github code
     cd "${HOME_DIR}" || exit
