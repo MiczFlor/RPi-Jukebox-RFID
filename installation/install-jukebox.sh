@@ -117,7 +117,7 @@ install_jukebox_dependencies() {
     --allow-change-held-packages > /dev/null
 
   # Install Python
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
   # Install Node
   if which node > /dev/null; then
