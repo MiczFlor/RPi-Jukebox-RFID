@@ -9,7 +9,7 @@ debug_file = /var/log/mopidy/mopidy-debug.log
 
 [local]
 enabled = true
-media_dir = /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+media_dir = %DIRaudioFolders%
 excluded_file_extensions =
   .conf
   .jpg

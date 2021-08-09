@@ -111,7 +111,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         // hang on, does that folder exist already?
         if(!file_exists($Audio_Folders_Path . "/" . $moveFolder)) {
             // no, so create the folder
-            $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; chmod 777 "' . $moveFolder . '"';
+            $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; sudo chmod -R 777 "' . $moveFolder . '"';
             exec($exec);   
             $messageAction .= "Will create new folder and move files to: '" . $moveFolder . "'";
         } else {
@@ -132,7 +132,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         // move files to folder
         foreach ($uFiles['ufile'] as $key => $values) {
             $targetName = $moveFolder . '/' . $values['name'];
-            $exec = 'mv "' . $values['tmp_name'] . '" "' . $targetName . '"; chown -R pi:www-data "' . $targetName . '"; chmod 777 "' . $targetName . '"';
+            $exec = 'mv "' . $values['tmp_name'] . '" "' . $targetName . '"; chown -R pi:www-data "' . $targetName . '"; sudo chmod -R 777 "' . $targetName . '"';
             exec($exec);
         }
         $messageSuccess = "<p>Files were successfully uploaded.</p>";
@@ -162,7 +162,7 @@ if ($_POST['ACTION'] == "folderCreateNew") {
         /*
         * create folder
         */        
-        $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chmod 777 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chown -R pi:www-data "' . $Audio_Folders_Path.'/'.$newDirPathRel . '"';
+        $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; sudo chmod -R 777 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chown -R pi:www-data "' . $Audio_Folders_Path.'/'.$newDirPathRel . '"';
         exec($exec);
         $messageSuccess = "<p>".$lang['manageFilesFoldersSuccessNewFolder']." '".$newDirPathRel."'</p>";
         
@@ -174,7 +174,7 @@ if ($_POST['ACTION'] == "folderCreateNew") {
  * START HTML
  *******************************************/
 
-html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
+html_bootstrap3_createHeader("en", "Files and Folders | Phoniebox", $conf['base_url']);
 
 ?>
 <body>
@@ -200,11 +200,11 @@ html_bootstrap3_createHeader("en", "Phoniebox", $conf['base_url']);
   <label for="collapsible" class="lbl-toggle">Are you having trouble with uploading files?</label>
   <div class="collapsible-content">
     <div class="content-inner">
-    <p>If the upload does not work, make sure that you adjust these variables in <code>/etc/php/7.0/fpm/php.ini</code>:<br>
-        <code>file_uploads = On</code><br>
-        <code>upload_max_filesize = 0</code><br>
-        <code>max_file_uploads = 20</code><br>
-        <code>post_max_size = 0</code><br>
+    <p>If the upload does not work, make sure that you adjust these variables in <code>' . php_ini_loaded_file() . '</code>:<br>
+        <code>file_uploads = On</code> (current: ' . (ini_get("file_uploads")?"On":"Off") . ')<br>
+        <code>upload_max_filesize = 0</code> (current: ' . ini_get("upload_max_filesize") . ')<br>
+        <code>max_file_uploads = 20</code> (current: ' . ini_get("max_file_uploads") . ')<br>
+        <code>post_max_size = 0</code> (current: ' . ini_get("post_max_size") . ')<br>
         And restart the webserver.
         </p>
     </div>

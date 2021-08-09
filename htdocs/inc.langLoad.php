@@ -9,6 +9,8 @@ if(isset($_POST['lang']) && trim($_POST['lang']) != "") {
     */
     file_put_contents($conf['settings_abs'].'/Lang', trim($_POST['lang']));
     $conf['settings_lang'] = trim($_POST['lang']);
+    // execute shell to create config file
+    exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
 }
 
 /*
@@ -42,8 +44,11 @@ foreach($langDef as $langKey => $langVal) {
 }
 
 /**
+print "<ul>\n";
 foreach($lang as $key => $value) {
     $lang[$key] = "#NEW#".$value;
+    print "\n<li>".$key." => ".$value."</li>";
 }
+print "</ul>\n";
 /**/
 ?>
