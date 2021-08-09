@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -qq -y \
 #resolvconf
 #python3-spidev
 
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 COPY . ${INSTALLATION_PATH}
 
