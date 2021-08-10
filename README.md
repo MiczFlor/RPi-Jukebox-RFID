@@ -22,20 +22,21 @@ The year 2020 also has a clear *:star: community hero :star:*: @s-martin has bee
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) released (2020-11-23)**
+* **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-11)**
 
-The [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.2?
+## What's new in version 2.3?
 
+* Lots of fixed bugs and minor improvements...
+
+**What's still hot?**
 * :fire: **Fixed location of gpio_settings.ini** for [GPIO control](components/gpio_control/README.md)
 * Added support for files with embedded chapters metada (like m4a) enhancement
 * Added customizable poweroff command bash enhancement
 * Finally fixed resume function...
 * Lots of fixed bugs and minor improvements...
     * Status LED, Rotary Button, Volume Up/Down, custom music directory for +Spotify, Startup sound volume
-
-**What's still hot?**
 * The constantly improved **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command)
     * integrated improved [GPIO control](components/gpio_control/README.md)
     * integrated selection of RFID readers and uses [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
