@@ -167,7 +167,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -n1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
@@ -948,7 +948,7 @@ case $COMMAND in
         ;;
     playlistappend)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         # Unmute if muted
         if [ -f $VOLFILE ]; then
             # $VOLFILE DOES exist == audio off
@@ -969,7 +969,7 @@ case $COMMAND in
     playsinglefile)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc clear
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         mpc repeat off
         mpc single on
         # Unmute if muted
@@ -1086,7 +1086,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
+        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -n1`
         ;;
     readwifiipoverspeaker)
         # will read out the IP address over the Pi's speaker.
