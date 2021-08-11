@@ -22,12 +22,16 @@ The year 2020 also has a clear *:star: community hero :star:*: @s-martin has bee
 
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-11)**
+* **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-12)**
 
 The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
 ## What's new in version 2.3?
 
+* Holding buttons feature fixed #1406
+* Bluetooth buttons and headphones toggle #1262
+* fixed stop on removal for RC522 #1122
+* USB Encoder buttons support for anyone who dors not want to solder...
 * Lots of fixed bugs and minor improvements...
 
 **What's still hot?**
