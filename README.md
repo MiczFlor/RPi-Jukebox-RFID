@@ -32,6 +32,7 @@ The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) rel
 * Bluetooth buttons and headphones toggle #1262
 * fixed stop on removal for RC522 #1122
 * USB Encoder buttons support for anyone who dors not want to solder...
+* Removed support for Raspian Stretch
 * Lots of fixed bugs and minor improvements...
 
 **What's still hot?**
