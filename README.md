@@ -8,26 +8,44 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
-![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
+## The Phoniebox Calendar 2021 is here!!!
+
+Another bunch of wonderful designs! 2021 is the third Phoniebox calendar. If you are interested, you can see the [2019 and 2020 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2021 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
+
+![The 2021 Phoniebox Calendar](docs/2021-Phoniebox-Calendar.jpg "The 2021 Phoniebox Calendar")
+
+The year 2020 also has a clear *:star: community hero :star:*: @s-martin has been doing outstanding work for the Phoniebox community:sparkles:. Thanks to you and may 2021 be a wonderful year for you.
 
 ## Important updates / news
 
+* **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask general questions in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions), bugs and enhancements should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
-* **Phoniebox [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) released (2020-11-23)**
+* **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-12)**
 
-The [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) release was pushed through the doors with many contributors (some of which in alphabetical order): @andreasbrett @BerniPi @juhrmann @Luegengladiator @MarkusProchaska @MarlonKrug @patrickweigelt @princemaxwell @RalfAlbers @s-martin @themorlan @veloxidSchweiz @xn--nding-jua. [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.2?
+## What's new in version 2.3?
 
+* Improved [installation guide](docs/INSTALL_COMPLETE_GUIDE.md)
+* Holding buttons feature fixed #1406
+* Bluetooth buttons and headphones toggle #1262
+* fixed stop on removal for RC522 #1122
+* USB Encoder buttons support for anyone who dors not want to solder...
+* Improved robustness and better documentation for [GPIO control](components/gpio_control/README.md)
+* Auto convert wrong Spotify URLs to a format Mopidy understands
+* Support for PC/SC-readers
+* Removed support for Raspian Stretch
+* Lots of fixed bugs and minor improvements...
+
+**What's still hot?**
 * :fire: **Fixed location of gpio_settings.ini** for [GPIO control](components/gpio_control/README.md)
 * Added support for files with embedded chapters metada (like m4a) enhancement
 * Added customizable poweroff command bash enhancement
 * Finally fixed resume function...
 * Lots of fixed bugs and minor improvements...
     * Status LED, Rotary Button, Volume Up/Down, custom music directory for +Spotify, Startup sound volume
-
-**What's still hot?**
 * The constantly improved **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command)
     * integrated improved [GPIO control](components/gpio_control/README.md)
     * integrated selection of RFID readers and uses [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
@@ -55,7 +73,7 @@ The [2.2](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/4?closed=1) rel
    
 [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command) for Raspbian `buster` available.
 
-* **MUST READ for users of [Phoniebox +Spotify Edition](docs/SPOTIFY-INTEGRATION.md)**
+* **MUST READ for users of [Phoniebox +Spotify Edition](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)**
 * This install script combines the two versions *Classic* and *+ Spotify*. 
 * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
 

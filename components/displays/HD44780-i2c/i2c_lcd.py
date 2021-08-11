@@ -333,12 +333,16 @@ try:
                 album = album.replace("\n", "").replace("ä", "\341").replace("ö", "\357").replace("ü", "\365").replace("ß", "\342").replace("Ä", "\341").replace("Ö", "\357").replace("Ü", "\365")  # weitere codes siehe https://www.mikrocontroller.net/topic/293125                           #
             except KeyError:                                                                  #
                 album = ""                                                                #
-            ## read in artist info                                                            #
+            ## read in artist info
             try:                                                                              #
                 artist = current_song_infos['artist']                                     #
                 artist = artist.replace("\n", "").replace("ä", "\341").replace("ö", "\357").replace("ü", "\365").replace("ß", "\342").replace("Ä", "\341").replace("Ö", "\357").replace("Ü", "\365")  # weitere codes siehe https://www.mikrocontroller.net/topic/293125                         #
             except KeyError:                                                                  #
-                artist = ""                                                               #
+                try:                                                                              #
+                    artist = current_song_infos['name']                                     #
+                    artist = artist.replace("\n", "").replace("ä", "\341").replace("ö", "\357").replace("ü", "\365").replace("ß", "\342").replace("Ä", "\341").replace("Ö", "\357").replace("Ü", "\365")  # weitere codes siehe https://www.mikrocontroller.net/topic/293125                         #
+                except KeyError:                                                                  #
+                    artist = ""                                                               #
             if (client.mpd_version) >= "0.20":
                 try:                                                                              #
                     elapsed = status['elapsed'].split(".")[0]                                   #
@@ -347,8 +351,7 @@ try:
                 except KeyError:                                                                  #
                     track_time = ""                                                           #
             else:                                                                                     #
-                track_time = subprocess.check_output('mpc | head -n2 | tail -n1 | sed "s/  \+/ /g" | cut -d" " -f3', shell=True)
-                track_time = track_time.replace("\n", "")                                         #
+                track_time = subprocess.check_output('mpc | head -n2 | tail -n1 | sed "s/  \+/ /g" | cut -d" " -f3', universal_newlines=True, shell=True)
             ###########################################################################################
 
             ############# RESET GLOBAL COUNTER, IF TITLE CHANGED ############################
@@ -406,7 +409,7 @@ try:
         if i_counter >= 65000:                                                               #
             i_counter = 1000  # <-- not 0, cause the display could be off                 #
         ######################################################################################
-        
+
         ####################### REMIND STUFF FOR NEXT CYCLE #################################
         last_state = state                                                                     #
         last_title = title                                                                     #

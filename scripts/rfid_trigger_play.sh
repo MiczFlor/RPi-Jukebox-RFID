@@ -80,7 +80,7 @@ if [ "$CARDID" ]; then
     # Special uses are for example volume changes, skipping, muting sound.
 
     case $CARDID in
-	    $CMDSHUFFLE)
+        $CMDSHUFFLE)
             # toggles shuffle mode  (random on/off)
             $PATHDATA/playout_controls.sh -c=playershuffle
             ;;
@@ -160,6 +160,10 @@ if [ "$CARDID" ]; then
             # decrease volume by x% set in Audio_Volume_Change_Step
             $PATHDATA/playout_controls.sh -c=volumedown
             ;;
+        $CMDSWITCHAUDIOIFACE)
+            # switch between primary/secondary audio iFaces
+            $PATHDATA/playout_controls.sh -c=switchaudioiface
+	    ;;
         $CMDSTOP)
             # kill all running audio players
             $PATHDATA/playout_controls.sh -c=playerstop
@@ -183,6 +187,18 @@ if [ "$CARDID" ]; then
             # echo "prev" | nc.openbsd -w 1 localhost 4212
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
+            ;;
+        $CMDRANDCARD)
+            # activate a random card
+            $PATHDATA/playout_controls.sh -c=randomcard
+            ;;
+        $CMDRANDFOLD)
+            # play a random folder
+            $PATHDATA/playout_controls.sh -c=randomfolder
+            ;;
+        $CMDRANDTRACK)
+            # jump to a random track in playlist (no shuffle mode required)
+            $PATHDATA/playout_controls.sh -c=randomtrack
             ;;
         $CMDREWIND)
             # play the first track in playlist
@@ -238,6 +254,22 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
+		$SHUTDOWNVOLUMEREDUCTION10)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=10
+			;;
+		$SHUTDOWNVOLUMEREDUCTION15)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=15
+			;;
+		$SHUTDOWNVOLUMEREDUCTION30)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=30
+			;;
+		$SHUTDOWNVOLUMEREDUCTION60)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=60
+			;;
         $ENABLEWIFI)
             $PATHDATA/playout_controls.sh -c=enablewifi
             ;;
@@ -270,6 +302,9 @@ if [ "$CARDID" ]; then
             ;;
         $CMDREADWIFIIP)
             $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
+            ;;
+        $CMDBLUETOOTHTOGGLE)
+            $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
             ;;
         *)
 

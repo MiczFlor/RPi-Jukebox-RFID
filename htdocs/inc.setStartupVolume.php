@@ -3,8 +3,6 @@ Startup Volume Select Form
 -->
         <!-- input-group -->
         <?php
-        //$maxvolumevalue = exec("/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=getmaxvolume");
-        //$maxvolumevalue = 43.6;//debug
         $maxvalueselect = round(($maxvolumevalue/5))*5;
         $startupvaluedisplay = round($startupvolumevalue);
         ?>

@@ -148,11 +148,14 @@ if(!file_exists($conf['settings_abs']."/global.conf")) {
 
 // read the global conf file
 $globalConf = parse_ini_file($conf['settings_abs']."/global.conf", $process_sections = null);
-//print "<pre>"; print_r($globalConf); print "</pre>"; //???
+if ($debug == "true") {
+    print "<pre>Array globalConf"; print_r($globalConf); print "</pre>"; //???
+}
 
 // assign the values from the global conf file to the vars in PHP
 $Audio_Folders_Path = $globalConf['AUDIOFOLDERSPATH'];
 $Playlists_Folders_Path = $globalConf['PLAYLISTSFOLDERPATH'];
+$Swipe_or_Place = $globalConf['SWIPEORPLACE'];
 $Second_Swipe = $globalConf['SECONDSWIPE'];
 $Second_Swipe_Pause = $globalConf['SECONDSWIPEPAUSE'];
 $Second_Swipe_Pause_Controls = $globalConf['SECONDSWIPEPAUSECONTROLS'];
@@ -165,6 +168,7 @@ $version = $globalConf['VERSION'];
 $edition = $globalConf['EDITION'];
 $maxvolumevalue = $globalConf['AUDIOVOLMAXLIMIT'];
 $startupvolumevalue = $globalConf['AUDIOVOLSTARTUP'];
+$bootvolumevalue = $globalConf['AUDIOVOLBOOT'];
 $volstepvalue = $globalConf['AUDIOVOLCHANGESTEP'];
 $idletimevalue = $globalConf['IDLETIMESHUTDOWN'];
 $conf['settings_lang'] = $globalConf['LANG'];
@@ -193,12 +197,14 @@ $nonEmptyCommands = array(
     'volume',
     'maxvolume',
     'startupvolume',
+    'bootvolume',
     'volstep',
     'shutdown',
     'reboot',
     'scan',
     'idletime',
     'shutdownafter',
+	'shutdownvolumereduction',
     'stopplayoutafter',
     'enableresume',
     'disableresume',
@@ -294,12 +300,14 @@ $commandToAction = array(
     'volume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolume -v=%s",            // change volume
     'maxvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setmaxvolume -v=%s",      // change max volume
     'startupvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setstartupvolume -v=%s",      // change startup volume
+    'bootvolume' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setbootvolume -v=%s",      // change boot volume
     'volstep' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setvolstep -v=%s",          // change volume step
     'mute' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=mute",                         // volume mute (toggle)
     'volumeup' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumeup",                 // volume up
     'volumedown' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=volumedown",             // volume down
     'idletime' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=setidletime -v=%s",        // set idletime
     'shutdownafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownafter -v=%s", // set shutdownafter time (sleeptimer)
+    'shutdownvolumereduction' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=shutdownvolumereduction -v=%s", // set time to shutdown with reducing volume
     'stopplayoutafter' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerstopafter -v=%s",// set playerstopafter time (auto stop timer)
     'playpos' => "/usr/bin/sudo ".$conf['scripts_abs']."/playout_controls.sh -c=playerplay -v=%s",          // play from playlist position,
     'DebugLogClear' => "sudo rm ../logs/debug.log; sudo touch ../logs/debug.log; sudo chmod 777 ../logs/debug.log",

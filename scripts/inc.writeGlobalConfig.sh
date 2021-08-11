@@ -65,6 +65,19 @@ fi
 PLAYLISTSFOLDERPATH=`cat $PATHDATA/../settings/Playlists_Folders_Path`
 
 ##############################################
+# General RFID player control SWIPE OR PLACE
+# General decision on how the player operates 
+# SWIPENOTPLACE = Swiping starts the player
+# PLACENOTSWIPE = Placing the card starts player, removal stops it
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Swipe_or_Place ]; then
+    echo "SWIPENOTPLACE" > $PATHDATA/../settings/Swipe_or_Place
+    chmod 777 $PATHDATA/../settings/Swipe_or_Place
+fi
+# 2. then|or read value from file
+SWIPEORPLACE=`cat $PATHDATA/../settings/Swipe_or_Place`
+
+##############################################
 # Second swipe
 # What happens when the same card is swiped a second time?
 # RESTART => start the playlist again vs. PAUSE => toggle pause and play current
@@ -105,6 +118,16 @@ if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
 fi
 # 2. then|or read value from file
 AUDIOIFACENAME=`cat $PATHDATA/../settings/Audio_iFace_Name`
+
+##############################################
+# Audio_iFace_Active
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Audio_iFace_Active ]; then
+    echo "0" > $PATHDATA/../settings/Audio_iFace_Active
+    chmod 777 $PATHDATA/../settings/Audio_iFace_Active
+fi
+# 2. then|or read value from file
+AUDIOIFACEACTIVE=`cat $PATHDATA/../settings/Audio_iFace_Active`
 
 ##############################################
 # Volume_Manager (mpd or amixer)
@@ -155,6 +178,16 @@ if [ ! -f $PATHDATA/../settings/Startup_Volume ]; then
 fi
 # 2. then|or read value from file
 AUDIOVOLSTARTUP=`cat $PATHDATA/../settings/Startup_Volume`
+
+##############################################
+# Volume_Boot - after reboot
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Volume_Boot ]; then
+    echo "30" > $PATHDATA/../settings/Volume_Boot
+    chmod 777 $PATHDATA/../settings/Volume_Boot
+fi
+# 2. then|or read value from file
+AUDIOVOLBOOT=`cat $PATHDATA/../settings/Volume_Boot`
 
 ##############################################
 # Change_Volume_Idle
@@ -261,6 +294,28 @@ fi
 VERSION=`cat $PATHDATA/../settings/version`
 
 ##############################################
+# CHAPTEREXTENSIONS
+# Only files with the extensions listed will be scanned for chapters
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/CHAPTEREXTENSIONS ]; then
+    echo "mp4,m4a,m4b,m4r" > $PATHDATA/../settings/CHAPTEREXTENSIONS
+    chmod 777 $PATHDATA/../settings/CHAPTEREXTENSIONS
+fi
+# 2. then|or read value from file
+CHAPTEREXTENSIONS=`cat $PATHDATA/../settings/CHAPTEREXTENSIONS`
+
+##############################################
+# CHAPTERMINDURATION
+# Only files with play length bigger than minimum will be scanned for chapters
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/CHAPTERMINDURATION ]; then
+    echo "600" > $PATHDATA/../settings/CHAPTERMINDURATION
+    chmod 777 $PATHDATA/../settings/CHAPTERMINDURATION
+fi
+# 2. then|or read value from file
+CHAPTERMINDURATION=`cat $PATHDATA/../settings/CHAPTERMINDURATION`
+
+##############################################
 # read control card ids
 # 1. read all values from file
 CMDVOLUP=`grep 'CMDVOLUP' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDVOLUP=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
@@ -273,15 +328,18 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
+# SWIPEORPLACE
 # SECONDSWIPE
 # SECONDSWIPEPAUSE
 # SECONDSWIPEPAUSECONTROLS
 # AUDIOIFACENAME
+# AUDIOIFACEACTIVE
 # VOLUMEMANAGER
 # AUDIOVOLCHANGESTEP
 # AUDIOVOLMAXLIMIT
 # AUDIOVOLMINLIMIT
 # AUDIOVOLSTARTUP
+# AUDIOVOLBOOT
 # VOLCHANGEIDLE
 # IDLETIMESHUTDOWN
 # POWEROFFCMD
@@ -292,6 +350,8 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # EDITION
 # LANG
 # VERSION
+# CHAPTEREXTENSIONS
+# CHAPTERMINDURATION
 # CMDVOLUP
 # CMDVOLDOWN
 # CMDNEXT
@@ -305,15 +365,18 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 rm "${PATHDATA}/../settings/global.conf"
 echo "AUDIOFOLDERSPATH=\"${AUDIOFOLDERSPATH}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "PLAYLISTSFOLDERPATH=\"${PLAYLISTSFOLDERPATH}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "SWIPEORPLACE=\"${SWIPEORPLACE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSE=\"${SECONDSWIPEPAUSE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSECONTROLS=\"${SECONDSWIPEPAUSECONTROLS}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOIFACEACTIVE=\"${AUDIOIFACEACTIVE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLUMEMANAGER=\"${VOLUMEMANAGER}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLCHANGESTEP=\"${AUDIOVOLCHANGESTEP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMAXLIMIT=\"${AUDIOVOLMAXLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLMINLIMIT=\"${AUDIOVOLMINLIMIT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOVOLSTARTUP=\"${AUDIOVOLSTARTUP}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "AUDIOVOLBOOT=\"${AUDIOVOLBOOT}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLCHANGEIDLE=\"${VOLCHANGEIDLE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "IDLETIMESHUTDOWN=\"${IDLETIMESHUTDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "POWEROFFCMD=\"${POWEROFFCMD}\"" >> "${PATHDATA}/../settings/global.conf"
@@ -322,6 +385,8 @@ echo "READWLANIPYN=\"${READWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "EDITION=\"${EDITION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "LANG=\"${LANG}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VERSION=\"${VERSION}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CHAPTEREXTENSIONS=\"${CHAPTEREXTENSIONS}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "CHAPTERMINDURATION=\"${CHAPTERMINDURATION}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDVOLUP=\"${CMDVOLUP}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDVOLDOWN=\"${CMDVOLDOWN}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDNEXT=\"${CMDNEXT}\"" >> "${PATHDATA}/../settings/global.conf"

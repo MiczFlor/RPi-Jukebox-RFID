@@ -45,6 +45,7 @@ $lang['globalIdleShutdown'] = "Leerlaufabschaltung";
 $lang['globalAutoStopPlayout'] = "Stop Playout Timer";
 $lang['globalStopTimer'] = "Stop Playout Timer";
 $lang['globalSleepTimer'] = "Einschlaf-Timer";
+$lang['globalShutdownVolumeReduction'] = "Einschlaf-Timer mit Lautstärke-Absenkung";
 $lang['globalExternalInterfaces'] = "Externe Geräte & Schnittstellen";
 $lang['globalIdleTime'] = "Leerlaufzeit";
 $lang['globalNotIdle'] = "Nicht im Leerlauf";
@@ -68,6 +69,7 @@ $lang['globalLang'] = "Sprache";
 $lang['globalLanguageSettings'] = "Spracheinstellungen";
 $lang['globalPriority'] = "Priorität";
 $lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Ausgabegeräte";
 
 // Player title HTML
 $lang['playerSeekBack'] = "Rückwärts spulen";
@@ -124,6 +126,7 @@ $lang['cardRegisterErrorStreamOrAudio'] = "<p>Das ist nicht genug! Füge eine UR
 $lang['cardRegisterErrorExistingAndNew'] = "<p>Das ist zu viel! Wähle entweder einen bestehenden Ordner aus oder erstelle einen neuen.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>Ein Ordner mit dem gleichen Namen existiert bereits! Wähle einen anderen. </p>";
 $lang['cardRegisterErrorSuggestFolder'] = "Ein Ordnername für den Stream muss erstellt werden. Unten im Formular steht ein Vorschlag.";
+$lang['cardRegisterErrorConvertSpotifyURL'] = "Falsche Spotify URL, konvertiert in korrektes Format";
 $lang['cardRegisterStream2Card'] = "Stream ist mit der Karten-ID verknüpft.";
 $lang['cardRegisterFolder2Card'] = "Audio-Ordner ist nun mit der Karten-ID verknüpft.";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube Audio wird heruntergeladen. Dies kann einige Minuten dauern. Du kannst die Logdatei \"youtube-dl.log\" im Ordner \"shared\" ansehen.</p>";
@@ -207,6 +210,7 @@ $lang['trackEditDeleteYes'] = "Ja, diesen Track LÖSCHEN";
 $lang['settingsVolChangePercent'] = "Lautst. Änderung";
 $lang['settingsMaxVol'] = "Max. Lautstärke";
 $lang['settingsStartupVol'] = "Start-Lautstärke";
+$lang['settingsBootVol'] = "Lautst. nach Boot";
 $lang['settingsWifiRestart'] = "Die Änderungen an der WiFi-Verbindung erfordern einen Neustart, um wirksam zu werden";
 $lang['settingsWifiSsidPlaceholder'] = "z.B. PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "Der Name, unter dem dein WiFi als 'verfügbares Netzwerk' angezeigt wird";
@@ -237,6 +241,7 @@ $lang['settingsWlanSendEmail'] = "E-Mail Adr.";
 $lang['settingsWlanSendON'] = "Ja, E-Mail senden.";
 $lang['settingsWlanSendOFF'] = "Nein, E-Mail nicht senden.";
 
+$lang['settingsVolumeManager'] = "Auswahl Volume Manager";
 
 $lang['settingsWlanReadNav'] = "Wlan IP vorlesen";
 $lang['settingsWlanReadInfo'] = "Wlan IP bei jedem Systemstart vorlesen? (nützlich wenn du deine Phoniebox in ein neues Wlan-Netzwerk mit dynamischer IP verbindest)";
@@ -257,6 +262,8 @@ $lang['infoMPDStatus'] = "MPD Server Status";
 $lang['infoDebugLogTail'] = "<b>DEBUG Logdatei</b>: Letzte 40 Zeilen";
 $lang['infoDebugLogClear'] = "Lösche Inhalt von debug.log";
 $lang['infoDebugLogSettings'] = "Debug Log Einstellungen";
+$lang['infoAudioActive'] = "Aktive Audioausgänge";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Ordnerverwaltung und Dateien hochladen

@@ -66,6 +66,7 @@ $lang['globalRepeat'] = "Herhalen";
 $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
+$lang['globalAudioSink'] = "Audio Devices";
 
 $lang['playerFilePlayed'] = "is gespeeld";
 $lang['playerFileAdded'] = "is toegevoegd aan de playlist";
@@ -109,6 +110,7 @@ $lang['cardRegisterErrorStreamOrAudio'] = "<p>Dit is niet genoeg! Voeg een URL t
 $lang['cardRegisterErrorExistingAndNew'] = "<p>Dit is te veel! Kies een bestaande map of maak een nieuwe map aan.</p>";
 $lang['cardRegisterErrorExistingFolder'] = "<p>Er bestaat al een map met dezelfde naam! Kies een andere.</p>";
 $lang['cardRegisterErrorSuggestFolder'] = "Er moet een mapnaam voor de stream worden gemaakt. Hieronder in het formulier heb ik een suggestie gedaan.";
+$lang['cardRegisterErrorConvertSpotifyURL'] = "Verkeerde spotify url, geconverteerd naar het juiste formaat";
 $lang['cardRegisterStream2Card'] = "Stream is gekoppeld aan kaart-ID.";
 $lang['cardRegisterFolder2Card'] = "De audiomap is nu gekoppeld aan kaart-ID";
 $lang['cardRegisterDownloadingYT'] = "<p>YouTube-audio wordt gedownload. Dit kan een paar minuten duren. U kunt het logbestand 'youtube-dl.log' in de gedeelde map controleren.</p>";
@@ -189,6 +191,8 @@ $lang['infoOsThrottle'] = "Beperking";
 $lang['infoStorageUsed'] = "Opslag gebruik";
 $lang['infoMopidyStatus'] = "Mopidy Server Status";
 $lang['infoMPDStatus'] = "MPD Server Status";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Folder Management and File Upload

@@ -372,6 +372,18 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                 # append variables to config file
                 echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
 
+                read -rp "Button USB Encoder: use existing device and button mapping? [Y/n] " response
+                case "$response" in
+                    [nN][oO]|[nN])
+                        EXISTINGuseButtonUSBEncoder=NO
+                        ;;
+                    *)
+                        EXISTINGuseButtonUSBEncoder=YES
+                        ;;
+                esac
+                # append variables to config file
+                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${HOME_DIR}/PhonieboxInstall.conf"
+
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
                 read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -428,7 +440,7 @@ config_audio_interface() {
     esac
     # append variables to config file
     echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
-    echo "Your iFace is called'$AUDIOiFace'"
+    echo "Your iFace is called '$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -781,7 +793,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-utils lsof
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -789,8 +801,8 @@ install_main() {
     # prepare python3
     ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
-    # use python3.7 as default
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+    # use python3 as default
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
     # Get github code
     cd "${HOME_DIR}" || exit
@@ -1065,6 +1077,19 @@ existing_assets() {
         if [ "${EXISTINGuseGpio}" == "YES" ]; then
             # copy from backup to new install
             cp "${backup_dir}"/settings/gpio_settings.ini "${jukebox_dir}"/settings/gpio_settings.ini
+        fi
+
+        # Button USB Encoder: use existing file
+        if [ "${EXISTINGuseButtonUSBEncoder}" == "YES" ]; then
+            # copy from backup to new install
+            cp "${backup_dir}"/components/controls/buttons_usb_encoder/deviceName.txt "${jukebox_dir}"/components/controls/buttons_usb_encoder/deviceName.txt
+            cp "${backup_dir}"/components/controls/buttons_usb_encoder/buttonMap.json "${jukebox_dir}"/components/controls/buttons_usb_encoder/buttonMap.json
+            # make buttons_usb_encoder.py ready to be use from phoniebox-buttons-usb-encoder service
+            sudo chmod +x "${jukebox_dir}"/components/controls/buttons_usb_encoder/buttons_usb_encoder.py
+            # make sure service is still enabled by registering again
+            sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample /etc/systemd/system/phoniebox-buttons-usb-encoder.service
+            sudo systemctl start phoniebox-buttons-usb-encoder.service
+            sudo systemctl enable phoniebox-buttons-usb-encoder.service
         fi
 
         # Sound effects: use existing startup / shutdown sounds

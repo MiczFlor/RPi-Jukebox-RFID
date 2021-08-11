@@ -251,20 +251,28 @@ function dir_list_recursively($rootdir = "") {
   * The dir path will end without '/'.
   */
 
-  $iter = new RecursiveIteratorIterator(
-    new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS + RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
-    RecursiveIteratorIterator::SELF_FIRST,
-    RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
-  );
+    try{
+        $iter = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($rootdir, RecursiveDirectoryIterator::SKIP_DOTS + RecursiveDirectoryIterator::FOLLOW_SYMLINKS),
+            RecursiveIteratorIterator::SELF_FIRST,
+            RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+        );  
+    }
+    catch (UnexpectedValueException $e) {        
+        global $debug;
+        if($debug == "true") {      
+            file_put_contents("../logs/debug.log", "\n  # Directory ".$rootdir." is a directory we can not recurse into. Please check permissions. "  , FILE_APPEND | LOCK_EX);
+        }    
+    }
 
-  $paths = array($rootdir);
-  foreach ($iter as $path => $dir) {
-      if ($dir->isDir()) {
-          $paths[] = $path;
-      }
-  }
+    $paths = array($rootdir);
+    foreach ($iter as $path => $dir) {
+        if ($dir->isDir()) {
+            $paths[] = $path;
+        }
+    }
 
-  return $paths;
+    return $paths;
 }
 
 function index_folders_print($item, $key)
@@ -288,7 +296,7 @@ function index_folders_print($item, $key)
         }
     }
     $playlist = $contentTree[$key]['path_rel'];
-    $id = str_replace(",", "", $contentTree[$key]['id']);
+    $id = $contentTree[$key]['id'];
 /**/
     //print "<pre>\nkey:".$key." id:".$contentTree[$key]['id']." path_rel:".$contentTree[$key]['path_rel']; print_r($contentTree); print "</pre>"; //???
     //print "<pre>\nfiles:"; print_r($files); print "</pre>"; //???
@@ -513,7 +521,7 @@ function getSubDirectories( $path = '.', $level = 0, $showfiles = 0 ){
     // Open the directory to the handle $dh
     $dh = @opendir($path);
 
-    while( false !== ( $file = readdir( $dh ) ) ){
+    while( false !== $dh && false !== ( $file = readdir( $dh ) ) ){
     // Loop through the directory
 
         if( !in_array( $file, $ignore ) ){
