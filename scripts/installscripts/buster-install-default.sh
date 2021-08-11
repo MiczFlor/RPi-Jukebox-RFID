@@ -801,7 +801,7 @@ install_main() {
     # prepare python3
     ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-mutagen python3-gpiozero python3-spidev
 
-    # use python3.7 as default
+    # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
     # Get github code
