@@ -217,6 +217,7 @@ $lang['settingsPlayoutBehaviourCardHelp'] = "If you chose 'Place card', this aff
 $lang['settingsVolChangePercent'] = "Vol. Change %";
 $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsStartupVol'] = "Startup Volume";
+$lang['settingsBootVol'] = "Volume after reboot";
 $lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
 $lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";

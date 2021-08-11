@@ -1,20 +1,20 @@
 <!--
-Startup Volume Select Form
+Boot Volume => the volume that will be set when the Phoniebox is booted
 -->
         <!-- input-group -->
         <?php
         $maxvalueselect = round(($maxvolumevalue/5))*5;
-        $startupvaluedisplay = round($startupvolumevalue);
+        $bootvolvaluedisplay = round($bootvolumevalue);
         ?>
         <div class="col-md-4 col-sm-6">
             <div class="row" style="margin-bottom:1em;">
               <div class="col-xs-6">
-              <h4><?php print $lang['settingsStartupVol']; ?></h4>
-                <form name='startupvolume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
+              <h4><?php print $lang['settingsBootVol']; ?></h4>
+                <form name='bootvolume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
                   <div class="input-group my-group">
-                    <select id="startupvolume" name="startupvolume" class="selectpicker form-control">
+                    <select id="bootvolume" name="bootvolume" class="selectpicker form-control">
                       <option value='0'<?php
-                          if($startupvolumevalue == 0) {
+                          if($bootvolumevalue == 0) {
                               print " selected";
                           }
                       ?>><?php print $lang['globalOff']; ?></option>
@@ -23,7 +23,7 @@ Startup Volume Select Form
                     while ($i >= 5) {
                         print "
                         <option value='".$i."'";
-                        if($startupvaluedisplay == $i) {
+                        if($bootvolvaluedisplay == $i) {
                             print " selected";
                         }
                         print ">".$i."%</option>";
@@ -40,12 +40,12 @@ Startup Volume Select Form
               </div>
 
               <div class="col-xs-6">
-                  <div class="c100 p<?php print $startupvaluedisplay; ?>">
+                  <div class="c100 p<?php print $bootvolvaluedisplay; ?>">
                     <span><?php
-                        if ($startupvolumevalue == 0) {
+                        if ($bootvolumevalue == 0) {
                             print $lang['globalOff'];
                         } else {
-                            print $startupvolumevalue."%";
+                            print $bootvolumevalue."%";
                         }
                     ?></span>
                     <div class="slice">
