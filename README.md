@@ -28,10 +28,14 @@ The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) rel
 
 ## What's new in version 2.3?
 
+* Improved [installation guide](docs/INSTALL_COMPLETE_GUIDE.md)
 * Holding buttons feature fixed #1406
 * Bluetooth buttons and headphones toggle #1262
 * fixed stop on removal for RC522 #1122
 * USB Encoder buttons support for anyone who dors not want to solder...
+* Improved robustness and better documentation for [GPIO control](components/gpio_control/README.md)
+* Auto convert wrong Spotify URLs to a format Mopidy understands
+* Support for PC/SC-readers
 * Removed support for Raspian Stretch
 * Lots of fixed bugs and minor improvements...
 
