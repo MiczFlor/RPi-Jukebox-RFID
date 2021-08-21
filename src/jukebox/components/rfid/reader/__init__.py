@@ -29,8 +29,7 @@ class ReaderRunner(threading.Thread):
         # Load the corresponding module
         self._logger.info(f"For reader config key '{reader_cfg_key}': loading module '{reader_type}'")
         self._reader_module = importlib.import_module('components.rfid.' + reader_type + '.' + reader_type, 'pkg.subpkg')
-        # Init the reader class
-        self._reader = self._reader_module.ReaderClass(reader_cfg_key)
+        self._reader = None
         # Get additional configuration
         self._cfg_same_id_delay = cfg_rfid.setndefault('rfid', 'same_id_delay', value=1.0)
         self._cfg_place_not_swipe = cfg_rfid.setndefault('rfid', 'place_not_swipe', value=False)
@@ -38,14 +37,18 @@ class ReaderRunner(threading.Thread):
         # TODO
         self._cfg_cmd_cards = []
         # Ready to go
-        self._keep_running = True
+        self._cancel = threading.Event()
 
     def stop(self):
-        self._keep_running = False
+        self._cancel.set()
         self._reader.stop()
 
     def run(self):
         self._logger.debug("Start listening!")
+        # Init the reader class
+        # Do it here, such that the reader class is initialized and destroyed in the
+        # actual reader thread
+        self._reader = self._reader_module.ReaderClass(self._reader_cfg_key)
         previous_id = ''
         previous_time = time.time()
 
@@ -60,7 +63,7 @@ class ReaderRunner(threading.Thread):
         with self._reader as reader:
             # Raises a StopIteration (if blocking) or simply returns '' (if non-blocking)
             for card_id in reader:
-                if not self._keep_running:
+                if self._cancel.is_set():
                     break
                 if card_id:
                     if card_id != previous_id or (time.time() - previous_time) >= self._cfg_same_id_delay \
@@ -75,7 +78,7 @@ class ReaderRunner(threading.Thread):
                         # (2) Send status update to PubSub
                         # TODO
                         # (3) Trigger action
-                        #     Option A): plugs.call_ignore_errors() --> it is thread safe!
+                        #     Option A): plugs.call_ignore_errors() --> it is thread safe! But it blocks - there is no Queue!
                         #     Through the RPC client. A little overhead but uses the same communication channel as external IFs
                         if card_action is not None:
                             plugs.call_ignore_errors(card_action['package'],
@@ -92,7 +95,7 @@ class ReaderRunner(threading.Thread):
                     # Time-out or reader internal error resulting in empty string: to be ignored
                     pass
                 # Slow down the card reading while loop in case card is placed permanently on reader
-                time.sleep(0.2)
+                self._cancel.wait(timeout=0.2)
 
         self._logger.debug("Stop listening!")
 

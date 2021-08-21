@@ -7,12 +7,9 @@ import signal
 import logging
 import time
 
-
 import jukebox.plugs as plugin
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
-# from components.rfid_reader.PhonieboxRfidReader import RFID_Reader
-# from gpio_control import gpio_control
 
 import jukebox.cfghandler
 
@@ -66,7 +63,7 @@ class JukeBox:
         if self._signal_cnt == 1:
             # Put the shutdown procedure into a thread, so we can make a time-out on it
             # Cannot use threading.Timer for the timeout, as sys.exit() must be called from main thread
-            t = threading.Thread(target=self.exit_gracefully, args=[esignal], daemon=True, name="ShutdownThread")
+            t = threading.Thread(target=self.exit_gracefully, args=[esignal, timeout], daemon=True, name="ShutdownThread")
             t.start()
             t.join(timeout)
             if t.is_alive():
@@ -85,7 +82,7 @@ class JukeBox:
         if self._signal_cnt == 3:
             sys.exit(1)
 
-    def exit_gracefully(self, esignal):
+    def exit_gracefully(self, esignal, timeout):
         msg = f"Closing down JukeBox {cfg.getn('system', 'box_name', default='Unnamed')}"
         print(msg)
         logger.info(msg)
@@ -106,7 +103,7 @@ class JukeBox:
         # (5) Wait for open threads to close
         # Note: Not waiting for ALL open threads, but only for those threads that are returned by the @atexit-registered
         # functions of the plugin modules
-        logger.debug(f"Waiting for @atexit-threads to complete: {thread_list}")
+        logger.debug(f"Waiting {timeout}s for @atexit-threads to complete: {thread_list}")
         for t in thread_list:
             t.join()
         logger.debug("All @atexit threads closed")
@@ -133,20 +130,6 @@ class JukeBox:
         # plugin.modules['volume'].factory.set_active("alsa2")
         # print(f"Callables = {plugin.callables}")
 
-        self.rpc_server = RpcServer()
-
-        # # load card id database
-        # cardid_database = self.nvm.load(cfg.getn('rfid', 'cardid_database'))
-        # rfid_reader = None
-        # # rfid_reader = RFID_Reader("RDM6300",{'numberformat':'card_id_float'})
-        # # rfid_reader = RFID_Reader("Fake", zmq_address='inproc://JukeBoxRpcServer', zmq_context=zmq.Context.instance())
-        # if rfid_reader is not None:
-        #     rfid_reader.set_cardid_db(cardid_database)
-        #     rfid_reader.reader.set_card_ids(list(cardid_database))     # just for Fake Reader to be aware of card ids
-        #     rfid_thread = threading.Thread(target=rfid_reader.run)
-        # else:
-        #     rfid_thread = None
-
         # # initialize gpio
         # # TODO: GPIO not yet integrated
         # gpio_config = None
@@ -163,6 +146,8 @@ class JukeBox:
         #     # gpio_thread = threading.Thread(target=gpio_controler.gpio_loop)
         # else:
         #     gpio_thread = None
+
+        self.rpc_server = RpcServer()
 
         logger.info(f"Start-up time: {((time.time_ns() - time_start) / 1000000.0):.3f} ms")
 

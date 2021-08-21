@@ -28,4 +28,15 @@
   plugin: ctrl
   method: mute
   kwargs: {}
+'7896':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  args:
+      - 12
+      - 'erasdf'
+  kwargs:
+      aparam: 23
+      bparam: 'sdfs'
+      cparam: 56
 
