@@ -11,10 +11,8 @@ import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
   navigationPlaceholder: {
-    marginBottom: '64px',
-    marginLeft: '4px',
-    marginRight: '4px',
-    marginTop: '16px',
+    margin: 10,
+    marginBottom: 64,
   },
 }));
 
@@ -23,7 +21,7 @@ const Routes = (props) => {
 
   return (
     <HashRouter>
-      <Grid item xs={12} sm={6} className={classes.navigationPlaceholder}>
+      <Grid item xs={12} md={6} className={classes.navigationPlaceholder}>
         <Switch>
           <Route exact path='/'>
             <Player />
