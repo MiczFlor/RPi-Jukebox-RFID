@@ -1,0 +1,1 @@
+DESCRIPTION = 'RDM6300 via serial UART'

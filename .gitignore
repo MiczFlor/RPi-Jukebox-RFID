@@ -26,3 +26,6 @@ __pycache__/
 # Keep folders with .gitkeep
 !/**/.gitkeep
 
+# Development Scratchpads
+/**/scratch
+/**/scratch_*

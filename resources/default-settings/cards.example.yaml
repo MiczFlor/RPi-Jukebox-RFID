@@ -1,0 +1,42 @@
+'1':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  kwargs:
+    volume: 12
+'2':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  args: [12]
+'3':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  args: 12
+'4':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  args: [12b]
+'5':
+  package: volume
+  plugin: ctrl
+  method: mute
+'6':
+  package: volume
+  plugin: ctrl
+  method: mute
+  kwargs: {}
+'7896':
+  package: volume
+  plugin: ctrl
+  method: set_volume
+  args:
+      - 12
+      - 'erasdf'
+  kwargs:
+      aparam: 23
+      bparam: 'sdfs'
+      cparam: 56
+

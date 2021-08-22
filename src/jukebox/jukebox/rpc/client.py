@@ -1,6 +1,7 @@
 import zmq
 import json
 import logging
+from typing import (List, Dict, Optional)
 import jukebox.cfghandler
 
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -8,7 +9,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 class RpcClient:
     def __init__(self, address, context=None, *,
-                 default_ignore_response=False, default_ignore_errors=False,
+                 default_ignore_response: bool = False, default_ignore_errors: bool = False,
                  logger=None):
         self.logger = logger
         if logger is None:
@@ -23,7 +24,7 @@ class RpcClient:
         self.default_ignore_response = default_ignore_response
         self.queue.connect(address)
 
-    def enqueue(self, request, ignore_response=None, ignore_errors=None):
+    def enque_raw(self, request, ignore_response: Optional[bool] = None, ignore_errors: Optional[bool] = None):
         if ignore_response is None:
             ignore_response = self.default_ignore_response
         if ignore_errors is None:
@@ -51,3 +52,16 @@ class RpcClient:
         if ignore_response is True:
             return None
         return server_response['result']
+
+    def enque(self, package: str, plugin: str, method: Optional[str] = None,
+              args: Optional[List] = None, kwargs: Optional[Dict] = None,
+              ignore_response: Optional[bool] = None,
+              ignore_errors: Optional[bool] = None):
+        request = {'package': package, 'plugin': plugin}
+        if method is not None:
+            request['method'] = method
+        if args is not None:
+            request['args'] = args
+        if kwargs is not None:
+            request['kwargs'] = kwargs
+        self.enque(request, ignore_response, ignore_errors)

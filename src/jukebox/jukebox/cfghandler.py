@@ -154,7 +154,7 @@ class ConfigHandler:
                     tmp = self._data[keys[0]]
                     for nk in keys[1:-1]:
                         tmp = tmp[nk]
-                except KeyError as e:
+                except KeyError:
                     return default
                 else:
                     return tmp.get(keys[-1], default)
@@ -267,4 +267,3 @@ def write_yaml(cfg, filename, only_if_changed=False, *args, **kwargs) -> None:
         else:
             logger.info(f"({cfg.name}) "
                         f"Not writing to file as data has unchanged status set (use only_if_changed=False to override)")
-
