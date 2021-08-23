@@ -254,6 +254,7 @@ register_jukebox_settings() {
   # Ask for Jukebox hostname to replace raspberry.local
 
   cp -f ${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml ${SETTINGS_PATH}/jukebox.yaml
+  cp -f ${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml ${SETTINGS_PATH}/logger.yaml
 
   echo "DONE: register_jukebox_settings"
 }
