@@ -28,7 +28,7 @@ The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) rel
 
 ## What's new in version 2.3?
 
-* Improved [installation guide](docs/INSTALL_COMPLETE_GUIDE.md)
+* Improved [installation guide](docs/INSTALL-COMPLETE-GUIDE.md)
 * Holding buttons feature fixed #1406
 * Bluetooth buttons and headphones toggle #1262
 * fixed stop on removal for RC522 #1122
