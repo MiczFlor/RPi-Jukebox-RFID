@@ -30,7 +30,7 @@ mqttCert = "/home/pi/MQTT/mqtt-client-phoniebox.crt"    # path to client certifi
 mqttKey = "/home/pi/MQTT/mqtt-client-phoniebox.key"     # path to client keyfile for certificate-based authentication
 mqttConnectionTimeout = 60              # in seconds; timeout for MQTT connection
 
-useFastPublish = 0                   # set to 0 to disable new fast publish modification
+useFastPublish = 0                   # set to 1 to enable fast publish modification
 
 # ----------------------------------------------------------
 #  DO NOT CHANGE BELOW
