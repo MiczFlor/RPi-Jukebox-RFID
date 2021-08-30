@@ -56,6 +56,14 @@ def watchForNewCard():
 
             # file was closed and written => a new card was swiped
             if "IN_CLOSE_WRITE" in e_type_names:
+                # fetch card ID
+                cardid = readfile(path + "/../settings/Latest_RFID")
+
+                # publish event "card_swiped"
+                client.publish(mqttBaseTopic + "/event/card_swiped", payload=cardid)
+                print(" --> Publishing event card_swiped = " + cardid)
+
+                # process all attributes
                 processGet("all")
 
 
