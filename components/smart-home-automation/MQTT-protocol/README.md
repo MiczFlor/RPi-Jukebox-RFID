@@ -34,8 +34,16 @@ Phoniebox' MQTT client will do the following things:
 2. at shutdown send state info to
    - `phoniebox/state` (offline)
 3. periodically send *all* attributes to `phoniebox/attribute/$attributeName` (this interval can be defined through `refreshIntervalPlaying` and `refreshIntervalIdle` in the `SETTINGS` section)
-4. listen for attribute requests on `phoniebox/get/$attribute`
-5. listen for commands on `phoniebox/cmd/$command` (if a command needs a parameter it has to be provided via payload)
+4. send specific events to `phoniebox/event/$eventName` right away
+5. listen for attribute requests on `phoniebox/get/$attribute`
+6. listen for commands on `phoniebox/cmd/$command` (if a command needs a parameter it has to be provided via payload)
+
+## Topic: phoniebox/event/$event
+This is a read-only topic. The following events trigger immediate messages through this topic:
+
+- card_swiped
+
+Use these topics to get notified of time-critical events right away rather than having to wait for the periodic send of all attributes or requesting an attribute through the get topic. Currently the only event triggering a message is the "card_swiped" event with the obvious use-case of letting your smart home react upon swiped cards. These cards needn't be configured in Phoniebox as the MQTT daemon will just relay any swiped card to the MQTT server. So it's possible to have a "dim lights" card that will not trigger any Phoniebox action but is picked up by your smart home to dim the lights.
 
 ## Topic: phoniebox/get/$attribute
 MQTT clients can (additionally to the periodic updates) request an attribute of Phoniebox. Sending an empty payload to `phoniebox/get/volume` will trigger Phoniebox' MQTT client to fetch the current volume from MPD and send the result to `phoniebox/attribute/volume`. 
