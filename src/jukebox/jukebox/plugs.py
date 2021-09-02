@@ -102,7 +102,7 @@ from typing import (
     Optional,
     Union,
     Any)
-
+import traceback
 
 logger = logging.getLogger('jb.plugin')
 logger_call = logging.getLogger('jb.plugin.call')
@@ -545,7 +545,6 @@ def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = No
         _PLUGINS.__delitem__(load_as)
         _PACKAGE_MAP.__delitem__(package)
         logger.error(f"Failed to load package: {package}")
-        logger.error(f"Reason: {e.__class__.__name__}: {e}")
         raise e
 
     for func in _PLUGINS[load_as].initializer:
@@ -563,7 +562,9 @@ def load_all_named(packages_named: Mapping[str, str], prefix: Optional[str] = No
             load(package, load_as, prefix)
         except Exception as e:
             if ignore_errors:
-                logger.warning(f"Ignoring failed package load for '{package}'")
+                logger.error(f"Ignoring failed package load for '{package}'")
+                logger.error(f"Reason: {e.__class__.__name__}: {e}")
+                logger.error(f"Detailed reason:\n{traceback.format_exc()}")
             else:
                 raise e
 
@@ -575,12 +576,14 @@ def load_all_unnamed(packages_unnamed: Iterable[str], prefix: Optional[str] = No
             load(package, prefix=prefix)
         except Exception as e:
             if ignore_errors:
-                logger.warning(f"Ignoring failed package load for '{package}'")
+                logger.error(f"Ignoring failed package load for '{package}'")
+                logger.error(f"Reason: {e.__class__.__name__}: {e}")
+                logger.error(f"Detailed reason:\n{traceback.format_exc()}")
             else:
                 raise e
 
 
-def load_all_finalize():
+def load_all_finalize(ignore_errors=False):
     """Calls all functions registered with @finalize from all loaded modules in the order they were loaded
 
     This must be executed after the last plugin package is loaded"""
@@ -592,7 +595,15 @@ def load_all_finalize():
     for loaded_as, pack in _PLUGINS.items():
         for func in pack.finalizer:
             logger.debug(f"Package load finalizer: calling {loaded_as}.{func.__name__}()")
-            func()
+            try:
+                func()
+            except Exception as e:
+                if ignore_errors:
+                    logger.error(f"Ignoring failed package load finalizer: '{loaded_as}.{func.__name__}()'")
+                    logger.error(f"Reason: {e.__class__.__name__}: {e.__str__()}")
+                    logger.error(f"Detailed reason:\n{traceback.format_exc()}")
+                else:
+                    raise e
 
 
 def close_down(**kwargs) -> Any:
@@ -602,6 +613,7 @@ def close_down(**kwargs) -> Any:
     Modules are processed in reverse order. Several at-exit tagged functions of a single module are processed
     in the order of registration.
 
+    Errors raised in functions are suppressed to ensure all plugins are processed
     :return:
     """
     results = []
@@ -609,7 +621,12 @@ def close_down(**kwargs) -> Any:
     for loaded_as, pack in reversed(list(_PLUGINS.items())):
         for func in pack.atexit:
             logger.debug(f"Package closing atexit: calling {loaded_as}.{func.__name__}({kwargs})")
-            results.append(func(**kwargs))
+            try:
+                results.append(func(**kwargs))
+            except Exception as e:
+                logger.error(f"Ignoring failed package atexit function: '{loaded_as}.{func.__name__}()'")
+                logger.error(f"Reason: {e.__class__.__name__}: {e.__str__()}")
+                logger.error(f"Detailed reason:\n{traceback.format_exc()}")
     return results
 
 

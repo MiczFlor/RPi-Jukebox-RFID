@@ -103,7 +103,11 @@ class ReaderRunner(threading.Thread):
 @plugs.finalize
 def finalize():
     jukebox.cfghandler.load_yaml(cfg_rfid, cfg_main.getn('rfid', 'reader_config'))
-    jukebox.cfghandler.load_yaml(cfg_cards, cfg_main.getn('rfid', 'card_database'))
+    try:
+        jukebox.cfghandler.load_yaml(cfg_cards, cfg_main.getn('rfid', 'card_database'))
+    except FileNotFoundError:
+        cfg_cards.config_dict({})
+        log.error(f"Empty card database: Could not open file: {cfg_main.getn('rfid', 'card_database')}")
 
     # TODO: externalize card_database checker
     # Check type of keys (all of them)

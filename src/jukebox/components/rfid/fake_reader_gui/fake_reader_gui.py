@@ -158,7 +158,10 @@ class ReaderClass(ReaderBaseClass):
 
         # Frame 1
         card_ids = cfg_cards.keys()
-        card_id_init = card_ids.__iter__().__next__()
+        try:
+            card_id_init = card_ids.__iter__().__next__()
+        except StopIteration:
+            card_id_init = ""
         self._menu_rfid_value = tk.StringVar()
 
         # Using Menubutton to separate value and show different label
