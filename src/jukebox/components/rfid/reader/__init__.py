@@ -34,8 +34,6 @@ class ReaderRunner(threading.Thread):
         self._cfg_same_id_delay = cfg_rfid.setndefault('rfid', 'same_id_delay', value=1.0)
         self._cfg_place_not_swipe = cfg_rfid.setndefault('rfid', 'place_not_swipe', value=False)
         self._cfg_log_ignored_cards = cfg_rfid.setndefault('rfid', 'log_ignored_cards', value=False)
-        # TODO
-        self._cfg_cmd_cards = []
         # Ready to go
         self._cancel = threading.Event()
 
@@ -49,6 +47,8 @@ class ReaderRunner(threading.Thread):
         # Do it here, such that the reader class is initialized and destroyed in the
         # actual reader thread
         self._reader = self._reader_module.ReaderClass(self._reader_cfg_key)
+        # Previous ID is only stored to prevent repetitive triggers of the same card in case of place-not-swipe scenarios
+        # For command card there is an exception (see below)
         previous_id = ''
         previous_time = time.time()
 
@@ -66,8 +66,7 @@ class ReaderRunner(threading.Thread):
                 if self._cancel.is_set():
                     break
                 if card_id:
-                    if card_id != previous_id or (time.time() - previous_time) >= self._cfg_same_id_delay \
-                       or card_id in self._cfg_cmd_cards:
+                    if card_id != previous_id or (time.time() - previous_time) >= self._cfg_same_id_delay:
                         # Do this first to provide fast audible/visual feed-back
                         if self._action_thread:
                             self._action_thread.trigger.set()
@@ -78,21 +77,31 @@ class ReaderRunner(threading.Thread):
                         # (2) Send status update to PubSub
                         # TODO
                         # (3) Trigger action
-                        #     Option A): plugs.call_ignore_errors() --> it is thread safe! But it blocks - there is no Queue!
-                        #     Through the RPC client. A little overhead but uses the same communication channel as external IFs
+                        #     Option A) plugs.call_ignore_errors() --> it is thread safe! But it blocks - there is no Queue!
+                        #     Option B) Through the RPC client. A little overhead but uses the same communication channel
+                        #               as external IFs
                         if card_action is not None:
-                            plugs.call_ignore_errors(card_action['package'],
-                                                     card_action['plugin'],
+                            # Retrieve card_action parameters always with default to be error-safe in case of
+                            # dodgy cards database entry
+                            # TODO: This call happens from the reader thread, which is not necessarily what we want ...
+                            # TODO: Change to RPC call to transfer execution into main thread
+                            plugs.call_ignore_errors(card_action.get('package', 'package_not_specified'),
+                                                     card_action.get('plugin', 'plugin_not_specified'),
                                                      card_action.get('method', None),
                                                      args=card_action.get('args', ()),
                                                      kwargs=card_action.get('kwargs', {}))
+                            if card_action.get('command_card', False):
+                                # If this is a command card, clear the previous ID:
+                                # This very neatly allows (without overhead) that the card can trigger the command again
+                                # without waiting for same_id_delay
+                                previous_id = ''
                         else:
                             self._logger.info(f"Unknown card: '{card_id}'.")
                     elif self._cfg_log_ignored_cards:
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
                     previous_time = time.time()
                 else:
-                    # Time-out or reader internal error resulting in empty string: to be ignored
+                    # Time-out for reader internal error resulting in empty string: to be ignored
                     pass
                 # Slow down the card reading while loop in case card is placed permanently on reader
                 self._cancel.wait(timeout=0.2)
@@ -114,10 +123,6 @@ def finalize():
     illegal_cards = [x for x in cfg_cards.keys() if not isinstance(x, str)]
     if len(illegal_cards) > 0:
         log.error(f"Found non-string card ID entries! Ignoring the following cards IDs: {illegal_cards}")
-
-    # TODO: Build a command card list
-    # --> This delays bootup time (is it relevant? large databases?)
-    # --> Save a date key and only check on demand?
 
     # Timer Thread: TODO
 
