@@ -132,6 +132,10 @@ class JukeBox:
         # plugin.modules['volume'].factory.set_active("alsa2")
         # print(f"Callables = {plugin.callables}")
 
+        # Testcode for timers
+        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'start', args=[3])
+        # plugin.call_ignore_errors('timers', 'timer_fade_volume', 'start', args=[4, 2])
+
         # # initialize gpio
         # # TODO: GPIO not yet integrated
         # gpio_config = None

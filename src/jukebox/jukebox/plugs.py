@@ -712,6 +712,7 @@ def call_ignore_errors(package: str, plugin: str, method: Optional[str] = None, 
             name += f'.{method}'
         logger.error(f"Ignoring failed call: '{name}(args={args}, kwargs={kwargs})'")
         logger.error(f"Reason: {e.__class__.__name__}: {e}")
+        logger.error(f"Detailed reason:\n{traceback.format_exc()}")
     finally:
         _release_lock()
     return result
@@ -753,6 +754,13 @@ def get(package: str, plugin: Optional[str] = None, method: Optional[str] = None
     if func is None:
         raise NameError(f"Plugin object '{package}.{plugin}' has not attribute '{method}'")
     return func
+
+
+def loaded_as(module_name: str) -> str:
+    """Return the plugin name a python module is loaded as"""
+    if module_name not in _PACKAGE_MAP.keys():
+        raise KeyError(f"Not a loaded module: {module_name}")
+    return _PACKAGE_MAP[module_name]
 
 
 def delete(package: str, plugin: Optional[str] = None, ignore_errors=False):
