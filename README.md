@@ -1,115 +1,143 @@
-This Branch is an attempt to realize elements from the discussion which took place in https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1329
+# RFID Jukebox Version 3 (aka future3) 
 
-This is the first attempt to a new structure, many things here are untested and error prone. This is still in the phase of orientation and proof of concept with trails and experiments in many directions which all have to be understood as base for discussion.
+### What is this?
+A complete re-write of the Jukebox
 
-In order to Focus on the actual topics many non needed/active items in this branch have been deleted. This doesn't mean existing parts are aboselte, things will be integrated step by step.
-
-#### These are the Fundamental Design Goals:
-
+### Why?
 - better maintainability
-- clear strategy on architecture
+- clear architecture allowing easier add-on and new feature
 - higher performance especially on lower end Hardware
 
-#### To achieve this, the current direction is:
+### How?
 
-- avoid shell script invocation during runtime
-- establish a socket based API
-- re-implement the core functionality in python
+- Jukebox core is a holistic Python3-only application 
+    - Avoid shell script invocation during runtime wherever possible
+- Establish a socket based API (using libzeromq) toward the WebUI
+- Implement a Remote-Procedure-Call (RPC) Server through which all user function call pass  
+- Implement a plugin-concept to dynamically load additional Python Module for easy extendability 
+    - In conjunction with the RPC this is a neat way of allwing addional feature without having to touch the core all the time
 
-### What has been realized so far:
+### Where are we?
 
-Running Player Functionality (Landing Page of WebUI) as a Python based rewrite of the Backend based on a socked API realized with ZMQ (Zero message Queue).
+The initial proof-of-concept phase has been left behind and there already is quite some functionality available. 
+This is still heavily in progress, but the WebUI and RFID-triggered playback of local files works.
 
-The work has taken place in the Components Folder, which has been renamed to Phoniebox since most of the existing Python code was located there. The Folder is structured as a Python Package, including all former components, mainly for the Reason of faster development right now.
+Features/Files form the Version 2.X branch will only be copied/merged when they can be integrated and tested. 
+If you don't find your v2.X contributions, it doesn't mean they are obsolete. Things will be integrated step by step.
+
+
+## Feature Rollout Plan (aka To-Do List)
+
+**General**
+- [ ] Method to change configuration through WebUI
+  - The difficulty lies bringing the running Jukebox to accept the changes
+- [ ] Strategy to post config changes via PubSub
+    - e.g. volume change is posted repeatedly with status
+    - but what about set_max_volume, is shutdown timer active?
+    
+- [ ] Clean up of surplus files
+- [X] Host interface (shutdown, reboot)
+- [X] Temperature getter / publisher
+- [ ] is_throttled getter / publisher
+- [ ] Version number getter
+- [ ] Exit through RPC
+- [ ] Storage space getter / publisher
+
+**Config handler**
+- [ ] While saving config to disk: local file change detection
+- [ ] cfghandler creates setndefault() at arbitrary depth
+
+**WebUI**
+- [X] Playback Control
+- [ ] Cover Art  
+- [ ] Register cards
+- [ ] Shutdown button 
+
+**Playback**
+- [ ] Playlist handling
+- [ ] Local Files, Streams, etc
+- [ ] Folder configuration [Reference](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour)
+  - Resume: Save and restore position (how interact with shuffle?) 
+  - Single: Enable mpc single
+  - Shuffle: Enable mpc shuffle / random (which one?)
+
+**RFID**
+- [X] Test with Reader disabled 
+- [X] Start-up behaviour with un-configured Reader
+- [X] Command card
+- [X] Revised RFID reader user-query setup script  
+- [ ] Enable config flag ?  
+- [ ] Place not swipe / Timer thread
+- [ ] Readers support
+    - [X] USB (Neuftech)
+    - [X] RDM6300
+    - [ ] MFRC522
+    - [ ] RC532
+    - [ ] PC/SC Cards
+    - [X] Multi-reader support
+- [ ] Console-based Fake Reader
+- [ ] Publish RFID Card ID via PubSub
+- [ ] Second Swipe Options
+    - Freely configurable with an RPC call
+    - Ignore (nothing)
+    - Toggle Pause/Play
+    - Skip to next track
+    - Re-start playlist 
+    - Resume
+
+**Timer**
+- [ ] Idle timer
+- [X] Shutdown timer
+- [X] Play stop timer
+- [X] Shutdown timer volume reduction
+    - Decreases volume every x min until zero, then shuts down
+    - Needs to be cancelable
+- [ ] Publish mechnism of timer status    
+
+
+**Installation**
+- [X] Single call installation script
+- [ ] Query for settings vs. automatic version, e.g.
+    - before overwriting MPD config (i.e. for re-installs)
+    - static IP
+- [ ] IPQoS in SSH config   
+- [ ] Separate static IP and IPv6 disable
+    
+
+**Volume**
+- [ ] Min/Max Volume
+- [X] Jingle playback volume as fixed value in config
+- [X] Default volume setting after boot-up
+- [X] MPD volume control service
+
+**GPIO**
+- [ ] Everything needs porting
+  - Function call routines need replacing to do RPC Calls
+- [ ] Status LED probably needs re-writing to benefit fully from plugin structure 
+- [ ] USB Buttons
+
+**WLAN**
+- [ ] Ad-hoc WLAN Hot spot
+- [ ] IP address read-out
+
+**Spotify**
+- [ ] Everything
+
+**Others**
+- [ ] Bluetooth sink toggle
+- [ ] MQTT 
+- [ ] Record and Playback using a Mic
+
+**Start-up stuff**
+- [ ] check music folder rights
+- [ ] mpc update / mpc rescan
+- [ ] sudo iwconfig wlan0 power off (need to be done after every restart)
+- [ ] Optional power down HDMI circuits: /usr/bin/tvservice -o
 
 ### Architecture
 The Fundamental Architecture looks like:
 
 <img src="./docs/architecture.svg">
-
-
-## PhonieboxDaemon:
-
-
-### PhonieboxDaemon.py
-This is the Entry point of this Implementation
-
-This Daemon is so far:
-
-- Playing Startup sound
-- Reading Status and Database Files
-- Instantiating Phoniebox Objects (Volume, Player, System Control)
-- Instantiating and Starting RFID Reader as thread
-- \##Instantiating and Starting GPIO Control
-- Running the RPC Server (API)
-
-_Next Steps here:_
-
-- [X] reading of Config File in order to allow distributed development
-- [ ] Refactoring as class in order to allow the exit functions to take over more tasks
-- [X] Add Logger
-- [X] Add Command Line Interface to pass config etc. (e.g to be started by systemd)
-
-### rpc/PhoniboxRpcServer.py
-
-This Server is ZMQ based API, which takes a dictionary of control objects (classes) as argument. 
-Each Method of the passed classes will be made available to the API
-
-### rpc/PhoniboxRpcClient.py
-
-Module which is intended to be included by other python Control Class in order to access the API
-
-
-### PhoniboxNVManager.py
-
-This is an Non Volatile Memory Manager. The attempt here is to reduce File IO writes, by keeping runtime Information in the RAM (a dictionary) and store them to Disk on Exit.
-
-### PhoniboxVolume.py
-
-ALSA Volume Control, utilizing pyalsaaudio
-hard-coded ALSA Volume Control 
-
-_Next Steps here:_
-
-- [ ] allow Card and Interface configuration
-
-### player/PhoniboxPlayerMPD.py
-
-Core Player Function, Controls MPD (via python-mpd2)
-Thsi si where most of the former Rsume Play and Playout Controls.sh went into
-
-_Next Steps here:_
-
-- [ ] Implement Resume Functionality
-- [ ] Reduce / Organize Json Output  of playerstatus to what is really needed by the WebUI
-- [ ] Switch mpd control to asyncio in order to be independent of WebUI Polling for actual  mpd status
-
-## cli_client
-command line access to the Daemon API,
-This should be a very lightweight and fast interface-tool with nearly no further dependencies.
-
-_Next Steps here:_
-
-- [ ] Define and Implement Output Format which can be easily treated in a shell
-
-
-
-## WebUI
-
-Even there are many changes in the WebUI it has been keept as it was as much as possible.
-The changes are mainly in order to interface with the new ZMQ aproach
-
-### htdocs/api/PhonieboxRpcClient.php
-this is the PHP Version of the RpcClient to allow fast and lightweight API access
-
-_Next Steps here:_
-
-- [ ] get all configuration needed from the Daemon via the API instead of setting files
-- [ ] reduce the still 109 exec calls ....
-- [ ] evaluate jszmq or zeromq.js as option to directly interface the API via js (https://github.com/zeromq)
-
-
-
 
 
 
