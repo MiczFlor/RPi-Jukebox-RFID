@@ -48,11 +48,11 @@ class AlsaCtrl:
 
     @plugin.tag
     def inc_volume(self, step=3):
-        self.set_volume(self.get_volume() + step)
+        return self.set_volume(self.get_volume() + step)
 
     @plugin.tag
     def dec_volume(self, step=3):
-        self.set_volume(self.get_volume() - step)
+        return self.set_volume(self.get_volume() - step)
 
 
 class AlsaCtrlBuilder:
