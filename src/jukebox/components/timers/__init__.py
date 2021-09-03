@@ -92,7 +92,7 @@ def finalize():
     plugin.register(timer_stop_player, name='timer_stop_player', package=plugin.loaded_as(__name__))
 
     global timer_fade_volume
-    timeout = cfg.setndefault('timers', 'volume_fade_out', 'default_timeout_sec', value=60 * 60)
+    timeout = cfg.setndefault('timers', 'volume_fade_out', 'default_time_per_iteration_sec', value=15 * 60)
     steps = cfg.setndefault('timers', 'volume_fade_out', 'number_of_steps', value=10)
     timer_fade_volume = GenericMultiTimerClass(steps, timeout, VolumeFadeOutActionClass)
     timer_fade_volume.__doc__ = "Timer step-wise volume fade out and shutdown"

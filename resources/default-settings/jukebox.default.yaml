@@ -8,6 +8,8 @@ modules:
         jingle: jingle
         player: playermpd
         rfid: rfid.reader
+        timers: timers
+        host: hostif.linux
     others:
         - alsaif
         - alsaif.alsawave
@@ -15,13 +17,19 @@ modules:
     # Write a reference of all loaded plugin callables to this file (comment out disables)
     reference_out: ../../shared/settings/plugin_reference.txt
 volume:
+    # Select the interface through which volume changes are applied. Currently supported 'alsa', 'mpd'
     interface: alsa
+    # Reset system volume to this level after start. (Comment out disables and volume is not changed)
+    startup_volume: 40
 jingle:
+    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
     startup_sound: ../../resources/audio/startupsound.wav
     # startup_sound: ../../resources/audio/startupsound.mp3
     shutdown_sound: ../../resources/audio/shutdownsound.wav
     # Use file ending to choose player from available jingle services
     service: auto
+    # The playback volume of the jingles. (Comment out means use current system volume)
+    volume: 30
 jinglemp3:
     # These parameters are passed to the mpeg123 player (e.g. [-d 2])
     call_parameters: []
@@ -40,3 +48,21 @@ pubsub:
 rfid:
     reader_config: ../../shared/settings/rfid.yaml
     card_database: ../../shared/settings/cards.yaml
+timers:
+    # These timers are always disabled after start
+    # The following values only give the default values.
+    # These can be changed when enabling the respective timer on a case-by-case basis w/o saving
+    shutdown:
+        default_timeout_sec: 3600
+    stop_player:
+        default_timeout_sec: 3600
+    volume_fade_out:
+        default_time_per_iteration_sec: 900
+        number_of_steps: 10
+host:
+    # Do not actually execute system shutdown and reboot commands
+    debug_mode: False
+    # Wether to publish the host's temperature regularly
+    publish_temperature:
+        enabled: false
+        timer_interval_sec: 5
