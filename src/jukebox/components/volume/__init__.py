@@ -39,6 +39,7 @@ class VolumeFactory:
 
     def __init__(self):
         self._builders = {}
+        self._active_key = None
 
     def register(self, key, builder):
         logger.debug(f"Register '{key}' in {self.__class__}")
@@ -56,7 +57,15 @@ class VolumeFactory:
     def set_active(self, key):
         """Set the active volume service which gets registered as 'ctrl'"""
         logger.debug(f"Set active '{key}' in VolumeFactory")
+        if self._builders.get(key) is None:
+            logger.error(f"Ignoring activation request for unknown volume service key: '{key}'")
+            return
         plugin.register(self.get(key), package="volume", name="ctrl", replace=True)
+        self._active_key = key
+
+    @plugin.tag
+    def get_active(self):
+        return self._active_key
 
 
 factory: VolumeFactory
@@ -76,3 +85,6 @@ def finalize():
     interface_name = cfg.getn('volume', 'interface', default=None)
     if interface_name is not None:
         factory.set_active(interface_name)
+        startup_volume = cfg.getn('volume', 'startup_volume', default=None)
+        if startup_volume is not None:
+            plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[startup_volume])

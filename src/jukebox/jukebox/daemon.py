@@ -115,11 +115,13 @@ class JukeBox:
     def run(self):
         time_start = time.time_ns()
         # Load the plugins
+        # Ignore all errors during plugin loading to provide functionality
+        # even if a plugin throws errors or has bad error handling
         plugins_named = cfg.getn('modules', 'named', default={})
         plugins_other = cfg.getn('modules', 'others', default=[])
-        plugin.load_all_named(plugins_named, prefix='components')
-        plugin.load_all_unnamed(plugins_other, prefix='components')
-        plugin.load_all_finalize()
+        plugin.load_all_named(plugins_named, prefix='components', ignore_errors=True)
+        plugin.load_all_unnamed(plugins_other, prefix='components', ignore_errors=True)
+        plugin.load_all_finalize(ignore_errors=True)
 
         # Initial testing code:
         # print(f"Callables = {plugin._PLUGINS}")
@@ -129,6 +131,10 @@ class JukeBox:
         # Testcode for switching to another volume control service ...
         # plugin.modules['volume'].factory.set_active("alsa2")
         # print(f"Callables = {plugin.callables}")
+
+        # Testcode for timers
+        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'start', args=[3])
+        # plugin.call_ignore_errors('timers', 'timer_fade_volume', 'start', args=[4, 2])
 
         # # initialize gpio
         # # TODO: GPIO not yet integrated

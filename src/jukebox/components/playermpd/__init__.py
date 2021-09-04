@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 Package for interfacing with the MPD Music Player Daemon
+
+https://github.com/Mic92/python-mpd2
+https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
+https://mpd.readthedocs.io/en/latest/protocol.html
+
 """
 import mpd
 import threading
@@ -112,13 +117,17 @@ class PlayerMPD:
             self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
             self.old_song = self.mpd_status['song']
 
-        # This will log all plugin calls in logger and spams the debug messages which might be needed to debug actual issues:
-        # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
-        # Do the same, but prevent the debug logging:
-        try:
-            self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
-        except Exception:
-            pass
+        # If volume ctrl is over mpd, volume is always retrieve via a full call to client status
+        # To avoid double calls to status with evey status poll, we need a case differentiation here
+        # In case MPD is the active volume manager, we can directly use the volume value
+        if plugs.get('volume').factory.get_active != 'mpd':
+            # This will log all plugin calls in logger and spams the debug messages:
+            # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
+            # Do the same, but prevent the debug logging:
+            try:
+                self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
+            except Exception:
+                pass
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -296,10 +305,74 @@ class PlayerMPD:
 
         return albums
 
+    def get_volume(self):
+        """Get the current volume
 
-# The initializer stuff gets executed directly
-player_ctrl = PlayerMPD()
-plugs.register(player_ctrl, name='ctrl')
+        For volume control do not use directly, but use through the plugin 'volume',
+        as the user may have configured a volume control manager other than MPD"""
+        volume = self.mpd_retry_with_mutex(self.mpd_client.status).get('volume')
+        return volume
+
+    def set_volume(self, volume):
+        """Set the volume
+
+        For volume control do not use directly, but use through the plugin 'volume',
+        as the user may have configured a volume control manager other than MPD"""
+        self.mpd_retry_with_mutex(self.mpd_client.volume, volume)
+
+
+class MpdVolumeCtrl:
+    """The Volume Ctrl Service for the plugin 'volume'
+
+    This allows volume ctrl through MPD rather than e.g. ALSA
+    """
+
+    def __init__(self, mpd_player_inst):
+        self._mpd_player_inst = mpd_player_inst
+
+    @plugs.tag
+    def get_volume(self):
+        return self._mpd_player_inst.get_volume()
+
+    @plugs.tag
+    def set_volume(self, volume):
+        return self._mpd_player_inst.set_volume(volume)
+
+    @plugs.tag
+    def inc_volume(self, step=3):
+        return self.set_volume(self.get_volume() + step)
+
+    @plugs.tag
+    def dec_volume(self, step=3):
+        return self.set_volume(self.get_volume() - step)
+
+
+class MpdVolumeCtrlBuilder:
+
+    def __init__(self, mpd_player_inst):
+        self._mpd_player_inst = mpd_player_inst
+        self._instance = None
+
+    def __call__(self, *args, **kwargs):
+        if not self._instance:
+            self._instance = MpdVolumeCtrl(self._mpd_player_inst)
+        return self._instance
+
+
+# ---------------------------------------------------------------------------
+# Plugin Initializer / Finalizer
+# ---------------------------------------------------------------------------
+
+player_ctrl: PlayerMPD
+
+
+@plugs.initialize
+def initialize():
+    global player_ctrl
+    player_ctrl = PlayerMPD()
+    plugs.register(player_ctrl, name='ctrl')
+    volume = plugs.get('volume')
+    volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
 
 
 @plugs.atexit
