@@ -19,3 +19,4 @@ jobs:
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests.sh
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests2.sh
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests3.sh
+        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests4.sh
