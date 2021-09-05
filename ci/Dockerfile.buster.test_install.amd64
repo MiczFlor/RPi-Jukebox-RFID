@@ -9,7 +9,8 @@ RUN groupadd --gid 1000 pi ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh ;\
   chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh ;\
   chmod +x /code/scripts/installscripts/tests/run_installation_tests2.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests3.sh
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests3.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests4.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
