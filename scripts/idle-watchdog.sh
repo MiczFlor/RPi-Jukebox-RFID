@@ -34,7 +34,8 @@ do
     fi
 
     # If box is playing and volume is greater 0, remove idle shutdown. Skip this if "at"-queue is already empty
-    if [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "1" ] && [ $VOLPERCENT -ne "0" ] && [ -n "$(sudo atq -q i)" ];
+    # If volume is controlled by amixer, VOLPERCENT is empty. Ignore that.
+    if [ "$(echo "$PLAYERSTATUS" | grep -c "\[playing\]")" == "1" ] && [[ -z $VOLPERCENT  ||  $VOLPERCENT -ne "0" ]] && [ -n "$(sudo atq -q i)" ];
     then
         for i in `sudo atq -q i | awk '{print $1}'`;do sudo atrm $i;done
     fi
