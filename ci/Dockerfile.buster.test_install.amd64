@@ -29,6 +29,7 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get -y install wget build-essential git iw locales wpasupplicant;\
   apt-get clean ;\
   touch /boot/cmdlinetxt ;\
-  rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+  rm -rf /var/cache/apt/* /var/lib/apt/lists/* ;\
+  cp /code/misc/sampleconfigs/deviceName.txt.stretch-default.sample /code/deviceName.txt
 
 USER pi

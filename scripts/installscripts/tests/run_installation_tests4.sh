@@ -24,11 +24,12 @@ export DEBIAN_FRONTEND=noninteractive
 # y use gpio
 # y RFID registration
 # 1 use USB reader
+# 0 use first device in list
 # yes, reader is connected
 # n No reboot
 
 # TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n1\ny\nn\n'
+GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n1\n0\ny\nn\n'
 
 # Test installation
 ./scripts/installscripts/tests/test_installation.sh
