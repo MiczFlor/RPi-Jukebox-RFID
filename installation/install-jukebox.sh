@@ -210,7 +210,7 @@ install_jukebox() {
 }
 
 # Samba configuration settings
-configure_samba() {
+setup_samba() {
   local SMB_CONF="/etc/samba/smb.conf"
   local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
@@ -243,7 +243,7 @@ EOF
     sudo chmod 644 $SMB_CONF
   fi
 
-  echo "DONE: configure_samba"
+  echo "DONE: setup_samba"
 }
 
 register_jukebox_settings() {
@@ -301,7 +301,16 @@ register_system_services() {
   echo "DONE: register_system_services"
 }
 
-setup_kiosk_mode() {
+install_rfid_reader() {
+  local time_start=$(date +%s)
+
+  python3 ${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py
+
+  calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: install_rfid_reader"
+}
+
+install_kiosk_mode() {
   local time_start=$(date +%s)
 
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then
@@ -489,11 +498,12 @@ install() {
   set_raspi_config
   # update_os
   install_jukebox_dependencies
-  configure_samba
+  setup_samba
   install_jukebox
   register_jukebox_settings
   register_system_services
-  setup_kiosk_mode
+  install_rfid_reader
+  install_kiosk_mode
   optimize_boot_time
   cleanup
 
