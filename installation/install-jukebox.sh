@@ -304,7 +304,7 @@ register_system_services() {
 install_rfid_reader() {
   local time_start=$(date +%s)
 
-  python3 ${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py
+  python3 ${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py | tee /dev/fd/3
 
   calc_runtime_and_print time_start $(date +%s)
   echo "DONE: install_rfid_reader"
