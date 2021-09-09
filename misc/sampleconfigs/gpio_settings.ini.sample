@@ -3,7 +3,7 @@ enabled: True
 antibouncehack: False
 
 [VolumeControl]
-enabled: True
+enabled: False
 Type: TwoButtonControl ;or RotaryEncoder
 Pin1: 5
 Pin2: 6
@@ -16,7 +16,7 @@ functionCall2: functionCallVolD
 functionCallTwoButtons: functionCallVol0 ;only for TwoButtonControl
 
 [PrevNextControl]
-enabled: True
+enabled: False
 Type: TwoButtonControl
 Pin1: 22
 Pin2: 23
@@ -28,7 +28,7 @@ hold_time: 0.3
 hold_mode: None
 
 [PlayPause]
-enabled: True
+enabled: False
 Type: Button
 Pin: 27
 pull_up_down: pull_up
@@ -93,14 +93,14 @@ pull_up_down: pull_up
 functionCall: functionCallPlayerPrev
 
 [FastForward]
-enabled: false
+enabled: False
 Type:  Button
 Pin: 7
 pull_up_down: pull_up
 functionCall: functionCallPlayerSeekFwd
 
 [Rewind]
-enabled: false
+enabled: False
 Type:  Button
 Pin: 8
 pull_up_down: pull_up
@@ -114,7 +114,7 @@ pull_up_down: pull_up
 functionCall: functionCallPlayerPauseForce
 
 [RFIDDevice]
-enabled: True
+enabled: False
 Type: Button
 Pin: 21
 pull_up_down: pull_up
