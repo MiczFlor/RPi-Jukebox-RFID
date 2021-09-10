@@ -11,8 +11,6 @@ import threading
 import signal
 from functools import partial
 
-import RPi.GPIO as gpio
-
 from base import readersupport
 
 logger = logging.getLogger(os.path.basename(__file__).ljust(25))
@@ -39,24 +37,30 @@ def get_global_params() -> dict:
     This is separated from the rfid_reader configuration read-in as preparation for configuration file unification
     """
     # Minimum delay between cards with same ID to be accepted as valid input
+    same_id_delay = 1.0
     try:
         with open(settings_path + '/Second_Swipe_Pause', 'r') as f:
-            try:
-                same_id_delay = float(f.read().strip())
-            except ValueError:
-                same_id_delay = 1.0
-    except FileNotFoundError:
-        same_id_delay = 1.0
+            same_id_delay = float(f.read().strip())
+    except Exception as e:
+        logger.error(f"Error reading config: {e.__class__.__name__}: {e}")
     logger.info(f"Global config: same_id_delay = {same_id_delay}s")
 
     # Swipe or place RFID cards
-    with open(settings_path +'/Swipe_or_Place', 'r') as f:
-        place_not_swipe = True if f.read().strip().lower() == "placenotswipe" else False
+    place_not_swipe = False
+    try:
+        with open(settings_path +'/Swipe_or_Place', 'r') as f:
+            place_not_swipe = True if f.read().strip().lower() == "placenotswipe" else False
+    except Exception as e:
+        logger.error(f"Error reading config: {e.__class__.__name__}: {e}")
     logger.info(f"Global config: place_not_swipe = {place_not_swipe}")
 
     # Weather control cards are except from same card delay
-    with open(settings_path + '/Second_Swipe_Pause_Controls', 'r') as f:
-        cmd_cards_no_delay = True if f.read().strip().lower() == "on" else False
+    cmd_cards_no_delay = False
+    try:
+        with open(settings_path + '/Second_Swipe_Pause_Controls', 'r') as f:
+            cmd_cards_no_delay = True if f.read().strip().lower() == "on" else False
+    except Exception as e:
+        logger.error(f"Error reading config: {e.__class__.__name__}: {e}")
     logger.info(f"Global config: cmd_cards_no_delay = {cmd_cards_no_delay}")
 
     # Gather all control card IDs if necessary
@@ -68,13 +72,16 @@ def get_global_params() -> dict:
         # i.e. put no restrictions on the number format.
         # New readers could introduce hexadecimal or float numbers (as in now an option in RDM6300)
         re_expr = re.compile(r'(?:\s*=\s*"\s*)(.+)(?:\s*")', re.IGNORECASE)
-        print(f"{re_expr.groups}")
-        with open(settings_path + '/global.conf', 'r') as f:
-            for line in f.readlines():
-                if line.strip().lower().startswith("cmd"):
-                    re_result = re_expr.search(line)
-                    if re_result:
-                        cmd_cards.append(re_result.group(1))
+        # print(f"{re_expr.groups}")
+        try:
+            with open(settings_path + '/global.conf', 'r') as f:
+                for line in f.readlines():
+                    if line.strip().lower().startswith("cmd"):
+                        re_result = re_expr.search(line)
+                        if re_result:
+                            cmd_cards.append(re_result.group(1))
+        except Exception as e:
+            logger.error(f"Error reading config: {e.__class__.__name__}: {e}")
         # Check if there are no command cards configured even if cmd_cards_no_delay is enabled
         if not len(cmd_cards):
             cmd_cards = None
@@ -108,6 +115,7 @@ class PinActionClass(threading.Thread):
         """
         threading.Thread.__init__(self)
         logger.debug(f"PinActionClass started with buzz_pin={buzz_pin}, buzz_duration={buzz_duration}, buzz_retrigger={buzz_retrigger}")
+        import RPi.GPIO as gpio
         self.trigger = threading.Event()
         self.buzz_pin = buzz_pin
         self.buzz_delay = buzz_duration
@@ -365,7 +373,7 @@ def create_read_card_workers(reader_cfg_file, logger_level=None) -> None:
 
     if len(reader_params) == 1:
         # The simple case: single rfid reader only
-        logger.info(f"Single instance RFID reader")
+        logger.info("Single instance RFID reader")
         read_card_worker(reader_module[0], reader_params[0], global_params, card_removal_timer_thread, pin_action_action_thread)
     else:
         # The complicated case: multiple parallel rfid readers

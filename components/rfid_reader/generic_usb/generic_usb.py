@@ -54,8 +54,11 @@ def _is_keyboard(device: evdev.InputDevice) -> bool:
     # The exclusion keys that the device must NOT have
     reserved_key = {0}
 
-    device_key_list = device.capabilities()[evdev.ecodes.EV_KEY]
-    is_keyboard_res = mandatory_keys.issubset(device_key_list) and reserved_key.isdisjoint(device_key_list)
+    try:
+        device_key_list = device.capabilities()[evdev.ecodes.EV_KEY]
+        is_keyboard_res = mandatory_keys.issubset(device_key_list) and reserved_key.isdisjoint(device_key_list)
+    except KeyError:
+        is_keyboard_res = False
     logger.debug(f"is_keyboard test for '{device.name}' at '{device.fn}' is '{is_keyboard_res}'")
     return True
 
