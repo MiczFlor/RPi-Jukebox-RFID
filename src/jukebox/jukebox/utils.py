@@ -34,7 +34,7 @@ def decode_action(cfg_action, quick_select_dict=None, logger=log):
     if qs not in valid:
         logger.error(f"Action configuration of 'quick_select: {qs}' must be one of"
                      f"{valid}. Default to 'none'.")
-    if qs is 'none':
+    if qs == 'none':
         return None
     if qs == 'custom':
         return decode_rpc_call(cfg_action)
