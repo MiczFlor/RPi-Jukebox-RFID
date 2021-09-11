@@ -631,7 +631,7 @@ def close_down(**kwargs) -> Any:
 
 
 def _call(package: str, plugin: str, method: Optional[str] = None, *,
-          args=(), kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
+          args=None, kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
     """
     The internals of the call functionality. See call(...) for documentation!
 
@@ -641,6 +641,20 @@ def _call(package: str, plugin: str, method: Optional[str] = None, *,
         m = f".{method}" if method is not None else ''
         logger_call.debug(f"Calling: {package}.{plugin}{m}(args={args}, kwargs={kwargs})")
     func = get(package, plugin, method)
+    if args is None:
+        args = ()
+    else:
+        # Make the argument passing more fail-safe:
+        # args should an argument list, but these cases are converted:
+        # - if a single argument is passed, wrap is in a list first
+        # - if a string is passed, it is iterable but a single argument
+        if isinstance(args, str):
+            args = [args]
+        else:
+            try:
+                args.__iter__()
+            except AttributeError:
+                args = [args]
     if kwargs is None:
         kwargs = {}
     if (not callable(func)) or inspect.isclass(func):

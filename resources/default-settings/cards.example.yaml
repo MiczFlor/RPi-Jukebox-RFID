@@ -1,42 +1,63 @@
 '1':
-  package: volume
-  plugin: ctrl
-  method: set_volume
-  kwargs:
-    volume: 12
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      kwargs:
+        volume: 12
 '2':
-  package: volume
-  plugin: ctrl
-  method: set_volume
-  args: [12]
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      args: [12]
+      ignore_same_id_delay: true
 '3':
-  package: volume
-  plugin: ctrl
-  method: set_volume
-  args: 12
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      args: 12
 '4':
-  package: volume
-  plugin: ctrl
-  method: set_volume
-  args: [12b]
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      args: [12b]
 '5':
-  package: volume
-  plugin: ctrl
-  method: mute
+      package: volume
+      plugin: ctrl
+      method: mute
 '6':
-  package: volume
-  plugin: ctrl
-  method: mute
-  kwargs: {}
+      package: volume
+      plugin: ctrl
+      method: mute
+      kwargs: {}
+      ignore_card_removal_action: true
+'7':
+      package: volume
+      plugin: ctrl
+      method: get_volume
+'8':
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      args: [18]
 '7896':
-  package: volume
-  plugin: ctrl
-  method: set_volume
-  args:
-      - 12
-      - 'erasdf'
-  kwargs:
-      aparam: 23
-      bparam: 'sdfs'
-      cparam: 56
-
+      package: volume
+      plugin: ctrl
+      method: set_volume
+      args:
+          - 12
+          - 'erasdf'
+      kwargs:
+          aparam: 23
+          bparam: 'sdfs'
+          cparam: 56
+'T':
+      package: player
+      plugin: ctrl
+      method: play_card
+      args: [path/to/music/folder]
+'G':
+      quick_select: play_card
+      args: path/to/music/folder
+'V':
+      quick_select: inc_volume
+      ignore_card_removal_action: false

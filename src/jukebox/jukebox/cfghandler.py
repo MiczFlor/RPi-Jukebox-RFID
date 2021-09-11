@@ -97,6 +97,7 @@ class ConfigHandler:
     """
     def __init__(self, name):
         self.name = name
+        self._loaded_from = None
         # Initialize this as empty standard dict. Type may be overwritten by config_dict
         self._data = {}
         # self._hash = hashlib.md5(self._data.__str__().encode('utf8')).digest()
@@ -112,6 +113,15 @@ class ConfigHandler:
 
     def release(self):
         return self._lock.release()
+
+    @property
+    def loaded_from(self):
+        """Property to store filename from which the config was loaded"""
+        return self._loaded_from
+
+    @loaded_from.setter
+    def loaded_from(self, filename):
+        self._loaded_from = filename
 
     def __enter__(self):
         self.acquire()
@@ -159,7 +169,7 @@ class ConfigHandler:
                 else:
                     return tmp.get(keys[-1], default)
 
-    def setndefault(self, *keys, value, create=False):
+    def setndefault(self, *keys, value, create_hierarchy=False):
         """
         Set the key = value pair at arbitrary hierarchy depth unless the key already exists
 
@@ -239,6 +249,7 @@ def load_yaml(cfg, filename) -> None:
     """
     yaml = YAML(typ='rt')
     logger.info(f"({cfg.name}) Loading yaml file '{filename}'")
+    cfg.loaded_from = filename
     with open(filename) as stream:
         cfg.config_dict(yaml.load(stream))
 

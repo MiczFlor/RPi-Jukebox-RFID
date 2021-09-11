@@ -145,10 +145,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
             reader_descriptions.append('(No description provided!)')
 
     # Prepare the configuration collector with the base values
-    config_dict = {'rfid': {'same_id_delay': 1.0,
-                            'place_not_swipe': False,
-                            'log_ignored_cards': False,
-                            'readers': {}},
+    config_dict = {'rfid': {'readers': {}},
                    'rfid.pinaction.rpi': {'enabled': False,
                                   'pin': 0,
                                   'duration': 0.2,
@@ -200,8 +197,14 @@ def query_user_for_reader(dependency_install='query') -> dict:
         #     config_dict[f'reader_module{len(reader_select_name)-1:02d}'] = reader_params
 
         # TODO: what if no reader params?
-        config_dict['rfid']['readers'][f'read_{len(reader_select_name)-1:02d}'] = {'module': reader_select_name[-1],
-                                                                                   'config': reader_params}
+        config_dict['rfid']['readers'][f'read_{len(reader_select_name) - 1:02d}'] = {'module': reader_select_name[-1],
+                                                                                     'config': reader_params,
+                                                                                     'same_id_delay': 1.0,
+                                                                                     'log_ignored_cards': False,
+                                                                                     'place_not_swipe':
+                                                                                         {'enabled': False,
+                                                                                          'card_removal_action':
+                                                                                              {'quick_select': 'pause'}}}
 
         if not pyil.input_yesno("\nDo you want to add another RFID reader? ", blank=False,
                                 prompt_color=Colors.lightgreen, prompt_hint=True):
