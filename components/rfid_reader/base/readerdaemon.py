@@ -11,6 +11,8 @@ import threading
 import signal
 from functools import partial
 
+import RPi.GPIO as gpio
+
 from base import readersupport
 
 logger = logging.getLogger(os.path.basename(__file__).ljust(25))
@@ -48,7 +50,7 @@ def get_global_params() -> dict:
     # Swipe or place RFID cards
     place_not_swipe = False
     try:
-        with open(settings_path +'/Swipe_or_Place', 'r') as f:
+        with open(settings_path + '/Swipe_or_Place', 'r') as f:
             place_not_swipe = True if f.read().strip().lower() == "placenotswipe" else False
     except Exception as e:
         logger.error(f"Error reading config: {e.__class__.__name__}: {e}")
@@ -115,7 +117,6 @@ class PinActionClass(threading.Thread):
         """
         threading.Thread.__init__(self)
         logger.debug(f"PinActionClass started with buzz_pin={buzz_pin}, buzz_duration={buzz_duration}, buzz_retrigger={buzz_retrigger}")
-        import RPi.GPIO as gpio
         self.trigger = threading.Event()
         self.buzz_pin = buzz_pin
         self.buzz_delay = buzz_duration
