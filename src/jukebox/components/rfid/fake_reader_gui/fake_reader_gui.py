@@ -50,6 +50,7 @@ from tkinter import filedialog
 from ttkthemes import ThemedStyle
 
 from components.rfid import ReaderBaseClass
+from components.rfid.cardutils import (card_to_str)
 import jukebox.cfghandler
 
 from .description import DESCRIPTION
@@ -74,36 +75,6 @@ def gui_close():
     # We will just raise a Ctrl-C Interrupt with the main thread for now
     # There is now "close-down" by remote-thread call implemented at the moment
     os.kill(os.getpid(), signal.SIGINT)
-
-
-def card_to_str(card_id) -> str:
-    """Format a readable string from card entry command"""
-    # TODO: Move somewhere sensible
-    readable = "Error: Card ID not found in database!"
-    if card_id in cfg_cards:
-        package = cfg_cards.getn(card_id, 'package', default='?')
-        plugin = cfg_cards.getn(card_id, 'plugin', default='?')
-        method = cfg_cards.getn(card_id, 'method', default=None)
-        args = cfg_cards.getn(card_id, 'args', default=None)
-        kwargs = cfg_cards.getn(card_id, 'kwargs', default=None)
-
-        method_str = ''
-        args_str = ''
-        kwargs_str = ''
-        separator = ''
-        if method is not None:
-            method_str = f".{method}"
-        if args is not None:
-            try:
-                args_str = ", ".join([f"'{x}'" if type(x) == str else str(x) for x in args])
-            except TypeError:
-                args_str = f"{args}"
-        if kwargs is not None:
-            kwargs_str = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
-            if args is not None:
-                separator = ", "
-        readable = f"{package}.{plugin}{method_str}({args_str}{separator}{kwargs_str})"
-    return readable
 
 
 class ReaderClass(ReaderBaseClass):
@@ -173,11 +144,14 @@ class ReaderClass(ReaderBaseClass):
         self._menu = tk.Menu(self._menu_btn, tearoff=0,
                              background='gray96', relief=tk.FLAT,
                              activeborderwidth=0, borderwidth=0)
-        id_max_len = functools.reduce(lambda x, y: max(x, len(y)), card_ids, 0)
+        id_max_len = max(4, functools.reduce(lambda x, y: max(x, len(y)), card_ids, 0))
         for c in card_ids:
             self._menu.add_radiobutton(value=c, label=f"{c:>{id_max_len}}: {card_to_str(c)}",
                                        variable=self._menu_var,
                                        font='TkFixedFont')
+        self._menu.add_radiobutton(value='DEAD', label=f"{'DEAD':>{id_max_len}}: Unknown Card ID",
+                                   variable=self._menu_var,
+                                   font='TkFixedFont')
         # In case you need to check what font 'TkFixedFont' is mapped to, use these two lines
         # from tkinter import font
         # print(f'{font.nametofont("TkFixedFont").actual()}')
@@ -247,8 +221,9 @@ class ReaderClass(ReaderBaseClass):
 
     def _menu_rfid_callback2(self, *args):
         self._card_id = self._menu_var.get()
-        readable = card_to_str(self._card_id)
-        logger.debug(f"Selected card command: {readable}")
+        readable = card_to_str(self._card_id, long=True, multiline=True)
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"Selected card command: {card_to_str(self._card_id, long=True, multiline=False)}")
         self._lab_card_id['text'] = f"ID: '{self._menu_var.get()}'\n{readable}"
 
     def _btn_trigger_callback(self):
@@ -256,12 +231,14 @@ class ReaderClass(ReaderBaseClass):
 
     def _btn_place_callback(self):
         self._btn_place['state'] = tk.DISABLED
+        self._btn_trigger['state'] = tk.DISABLED
         self._btn_remove['state'] = tk.NORMAL
         self._lab_card_place['text'] = 'Card placed on reader'
         self._card_on_reader = True
 
     def _btn_remove_callback(self):
         self._btn_remove['state'] = tk.DISABLED
+        self._btn_trigger['state'] = tk.NORMAL
         self._btn_place['state'] = tk.NORMAL
         self._lab_card_place['text'] = 'No card on reader'
         self._card_on_reader = False

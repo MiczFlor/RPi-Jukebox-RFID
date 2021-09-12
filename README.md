@@ -41,7 +41,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [ ] is_throttled getter / publisher
 - [ ] Version number getter
 - [ ] Exit through RPC
-- [ ] Storage space getter / publisher
+- [ ] Storage space getter / publisher (shutil.disk_usage)
 
 **Config handler**
 - [ ] While saving config to disk: local file change detection
@@ -54,36 +54,51 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [ ] Shutdown button 
 
 **Playback**
-- [ ] Playlist handling
-- [ ] Local Files, Streams, etc
+- [ ] Playlist generator
+    - [ ] Local folders
+        - [ ] Non-recursive folder play
+        - [ ] Recursive folder play
+    - [ ] Podcast
+    - [ ] Livestreams
+    - [ ] NEW: Playback of m3u playlists (e.g. folder.m3u) ?
+    
 - [ ] Folder configuration [Reference](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour)
-  - Resume: Save and restore position (how interact with shuffle?) 
-  - Single: Enable mpc single
-  - Shuffle: Enable mpc shuffle / random (which one?)
+  - [ ] Resume: Save and restore position (how interact with shuffle?) 
+  - [ ] Single: Enable mpc single
+  - [ ] Shuffle: Enable mpc random (not shuffle)
+    - Rename to random, as this is mpc random
+  - [ ] Loop: Loop playlist 
 
 **RFID**
 - [X] Test with Reader disabled 
 - [X] Start-up behaviour with un-configured Reader
-- [X] Command card
-- [X] Revised RFID reader user-query setup script  
+- [X] Command card -> is now parameter ignore_same_id_delay
+- [X] Revised RFID reader user-query setup script
+  - [ ] Ask for place option
 - [ ] Enable config flag ?  
-- [ ] Place not swipe / Timer thread
+- [X] Place not swipe / Timer thread
+    - [X] Configurable card removal action
 - [ ] Readers support
-    - [X] USB (Neuftech)
+    - [X] USB (e.g. Neuftech)
     - [X] RDM6300
     - [ ] MFRC522
     - [ ] RC532
     - [ ] PC/SC Cards
     - [X] Multi-reader support
-- [ ] Console-based Fake Reader
+    - [X] GUI Fake Reader for Development
 - [ ] Publish RFID Card ID via PubSub
-- [ ] Second Swipe Options
+  - Needs to be thread safe
+- [X] Second Swipe Options -> must be part of player control
     - Freely configurable with an RPC call
     - Ignore (nothing)
     - Toggle Pause/Play
     - Skip to next track
-    - Re-start playlist 
-    - Resume
+    - Re-start playlist
+- [X] Simplified quick_select action shortcuts for often used card commands
+    - [ ] Port all previous card commands
+    - [X] Reference file write-out
+      - [ ] Improve readability
+    - [ ] Card reference IF via RPC (?)
 
 **Timer**
 - [ ] Idle timer
@@ -92,7 +107,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [X] Shutdown timer volume reduction
     - Decreases volume every x min until zero, then shuts down
     - Needs to be cancelable
-- [ ] Publish mechnism of timer status    
+- [ ] Publish mechanism of timer status    
 
 
 **Installation**
@@ -113,6 +128,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 **GPIO**
 - [ ] Everything needs porting
   - Function call routines need replacing to do RPC Calls
+  - Configuration format probably best changed to YAML  
 - [ ] Status LED probably needs re-writing to benefit fully from plugin structure 
 - [ ] USB Buttons
 
@@ -129,8 +145,8 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [ ] Record and Playback using a Mic
 
 **Start-up stuff**
-- [ ] check music folder rights
-- [ ] mpc update / mpc rescan
+- [X] check music folder rights
+- [X] mpc update / (mpc rescan)
 - [ ] sudo iwconfig wlan0 power off (need to be done after every restart)
 - [ ] Optional power down HDMI circuits: /usr/bin/tvservice -o
 

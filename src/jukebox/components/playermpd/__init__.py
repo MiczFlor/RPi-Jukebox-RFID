@@ -6,15 +6,22 @@ https://github.com/Mic92/python-mpd2
 https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
 https://mpd.readthedocs.io/en/latest/protocol.html
 
+sudo -u mpd speaker-test -t wav -c 2
 """
+import re
+
 import mpd
 import threading
 import logging
 import time
+import functools
 import jukebox.cfghandler
+import jukebox.utils as utils
 import jukebox.plugs as plugs
 from jukebox.NvManager import nv_manager
 import jukebox.pubsub as pubsub
+import misc
+
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -29,24 +36,45 @@ class PlayerMPD:
         self.mpd_host = cfg.getn('playermpd', 'host')
         self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
 
+        self.second_swipe_action_dict = {'toggle': self.toggle,
+                                         'play': self.play,
+                                         'skip': self.next,
+                                         'rewind': self.rewind,
+                                         'replay': self.replay,
+                                         'replay_if_stopped': self.replay_if_stopped}
+        self.second_swipe_action = None
+        self.decode_2nd_swipe_option()
+
         self.mpd_client = mpd.MPDClient()
         self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
         self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command
         self.connect()
         logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
+        self.music_player_status['player_status'].setdefault('last_played_folder', '')
+        self.current_folder_status = {}
         if not self.music_player_status:
             self.music_player_status['player_status'] = {}
             self.music_player_status['audio_folder_status'] = {}
             self.music_player_status.save_to_json()
             self.current_folder_status = {}
+            self.music_player_status['player_status']['last_played_folder'] = ''
         else:
             last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
-            if last_played_folder is not None:
+            if last_played_folder:
+                # current_folder_status is a dict, but last_played_folder a str
                 self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
+                # Restore the playlist status in mpd
+                # But what about playback position?
                 self.mpd_client.clear()
                 self.mpd_client.add(last_played_folder)
                 logger.info(f"Last Played Folder: {last_played_folder}")
+
+        # Clear last folder played, as we actually did not play any folder yet
+        # Needed for second swipe detection
+        # TODO: This will loose the last_played_folder information is the box is started and closed with playing anything...
+        # Change this to last_played_folder and shutdown_state (for restoring)
+        self.music_player_status['player_status']['last_played_folder'] = ''
 
         self.old_song = None
         self.mpd_status = {}
@@ -69,6 +97,22 @@ class PlayerMPD:
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
 
+    def decode_2nd_swipe_option(self):
+        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'quick_select', value='none').lower()
+        if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
+            logger.error(f"Config mpd.second_swipe_action must be one of "
+                         f"{[*self.second_swipe_action_dict.keys(), 'none', 'custom']}. Ignore setting.")
+        if cfg_2nd_swipe_action in self.second_swipe_action_dict.keys():
+            self.second_swipe_action = self.second_swipe_action_dict[cfg_2nd_swipe_action]
+        if cfg_2nd_swipe_action == 'custom':
+            custom_action = utils.decode_rpc_call(cfg.getn('playermpd', 'second_swipe_action', default=None))
+            self.second_swipe_action = functools.partial(plugs.call_ignore_errors,
+                                                         custom_action['package'],
+                                                         custom_action['plugin'],
+                                                         custom_action['method'],
+                                                         custom_action['args'],
+                                                         custom_action['kwargs'])
+
     def mpd_retry_with_mutex(self, mpd_cmd, param1=None, param2=None):
         """
         This method adds thread saftey for acceses to mpd via a mutex lock,
@@ -88,7 +132,7 @@ class PlayerMPD:
                     else:
                         ret = mpd_cmd()
                     break
-                except ConnectionError:     # TODO: this is not working properly yet, we are alwas anding up in the Exception!
+                except mpd.base.ConnectionError:     # TODO: this is not working properly yet, we are alwas anding up in the Exception!
                     logger.info(f"MPD Connection Error, retry {retry}")
                     self.connect()
                     retry -= 1
@@ -153,7 +197,13 @@ class PlayerMPD:
         return self.mpd_retry_with_mutex(self.mpd_client.mpd_version)
 
     @plugs.tag
+    def update(self):
+        logger.info("MPC music library update")
+        return self.mpd_retry_with_mutex(self.mpd_client.update)
+
+    @plugs.tag
     def play(self, songid=None):
+        logger.debug("Play")
         if songid is None:
             songid = 0
 
@@ -184,11 +234,14 @@ class PlayerMPD:
 
     @plugs.tag
     def prev(self):
+        logger.debug("Prev")
         self.mpd_retry_with_mutex(self.mpd_client.previous)
         return self.mpd_status
 
     @plugs.tag
     def next(self):
+        """Play next track in current playlist"""
+        logger.debug("Next")
         self.mpd_retry_with_mutex(self.mpd_client.next)
         return self.mpd_status
 
@@ -203,6 +256,58 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
         return self.mpd_status
+
+    @plugs.tag
+    def rewind(self):
+        """Re-start current playlist from first track
+
+        Note: Will not re-read folder config, but leave settings untouched"""
+        logger.debug("Rewind")
+        self.mpd_retry_with_mutex(self.mpd_client.play, 1)
+
+    @plugs.tag
+    def replay(self):
+        """Re-start playing the last-played folder
+
+        Note: Will reset settings to folder config"""
+        logger.debug("Replay")
+        self.playlistaddplay(self.music_player_status['player_status']['last_played_folder'])
+
+    @plugs.tag
+    def toggle(self):
+        """Toggle pause state, i.e. do a pause / resume depending on current state"""
+        logger.debug("Toggle")
+        self.mpd_retry_with_mutex(self.mpd_client.pause)
+
+    @plugs.tag
+    def replay_if_stopped(self):
+        """Re-start playing the last-played folder unless playlist is still playing
+
+        Note: To me this seems much like the behaviour of play,
+        but we keep it as it is specifically implemented in box 2.X"""
+        if self.mpd_status['state'] == 'stop':
+            self.replay()
+
+    @plugs.tag
+    def play_card(self, folder=None):
+        """Main entry point for trigger playing from RFID reader
+
+        Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
+        accordingly.
+
+        Developers notes:
+        - 2nd swipe trigger may also happen, if playlist has already stopped playing
+        - 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
+        - TODO: last_played_folder is restored after box start, so first swipe of last played card may look like second swipe
+         """
+        logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
+        is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
+        if self.second_swipe_action is not None and is_second_swipe:
+            logger.debug('Calling second swipe action')
+            self.second_swipe_action()
+        else:
+            logger.debug('Calling first swipe action')
+            self.playlistaddplay(folder)
 
     @plugs.tag
     def repeatmode(self, mode):
@@ -279,6 +384,18 @@ class PlayerMPD:
             self.mpd_retry_with_mutex(self.mpd_client.play)
 
         return self.mpd_status
+
+    @plugs.tag
+    def queue_load(self, folder):
+        # There was something playing before -> stop and save state
+        # Clear the queue
+        # Check / Create the playlist
+        #  - not needed if same folder is played again? Buf what if files have been added a mpc update has been run?
+        #  - and this a re-trigger to start the new playlist
+        # If we must update the playlists everytime anyway why write them to file and not just keep them in the queue?
+        # Load the playlist
+        # Get folder config and apply settings
+        pass
 
     @plugs.tag
     def playerstatus(self):
@@ -359,6 +476,19 @@ class MpdVolumeCtrlBuilder:
         return self._instance
 
 
+def get_music_directory(conf_file='/etc/mpd.conf'):
+    """Extract the music directory from the mpd.conf file"""
+    pattern = re.compile(r'^\s*music_directory\s*"(.*)"', re.I)
+    directory = None
+    with open(conf_file, 'r') as f:
+        for line in f:
+            res = pattern.match(line)
+            if res:
+                directory = res.group(1)
+                break
+    return directory
+
+
 # ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
@@ -373,6 +503,25 @@ def initialize():
     plugs.register(player_ctrl, name='ctrl')
     volume = plugs.get('volume')
     volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
+
+    # Update mpc library
+    library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)
+    if library_update:
+        player_ctrl.update()
+
+    # Check user rights: Where to get the music directory from? Should be mpd.conf, right?
+    audio_folder_path = None
+    mpd_conf_file = cfg.setndefault('playermpd', 'mpd_conf', value='/etc/mpd.conf')
+    try:
+        audio_folder_path = get_music_directory(mpd_conf_file)
+    except Exception as e:
+        logger.error(f"Could not determine music library directory from '{mpd_conf_file}'")
+        logger.error(f"Reason: {e.__class__.__name__}: {e}")
+
+    library_check_user_rights = cfg.setndefault('playermpd', 'library', 'check_user_rights', value=True)
+    if library_check_user_rights and audio_folder_path is not None:
+        logger.info(f"Change user rights for {audio_folder_path}")
+        misc.recursive_chmod(audio_folder_path, mode_files=0o666, mode_dirs=0o777)
 
 
 @plugs.atexit

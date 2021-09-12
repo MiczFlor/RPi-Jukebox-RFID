@@ -109,8 +109,34 @@ def publish_cpu_temperature(**ignored_kwargs):
     logger.debug(f'Publishing Temperature: {temperature}')
 
 
+# ---------------------------------------------------------------------------
+# MISC
+# ---------------------------------------------------------------------------
+@plugin.register()
+def wlan_disable_power_down(card=None):
+    """Turn off power management of wlan. Keep RPi reachable via WLAN
+
+    This must be done after every reboot
+    card=None takes card from configuration file"""
+    if card is None:
+        card = cfg.setndefault('host', 'wlan_power', 'card', default='wlan0')
+    logger.info(f'Disable power down management of {card}')
+    ret = subprocess.run(['sudo', 'iwconfig', card, 'power', 'off'],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    if ret.returncode != 0:
+        logger.error(f"{ret.stdout}")
+
+
+@plugin.initialize
+def initialize():
+    wlan_power = cfg.setndefault('host', 'wlan_power', 'disable_power_down', value=True)
+    card = cfg.setndefault('host', 'wlan_power', 'card', value='wlan0')
+    if wlan_power:
+        wlan_disable_power_down(card)
+
+
 @plugin.finalize
-def temperature_finalize():
+def finalize():
     global timer_temperature
     enabled = cfg.setndefault('host', 'publish_temperature', 'enabled', value=True)
     wait_time = cfg.setndefault('host', 'publish_temperature', 'timer_interval_sec', value=5)
@@ -125,7 +151,7 @@ def temperature_finalize():
 
 
 @plugin.atexit
-def temperature_atexit(**ignored_kwargs):
+def atexit(**ignored_kwargs):
     global timer_temperature
     timer_temperature.cancel()
 
@@ -134,6 +160,18 @@ def temperature_atexit(**ignored_kwargs):
 # RPi-only stuff
 # ---------------------------------------------------------------------------
 if IS_RPI:
+
+    @plugin.register
+    def hdmi_power_down():
+        """Power down HDMI circuits to save power if no display is connected
+
+        This must be done after every reboot"""
+        logger.info('Power down HDMI circuits')
+        ret = subprocess.run(['sudo', '/usr/bin/tvservice', '-o'],
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        if ret.returncode != 0:
+            logger.error(f"{ret.stdout}")
+
 
     @plugin.register
     def get_throttled():
@@ -148,3 +186,9 @@ if IS_RPI:
         else:
             status_string = f"Not OK (Code: {ret.status})"
         return status_string
+
+    @plugin.initialize
+    def rpi_initialize():
+        hdmi_off = cfg.setndefault('host', 'rpi', 'hdmi_power_down', default=False)
+        if hdmi_off:
+            hdmi_power_down()
