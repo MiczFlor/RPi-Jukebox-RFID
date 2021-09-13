@@ -7,8 +7,9 @@ import { initSockets, socketRequest } from '../../sockets';
 const PlayerProvider = ({ children }) => {
   const postJukeboxCommand = async (_package, method, kwargs) => {
     setState({ ...state, requestInFlight: true });
+    const plugin = 'ctrl'; // TODO: This might need an update because it only works with `playermpd`
 
-    const { status } = await socketRequest(_package, method, kwargs);
+    const { status } = await socketRequest(_package, plugin, method, kwargs);
 
     if(!status) {
       // TODO: Implement error handling as this shouldn't happen
