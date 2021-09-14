@@ -75,7 +75,7 @@ const Library = () => {
 
   useEffect(() => {
     const getFlattenListOfDirectories = async () => {
-      const list = await socketRequest('player', 'list_all_dirs');
+      const list = await socketRequest('player', 'ctrl', 'list_all_dirs');
 
       setFolders(list.filter(entry => !!entry.directory));
     };
