@@ -15,16 +15,6 @@ import ShutDownDialog from './dialogs/shutdown';
 const SystemControls = () => {
   const { state: { postJukeboxCommand } } = useContext(PlayerContext);
 
-  const reboot = () => {
-    console.log('reboot');
-    postJukeboxCommand('system', 'reboot', {});
-  };
-
-  const shutdown = () => {
-    console.log('shutdown');
-    postJukeboxCommand('system', 'shutdown', {});
-  };
-
   return (
     <Card>
       <CardHeader title="System Controls" />
