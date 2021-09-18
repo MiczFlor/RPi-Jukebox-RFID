@@ -96,6 +96,17 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 **See more innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY) or visit and share the project's homepage at [phoniebox.de](http://phoniebox.de/). There is also an [english Phoniebox page](http://phoniebox.de/index.php?l=en).**
 
+## Sustainability
+
+You might be surprised how easy and affordable you can get a RaspberryPi or an "appropriate" housing for your Phoniebox **second hand**. Think about the planet before you buy a new one.   
+Creating a Phoniebox may be sustainable for the following reasons:
+
+* You **buy things second hand** or **do upcycling on unused objects** and reduce newly produced products
+* You built your Phoniebox yourself, so **maintaining and repairing is not a problem** (Additionally **a great community helps** you)
+* Since the Phoniebox uses Linux as a base system it's **very unlikely that you run out of system and security updates** - so it can run and run and run...
+* **RFID cards or tags can be reused - no need to buy new plastic elements** for changing the music or story linked to a card
+* **Build it together with your kids** to show them that building things on their own is possible and in cooperation with others makes life easier and fun at the same time
+
 ## <a name="install"></a>Installation
 
 * Installation instructions for Raspbian (https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
