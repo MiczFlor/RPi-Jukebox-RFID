@@ -8,15 +8,23 @@ const PlayerProvider = ({ children }) => {
   const postJukeboxCommand = async (_package, plugin, method, kwargs) => {
     setState({ ...state, requestInFlight: true });
 
-    const { status } = await socketRequest(_package, plugin, method, kwargs);
+    try {
+      const { status } = await socketRequest(_package, plugin, method, kwargs);
 
-    if(!status) {
-      // TODO: Implement error handling as this shouldn't happen
-      setState({ ...state, playerstatus: DEFAULT_PLAYER_STATUS });
+      if(!status) {
+        // TODO: Implement error handling as this shouldn't happen
+        setState({ ...state, playerstatus: DEFAULT_PLAYER_STATUS });
+      }
+
+      setState({ ...state, playerstatus: status });
+      setState({ ...state, requestInFlight: false });
+
+      return Promise.resolve();
     }
-
-    setState({ ...state, playerstatus: status });
-    setState({ ...state, requestInFlight: false });
+    catch(error) {
+      setState({ ...state, requestInFlight: false });
+      return Promise.reject(error);
+    }
   }
 
   const [state, setState] = useState({

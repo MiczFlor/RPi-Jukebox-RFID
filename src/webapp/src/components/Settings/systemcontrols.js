@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -10,6 +9,8 @@ import {
 } from '@material-ui/core';
 
 import PlayerContext from '../../context/player/context';
+import RebootDialog from './dialogs/reboot';
+import ShutDownDialog from './dialogs/shutdown';
 
 const SystemControls = () => {
   const { state: { postJukeboxCommand } } = useContext(PlayerContext);
@@ -31,10 +32,10 @@ const SystemControls = () => {
       <CardContent>
         <Grid container direction="row" justify="space-around" alignItems="center">
           <Grid item>
-            <Button variant="outlined" onClick={reboot}>Reboot</Button>
+            <RebootDialog />
           </Grid>
           <Grid item>
-            <Button variant="outlined" onClick={shutdown}>Shutdown</Button>
+            <ShutDownDialog />
           </Grid>
         </Grid>
       </CardContent>
