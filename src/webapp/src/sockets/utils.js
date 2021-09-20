@@ -22,7 +22,7 @@ const decodePubSubMessage = (msg) => {
   const [topic, data] = message.split(/ (.+)/);
   // The we have pure JSON as string which can be parsed
   const payload = JSON.parse(data);
-  // console.log('decodeMessage', payload);
+  console.log('decodeMessage', payload);
   return { topic, [topic]: payload };
 }
 
