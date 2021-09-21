@@ -78,9 +78,9 @@ class RpcServer:
             # But if 'id' is omitted, this will always be 'None'! Unless an error occurred, then the error is returned
             # The absence of 'id' indicates that the requester is not interested in the response
             # If present, 'id' and 'tsp' may not be None. If they are None, there are treated as if non-existing.
-            package = client_request.pop('package', default=None)
+            package = client_request.pop('package', None)
             if package is not None:
-                plugin = client_request.pop('plugin', default=None)
+                plugin = client_request.pop('plugin', None)
                 if plugin is not None:
                     method = client_request.pop('method', None)
                     args = client_request.pop('args', tuple())
