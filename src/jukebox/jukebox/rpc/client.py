@@ -39,9 +39,9 @@ class RpcClient:
         try:
             server_response = json.loads(self.queue.recv())
         except Exception as e:
-            self.logger.error(f"While waiting for server response: {e}")
             if ignore_errors is False:
                 raise e
+            self.logger.error(f"While waiting for server response: {e}")
             return None
         if 'error' in server_response:
             if ignore_errors is False:
@@ -64,4 +64,4 @@ class RpcClient:
             request['args'] = args
         if kwargs is not None:
             request['kwargs'] = kwargs
-        self.enque(request, ignore_response, ignore_errors)
+        return self.enque_raw(request, ignore_response, ignore_errors)
