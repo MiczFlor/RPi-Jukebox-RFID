@@ -1,6 +1,6 @@
-# Phoniebox Runbook
+# Phoniebox Development Runbook for Docker environments
 
-This document describes how to set up a local development environment based on different hosts.
+This document describes how to set up a local development environment. It is useful to develop certain parts of the Phoniebox application that do not directly require the Raspberry Pi hardware such as GPIO. *Raspberry Pi OS* is based on Debian but comes with a lot of special packages and a unique graphical interface. It is difficult to mock a Raspberry Pi whithin a Docker container but we try to keep both environments as close as possible. It's not meant to be deployed on the Raspberry Pi directly for performance reasons
 
 Depending on your host environment (Mac, Linux or Windows), you might need to adapt some of those commands a little bit.
 
@@ -11,6 +11,10 @@ Depending on your host environment (Mac, Linux or Windows), you might need to ad
     * Mac: [Docker & Compose](https://docs.docker.com/docker-for-mac/install/), [pulseaudio](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html)
     * Windows: [Docker & Compose](https://docs.docker.com/docker-for-windows/install/), [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
 1. Pull the Phoniebox repository: `git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git`
+1. Create a jukebox.yaml file
+    * .Copy the `./resources/default-settings/jukebox.default.yaml` to `./shared/settings` and rename the file to `jukebox.yaml`
+    * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`
+    * [Currently required] Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`
 1. Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders` and copy a set of MP3 files into this folder
 
 ## Run development environment

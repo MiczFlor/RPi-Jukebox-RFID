@@ -100,9 +100,9 @@ class RpcServer:
                 logger.error(f"Request {client_request} got error: {error}")
                 response = {'error': {'code': -1, 'message': error}}
                 if request_id is not None:
-                    response['id'] = client_request.get('id')
+                    response['id'] = request_id
             elif request_id is not None:
-                response = {'result': result, 'id': client_request.get('id')}
+                response = {'result': result, 'id': request_id}
             else:
                 response = {'result': None}
 

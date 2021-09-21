@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+# Bash Script output rules
+# Output to both console and logfile:     "$ command | tee /dev/fd/3"
+# Output to console only                  "$ command 1>&3"
+# Output to logfile only:                 "$ command"
+# No output to both console and logfile:  "$ command > /dev/null"
+
 # Handle language configuration
 export LC_ALL=C
 
@@ -89,7 +96,7 @@ update_os() {
   local time_start=$(date +%s)
 
   echo "Updating Raspberry Pi OS" | tee /dev/fd/3
-  sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade > /dev/null; sudo apt-get -qq -y autoremove > /dev/null
+  sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade; sudo apt-get -qq -y autoremove
 
   calc_runtime_and_print time_start $(date +%s)
   echo "DONE: update_os"
@@ -114,7 +121,7 @@ install_jukebox_dependencies() {
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
-    --allow-change-held-packages > /dev/null
+    --allow-change-held-packages
 
   # Install Python
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
@@ -128,7 +135,7 @@ install_jukebox_dependencies() {
     sudo npm update --silent -g
   else
     echo "  Install NodeJS"
-    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - > /dev/null
+    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g npm serve
   fi
@@ -210,7 +217,7 @@ install_jukebox() {
 }
 
 # Samba configuration settings
-configure_samba() {
+setup_samba() {
   local SMB_CONF="/etc/samba/smb.conf"
   local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
@@ -243,7 +250,7 @@ EOF
     sudo chmod 644 $SMB_CONF
   fi
 
-  echo "DONE: configure_samba"
+  echo "DONE: setup_samba"
 }
 
 register_jukebox_settings() {
@@ -254,6 +261,7 @@ register_jukebox_settings() {
   # Ask for Jukebox hostname to replace raspberry.local
 
   cp -f ${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml ${SETTINGS_PATH}/jukebox.yaml
+  cp -f ${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml ${SETTINGS_PATH}/logger.yaml
 
   echo "DONE: register_jukebox_settings"
 }
@@ -300,7 +308,16 @@ register_system_services() {
   echo "DONE: register_system_services"
 }
 
-setup_kiosk_mode() {
+install_rfid_reader() {
+  local time_start=$(date +%s)
+
+  python3 ${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py | tee /dev/fd/3
+
+  calc_runtime_and_print time_start $(date +%s)
+  echo "DONE: install_rfid_reader"
+}
+
+install_kiosk_mode() {
   local time_start=$(date +%s)
 
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then
@@ -461,8 +478,10 @@ Installation complete!
 In order to start, you need to reboot your Raspberry Pi.
 Your SSH connection will disconnect.
 
-After the reboot, open http://raspberrypi.local in a browser
-to get started. Don't forget to upload files via Samba.
+After the reboot, open either http://raspberrypi.local
+(for Mac / iOS) or http://raspberrypi (for Android / Windows)
+in a browser to get started. Don't forget to upload files
+via Samba.
 
 Do you want to reboot now? [Y/n]" 1>&3
 
@@ -488,11 +507,12 @@ install() {
   set_raspi_config
   # update_os
   install_jukebox_dependencies
-  configure_samba
+  setup_samba
   install_jukebox
   register_jukebox_settings
   register_system_services
-  setup_kiosk_mode
+  install_rfid_reader
+  install_kiosk_mode
   optimize_boot_time
   cleanup
 

@@ -46,7 +46,7 @@ playermpd:
     check_user_rights: true
   mpd_conf: /etc/mpd.conf
 alsaif:
-  mixer: Master
+  mixer: Headphone
 alsawave:
   device: default
 rpc:

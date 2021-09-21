@@ -5,18 +5,26 @@ import PlayerContext from './context';
 import { initSockets, socketRequest } from '../../sockets';
 
 const PlayerProvider = ({ children }) => {
-  const postJukeboxCommand = async (_package, method, kwargs) => {
+  const postJukeboxCommand = async (_package, plugin, method, kwargs) => {
     setState({ ...state, requestInFlight: true });
 
-    const { status } = await socketRequest(_package, method, kwargs);
+    try {
+      const { status } = await socketRequest(_package, plugin, method, kwargs);
 
-    if(!status) {
-      // TODO: Implement error handling as this shouldn't happen
-      setState({ ...state, playerstatus: DEFAULT_PLAYER_STATUS });
+      if(!status) {
+        // TODO: Implement error handling as this shouldn't happen
+        setState({ ...state, playerstatus: DEFAULT_PLAYER_STATUS });
+      }
+
+      setState({ ...state, playerstatus: status });
+      setState({ ...state, requestInFlight: false });
+
+      return Promise.resolve();
     }
-
-    setState({ ...state, playerstatus: status });
-    setState({ ...state, requestInFlight: false });
+    catch(error) {
+      setState({ ...state, requestInFlight: false });
+      return Promise.reject(error);
+    }
   }
 
   const [state, setState] = useState({
@@ -51,46 +59,46 @@ const PlayerProvider = ({ children }) => {
     const kwargs = method === 'playlistaddplay' ? { folder: directory } : {};
 
     setState({ ...state, isPlaying: true });
-    postJukeboxCommand('player', method, kwargs);
+    postJukeboxCommand('player', 'ctrl', method, kwargs);
   };
 
   const pause = () => {
     if (state.requestInFlight) return;
 
     setState({ ...state, isPlaying: false });
-    postJukeboxCommand('player', 'pause');
+    postJukeboxCommand('player', 'ctrl', 'pause');
   };
 
   const previous = () => {
     if (state.requestInFlight) return;
 
     setState({ ...state, isPlaying: true });
-    postJukeboxCommand('player', 'prev');
+    postJukeboxCommand('player', 'ctrl', 'prev');
   };
 
   const next = () => {
     if (state.requestInFlight) return;
 
     setState({ ...state, isPlaying: true });
-    postJukeboxCommand('player', 'next');
+    postJukeboxCommand('player', 'ctrl', 'next');
   };
 
   const seek = (new_time) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('player', 'seek', { new_time: new_time.toFixed(3) });
+    postJukeboxCommand('player', 'ctrl', 'seek', { new_time: new_time.toFixed(3) });
   }
 
   const setVolume = (volume) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('volume', 'set_volume', { volume });
+    postJukeboxCommand('volume', 'ctrl', 'set_volume', { volume });
   }
 
   const toggleMuteVolume = (mute_on) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('volume', 'mute', { mute_on });
+    postJukeboxCommand('volume', 'ctrl', 'mute', { mute_on });
   }
 
   const repeat = (repeat, single) => {
@@ -100,13 +108,13 @@ const PlayerProvider = ({ children }) => {
     if (!repeat && !single) mode = 'repeat';
     if (repeat && !single) mode = 'single';
 
-    postJukeboxCommand('player', 'repeatmode', { mode });
+    postJukeboxCommand('player', 'ctrl', 'repeatmode', { mode });
   }
 
   const shuffle = (random) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('player', 'shuffle', { random });
+    postJukeboxCommand('player', 'ctrl', 'shuffle', { random });
   }
 
   // Initialize sockets for player context

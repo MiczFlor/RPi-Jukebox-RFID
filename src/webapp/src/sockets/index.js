@@ -24,7 +24,7 @@ const initSockets = ({ setState }) => {
 };
 
 // const socketRequest = (payload) => (
-const socketRequest = (_package, method, kwargs, plugin = 'ctrl') => (
+const socketRequest = (_package, plugin, method, kwargs) => (
   new Promise((resolve, reject) => {
     const requestId = uuidv4();
 
