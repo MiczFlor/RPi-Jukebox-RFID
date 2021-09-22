@@ -744,7 +744,13 @@ case $COMMAND in
         then
 	       /bin/sleep $VALUE
         fi
-        mpc pause
+        PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+        # Only pause when currently playing
+        # Otherwise mpc might go from "stopped" back to "pause", causing inconsitency as there is nothing to "resume"
+        if [ "$PLAYSTATE" == "play" ]
+        then
+            mpc pause
+        fi
         ;;
     playerplay)
         # play / resume current track
