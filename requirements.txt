@@ -19,3 +19,4 @@ python_mpd2
 # RPi.GPIO
 ruamel.yaml
 # smbus
+tornado

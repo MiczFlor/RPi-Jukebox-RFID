@@ -215,6 +215,9 @@ _PLUGINS: Dict[str, PluginPackageClass] = {}
 # (with their python module name and the loaded_as package name)
 # Maps loaded_from -> loaded_as
 _PACKAGE_MAP: Dict[str, str] = {}
+# Container for all packages with attempted load but failed to load error free
+# Could be during import (package will no be available) or during initialize (package available but not initialized)
+_PLUGINS_FAILED: Dict[str, PluginPackageClass] = {}
 
 
 def _deduce_package_origin(obj: Any) -> Union[str, None]:
@@ -544,12 +547,18 @@ def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = No
         # Clear the failed plugin registration
         _PLUGINS.__delitem__(load_as)
         _PACKAGE_MAP.__delitem__(package)
+        # Store attempted but failed loads for later reference
+        _PLUGINS_FAILED[load_as] = PluginPackageClass(package)
         logger.error(f"Failed to load package: {package}")
         raise e
 
     for func in _PLUGINS[load_as].initializer:
         logger.debug(f"Package load initializer: calling {load_as}.{func.__name__}()")
-        func()
+        try:
+            func()
+        except Exception as e:
+            _PLUGINS_FAILED[load_as] = PluginPackageClass(package)
+            raise e
 
 
 def load_all_named(packages_named: Mapping[str, str], prefix: Optional[str] = None, ignore_errors=False):
@@ -778,7 +787,9 @@ def loaded_as(module_name: str) -> str:
 
 
 def delete(package: str, plugin: Optional[str] = None, ignore_errors=False):
-    """Delete a plugin object from the registered plugs callables"""
+    """Delete a plugin object from the registered plugs callables
+
+    Note: This does not 'unload' the python module. It merely makes it un-callable via plugs!"""
     if exists(package, plugin):
         if plugin is None:
             _PACKAGE_MAP.__delitem__(_PLUGINS[package].loaded_from)
@@ -816,3 +827,52 @@ def dump_plugins(stream):
                 print("", file=stream)
         print("", file=stream)
     print('*' * width, file=stream)
+
+
+def summarize():
+    sum = {}
+    for package, plugins in _PLUGINS.items():
+        for name, obj in _PLUGINS[package].plugins.items():
+            description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+            if callable(obj):
+                sign = f"{inspect.signature(obj)}"
+                fullname = f"{package}.{name}"
+                entry = {'package': package,
+                         'plugin': name,
+                         'signature': sign,
+                         'description': description}
+                sum[fullname] = entry
+            else:
+                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                    if hasattr(fobj, 'plugs_callable'):
+                        description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                        sign = f"{fname}{inspect.signature(fobj)}"
+                        fullname = f"{package}.{name}.{fname}"
+                        entry = {'package': package,
+                                 'plugin': name,
+                                 'method': fname,
+                                 'signature': sign,
+                                 'description': description}
+                        sum[fullname] = entry
+    return sum
+
+
+def get_all_loaded_packages():
+    """Report a short summary of all loaded packages
+
+    Format {loaded_as: loaded_from}"""
+    return {k: _PLUGINS[k].loaded_from for k in _PLUGINS.keys()}
+
+
+def get_all_failed_packages():
+    """Report a packages that did not load error free
+
+    Note: Package could fail to load
+    - altogether: these package are not registered
+    - partially: during initializer, finalizer functions: The package is loaded, but the function did not execute error-free
+
+    Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
+
+    Format {loaded_as: loaded_from}"""
+    return {k: _PLUGINS_FAILED[k].loaded_from for k in _PLUGINS_FAILED.keys()}

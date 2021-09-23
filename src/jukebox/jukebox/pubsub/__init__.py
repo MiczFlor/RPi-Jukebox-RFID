@@ -12,8 +12,8 @@ class _PubSubBuilder:
         return self._instance
 
 
-_pubsubbuilder = _PubSubBuilder()
-
-
-def get_publisher():
-    return _pubsubbuilder()
+# _pubsubbuilder: = _PubSubBuilder()
+#
+#
+# def get_publisher():
+#     return _pubsubbuilder()

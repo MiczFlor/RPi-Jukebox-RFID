@@ -33,22 +33,42 @@ handlers:
     backupCount: 2
     encoding: utf8
     mode: w
+  publisher:
+    # Publishes logging messages via the PublishServer
+    "()": misc.loggingext.PubStreamHandler
+    level: WARNING
+    formatter: base
 filters:
   colorize:
     # This filter adds all colors from simplecolors by using %(colorname)c or {colorname} in formatter string
-    # It also adds the keyword {levelnameColored} which auto-colores the levelname depending on severity
+    # It also adds the keyword {levelnameColored} which auto-colors the levelname depending on severity
     "()": misc.loggingext.ColorFilter
     enable: True
     color_levelname: True
 loggers:
   jb:
     level: DEBUG
-    handlers: [console, debug_file_handler, error_file_handler]
-    propagate: no
+    # handlers: [console, debug_file_handler, error_file_handler]
+    handlers: [console, publisher]
+     # handlers: [console]
+    propagate: false
   jb.daemon:
     level: DEBUG
   jb.plugin.call:
-    level: ERROR
+    level: DEBUG
+  jb.pub.server:
+    level: DEBUG
+    # In case you recursion problems, make sure this logger does not go to the publisher
+    # propagate: false
+    # handlers: [console]
+  tornado:
+    level: DEBUG
+    handlers: [console]
+    propagate: false
+  mpd:
+    level: WARNING
+    handlers: [console]
+    propagate: false
 root:
   level: DEBUG
-#  handlers: [console]
+  handlers: [console]
