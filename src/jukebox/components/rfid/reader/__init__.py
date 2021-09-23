@@ -206,7 +206,6 @@ class ReaderRunner(threading.Thread):
 @plugs.finalize
 def finalize():
     jukebox.cfghandler.load_yaml(cfg_rfid, cfg_main.getn('rfid', 'reader_config'))
-    load_card_database(cfg_main.getn('rfid', 'card_database'))
 
     # Pin Action Thread
     # TODO: Change to factory pattern?
