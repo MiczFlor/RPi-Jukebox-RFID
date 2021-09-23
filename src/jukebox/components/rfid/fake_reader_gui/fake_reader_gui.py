@@ -128,13 +128,6 @@ class ReaderClass(ReaderBaseClass):
         # self._btn_database.pack(side='top', padx=default_padx, pady=default_pady, anchor='w')
 
         # Frame 1
-        card_ids = cfg_cards.keys()
-        try:
-            card_id_init = card_ids.__iter__().__next__()
-        except StopIteration:
-            card_id_init = ""
-        self._menu_rfid_value = tk.StringVar()
-
         # Using Menubutton to separate value and show different label
         # https://www.pythontutorial.net/tkinter/tkinter-menubutton/
         # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Menubutton.html
@@ -144,11 +137,20 @@ class ReaderClass(ReaderBaseClass):
         self._menu = tk.Menu(self._menu_btn, tearoff=0,
                              background='gray96', relief=tk.FLAT,
                              activeborderwidth=0, borderwidth=0)
-        id_max_len = max(4, functools.reduce(lambda x, y: max(x, len(y)), card_ids, 0))
-        for c in card_ids:
-            self._menu.add_radiobutton(value=c, label=f"{c:>{id_max_len}}: {card_to_str(c)}",
-                                       variable=self._menu_var,
-                                       font='TkFixedFont')
+
+        with cfg_cards:
+            card_ids = cfg_cards.keys()
+            try:
+                card_id_init = card_ids.__iter__().__next__()
+            except StopIteration:
+                card_id_init = ""
+            self._menu_rfid_value = tk.StringVar()
+
+            id_max_len = max(4, functools.reduce(lambda x, y: max(x, len(y)), card_ids, 0))
+            for c in card_ids:
+                self._menu.add_radiobutton(value=c, label=f"{c:>{id_max_len}}: {card_to_str(c)[0]}",
+                                           variable=self._menu_var,
+                                           font='TkFixedFont')
         self._menu.add_radiobutton(value='DEAD', label=f"{'DEAD':>{id_max_len}}: Unknown Card ID",
                                    variable=self._menu_var,
                                    font='TkFixedFont')
@@ -221,9 +223,9 @@ class ReaderClass(ReaderBaseClass):
 
     def _menu_rfid_callback2(self, *args):
         self._card_id = self._menu_var.get()
-        readable = card_to_str(self._card_id, long=True, multiline=True)
+        readable = '\n'.join(card_to_str(self._card_id, long=True))
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f"Selected card command: {card_to_str(self._card_id, long=True, multiline=False)}")
+            logger.debug(f"Selected card command: {' / '.join(card_to_str(self._card_id, long=True))}")
         self._lab_card_id['text'] = f"ID: '{self._menu_var.get()}'\n{readable}"
 
     def _btn_trigger_callback(self):

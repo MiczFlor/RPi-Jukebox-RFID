@@ -6,8 +6,10 @@ import functools
 import jukebox.plugs as plugs
 import jukebox.cfghandler
 import jukebox.utils as utils
+import jukebox.publishing as publishing
 from components.rfid.cardactions import (qs_action_place, qs_action_remove)
 from components.rfid.cardutils import (decode_card_action, dump_card_action_reference)
+from components.rfid.cards import (load_card_database, save_card_database)
 
 
 log = logging.getLogger('jb.rfid')
@@ -66,15 +68,20 @@ class ReaderRunner(threading.Thread):
         self._reader_module = importlib.import_module('components.rfid.' + reader_type + '.' + reader_type, 'pkg.subpkg')
         self._reader = None
         # Get additional configuration
-        self._cfg_same_id_delay = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key, 'same_id_delay', value=1.0)
-        self._cfg_place_not_swipe = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key, 'place_not_swipe', 'enabled', value=False)
-        self._cfg_log_ignored_cards = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key, 'log_ignored_cards', value=False)
+        self._cfg_same_id_delay = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key,
+                                                       'same_id_delay', value=1.0)
+        self._cfg_place_not_swipe = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key,
+                                                         'place_not_swipe', 'enabled', value=False)
+        self._cfg_log_ignored_cards = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key,
+                                                           'log_ignored_cards', value=False)
         # Get removal actions:
-        cfg_removal_action = cfg_rfid.getn('rfid', 'readers', reader_cfg_key, 'place_not_swipe', 'card_removal_action', default=None)
+        cfg_removal_action = cfg_rfid.getn('rfid', 'readers', reader_cfg_key,
+                                           'place_not_swipe', 'card_removal_action', default=None)
         self._default_removal_action = utils.decode_action(cfg_removal_action, qs_action_remove, self._logger)
 
         if self._cfg_place_not_swipe is True and self._default_removal_action is None:
-            self._logger.warning('Option place_not_swipe activated, but no card removal action specified. Ignoring place_place_not_swipe')
+            self._logger.warning('Option place_not_swipe activated, but no card removal action specified. '
+                                 'Ignoring place_place_not_swipe')
             self._cfg_place_not_swipe = False
         self._timer_thread = None
         if self._cfg_place_not_swipe:
@@ -84,6 +91,8 @@ class ReaderRunner(threading.Thread):
             self._timer_thread.daemon = True
             self._timer_thread.name = f"{reader_cfg_key}CRemover"
             self._timer_thread.start()
+        self.publisher = None
+        self.topic = f"{plugs.loaded_as(__name__)}.card_id"
         # Ready to go
         self._cancel = threading.Event()
 
@@ -97,6 +106,7 @@ class ReaderRunner(threading.Thread):
         # Do it here, such that the reader class is initialized and destroyed in the
         # actual reader thread
         self._reader = self._reader_module.ReaderClass(self._reader_cfg_key)
+        self.publisher = publishing.get_publisher()
         # Previous ID is only stored to prevent repetitive triggers of the same card in case of place-not-swipe scenarios
         # For command card there is an exception (see below)
         previous_id = ''
@@ -140,6 +150,7 @@ class ReaderRunner(threading.Thread):
                         valid_for_removal_action = False
 
                         # (3) Check if this card is in the card database
+                        # TODO: This card config read is not thread safe
                         card_entry = cfg_cards.get(card_id, default=None)
                         if card_entry is not None:
 
@@ -147,7 +158,7 @@ class ReaderRunner(threading.Thread):
                             card_action = decode_card_action(card_entry, qs_action_place, self._logger)
 
                             # (5) Send status update to PubSub
-                            # TODO
+                            self.publisher.send(self.topic, card_id)
 
                             if card_action is not None:
                                 # (6) Override card individual parameters
@@ -165,9 +176,9 @@ class ReaderRunner(threading.Thread):
                                         self._timer_thread.trigger.set()
 
                                 # (7) Finally trigger action
-                                #     Option A) plugs.call_ignore_errors() --> it is thread safe! But it blocks - there is no Queue!
-                                #     Option B) Through the RPC client. A little overhead but uses the same communication channel
-                                #               as external IFs
+                                #     Option A) plugs.call_ignore_errors(): it is thread safe but blocks, there is no Queue!
+                                #     Option B) Through the RPC client. A little overhead but uses the same
+                                #               communication channel as external IFs
                                 # Retrieve card_action parameters always with default to be error-safe in case of
                                 # dodgy cards database entry
                                 # TODO: This call happens from the reader thread, which is not necessarily what we want ...
@@ -177,6 +188,7 @@ class ReaderRunner(threading.Thread):
 
                         else:
                             self._logger.info(f"Unknown card: '{card_id}'.")
+                            self.publisher(card_id)
                     elif self._cfg_log_ignored_cards:
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
                     previous_time = time.time()
@@ -189,27 +201,6 @@ class ReaderRunner(threading.Thread):
                     self._timer_thread.trigger.clear()
 
         self._logger.debug("Stop listening!")
-
-
-def load_card_database(filename):
-    try:
-        jukebox.cfghandler.load_yaml(cfg_cards, filename)
-    except FileNotFoundError:
-        cfg_cards.config_dict({})
-        log.error(f"Empty card database: Could not open file: {filename}")
-
-    # Check type of keys (all of them)
-    illegal_cards = [x for x in cfg_cards.keys() if not isinstance(x, str)]
-    if len(illegal_cards) > 0:
-        log.error(f"Found non-string card ID entries! Ignoring the following cards IDs: {illegal_cards}")
-        # TODO: Further checks for illegal entries?
-
-
-def save_card_database(filename=None, *, only_if_changed=True):
-    """Store the current card database. If filename is None, it is saved back to the file it was loaded from"""
-    if filename is None:
-        filename = cfg_rfid.loaded_from
-    jukebox.cfghandler.write_yaml(cfg_rfid, filename, only_if_changed=only_if_changed)
 
 
 @plugs.finalize

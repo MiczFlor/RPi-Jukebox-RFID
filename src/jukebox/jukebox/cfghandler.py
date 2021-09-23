@@ -138,6 +138,11 @@ class ConfigHandler:
         # Locking here will only help in the rarest of cases (because of mutable objects) and suggests false safety
         self._data[key] = value
 
+    def __delitem__(self, *args, **kwargs):
+        # We rely on calling function to properly lock before writing
+        # Locking here will only help in the rarest of cases (because of mutable objects) and suggests false safety
+        self._data.__delitem__(*args, **kwargs)
+
     def get(self, key, *, default=None):
         """
         Enforce keyword on default to avoid accidental misuse when actually getn is wanted
@@ -234,6 +239,24 @@ class ConfigHandler:
         with self._lock:
             self._hash = hashlib.md5(self._data.__str__().encode('utf8')).digest()
 
+    def save(self, only_if_changed=False):
+        """Save config back to the file it was loaded from
+
+        If you want to save to a different file, use write_yaml()!
+
+        Developers note: Only YAML supported for now.
+        If so inclined somebody may implement a FactoryPattern"""
+        with self._lock:
+            write_yaml(self, self._loaded_from, only_if_changed=only_if_changed)
+            self.clear_modified()
+
+    def load(self, filename):
+        """Load config file into memory
+
+        Developers note: Only YAML supported for now.
+        If so inclined somebody may implement a FactoryPattern"""
+        load_yaml(self, filename)
+
 
 # ---------------------------------------------------------------------------
 # Pre-defined file I/O for yaml
@@ -249,9 +272,10 @@ def load_yaml(cfg, filename) -> None:
     """
     yaml = YAML(typ='rt')
     logger.info(f"({cfg.name}) Loading yaml file '{filename}'")
-    cfg.loaded_from = filename
-    with open(filename) as stream:
-        cfg.config_dict(yaml.load(stream))
+    with cfg:
+        cfg.loaded_from = filename
+        with open(filename) as stream:
+            cfg.config_dict(yaml.load(stream))
 
 
 def write_yaml(cfg, filename, only_if_changed=False, *args, **kwargs) -> None:

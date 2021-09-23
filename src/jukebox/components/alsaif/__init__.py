@@ -1,4 +1,9 @@
-"""ALSA Volume Control Plugin Package for volume.VolumeFactory"""
+"""ALSA Volume Control Plugin Package for volume.VolumeFactory
+
+References:
+https://larsimmisch.github.io/pyalsaaudio/index.html
+https://github.com/larsimmisch/pyalsaaudio/
+"""
 import alsaaudio
 import logging
 import jukebox.cfghandler
@@ -40,6 +45,7 @@ class AlsaCtrl:
     @plugin.tag
     def mute(self, mute_on=True):
         logger.debug(f"Set Mute = {mute_on}")
+        # TODO: try-block as not all mixers have mute capability
         self.mixer.setmute(1 if mute_on else 0)
 
     @plugin.tag

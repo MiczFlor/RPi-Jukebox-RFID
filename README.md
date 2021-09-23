@@ -4,18 +4,20 @@
 A complete re-write of the Jukebox
 
 ### Why?
+
 - better maintainability
-- clear architecture allowing easier add-on and new feature
-- higher performance especially on lower end Hardware
+- better observability for debugging 
+- clear architecture allowing easier integration of new feature
+- higher performance especially on lower end hardware
 
 ### How?
 
 - Jukebox core is a holistic Python3-only application 
-    - Avoid shell script invocation during runtime wherever possible
-- Establish a socket based API (using libzeromq) toward the WebUI
+- Avoid shell script invocation during runtime wherever possible
+- Establish a socket based API (using ZeroMQ) toward the WebUI
 - Implement a Remote-Procedure-Call (RPC) Server through which all user function call pass  
 - Implement a plugin-concept to dynamically load additional Python Module for easy extendability 
-    - In conjunction with the RPC this is a neat way of allwing addional feature without having to touch the core all the time
+- In conjunction with the RPC this is a neat way of allowing additional feature without having to touch the core all the time
 
 ### Where are we?
 
@@ -39,13 +41,34 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [X] Host interface (shutdown, reboot)
 - [X] Temperature getter / publisher
 - [ ] is_throttled getter / publisher
-- [ ] Version number getter
-- [ ] Exit through RPC
+- [ ] Version number getter / Git Hash
+- [ ] Exit via RPC
+- [ ] Service restart via RPC 
+  - [ ] Check if really running as a service (systemctl show --property MainPID --value mpd)
 - [ ] Storage space getter / publisher (shutil.disk_usage)
+- [ ] Getter for error logs to show in WebUI
+    - Get file location from FileHandlers (files may be stale!)
+- [ ] Enable/Disable debug logging from RPC  
+- [X] Publisher of errors (specialized logger handler)
+  - This is a configurable logger handler in logger.yaml
+- [ ] Basic Logging Config should enable Publisher stream handler
+- [ ] Disable Console Stream Handler (or set to warning) when running as a service  
+- [ ] Log & publish start time
+
+**Via RPC**
+  - [X] List of loaded / failed plugins
+  - [X] card action reference
+  - [X] Help command (available commands)
+      - which basically is a plugin reference
 
 **Config handler**
 - [ ] While saving config to disk: local file change detection
 - [ ] cfghandler creates setndefault() at arbitrary depth
+
+**0MQ Publisher**
+- [X] Last Value Cache
+- [X] Subscriber detection and initial status update
+- [X] Port configuration option (WS und/oder TCP)
 
 **WebUI**
 - [X] Playback Control
@@ -69,6 +92,12 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
     - Rename to random, as this is mpc random
   - [ ] Loop: Loop playlist 
 
+**MPD Player**
+- [ ] Thread safety for status information / configuration
+- [ ] Differential status post
+- [ ] Second swipe option setter via RPC
+- [ ] Volume publisher for ALSA / MPD switchable
+
 **RFID**
 - [X] Test with Reader disabled 
 - [X] Start-up behaviour with un-configured Reader
@@ -86,7 +115,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
     - [ ] PC/SC Cards
     - [X] Multi-reader support
     - [X] GUI Fake Reader for Development
-- [ ] Publish RFID Card ID via PubSub
+- [x] Publish RFID Card ID via PubSub
   - Needs to be thread safe
 - [X] Second Swipe Options -> must be part of player control
     - Freely configurable with an RPC call
@@ -98,7 +127,17 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
     - [ ] Port all previous card commands
     - [X] Reference file write-out
       - [ ] Improve readability
-    - [ ] Card reference IF via RPC (?)
+    - [X] Card reference IF via RPC (?)
+    - [ ] Export available quick selects commands to RPC
+
+**Cards**
+- [ ] Write a simplified card summary to 
+  - [ ] file
+  - [x] RPC
+- [ ] Card assignment function for WebUI
+  - [X] Via Quick select
+  - [ ] Full custom RPC call
+- [X] Remove card
 
 **Timer**
 - [ ] Idle timer
@@ -107,7 +146,8 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [X] Shutdown timer volume reduction
     - Decreases volume every x min until zero, then shuts down
     - Needs to be cancelable
-- [ ] Publish mechanism of timer status    
+- [X] Publish mechanism of timer status    
+- [ ] Make timer settings persistent
 
 
 **Installation**
@@ -115,6 +155,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [ ] Query for settings vs. automatic version, e.g.
     - before overwriting MPD config (i.e. for re-installs)
     - static IP
+    - ALSA Mixer interface
 - [ ] IPQoS in SSH config   
 - [ ] Separate static IP and IPv6 disable
     
@@ -130,7 +171,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
   - Function call routines need replacing to do RPC Calls
   - Configuration format probably best changed to YAML  
 - [ ] Status LED probably needs re-writing to benefit fully from plugin structure 
-- [ ] USB Buttons
+- [ ] USB Buttons: It's a different category as it works similar to the RFID cards
 
 **WLAN**
 - [ ] Ad-hoc WLAN Hot spot
@@ -149,6 +190,11 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [X] mpc update / (mpc rescan)
 - [ ] sudo iwconfig wlan0 power off (need to be done after every restart)
 - [ ] Optional power down HDMI circuits: /usr/bin/tvservice -o
+
+**Debug Tools**
+- [X] Publishing Sniffer
+- [X] RPC command line client
+  - with tab-completion and history
 
 ### Architecture
 The Fundamental Architecture looks like:

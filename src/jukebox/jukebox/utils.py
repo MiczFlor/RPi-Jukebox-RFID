@@ -1,4 +1,5 @@
 import logging
+import copy
 from typing import (Dict, Mapping)
 
 log = logging.getLogger('jb.utils')
@@ -10,12 +11,15 @@ def decode_rpc_call(cfg_action: Dict):
     Important: Leaves all other parameters in cfg_action untouched or later downstream processing!"""
     if cfg_action is None:
         return None
-    cfg_action.setdefault('package', 'package_not_specified')
-    cfg_action.setdefault('plugin', 'plugin_not_specified'),
-    cfg_action.setdefault('method', None),
-    cfg_action.setdefault('args', None),
-    cfg_action.setdefault('kwargs', None)
-    return cfg_action
+    # We need a deep copy here, since we do not want to modify the source
+    # The source could have unset keys on purpose, or be an (incomplete) template for different RPC actions
+    ret_action = copy.deepcopy(cfg_action)
+    ret_action.setdefault('package', 'package_not_specified')
+    ret_action.setdefault('plugin', 'plugin_not_specified'),
+    ret_action.setdefault('method', None),
+    ret_action.setdefault('args', None),
+    ret_action.setdefault('kwargs', None)
+    return ret_action
 
 
 def decode_action(cfg_action, quick_select_dict=None, logger=log):
@@ -48,7 +52,7 @@ def decode_action(cfg_action, quick_select_dict=None, logger=log):
     return action
 
 
-def action_to_str(action: Mapping) -> str:
+def action_to_str(action: Mapping, with_args=True) -> str:
     package = action.get('package', '?')
     plugin = action.get('plugin', '?')
     method = action.get('method', None)
@@ -77,5 +81,8 @@ def action_to_str(action: Mapping) -> str:
         kwargs_str = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
         if args is not None:
             separator = ", "
-    readable = f"{package}.{plugin}{method_str}({args_str}{separator}{kwargs_str})"
+    if with_args:
+        readable = f"{package}.{plugin}{method_str}({args_str}{separator}{kwargs_str})"
+    else:
+        readable = f"{package}.{plugin}{method_str}"
     return readable

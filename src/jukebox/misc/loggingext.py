@@ -33,6 +33,7 @@ There can be multiple loggers per module, e.g. for special classes, to further c
 import sys
 import logging
 import logging.config
+import jukebox.publishing as publishing
 import misc.simplecolors as sc
 from ruamel.yaml import YAML
 
@@ -113,3 +114,49 @@ class ColorFilter(logging.Filter):
                 record.__setattr__(color, '')
             record.levelnameColored = record.levelname
         return True
+
+# Add an output options to the PubSub
+# Options
+# (1) Custom StreamHandler: logging.StreamHandler (subclass and overwrite)
+# (2) Better: Pass a custom stream class to StreamHandler
+# https://stackoverflow.com/questions/5558622/creating-a-stream-class-in-python
+
+
+class PubStream:
+    """"
+    Stream handler wrapper around the publisher for logging.StreamHandler
+
+    Allows logging to send all log information (based on logging configuration)
+    to the Publisher.
+
+    ATTENTION: This can lead to recursions!
+
+    Recursions come up when
+    (a) Publish.send / PublishServer.send also emits logs, which cause a another send, which emits a log,
+        which causes a send, .....
+    (b) Publisher initialization emits logs, which need a Publisher instance to send logs
+
+    IMPORTANT: To avoid endless recursions: The creation of a Publisher MUST NOT generate any log messages! Nor any of the
+    functions in the send-function stack!
+    """
+    def __init__(self):
+        self._topic = 'core.logger'
+        self._message = ''
+
+    def flush(self):
+        publishing.get_publisher().send(self._topic, self._message.strip('\n '))
+        self._message = ''
+
+    def write(self, msg):
+        self._message += msg
+
+
+class PubStreamHandler(logging.StreamHandler):
+    """Wrapper for logging.StreamHandler with stream = PubStream
+
+    This serves one purpose: In logger.yaml custom handlers
+    can be configured (which are automatically instantiated).
+    Using this Handler, we can output to PubStream whithout
+    support code to instantiate PubStream keeping this file generic"""
+    def __init__(self):
+        super().__init__(PubStream())
