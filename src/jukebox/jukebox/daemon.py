@@ -8,6 +8,7 @@ import logging
 import time
 
 import jukebox.plugs as plugin
+import jukebox.publishing as publishing
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
 
@@ -123,6 +124,18 @@ class JukeBox:
         plugin.load_all_unnamed(plugins_other, prefix='components', ignore_errors=True)
         plugin.load_all_finalize(ignore_errors=True)
 
+        pack_ok = plugin.call_ignore_errors('misc', 'get_all_loaded_packages')
+        pack_error = plugin.call_ignore_errors('misc', 'get_all_failed_packages')
+        logger.info(f"Loaded plugins: {', '.join(pack_ok)}")
+        if len(pack_error) > 0:
+            logger.error(f"Plugins with errors during load: {', '.join(pack_error)}")
+        publishing.get_publisher().send('core.plugins.loaded', pack_ok)
+        publishing.get_publisher().send('core.plugins.error', pack_error)
+
+        # ps = plugin.summarize()
+        # for k, v in ps.items():
+        #     print(f"{k}: {v}")
+
         # Initial testing code:
         # print(f"Callables = {plugin._PLUGINS}")
         # print(f"{plugin.modules['volume'].factory.list()}")
@@ -132,9 +145,50 @@ class JukeBox:
         # plugin.modules['volume'].factory.set_active("alsa2")
         # print(f"Callables = {plugin.callables}")
 
+        # cfg_cards = jukebox.cfghandler.get_handler('cards')
+        #
+        # from components.rfid.cardutils import (card_to_str)
+        # logger.debug(f"Selected card command: {' / '.join(card_to_str('V', long=True))}")
+        # logger.debug(f"Selected card command: {' / '.join(card_to_str('new', long=True))}")
+        #
+        # print(f"\n\n{cfg_cards._data}")
+        # cl = plugin.call_ignore_errors('cards', 'list_cards')
+        # print(f"\n\n{cfg_cards._data}")
+        #
+        # logger.debug(f"Selected card command: {' / '.join(card_to_str('V', long=True))}")
+        # logger.debug(f"Selected card command: {' / '.join(card_to_str('new', long=True))}")
+
+        # for k, v in cl.items():
+        #     print(f"{k}: {v}")
+        # time.sleep(1)
+        # plugin.call_ignore_errors('cards', 'register_card', args=['new', 'inc_volume'], kwargs={'args': [15],
+        #                                                                                         'ignore_same_id_delay': True,
+        #                                                                                         'overwrite': True})
+        #
+        # time.sleep(1)
+        # plugin.call_ignore_errors('cards', 'delete_card', args=['1', False])
+        # cl = plugin.call_ignore_errors('cards', 'list_cards', )
+        # for k, v in cl.items():
+        #     print(f"{k}: {v}")
+
         # Testcode for timers
-        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'start', args=[3])
+        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'start', args=[10])
+        # time.sleep(2)
+        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'trigger')
+        # plugin.call_ignore_errors('timers', 'timer_shutdown', 'cancel')
         # plugin.call_ignore_errors('timers', 'timer_fade_volume', 'start', args=[4, 2])
+
+        # plugin.call_ignore_errors('host', 'timer_temperature', 'trigger')
+        # time.sleep(1)
+        # plugin.call_ignore_errors('host', 'timer_temperature', 'trigger')
+        # time.sleep(1)
+        # plugin.call_ignore_errors('host', 'timer_temperature', 'trigger')
+        # time.sleep(1)
+        # plugin.call_ignore_errors('host', 'timer_temperature', 'cancel')
+
+        # plugin.call_ignore_errors('publishing', 'republish')
+
+        # plugin.call_ignore_errors('host', 'reboot')
 
         # # initialize gpio
         # # TODO: GPIO not yet integrated

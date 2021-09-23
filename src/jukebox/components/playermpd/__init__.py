@@ -2,6 +2,52 @@
 """
 Package for interfacing with the MPD Music Player Daemon
 
+Status information in three topics
+1) Player Status: published only on change
+  This is a subset of the MPD status (and not the full MPD status) ??
+  - folder
+  - song
+  - volume (volume is published only via player status, and not separatly to avoid too many Threads)
+  - ...
+2) Elapsed time: published every 250 ms, unless constant
+  - elapsed
+3) Folder Config: published only on change
+   This belongs to the folder being played
+   Publish:
+   - random, resume, single, loop
+   On save store this information:
+   Contains the information for resume functionality of each folder
+   - random, resume, single, loop
+   - if resume:
+     - current song, elapsed
+   - what is PLAYSTATUS for?
+   When to save
+   - on stop
+   Angstsave:
+   - on pause (only if box get turned off without proper shutdown - else stop gets implicitly called)
+   - on status change of random, resume, single, loop (for resume omit current status if currently playing- this has now meaning)
+   Load checks:
+   - if resume, but no song, elapsed -> log error and start from the beginning
+
+Status storing:
+  - Folder config for each folder (see above)
+  - Information to restart last folder playback, which is:
+    - last_folder -> folder_on_close
+    - song, elapsed
+    - random, resume, single, loop
+    - if resume is enabled, after start we need to set last_played_folder, such that card swipe is detected as second swipe?!
+      on the other hand: if resume is enabled, this is also saved to folder.config -> and that is checked by play card
+
+Internal status
+  - last played folder: Needed to detect second swipe
+
+
+Saving {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
+'audio_folder_status':
+{'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
+'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
+
+References:
 https://github.com/Mic92/python-mpd2
 https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
 https://mpd.readthedocs.io/en/latest/protocol.html
@@ -18,6 +64,8 @@ import functools
 import jukebox.cfghandler
 import jukebox.utils as utils
 import jukebox.plugs as plugs
+import jukebox.multitimer as multitimer
+import jukebox.publishing as publishing
 from jukebox.NvManager import nv_manager
 import jukebox.pubsub as pubsub
 import misc
@@ -32,7 +80,6 @@ class PlayerMPD:
 
     def __init__(self):
         self.nvm = nv_manager()
-        self.pubsubserver = pubsub.get_publisher()
         self.mpd_host = cfg.getn('playermpd', 'host')
         self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
 
@@ -51,7 +98,6 @@ class PlayerMPD:
         self.connect()
         logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
-        self.music_player_status['player_status'].setdefault('last_played_folder', '')
         self.current_folder_status = {}
         if not self.music_player_status:
             self.music_player_status['player_status'] = {}
@@ -81,7 +127,11 @@ class PlayerMPD:
         self.mpd_status_poll_interval = 0.25
         self.mpd_mutex = threading.Lock()
         self.status_is_closing = False
-        self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+        # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+
+        self.status_thread = multitimer.GenericEndlessTimerClass('mpd.timer_status',
+                                                                 self.mpd_status_poll_interval, self._mpd_status_poll)
+        self.status_thread.start()
 
     def exit(self):
         logger.debug("Exit routine of playermpd started")
@@ -132,7 +182,8 @@ class PlayerMPD:
                     else:
                         ret = mpd_cmd()
                     break
-                except mpd.base.ConnectionError:     # TODO: this is not working properly yet, we are alwas anding up in the Exception!
+                except mpd.base.ConnectionError:
+                    # Maybe now? TODO: this is not working properly yet, we are alwas anding up in the Exception!
                     logger.info(f"MPD Connection Error, retry {retry}")
                     self.connect()
                     retry -= 1
@@ -149,7 +200,7 @@ class PlayerMPD:
                         break
         return ret
 
-    def _mpd_status_poll(self):
+    def _mpd_status_poll(self, **ignored_kwargs):
         """
         this method polls the status from mpd and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
@@ -181,16 +232,13 @@ class PlayerMPD:
         if self.mpd_status.get('file') is not None:
             self.current_folder_status["CURRENTFILENAME"] = self.mpd_status['file']
             self.current_folder_status["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
+            self.current_folder_status["ELAPSED"] = self.mpd_status.get('elapsed', '0.0')
             self.current_folder_status["PLAYSTATUS"] = self.mpd_status['state']
             self.current_folder_status["RESUME"] = "OFF"
             self.current_folder_status["SHUFFLE"] = "OFF"
             self.current_folder_status["LOOP"] = "OFF"
             self.current_folder_status["SINGLE"] = "OFF"
-        # the repetation is intentionally at the end, to avoid overruns in case of delays caused by communication
-        self.pubsubserver.publish('playerstatus', self.mpd_status)
-        if self.status_is_closing is False:
-            self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+        publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     @plugs.tag
     def get_player_type_and_version(self):
@@ -290,14 +338,18 @@ class PlayerMPD:
 
     @plugs.tag
     def play_card(self, folder=None):
-        """Main entry point for trigger playing from RFID reader
+        """Main entry point for trigger music playing from RFID reader
 
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
         accordingly.
 
         Developers notes:
         - 2nd swipe trigger may also happen, if playlist has already stopped playing
+          --> Generally, treat as first swipe
         - 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
+          --> Treat as first swipe
+        - With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
+          placed again on the reader: Should be like first swipe
         - TODO: last_played_folder is restored after box start, so first swipe of last played card may look like second swipe
          """
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
@@ -519,7 +571,7 @@ def initialize():
         logger.error(f"Reason: {e.__class__.__name__}: {e}")
 
     library_check_user_rights = cfg.setndefault('playermpd', 'library', 'check_user_rights', value=True)
-    if library_check_user_rights and audio_folder_path is not None:
+    if library_check_user_rights is True and audio_folder_path is not None:
         logger.info(f"Change user rights for {audio_folder_path}")
         misc.recursive_chmod(audio_folder_path, mode_files=0o666, mode_dirs=0o777)
 

@@ -23,15 +23,17 @@
 # Contributing author(s):
 # - Christian Banz
 
-from jukebox.multitimer import GenericEndlessTimerClass
+import os
 import subprocess
 import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
-from typing import Any
+import jukebox.publishing
+from jukebox.multitimer import GenericEndlessTimerClass
 
 # This is a slightly dirty way of checking if we are on an RPi
 # JukeBox installs the dependency RPI which has no meaning on other machines
+# It could still be installed, though, and this check will be false positive
 try:
     import RPi.gpio as gpio
     IS_RPI = True
@@ -41,6 +43,8 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+# Get the main Thread Publisher
+publisher = jukebox.publishing.get_publisher()
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -56,31 +60,63 @@ except Exception:
 @plugin.register
 def shutdown():
     logger.info('Shutting down host system now')
+    debug_flag = '-k' if IS_DEBUG else ''
+    # ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
+    #                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    # Detach the shell and wait 1 second before command execution
+    # for return value to pass up the RPC call stack.
+    # The return value has no meaning itself, but the RPC call stack should complete correctly
+    # This works on the RPi w/o further authentification, on other machines a systemctl reboot may work better
+    # If authentication is required, the command will simply not execute and time out
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        logger.error(f"{ret.stdout}")
     if not IS_DEBUG:
-        ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        if ret.returncode != 0:
-            logger.error(f"{ret.stdout}")
-    else:
         logger.info('Skipping system command due to debug mode')
 
 
 @plugin.register
 def reboot():
     logger.info('Rebooting down host system now')
-    if not IS_DEBUG:
-        ret = subprocess.run(['sudo', 'reboot'],
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        if ret.returncode != 0:
-            logger.error(f"{ret.stdout}")
+    debug_flag = '-k' if IS_DEBUG else ''
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        logger.error(f"{ret.stdout}")
+    if IS_DEBUG:
+        logger.info('Reboot command executed in debug mode')
+
+
+@plugin.register
+def restart_service():
+    """Restart Jukebox App if running as a service"""
+    ret = subprocess.run('systemctl show --property MainPID --value mpd',
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    msg = ''
+    if ret.returncode != 0:
+        msg = f"Error in finding service PID: {ret.stdout}"
+    elif ret.stdout != os.getpid():
+        msg = "I am not running as a service! Doing nothing"
     else:
-        logger.info('Skipping system command due to debug mode')
+        ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &',
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                             stdin=subprocess.DEVNULL)
+        if ret.returncode != 0:
+            msg = f"Error in restarting service: {ret.stdout}"
+    if not msg:
+        msg = 'Restart service request dispatched successfully to host'
+    logger.error(msg)
+    return msg
 
 
 # ---------------------------------------------------------------------------
 # Temperature
 # ---------------------------------------------------------------------------
-timer_temperature: Any
+timer_temperature: GenericEndlessTimerClass
 
 
 @plugin.register
@@ -101,12 +137,14 @@ def publish_cpu_temperature(**ignored_kwargs):
         temperature = get_cpu_temperature()
     except Exception as e:
         logger.error(f"Error reading temperature. Canceling temperature publisher. {e.__class__.__name__}: {e}")
-        # If there was an error reading the temperature, the is no sense in keepin the timer alive and running
+        # If there was an error reading the temperature, the is no sense in keeping the timer alive and running
         # into the same problem again
         timer_temperature.cancel()
-        temperature = '0.0'
-    # TODO: Send to pubsub
-    logger.debug(f'Publishing Temperature: {temperature}')
+        # Revoke Temperature from publisher
+        publisher.revoke('host.temperature.cpu')
+    else:
+        # May be called from different threads: get thread-correct publisher instance
+        jukebox.publishing.get_publisher().send('host.temperature.cpu', str(temperature))
 
 
 # ---------------------------------------------------------------------------
@@ -140,13 +178,13 @@ def finalize():
     global timer_temperature
     enabled = cfg.setndefault('host', 'publish_temperature', 'enabled', value=True)
     wait_time = cfg.setndefault('host', 'publish_temperature', 'timer_interval_sec', value=5)
-    timer_temperature = GenericEndlessTimerClass(wait_time, publish_cpu_temperature)
+    timer_temperature = GenericEndlessTimerClass('host.timer.cputemp', wait_time, publish_cpu_temperature)
     timer_temperature.__doc__ = "Endless timer for publishing CPU temperature"
-    timer_temperature.name = 'TimeCpuTemp'
     # Note: Since timer_temperature is an instance of a class from a different module,
     # auto-registration would register it with that module. Manually set package to this plugin module
     plugin.register(timer_temperature, name='timer_temperature', package=plugin.loaded_as(__name__))
     if enabled:
+        publish_cpu_temperature()
         timer_temperature.start()
 
 
@@ -171,7 +209,6 @@ if IS_RPI:
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         if ret.returncode != 0:
             logger.error(f"{ret.stdout}")
-
 
     @plugin.register
     def get_throttled():

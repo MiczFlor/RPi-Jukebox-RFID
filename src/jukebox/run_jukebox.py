@@ -19,7 +19,7 @@ def main():
     default_cfg_logger = os.path.abspath(os.path.join(script_path, '../../shared/settings/logger.yaml'))
 
     argparser = argparse.ArgumentParser(description='The JukeboxDaemon')
-    argparser.add_argument('-conf', '-c', type=argparse.FileType('r'), default=default_cfg_jukebox,
+    argparser.add_argument('-c', '--conf', type=argparse.FileType('r'), default=default_cfg_jukebox,
                            help=f"jukebox configuration file [default: '{default_cfg_jukebox}'",
                            metavar="FILE")
     verbose_group = argparser.add_mutually_exclusive_group()
