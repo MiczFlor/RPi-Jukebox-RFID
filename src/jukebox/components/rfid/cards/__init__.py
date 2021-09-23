@@ -6,6 +6,7 @@ A few considerations:
 
 Do we need a notifier? Or a callback for modules to get notified?
 Do we want to publish the information about a card DB update?
+TODO: Add callback for on_database_change
 """
 
 import logging
@@ -15,8 +16,9 @@ import jukebox.utils as utils
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 import jukebox.publishing as publishing
-from components.rfid.cardactions import (qs_action_place)
+from components.rfid.cardactions import (qs_action_place, qs_action_remove)
 from components.rfid.cardutils import decode_card_action
+from components.rfid.cardutils import (dump_card_action_reference)
 
 
 log = logging.getLogger('jb.cards')
@@ -152,6 +154,18 @@ def save_card_database(filename=None, *, only_if_changed=True):
         jukebox.cfghandler.write_yaml(cfg_cards, filename, only_if_changed=only_if_changed)
 
 
-@plugs.initialize
-def initialize():
+@plugs.finalize
+def finalize():
     load_card_database(cfg_main.getn('rfid', 'card_database'))
+
+    # Write reference of command shortcuts
+    if 'card_action_reference_out' in cfg_main['rfid']:
+        with open(cfg_main.getn('rfid', 'card_action_reference_out'), 'w') as stream:
+            dump_card_action_reference(stream, qs_action_place, 'Card placement action shortcuts')
+            print('\n\n', file=stream)
+            dump_card_action_reference(stream, qs_action_remove, 'Card removal action shortcuts (only place-capable readers)')
+
+
+@plugs.atexit
+def atexit(**ignored_kwargs):
+    save_card_database(only_if_changed=True)

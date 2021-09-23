@@ -8,8 +8,7 @@ import jukebox.cfghandler
 import jukebox.utils as utils
 import jukebox.publishing as publishing
 from components.rfid.cardactions import (qs_action_place, qs_action_remove)
-from components.rfid.cardutils import (decode_card_action, dump_card_action_reference)
-from components.rfid.cards import (load_card_database, save_card_database)
+from components.rfid.cardutils import (decode_card_action)
 
 
 log = logging.getLogger('jb.rfid')
@@ -214,13 +213,6 @@ def finalize():
         buzzer_module = plugs.get('rfidpinaction')
         buzzer_thread = buzzer_module.get_handler()
 
-    # Write reference of command shortcuts
-    if 'card_action_reference_out' in cfg_main['rfid']:
-        with open(cfg_main.getn('rfid', 'card_action_reference_out'), 'w') as stream:
-            dump_card_action_reference(stream, qs_action_place, 'Card placement action shortcuts')
-            print('\n\n', file=stream)
-            dump_card_action_reference(stream, qs_action_remove, 'Card removal action shortcuts (only place-capable readers)')
-
     # Load all the required modules
     # Start a ReaderRunner-Thread for each Reader
     for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
@@ -237,5 +229,4 @@ def atexit(**ignored_kwargs):
     # Do I need to write the config?
     # Probably yes, in case Readers add default values?
     # Changed values of buzzer etc through a later user if?
-    save_card_database(only_if_changed=True)
     return _READERS.values()
