@@ -2,8 +2,8 @@ import { socket_sub } from './index';
 import { decodePubSubMessage } from './utils';
 
 export const socketEvents = ({ setState }) => {
-  socket_sub.on('message', (msg) => {
-    const message = decodePubSubMessage(msg);
+  socket_sub.on('message', (_topic, _payload) => {
+    const message = decodePubSubMessage(_topic, _payload);
 
     switch(message?.topic) {
       case 'playerstatus':
