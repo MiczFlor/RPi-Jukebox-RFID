@@ -21,6 +21,7 @@ from components.rfid.cardutils import decode_card_action
 
 log = logging.getLogger('jb.cards')
 cfg_cards = jukebox.cfghandler.get_handler('cards')
+cfg_main = jukebox.cfghandler.get_handler('jukebox')
 
 
 @plugs.register
@@ -149,3 +150,8 @@ def save_card_database(filename=None, *, only_if_changed=True):
         cfg_cards.save(only_if_changed=only_if_changed)
     else:
         jukebox.cfghandler.write_yaml(cfg_cards, filename, only_if_changed=only_if_changed)
+
+
+@plugs.initialize
+def initialize():
+    load_card_database(cfg_main.getn('rfid', 'card_database'))
