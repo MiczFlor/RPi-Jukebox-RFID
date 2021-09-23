@@ -37,6 +37,7 @@ def initialize():
 
 @plugin.atexit
 def closing(**ignored_kwargs):
+    global _PUBLISH_SERVER_THREAD
     logger.debug("Closing publish server connection")
     pub.get_publisher().send('core.welcome', 'Goodbye. Hear you later!')
     pub.get_publisher().close_server()
