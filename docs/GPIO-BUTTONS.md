@@ -1,4 +1,5 @@
-
+Deprecated, please see [wiki](/wiki) for the latest version
+---------------------------------------------
 # Control Jukebox with buttons / GPIO
 
 (Other docs: [Installation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) |
