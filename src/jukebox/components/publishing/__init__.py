@@ -21,7 +21,9 @@ _PUBLISH_SERVER_THREAD: pub.server.PublishServer
 
 @plugin.register
 def republish(topic=None):
-    """Re-publish the topic tree 'topic' to all subscribers (None=resend all)"""
+    """Re-publish the topic tree 'topic' to all subscribers
+
+    :param topic: Topic tree to republish. None = resend all"""
     pub.get_publisher().resend(topic)
 
 

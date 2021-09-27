@@ -37,51 +37,64 @@ python packages and can be accessed by normal means
 If you want to provide additional functionality to the same feature (probably even for run-time switching)
 you can implement a Factory Pattern using this package. Take a look at volume.py as an example.
 
-Kick-start examples:
-    Example: Decorate a function for auto-registering under it's own name
-    >>> import jukebox.plugs as plugs
-    >>> @plugs.register
-    >>> def func1(param):
-    >>>     pass
+**Example:** Decorate a function for auto-registering under it's own name::
 
-    Example: Decorate a function for auto-registering under a new name
-    >>> @plugs.register(name='better_name')
-    >>> def func2(param):
-    >>>     pass
+    import jukebox.plugs as plugs
+    @plugs.register
+    def func1(param):
+        pass
 
-    Example: Register a function during run-time under it's own name
-    >>> def func3(param):
-    >>>     pass
-    >>> plugs.register(func3)
+**Example:** Decorate a function for auto-registering under a new name::
 
-    Example: Register a function during run-time under a new name
-    >>> def func4(param):
-    >>>     pass
-    >>> plugs.register(func4, name='other_name', package='other_package')
+    @plugs.register(name='better_name')
+    def func2(param):
+        pass
 
-    Example: Decorate a class for auto registering during initialization,
-    including all methods (see _register_class for more info)
-    >>> @plugs.register(auto_tag=True)
-    >>> class MyClass1:
-    >>>     pass
+**Example:** Register a function during run-time under it's own name::
 
-    Example: Register a class instance, from which only report is a callable method through the plugs interface
-    >>> class MyClass2:
-    >>>     @plugs.tag
-    >>>     def report(self):
-    >>>         pass
-    >>> myinst2 = MyClass2()
-    >>> plugin.register(myinst2, name='myinst2')
+    def func3(param):
+        pass
+    plugs.register(func3)
+
+**Example:** Register a function during run-time under a new name::
+
+    def func4(param):
+        pass
+    plugs.register(func4, name='other_name', package='other_package')
+
+**Example:** Decorate a class for auto registering during initialization,
+including all methods (see _register_class for more info)::
+
+    @plugs.register(auto_tag=True)
+    class MyClass1:
+        pass
+
+**Example:** Register a class instance, from which only report is a callable method through the plugs interface::
+
+    class MyClass2:
+        @plugs.tag
+        def report(self):
+            pass
+    myinst2 = MyClass2()
+    plugin.register(myinst2, name='myinst2')
 
 Naming convention:
-  package      : (a) Either a python package
-              : (b) or a plugin package (which si the python package but probably loaded under a different name inside plugs)
-  plugin       : (a) An object from the package that can be accessed through the plugs call function
-               :     (i.e. a function or a class instance)
-               : (b) the string name to above object
-  name         :     the string name of the plugin object for registration
-  method       : (a) In case the object is a class instance a bound method to call from the class instance
-               : (c) the string name to above object
+
+package
+    1. Either a python package
+    2. or a plugin package (which is the python package but probably loaded under a different name inside plugs)
+
+plugin
+    1. An object from the package that can be accessed through the plugs call function (i.e. a function or a class instance)
+    2. The string name to above object
+
+name
+    The string name of the plugin object for registration
+
+method
+    1. In case the object is a class instance a bound method to call from the class instance
+    2. The string name to above object
+
 """
 
 import importlib
@@ -394,20 +407,23 @@ def register(plugin: Optional[Callable] = None, *,
     A generic decorator / run-time function to register plugin module callables
 
     The functions comes in five distinct signatures for 5 use cases:
-    (A) @plugs.register: decorator for a class w/o any arguments
-    (B) @plugs.register: decorator for a function w/o any arguments
-    (C) @plugs.register(auto_tag=bool): decorator for a class with 1 arguments
-    (D) @plugs.register(name=name, package=package): decorator for a function with 1 or 2 arguments
-    (E) plugs.register(plugin, name=name, package=package): run-time registration of
-        - function
-        - bound method
-        - class instance
+
+    1. ``@plugs.register``: decorator for a class w/o any arguments
+    2. ``@plugs.register``: decorator for a function w/o any arguments
+    3. ``@plugs.register(auto_tag=bool)``: decorator for a class with 1 arguments
+    4. ``@plugs.register(name=name, package=package)``: decorator for a function with 1 or 2 arguments
+    5. ``plugs.register(plugin, name=name, package=package)``: run-time registration of
+
+        * function
+        * bound method
+        * class instance
 
     For more documentation see the functions
-        _register_obj
-        _register_class
 
-    See the examples below how to use this decorator / function
+        * :func:`_register_obj`
+        * :func:`_register_class`
+
+    See the examples in Module :mod:`plugs` how to use this decorator / function
 
     :param plugin:
     :param name:
@@ -448,6 +464,7 @@ def tag(func: Callable) -> Callable:
 
     Note that the instantiated class must still be registered as plugin object
     (either with the class decorator or dynamically)
+
     :param func: function to decorate
     :return: the function
     """
@@ -461,8 +478,9 @@ def tag(func: Callable) -> Callable:
 def initialize(func: Callable) -> Callable:
     """
     Decorator for functions that shall be called by the plugs package directly after the module is loaded
+
     :param func: Function to decorate
-    :return: The Function itself
+    :return: The function itself
     """
     plugin_origin = _deduce_package_origin(func)
     if plugin_origin is None:
@@ -474,8 +492,9 @@ def initialize(func: Callable) -> Callable:
 def finalize(func: Callable) -> Callable:
     """
     Decorator for functions that shall be called by the plugs package directly after ALL modules are loaded
+
     :param func: Function to decorate
-    :return: The Function itself
+    :return: The function itself
     """
     plugin_origin = _deduce_package_origin(func)
     if plugin_origin is None:
@@ -488,15 +507,15 @@ def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
     """
     Decorator for functions that shall be called by the plugs package directly after at exit of program.
 
-    Important: There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
-    during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
-    shutdown handler.
+    .. important:: There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
+        during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
+        shutdown handler.
 
     The atexit-functions are called with a single integer argument, which is passed down from plugin.exit(int)
     It is intended for passing down the signal number that initiated the program termination
 
     :param func: Function to decorate
-    :return: The Function itself
+    :return: The function itself
     """
     plugin_origin = _deduce_package_origin(func)
     if plugin_origin is None:
@@ -521,7 +540,7 @@ def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = No
     :param package: Python package to load as plugin package
     :param load_as: Plugin package registration name. If None the name is the python's package simple name
     :param prefix: Prefix to python package to create fully qualified name. This is used only to locate the python package
-    and ignored otherwise. Useful if all the plugin module are in a dedicated folder
+        and ignored otherwise. Useful if all the plugin module are in a dedicated folder
     :return:
     """
     load_as = load_as or package
@@ -688,26 +707,29 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
     """
     Call a function/method from the loaded plugins
 
-    - package.plugin(*args, **kwargs)
-        where plugin is a function or a callable instance of a class
-    - package.plugin.method(*args, **kwargs)
-        where plugin is a class instance
-        and method must have the attribute 'plugin_callable' = True
+    If a plugin is a function or a callable instance of a class, this is equivalent to
+
+    ``package.plugin(*args, **kwargs)``
+
+    If plugin is a class instance from which a method is called, this is equivalent to the followig.
+    Also remember, that method must have the attribute ``plugin_callable = True``
+
+    ``package.plugin.method(*args, **kwargs)``
 
     Calls are serialized by a thread lock. The thread lock is shared with call_ignore_errors.
 
-    Developers notes:
-        There is no logger in this function as they all belong up-level where the exceptions are handled
-        If you want logger messages instead of exceptions, use call_ignore_errors
+    .. note::
+        There is no logger in this function as they all belong up-level where the exceptions are handled.
+        If you want logger messages instead of exceptions, use :func:`call_ignore_errors`
 
     :param package: Name of the plugin package in which to look for function/class instance
     :param plugin: Function name or instance name of a class
-    :param method: Method name when accessing a class instance' method. Leave at None if unneeded.
+    :param method: Method name when accessing a class instance' method. Leave at *None* if unneeded.
     :param as_thread: Run the callable in separate daemon thread.
-    There is no return value from the callable in this case! The return value is the thread object.
-    Also note that Exceptions in the Thread must be handled in the Thread and are not propagated to the main Thread.
-    All threads are started as daemon threads with terminate upon main program termination.
-    There is not stop-thread mechanism. This is intended for short lived threads.
+        There is no return value from the callable in this case! The return value is the thread object.
+        Also note that Exceptions in the Thread must be handled in the Thread and are not propagated to the main Thread.
+        All threads are started as daemon threads with terminate upon main program termination.
+        There is not stop-thread mechanism. This is intended for short lived threads.
     :param thread_name: Name of the thread
     :param args: Arguments passed to callable
     :param kwargs: Keyword arguments passed to callable
@@ -721,9 +743,11 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
 def call_ignore_errors(package: str, plugin: str, method: Optional[str] = None, *,
                        args=(), kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
     """
-    Call a function/method from the loaded plugins ignoring all raised Exceptions
+    Call a function/method from the loaded plugins ignoring all raised Exceptions.
 
-    Errors get logged. See call for parameter documentation.
+    Errors get logged.
+
+    See :func:`call` for parameter documentation.
     """
     _acquire_lock()
     try:
@@ -757,9 +781,12 @@ def exists(package: str, plugin: Optional[str] = None, method: Optional[str] = N
 def get(package: str, plugin: Optional[str] = None, method: Optional[str] = None) -> Any:
     """Get a plugs-package registered object
 
-    1 argument: Get the python module reference for the plugs package
-    2 arguments: Get the plugin reference for the plugs package.plugin
-    3 arguments: Get the plugin reference for the plugs package.plugin.method
+    The return object depends on the number of parameters
+
+    * 1 argument: Get the python module reference for the plugs *package*
+    * 2 arguments: Get the plugin reference for the plugs *package.plugin*
+    * 3 arguments: Get the plugin reference for the plugs *package.plugin.method*
+
     """
     pack = _PLUGINS.get(package, None)
     if pack is None:
@@ -858,21 +885,75 @@ def summarize():
     return sum
 
 
-def get_all_loaded_packages():
+def generate_help_rst(stream):
+    print("RPC Call Reference", file=stream)
+    print("*******************\n\n", file=stream)
+    print("This file provides a summary of all the callable functions through the RPC. It depends on the "
+          "loaded modules\n", file=stream)
+    print(".. contents::\n", file=stream)
+    for package, plugins in _PLUGINS.items():
+
+        print(f"Module: {package}", file=stream)
+        print("-------------------------------------------\n\n", file=stream)
+
+        # description = (get(package).__doc__ or "").strip('\n ')
+        # description = re.sub(r'\n', '\n    ', description, flags=re.MULTILINE)
+        # print(f"    {description}\n\n", file=stream)
+
+        print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
+
+        description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+        print(f"{description}\n\n", file=stream)
+
+        for name, obj in _PLUGINS[package].plugins.items():
+            description = (obj.__doc__ or "").strip('\n ')
+            if callable(obj):
+                fullname = f"{package}.{name}"
+                sign = f"{inspect.signature(obj)}"
+                print(f".. py:function:: {fullname}{sign}", file=stream)
+                print("    :noindex:\n", file=stream)
+                print(f"    {description}\n\n", file=stream)
+            else:
+                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                    if hasattr(fobj, 'plugs_callable'):
+                        description = (fobj.__doc__ or "").strip('\n ')
+                        sign = f"{inspect.signature(fobj)}"
+                        fullname = f"{package}.{name}.{fname}"
+                        print(f".. py:function:: {fullname}{sign}", file=stream)
+                        print("    :noindex:\n", file=stream)
+                        print(f"    {description}\n\n", file=stream)
+    print("\n\nGeneration notes", file=stream)
+    print("-------------------------------------------\n\n", file=stream)
+    print("This is an automatically generated file from the loaded plugins:", file=stream)
+    for la, lf in get_all_loaded_packages().items():
+        print(f"* *{la}*: {lf}", file=stream)
+    fp = get_all_failed_packages()
+    if len(fp) > 0:
+        print("\n.. error::\n", file=stream)
+        print("   These packages failed to load or loaded with errors:\n", file=stream)
+        for la, lf in fp.items():
+            print(f"   * *{la}*: {lf}", file=stream)
+        print("\n   This reference may be incomplete!\n", file=stream)
+
+
+def get_all_loaded_packages() -> Dict[str, str]:
     """Report a short summary of all loaded packages
 
-    Format {loaded_as: loaded_from}"""
+    :return: Dictionary of the form `{loaded_as: loaded_from, ...}`"""
     return {k: _PLUGINS[k].loaded_from for k in _PLUGINS.keys()}
 
 
-def get_all_failed_packages():
-    """Report a packages that did not load error free
+def get_all_failed_packages() -> Dict[str, str]:
+    """Report those packages that did not load error free
 
-    Note: Package could fail to load
-    - altogether: these package are not registered
-    - partially: during initializer, finalizer functions: The package is loaded, but the function did not execute error-free
+    .. note:: Package could fail to load
 
-    Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
+        1. altogether: these package are not registered
+        2. partially: during initializer, finalizer functions: The package is loaded,
+            but the function did not execute error-free
 
-    Format {loaded_as: loaded_from}"""
+        Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
+
+    :return: Dictionary of the form `{loaded_as: loaded_from, ...}`"""
     return {k: _PLUGINS_FAILED[k].loaded_from for k in _PLUGINS_FAILED.keys()}

@@ -33,46 +33,10 @@ There can be multiple loggers per module, e.g. for special classes, to further c
 import sys
 import logging
 import logging.config
+import logging.handlers
 import jukebox.publishing as publishing
 import misc.simplecolors as sc
 from ruamel.yaml import YAML
-
-
-def configure_default(level=logging.DEBUG, name='jb'):
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    console = logging.StreamHandler(sys.stdout)
-    console.setLevel(level)
-    formatter = logging.Formatter(
-        fmt='{asctime} - {lineno:4}:{filename:18} - {name:20} - {threadName:15} - {levelnameColored:8} - '
-            '{lightcyan}{message}{reset}',
-        datefmt='%d.%m.%Y %H:%M:%S',
-        style='{')
-    console.addFilter(ColorFilter())
-    console.setFormatter(formatter)
-    logger.addHandler(console)
-    logger.info(f"Enabling default logger with level = {level}")
-    return logger
-
-
-def configure_from_file(filename=None):
-    if filename is None:
-        return configure_default(level=logging.WARNING)
-    yaml = YAML(typ='safe')
-    try:
-        with open(filename) as stream:
-            cfg = yaml.load(stream)
-        logging.config.dictConfig(cfg)
-        logger = logging.getLogger('jb')
-    except Exception as e:
-        logger = configure_default(level=logging.DEBUG)
-        logger.error(f"Using default fallback logger. Reason: while opening '{filename}' for logger configuration")
-        logger.error(f"{e}")
-    # This enforces a fresh file for all RotatingFileHandlers at start of application
-    for h in logger.handlers:
-        if type(h) == logging.handlers.RotatingFileHandler:
-            h.doRollover()
-    return logger
 
 
 class ColorFilter(logging.Filter):
@@ -115,12 +79,6 @@ class ColorFilter(logging.Filter):
             record.levelnameColored = record.levelname
         return True
 
-# Add an output options to the PubSub
-# Options
-# (1) Custom StreamHandler: logging.StreamHandler (subclass and overwrite)
-# (2) Better: Pass a custom stream class to StreamHandler
-# https://stackoverflow.com/questions/5558622/creating-a-stream-class-in-python
-
 
 class PubStream:
     """"
@@ -160,3 +118,51 @@ class PubStreamHandler(logging.StreamHandler):
     support code to instantiate PubStream keeping this file generic"""
     def __init__(self):
         super().__init__(PubStream())
+
+
+def configure_default(level=logging.DEBUG, name='jb', with_publisher=False):
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    console = logging.StreamHandler(sys.stdout)
+    console.setLevel(level)
+    formatter_color = logging.Formatter(
+        fmt='{asctime} - {lineno:4}:{filename:18} - {name:20} - {threadName:15} - {levelnameColored:8} - '
+            '{lightcyan}{message}{reset}',
+        datefmt='%d.%m.%Y %H:%M:%S',
+        style='{')
+    console.addFilter(ColorFilter())
+    console.setFormatter(formatter_color)
+    logger.addHandler(console)
+    if with_publisher:
+        publisher = PubStreamHandler()
+        publisher.setLevel(logging.WARNING)
+        formatter_base = logging.Formatter(
+            fmt='{asctime} - {lineno:4}:{filename:18} - {name:20} - {threadName:15} - {levelname:8} - '
+                '{message}',
+            datefmt='%d.%m.%Y %H:%M:%S',
+            style='{')
+        publisher.setFormatter(formatter_base)
+        logger.addHandler(publisher)
+    logger.info(f"Enabling default logger with level = {level} on console" +
+                (" and level = WARNING on publisher" if with_publisher else ""))
+    return logger
+
+
+def configure_from_file(filename=None):
+    if filename is None:
+        return configure_default(level=logging.WARNING)
+    yaml = YAML(typ='safe')
+    try:
+        with open(filename) as stream:
+            cfg = yaml.load(stream)
+        logging.config.dictConfig(cfg)
+        logger = logging.getLogger('jb')
+    except Exception as e:
+        logger = configure_default(level=logging.DEBUG)
+        logger.error(f"Using default fallback logger. Reason: while opening '{filename}' for logger configuration")
+        logger.error(f"{e}")
+    # This enforces a fresh file for all RotatingFileHandlers at start of application
+    for h in logger.handlers:
+        if isinstance(h, logging.handlers.RotatingFileHandler):
+            h.doRollover()
+    return logger

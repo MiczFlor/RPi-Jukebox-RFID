@@ -20,3 +20,4 @@ python_mpd2
 ruamel.yaml
 # smbus
 tornado
+requests

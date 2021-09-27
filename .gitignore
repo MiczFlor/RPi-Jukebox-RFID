@@ -2,10 +2,7 @@
 /shared/audiofolders/*
 /shared/playlists/*
 /shared/settings/*
-/shared/*.*
-
-# Default logger file output location
-logs
+/shared/logs/*.log*
 
 # Application
 /src/cli_client/pbc

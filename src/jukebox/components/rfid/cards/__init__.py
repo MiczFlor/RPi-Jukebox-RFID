@@ -1,4 +1,6 @@
 """
+Handling the RFID card database
+
 A few considerations:
 - Changing the Card DB influences to current state
   - rfid.reader: Does not care, as it always freshly looks into the DB when a new card is triggered
@@ -89,12 +91,13 @@ def register_card(card_id: str, quick_select: str,
 
     If you are going to call this through the RPC it will get a little verbose
 
-    Example: Registering a new card for increment volume with a custom argument to inc_volume (here: 15) and
-    custom ignore_same_id_delay value:
+    **Example:** Registering a new card with ID *0009* for increment volume with a custom argument to inc_volume
+    (*here: 15*) and custom *ignore_same_id_delay value*::
 
         plugin.call_ignore_errors('cards', 'register_card',
-                                  args=['new', 'inc_volume'],
+                                  args=['0009', 'inc_volume'],
                                   kwargs={'args': [15], 'ignore_same_id_delay': True, 'overwrite': True})
+
     """
     if quick_select not in qs_action_place.keys():
         msg = f"Unknown quick_select: '{quick_select}'"

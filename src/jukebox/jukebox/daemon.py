@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import threading
@@ -6,7 +5,9 @@ import sys
 import signal
 import logging
 import time
+from typing import (Optional)
 
+from misc import flatten
 import jukebox.plugs as plugin
 import jukebox.publishing as publishing
 from jukebox.rpc.server import RpcServer
@@ -18,34 +19,26 @@ logger = logging.getLogger('jb.daemon')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
-def flatten(iterable):
-    """Flatten all levels of hierarchy in nested iterables"""
-    res = []
-    try:
-        iterator = iter(iterable)
-    except TypeError:
-        res.append(iterable)
-    else:
-        for it in iterator:
-            res = [*res, *flatten(it)]
-    return res
-
-
 class JukeBox:
     def __init__(self, configuration_file):
-        self.nvm = nv_manager()
-        self.configuration_file = configuration_file
-        self._signal_cnt = 0
-        self.rpc_server = None
-
-        jukebox.cfghandler.load_yaml(cfg, self.configuration_file)
-
-        logger.info("Starting the " + cfg.getn('system', 'box_name', default='Jukebox2') + " Daemon")
-        logger.info("Starting the " + cfg['system'].get('box_name', default='Jukebox2') + " Daemon")
-
-        # setup the signal listeners
+        # Set up the signal listeners
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
+
+        self._start_time = time.time()
+        logger.info("Starting Jukebox Daemon")
+
+        self.nvm = nv_manager()
+        self._signal_cnt = 0
+        self.rpc_server = None
+        jukebox.cfghandler.load_yaml(cfg, configuration_file)
+
+        logger.info("Welcome to " + cfg.getn('system', 'box_name', default='Jukebox Version 3'))
+        logger.info(f"Time of start: {time.ctime(self._start_time)}")
+
+    @property
+    def start_time(self):
+        return self._start_time
 
     def signal_handler(self, esignal, frame):
         """Signal handler for orderly shutdown
@@ -100,7 +93,7 @@ class JukeBox:
         thread_list = list(filter(lambda x: x is not None, flatten(plugin.close_down(signal_id=esignal))))
         # (4) Save all nonvolatile data
         self.nvm.save_all()
-        jukebox.cfghandler.write_yaml(cfg, self.configuration_file, only_if_changed=True)
+        cfg.save(only_if_changed=True)
         # (5) Wait for open threads to close
         # Note: Not waiting for ALL open threads, but only for those threads that are returned by the @atexit-registered
         # functions of the plugin modules
@@ -115,6 +108,7 @@ class JukeBox:
 
     def run(self):
         time_start = time.time_ns()
+
         # Load the plugins
         # Ignore all errors during plugin loading to provide functionality
         # even if a plugin throws errors or has bad error handling
@@ -131,6 +125,7 @@ class JukeBox:
             logger.error(f"Plugins with errors during load: {', '.join(pack_error)}")
         publishing.get_publisher().send('core.plugins.loaded', pack_ok)
         publishing.get_publisher().send('core.plugins.error', pack_error)
+        publishing.get_publisher().send('core.started_at', time.ctime(self._start_time))
 
         # ps = plugin.summarize()
         # for k, v in ps.items():
@@ -215,5 +210,30 @@ class JukeBox:
             with open(cfg.getn('modules', 'reference_out'), 'w') as stream:
                 plugin.dump_plugins(stream)
 
+        if 'reference_out' in cfg['modules']:
+            # with open(cfg.getn('modules', 'reference_out'), 'w') as stream:
+            with open('../../docs/sphinx/plugs_ref.rst', 'w') as stream:
+                plugin.generate_help_rst(stream)
+
         # Start the RPC Server
         self.rpc_server.run()
+
+
+class JukeBoxBuilder:
+    def __init__(self):
+        self._instance = None
+
+    def __call__(self, *args, **kwargs):
+        if not self._instance:
+            self._instance = JukeBox(*args, **kwargs)
+        return self._instance
+
+
+_JUKEBOX_BUILDER: Optional[JukeBoxBuilder] = None
+
+
+def get_jukebox_daemon(*args, **kwargs):
+    global _JUKEBOX_BUILDER
+    if _JUKEBOX_BUILDER is None:
+        _JUKEBOX_BUILDER = JukeBoxBuilder()
+    return _JUKEBOX_BUILDER(*args, **kwargs)

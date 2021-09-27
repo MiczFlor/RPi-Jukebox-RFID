@@ -125,7 +125,7 @@ class GenericTimerClass:
         self._wait_seconds = wait_seconds
         # Hide away the argument 'iteration' that is passed from MultiTimer to function
         # for a single event Timer (and also endless timers, as the inherit from here)
-        self._function = lambda iteration, *largs, **lkwargs:  function(*largs, **lkwargs)
+        self._function = lambda iteration, *largs, **lkwargs: function(*largs, **lkwargs)
         self._iterations = 1
         self._name = name
         self._publish_core()
