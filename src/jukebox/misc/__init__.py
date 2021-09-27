@@ -14,3 +14,16 @@ def recursive_chmod(path, mode_files, mode_dirs):
         os.chmod(dirpath, mode_dirs)
         for filename in filenames:
             os.chmod(os.path.join(dirpath, filename), mode_files)
+
+
+def flatten(iterable):
+    """Flatten all levels of hierarchy in nested iterables"""
+    res = []
+    try:
+        iterator = iter(iterable)
+    except TypeError:
+        res.append(iterable)
+    else:
+        for it in iterator:
+            res = [*res, *flatten(it)]
+    return res

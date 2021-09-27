@@ -23,6 +23,8 @@
 # Contributing author(s):
 # - Christian Banz
 
+"""Multitimer Module"""
+
 import threading
 from typing import (
     Callable)
@@ -89,7 +91,7 @@ class MultiTimer(threading.Thread):
                 else:
                     self.event.clear()
             # logger.debug(f"Execute timer action #{iteration} of '{self.name}'.")
-            self.function(iteration=iteration, *self.args, **self.kwargs)
+            self.function(*self.args, iteration=iteration, **self.kwargs)
 
     def run(self):
         if self.publish_callback is not None:
@@ -114,7 +116,6 @@ class GenericTimerClass:
         """
         :param wait_seconds: The time in seconds to wait before calling function
         :param function: The function to call with args and kwargs.
-        Note that a keyword parameter iteration is passed to function (which is always 0).
         :param args: Parameters for function call
         :param kwargs: Parameters for function call
         """
@@ -122,19 +123,12 @@ class GenericTimerClass:
         self.args = args if args is not None else []
         self.kwargs = kwargs if kwargs is not None else {}
         self._wait_seconds = wait_seconds
-        self._function = function
+        # Hide away the argument 'iteration' that is passed from MultiTimer to function
+        # for a single event Timer (and also endless timers, as the inherit from here)
+        self._function = lambda iteration, *largs, **lkwargs:  function(*largs, **lkwargs)
         self._iterations = 1
         self._name = name
         self._publish_core()
-
-    # @property
-    # def name(self) -> str:
-    #     """Identifier string which is also used as topic for publisher"""
-    #     return self._name
-    #
-    # @name.setter
-    # def name(self, new_name: str):
-    #     self._name = new_name
 
     @plugin.tag
     def start(self, wait_seconds=None):
@@ -220,6 +214,7 @@ class GenericEndlessTimerClass(GenericTimerClass):
     Interface for plugin / RPC accessibility for an event timer call function endlessly every m seconds
     """
     def __init__(self, name, wait_seconds_per_iteration: float, function, args=None, kwargs=None):
+        # Remove the necessity for the 'iterations' keyword that is added by GenericTimerClass
         super().__init__(name, wait_seconds_per_iteration, function, args, kwargs)
         # Negative iteration count causes endless looping
         self._iterations = -1
@@ -238,9 +233,9 @@ class GenericMultiTimerClass(GenericTimerClass):
         """
         :param iterations: Number of times callee is called
         :param wait_seconds_per_iteration: Wait in seconds before each iteration
-        :param callee: A class that gets instantiated once as callee(iterations, *args, **kwargs).
-        Then with every time out iteration __call__(iteration) is called. iteration is the current iteration count
-        in decreasing order!
+        :param callee: A builder class that gets instantiated once as callee(*args, iterations=iterations, **kwargs).
+        Then with every time out iteration __call__(*args, iteration=iteration, **kwargs) is called.
+        'iteration' is the current iteration count in decreasing order!
         :param args:
         :param kwargs:
         """
@@ -255,7 +250,7 @@ class GenericMultiTimerClass(GenericTimerClass):
         """Start the timer (with default or new parameters)"""
         if iterations is not None:
             self._iterations = iterations
-        self._function = self._callee(self._iterations, *self.class_args, **self.class_kwargs)
+        self._function = self._callee(*self.class_args, iterations=self._iterations, **self.class_kwargs)
         super().start(wait_seconds_per_iteration)
 
     def get_state(self):

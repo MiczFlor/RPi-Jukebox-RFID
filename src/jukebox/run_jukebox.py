@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """
-Top-level entry point for the JukeBox Core demon
+This is the main app and starts the Jukebox Core.
 
+Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart
+the service.
+For example after a configuration change. Not all configuration changes can be applied on-the-fly.
+See :ref:`coreapps:Configuration`.
+
+For debugging, it is usually desirable to run the Jukebox directly from the console rather than
+as service. This gives direct logging info in the console and allows changing command line parameters.
+See :ref:`coreapps:Troubleshooting`.
 """
 import os.path
 import argparse
@@ -34,21 +42,22 @@ def main():
     args = argparser.parse_args()
 
     if args.verbose is not None:
-        logger = misc.loggingext.configure_default({1: logging.INFO, 2: logging.DEBUG}[min(args.verbose, 2)])
+        logger = misc.loggingext.configure_default({1: logging.INFO, 2: logging.DEBUG}[min(args.verbose, 2)],
+                                                   with_publisher=True)
         if args.verbose < 3:
-            misc.loggingext.configure_default(logging.ERROR, name='jb.plugin.call')
+            misc.loggingext.configure_default(logging.ERROR, name='jb.plugin.call', with_publisher=True)
     elif args.quiet is not None:
-        logger = misc.loggingext.configure_default({1: logging.ERROR, 2: logging.CRITICAL}[min(args.quiet, 2)])
+        logger = misc.loggingext.configure_default({1: logging.ERROR, 2: logging.CRITICAL}[min(args.quiet, 2)],
+                                                   with_publisher=True)
     else:
         logger = misc.loggingext.configure_from_file(args.logger)
 
-    logger.info("Starting Jukebox Daemon")
     if working_path != script_path:
         logger.warning("It is working_path != script_path."
                        "If you have relative filenames in your config, they may not be found!")
         logger.warning(f"working_path: '{working_path}'")
         logger.warning(f"script_path : '{script_path}'")
-    myjukebox = jukebox.daemon.JukeBox(args.conf.name)
+    myjukebox = jukebox.daemon.get_jukebox_daemon(args.conf.name)
     myjukebox.run()
 
 
