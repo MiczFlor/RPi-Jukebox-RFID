@@ -14,16 +14,18 @@ const decodeMessage = (msg) => {
   return { id, result, error };
 }
 
-const decodePubSubMessage = (msg) => {
-  const message = new TextDecoder().decode(msg);
-  // Message comes like this string
-  // 'topicName { "topic": "topicName", ...kwargs }'
-  // the below line removes 'topicName ' from the string
-  const [topic, data] = message.split(/ (.+)/);
-  // The we have pure JSON as string which can be parsed
-  const payload = JSON.parse(data);
-  console.log('decodeMessage', payload);
-  return { topic, [topic]: payload };
+const decodePubSubMessage = (_topic, _payload) => {
+  const topic = new TextDecoder().decode(_topic);
+  const payload = new TextDecoder().decode(_payload);
+
+  try {
+    const data = JSON.parse(payload);
+
+    return { topic, [topic]: data };
+  }
+  catch (error) {
+    return { topic, [topic]: { error } };
+  }
 }
 
 const preparePayload = (

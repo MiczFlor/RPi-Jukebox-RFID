@@ -1,8 +1,10 @@
 # Shared folder
 /shared/audiofolders/*
+/shared/logs/*
 /shared/playlists/*
 /shared/settings/*
 /shared/logs/*.log*
+/shared/*.*
 
 # Application
 /src/cli_client/pbc
