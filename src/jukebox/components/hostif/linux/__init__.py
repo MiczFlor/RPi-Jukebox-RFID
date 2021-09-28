@@ -36,7 +36,7 @@ from jukebox.multitimer import GenericEndlessTimerClass
 # JukeBox installs the dependency RPI which has no meaning on other machines
 # It could still be installed, though, and this check will be false positive
 try:
-    import RPi.gpio as gpio
+    import RPi.gpio as gpio  # noqa: F401
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False

@@ -21,3 +21,5 @@ ruamel.yaml
 # smbus
 tornado
 requests
+sphinx
+sphinx_rtd_theme

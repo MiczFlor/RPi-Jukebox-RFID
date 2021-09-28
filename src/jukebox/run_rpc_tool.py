@@ -151,7 +151,7 @@ def reprompt(scr, msg, y, x):
     scr.move(y, x)
 
 
-def get_input(scr):
+def get_input(scr):  # noqa: C901
     curses.noecho()
     ch = 0
     msg = ''

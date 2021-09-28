@@ -135,6 +135,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
       - [ ] Improve readability
     - [X] Card reference IF via RPC (?)
     - [ ] Export available quick selects commands to RPC
+    - [ ] Base quick select on yaml file
 
 **Cards**
 - [ ] Write a simplified card summary to 

@@ -886,8 +886,8 @@ def summarize():
 
 
 def generate_help_rst(stream):
-    print("RPC Call Reference", file=stream)
-    print("*******************\n\n", file=stream)
+    print("RPC Command Reference", file=stream)
+    print("***********************\n\n", file=stream)
     print("This file provides a summary of all the callable functions through the RPC. It depends on the "
           "loaded modules\n", file=stream)
     print(".. contents::\n", file=stream)
@@ -906,7 +906,7 @@ def generate_help_rst(stream):
         print(f"{description}\n\n", file=stream)
 
         for name, obj in _PLUGINS[package].plugins.items():
-            description = (obj.__doc__ or "").strip('\n ')
+            description = (obj.__doc__ or "").strip('\n')
             if callable(obj):
                 fullname = f"{package}.{name}"
                 sign = f"{inspect.signature(obj)}"
@@ -925,7 +925,7 @@ def generate_help_rst(stream):
                         print(f"    {description}\n\n", file=stream)
     print("\n\nGeneration notes", file=stream)
     print("-------------------------------------------\n\n", file=stream)
-    print("This is an automatically generated file from the loaded plugins:", file=stream)
+    print("This is an automatically generated file from the loaded plugins:\n", file=stream)
     for la, lf in get_all_loaded_packages().items():
         print(f"* *{la}*: {lf}", file=stream)
     fp = get_all_failed_packages()

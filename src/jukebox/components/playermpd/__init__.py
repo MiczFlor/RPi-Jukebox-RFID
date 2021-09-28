@@ -53,7 +53,7 @@ https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
 https://mpd.readthedocs.io/en/latest/protocol.html
 
 sudo -u mpd speaker-test -t wav -c 2
-"""
+"""  # noqa: E501
 import re
 
 import mpd
@@ -306,7 +306,8 @@ class PlayerMPD:
 
     @plugs.tag
     def rewind(self):
-        """Re-start current playlist from first track
+        """
+        Re-start current playlist from first track
 
         Note: Will not re-read folder config, but leave settings untouched"""
         logger.debug("Rewind")
@@ -314,9 +315,10 @@ class PlayerMPD:
 
     @plugs.tag
     def replay(self):
-        """Re-start playing the last-played folder
+        """
+        Re-start playing the last-played folder
 
-        Note: Will reset settings to folder config"""
+        Will reset settings to folder config"""
         logger.debug("Replay")
         self.playlistaddplay(self.music_player_status['player_status']['last_played_folder'])
 
@@ -328,28 +330,33 @@ class PlayerMPD:
 
     @plugs.tag
     def replay_if_stopped(self):
-        """Re-start playing the last-played folder unless playlist is still playing
+        """
+        Re-start playing the last-played folder unless playlist is still playing
 
-        Note: To me this seems much like the behaviour of play,
-        but we keep it as it is specifically implemented in box 2.X"""
+        .. note:: To me this seems much like the behaviour of play,
+            but we keep it as it is specifically implemented in box 2.X"""
         if self.mpd_status['state'] == 'stop':
             self.replay()
 
     @plugs.tag
     def play_card(self, folder=None):
-        """Main entry point for trigger music playing from RFID reader
+        """
+        Main entry point for trigger music playing from RFID reader
 
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
         accordingly.
 
         Developers notes:
-        - 2nd swipe trigger may also happen, if playlist has already stopped playing
-          --> Generally, treat as first swipe
-        - 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
-          --> Treat as first swipe
-        - With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
-          placed again on the reader: Should be like first swipe
-        - TODO: last_played_folder is restored after box start, so first swipe of last played card may look like second swipe
+
+            * 2nd swipe trigger may also happen, if playlist has already stopped playing
+              --> Generally, treat as first swipe
+            * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
+              --> Treat as first swipe
+            * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
+              placed again on the reader: Should be like first swipe
+            * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
+              second swipe
+
          """
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
         is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
@@ -474,7 +481,8 @@ class PlayerMPD:
         return albums
 
     def get_volume(self):
-        """Get the current volume
+        """
+        Get the current volume
 
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD"""
@@ -482,7 +490,8 @@ class PlayerMPD:
         return volume
 
     def set_volume(self, volume):
-        """Set the volume
+        """
+        Set the volume
 
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD"""
@@ -490,7 +499,8 @@ class PlayerMPD:
 
 
 class MpdVolumeCtrl:
-    """The Volume Ctrl Service for the plugin 'volume'
+    """
+    The Volume Ctrl Service for the plugin 'volume'
 
     This allows volume ctrl through MPD rather than e.g. ALSA
     """
