@@ -80,7 +80,7 @@ class ColorFilter(logging.Filter):
         return True
 
 
-class PubStream(io.IOBase):
+class PubStream:
     """"
     Stream handler wrapper around the publisher for logging.StreamHandler
 
