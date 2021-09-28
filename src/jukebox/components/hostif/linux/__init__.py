@@ -24,6 +24,7 @@
 # - Christian Banz
 
 import os
+import shutil
 import subprocess
 import logging
 import jukebox.plugs as plugin
@@ -91,15 +92,26 @@ def reboot():
 
 
 @plugin.register
-def restart_service():
-    """Restart Jukebox App if running as a service"""
-    ret = subprocess.run('systemctl show --property MainPID --value mpd',
+def jukebox_is_service():
+    """Check if current Jukebox process is running as a service"""
+    ret = subprocess.run('systemctl show --property MainPID --value jukebox-daemon', shell=True,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
-    msg = ''
     if ret.returncode != 0:
         msg = f"Error in finding service PID: {ret.stdout}"
-    elif ret.stdout != os.getpid():
+        logger.error(msg)
+
+    if ret.stdout != os.getpid():
+        return False
+    else:
+        return True
+
+
+@plugin.register
+def restart_service():
+    """Restart Jukebox App if running as a service"""
+    msg = ''
+    if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
         ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &',
@@ -109,8 +121,28 @@ def restart_service():
             msg = f"Error in restarting service: {ret.stdout}"
     if not msg:
         msg = 'Restart service request dispatched successfully to host'
-    logger.error(msg)
+    logger.info(msg)
     return msg
+
+
+@plugin.register()
+def get_disk_usage(path='/'):
+    """Return the disk usage in Megabytes as dictionary for RPC export"""
+    [t, u, f] = shutil.disk_usage(path)
+    return {'total': round(t / 1024 / 1024), 'used': round(u / 1024 / 1024), 'free': round(f / 1024 / 1024)}
+
+
+@plugin.register()
+def get_git_log():
+    """Return git log information for the current branch state"""
+    try:
+        sub = subprocess.run("git log --pretty='%h [%cs] %s %d' -n 1 --no-color",
+                             shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=True)
+    except Exception as e:
+        logger.error(f"{e.__class__.__name__}: {e}")
+        return "Unable to get git log"
+    return sub.stdout.decode('utf-8').strip()
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +163,7 @@ def get_cpu_temperature():
 
 
 @plugin.register
-def publish_cpu_temperature(**ignored_kwargs):
+def publish_cpu_temperature():
     global timer_temperature
     try:
         temperature = get_cpu_temperature()

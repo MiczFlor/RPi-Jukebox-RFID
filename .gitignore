@@ -3,6 +3,7 @@
 /shared/logs/*
 /shared/playlists/*
 /shared/settings/*
+/shared/logs/*.log*
 /shared/*.*
 
 # Application

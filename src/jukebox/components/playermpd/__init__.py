@@ -67,7 +67,6 @@ import jukebox.plugs as plugs
 import jukebox.multitimer as multitimer
 import jukebox.publishing as publishing
 from jukebox.NvManager import nv_manager
-import jukebox.pubsub as pubsub
 import misc
 
 
@@ -200,7 +199,7 @@ class PlayerMPD:
                         break
         return ret
 
-    def _mpd_status_poll(self, **ignored_kwargs):
+    def _mpd_status_poll(self):
         """
         this method polls the status from mpd and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval

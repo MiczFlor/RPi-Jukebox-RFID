@@ -2,17 +2,28 @@
 """
 Command Line Interface to the Jukebox RPC Server
 
-TODO:
-- kwargs support
-- configurable connection address
+A command line tool for sending RPC commands to the running jukebox app.
+This uses the same interface as the WebUI. Can be used for additional control
+or for debugging.
 
-Developers note: Scripting at it's dirty end :-)
+The tool features auto-completion and command history.
+
+The list of available commands is fetched from the running Jukebox service.
+
+.. todo:
+    - kwargs support
+    - configurable connection address
+
 """
+
 import argparse
 import zmq.error
 import curses
 import curses.ascii
 import jukebox.rpc.client as rpc
+
+# Developers note: Scripting at it's dirty end :-)
+
 
 # Careful: curses and default outputs don't mix!
 # In case you'll get an error, most likely your terminal may become funny
@@ -93,6 +104,8 @@ def format_usage(scr):
     scr.addstr("\n")
     scr.addstr("Type help <RET>, to get a list of all commands'\n")
     scr.addstr("Type usage <RET>, to get this usage help'\n")
+    scr.addstr("\n")
+    scr.addstr("After Jukebox app restart, call help once to update command list from jukebox app\n")
     scr.addstr("\n")
     scr.addstr("To exit, press Ctrl-D or type 'exit'\n")
     scr.addstr("\n")

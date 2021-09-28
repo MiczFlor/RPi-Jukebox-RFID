@@ -41,19 +41,23 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [X] Host interface (shutdown, reboot)
 - [X] Temperature getter / publisher
 - [ ] is_throttled getter / publisher
-- [ ] Version number getter / Git Hash
+- [X] Version number getter / Git Hash
+  - [ ] Log and publish this!
 - [ ] Exit via RPC
 - [ ] Service restart via RPC 
-  - [ ] Check if really running as a service (systemctl show --property MainPID --value mpd)
-- [ ] Storage space getter / publisher (shutil.disk_usage)
-- [ ] Getter for error logs to show in WebUI
+  - [ ] Check if really running as a service
+- [X] Storage space getter / publisher (shutil.disk_usage)
+- [X] Getter for error logs to show in WebUI
     - Get file location from FileHandlers (files may be stale!)
+    - Logger might be disabled or not connected
 - [ ] Enable/Disable debug logging from RPC  
 - [X] Publisher of errors (specialized logger handler)
   - This is a configurable logger handler in logger.yaml
-- [ ] Basic Logging Config should enable Publisher stream handler
+- [X] Basic Logging Config should enable Publisher stream handler
 - [ ] Disable Console Stream Handler (or set to warning) when running as a service  
-- [ ] Log & publish start time
+- [X] Log & publish start time
+
+- [ ] /shared/references: plugin_reference / rpc commands reference / card actions reference / card db summary
 
 **Via RPC**
   - [X] List of loaded / failed plugins
@@ -97,6 +101,8 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 - [ ] Differential status post
 - [ ] Second swipe option setter via RPC
 - [ ] Volume publisher for ALSA / MPD switchable
+  - [ ] ALSA volume check with select.poll()
+- [ ] Before every music lib update, player should check user rights (not only after start-up)    
 
 **RFID**
 - [X] Test with Reader disabled 
@@ -148,6 +154,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
     - Needs to be cancelable
 - [X] Publish mechanism of timer status    
 - [ ] Make timer settings persistent
+- [ ] Change multitimer function call interface such that Endless timer etc do not pass the `iteration` kwarg
 
 
 **Installation**
@@ -193,6 +200,7 @@ If you don't find your v2.X contributions, it doesn't mean they are obsolete. Th
 
 **Debug Tools**
 - [X] Publishing Sniffer
+  - [ ] Update mode vs linear mode ?
 - [X] RPC command line client
   - with tab-completion and history
 

@@ -36,12 +36,12 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 # ---------------------------------------------------------------------------
 # Action functions for Timers
 # ---------------------------------------------------------------------------
-def shutdown(**ignored_kwargs):
+def shutdown():
     logger.info("Shutting down on timer request...")
     plugin.call_ignore_errors('host', 'shutdown')
 
 
-def stop_player(**ignored_kwargs):
+def stop_player():
     logger.info("Stopping the player on timer request...")
     plugin.call_ignore_errors('player', 'ctrl', 'stop')
 
