@@ -210,9 +210,9 @@ class JukeBox:
             with open(cfg.getn('modules', 'reference_out'), 'w') as stream:
                 plugin.dump_plugins(stream)
 
-        if 'reference_out' in cfg['modules']:
-            with open('../../docs/sphinx/rpc_command_reference.rst', 'w') as stream:
-                plugin.generate_help_rst(stream)
+        # if 'reference_out' in cfg['modules']:
+        #     with open('../../docs/sphinx/rpc_command_reference.rst', 'w') as stream:
+        #         plugin.generate_help_rst(stream)
 
         # Start the RPC Server
         self.rpc_server.run()

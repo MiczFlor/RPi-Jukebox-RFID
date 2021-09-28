@@ -903,10 +903,10 @@ def generate_help_rst(stream):
         print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
 
         description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-        print(f"{description}\n\n", file=stream)
-
+        print(f"{inspect.cleandoc(description)}\n\n", file=stream)
         for name, obj in _PLUGINS[package].plugins.items():
-            description = (obj.__doc__ or "").strip('\n')
+            # description = inspect.cleandoc(obj.__doc__ or "")
+            description = obj.__doc__ or ""
             if callable(obj):
                 fullname = f"{package}.{name}"
                 sign = f"{inspect.signature(obj)}"
@@ -917,7 +917,7 @@ def generate_help_rst(stream):
                 for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
                                     *inspect.getmembers(obj, predicate=inspect.isfunction)]:
                     if hasattr(fobj, 'plugs_callable'):
-                        description = (fobj.__doc__ or "").strip('\n ')
+                        description = fobj.__doc__ or ""
                         sign = f"{inspect.signature(fobj)}"
                         fullname = f"{package}.{name}.{fname}"
                         print(f".. py:function:: {fullname}{sign}", file=stream)

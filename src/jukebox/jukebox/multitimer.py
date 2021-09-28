@@ -168,7 +168,7 @@ class GenericTimerClass:
     def get_timeout(self):
         """Get the configured time-out
 
-        Note: This is the total wait time. Not the remaining wait time!"""
+        :return: The total wait time. (Not the remaining wait time!)"""
         return self._wait_seconds
 
     @plugin.tag

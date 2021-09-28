@@ -6,6 +6,9 @@
 /shared/logs/*.log*
 /shared/*.*
 
+# Documentation builder
+/docs/sphinx/_build/
+
 # Application
 /src/cli_client/pbc
 
