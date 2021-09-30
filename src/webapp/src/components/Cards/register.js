@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import {
@@ -11,8 +11,9 @@ import {
   Grid,
   Typography
 } from '@material-ui/core';
-
 import BookmarkIcon from '@material-ui/icons/Bookmark';
+
+import PlayerContext from '../../context/player/context';
 
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
@@ -43,8 +44,11 @@ const ActionsControls = ({
 
 const CardsRegister = () => {
   const history = useHistory();
+  const { state } = useContext(PlayerContext);
 
-  const [lastSwipedCardId, setLastSwipedCardId] = useState(9887654321);
+  const { 'rfid.card_id': card_id } = state;
+
+  const [lastSwipedCardId, setLastSwipedCardId] = useState(card_id || undefined);
   const [selectedAction, setSelectedAction] = useState(undefined);
   const [selectedFolder, setSelectedFolder] = useState(undefined);
 
@@ -66,6 +70,11 @@ const CardsRegister = () => {
       history.push('/cards');
     }
   };
+
+  useEffect(() => {
+    console.log(`setLastSwipedCardId(${card_id});`);
+    setLastSwipedCardId(card_id);
+  }, [card_id])
 
   return (
     <>
