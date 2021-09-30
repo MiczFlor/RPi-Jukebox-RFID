@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import {
   Card,
@@ -8,12 +8,10 @@ import {
   Grid,
 } from '@material-ui/core';
 
-import PlayerContext from '../../context/player/context';
 import RebootDialog from './dialogs/reboot';
 import ShutDownDialog from './dialogs/shutdown';
 
 const SystemControls = () => {
-  const { state: { postJukeboxCommand } } = useContext(PlayerContext);
 
   return (
     <Card>

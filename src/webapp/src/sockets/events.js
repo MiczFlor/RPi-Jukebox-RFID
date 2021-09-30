@@ -16,6 +16,10 @@ export const socketEvents = ({ setState }) => {
         console.error('[PubSub][playerstatus] Payload missing');
         break;
 
+      case 'rfid.card_id':
+        console.log('[PubSub][rfid.card_id]: ', _payload);
+        break;
+
       default:
         break;
     }

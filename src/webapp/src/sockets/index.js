@@ -9,7 +9,10 @@ import {
   preparePayload
 } from './utils';
 
-const SUBSCRIPTIONS = ['playerstatus'];
+const SUBSCRIPTIONS = [
+  'playerstatus',
+  'rfid.card_id',
+];
 
 const socket_sub = new zmq.Sub();
 
@@ -23,7 +26,6 @@ const initSockets = ({ setState }) => {
   socketEvents({ setState });
 };
 
-// const socketRequest = (payload) => (
 const socketRequest = (_package, plugin, method, kwargs) => (
   new Promise((resolve, reject) => {
     const requestId = uuidv4();
@@ -66,10 +68,11 @@ const socketRequest = (_package, plugin, method, kwargs) => (
   })
 );
 
+
 export {
+  initSockets,
   socket_sub,
   socketRequest,
-  initSockets,
 };
 
 

@@ -48,8 +48,11 @@ def list_cards():
                 description = (func.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
             readable = utils.action_to_str(action)
 
-            card_list[card_id] = {'func': readable,
-                                  'description': description}
+            card_list[card_id] = {
+                'func': readable,
+                'description': description,
+                'action': action
+            }
 
             if 'ignore_same_id_delay' in action.keys():
                 card_list[card_id]['ignore_same_id_delay'] = action['ignore_same_id_delay']
