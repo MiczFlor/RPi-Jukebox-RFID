@@ -17,8 +17,8 @@ INSTALLATION_PATH="${HOME_PATH}/RPi-Jukebox-RFID"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 
-GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
-GIT_BRANCH="future3/develop"
+GIT_URL="https://github.com/pabera/RPi-Jukebox-RFID.git"
+GIT_BRANCH="future3/card-management"
 
 # Settings
 ENABLE_STATIC_IP=true
