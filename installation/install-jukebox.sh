@@ -138,6 +138,18 @@ install_jukebox_dependencies() {
     curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g npm serve
+
+    # Slower PIs need this to finish building the Webapp
+    MEMORY=`cat /proc/meminfo | awk '$1 == "MemTotal:" {print 0+$2}'`
+    if [[ $MEMORY -lt 1024000 ]]
+    then
+      export NODE_OPTIONS=--max-old-space-size=1024
+    fi
+
+    if [[ $MEMORY -lt 512000 ]]
+    then
+      export NODE_OPTIONS=--max-old-space-size=512
+    fi
   fi
 
   calc_runtime_and_print time_start $(date +%s)
