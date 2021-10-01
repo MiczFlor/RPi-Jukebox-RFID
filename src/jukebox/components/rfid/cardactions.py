@@ -48,7 +48,11 @@ qs_action_place = {
                    'method': 'inc_volume',
                    'args': [5],
                    'ignore_card_removal_action': True,
-                   'ignore_same_id_delay': True}
+                   'ignore_same_id_delay': True},
+    'shutdown':   {'package': 'host',
+                   'plugin': 'shutdown'},
+    'reboot':     {'package': 'host',
+                   'plugin': 'reboot'}
 }
 
 # --------------------------------------------------------------

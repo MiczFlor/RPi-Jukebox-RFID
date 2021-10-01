@@ -1,5 +1,5 @@
 const encodeMessage = (obj) => {
-  console.log('encodeMessage', obj);
+  // console.log('encodeMessage', obj);
   const payload = JSON.stringify(obj);
   return payload;
 }
@@ -21,10 +21,10 @@ const decodePubSubMessage = (_topic, _payload) => {
   try {
     const data = JSON.parse(payload);
 
-    return { topic, [topic]: data };
+    return { topic, data };
   }
   catch (error) {
-    return { topic, [topic]: { error } };
+    return { topic,  error };
   }
 }
 

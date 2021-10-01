@@ -5,7 +5,7 @@ import {
   progressToTime,
   timeToProgress,
   toHHMMSS,
-} from '../utils';
+} from '../../utils/utils';
 
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';

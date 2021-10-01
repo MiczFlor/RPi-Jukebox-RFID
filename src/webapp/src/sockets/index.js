@@ -1,15 +1,17 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as zmq from 'jszmq';
 
-import { PUBSUB_ENDPOINT, REQRES_ENDPOINT } from '../config';
-import { socketEvents } from './events';
+import {
+  PUBSUB_ENDPOINT,
+  REQRES_ENDPOINT,
+  SUBSCRIPTIONS,
+} from '../config';
 import {
   decodeMessage,
+  decodePubSubMessage,
   encodeMessage,
   preparePayload
 } from './utils';
-
-const SUBSCRIPTIONS = ['playerstatus'];
 
 const socket_sub = new zmq.Sub();
 
@@ -19,11 +21,28 @@ SUBSCRIPTIONS.forEach(
 
 socket_sub.connect(PUBSUB_ENDPOINT);
 
+const socketEvents = ({ setState }) => {
+  socket_sub.on('message', (_topic, _payload) => {
+    const { topic, data, error } = decodePubSubMessage(_topic, _payload);
+
+    if (data) {
+      setState(state => { return { ...state, [topic]: data } });
+      if (topic !== 'playerstatus') {
+        console.log(topic, data);
+      }
+    }
+
+    if (error) {
+      // TODO: Better error handling
+      console.error(`[PubSub][${topic}]: ${error}`);
+    }
+  });
+};
+
 const initSockets = ({ setState }) => {
   socketEvents({ setState });
 };
 
-// const socketRequest = (payload) => (
 const socketRequest = (_package, plugin, method, kwargs) => (
   new Promise((resolve, reject) => {
     const requestId = uuidv4();
@@ -67,9 +86,6 @@ const socketRequest = (_package, plugin, method, kwargs) => (
 );
 
 export {
-  socket_sub,
-  socketRequest,
   initSockets,
+  socketRequest,
 };
-
-
