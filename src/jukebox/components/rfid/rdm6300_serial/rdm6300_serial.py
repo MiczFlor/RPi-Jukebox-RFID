@@ -1,13 +1,26 @@
 """
 The RDM6300 / RDM630 connected via serial UART port
 
+**place-capable**: yes
+
+Options
+---------
+
+Number Format
+
+Board Connections
+------------------
+
+The voltage level of the RX/TX is 3.3V despite the wide-spread belief that it is 5V. (At least on the boards I have).
+I did check with an oscilloscope. And one can see the AMS1117 LDO on the backside of the board.
+
 """
 import logging
 import serial
 
 import misc.inputminus as pyil
 from misc.simplecolors import Colors
-from components.rfid import ReaderBaseClass
+from components.rfid.readerbase import ReaderBaseClass
 import jukebox.cfghandler
 
 from .description import DESCRIPTION

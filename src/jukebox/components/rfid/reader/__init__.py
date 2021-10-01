@@ -99,7 +99,7 @@ class ReaderRunner(threading.Thread):
         self._cancel.set()
         self._reader.stop()
 
-    def run(self):
+    def run(self):  # noqa: C901
         self._logger.debug("Start listening!")
         # Init the reader class
         # Do it here, such that the reader class is initialized and destroyed in the

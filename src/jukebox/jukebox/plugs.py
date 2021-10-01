@@ -886,8 +886,8 @@ def summarize():
 
 
 def generate_help_rst(stream):
-    print("RPC Call Reference", file=stream)
-    print("*******************\n\n", file=stream)
+    print("RPC Command Reference", file=stream)
+    print("***********************\n\n", file=stream)
     print("This file provides a summary of all the callable functions through the RPC. It depends on the "
           "loaded modules\n", file=stream)
     print(".. contents::\n", file=stream)
@@ -903,10 +903,10 @@ def generate_help_rst(stream):
         print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
 
         description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-        print(f"{description}\n\n", file=stream)
-
+        print(f"{inspect.cleandoc(description)}\n\n", file=stream)
         for name, obj in _PLUGINS[package].plugins.items():
-            description = (obj.__doc__ or "").strip('\n ')
+            # description = inspect.cleandoc(obj.__doc__ or "")
+            description = obj.__doc__ or ""
             if callable(obj):
                 fullname = f"{package}.{name}"
                 sign = f"{inspect.signature(obj)}"
@@ -917,7 +917,7 @@ def generate_help_rst(stream):
                 for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
                                     *inspect.getmembers(obj, predicate=inspect.isfunction)]:
                     if hasattr(fobj, 'plugs_callable'):
-                        description = (fobj.__doc__ or "").strip('\n ')
+                        description = fobj.__doc__ or ""
                         sign = f"{inspect.signature(fobj)}"
                         fullname = f"{package}.{name}.{fname}"
                         print(f".. py:function:: {fullname}{sign}", file=stream)
@@ -925,7 +925,7 @@ def generate_help_rst(stream):
                         print(f"    {description}\n\n", file=stream)
     print("\n\nGeneration notes", file=stream)
     print("-------------------------------------------\n\n", file=stream)
-    print("This is an automatically generated file from the loaded plugins:", file=stream)
+    print("This is an automatically generated file from the loaded plugins:\n", file=stream)
     for la, lf in get_all_loaded_packages().items():
         print(f"* *{la}*: {lf}", file=stream)
     fp = get_all_failed_packages()
