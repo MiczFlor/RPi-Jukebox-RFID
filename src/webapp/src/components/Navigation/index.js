@@ -1,24 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { makeStyles } from '@material-ui/core/styles';
-import BottomNavigation from '@material-ui/core/BottomNavigation';
-import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
-import BookmarksIcon from '@material-ui/icons/Bookmarks';
-import HomeIcon from '@material-ui/icons/Home';
-import MusicNoteIcon from '@material-ui/icons/MusicNote';
-import SettingsIcon from '@material-ui/icons/Settings';
-
-const useStyles = makeStyles({
-  stickToBottom: {
-    width: '100%',
-    position: 'fixed',
-    bottom: 0,
-  },
-});
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
+import HomeIcon from '@mui/icons-material/Home';
+import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function Navigation() {
-  const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   return (
@@ -28,7 +18,11 @@ export default function Navigation() {
         setValue(newValue);
       }}
       showLabels
-      className={classes.stickToBottom}
+      sx={{
+        width: '100%',
+        position: 'fixed',
+        bottom: '0px',
+      }}
     >
       <BottomNavigationAction
         component={Link}

@@ -1,41 +1,41 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  withoutBackButton: {
-    marginTop: 10,
-    marginLeft: 20,
-  }
-}));
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 const Header = ({ title, backLink }) => {
-  const classes = useStyles();
-
   return (
-    <Grid container spacing={1} className={classes.header}>
+    <Grid
+      container
+      spacing={1}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       {backLink &&
         <IconButton
           aria-label="back"
           component={Link}
           to={backLink}
+          size="large"
         >
           <ArrowBackIcon />
         </IconButton>
       }
       <Typography
-        className={!backLink ? classes.withoutBackButton : null}
         variant="h6"
+        sx={
+          !backLink
+          ? {
+              marginTop: '10px',
+              marginLeft: '20px',
+            }
+          : {}
+        }
       >
         {title}
       </Typography>

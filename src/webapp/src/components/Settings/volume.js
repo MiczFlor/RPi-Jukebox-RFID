@@ -8,7 +8,7 @@ import {
   Grid,
   Slider,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const marks = [5, 25, 50, 75, 100].map(
   (value) => ({ value, label: `${value}%` })

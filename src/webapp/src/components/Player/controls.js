@@ -2,15 +2,15 @@ import React, { useContext, useEffect } from 'react';
 
 import PlayerContext from '../../context/player/context';
 
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import PlayCircleFilledRoundedIcon from '@material-ui/icons/PlayCircleFilledRounded';
-import PauseCircleFilledRoundedIcon from '@material-ui/icons/PauseCircleFilledRounded';
-import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded';
-import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded';
-import ShuffleRoundedIcon from '@material-ui/icons/ShuffleRounded';
-import RepeatRoundedIcon from '@material-ui/icons/RepeatRounded';
-import RepeatOneRoundedIcon from '@material-ui/icons/RepeatOneRounded';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
+import PauseCircleFilledRoundedIcon from '@mui/icons-material/PauseCircleFilledRounded';
+import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
+import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
+import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
+import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
+import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
 
 const Controls = () => {
   const {
@@ -53,14 +53,14 @@ const Controls = () => {
   }, [playerstatus]);
 
   return (
-    <Grid container direction="row" justify="center" alignItems="center">
+    <Grid container direction="row" justifyContent="center" alignItems="center">
 
       {/* Shuffle */}
       <IconButton
         aria-label="Shuffle"
         color={isShuffle ? 'primary' : undefined}
         onClick={toggleShuffle}
-        >
+        size="large">
         <ShuffleRoundedIcon style={{ fontSize: 20 }} />
       </IconButton>
 
@@ -69,7 +69,7 @@ const Controls = () => {
         aria-label="Skip previous track"
         disabled={!songIsScheduled}
         onClick={previous}
-      >
+        size="large">
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
@@ -80,16 +80,13 @@ const Controls = () => {
           aria-label="Play"
           onClick={e => play()}
           disabled={!songIsScheduled}
-        >
+          size="large">
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
       {
         isPlaying &&
-        <IconButton
-          aria-label="Pause"
-          onClick={pause}
-        >
+        <IconButton aria-label="Pause" onClick={pause} size="large">
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
@@ -99,7 +96,7 @@ const Controls = () => {
         aria-label="Skip next track"
         disabled={!songIsScheduled}
         onClick={next}
-      >
+        size="large">
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
@@ -108,7 +105,7 @@ const Controls = () => {
         aria-label="Repeat"
         color={isRepeat ? 'primary' : undefined}
         onClick={toggleRepeat}
-      >
+        size="large">
         {
           !isSingle &&
           <RepeatRoundedIcon style={{ fontSize: 20 }} />

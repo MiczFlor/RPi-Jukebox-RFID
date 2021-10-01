@@ -3,7 +3,7 @@ import React from 'react';
 import {
   Grid,
   Typography
-} from '@material-ui/core';
+} from '@mui/material';
 
 import SelectPlayCards from './select-play-cards';
 import SelectQuickSelects from './select-quick-selects';

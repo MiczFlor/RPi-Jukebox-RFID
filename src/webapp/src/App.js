@@ -1,8 +1,8 @@
 import React from 'react';
+
+import Grid from '@mui/material/Grid';
+
 import PlayerProvider from './context/player';
-
-import Grid from '@material-ui/core/Grid';
-
 import Routes from './routes';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
         container
         direction="row"
         id="routes"
-        justify="center"
+        justifyContent="center"
       >
         <Routes />
       </Grid>

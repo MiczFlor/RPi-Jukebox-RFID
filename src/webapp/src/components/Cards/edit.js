@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 
-import Avatar from '@material-ui/core/Avatar';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
+import Avatar from '@mui/material/Avatar';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
 
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';

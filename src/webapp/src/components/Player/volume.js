@@ -1,45 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
+import VolumeDownIcon from '@mui/icons-material/VolumeDown';
+import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
+import VolumeOffIcon from '@mui/icons-material/VolumeOff';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 import PlayerContext from '../../context/player/context';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Slider from '@material-ui/core/Slider';
-import Tooltip from '@material-ui/core/Tooltip';
-import VolumeDownIcon from '@material-ui/icons/VolumeDown';
-import VolumeMuteIcon from '@material-ui/icons/VolumeMute';
-import VolumeOffIcon from '@material-ui/icons/VolumeOff';
-import VolumeUpIcon from '@material-ui/icons/VolumeUp';
-
-const useStyles = makeStyles({
-  volume: {
-    width: '100%',
-  },
-});
-
-function VolumeLabel(props) {
-  const { children, open, value } = props;
-
-  return (
-    <Tooltip
-      open={open}
-      enterTouchDelay={100}
-      placement="top"
-      title={value}>
-      {children}
-    </Tooltip>
-  );
-}
-
-VolumeLabel.propTypes = {
-  children: PropTypes.element.isRequired,
-  open: PropTypes.bool.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
 const Volume = () => {
-  const classes = useStyles();
   const {
     setVolume,
     state,
@@ -49,7 +19,7 @@ const Volume = () => {
   const { volume } = state.playerstatus || {};
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
-  const [_volume, _setVolume] = useState(volume)
+  const [_volume, _setVolume] = useState(0);
 
   const [volumeMute, setVolumeMute] = useState(false);
   const [volumeMax] = useState(75);
@@ -81,7 +51,13 @@ const Volume = () => {
   }, [isChangingVolume, volume]);
 
   return (
-    <Grid container direction="row" justify="center" alignItems="center" className={classes.volume}>
+    <Grid
+      alignItems="center"
+      container
+      direction="row"
+      justifyContent="center"
+      sx={{ width: '100%' }}
+    >
       <Grid item onClick={toggleVolumeMute}>
         {volumeMute && <VolumeOffIcon />}
         {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
@@ -90,14 +66,14 @@ const Volume = () => {
       </Grid>
       <Grid item xs>
         <Slider
-          ValueLabelComponent={VolumeLabel}
-          value={_volume || 0}
+          valueLabelDisplay="auto"
+          value={typeof _volume === 'number' ? _volume : 0}
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
           disabled={volumeMute}
           marks={[ { value: volumeMax } ]}
           step={volumeStep}
-          aria-labelledby="volume slider"
+          aria-labelledby="Volume Slider"
         />
       </Grid>
     </Grid>

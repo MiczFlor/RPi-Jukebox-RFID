@@ -7,20 +7,11 @@ import {
   toHHMMSS,
 } from '../../utils/utils';
 
-import Grid from '@material-ui/core/Grid';
-import Slider from '@material-ui/core/Slider';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  timeIndicator: {
-    marginTop: -20,
-  },
-}));
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
 
 const SeekBar = () => {
-  const classes = useStyles();
-
   const {
     seek,
     state,
@@ -59,40 +50,39 @@ const SeekBar = () => {
     }
   }, [playerstatus]);
 
-  return (
-    <>
-      <Grid container>
-        <Grid item xs>
-          <Slider
-            value={progress}
-            onChange={handleSeekToPosition}
-            onChangeCommitted={playFromNewTime}
-            disabled={!playerstatus?.title}
-            aria-labelledby="Song position"
-          />
-        </Grid>
+  return <>
+    <Grid container>
+      <Grid item xs>
+        <Slider
+          value={progress || 0}
+          onChange={handleSeekToPosition}
+          onChangeCommitted={playFromNewTime}
+          disabled={!playerstatus?.title}
+          aria-labelledby="Song position"
+        />
       </Grid>
-      <Grid
-        alignItems="center"
-        className={classes.timeIndicator}
-        container
-        direction="row"
-        justify="space-between"
-      >
-        <Grid item>
-          <Typography color="textSecondary">
-            {toHHMMSS(parseInt(timeElapsed))}
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Typography color="textSecondary">
-            {/* -{toHHMMSS(parseInt(timeTotal)-parseInt(timeElapsed))} */}
-            {toHHMMSS(parseInt(timeTotal))}
-          </Typography>
-        </Grid>
+    </Grid>
+    <Grid
+      alignItems="center"
+      container
+      direction="row"
+      justifyContent="space-between"
+      sx={ {
+        marginTop: '-20px',
+      }}
+    >
+      <Grid item>
+        <Typography color="textSecondary">
+          {toHHMMSS(parseInt(timeElapsed))}
+        </Typography>
       </Grid>
-    </>
-  );
+      <Grid item>
+        <Typography color="textSecondary">
+          {toHHMMSS(parseInt(timeTotal))}
+        </Typography>
+      </Grid>
+    </Grid>
+  </>;
 };
 
 export default SeekBar;

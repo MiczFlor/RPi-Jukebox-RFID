@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 
 import Cover from './cover';
 import Controls from './controls';
@@ -9,19 +8,17 @@ import Display from './display';
 import SeekBar from './seekbar';
 import Volume from './volume';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-}));
-
 const Player = () => {
-  const classes = useStyles();
-
   return (
-    <Grid container id="player" className={classes.root}>
+    <Grid
+      container
+      id="player"
+      sx={{
+        paddingTop: '20px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+      }}
+    >
       <Grid item xs={12} sm={5}>
         <Cover />
       </Grid>

@@ -8,7 +8,7 @@ import {
   Grid,
   NativeSelect,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const TIMESLOTS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
 
@@ -26,7 +26,7 @@ const SettingsAutoShutdown = () => {
       <Divider />
       <CardContent>
         <Grid container direction="column">
-          <Grid container direction="row" justify="space-between" alignItems="center">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography>Stop Playout Timer</Typography>
             </Grid>
@@ -41,7 +41,7 @@ const SettingsAutoShutdown = () => {
             </Grid>
           </Grid>
 
-          <Grid container direction="row" justify="space-between" alignItems="center">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography>Shutdown Timer</Typography>
             </Grid>
@@ -56,7 +56,7 @@ const SettingsAutoShutdown = () => {
             </Grid>
           </Grid>
 
-          <Grid container direction="row" justify="space-between" alignItems="center">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
               <Typography>Idle Shutdown</Typography>
             </Grid>

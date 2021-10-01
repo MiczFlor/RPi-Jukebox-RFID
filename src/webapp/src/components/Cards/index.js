@@ -1,31 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import CardsList from './cardslist';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Fab from '@material-ui/core/Fab';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import Fab from '@mui/material/Fab';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 
 import Header from '../Header';
 import { fetchCardsList } from '../../utils/requests';
 
-const useStyles = makeStyles((theme) => ({
-  cardsList: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  fab: {
-    position: 'fixed',
-    bottom: theme.spacing(2) + 60,
-    right: theme.spacing(2),
-  },
-}));
-
 const Cards = () => {
-  const classes = useStyles();
+  const theme = useTheme();
 
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
@@ -50,7 +38,14 @@ const Cards = () => {
   return (
     <div id="cards">
       <Header title="Cards" />
-      <Grid container spacing={1} className={classes.cardsList}>
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
         {isLoading
           ? <CircularProgress />
           : <CardsList cardsList={data} />
@@ -61,9 +56,13 @@ const Cards = () => {
       </Grid>
       <Fab
         aria-label="Register card"
-        className={classes.fab}
         color="primary"
         onClick={openRegisterCard}
+        sx={{
+          position: 'fixed',
+          bottom: '76px',
+          right: theme.spacing(2),
+        }}
       >
         <AddIcon />
       </Fab>
