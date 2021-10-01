@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router';
 
 import Avatar from '@material-ui/core/Avatar';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
@@ -8,37 +8,37 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
 import CardsDeleteDialog from './dialogs/delete';
-import { deleteCard, registerCard } from '../../utils/requests';
+import { fetchCardsList, deleteCard, registerCard } from '../../utils/requests';
 
 const CardEdit = () => {
   const history = useHistory();
+  const params = useParams();
   const { location: { state } } = history;
-  const { action, id, from_quick_select } = state;
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedAction, setSelectedAction] = useState(from_quick_select);
-  const [selectedFolder, setSelectedFolder] = useState(action?.args);
+  const [cardId, setCardId] = useState(undefined);
+  const [selectedAction, setSelectedAction] = useState(undefined);
+  const [selectedFolder, setSelectedFolder] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegisterCard = () => {
-    if (selectedFolder) {
-      const kwargs = {
-        card_id: id,
-        quick_select: selectedAction,
-        args: selectedFolder,
-        overwrite: true,
-      };
+  const handleRegisterCard = async (card_id) => {
+    const kwargs = {
+      card_id: card_id.toString(),
+      quick_select: selectedAction,
+      overwrite: true,
+    };
 
-      return registerCard(kwargs);
+    if (selectedAction === 'play_card') {
+      kwargs.args = selectedFolder;
     }
-  };
 
-  const handleDeleteCard = async () => {
-    const { error } = await deleteCard(id);
+    const { error } = await registerCard(kwargs);
 
     if (error) {
       return console.error(error);
@@ -46,6 +46,42 @@ const CardEdit = () => {
 
     history.push('/cards');
   };
+
+  const handleDeleteCard = async () => {
+    const { error } = await deleteCard(cardId);
+
+    if (error) {
+      return console.error(error);
+    }
+
+    history.push('/cards');
+  };
+
+  useEffect(() => {
+    if (state && state.id) {
+      setCardId(state.id);
+      setSelectedAction(state.from_quick_select);
+      setSelectedFolder(state.action?.args);
+      return;
+    }
+
+    const loadCardList = async () => {
+      const { result, error } = await fetchCardsList(setIsLoading);
+
+      if (result && params?.cardId && result[params.cardId]) {
+        setCardId(params.cardId);
+        setSelectedAction(result[params.cardId].from_quick_select);
+        setSelectedFolder(result[params.cardId].action?.args);
+      }
+
+      if (error) {
+        console.error(error);
+        history.push('/cards');
+      }
+    }
+
+    loadCardList();
+  }, [history, params, state]);
 
   return (
     <>
@@ -59,17 +95,20 @@ const CardEdit = () => {
                   <BookmarkIcon />
                 </Avatar>
               }
-              title={id}
+              title={cardId}
             />
             <CardContent>
-              <Grid container direction="row" alignItems="center">
-                <ControlsSelector
-                  selectedAction={selectedAction}
-                  setSelectedAction={setSelectedAction}
-                  selectedFolder={selectedFolder}
-                  setSelectedFolder={setSelectedFolder}
-                />
-              </Grid>
+              {isLoading
+                ? <CircularProgress />
+                : <Grid container direction="row" alignItems="center">
+                    <ControlsSelector
+                      selectedAction={selectedAction}
+                      setSelectedAction={setSelectedAction}
+                      selectedFolder={selectedFolder}
+                      setSelectedFolder={setSelectedFolder}
+                    />
+                  </Grid>
+              }
             </CardContent>
             <CardActions>
               <Button
@@ -82,7 +121,7 @@ const CardEdit = () => {
               <Button
                 size="small"
                 color="primary"
-                onClick={handleRegisterCard}
+                onClick={(e) => handleRegisterCard(cardId)}
               >
                 Save
               </Button>
@@ -94,7 +133,7 @@ const CardEdit = () => {
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         doDelete={handleDeleteCard}
-        cardId={id}
+        cardId={cardId}
       />
     </>
   );

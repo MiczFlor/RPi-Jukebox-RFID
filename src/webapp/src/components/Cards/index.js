@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
+import AddIcon from '@material-ui/icons/Add';
+import CardsList from './cardslist';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Fab from '@material-ui/core/Fab';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-import AddIcon from '@material-ui/icons/Add';
-import CardsList from './cardslist';
-import Fab from '@material-ui/core/Fab';
 import Header from '../Header';
-import { socketRequest } from '../../sockets';
+import { fetchCardsList } from '../../utils/requests';
 
 const useStyles = makeStyles((theme) => ({
   cardsList: {
@@ -32,30 +32,19 @@ const Cards = () => {
   const [isLoading, setIsLoading] = useState(true);
   const history = useHistory();
 
-  const openEditCard = (data) => {
-    history.push(`/cards/${data.id}/edit`, data);
-  };
-
   const openRegisterCard = () => {
     history.push('/cards/register');
   };
 
   useEffect(() => {
-    const fetchCardsList = async () => {
-      setIsLoading(true);
+    const loadCardList = async () => {
+      const { result, error } = await fetchCardsList(setIsLoading);
 
-      try {
-        const result = await socketRequest('cards', 'list_cards');
-        setData(result);
-      }
-      catch (error) {
-        setError(error)
-      };
+      if(result) setData(result);
+      if(error) setError(error);
+    }
 
-      setIsLoading(false);
-    };
-
-    fetchCardsList();
+    loadCardList();
   }, [history]);
 
   return (
@@ -64,10 +53,7 @@ const Cards = () => {
       <Grid container spacing={1} className={classes.cardsList}>
         {isLoading
           ? <CircularProgress />
-          : <CardsList
-              cardsList={data}
-              openEditCard={openEditCard}
-            />
+          : <CardsList cardsList={data} />
         }
         {error &&
           <Typography>An error occurred while loading cards list.</Typography>

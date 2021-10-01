@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
+import { isNil, reject } from 'ramda';
 
 import {
   Avatar,
@@ -19,12 +20,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CardsList = ({ cardsList, openEditCard }) => {
+const CardsList = ({ cardsList }) => {
   const classes = useStyles();
 
   const ListItemLink = (cardId) => {
-    // const to = `/cards/${cardId}/edit`;
-
     const EditCardLink = forwardRef((props, ref) => {
       const { data } = props;
       const location = {
@@ -36,7 +35,10 @@ const CardsList = ({ cardsList, openEditCard }) => {
     });
 
     const description = cardsList[cardId].from_quick_select
-      ? `${cardsList[cardId].from_quick_select}, ${cardsList[cardId].action.args}`
+      ? reject(
+          isNil,
+          [cardsList[cardId].from_quick_select, cardsList[cardId].action.args]
+        ).join(', ')
       : cardsList[cardId].func
 
     return (
@@ -45,7 +47,6 @@ const CardsList = ({ cardsList, openEditCard }) => {
         component={EditCardLink}
         data={{ id: cardId, ...cardsList[cardId] }}
         key={cardId}
-        // onClick={e => openEditCard({ id: cardId, ...cardsList[cardId] })}
       >
         <ListItemAvatar>
           <Avatar>

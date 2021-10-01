@@ -5,6 +5,21 @@ const getFlattenListOfDirectories = async () => {
   return list.filter(entry => !!entry.directory);
 };
 
+const fetchCardsList = async (setIsLoading) => {
+  setIsLoading(true);
+
+  try {
+    const result = await socketRequest('cards', 'list_cards');
+    setIsLoading(false);
+    return { result };
+  }
+  catch (error) {
+    console.error('registerCard error: ', error);
+    setIsLoading(false);
+    return { error };
+  };
+};
+
 const registerCard = async (kwargs) => {
   try {
     const result = await socketRequest('cards', 'register_card', null, kwargs);
@@ -28,6 +43,7 @@ const deleteCard = async (card_id) => {
 
 export {
   getFlattenListOfDirectories,
+  fetchCardsList,
   deleteCard,
   registerCard,
 }

@@ -53,26 +53,26 @@ const CardsRegister = () => {
   const [selectedFolder, setSelectedFolder] = useState(undefined);
 
   const handleRegisterCard = async () => {
-    if (selectedFolder) {
-      const kwargs = {
-        card_id: lastSwipedCardId.toString(),
-        quick_select: selectedAction,
-        args: selectedFolder,
-        overwrite: true,
-      };
+    const kwargs = {
+      card_id: lastSwipedCardId.toString(),
+      quick_select: selectedAction,
+      overwrite: true,
+    };
 
-      const { error } = await registerCard(kwargs);
-
-      if (error) {
-        return console.error(error);
-      }
-
-      history.push('/cards');
+    if (selectedAction === 'play_card') {
+      kwargs.args = selectedFolder;
     }
+
+    const { error } = await registerCard(kwargs);
+
+    if (error) {
+      return console.error(error);
+    }
+
+    history.push('/cards');
   };
 
   useEffect(() => {
-    console.log(`setLastSwipedCardId(${card_id});`);
     setLastSwipedCardId(card_id);
   }, [card_id])
 

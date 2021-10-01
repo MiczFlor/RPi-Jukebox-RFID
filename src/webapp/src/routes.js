@@ -35,7 +35,7 @@ const Routes = (props) => {
           <Route path='/cards/register'>
             <CardsRegister />
           </Route>
-          <Route path='/cards/:cardsId/edit'>
+          <Route path='/cards/:cardId/edit'>
             <CardsEdit />
           </Route>
           <Route path='/cards'>
