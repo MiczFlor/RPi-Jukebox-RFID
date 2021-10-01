@@ -1,64 +1,48 @@
 import React, { useEffect, useState, useContext } from 'react';
 
 import {
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
+  Avatar,
   CircularProgress,
+  Divider,
   Grid,
-  makeStyles,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
   TextField,
-  Typography
-} from '@material-ui/core';
+  Typography,
+} from '@mui/material';
 
 import { socketRequest } from '../../sockets';
 import noCover from '../../assets/noCover.jpg';
 import PlayerContext from '../../context/player/context';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    height: '100%'
-  },
-  content: {
-    flex: '1',
-  },
-  cover: {
-    width: 100,
-    height: 100,
-  },
-  searchInput: {
-    width: '100%',
-    marginBottom: 10,
-  }
-}));
-
-const DirectoryCard = ({ classes, directory, play }) => {
+const DirectoryItem = ({ directory, play }) => {
   const tree = directory.split('/');
   const folder = tree.pop();
   const parentPath = tree.join('/');
 
   return (
-    <Grid item xs={12} sm={6}>
-      <Card className={classes.root} variant="outlined">
-        <CardMedia className={classes.cover} image={noCover}></CardMedia>
-        <CardContent className={classes.content}>
-          <Typography variant="subtitle1" display="block" gutterBottom>{folder}</Typography>
-          <Typography variant="overline" display="block" gutterBottom>{parentPath}</Typography>
-          <Button variant="outlined" onClick={e => play(directory)}>Play</Button>
-        </CardContent>
-      </Card>
-    </Grid>
+    <>
+      <ListItem disablePadding>
+        <ListItemButton onClick={e => play(directory)}>
+          <ListItemAvatar>
+            <Avatar variant="rounded" alt="Cover" src={noCover} />
+          </ListItemAvatar>
+          <ListItemText
+            primary={folder}
+            secondary={parentPath}
+          />
+        </ListItemButton>
+      </ListItem>
+      <Divider component="li" />
+    </>
   );
-};
+}
 
 const Library = () => {
-  const classes = useStyles();
-  const {
-    play,
-    state: { playerstatus },
-  } = useContext(PlayerContext);
+  const { play } = useContext(PlayerContext);
 
   const [isLoading, setIsLoading] = useState(true);
   const [folders, setFolders] = useState([]);
@@ -90,40 +74,34 @@ const Library = () => {
         <Grid container>
           <Grid item xs={12}>
             <TextField
-              className={classes.searchInput}
               id="outlined-basic"
               label="Search"
-              variant="outlined"
-              value={searchQuery}
               onChange={handleSearch}
+              value={searchQuery}
+              variant="outlined"
+              sx={{
+                width: '100%',
+                marginBottom: '10px',
+              }}
             />
           </Grid>
         </Grid>
       </form>
       {isLoading && <CircularProgress />}
-      {
-        !isLoading &&
-        <Grid container spacing={1}>
-        {
-          folders
+      {!isLoading &&
+        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          {folders
             .filter(directoryNameBySearchQuery)
             .map(({ directory }) =>
-              <DirectoryCard
-                classes={classes}
+              <DirectoryItem
                 directory={directory}
                 key={directory}
                 play={play}
-                playerstatus={playerstatus}
               />
             )
-        }
-        </Grid>
+          }
+        </List>
       }
-      {/* {
-        !isLoading &&
-        !folders.filter(directoryNameBySearchQuery).length &&
-        <Typography variant="overline" display="block" gutterBottom>Nothing found</Typography>
-      } */}
     </div>
   );
 };

@@ -8,21 +8,12 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+  Typography
+} from '@mui/material';
 
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  }
-}));
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 const CardsList = ({ cardsList }) => {
-  const classes = useStyles();
-
   const ListItemLink = (cardId) => {
     const EditCardLink = forwardRef((props, ref) => {
       const { data } = props;
@@ -63,7 +54,7 @@ const CardsList = ({ cardsList }) => {
 
   return (
     cardsList && Object.keys(cardsList).length > 0
-      ? <List className={classes.root}>
+      ? <List sx={{ width: '100%' }}>
           {Object.keys(cardsList).map(ListItemLink)}
         </List>
       : <Typography>No cards registered!</Typography>

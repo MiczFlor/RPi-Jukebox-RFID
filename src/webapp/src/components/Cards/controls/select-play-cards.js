@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   FormControl,
   NativeSelect
-} from '@material-ui/core';
+} from '@mui/material';
 
 import {
   getFlattenListOfDirectories

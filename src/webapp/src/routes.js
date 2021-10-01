@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route, HashRouter, Switch } from 'react-router-dom'
 
-import { makeStyles } from '@material-ui/core/styles';
 import Cards from './components/Cards';
 import CardsRegister from './components/Cards/register';
 import CardsEdit from './components/Cards/edit';
@@ -10,21 +9,19 @@ import Navigation from './components/Navigation';
 import Player from './components/Player'
 import Settings from './components/Settings'
 
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 
-const useStyles = makeStyles((theme) => ({
-  navigationPlaceholder: {
-    margin: 10,
-    marginBottom: 64,
-  },
-}));
-
-const Routes = (props) => {
-  const classes = useStyles();
-
+const Routes = () => {
   return (
     <HashRouter>
-      <Grid item xs={12} md={6} className={classes.navigationPlaceholder}>
+      <Grid
+        item xs={12}
+        md={6}
+        sx={{
+          margin: '10px',
+          marginBottom: '64px',
+        }}
+      >
         <Switch>
           <Route exact path='/'>
             <Player />

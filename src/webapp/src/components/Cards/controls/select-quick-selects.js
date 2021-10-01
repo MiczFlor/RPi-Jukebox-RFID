@@ -3,7 +3,7 @@ import React from 'react';
 import {
   FormControl,
   NativeSelect
-} from '@material-ui/core';
+} from '@mui/material';
 
 import { JUKEBOX_ACTIONS_MAP } from '../../../config';
 

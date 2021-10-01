@@ -6,7 +6,7 @@ import {
   CardHeader,
   Divider,
   Grid,
-} from '@material-ui/core';
+} from '@mui/material';
 
 import RebootDialog from './dialogs/reboot';
 import ShutDownDialog from './dialogs/shutdown';
@@ -18,7 +18,7 @@ const SystemControls = () => {
       <CardHeader title="System Controls" />
       <Divider />
       <CardContent>
-        <Grid container direction="row" justify="space-around" alignItems="center">
+        <Grid container direction="row" justifyContent="space-around" alignItems="center">
           <Grid item>
             <RebootDialog />
           </Grid>

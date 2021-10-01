@@ -10,8 +10,8 @@ import {
   CardHeader,
   Grid,
   Typography
-} from '@material-ui/core';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
+} from '@mui/material';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 import PlayerContext from '../../context/player/context';
 
