@@ -38,30 +38,6 @@ class MusicCoverArt:
 
         return cover_base64_string
 
-    @plugin.tag
-    def get_by_folder_name_as_base64(self, folder):
-        # Find first file in folder
-        os.listdir(path)[0]
-
-    # Currently not used, but left here for
-    def save_to_cache(self, file_name, file_data):
-        cache_path = self.cache_path
-
-        if cache_path is None:
-            return
-
-        Path(cache_path).mkdir(parents=True, exist_ok=True)
-        cache_path_file = cache_path + '/' + file_name
-
-        if Path(cache_path_file).exists() is not True:
-            try:
-                image_file = open(cache_path_file, 'wb')
-                image_file.write(file_data)
-                image_file.close()
-                logger.debug('Write file: ' + cache_path_file)
-            except Exception as e:
-                logger.error(f'Error while storing to cache: {e}')
-
 
 # # The initializer stuff gets executed directly
 music_cover_art = MusicCoverArt()
