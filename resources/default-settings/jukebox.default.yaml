@@ -1,13 +1,13 @@
 system:
   box_name: Jukebox
   # What are these dirs for? They must match the mpd config -> get them from there
-  audiofolder_path: ../../shared
-  playlistfolder_path: ../../playlists
+  audiofolder_path: ../../shared/audiofolders
+  playlistfolder_path: ../../shared/playlists
 modules:
   named:
     # Do not change the order!
     publishing: publishing
-    volume: volume     
+    volume: volume
     jingle: jingle
     player: playermpd
     cards: rfid.cards

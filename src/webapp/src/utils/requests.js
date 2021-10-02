@@ -1,5 +1,16 @@
 import { socketRequest } from "../sockets";
 
+const getMusicCoverByFilenameAsBase64 = async (audio_src) => {
+  try {
+    const result = await socketRequest('music_cover_art', 'ctrl', 'get_by_filename_as_base64', { audio_src });
+    return { result };
+  }
+  catch (error) {
+    console.error('registerCard error: ', error);
+    return { error };
+  };
+}
+
 const getFlattenListOfDirectories = async () => {
   const list = await socketRequest('player', 'ctrl', 'list_all_dirs');
   return list.filter(entry => !!entry.directory);
@@ -42,6 +53,7 @@ const deleteCard = async (card_id) => {
 };
 
 export {
+  getMusicCoverByFilenameAsBase64,
   getFlattenListOfDirectories,
   fetchCardsList,
   deleteCard,
