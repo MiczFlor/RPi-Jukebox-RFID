@@ -12,7 +12,12 @@ const toHHMMSS = (seconds) => {
   ].filter(Boolean).join(':');
 }
 
+const pluginIsLoaded = (pluginList = {}, _package) => {
+  return Object.keys(pluginList).includes(_package)
+}
+
 export {
+  pluginIsLoaded,
   progressToTime,
   timeToProgress,
   toHHMMSS,

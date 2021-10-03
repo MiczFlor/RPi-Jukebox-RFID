@@ -11,22 +11,6 @@ const SUBSCRIPTIONS = [
   'rfid.card_id',
 ];
 
-const DEFAULT_PLAYER_STATUS = {
-  kwargs: {
-    status: {
-      consume: "0",
-      mixrampdb: "0.000000",
-      playlist: "1",
-      playlistlength: "0",
-      random: "0",
-      repeat: "0",
-      single: "0",
-      state: "stop",
-      volume: 60,
-    }
-  }
-};
-
 const JUKEBOX_ACTIONS_MAP = {
   // Quick Selects / QS
 
@@ -57,7 +41,6 @@ const JUKEBOX_ACTIONS_MAP = {
 }
 
 export {
-  DEFAULT_PLAYER_STATUS,
   JUKEBOX_ACTIONS_MAP,
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,

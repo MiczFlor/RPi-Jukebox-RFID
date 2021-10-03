@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { DEFAULT_PLAYER_STATUS } from '../../config';
 import PlayerContext from './context';
 import { initSockets, socketRequest } from '../../sockets';
 
@@ -11,12 +10,10 @@ const PlayerProvider = ({ children }) => {
     try {
       const { status } = await socketRequest(_package, plugin, method, kwargs);
 
-      if(!status) {
-        // TODO: Implement error handling as this shouldn't happen
-        setState({ ...state, playerstatus: DEFAULT_PLAYER_STATUS });
+      if(status) {
+        setState({ ...state, playerstatus: status });
       }
 
-      setState({ ...state, playerstatus: status });
       setState({ ...state, requestInFlight: false });
 
       return Promise.resolve();
@@ -28,16 +25,6 @@ const PlayerProvider = ({ children }) => {
   }
 
   const [state, setState] = useState({
-    // Provide a status even when there is not data or
-    // or insufficient data coming from the server
-    status: DEFAULT_PLAYER_STATUS.kwargs.status,
-
-    // To react immediately to user input, we control the
-    // playing status separately, otherwise there is a short
-    // lack in response based on the publish events coming
-    // from the server
-    isPlaying: false,
-
     // requestInFlight is required to prevent sending requests
     // to the server while another request is still being
     // processed. This can happen when users click an action in
@@ -51,7 +38,6 @@ const PlayerProvider = ({ children }) => {
 
 
   // All global player actions available across the entire app
-
   const play = (directory) => {
     if (state.requestInFlight) return;
 
