@@ -7,9 +7,9 @@ RUN groupadd --gid 1000 wurst ;\
   useradd -u 1000 -g 1000 -G sudo -d /home/hans -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' hans ;\
   chown -R 1000:1000 /code /home/hans ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests2.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests3.sh
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests_altuser.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
