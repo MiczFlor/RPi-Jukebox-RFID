@@ -35,7 +35,7 @@ Here are some examples for card is '0001' to '0003' using quick select options:
             folder: path/to/folder
 
 .. note::
-    * Remember card ids must be strings! Soe, quote them
+    * Remember card ids must be strings! So, quote them!
     * *args* must be a **list** of arguments to be passed! Even if ony a single argument is passed. So, use *args: [value]*.
       We try catch mis-uses but that might not always work.
 

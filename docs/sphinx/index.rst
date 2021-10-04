@@ -12,7 +12,9 @@ Welcome to RPi Jukebox RFID's documentation!
    :maxdepth: 2
    :caption: Getting Started:
 
+   featurelist
    install
+   migration
    coreapps
 
 .. toctree::
@@ -29,6 +31,7 @@ Welcome to RPi Jukebox RFID's documentation!
    :maxdepth: 2
    :caption: Developer Reference:
 
+   development_environment
    api
 
 

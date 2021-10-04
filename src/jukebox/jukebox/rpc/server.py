@@ -1,4 +1,52 @@
 # -*- coding: utf-8 -*-
+"""
+Remote Procedure Call Server (RPC)
+*************************************
+
+Bind to tcp and/or websocket port and translates incoming requests to procedure calls.
+Avaiable procedures to call are all functions registered with the plugin package.
+
+To protocol is loosely based on `jsonrpc <https://www.jsonrpc.org/specification>`_
+
+But with different elements directly relating to the plugin concept and Python function argument options
+
+.. code-block:: yaml
+
+    {
+      'package'  : str  # The plugin package loaded from python module
+      'plugin'   : str  # The plugin object to be accessed from the package
+                        # (i.e. function or class instance)
+      'method'   : str  # (optional) The method of the class instance
+      'args'     : [ ]  # (optional) Positional arguments as list
+      'kwargs'   : { }  # (optional) Keyword arguments as dictionary
+      'as_thread': bool # (optional) start call in separate thread
+      'id'       : Any  # (optional) Round-trip id for response (may not be None)
+      'tsp'      : Any  # (optional) measure and return total processing time for
+                        # the call request (may not be None)
+    }
+
+**Response**
+
+A response will ALWAYS be send, independent of presence of 'id'. This is in difference to the
+jsonrpc specification. But this is a ZeroMQB REQ/REP pattern requirement!
+
+If 'id' is omitted, the response will be 'None'! Unless an error occurred, then the error is returned.
+The absence of 'id' indicates that the requester is not interested in the response.
+If present, 'id' and 'tsp' may not be None. If they are None, there are treated as if non-existing.
+
+**Sockets**
+
+Three sockets are opened
+
+#. TCP (on a configurable port)
+#. Websocket  (on a configurable port)
+#. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
+   call arbitrary RPC functions from plugins that provide an interface to the outside world (e.g. GPIO). By also going though
+   the RPC instead of calling function directly we increase thread-safety and provide easy configurability (e.g. which
+   button triggers what action)
+
+"""
+
 
 import nanotime
 import zmq
@@ -12,7 +60,9 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class RpcServer:
+    """The RPC Server Class"""
     def __init__(self, context=None):
+        """Initialize the connections and bind to the ports"""
         # Get the global context (will be created if non-existing)
         logger.info("Init RPC Server")
         self.context = context or zmq.Context.instance()
@@ -41,16 +91,20 @@ class RpcServer:
         logger.info('All socket connections initialized')
 
     def terminate(self):
+        # This does not really exit the server
+        # as the run has a blocking call to socket.recv()
         logger.info("Closing RPC Server")
         self._keep_running = False
 
     def run(self):
+        """The main endless loop waiting for requests and forwarding the
+        call request to the plugin module"""
         self._keep_running = True
         logger.info("RPC Servers started")
         # TODO: check if connected, otherwise connect or exit?
 
         while self._keep_running:
-            #  Wait for next request from client
+            # Wait for next request from client
             message = self.socket.recv()
             nt = nanotime.now().nanoseconds()
 
@@ -60,24 +114,6 @@ class RpcServer:
             error = None
             result = None
 
-            # Based on jsonrpc https://www.jsonrpc.org/specification
-            # But with different elements
-            # {
-            #   'package'  : str  # The plugin package loaded from python module
-            #   'plugin'   : str  # The plugin object to be accessed from the package (i.e. function or class instance)
-            #   'method'   : str  # (optional) The method of the class instance
-            #   'args'     : [ ]  # (optional) Positional arguments as list
-            #   'kwargs'   : { }  # (optional) Keyword arguments as dictionary
-            #   'as_thread': bool # (optional) start call in separate thread
-            #   'id'       : Any  # (optional) Round-trip id for response (may not be None)
-            #   'tsp'      : Any  # (optional) measure and return total processing time for the call request (may not be None)
-            # }
-            # Note the difference in response behavior
-            # A response will ALWAYS be send, independent of presence of 'id'
-            # This is a ZeroMQB REQ/REP pattern requirement!
-            # But if 'id' is omitted, this will always be 'None'! Unless an error occurred, then the error is returned
-            # The absence of 'id' indicates that the requester is not interested in the response
-            # If present, 'id' and 'tsp' may not be None. If they are None, there are treated as if non-existing.
             package = client_request.pop('package', None)
             if package is not None:
                 plugin = client_request.pop('plugin', None)
@@ -113,6 +149,6 @@ class RpcServer:
             if len(client_request) != 0:
                 logger.warning(f"Ignoring unknown request keys: {client_request.keys()}")
 
-            #  Send reply back to client
+            # Send reply back to client
             logger.debug(f"Sending response: {response}")
             self.socket.send_string(json.dumps(response))

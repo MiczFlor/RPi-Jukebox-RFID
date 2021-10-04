@@ -9,3 +9,5 @@ Developers API Introduction
    :caption: The Python packages:
 
    plugs
+   publishing
+   rpc_server

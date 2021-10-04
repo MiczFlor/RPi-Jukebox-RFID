@@ -9,10 +9,20 @@ You may configure a single or even multiple parallel readers (of different or id
 
 Successive card swipes are suppressed to avoid bouncing effects. This can be deactivated for individual cards.
 
+.. contents::
+
 Reader Types
 ------------
 
-TBD
+place-capable:
+    Some readers give a single event signal when the card is placed on the reader. This is amply sufficient
+    to build a fully-featured Jukebox. Other readers give a continuous
+    signal. The latter allows to also detect card removal and not only card placement. This can be used to
+    invoke pause when the card is removed.
+
+    Generally, all :ref:`USB-based RFID readers <rfidreaders:Generic USB reader>` are **not** place-capable.
+
+    The known place-capable readers are :ref:`RDM6300 <rfidreaders:RDM6300 serial UART>`, MFRC522, and PN532.
 
 Reader Configuration
 -----------------------
