@@ -8,7 +8,7 @@ const PlayerProvider = ({ children }) => {
     setState({ ...state, requestInFlight: true });
 
     try {
-      const { status } = await socketRequest(_package, plugin, method, kwargs);
+      const { status } = await socketRequest(_package, plugin, method, kwargs) || {};
 
       if(status) {
         setState({ ...state, playerstatus: status });

@@ -11,7 +11,6 @@ import {
   ListItemButton,
   ListItemText,
   TextField,
-  Typography,
 } from '@mui/material';
 
 import { socketRequest } from '../../sockets';

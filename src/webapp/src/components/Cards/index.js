@@ -13,12 +13,12 @@ import Header from '../Header';
 import { fetchCardsList } from '../../utils/requests';
 
 const Cards = () => {
+  const history = useHistory();
   const theme = useTheme();
 
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const history = useHistory();
 
   const openRegisterCard = () => {
     history.push('/cards/register');

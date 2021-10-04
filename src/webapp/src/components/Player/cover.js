@@ -47,7 +47,12 @@ const Cover = () => {
             height: '100%',
           }}
         >
-          {coverImage && <img style={{ width: '100%', height: '100%' }} src={`data:image/jpeg;base64,${coverImage}`} />}
+          {coverImage &&
+            <img
+              alt="Cover"
+              src={`data:image/jpeg;base64,${coverImage}`}
+              style={{ width: '100%', height: '100%' }}
+            />}
           {!coverImage && <MusicNoteIcon style={{ fontSize: 75 }} />}
         </Grid>
       </Paper>

@@ -27,22 +27,26 @@ const SettingsVolume = () => {
           <Grid item>
             <Typography>Maximum Volume</Typography>
             <Slider
-              marks={marks}
-              step={1}
-              min={0}
-              max={100}
               defaultValue={volumeMax}
+              marks={marks}
+              max={100}
+              min={0}
+              size="small"
+              step={1}
+              valueLabelDisplay="auto"
             />
           </Grid>
 
           <Grid item>
             <Typography>Volume Steps</Typography>
             <Slider
-              step={1}
-              marks
-              min={1}
-              max={15}
               defaultValue={volumeStep}
+              marks
+              max={15}
+              min={1}
+              size="small"
+              step={1}
+              valueLabelDisplay="auto"
             />
           </Grid>
         </Grid>
