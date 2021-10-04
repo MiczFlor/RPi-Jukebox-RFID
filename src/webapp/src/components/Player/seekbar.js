@@ -54,11 +54,12 @@ const SeekBar = () => {
     <Grid container>
       <Grid item xs>
         <Slider
-          value={progress || 0}
+          aria-labelledby="Song position"
+          disabled={!playerstatus?.title}
           onChange={handleSeekToPosition}
           onChangeCommitted={playFromNewTime}
-          disabled={!playerstatus?.title}
-          aria-labelledby="Song position"
+          size="small"
+          value={progress || 0}
         />
       </Grid>
     </Grid>

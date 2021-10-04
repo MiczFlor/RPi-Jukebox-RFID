@@ -6,10 +6,13 @@ import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import { useTheme } from '@mui/material/styles';
 
 import PlayerContext from '../../context/player/context';
 
 const Volume = () => {
+  const theme = useTheme();
+
   const {
     setVolume,
     state,
@@ -22,7 +25,7 @@ const Volume = () => {
   const [_volume, _setVolume] = useState(0);
 
   const [volumeMute, setVolumeMute] = useState(false);
-  const [volumeMax] = useState(75);
+  const [volumeMax] = useState(100);
   const [volumeStep] = useState(1);
 
   const toggleVolumeMute = () => {
@@ -58,7 +61,11 @@ const Volume = () => {
       justifyContent="center"
       sx={{ width: '100%' }}
     >
-      <Grid item onClick={toggleVolumeMute}>
+      <Grid
+        item
+        onClick={toggleVolumeMute}
+        sx={{ marginRight: theme.spacing(2) }}
+      >
         {volumeMute && <VolumeOffIcon />}
         {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
         {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
@@ -66,14 +73,15 @@ const Volume = () => {
       </Grid>
       <Grid item xs>
         <Slider
-          valueLabelDisplay="auto"
-          value={typeof _volume === 'number' ? _volume : 0}
+          aria-labelledby="Volume Slider"
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
           disabled={volumeMute}
           marks={[ { value: volumeMax } ]}
+          size="small"
           step={volumeStep}
-          aria-labelledby="Volume Slider"
+          value={typeof _volume === 'number' ? _volume : 0}
+          valueLabelDisplay="auto"
         />
       </Grid>
     </Grid>

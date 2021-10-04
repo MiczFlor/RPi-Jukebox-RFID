@@ -18,7 +18,7 @@ class MusicCoverArt:
     def __init__(self):
         self.audiofolder_path = cfg.getn('system', 'audiofolder_path')
 
-        if self.audiofolder_path is None or self.cache_path is None:
+        if self.audiofolder_path is None:
             logger.error("Missing config, can't initialize plugin")
 
     @plugin.tag

@@ -1,7 +1,5 @@
 import React, { useContext, useEffect } from 'react';
 
-import PlayerContext from '../../context/player/context';
-
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
@@ -11,6 +9,8 @@ import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
 import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
+
+import PlayerContext from '../../context/player/context';
 
 const Controls = () => {
   const {

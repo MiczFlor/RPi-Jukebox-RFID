@@ -1,26 +1,20 @@
 import React, { useContext, useState } from 'react';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
-import Snackbar from '@mui/material/Snackbar';
-import makeStyles from '@mui/styles/makeStyles';
+
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  Snackbar,
+} from '@mui/material';
 
 import PlayerContext from '../../../context/player/context';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
-}));
-
 export default function RebootDialog() {
-  const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [waitingForReboot, setWaitingForReboot] = React.useState(false);
   const [showError, setShowError] = useState(false);
