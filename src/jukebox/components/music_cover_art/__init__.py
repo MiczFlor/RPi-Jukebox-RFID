@@ -2,17 +2,16 @@
 Read all cover art from music save it to a cache for the UI to load
 """
 
+import os
 from base64 import b64encode
 import eyed3
 import logging
-from pathlib import Path
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-import jukebox.publishing as pub
-from jukebox.publishing.subscriber import Subscriber
 
 logger = logging.getLogger('jb.music_cover_art')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
 
 class MusicCoverArt:
     def __init__(self):
@@ -22,14 +21,14 @@ class MusicCoverArt:
             logger.error("Missing config, can't initialize plugin")
 
     @plugin.tag
-    def get_by_filename_as_base64(self, audio_src):
+    def get_by_filename_as_base64(self, audio_src: str):
         cover_base64_string = ''
 
         try:
-            audio_file_path = self.audiofolder_path + '/' + audio_src
+            audio_file_path = os.path.join(self.audiofolder_path, audio_src)
             file_data = eyed3.load(audio_file_path)
         except Exception as e:
-            logger.error(f'File does not exist: {e}')
+            logger.error(f'ERROR {e.__class__.__name__}: {e}')
             return cover_base64_string
 
         for image in file_data.tag.images:
@@ -39,6 +38,7 @@ class MusicCoverArt:
         return cover_base64_string
 
 
-# # The initializer stuff gets executed directly
-music_cover_art = MusicCoverArt()
-plugin.register(music_cover_art, name='ctrl')
+@plugin.initialize
+def initialize():
+    music_cover_art = MusicCoverArt()
+    plugin.register(music_cover_art, name='ctrl')

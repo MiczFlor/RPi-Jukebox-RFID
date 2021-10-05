@@ -19,6 +19,7 @@ modules:
   - alsaif
   - alsaif.alsawave
   - jingle.jinglemp3
+  - music_cover_art
   - misc
     # Write a reference of all loaded plugin callables to this file (Comment out disables)
   reference_out: ../../shared/settings/plugin_reference.txt
