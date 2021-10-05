@@ -29,3 +29,11 @@ Then navigate your browser to
 ~~~
 file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html
 ~~~
+
+### Installation?
+
+Run the following one-liner in a shell and follow the instructions
+
+```
+cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+```

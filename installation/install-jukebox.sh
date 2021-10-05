@@ -22,9 +22,14 @@ GIT_BRANCH="future3/develop"
 
 # Settings
 ENABLE_STATIC_IP=true
+DISABLE_IPv6=true
+DISABLE_BLUETOOTH=false
+DISABLE_SSH_QOS=true
 DISABLE_BOOT_SCREEN=true
 DISABLE_BOOT_LOGS_PRINT=true
 ENABLE_KIOSK_MODE=false       # Allow web application to be shown via a display attached to RPi
+MPD_USE_DEFAULT_CONF_DIR=true
+MPD_CONFIG=true
 
 # $1->start, $2->end
 calc_runtime_and_print () {
@@ -291,29 +296,43 @@ register_system_services() {
 
   sudo systemctl daemon-reload
 
-  echo "Configure MPD" | tee /dev/fd/3
-  # TODO: Could this be read from the jukebox.yaml?
-  local MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
-  local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
-  local PLAYLISTS_PATH="${SHARED_PATH}/playlists"
-  local ALSA_MIXER_CONTROL="Headphone"
+  if [ "$MPD_CONFIG" = true ] ; then
 
-  sudo systemctl stop mpd.service
+    echo "Configure MPD" | tee /dev/fd/3
+    # TODO: Could this be read from the jukebox.yaml?
 
-  # Prepare new mpd.conf
-  sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' ${MPD_CONF_PATH}
+    local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
+    local PLAYLISTS_PATH="${SHARED_PATH}/playlists"
+    local ALSA_MIXER_CONTROL="Headphone"
 
-  # Reload mpd
-  # Make original file unreachable
-  sudo mv -f /etc/mpd.conf /etc/mpd.conf.orig
-  # Update mpd.service file to use Jukebox mpd.conf
-  sudo sed -i 's|$MPDCONF|'"$MPD_CONF_PATH"'|' ${SYSTEMD_PATH}/mpd.service
-  sudo systemctl daemon-reload
-  sudo systemctl start mpd.service
-  mpc update
+    sudo systemctl stop mpd.service
+
+    local MPD_CONF_PATH="/etc/mpd.conf"
+    if [ "$MPD_USE_DEFAULT_CONF_DIR" = true ] ; then
+      # As an option, the mpd.conf can be located in the Jukebox installation path
+      # TODO: If so done, also update the jukebox.yaml to point to the correct location!
+      local MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
+        # Update mpd.service file to use Jukebox mpd.conf
+        sudo sed -i 's|$MPDCONF|'"$MPD_CONF_PATH"'|' ${SYSTEMD_PATH}/mpd.service
+    fi
+
+    # Make a backup of original file (and make it unreachable in case of non-default conf location)
+    sudo mv -f /etc/mpd.conf /etc/mpd.conf.orig
+
+    # Prepare new mpd.conf
+    sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}
+    sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' ${MPD_CONF_PATH}
+    sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' ${MPD_CONF_PATH}
+    sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' ${MPD_CONF_PATH}
+    sudo chown mpd:audio "${MPD_CONF_PATH}"
+    sudo chmod 640 "${MPD_CONF_PATH}"
+
+    # Reload mpd
+    sudo systemctl daemon-reload
+    sudo systemctl start mpd.service
+    mpc update
+
+  fi
 
   # We don't start the services now, we wait for the reboot
   calc_runtime_and_print time_start $(date +%s)
@@ -394,14 +413,21 @@ optimize_boot_time() {
   # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
   echo "Optimize boot time" | tee /dev/fd/3
 
-  echo "  * Disable hciuart.service" | tee /dev/fd/3
-  sudo systemctl disable hciuart.service
+  echo "  * Disable exim4.service" | tee /dev/fd/3
+  sudo systemctl disable exim4.service
+
+  if [ "$DISABLE_BLUETOOTH" = true ] ; then
+    echo "  * Disable hciuart.service and bluetooth" | tee /dev/fd/3
+    sudo systemctl disable hciuart.service
+    sudo systemctl disable bluetooth.service
+  fi
 
   echo "  * Disable keyboard-setup.service" | tee /dev/fd/3
   sudo systemctl disable keyboard-setup.service
 
   echo "  * Disable triggerhappy.service" | tee /dev/fd/3
   sudo systemctl disable triggerhappy.service
+  sudo systemctl disable triggerhappy.socket
 
   echo "  * Disable raspi-config.service" | tee /dev/fd/3
   sudo systemctl disable raspi-config.service
@@ -409,12 +435,14 @@ optimize_boot_time() {
   echo "  * Disable apt-daily.service & apt-daily-upgrade.service" | tee /dev/fd/3
   sudo systemctl disable apt-daily.service
   sudo systemctl disable apt-daily-upgrade.service
+  sudo systemctl disable apt-daily.timer
+  sudo systemctl disable apt-daily-upgrade.timer
 
   # Static IP Address and DHCP optimizations
   local DHCP_CONF="/etc/dhcpcd.conf"
 
   if [ "$ENABLE_STATIC_IP" = true ] ; then
-    echo "  * Set static IP address and disabling IPV6" | tee /dev/fd/3
+    echo "  * Set static IP address" | tee /dev/fd/3
     if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
       echo "    Skipping. Already set up!" | tee /dev/fd/3
     else
@@ -440,15 +468,25 @@ static ip_address=${CURRENT_IP_ADDRESS}/24
 static routers=${GATEWAY}
 static domain_name_servers=${GATEWAY}
 
+EOF
+
+    fi
+  else
+    echo "  * Skipped static IP address"
+  fi
+
+  # Disable IPv6 and ARP
+  if [ "$DISABLE_IPv6" = true ] ; then
+      echo "  * Disabling IPV6 and ARP" | tee /dev/fd/3
+      cat << EOF | sudo tee -a $DHCP_CONF
+
+## Jukebox boot speed-up settings
 noarp
 ipv4only
 noipv6
 
 EOF
 
-    fi
-  else
-    echo "  * Skipped static IP address and disabling IPV6"
   fi
 
   # Disable RPi rainbow screen
@@ -475,6 +513,16 @@ EOF
   echo "DONE: optimize_boot_time"
 }
 
+set_ssh_qos() {
+  # The latest version of SSH installed on the Raspberry Pi 3 uses QoS headers, which disagrees with some
+  # routers and other hardware. This causes immense delays when remotely accessing the RPi over ssh.
+  if [ "$DISABLE_SSH_QOS" = true ] ; then
+    echo "  * Set SSH QoS to best effort" | tee /dev/fd/3
+    echo -e "IPQoS 0x00 0x00\n" | sudo tee -a /etc/ssh/sshd_config
+    echo -e "IPQoS 0x00 0x00\n" | sudo tee -a /etc/ssh/ssh_config
+  fi
+}
+
 cleanup() {
   sudo rm -rf /var/lib/apt/lists/*
 
@@ -497,7 +545,7 @@ via Samba.
 
 Do you want to reboot now? [Y/n]" 1>&3
 
-  read -rp "Do you want to install? [Y/n] " response
+  read -rp "Do you want to reboot now? [Y/n] " response
   case "$response" in
     [nN][oO]|[nN])
       echo "Reboot aborted" | tee /dev/fd/3
@@ -526,6 +574,7 @@ install() {
   install_rfid_reader
   install_kiosk_mode
   optimize_boot_time
+  set_ssh_qos
   cleanup
 
   calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
