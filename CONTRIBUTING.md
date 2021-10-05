@@ -5,68 +5,78 @@
 * Structure of files and folders
 * How to contribute
 
+# Differences to Version 2
+
+The naming conventions have changed from Version 2 to Version 3. Do use the new naming convention! 
+
 # Naming conventions
+
+The Jukebox core app is written entirely in Python. Therefore, we follow the [Python Style Guide](https://www.python.org/dev/peps/pep-0008/).
 
 * **Files & folder names**
     * all **lower case**
-    * separate words with **dashes** `-` (less keystrokes, better autocomplete recognition, in HTML links dashes can not be confused) not camel/PascalCaps or underscores
+    * separate words with **underscore** `_` (**no** dashes - this conflicts with Python module names!)
+      * Note: This is the major difference to Version 2. Follow this rule!
     * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
     * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
     * unique and clear product IDs (e.g. MAX7219)
         * the product ID should be written as is (no lowercase)
-        * the product ID should come last in a descriptive name (e.g. dot-matrix-module-MAX7219)
+        * the product ID should come last in a descriptive name (e.g. `dot_matrix_module_MAX7219`)
     * be consistent and look at existing examples before you invent something new
 
-* **`README.md`**
-    * written in capital letters, so it's easier to spot
-    * every new folder of a component deserves a `README.md` file
-
+* **Documentation**
+    * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
+    * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you 
+  
 # Structure of files and folders
 
 Inside the root folder or the repo, these folders are important:
 
-* `scripts`
-    * this folder should contain **only actively used scripts** (controlling playout, rfid tiggers, etc.)
-    * some possible services and features might live in the *components* directory (see below)
-    * if one or more scripts are needed for the activation of a component (like daemons), they should be copied to the `scripts` directory during installation / activation
-    * WHY? By copying, changes will NOT affect the github repo and make it easier for users to modify their components
-* `components`
-    * contains sub- und subsubfolders for additional features, services, hardware
-    * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one
-    * **subsubfolders** are specific hardware, services, features, protocols, etc. 
+* `src/jukebox`
+  * contains the Jukebox Core App
+* `src/jukebox/components`
+  * contains the Python packages that are loaded using the plugin interface
+* `src/webapp`
+  * contains the Web Interface
+* `src/docs/sphinx`  
+  * contains the documentation sources and build flow using Sphinx 
 
 # How to contribute
 
 Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
-We want to keep it as easy as possible to contribute changes that get things working in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
+We want to keep it as easy as possible to contribute changes that get things working in your environment. 
+There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
-Development is done on the git branch `develop`. How to move to that branch, see below.
+Development for Version 3 is done on the git branch `future3/develop`. How to move to that branch, see below.
 
 ## Getting Started
 
-* Make sure you have a [GitHub account](https://github.com/signup/free).
-* Open an issue if one does not already exist.
-  * Clearly describe the issue including steps to reproduce when it is a bug.
-  * Make sure you fill in the earliest version that you know has the issue.
-* Use the online line install script to get the box installed.
-* By default this will get you to the `master` branch. You will move to the `develop` branch, do this:
+* Make sure you have a [GitHub account](https://github.com/signup/free)
+* Open an issue if one does not already exist
+  * Mark the issue with the `future3` label. This is important to us, to distinguish between the versions. 
+    Version 2 will continue to live for quite a while. 
+  * Clearly describe the issue including steps to reproduce when it is a bug
+  * Make sure you fill in the earliest version that you know has the issue
+* By default this will get you to the `future3/master` branch. You will move to the `future3/develop` branch, do this:
 
 ~~~
 cd /home/pi/RPi-Jukebox-RFID
-git checkout develop
+git checkout future3/develop
 git fetch origin
-git reset --hard origin/develop
+git reset --hard origin/future3/develop
 git pull
 ~~~
 
-The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on the `develop` branch of your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
+The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). 
+And, ideally pull requests use the "running code" on the `future3/develop` branch of your Phoniebox. 
+Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
 
 ## Making Changes
 
 * Create a topic branch from where you want to base your work.
-  * This is usually the master branch.
+  * This is usually the master branch or the develop branch.
   * Only target release branches if you are certain your fix must be on that
     branch.
   * To quickly create a topic branch based on master, run `git checkout -b
@@ -75,38 +85,51 @@ The preferred way of code contributions are [pull requests (follow this link for
 * Make commits of logical and atomic units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
 
-~~~
-      Added shuffle mode and RFID controls for it (issue #130) #140
-      
-      Adds a shuffle mode for MPD to be triggered by RFID card.
-      The shuffle mode stays permanently active until deactivation (also after shutdown and reboot).
-      That is why i decided to automatically set random off (if currently active) during shutdown 
-      and reboot.
-      
-      Scenario: You use your toddlers phoniebox as party jukebox in the evening and shuffle over 
-      folders with your music and forget to deactivate the shuffle mode.
-      Next morning your toddler gets crazy because his preferred fairytale plays the chapters in 
-      random mode => Therefore the automatism
-      
-      Update: This time without the need to create an extra random.txt file.and uptodate with the 
-      master branch.
-~~~
 ## Making Trivial Changes
 
-For changes of a trivial nature, it is not always necessary to create a new issue. 
-In this case, it is appropriate to start the first line of a
-commit with one of  `(docs)`, `(maint)`, or `(packaging)` instead of a ticket
+For changes of a trivial nature, it is not always necessary to create a new issue. In this case
+you can directly open a pull request. It is appropriate to start the first line of a
+commit / pull request with one of  `(docs)`, `(maint)`, or `(packaging)` instead of a ticket
 number.
 
 For commits that address trivial repository maintenance tasks or packaging
-issues, start the first line of the commit with `(maint)` or `(packaging)`,
+issues, start with `(maint)` or `(packaging)`,
 respectively.
+
+## Before submitting
+
+### Python Code
+
+If you touched *any* Python file (even if only for fixing spelling errors), run flake8 in the top-level folder. 
+It contains out setup file.
+
+~~~
+$ cd cd /home/pi/RPi-Jukebox-RFID
+$ flake8
+~~~
+
+Fix those issues! Or you are running in delays in accepting your PR.
+
+If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK. 
+Let us know in the pull request - we will look at it. 
+
+### Documentation
+
+When adding or improving documentation, build the documentation and look at it locally. 
+If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
+Also run through this step in this case!
+
+~~~
+$ cd cd /home/pi/RPi-Jukebox-RFID/docs/sphinx
+$ make
+$ open file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html
+~~~
 
 ## Submitting Changes
 
-* Push your changes to a topic branch in your fork of the repository.
-* Submit a pull request to the repository.
-* The core team looks at Pull Requests on a regular basis.
+* Push your changes to a topic branch in your fork of the repository
+* Submit a pull request to the repository
+* The core team looks at Pull Requests on a regular basis
 * After feedback has been given we expect responses within two weeks. After two
   weeks we may close the pull request if it isn't showing any activity.
 
@@ -130,7 +153,7 @@ The original contributor will be notified of the revert.
   be resolved within one business day.
 
 ## Guidelines ##
-* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**.
+* Phoniebox runs on Raspian **Buster**. Therefore, all Python code should work with **Python 3.7**.
 * For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
 ## Additional Resources

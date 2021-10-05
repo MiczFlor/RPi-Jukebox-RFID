@@ -9,6 +9,10 @@ A few considerations:
 Do we need a notifier? Or a callback for modules to get notified?
 Do we want to publish the information about a card DB update?
 TODO: Add callback for on_database_change
+
+TODO: check card id type (if int, convert to str)
+TODO: check if args is really a list (convert if not?)
+
 """
 
 import logging

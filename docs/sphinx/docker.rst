@@ -23,13 +23,13 @@ Prerequisites
 
     * Mac:
 
-        * `Docker & Compose <https://docs.docker.com/docker-for-mac/install/>`_
-        * `pulseaudio <https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html>`_
+        * `Docker & Compose (Mac) <https://docs.docker.com/docker-for-mac/install/>`_
+        * `pulseaudio (Doc) <https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html>`_
 
     * Windows:
 
-        * `Docker & Compose <https://docs.docker.com/docker-for-windows/install/>`_
-        * `pulseaudio <https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/>`_
+        * `Docker & Compose (Win) <https://docs.docker.com/docker-for-windows/install/>`_
+        * `pulseaudio (Win) <https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/>`_
 
 2. Pull the Phoniebox repository: ``git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git``
 
