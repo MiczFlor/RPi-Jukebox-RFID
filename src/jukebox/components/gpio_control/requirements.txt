@@ -1,5 +1,0 @@
-# gipo_control related requirements
-# You need to install these with `sudo python3 -m pip install --upgrade --force-reinstall -q -r requirements.txt`
-
-python-mpd2
-mock
