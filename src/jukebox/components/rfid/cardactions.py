@@ -49,10 +49,10 @@ qs_action_place = {
                    'args': [5],
                    'ignore_card_removal_action': True,
                    'ignore_same_id_delay': True},
-    'shutdown':   {'package': 'host',
-                   'plugin': 'shutdown'},
-    'reboot':     {'package': 'host',
-                   'plugin': 'reboot'}
+    'shutdown': {'package': 'host',
+                 'plugin': 'shutdown'},
+    'reboot': {'package': 'host',
+               'plugin': 'reboot'}
 }
 
 # --------------------------------------------------------------

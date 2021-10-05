@@ -29,7 +29,6 @@ loggers:
 The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense)
 There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 """
-import io
 import sys
 import logging
 import logging.config
