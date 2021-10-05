@@ -41,6 +41,9 @@ Inside the root folder or the repo, these folders are important:
 * `src/docs/sphinx`  
   * contains the documentation sources and build flow using Sphinx 
 
+All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
+as local, temporary scratch areas. 
+
 # How to contribute
 
 Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
