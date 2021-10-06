@@ -11,7 +11,7 @@ Directly on RPi
 The full setup is running on the RPi and you access files via with remote access. Pretty easy to set up as
 you simply do a normal install and switch to the future3/develop branch.
 
-Locally an any Linux machine
+Locally on any Linux machine
 ------------------------------
 
 The jukebox also runs on any Linux machine. The RPi-specific stuff will not work of course. That is no issue depending
