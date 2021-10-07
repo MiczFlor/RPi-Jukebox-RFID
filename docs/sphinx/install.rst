@@ -4,9 +4,9 @@ Installing Phoniebox future3
 Install Raspberry Pi OS Lite
 -------------------------------------------
 
-Before you can install the Phoniebox software, you need to prepare your Raspberry Pi and install
+Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
-1. Connect your Micro SD card (through a card reader) to your computer
+1. Connect a Micro SD card to your computer (preferable an SC card with high read throughput)
 2. `Download <https://www.raspberrypi.org/software/>`_
    the `Raspberry Pi Imager <https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/>`_ and open it
 3. Select **Raspberry Pi OS Lite** (without desktop environment) as the operating system
@@ -18,26 +18,26 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 Initial Boot
 -------------------------------------------
 
-You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proceed with the next steps.
+You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to proceed with the next steps.
 
-1. Open a terminal of your choice
-2. Insert your card again if it has been ejected automatically
-3. Navigate to your SC card e.g., ``cd /Volumes/boot`` for Mac or ``D:`` for Windows
-4. Enable SSH by adding a simple file
+1. Open a terminal of your choice.
+2. Insert your card again if it has been ejected automatically.
+3. Navigate to your SC card e.g., ``cd /Volumes/boot`` for Mac or ``D:`` for Windows.
+4. Enable SSH by adding a simple file.
 
     .. code-block:: bash
 
         $ touch ssh
 
-5. Set up your Wifi connection
+5. Set up your Wifi connection.
 
-*Mac*
+    *Mac*
 
     .. code-block:: bash
 
         $ nano wpa_supplicant.conf
 
-*Windows*
+    *Windows*
 
     .. code-block:: bash
 
@@ -45,19 +45,19 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 
 6. Insert the following content, update your country, Wifi credentials and save the file.
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    country=DE
-    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-    update_config=1
+        country=DE
+        ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+        update_config=1
 
-    network={
-        ssid="network-name"
-        psk="network-password"
-    }
+        network={
+            ssid="network-name"
+            psk="network-password"
+        }
 
-7. Eject your SD card and insert it into your Raspberry Pi
-8. Start your Raspberry Pi by attaching a power supply
+7. Eject your SD card and insert it into your Raspberry Pi.
+8. Start your Raspberry Pi by attaching a power supply.
 9. Login into your Raspberry Pi, username is ``pi`` and password is ``raspberry``.
    If ``raspberrypi.local`` does not work, find out your Raspberry Pi's IP address from your router.
 
@@ -79,8 +79,3 @@ Run the following command in your SSH terminal and follow the instructions
         $ nano install-jukebox.sh
         # change the line ENABLE_STATIC_IP=true to false
         $ ./install-jukebox.sh
-
-Post-installation
--------------------------------------------
-
-Run the tool :ref:`run_register_rfid_reader.py <coreapps:run_register_rfid_reader.py>`.

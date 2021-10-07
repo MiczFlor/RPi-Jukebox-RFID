@@ -4,22 +4,18 @@
 Feature Status
 ****************
 
-In a nutshell
-------------------
+This is where we are in a nutshell: Playing music from local folders via RFID trigger. We also built a new WebUI to control
+the Jukebox from a browser.
 
-This is where we are in a nutshell: Playing music from local folders via RFID trigger. Also the new WebUI is there
-to control the Jukebox.
+The are a few things that are specifically not integrated yet: GPIOs, playing streams, podcasts or Spotify.
 
-The are a few things that are specifically not integrated yet: GPIOs, playing streams or podcast, Spotify.
-
-In more detail
-------------------
+Overview
+--------
 
 Here is the currently implemented feature list in more detail. It also shows some of the holes. However the list
 is not complete in terms of planned features, but probably reflects more of where work is currently being put into.
 
-General
-^^^^^^^^^^
+.. contents::
 
 * |[ ]| Method to change configuration through WebUI
   * The difficulty lies bringing the running Jukebox to accept the changes
@@ -59,7 +55,7 @@ General
 * |[ ]| /shared/references: plugin_reference / rpc commands reference / card actions reference / card db summary
 
 Via RPC
-^^^^^^^^^^
+-------
 
   * |[X]| List of loaded / failed plugins
   * |[X]| card action reference
@@ -68,13 +64,13 @@ Via RPC
       * which basically is a plugin reference
 
 Config handler
-^^^^^^^^^^^^^^^^^^
+--------------
 
 * |[ ]| While saving config to disk: local file change detection
 * |[ ]| cfghandler creates setndefault() at arbitrary depth
 
-0MQ Publisher
-^^^^^^^^^^^^^^
+ZMQ Publisher
+--------------
 
 * |[X]| Last Value Cache
 * |[X]| Subscriber detection and initial status update
@@ -82,7 +78,7 @@ Config handler
 * |[ ]| Callback registration option for plugin on topic send
 
 WebUI
-^^^^^^^^^^
+--------------
 
 * |[X]| Playback Control
 * |[X]| Cover Art
@@ -91,7 +87,7 @@ WebUI
 * |[ ]| Settings configuration page
 
 Playback
-^^^^^^^^^^
+--------------
 
 * |[ ]| Playlist generator (in work)
 
@@ -115,7 +111,7 @@ Playback
   * |[ ]| Loop: Loop playlist
 
 MPD Player
-^^^^^^^^^^
+--------------
 
 * |[ ]| Thread safety for status information / configuration
 * |[ ]| Differential status post
@@ -127,7 +123,7 @@ MPD Player
 * |[ ]| Before every music lib update, player should check user rights (not only after start-up)
 
 RFID
-^^^^^^^^^^
+--------------
 
 * |[X]| Test with Reader disabled
 * |[X]| Start-up behaviour with un-configured Reader
@@ -175,7 +171,7 @@ RFID
     * |[ ]| Base quick select on yaml file
 
 Cards
-^^^^^^^^^^
+--------------
 
 * |[ ]| Write a simplified card summary to
 
@@ -190,7 +186,7 @@ Cards
 * |[X]| Remove card
 
 Timer
-^^^^^^^^^^
+--------------
 
 * |[ ]| Idle timer
 * |[X]| Shutdown timer
@@ -206,7 +202,7 @@ Timer
 
 
 Installation
-^^^^^^^^^^^^^^^
+--------------
 
 * |[X]| Single call installation script
 * |[ ]| Query for settings vs. automatic version, e.g.
@@ -220,7 +216,7 @@ Installation
 
 
 Volume
-^^^^^^^^^^
+--------------
 
 * |[ ]| Min/Max Volume
 * |[X]| Jingle playback volume as fixed value in config
@@ -228,7 +224,7 @@ Volume
 * |[X]| MPD volume control service
 
 GPIO
-^^^^^^^^^^
+--------------
 
 * |[ ]| Everything needs porting
 
@@ -240,25 +236,25 @@ GPIO
 * |[ ]| Port rfid pin action to GPIO as a general pin service for all plugins
 
 WLAN
-^^^^^^^^^^
+--------------
 
 * |[ ]| Ad-hoc WLAN Hot spot
 * |[ ]| IP address read-out
 
 Spotify
-^^^^^^^^^^
+--------------
 
 * |[ ]| Everything
 
 Others
-^^^^^^^^^^
+--------------
 
 * |[ ]| Bluetooth sink toggle
 * |[ ]| MQTT
 * |[ ]| Record and Playback using a Mic
 
 Start-up stuff
-^^^^^^^^^^^^^^^^
+--------------
 
 * |[X]| check music folder rights
 * |[X]| mpc update / (mpc rescan)
@@ -266,7 +262,7 @@ Start-up stuff
 * |[ ]| Optional power down HDMI circuits: /usr/bin/tvservice -o
 
 Debug Tools
-^^^^^^^^^^^^^^
+--------------
 
 * |[X]| Publishing Sniffer
 
@@ -278,7 +274,7 @@ Debug Tools
 
 
 Documentation
-^^^^^^^^^^^^^^
+--------------
 
 * |[X]| Sphinx / Restructured Text tool flow
 * |[ ]| What is the Phoniebox

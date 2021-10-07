@@ -4,14 +4,14 @@ Updating
 Updating your Jukebox Version 3
 -------------------------------------
 
-Things on Version 3 are moving fast and you may want to get stay on the edge. Since we are in Alpha Release stage
+Things on Version 3 are moving fast and you may want to get stay on the edge. Since we are in Alpha Release stage,
 a fair number of fixes are expected to be committed in the near future.
 
 You will need to do three things to update your version from develop (or the next release candidate version)
 
 #. Pull the newest code base from Github
 #. Check for new entries in the configuration
-#. Build the Web App
+#. Build the WebUI
 
 .. code-block:: bash
 
@@ -51,5 +51,3 @@ If you do not want to wipe your SD card, follow this procedure:
 
 Do not just pull the future3 branch into you existing Version 2.x directory.
 Stuff has changed too much to make this feasible.
-
-
