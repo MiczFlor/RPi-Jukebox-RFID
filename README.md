@@ -24,7 +24,7 @@ Just a handful of features from version 2.x have been ported to version 3 so far
 
 If you like to try it out or contribute, check out the following references. If you post issues or pull requests on Github, make sure you label them with `[future3]`.
 
-* 🚀 **[Install Jukebox Version 3](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
+* 🚀 **[Install Jukebox Version 3 Alpha](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
 * ☑️ [Feature Status](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html)
 * 📖 [Documentation](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
