@@ -8,6 +8,31 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
+---
+
+
+## 🔥 Version 3 is coming ...
+
+Over the last few months, a few Phoniebox fans started to think about a potential future of the Jukebox code. Version 2 is mature
+and works well but doesn't scale enough for future development. It's the mix of Shell, Python and PHP. The goal was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://rpi-jukebox-rfid.readthedocs.io/en/latest/).
+
+### ☝️ Looking for early adopters, testers and contributors
+
+We would like to invite you to try out this new version called `future3`. Let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
+
+Just a handful of features from version 2.x have been ported to version 3 so far. Specifically GPIO support is currently missing but it's in active development and soon to arrive.
+
+If you like to try it out or contribute, check out the following references. If you post issues or pull requests on Github, make sure you label them with `[future3]`.
+
+* 🚀 **[Install Jukebox Version 3 Alpha](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
+* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
+* ☑️ [Feature Status](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html)
+* 📖 [Documentation](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
+* 👩‍💻 [Development](https://rpi-jukebox-rfid.readthedocs.io/en/latest/development_environment.html)
+* 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/main), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop)
+
+---
+
 ## The Phoniebox Calendar 2021 is here!!!
 
 Another bunch of wonderful designs! 2021 is the third Phoniebox calendar. If you are interested, you can see the [2019 and 2020 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2021 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
@@ -20,6 +45,7 @@ The year 2020 also has a clear *:star: community hero :star:*: @s-martin has bee
 
 * **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask general questions in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions), bugs and enhancements should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
+* **Phoniebox [future3 Alpha 1](https://rpi-jukebox-rfid.readthedocs.io/en/latest/) released (2021-10)**
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
 * **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-12)**
