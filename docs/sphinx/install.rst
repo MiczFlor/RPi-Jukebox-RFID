@@ -4,6 +4,9 @@ Installing Phoniebox future3
 Install Raspberry Pi OS Lite
 -------------------------------------------
 
+.. important:: Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4!
+    1 and Zero's will require a bit more work and are currently not supported!
+
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
 1. Connect a Micro SD card to your computer (preferable an SC card with high read throughput)
