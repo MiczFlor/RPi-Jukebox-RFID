@@ -18,18 +18,20 @@ SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 
 GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
-GIT_BRANCH="future3/develop"
+GIT_BRANCH="future3/main"
 
 # Settings
 ENABLE_STATIC_IP=true
 DISABLE_IPv6=true
-DISABLE_BLUETOOTH=false
+DISABLE_BLUETOOTH=true
 DISABLE_SSH_QOS=true
 DISABLE_BOOT_SCREEN=true
 DISABLE_BOOT_LOGS_PRINT=true
-ENABLE_KIOSK_MODE=false       # Allow web application to be shown via a display attached to RPi
 MPD_USE_DEFAULT_CONF_DIR=true
 MPD_CONFIG=true
+UPDATE_OS=false
+INSTALL_WEBAPP=true
+ENABLE_KIOSK_MODE=false       # Allow web application to be shown via a display attached to RPi
 
 # $1->start, $2->end
 calc_runtime_and_print () {
@@ -78,6 +80,136 @@ Let's set up your Phoniebox now?! [Y/n]" 1>&3
   esac
 }
 
+customize_options() {
+  echo "Customize Options begins"
+  echo "A few more questions before we can start ..." 1>&3
+
+  # future3/main (release branch) or future3/develop (current branch)
+  read -n 1 -p "Would you like to install 1) latest release candidate or 2) most recent development? [R/d] " ans;
+  case $ans in
+      # r|R) Ignoring R actually as it is the default
+      #  GIT_BRANCH="future3/main"
+      s|d)
+        GIT_BRANCH="future3/develop"
+        ;;
+      *)
+        ;;
+  esac
+  echo "Installing ${GIT_BRANCH}" | tee /dev/fd/3
+
+  # ENABLE_STATIC_IP
+  CURRENT_IP_ADDRESS=$(hostname -I)
+  read -rp "Would you like to set a static IP (will be ${CURRENT_IP_ADDRESS})?
+It'll save a lot of start up time. This can be changed later.
+[Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      ENABLE_STATIC_IP=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+
+  # DISABLE_IPv6
+  read -rp "Do you want to disable IPv6? [Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      DISABLE_IPv6=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "DISABLE_IPv6=${DISABLE_IPv6}"
+
+  # DISABLE_BLUETOOTH
+  read -rp "Do you want to disable Bluethooth?
+We recommend to turn off Bluetooth to save energy and booting time.
+[Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      DISABLE_BLUETOOTH=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
+
+  # DISABLE_BOOT_SCREEN
+  read -rp "Do you want to disable the Rainbow boot screen?
+We recommend to turn off it off booting time.
+[Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      DISABLE_BOOT_SCREEN=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "DISABLE_BOOT_SCREEN=${DISABLE_BOOT_SCREEN}"
+
+  # DISABLE_BOOT_LOGS_PRINT
+  read -rp "Do you want to disable the boot logs?
+We recommend to turn off it off booting time. You will have to
+enable it if you need to debug the booting routine for some reason.
+[Y/n] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      DISABLE_BOOT_LOGS_PRINT=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "DISABLE_BOOT_LOGS_PRINT=${DISABLE_BOOT_LOGS_PRINT}"
+
+  # INSTALL_WEBAPP
+  read -rp "Would you like to install the web application?
+If you don't want to use a graphical interface to manage your Phoniebox,
+you don't need to install the web application.
+[y/N] " response
+  case "$response" in
+    [nN][oO]|[nN])
+      INSTALL_WEBAPP=false
+      ENABLE_KIOSK_MODE=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "INSTALL_WEBAPP=${INSTALL_WEBAPP}"
+
+  # ENABLE_KIOSK_MODE
+  if [ "$INSTALL_WEBAPP" = true ] ; then
+    read -rp "Would you like to enable the Kiosk Mode?
+  If you have a screen attached to your RPi, this will launch the
+  web application right after boot. It will only install the necessary
+  xserver dependencies and not the entire RPi desktop environment.
+  [y/N] " response
+    case "$response" in
+      [yY])
+        ENABLE_KIOSK_MODE=true
+        ;;
+      *)
+        ;;
+    esac
+    echo "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
+  fi
+
+  # UPDATE_OS
+  read -rp "Would you like to update the operating system?
+This shall be done eventually, but increases the installation time a lot.
+[y/N] " response
+  case "$response" in
+    [yY])
+      UPDATE_OS=true
+      ;;
+    *)
+      ;;
+  esac
+  echo "UPDATE_OS=${UPDATE_OS}"
+
+  echo "Customize Options ends"
+}
+
 # Update RPi configuration
 set_raspi_config() {
   echo "Set default raspi-config" | tee /dev/fd/3
@@ -100,8 +232,12 @@ set_raspi_config() {
 update_os() {
   local time_start=$(date +%s)
 
-  echo "Updating Raspberry Pi OS" | tee /dev/fd/3
-  sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade; sudo apt-get -qq -y autoremove
+  if [ "$UPDATE_OS" = true ] ; then
+    echo "Updating Raspberry Pi OS" | tee /dev/fd/3
+    sudo apt-get -qq -y update; sudo apt-get -qq -y full-upgrade; sudo apt-get -qq -y autoremove
+  else
+    echo "Raspberry Pi OS Update skipped"
+  fi
 
   calc_runtime_and_print time_start $(date +%s)
   echo "DONE: update_os"
@@ -131,29 +267,31 @@ install_jukebox_dependencies() {
   # Install Python
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 
-  # Install Node
-  if which node > /dev/null; then
-    echo "  Found existing NodeJS. Hence, updating NodeJS"
-    sudo npm cache clean -f
-    sudo npm install --silent -g n
-    sudo n --quiet latest
-    sudo npm update --silent -g
-  else
-    echo "  Install NodeJS"
-    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-    sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm serve
+  if [ "$INSTALL_WEBAPP" = true ] ; then
+    # Install Node
+    if which node > /dev/null; then
+      echo "  Found existing NodeJS. Hence, updating NodeJS"
+      sudo npm cache clean -f
+      sudo npm install --silent -g n
+      sudo n --quiet latest
+      sudo npm update --silent -g
+    else
+      echo "  Install NodeJS"
+      curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+      sudo apt-get -qq -y install nodejs
+      sudo npm install --silent -g npm serve
 
-    # Slower PIs need this to finish building the Webapp
-    MEMORY=`cat /proc/meminfo | awk '$1 == "MemTotal:" {print 0+$2}'`
-    if [[ $MEMORY -lt 1024000 ]]
-    then
-      export NODE_OPTIONS=--max-old-space-size=1024
-    fi
+      # Slower PIs need this to finish building the Webapp
+      MEMORY=`cat /proc/meminfo | awk '$1 == "MemTotal:" {print 0+$2}'`
+      if [[ $MEMORY -lt 1024000 ]]
+      then
+        export NODE_OPTIONS=--max-old-space-size=1024
+      fi
 
-    if [[ $MEMORY -lt 512000 ]]
-    then
-      export NODE_OPTIONS=--max-old-space-size=512
+      if [[ $MEMORY -lt 512000 ]]
+      then
+        export NODE_OPTIONS=--max-old-space-size=512
+      fi
     fi
   fi
 
@@ -220,14 +358,16 @@ install_jukebox() {
   cd ${INSTALLATION_PATH}
   pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
-  # Install Node dependencies
-  # TODO: Avoid building the app locally
-  # Instead implement a Github Action that prebuilds on commititung a git tag
-  echo "  Install web application" | tee /dev/fd/3
-  cd ${INSTALLATION_PATH}/src/webapp
-  npm ci --prefer-offline --no-audit --production
-  rm -rf build
-  npm run build
+  if [ "$INSTALL_WEBAPP" = true ] ; then
+    # Install Node dependencies
+    # TODO: Avoid building the app locally
+    # Instead implement a Github Action that prebuilds on commititung a git tag
+    echo "  Install web application" | tee /dev/fd/3
+    cd ${INSTALLATION_PATH}/src/webapp
+    npm ci --prefer-offline --no-audit --production
+    rm -rf build
+    npm run build
+  fi
 
   calc_runtime_and_print time_start $(date +%s)
   echo "DONE: install_jukebox"
@@ -565,7 +705,7 @@ install() {
 
   welcome
   set_raspi_config
-  # update_os
+  update_os
   install_jukebox_dependencies
   setup_samba
   install_jukebox
