@@ -86,8 +86,8 @@ customize_options() {
 
   # future3/main (release branch) or future3/develop (current branch)
   echo "Would you like to install
-1) latest release candidate or
-2) most recent development?
+R) latest release candidate or
+d) most recent development?
 [R/d] " 1>&3
   read -n 1 -p "Release or develop" ans;
   case $ans in
@@ -99,11 +99,11 @@ customize_options() {
       *)
         ;;
   esac
-  echo "Installing ${GIT_BRANCH}" | tee /dev/fd/3
+  printf "\nInstalling ${GIT_BRANCH}" | tee /dev/fd/3
 
   # ENABLE_STATIC_IP
   CURRENT_IP_ADDRESS=$(hostname -I)
-  echo "Would you like to set a static IP (will be ${CURRENT_IP_ADDRESS})?
+  echo "Would you like to set a static IP? It will be ${CURRENT_IP_ADDRESS}
 It'll save a lot of start up time. This can be changed later.
 [Y/n] " 1>&3
   read -rp "ENABLE_STATIC_IP" response
@@ -175,7 +175,7 @@ enable it if you need to debug the booting routine for some reason.
   echo "Would you like to install the web application?
 If you don't want to use a graphical interface to manage your Phoniebox,
 you don't need to install the web application.
-[y/N] " 1>&3
+[Y/n] " 1>&3
   read -rp "INSTALL_WEBAPP" response
   case "$response" in
     [nN][oO]|[nN])
@@ -220,6 +220,7 @@ This shall be done eventually, but increases the installation time a lot.
   echo "UPDATE_OS=${UPDATE_OS}"
 
   echo "Customize Options ends"
+  clear 1>&3
 }
 
 # Update RPi configuration
