@@ -416,7 +416,10 @@ register_system_services() {
   sudo chmod 644 ${SYSTEMD_PATH}/jukebox-*.service
 
   sudo systemctl enable jukebox-daemon.service
-  sudo systemctl enable jukebox-webapp.service
+
+  if [ "$INSTALL_WEBAPP" = true ] ; then
+    sudo systemctl enable jukebox-webapp.service
+  fi
 
   sudo systemctl daemon-reload
 
