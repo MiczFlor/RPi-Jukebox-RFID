@@ -85,7 +85,11 @@ customize_options() {
   echo "A few more questions before we can start ..." 1>&3
 
   # future3/main (release branch) or future3/develop (current branch)
-  read -n 1 -p "Would you like to install 1) latest release candidate or 2) most recent development? [R/d] " ans;
+  echo "Would you like to install
+1) latest release candidate or
+2) most recent development?
+[R/d] " 1>&3
+  read -n 1 -p "Release or develop" ans;
   case $ans in
       # r|R) Ignoring R actually as it is the default
       #  GIT_BRANCH="future3/main"
@@ -99,9 +103,10 @@ customize_options() {
 
   # ENABLE_STATIC_IP
   CURRENT_IP_ADDRESS=$(hostname -I)
-  read -rp "Would you like to set a static IP (will be ${CURRENT_IP_ADDRESS})?
+  echo "Would you like to set a static IP (will be ${CURRENT_IP_ADDRESS})?
 It'll save a lot of start up time. This can be changed later.
-[Y/n] " response
+[Y/n] " 1>&3
+  read -rp "ENABLE_STATIC_IP" response
   case "$response" in
     [nN][oO]|[nN])
       ENABLE_STATIC_IP=false
@@ -112,7 +117,8 @@ It'll save a lot of start up time. This can be changed later.
   echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
 
   # DISABLE_IPv6
-  read -rp "Do you want to disable IPv6? [Y/n] " response
+  echo "Do you want to disable IPv6? [Y/n] " 1>&3
+  read -rp "DISABLE_IPv6" response
   case "$response" in
     [nN][oO]|[nN])
       DISABLE_IPv6=false
@@ -123,9 +129,10 @@ It'll save a lot of start up time. This can be changed later.
   echo "DISABLE_IPv6=${DISABLE_IPv6}"
 
   # DISABLE_BLUETOOTH
-  read -rp "Do you want to disable Bluethooth?
+  echo "Do you want to disable Bluethooth?
 We recommend to turn off Bluetooth to save energy and booting time.
-[Y/n] " response
+[Y/n] " 1>&3
+  read -rp "DISABLE_BLUETOOTH" response
   case "$response" in
     [nN][oO]|[nN])
       DISABLE_BLUETOOTH=false
@@ -136,9 +143,10 @@ We recommend to turn off Bluetooth to save energy and booting time.
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 
   # DISABLE_BOOT_SCREEN
-  read -rp "Do you want to disable the Rainbow boot screen?
+  echo "Do you want to disable the Rainbow boot screen?
 We recommend to turn off it off booting time.
-[Y/n] " response
+[Y/n] " 1>&3
+  read -rp "DISABLE_BOOT_SCREEN" response
   case "$response" in
     [nN][oO]|[nN])
       DISABLE_BOOT_SCREEN=false
@@ -149,10 +157,11 @@ We recommend to turn off it off booting time.
   echo "DISABLE_BOOT_SCREEN=${DISABLE_BOOT_SCREEN}"
 
   # DISABLE_BOOT_LOGS_PRINT
-  read -rp "Do you want to disable the boot logs?
+  echo "Do you want to disable the boot logs?
 We recommend to turn off it off booting time. You will have to
 enable it if you need to debug the booting routine for some reason.
-[Y/n] " response
+[Y/n] " 1>&3
+  read -rp "DISABLE_BOOT_LOGS_PRINT" response
   case "$response" in
     [nN][oO]|[nN])
       DISABLE_BOOT_LOGS_PRINT=false
@@ -163,10 +172,11 @@ enable it if you need to debug the booting routine for some reason.
   echo "DISABLE_BOOT_LOGS_PRINT=${DISABLE_BOOT_LOGS_PRINT}"
 
   # INSTALL_WEBAPP
-  read -rp "Would you like to install the web application?
+  echo "Would you like to install the web application?
 If you don't want to use a graphical interface to manage your Phoniebox,
 you don't need to install the web application.
-[y/N] " response
+[y/N] " 1>&3
+  read -rp "INSTALL_WEBAPP" response
   case "$response" in
     [nN][oO]|[nN])
       INSTALL_WEBAPP=false
@@ -179,11 +189,12 @@ you don't need to install the web application.
 
   # ENABLE_KIOSK_MODE
   if [ "$INSTALL_WEBAPP" = true ] ; then
-    read -rp "Would you like to enable the Kiosk Mode?
-  If you have a screen attached to your RPi, this will launch the
-  web application right after boot. It will only install the necessary
-  xserver dependencies and not the entire RPi desktop environment.
-  [y/N] " response
+    echo "Would you like to enable the Kiosk Mode?
+If you have a screen attached to your RPi, this will launch the
+web application right after boot. It will only install the necessary
+xserver dependencies and not the entire RPi desktop environment.
+[y/N] " 1>&3
+    read -rp "ENABLE_KIOSK_MODE" response
     case "$response" in
       [yY])
         ENABLE_KIOSK_MODE=true
@@ -195,9 +206,10 @@ you don't need to install the web application.
   fi
 
   # UPDATE_OS
-  read -rp "Would you like to update the operating system?
+  echo "Would you like to update the operating system?
 This shall be done eventually, but increases the installation time a lot.
-[y/N] " response
+[y/N] " 1>&3
+  read -rp "UPDATE_OS" response
   case "$response" in
     [yY])
       UPDATE_OS=true
