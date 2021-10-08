@@ -704,6 +704,7 @@ install() {
   local time_start=$(date +%s)
 
   welcome
+  customize_options
   set_raspi_config
   update_os
   install_jukebox_dependencies
