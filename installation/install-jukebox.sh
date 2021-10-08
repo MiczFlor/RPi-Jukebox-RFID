@@ -103,8 +103,8 @@ d) most recent development?
 
   # ENABLE_STATIC_IP
   CURRENT_IP_ADDRESS=$(hostname -I)
-  echo "Would you like to set a static IP? It will be ${CURRENT_IP_ADDRESS}
-It'll save a lot of start up time. This can be changed later.
+  printf "\n\nWould you like to set a static IP? Your current IP is ${CURRENT_IP_ADDRESS}
+It'll save a lot of booting time. You can change option later as well.
 [Y/n] " 1>&3
   read -rp "ENABLE_STATIC_IP" response
   case "$response" in
@@ -142,39 +142,10 @@ We recommend to turn off Bluetooth to save energy and booting time.
   esac
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 
-  # DISABLE_BOOT_SCREEN
-  echo "Do you want to disable the Rainbow boot screen?
-We recommend to turn off it off booting time.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_SCREEN" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_SCREEN=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_SCREEN=${DISABLE_BOOT_SCREEN}"
-
-  # DISABLE_BOOT_LOGS_PRINT
-  echo "Do you want to disable the boot logs?
-We recommend to turn off it off booting time. You will have to
-enable it if you need to debug the booting routine for some reason.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_LOGS_PRINT" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_LOGS_PRINT=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_LOGS_PRINT=${DISABLE_BOOT_LOGS_PRINT}"
-
   # INSTALL_WEBAPP
   echo "Would you like to install the web application?
-If you don't want to use a graphical interface to manage your Phoniebox,
-you don't need to install the web application.
+In case you don't need a graphical interface to manage your Phoniebox,
+you can skip this option.
 [Y/n] " 1>&3
   read -rp "INSTALL_WEBAPP" response
   case "$response" in
