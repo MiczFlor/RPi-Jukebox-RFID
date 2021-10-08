@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 setup_mpd() {
-  local time_start=$(date +%s)
-
   echo "Configure MPD" | tee /dev/fd/3
   # TODO: Could this be read from the jukebox.yaml?
 
@@ -37,7 +35,5 @@ setup_mpd() {
   sudo systemctl start mpd.service
   mpc update
 
-  # We don't start the services now, we wait for the reboot
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: setup_mpd"
 }

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 setup_jukebox_webapp() {
-  local time_start=$(date +%s)
-
   echo "Install web application" | tee /dev/fd/3
 
   # Install Node
@@ -47,6 +45,5 @@ setup_jukebox_webapp() {
   sudo systemctl enable jukebox-webapp.service
   sudo systemctl daemon-reload
 
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: setup_jukebox_webapp"
 }

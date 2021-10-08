@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
 setup_jukebox_core() {
-  local time_start=$(date +%s)
-
   echo "Install Jukebox Core dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     at git wget \
     mpd mpc \
     mpg123 \
-    samba samba-common-bin \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg \
     alsa-tools \
@@ -69,6 +66,5 @@ setup_jukebox_core() {
   sudo systemctl enable jukebox-daemon.service
   sudo systemctl daemon-reload
 
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: setup_jukebox_core"
 }

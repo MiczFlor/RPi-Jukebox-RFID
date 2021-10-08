@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 setup_samba() {
-  local time_start=$(date +%s)
-
   local SMB_CONF="/etc/samba/smb.conf"
   local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
@@ -46,6 +44,5 @@ EOF
     sudo chmod 644 $SMB_CONF
   fi
 
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: setup_samba"
 }

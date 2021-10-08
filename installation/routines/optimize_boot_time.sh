@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 optimize_boot_time() {
-  local time_start=$(date +%s)
-
   # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
   echo "Optimize boot time" | tee /dev/fd/3
 
@@ -101,7 +99,5 @@ EOF
     sudo sed -i "$ s/$/ consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram/" $BOOT_CMDLINE
   fi
 
-
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: optimize_boot_time"
 }

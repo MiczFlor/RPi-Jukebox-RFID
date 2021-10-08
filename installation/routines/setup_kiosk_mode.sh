@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 setup_kiosk_mode() {
-  local time_start=$(date +%s)
   echo "Setup Kiosk Mode" | tee /dev/fd/3
 
   # Resource:
@@ -47,6 +46,5 @@ EOF
   # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
   sudo touch /etc/chromium-browser/customizations/01-disable-update-check;echo CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\" | sudo tee /etc/chromium-browser/customizations/01-disable-update-check
 
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: setup_kiosk_mode"
 }
