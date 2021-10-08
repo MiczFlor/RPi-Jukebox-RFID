@@ -5,8 +5,8 @@ export LC_ALL=C
 
 # Constants
 INSTALL_ID=$(date +%s)
-GIT_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID.git"
-GIT_BRANCH="future3/main"
+GIT_URL="https://github.com/pabera/RPi-Jukebox-RFID.git"
+GIT_BRANCH="future3/refactor-install-script"
 
 HOME_PATH="/home/pi"
 INSTALLATION_PATH="${HOME_PATH}/RPi-Jukebox-RFID"
