@@ -1,3 +1,16 @@
+.git
+.dockerignore
+.DS_Store
+
+# Application
+docker
+docs
+installation
 src
-!src/jukebox/requirements.txt
-shared/audiofolders
+shared
+
+# webapp
+!src/webapp
+src/webapp/node_modules
+src/webapp/npm-debug.log
+src/webapp/build

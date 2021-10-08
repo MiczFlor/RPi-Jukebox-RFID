@@ -1,0 +1,15 @@
+[Unit]
+Description=Jukebox Daemon
+After=network.target sound.target mpd.service
+Requires=mpd.service
+
+[Service]
+ExecStart=/usr/bin/python3 run_jukebox.py
+WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/jukebox
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

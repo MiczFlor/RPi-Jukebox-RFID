@@ -1,0 +1,4 @@
+playermpd:
+    host: mpd
+alsaif:
+  mixer: Master

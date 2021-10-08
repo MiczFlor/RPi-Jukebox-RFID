@@ -50,18 +50,30 @@ typedef struct
     char method [MAX_STRLEN];
     char params [MAX_PARAMS][MAX_STRLEN];
     int num_params;
+    char address [MAX_STRLEN];
 } t_request;
 
 
-int send_zmq_request_and_wait_response(char * request, int request_len, char * response, int max_response_len)
+int send_zmq_request_and_wait_response(char * request, int request_len, char * response, int max_response_len, char * address)
 {
     int zmq_ret,ret = -1;
     void *context = zmq_ctx_new ();
     void *requester = zmq_socket (context, ZMQ_REQ);
     int linger = 200;
+    
+    if (g_verbose)
+    {
+      int major, minor, patch;
+      zmq_version (&major, &minor, &patch);
+      printf ("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
+    }
+    
     zmq_setsockopt(requester,ZMQ_LINGER,&linger,sizeof(linger));
     zmq_setsockopt(requester,ZMQ_RCVTIMEO,&linger,sizeof(linger));
-    zmq_connect (requester, "tcp://localhost:5555");
+    zmq_connect (requester, address);
+
+    if (g_verbose) printf("connected to: %s",address);
+    
 
     zmq_ret = zmq_send (requester, request, request_len, 0);
 
@@ -94,32 +106,32 @@ void * connect_and_send_request(t_request * tr)
 {
     char json_request[MAX_REQEST_STRLEN];
     char json_response[MAX_REQEST_STRLEN];
-    char params[MAX_STRLEN * 8];
+    char kwargs[MAX_STRLEN * 8];
     size_t json_len;
     int n;
 
     if (tr->num_params > 0)
     {
-        sprintf(params, "\"params\":{");
+        sprintf(kwargs, "\"kwargs\":{");
         
         for (n = 0;n < tr->num_params;)
         {
-            strcat(params,tr->params[n]);
+            strcat(kwargs,tr->params[n]);
             n++;
-            if (n < tr->num_params) strcat(params,",");
+            if (n < tr->num_params) strcat(kwargs,",");
         }
 
-        strcat(params,"},");
+        strcat(kwargs,"},");
 
     }
-    else params[0] = 0;
+    else sprintf(kwargs, "\"kwargs\":{},");
 
-    snprintf(json_request,MAX_REQEST_STRLEN,"{\"object\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,params,123);
+    snprintf(json_request,MAX_REQEST_STRLEN,"{\"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,kwargs,123);
     json_len = strlen(json_request);
     
     if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);
 
-    send_zmq_request_and_wait_response(json_request,json_len,json_response,MAX_REQEST_STRLEN);
+    send_zmq_request_and_wait_response(json_request,json_len,json_response,MAX_REQEST_STRLEN,tr->address);
 
     return 0;
 }
@@ -148,6 +160,7 @@ void usage(void)
     fprintf(stderr,"    -h this screen\n");
     fprintf(stderr,"    -o, --object object\n");
     fprintf(stderr,"    -m, --method method\n");
+    fprintf(stderr,"    -a, --address   default=tcp://localhost:5555\n");
     fprintf(stderr,"    -v verbose\n");
 
     fprintf(stderr,"last change %s\n\n",__DATE__);
@@ -161,6 +174,7 @@ void usage(void)
 int HandleOptions(int argc,char *argv[], t_request * tr)
 {
   int c;
+  sprintf(tr->address,"tcp://localhost:5555");
   
   const struct option long_options[] =
   {
@@ -172,10 +186,11 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
     {"help",        no_argument,       0, 'h'},
     {"object",      required_argument, 0, 'o'},
     {"method",      required_argument, 0, 'm'},
+    {"address",     required_argument, 0, 'a'},
     {0, 0, 0, 0}
   };
 
-  const char short_options[] = {"o:m:p:?hv"};
+  const char short_options[] = {"o:m:p:a:?hv"};
 
   while (1)
   {
@@ -206,6 +221,10 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
         g_verbose = '1';
         break;
 
+      case 'a':
+        strncpy (tr->address,optarg,MAX_STRLEN);
+        break;
+      
       default:
         usage();
         abort ();
