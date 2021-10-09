@@ -13,7 +13,7 @@
 Jukebox Core Apps
 *****************
 
-The Jukebox's core apps are located in ``src/jukebox``. To get help on parameters, on each app you may run:
+The Jukebox's core apps are located in ``src/jukebox``. Run the following command to learn more about each app and its parameters:
 
 .. code-block:: bash
 
@@ -42,7 +42,7 @@ run_publicity_sniffer.py
 Configuration
 **************
 
-The Jukebox configuration is contained in a set of files located in ``../shared/settings``.
+The Jukebox configuration is managed by set of files located in ``../shared/settings``.
 Some configuration changes can be made through the WebUI and take immediate effect.
 
 The majority of configuration options is only available by editing the config files.
@@ -66,7 +66,9 @@ Best practice procedure:
     $ sudo systemctl start jukebox-daemon
 
 
-To try different configurations, you can start the Jukebox with a custom config file:
+To try different configurations, you can start the Jukebox with a custom config file. 
+This could be useful if you want your Jukebox to only allow a lower volume when started
+at night time when there is time to go to bed :-)
 
 .. code-block:: bash
 
@@ -76,8 +78,8 @@ Troubleshooting
 *****************
 
 We have made a point of providing extensive log messages.
-In full debug mode, this may become very verbose. But, well, the more information,
-the better. In fact, better observability has been one of the design goals for Version 3.
+In full debug mode, this may become very verbose. In fact, better observability
+has been one of the design goals for version 3.
 
 There are various options to get access to debug information.
 
@@ -107,16 +109,16 @@ We use Python's logging module to provide the debug messages which is configured
 Default logging configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The default logging config does two things:
+The default logging config does 2 things:
 
-1. Writes two log files:
+1. It writes 2 log files:
 
 .. code-block:: bash
 
-    ../shared/logs/app.log   : Complete Debug Messages
-    ../shared/logs/errors.log: Only Errors and Warnings
+    ../shared/logs/app.log    : Complete Debug Messages
+    ../shared/logs/errors.log : Only Errors and Warnings
 
-2. Prints logging messages to the console. If run as a service only error messages are emitted to console in order not to spam the system log files.
+2. Prints logging messages to the console. If run as a service, only error messages are emitted to console to avoid spamming the system log files.
 
 Debug logging in console
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -139,9 +141,9 @@ on the console log.
 Fallback configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Start the Jukebox with a catch-all debug enabler with a logger.yaml is possible.
-Attention: This only emits messages to console
-and does not write the log files! This is more a fallback features:
+It is possible to start the Jukebox with a catch-all debug enabler with a logger.yaml.
+Attention: This only emits messages to the console and does not write to the log files!
+This is more a fallback features:
 
 .. code-block:: bash
 
@@ -150,18 +152,16 @@ and does not write the log files! This is more a fallback features:
 Extreme cases
 ^^^^^^^^^^^^^
 
-Sometimes, the Jukebox App might crash with an Exception and Stack Trace which is
+Sometimes, the Jukebox app might crash with an exception and stack trace which is
 neither logged, nor caught and handled.
 
-If run locally from your console, you will see this immediately. No worries!
+If run locally from your console, you will see it immediately. No worries!
 
 If running as a service, you will probably not even notice immediately that something has
-gone pear-shaped. Services are restarted automatically when the fail.
-Things are just not behaving as expected. Time to check the system logs:
+gone pear-shaped. Services are restarted automatically when they fail.
+
+Things are just not behaving as expected? Time to check the system logs:
 
 .. code-block:: bash
 
     $journalctl -b -u jukebox-daemon
-
-
-

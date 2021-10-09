@@ -1,19 +1,19 @@
 Card Database
 *****************
 
-In the card database an action is assigned to every card. This action is triggered on every swipe of the card.
-
-.. important:: Card IDs **must** be strings! So, be sure to quote numbers!
+In the card database, an action is assigned to every card. This action is triggered on every swipe of the card.
 
 Actions
 -------------------------
 
 This is the function to be called every time when the card is swiped (or placed) on the reader. In principle every
-RPC-callable function can be called. There are pre-defined 'quick-selections' for commonly used functions.
+RPC-callable function can be triggered. There are pre-defined **quick selections** for commonly used functions.
 Take a look at the file ``shared/settings/card_actions_reference.txt`` to get an overview of available quick select options.
-It's an auto-generated file, that gets written after first start of the Jukebox.
+It's an auto-generated file, that gets written after the first start of the Jukebox.
 
 Here are some examples for card is '0001' to '0003' using quick select options:
+
+.. important:: Card IDs **must** be strings! So, be sure to quote numbers!
 
 .. code-block:: yaml
 
@@ -57,8 +57,8 @@ ignore_card_removal_action: true | false
 
 
 ignore_same_id_delay: true | false
-    Override the same_id_delay parameter for this card. If true, the same_id_delay for this card is treated as 0.
-    This makes sense e.g. for an "increase volume" card in combination with a place-capable RFID reader.
+    Override the ``same_id_delay`` parameter for this card. If true, the ``same_id_delay`` for this card is treated as 0.
+    This makes sense e.g., for an "increase volume" card in combination with a place-capable RFID reader.
     As long as the card is placed on the reader, the volume is increased.
 
     .. note:: This parameter causes *ignore_card_removal_action* to be treated as true

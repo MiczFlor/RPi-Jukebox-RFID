@@ -1,31 +1,31 @@
 Concepts
 ================================================
 
-The Jukebox is based on three concepts. Don't worry we won't delve into all the juicy developer details.
-But a rough understanding is important as this foundation reverberates into the configuration files.
+The Jukebox is based on three concepts. Don't worry we won't dive into all the juicy developer details (just yet).
+But a rough understanding is important as an foundation to understand the configuration files.
 
 Plugin Interface
 ----------------
 
 The core app is centered around a plugin concept. This serves three purposes:
 
-    #. Dynamically load packages with additional functionality based the configuration file.
-    #. Initialize and close these packages at app start / close. This happens in the background. Failing
+    #. Dynamically load packages with additional functionality based on configuration files.
+    #. Initialize and close these packages at app start / close. This happens automatically in the background. Failing
        packages (for any reason) are ignored during start-up. So when some functionality is not available, always
        check the logs to ensure all packages have loaded successfully! See :ref:`coreapps:Troubleshooting`.
     #. Register and present functions which can be called via the :ref:`concepts:Remote Procedure Call Server (RPC)`
 
-That's about what you need to know for the plugin concept. Developer detail information
+That's about what you need to know for the plugin concept. Developer detailed information
 can be found here (TBD).
 
 Remote Procedure Call Server (RPC)
 --------------------------------------
 
-The Remote Procedure Call (RPC) Server allows to remotely trigger actions (e.g. from the WebUI) in the Jukebox Core App.
-Not all Python functions of the core app are callable, but only those registered with the plugin interface. This
-is to simplify the external API and focus on the relevant user functions.
+The Remote Procedure Call (RPC) server allows to remotely trigger actions (e.g., from the Webapp) within the Jukebox core application.
+Only Python functions registered by the plugin interface can be called. This
+simplifies external APIs and let's us focus on the relevant user functions.
 
-Why should you care? Because we use the same protocol when triggering actions from other inputs, say, a card swipe, a
+Why should you care? Because we use the same protocol when triggering actions from other inputs like swiping a card swipe, a
 GPIO button press, etc. So, here is the essence of what you need to know:
 
 An RPC call consists of up to three parts
@@ -34,7 +34,7 @@ An RPC call consists of up to three parts
     #. the positional arguments (optional)
     #. the keyword arguments (optional)
 
-The function specification consists of two e.g. ``host.shutdown`` or three parts ``volume.ctrl.incr_volume``. In
+The function specification consists of two (e.g., ``host.shutdown``) or three terms (e.g., ``volume.ctrl.incr_volume``). In
 configuration files, this will look like this:
 
 .. code-block:: yaml
@@ -54,16 +54,16 @@ Or like this for a three part function with the argument set to ``5``:
 You will find a full list of RPC callable functions in :ref:`rpc_command_reference:RPC Command Reference` and in
 ``shared/settings/plugin_reference``. Examples are given in the configuration of the :ref:`carddatabase:Card Database`
 
-For developers the details can be found here (TBD). We also have tool to send RPC commands to the running Jukebox App:
+For developers the details can be found here (TBD). We also have a tool to send RPC commands to the running Jukebox application:
 :ref:`coreapps:run_rpc_tool.py`
 
 Publishing Message Queue
 --------------------------
 
-The complimentary part to the RPC, where the core app publishes is status and status changes. As a user, you need not
-worry about it.
+The Publishing Message Queue is the complimentary part to the RPC where the core application publishes its status and status updates.
+As a user, you need not worry about it.
 
-If you want to interface with the Jukebox for your own application, this is where you get the current
-state from. Details about the protocol here (TBD). And there is a sniffer tool which listens and prints the incoming
+If you want to interact with the Jukebox from your own application, this is where you get the current
+state from. Details about the protocol can be found here (TBD). A sniffer tool exists which listens and prints the incoming
 status messages: :ref:`coreapps:run_publicity_sniffer.py`.
 
