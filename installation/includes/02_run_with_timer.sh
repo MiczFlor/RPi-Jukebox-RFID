@@ -9,3 +9,11 @@ calc_runtime_and_print() {
 
   echo "Done in ${h}h ${m}m ${s}s."
 }
+
+run_with_timer() {
+  local time_start=$(date +%s);
+
+  $1; # Executes the function passed as an argument
+
+  calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
+}

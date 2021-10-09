@@ -15,8 +15,6 @@ SETTINGS_PATH="${SHARED_PATH}/settings"
 SYSTEMD_PATH="/lib/systemd/system"
 
 clone_or_pull_jukebox_repository() {
-  local time_start=$(date +%s)
-
   echo "Download Jukebox Repository" | tee /dev/fd/3
   cd ${HOME_PATH}
 
@@ -33,22 +31,18 @@ clone_or_pull_jukebox_repository() {
     else
       # No changes
       echo "  Updating version"
-      git pull
+      git pull origin $(git rev-parse --abbrev-ref HEAD)
     fi
   else
     git clone --depth 1 ${GIT_URL} --branch "${GIT_BRANCH}"
   fi
 
-  calc_runtime_and_print time_start $(date +%s)
   echo "DONE: download_jukebox_repository"
 
   clear 1>&3
 }
 
 install() {
-  local time_start=$(date +%s)
-
-  welcome
   customize_options
   set_raspi_config
   if [ "$DISABLE_SSH_QOS" = true ] ; then set_ssh_qos fi
@@ -61,14 +55,9 @@ install() {
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then setup_kiosk_mode fi
   optimize_boot_time
   cleanup
-
-  calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
-
-  finish
 }
 
 ### RUN INSTALLATION
-
 # Log installation for debugging reasons
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
 # Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
@@ -77,7 +66,7 @@ echo "Log start: ${INSTALL_ID}"
 
 clone_or_pull_jukebox_repository
 
-# Include dependencies
+# Load / Source dependencies
 for i in $INSTALLATION_PATH/installation/includes/*;
   do source $i
 done
@@ -86,4 +75,6 @@ for j in $INSTALLATION_PATH/installation/routines/*;
   do source $j
 done
 
-install
+welcome
+run_with_timer install
+finish
