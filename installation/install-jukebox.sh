@@ -4,19 +4,22 @@
 export LC_ALL=C
 
 # Constants
-INSTALL_ID=$(date +%s)
-GIT_URL="https://github.com/pabera/RPi-Jukebox-RFID.git"
-GIT_BRANCH="future3/refactor-install-script"
+GIT_USER="MiczFlor"
+GIT_REPO_NAME="RPi-Jukebox-RFID"
+GIT_BRANCH="future3/main"
+GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 
 HOME_PATH="/home/pi"
-INSTALLATION_PATH="${HOME_PATH}/RPi-Jukebox-RFID"
+INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 SYSTEMD_PATH="/lib/systemd/system"
 
+INSTALL_ID=$(date +%s)
+
 download_jukebox_source() {
-  wget -qO- https://github.com/pabera/RPi-Jukebox-RFID/tarball/future3/refactor-install-script | tar xz &&
-  find . -maxdepth 1 -type d -name '*-RPi-Jukebox-RFID-*' -exec mv {} RPi-Jukebox-RFID  \;
+  wget -qO- ${GIT_REPO}/tarball/${GIT_BRANCH} | tar xz
+  find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*" -exec mv {} $GIT_REPO_NAME  \;
 }
 
 install() {
