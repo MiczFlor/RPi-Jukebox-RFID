@@ -4,33 +4,47 @@
 Feature Status
 ****************
 
-This is where we are in a nutshell: Playing music from local folders via RFID trigger. We also built a new WebUI to control
-the Jukebox from a browser.
+**This is where we are in a nutshell:** Playing music from local folders via RFID trigger.
+We also built a new WebUI to control the Jukebox from a browser.
 
 The are a few things that are specifically not integrated yet: GPIOs, playing streams, podcasts or Spotify.
 
-Overview
---------
+In the following is the currently implemented feature list in more detail. It also shows some of the holes.
+However the list is *not complete in terms of planned features*,
+but probably **reflects more of where work is currently being put into**.
 
-Here is the currently implemented feature list in more detail. It also shows some of the holes. However the list
-is not complete in terms of planned features, but probably reflects more of where work is currently being put into.
+**For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue
+or join us on in the chat room. You may pick topic marked as open below, but also any other topic missing in below list.
+As mentioned, that list is not complete in terms of open features. Check the
+`Contribution guide <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/CONTRIBUTING.md>`_.
+Topics marked *in progress* are already in the process of implementation by community members.
 
 .. contents::
 
-* |[ ]| Method to change configuration through WebUI
-  * The difficulty lies bringing the running Jukebox to accept the changes
-* |[ ]| Strategy to post config changes via PubSub
+Jukebox Core App
+-------------------
 
-    * e.g. volume change is posted repeatedly with status
-    * but what about set_max_volume, is shutdown timer active?
+Base
+^^^^^^^^
 
-* |[ ]| Clean up of surplus files
+* |[X]| Clean up of surplus files
 * |[X]| Host interface (shutdown, reboot)
-* |[X]| Temperature getter / publisher
-* |[ ]| is_throttled getter / publisher
-* |[X]| Version number getter / Git Hash
+* |[X]| Temperature getter
+
+    * |[X]| Timer + Publisher
+
+* |[X]| RPi is_throttled getter
+
+    * |[ ]| Decode hex value to readable string (check version 2.x mqtt as reference?)
+    * |[ ]| Timer + Publisher
+
+* |[X]| Git hash log information
 
   * |[ ]| Log and publish this!
+
+* |[ ]| Version number getter (Version number should be stored in a python file)
+
+    * |[ ]| Log and publish  this
 
 * |[ ]| Exit via RPC
 * |[ ]| Service restart via RPC
@@ -51,45 +65,44 @@ is not complete in terms of planned features, but probably reflects more of wher
 * |[X]| Basic Logging Config should enable Publisher stream handler
 * |[ ]| Disable Console Stream Handler (or set to warning) when running as a service
 * |[X]| Log & publish start time
+* |[ ]| /shared/references: plugin_reference / rpc commands reference / card actions reference / card db summary (*in progress*)
+* |[ ]| Method to change configuration through WebUI
 
-* |[ ]| /shared/references: plugin_reference / rpc commands reference / card actions reference / card db summary
+  * The difficulty lies bringing the running Jukebox to accept the changes. There probably won't be a catch all solution
+    but rather a custom implementation for a select few features
+
+* |[X]| Strategy to post config changes via PubSub: Must be taken care of by the setter function modifying the property
+
 
 Via RPC
--------
+^^^^^^^^
 
-  * |[X]| List of loaded / failed plugins
-  * |[X]| card action reference
-  * |[X]| Help command (available commands)
+* |[X]| List of loaded / failed plugins
+* |[X]| card action reference
+* |[X]| Help command (available commands)
 
-      * which basically is a plugin reference
+  * which basically is a plugin reference
 
 Config handler
---------------
+^^^^^^^^^^^^^^^^^^^
 
-* |[ ]| While saving config to disk: local file change detection
-* |[ ]| cfghandler creates setndefault() at arbitrary depth
+* |[X]| While saving config to disk: local file change detection
+* |[X]| cfghandler creates setndefault() at arbitrary depth
 
 ZMQ Publisher
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[X]| Last Value Cache
 * |[X]| Subscriber detection and initial status update
 * |[X]| Port configuration option (WS und/oder TCP)
 * |[ ]| Callback registration option for plugin on topic send
 
-WebUI
---------------
-
-* |[X]| Playback Control
-* |[X]| Cover Art
-* |[X]| Register cards / Delete Card
-* |[X]| Shutdown button
-* |[ ]| Settings configuration page
+    * How to interact with threading?
 
 Playback
---------------
+^^^^^^^^^^^^^^^^^
 
-* |[ ]| Playlist generator (in work)
+* |[ ]| Playlist generator (*in progress*)
 
     * |[ ]| Local folders
 
@@ -100,8 +113,9 @@ Playback
     * |[ ]| Livestreams
     * |[ ]| NEW: Playback of m3u playlists (e.g. folder.m3u) ?
 
-* |[ ]| Folder configuration `Reference <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour>`_
+* |[ ]| Folder configuration  (*in progress*)
 
+  * |[ ]| `Reference <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour>`_
   * |[ ]| Resume: Save and restore position (how interact with shuffle?)
   * |[ ]| Single: Enable mpc single
   * |[ ]| Shuffle: Enable mpc random (not shuffle)
@@ -111,19 +125,19 @@ Playback
   * |[ ]| Loop: Loop playlist
 
 MPD Player
---------------
+^^^^^^^^^^^^^^^^^
 
-* |[ ]| Thread safety for status information / configuration
-* |[ ]| Differential status post
-* |[ ]| Second swipe option setter via RPC
-* |[ ]| Volume publisher for ALSA / MPD switchable
+* |[ ]| Thread safety for status information / configuration  (*in progress*)
+* |[ ]| Differential status post  (*in progress*)
+* |[ ]| Second swipe option setter via RPC  (*in progress*)
+* |[ ]| Volume publisher for ALSA / MPD switchable  (*in progress*)
 
-    * |[ ]| ALSA volume check with select.poll()
+    * |[ ]| ALSA volume check with select.poll()  (*in progress*)
 
 * |[ ]| Before every music lib update, player should check user rights (not only after start-up)
 
 RFID
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[X]| Test with Reader disabled
 * |[X]| Start-up behaviour with un-configured Reader
@@ -137,7 +151,7 @@ RFID
 
     * |[X]| Configurable card removal action
 
-* |[ ]| Readers support
+* |[ ]| Readers support (*in progress*)
 
     * |[X]| USB (e.g. Neuftech)
     * |[X]| RDM6300
@@ -168,10 +182,10 @@ RFID
 
     * |[X]| Card reference IF via RPC (?)
     * |[ ]| Export available quick selects commands to RPC
-    * |[ ]| Base quick select on yaml file
+    * |[ ]| Base quick select on yaml file (*in progress*)
 
 Cards
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[ ]| Write a simplified card summary to
 
@@ -186,9 +200,8 @@ Cards
 * |[X]| Remove card
 
 Timer
---------------
+^^^^^^^^^^^^^^^
 
-* |[ ]| Idle timer
 * |[X]| Shutdown timer
 * |[X]| Play stop timer
 * |[X]| Shutdown timer volume reduction
@@ -197,36 +210,32 @@ Timer
     * Needs to be cancelable
 
 * |[X]| Publish mechanism of timer status
+* |[X]| Change multitimer function call interface such that Endless timer etc do not pass the `iteration` kwarg
 * |[ ]| Make timer settings persistent
-* |[ ]| Change multitimer function call interface such that Endless timer etc do not pass the `iteration` kwarg
+* |[ ]| Idle timer
 
+    * This needs clearer specification: Idle is when no music is playing and no user interaction si taking place
+    * i.e. needs information from RPC AND from player status. Let's do this when we see a little clearer about Spotify
 
-Installation
---------------
-
-* |[X]| Single call installation script
-* |[ ]| Query for settings vs. automatic version, e.g.
-
-    * before overwriting MPD config (i.e. for re-installs)
-    * static IP
-    * ALSA Mixer interface
-
-* |[ ]| IPQoS in SSH config
-* |[ ]| Separate static IP and IPv6 disable
 
 
 Volume
---------------
+^^^^^^^^^^^^^^^^^
 
-* |[ ]| Min/Max Volume
 * |[X]| Jingle playback volume as fixed value in config
 * |[X]| Default volume setting after boot-up
 * |[X]| MPD volume control service
+* |[ ]| Min/Max Volume
+
+    * There is two places that can control volume alsaif and playermpd.MpdVolumeCtrl. Both need this feature
+    * It might be advisable to build a BaseClass and inheret from that
+
+* |[ ]| Error-safe mute/unmute for AlsaIF (not all sound cards support that)
 
 GPIO
---------------
+^^^^^^^^^^^^^^^^^
 
-* |[ ]| Everything needs porting
+* |[ ]| Everything needs porting (*in progress*)
 
     * Function call routines need replacing to do RPC Calls
     * Configuration format probably best changed to YAML
@@ -236,30 +245,36 @@ GPIO
 * |[ ]| Port rfid pin action to GPIO as a general pin service for all plugins
 
 WLAN
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[ ]| Ad-hoc WLAN Hot spot
 * |[ ]| IP address read-out
 
 Spotify
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[ ]| Everything
 
 Others
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[ ]| Bluetooth sink toggle
 * |[ ]| MQTT
 * |[ ]| Record and Playback using a Mic
 
 Start-up stuff
---------------
+^^^^^^^^^^^^^^^^^
 
 * |[X]| check music folder rights
 * |[X]| mpc update / (mpc rescan)
-* |[ ]| sudo iwconfig wlan0 power off (need to be done after every restart)
-* |[ ]| Optional power down HDMI circuits: /usr/bin/tvservice -o
+* |[X]| sudo iwconfig wlan0 power off (need to be done after every restart)
+
+    * |[ ]| needs testing
+
+* |[X]| Optional power down HDMI circuits: /usr/bin/tvservice -o
+
+    * |[ ]| needs testing
+
 
 Debug Tools
 --------------
@@ -270,7 +285,36 @@ Debug Tools
 
 * |[X]| RPC command line client
 
-    * with tab-completion and history
+    * |[X]| with tab-completion and history
+
+
+WebUI
+--------------
+
+* |[X]| Playback Control
+* |[X]| Cover Art
+* |[X]| Register cards / Delete Card
+* |[X]| Shutdown button
+* |[ ]| Settings configuration page
+* |[ ]| System information page
+* |[ ]| ``run_npm_build`` script
+
+    * |[ ]| Must consider ``export NODE_OPTIONS=--max-old-space-size=512``
+
+
+Installation Procedure
+-----------------------
+
+* |[X]| Single call installation script
+* |[ ]| Query for settings vs. automatic version, e.g.
+
+    * |[ ]| before overwriting MPD config (i.e. for re-installs)
+    * |[ ]| static IP (DHCP or static IP from user input)
+    * |[ ]| ALSA Mixer interface
+
+* |[X]| IPQoS in SSH config
+* |[X]| Separate static IP and IPv6 disable
+* |[ ]| For all system config file changes, check prior to modification, if modification already exists
 
 
 Documentation
