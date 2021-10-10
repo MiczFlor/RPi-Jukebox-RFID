@@ -3,12 +3,11 @@
 setup_jukebox_core() {
   echo "Install Jukebox Core dependencies" | tee /dev/fd/3
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
-    at git wget \
-    mpd mpc \
-    mpg123 \
-    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
-    ffmpeg \
+    at git \
     alsa-tools \
+    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
+    ffmpeg mpg123 \
+    mpd mpc \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
