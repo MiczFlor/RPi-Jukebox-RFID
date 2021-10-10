@@ -2,15 +2,7 @@
 
 # Slower PIs need this to finish building the Webapp
 _jukebox_webapp_export_node_memory_limit() {
-  MEMORY=`cat /proc/meminfo | awk '$1 == "MemTotal:" {print 0+$2}'`
-  echo "Memory found: ${MEMORY}"
-  if [[ $MEMORY -lt 1024000 ]]; then
-    export NODE_OPTIONS=--max-old-space-size=1024
-  fi
-
-  if [[ $MEMORY -lt 512000 ]]; then
-    export NODE_OPTIONS=--max-old-space-size=512
-  fi
+  export NODE_OPTIONS=--max-old-space-size=512
   echo "NODE_OPTIONS set to: '${NODE_OPTIONS}'"
 }
 
