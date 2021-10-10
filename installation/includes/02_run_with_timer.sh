@@ -16,4 +16,5 @@ run_with_timer() {
   $1; # Executes the function passed as an argument
 
   calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
+  echo "--------------------------------------"
 }
