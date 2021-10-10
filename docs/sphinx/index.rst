@@ -32,7 +32,7 @@ Welcome to RPi Jukebox RFID's documentation!
    :caption: Developer Reference:
 
    development_environment
-   api
+   api/api.rst
 
 
 
