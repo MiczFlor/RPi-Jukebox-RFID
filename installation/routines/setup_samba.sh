@@ -1,20 +1,19 @@
 #!/usr/bin/env bash
 
-setup_samba() {
-  local SMB_CONF="/etc/samba/smb.conf"
-  local SMB_USER="pi"
-  local SMB_PASSWD="raspberry"
-
-  # Skip interactive Samba WINS config dialog
-  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
-
-  echo "Install Samba Core dependencies" | tee /dev/fd/3
+_samba_install_os_dependencies() {
+  echo "Install Samba Core dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     samba samba-common-bin \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages
+}
+
+_samba_set_user() {
+  local SMB_CONF="/etc/samba/smb.conf"
+  local SMB_USER="pi"
+  local SMB_PASSWD="raspberry"
 
   echo "Configure Samba" | tee /dev/fd/3
   # Samba has not been configured
@@ -43,6 +42,15 @@ EOF
 
     sudo chmod 644 $SMB_CONF
   fi
+}
+
+setup_samba() {
+  echo "Install Samba and configure user" | tee /dev/fd/3
+
+  # Skip interactive Samba WINS config dialog
+  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+  _samba_install_os_dependencies
+  _samba_set_user
 
   echo "DONE: setup_samba"
 }

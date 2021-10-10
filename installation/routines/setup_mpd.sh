@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
-setup_mpd() {
-  echo "Configure MPD" | tee /dev/fd/3
-  # TODO: Could this be read from the jukebox.yaml?
+_mpd_install_os_dependencies() {
+  echo "Install MPD OS dependencies"
+  sudo apt-get -qq -y update; sudo apt-get -qq -y install \
+    mpd mpc \
+    --no-install-recommends \
+    --allow-downgrades \
+    --allow-remove-essential \
+    --allow-change-held-packages
+}
 
+_mpd_configure() {
+  # TODO: Could this be read from the jukebox.yaml?
   local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
   local PLAYLISTS_PATH="${SHARED_PATH}/playlists"
   local ALSA_MIXER_CONTROL="Headphone"
@@ -29,11 +37,20 @@ setup_mpd() {
   sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' ${MPD_CONF_PATH}
   sudo chown mpd:audio "${MPD_CONF_PATH}"
   sudo chmod 640 "${MPD_CONF_PATH}"
+}
 
-  # Reload mpd
+_mpd_reload_system_services() {
   sudo systemctl daemon-reload
   sudo systemctl start mpd.service
   mpc update
+}
+
+setup_mpd() {
+  echo "Configure MPD" | tee /dev/fd/3
+
+  _mpd_install_os_dependencies
+  _mpd_configure
+  _mpd_reload_system_services
 
   echo "DONE: setup_mpd"
 }

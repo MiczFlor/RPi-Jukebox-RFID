@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-setup_kiosk_mode() {
-  echo "Setup Kiosk Mode" | tee /dev/fd/3
-
+_kiosk_mode_install_os_dependencies() {
   # Resource:
   # https://blog.r0b.io/post/minimal-rpi-kiosk/
   sudo apt-get -qq -y install --no-install-recommends \
@@ -11,7 +9,9 @@ setup_kiosk_mode() {
     xinit \
     openbox \
     chromium-browser
+}
 
+_kiosk_mode_set_autostart() {
   local _DISPLAY='$DISPLAY'
   local _XDG_VTNR='$XDG_VTNR'
   cat << EOF >> /home/pi/.bashrc
@@ -42,9 +42,20 @@ chromium-browser http://localhost \
   --no-first-run
 
 EOF
+}
 
+_kiosk_mode_update_settings() {
   # Resource: https://github.com/Thyraz/Sonos-Kids-Controller/blob/d1f061f4662c54ae9b8dc8b545f9c3ba39f670eb/README.md#kiosk-mode-installation
   sudo touch /etc/chromium-browser/customizations/01-disable-update-check;echo CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\" | sudo tee /etc/chromium-browser/customizations/01-disable-update-check
+
+}
+
+setup_kiosk_mode() {
+  echo "Setup Kiosk Mode" | tee /dev/fd/3
+
+  _kiosk_mode_install_os_dependencies
+  _kiosk_mode_set_autostart
+  _kiosk_mode_update_settings
 
   echo "DONE: setup_kiosk_mode"
 }
