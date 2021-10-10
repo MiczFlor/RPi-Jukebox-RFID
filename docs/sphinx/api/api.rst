@@ -11,3 +11,4 @@ Developers API Introduction
    plugs
    publishing
    rpc_server
+   cfghandler

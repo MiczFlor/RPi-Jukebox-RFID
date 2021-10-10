@@ -146,25 +146,25 @@ class ReaderClass(ReaderBaseClass):
         # Use a string to index with key event code to decode key event code into ASCII character
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
 
-        config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default=None)
-        if config is None:
-            self._logger.error("Configuration may not be empty!!")
-            raise KeyError("configuration may not be empty!!")
-
-        if 'device_name' not in config:
-            self._logger.error("Mandatory key 'device_name' not given in configuration!")
-            raise KeyError("Mandatory key 'device_name' not given in configuration!")
-        if 'device_phys' not in config:
-            self._logger.warning("Key 'device_phys' not given in configuration! Trying without...")
-        if 'key_capability' not in config:
-            self._logger.warning("Key 'key_capability' not given in configuration! Using default value: 'true'.")
-        if 'name_is_unique' not in config:
-            self._logger.warning("Key 'name_is_unique' not given in configuration! Using default value: 'true'.")
-        if 'key_check_is_unique' not in config:
-            self._logger.warning("Key 'key_check_is_unique' not given in configuration! Using default value: 'true'.")
-
-        device_name = config.get('device_name')
         with cfg:
+            config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default=None)
+            if config is None:
+                self._logger.error("Configuration may not be empty!!")
+                raise KeyError("configuration may not be empty!!")
+
+            if 'device_name' not in config:
+                self._logger.error("Mandatory key 'device_name' not given in configuration!")
+                raise KeyError("Mandatory key 'device_name' not given in configuration!")
+            if 'device_phys' not in config:
+                self._logger.warning("Key 'device_phys' not given in configuration! Trying without...")
+            if 'key_capability' not in config:
+                self._logger.warning("Key 'key_capability' not given in configuration! Using default value: 'true'.")
+            if 'name_is_unique' not in config:
+                self._logger.warning("Key 'name_is_unique' not given in configuration! Using default value: 'true'.")
+            if 'key_check_is_unique' not in config:
+                self._logger.warning("Key 'key_check_is_unique' not given in configuration! Using default value: 'true'.")
+
+            device_name = config.get('device_name')
             device_phys = config.setdefault('device_phys', default='Empty')
             key_check = config.setdefault('key_check', default=True)
             name_is_unique = config.setdefault('name_is_unique', default=True)

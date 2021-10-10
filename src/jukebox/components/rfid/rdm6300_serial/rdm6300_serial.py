@@ -105,12 +105,10 @@ class ReaderClass(ReaderBaseClass):
         self._logger = logging.getLogger(f'jb.rfid.rdm({reader_cfg_key})')
         super().__init__(reader_cfg_key=reader_cfg_key, description=DESCRIPTION, logger=self._logger)
 
-        config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default={})
-
-        if 'number_format' not in config:
-            self._logger.warning("Missing configuration parameter: 'number_format'. Defaulting to 'card_id_dec'")
-
         with cfg:
+            config = cfg.setndefault('rfid', 'readers', reader_cfg_key, 'config', value={})
+            if 'number_format' not in config:
+                self._logger.warning("Missing configuration parameter: 'number_format'. Defaulting to 'card_id_dec'")
             number_format_str = config.setdefault('number_format', default='card_id_dec')
             self.device = config.setdefault('device', default='/dev/ttyS0')
             self.baudrate = config.setdefault('baudrate', default=9600)
