@@ -32,11 +32,8 @@ class MusicCoverArt:
             logger.error(f'ERROR {e.__class__.__name__}: {e}')
             return cover_base64_string
 
-        for image in file_data.tag.images:
-            cover_encoded_base64_bytes = b64encode(image.image_data)
-            cover_base64_string = cover_encoded_base64_bytes.decode('utf-8')
-
         try:
+            # Take the first image, if multiple images are embedded
             image = file_data.tag.images.__iter__().__next__()
         except StopIteration:
             pass
