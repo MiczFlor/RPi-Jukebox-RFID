@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Helpers
+_download_file_from_google_drive() {
+  local GD_SHARING_ID=$1
+  local ZMQ_TAR_FILENAME=$2
+
+  wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O ${ZMQ_TAR_FILENAME} && rm -rf /tmp/cookies.txt
+}
+
 _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
@@ -27,16 +35,26 @@ _jukebox_core_install_pyzmq() {
   # https://pyzmq.readthedocs.io/en/latest/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "  Install pyzmq"
-  ZMQ_TMP_PATH="libzmq"
-  ZMQ_PREFIX="/usr/local"
+  local ZMQ_TMP_PATH="libzmq"
+  local ZMQ_PREFIX="/usr/local"
+  local ZMQ_TAR_FILENAME="libzmq.tar.gz"
 
   if ! pip3 list | grep -F pyzmq >> /dev/null; then
+    # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
+    echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
+
     cd ${HOME_PATH} && mkdir ${ZMQ_TMP_PATH} && cd ${ZMQ_TMP_PATH}
-    # Download pre-compiled libzmq armv6 from Google Drive
-    # https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
-    wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
-    tar -xzf libzmq.tar.gz
-    rm -f libzmq.tar.gz
+
+    # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
+    LIBZMQ_GD_DOWNLOAD_ID="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY"
+    if [ `uname -m` = "armv6l" ]; then
+      # ARMv6: https://drive.google.com/file/d/1SQNOG3q1KfsqqtPgJ36O_ZU19rEWja5T/view?usp=sharing
+      LIBZMQ_GD_DOWNLOAD_ID="1SQNOG3q1KfsqqtPgJ36O_ZU19rEWja5T"
+    fi
+
+    _download_file_from_google_drive LIBZMQ_GD_DOWNLOAD_ID ZMQ_TAR_FILENAME
+    tar -xzf ${ZMQ_TAR_FILENAME}
+    rm -f ${ZMQ_TAR_FILENAME}
     sudo rsync -a * ${ZMQ_PREFIX}/
 
     pip3 install --pre pyzmq \
