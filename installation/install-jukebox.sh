@@ -3,18 +3,18 @@
 # Handle language configuration
 export LC_ALL=C
 
-# Constants
+# Variables
 GIT_USER="MiczFlor"
-GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_BRANCH="future3/main"
-GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 
+# Constants
+GIT_REPO_NAME="RPi-Jukebox-RFID"
+GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 HOME_PATH="/home/pi"
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 SYSTEMD_PATH="/lib/systemd/system"
-
 INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {
