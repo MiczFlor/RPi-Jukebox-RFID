@@ -45,6 +45,9 @@ INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: ${INSTALL_ID}"
 
+clear 1>&3
+echo "Downloading Phoniebox software from Github ..." 1>&3
+
 download_jukebox_source
 cd ${INSTALLATION_PATH}
 
