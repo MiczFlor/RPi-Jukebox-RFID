@@ -1,34 +1,39 @@
 #!/usr/bin/env bash
 
-optimize_boot_time() {
-  # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
-  echo "Optimize boot time" | tee /dev/fd/3
+# Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
 
-  echo "  * Disable exim4.service" | tee /dev/fd/3
+_optimize_disable_irrelevant_services() {
+  echo "  * Disable exim4.service"
   sudo systemctl disable exim4.service
 
-  if [ "$DISABLE_BLUETOOTH" = true ] ; then
-    echo "  * Disable hciuart.service and bluetooth" | tee /dev/fd/3
-    sudo systemctl disable hciuart.service
-    sudo systemctl disable bluetooth.service
-  fi
-
-  echo "  * Disable keyboard-setup.service" | tee /dev/fd/3
+  echo "  * Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
 
-  echo "  * Disable triggerhappy.service" | tee /dev/fd/3
+  echo "  * Disable triggerhappy.service"
   sudo systemctl disable triggerhappy.service
   sudo systemctl disable triggerhappy.socket
 
-  echo "  * Disable raspi-config.service" | tee /dev/fd/3
+  echo "  * Disable raspi-config.service"
   sudo systemctl disable raspi-config.service
 
-  echo "  * Disable apt-daily.service & apt-daily-upgrade.service" | tee /dev/fd/3
+  echo "  * Disable apt-daily.service & apt-daily-upgrade.service"
   sudo systemctl disable apt-daily.service
   sudo systemctl disable apt-daily-upgrade.service
   sudo systemctl disable apt-daily.timer
   sudo systemctl disable apt-daily-upgrade.timer
+}
 
+# TODO: If false, actually make sure bluetooth is enabled
+_optimize_handle_bluetooth() {
+  if [ "$DISABLE_BLUETOOTH" = true ] ; then
+    echo "  * Disable hciuart.service and bluetooth"
+    sudo systemctl disable hciuart.service
+    sudo systemctl disable bluetooth.service
+  fi
+}
+
+# TODO: Allow options to enable/disable wifi, Dynamic/Static IP etc.
+_optimize_handle_network_connection() {
   # Static IP Address and DHCP optimizations
   local DHCP_CONF="/etc/dhcpcd.conf"
 
@@ -65,10 +70,12 @@ EOF
   else
     echo "  * Skipped static IP address"
   fi
+}
 
-  # Disable IPv6 and ARP
+# TODO: Allow both Enable and Disable
+_optimize_ipv6_arp() {
   if [ "$DISABLE_IPv6" = true ] ; then
-      echo "  * Disabling IPV6 and ARP" | tee /dev/fd/3
+      echo "  * Disabling IPV6 and ARP"
       cat << EOF | sudo tee -a $DHCP_CONF
 
 ## Jukebox boot speed-up settings
@@ -79,10 +86,12 @@ noipv6
 EOF
 
   fi
+}
 
-  # Disable RPi rainbow screen
+# TODO: Allow both Enable and Disable
+_optimize_handle_boot_screen() {
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-    echo "  * Disable RPi rainbow screen" | tee /dev/fd/3
+    echo "  * Disable RPi rainbow screen"
     BOOT_CONFIG='/boot/config.txt'
     cat << EOF | sudo tee -a $BOOT_CONFIG
 
@@ -91,13 +100,26 @@ disable_splash=1
 
 EOF
   fi
+}
 
-  # Disable boot logs
+# TODO: Allow both Enable and Disable
+_optimize_handle_boot_logs() {
   if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
-    echo "  * Disable boot logs" | tee /dev/fd/3
+    echo "  * Disable boot logs"
     BOOT_CMDLINE='/boot/cmdline.txt'
     sudo sed -i "$ s/$/ consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram/" $BOOT_CMDLINE
   fi
+}
+
+optimize_boot_time() {
+  echo "Optimize boot time" | tee /dev/fd/3
+
+  _optimize_disable_irrelevant_services
+  _optimize_handle_bluetooth
+  _optimize_handle_network_connection
+  _optimize_ipv6_arp
+  _optimize_handle_boot_screen
+  _optimize_handle_boot_logs
 
   echo "DONE: optimize_boot_time"
 }
