@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# TODO: Could this be read from the jukebox.yaml?
+AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
+PLAYLISTS_PATH="${SHARED_PATH}/playlists"
+ALSA_MIXER_CONTROL="Headphone"
+MPD_CONF_PATH="/etc/mpd.conf"
+
 _mpd_install_os_dependencies() {
   echo "Install MPD OS dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
@@ -11,24 +17,16 @@ _mpd_install_os_dependencies() {
 }
 
 _mpd_configure() {
-  # TODO: Could this be read from the jukebox.yaml?
-  local AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
-  local PLAYLISTS_PATH="${SHARED_PATH}/playlists"
-  local ALSA_MIXER_CONTROL="Headphone"
+  # Make a backup of original file (and make it unreachable in case of non-default conf location)
+  sudo mv -f ${MPD_CONF_PATH} ${MPD_CONF_PATH}.orig
 
-  sudo systemctl stop mpd.service
-
-  local MPD_CONF_PATH="/etc/mpd.conf"
   if [ "$MPD_USE_DEFAULT_CONF_DIR" = true ] ; then
     # As an option, the mpd.conf can be located in the Jukebox installation path
     # TODO: If so done, also update the jukebox.yaml to point to the correct location!
-    local MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
+    MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
       # Update mpd.service file to use Jukebox mpd.conf
       sudo sed -i 's|$MPDCONF|'"$MPD_CONF_PATH"'|' ${SYSTEMD_PATH}/mpd.service
   fi
-
-  # Make a backup of original file (and make it unreachable in case of non-default conf location)
-  sudo mv -f /etc/mpd.conf /etc/mpd.conf.orig
 
   # Prepare new mpd.conf
   sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}
@@ -39,18 +37,43 @@ _mpd_configure() {
   sudo chmod 640 "${MPD_CONF_PATH}"
 }
 
-_mpd_reload_system_services() {
+_mpd_start_system_services() {
   sudo systemctl daemon-reload
   sudo systemctl start mpd.service
   mpc update
 }
 
-setup_mpd() {
-  echo "Configure MPD" | tee /dev/fd/3
+_mpd_stop_system_services() {
+  sudo systemctl stop mpd.service
+}
 
-  _mpd_install_os_dependencies
-  _mpd_configure
-  _mpd_reload_system_services
+setup_mpd() {
+  echo "Install MPD" | tee /dev/fd/3
+
+  local MPD_EXECUTE_INSTALL=true
+
+  if [[ -f ${MPD_CONF_PATH} || -f ${SYSTEMD_PATH}/mpd.service ]]; then
+     echo "  It seems there is a MPD already installed. Would you like to overwrite? [Y/n] " | tee /dev/fd/3
+      read -rp "MPD_OVERRIDE_CONFIG" response
+      case "$response" in
+        [nN][oO]|[nN])
+          MPD_EXECUTE_INSTALL=false
+          ;;
+        *)
+          ;;
+      esac
+  fi
+
+  echo "MPD_EXECUTE_INSTALL=${MPD_EXECUTE_INSTALL}"
+
+  _mpd_install_os_dependencies # Install or update anyways
+
+  if [ "$MPD_EXECUTE_INSTALL" = true ] ; then
+    _mpd_stop_system_services
+    _mpd_configure
+    _mpd_start_system_services
+  fi
+
 
   echo "DONE: setup_mpd"
 }
