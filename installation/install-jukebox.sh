@@ -18,7 +18,7 @@ SYSTEMD_PATH="/lib/systemd/system"
 INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {
-  wget -qO- ${GIT_REPO}/tarball/${GIT_BRANCH} | tar xz
+  wget -qO- ${GIT_URL}/tarball/${GIT_BRANCH} | tar xz
   find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*" -exec mv {} $GIT_REPO_NAME  \;
 }
 
