@@ -152,6 +152,7 @@ class PlaylistCollector:
         self.playlist = []
         self._music_library_base_path = os.path.abspath(music_library_base_path)
         #   These two variables only store reference content to generate __str__
+        an error
         self._folder = ''
         self._recursive = False
 
