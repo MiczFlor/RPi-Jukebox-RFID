@@ -1,13 +1,26 @@
 #!/usr/bin/env bash
 
+# Constants
+GD_ID_COMPILED_LIBZMQ_ARMV7="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
+GD_ID_COMPILED_LIBZMQ_ARMV6="1tE8oaikl3LhX85ESrwyn3vHSpsW_wsTn" # ARMv6: https://drive.google.com/file/d/1tE8oaikl3LhX85ESrwyn3vHSpsW_wsTn/view?usp=sharing
+
 # Helpers
 _download_file_from_google_drive() {
-  GD_SHARING_ID=$1
-  ZMQ_TAR_FILENAME=$2
+  GD_SHARING_ID=${1}
+  ZMQ_TAR_FILENAME=${2}
   wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O ${ZMQ_TAR_FILENAME} && rm -rf /tmp/cookies.txt
   echo "Downloaded libzmq from Google Drive ID ${GD_SHARING_ID} into ${ZMQ_TAR_FILENAME}"
 }
 
+_show_slow_hardware_message() {
+echo "  --------------------------------------------------------------------
+  | Your hardware is a little slower so this step will take a while. |
+  | Go watch a movie but don't let your computer go to sleep for the |
+  | SSH connection to remain intact.                                 |
+  --------------------------------------------------------------------" 1>&3
+}
+
+# Functions
 _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
@@ -45,11 +58,12 @@ _jukebox_core_install_pyzmq() {
 
     cd ${HOME_PATH} && mkdir ${ZMQ_TMP_PATH} && cd ${ZMQ_TMP_PATH}
 
-    # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
-    LIBZMQ_GD_DOWNLOAD_ID="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY"
+    # ARMv7 as default
+    LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV7}
     if [ `uname -m` = "armv6l" ]; then
-      # ARMv6: https://drive.google.com/file/d/1SQNOG3q1KfsqqtPgJ36O_ZU19rEWja5T/view?usp=sharing
-      LIBZMQ_GD_DOWNLOAD_ID="1SQNOG3q1KfsqqtPgJ36O_ZU19rEWja5T"
+      # ARMv6 as fallback
+      LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV6}
+      _show_slow_hardware_message
     fi
 
     _download_file_from_google_drive ${LIBZMQ_GD_DOWNLOAD_ID} ${ZMQ_TAR_FILENAME}

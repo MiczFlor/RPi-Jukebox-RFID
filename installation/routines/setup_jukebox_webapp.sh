@@ -29,10 +29,10 @@ _jukebox_webapp_install_node() {
     # Zero and older versions of Pi with ARMv6 only
     # support experimental NodeJS
     if [ `uname -m` = "armv6l" ]; then
-      NODE_SOURCE=NODE_SOURCE_EXPERIMENTAL
+      NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
     fi
 
-    curl -sL ${NODE_SOURCE} | sudo -E bash -
+    wget -O - ${NODE_SOURCE} | bash
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g npm serve
   fi
