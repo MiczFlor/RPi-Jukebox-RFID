@@ -134,20 +134,20 @@ xserver dependencies and not the entire RPi desktop environment.
   echo "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
 }
 
-_options_update_os() {
-  # UPDATE_OS
+_options_update_raspi_os() {
+  # UPDATE_RASPI_OS
   echo "Would you like to update the operating system?
 This shall be done eventually, but increases the installation time a lot.
 [y/N] " 1>&3
-  read -rp "UPDATE_OS" response
+  read -rp "UPDATE_RASPI_OS" response
   case "$response" in
     [yY])
-      UPDATE_OS=true
+      UPDATE_RASPI_OS=true
       ;;
     *)
       ;;
   esac
-  echo "UPDATE_OS=${UPDATE_OS}"
+  echo "UPDATE_RASPI_OS=${UPDATE_RASPI_OS}"
 }
 
 customize_options() {
@@ -161,7 +161,7 @@ customize_options() {
   _option_samba
   _option_webapp
   if [ "$ENABLE_WEBAPP" = true ] ; then _option_kiosk_mode; fi
-  _options_update_os
+  _options_update_raspi_os
 
   echo "Customize Options ends"
 }
