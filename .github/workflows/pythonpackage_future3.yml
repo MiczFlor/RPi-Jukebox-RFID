@@ -41,9 +41,10 @@ jobs:
       run: |
         pip install flake8
         # Stop the build if linting fails
-        ./run_flake8.sh
+        run_flake8.sh
    - name: Build the docs
+      working-directory: ./docs/sphinx
       run: |
         # Stop the build if documentation cannot be built
         # Treat all warnings as errors
-        cd docs/sphinx && sphinx-build -W -a -b html . _build
+        sphinx-build -W -a -b html . _build
