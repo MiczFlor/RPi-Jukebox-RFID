@@ -7,12 +7,14 @@ on:
     paths:
         - '**.py'
         - '**.py.*'
+        - 'docs/sphinx/**'
   pull_request:
     branches:
         - 'future3/**'
     paths:
         - '**.py'
         - '**.py.*'
+        - 'docs/sphinx/**'
 
 jobs:
   build:
@@ -41,8 +43,8 @@ jobs:
       run: |
         pip install flake8
         # Stop the build if linting fails
-        run_flake8.sh
-   - name: Build the docs
+        ./run_flake8.sh
+    - name: Build the docs
       working-directory: ./docs/sphinx
       run: |
         # Stop the build if documentation cannot be built
