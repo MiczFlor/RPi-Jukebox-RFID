@@ -9,6 +9,7 @@ class VolumeBaseClass(ABC):
     def __init__(self, logger: logging.Logger):
         super().__init__()
         self.logger = logger
+        self._max_volume = 100
 
     @abstractmethod
     def get_volume(self):
@@ -32,4 +33,12 @@ class VolumeBaseClass(ABC):
 
     @abstractmethod
     def dec_volume(self, step):
+        pass
+
+    @abstractmethod
+    def set_max_volume(self, max_volume):
+        pass
+
+    @abstractmethod
+    def get_max_volume(self):
         pass

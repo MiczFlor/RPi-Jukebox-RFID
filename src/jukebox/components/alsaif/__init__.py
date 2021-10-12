@@ -57,11 +57,24 @@ class AlsaCtrl(VolumeBaseClass):
 
     @plugin.tag
     def inc_volume(self, step=3):
-        return self.set_volume(self.get_volume() + step)
+        new_volume = self.get_volume() + step
+        return self.set_volume(new_volume if new_volume.__le__(self._max_volume) else self._max_volume)
 
     @plugin.tag
     def dec_volume(self, step=3):
         return self.set_volume(self.get_volume() - step)
+
+    @plugin.tag
+    def set_max_volume(self, max_volume):
+        logger.debug(f"Set Max Volume = {max_volume}")
+        if not 0 <= max_volume <= 100:
+            logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
+        self._max_volume = max_volume
+        return self.get_max_volume()
+
+    @plugin.tag
+    def get_max_volume(self):
+        return self._max_volume
 
 
 class AlsaCtrlBuilder:

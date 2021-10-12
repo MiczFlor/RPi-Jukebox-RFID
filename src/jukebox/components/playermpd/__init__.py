@@ -505,8 +505,9 @@ class MpdVolumeCtrl(VolumeBaseClass):
     This allows volume ctrl through MPD rather than e.g. ALSA
     """
 
-    def __init__(self, mpd_player_inst, logger: logging.Logger):
-        super().__init__(logger)
+    def __init__(self, mpd_player_inst):
+        self._logger = logger
+        super().__init__(self._logger)
         self._mpd_player_inst = mpd_player_inst
         self._saved_volume = self.get_volume()
 
@@ -516,11 +517,13 @@ class MpdVolumeCtrl(VolumeBaseClass):
 
     @plugs.tag
     def set_volume(self, volume):
+        logger.debug(f"Set Volume = {volume}")
         return self._mpd_player_inst.set_volume(volume)
 
     @plugs.tag
     def inc_volume(self, step=3):
-        return self.set_volume(self.get_volume() + step)
+        new_volume = self.get_volume() + step
+        return self.set_volume(new_volume if new_volume.__le__(self._max_volume) else self._max_volume)
 
     @plugs.tag
     def dec_volume(self, step=3):
@@ -534,6 +537,18 @@ class MpdVolumeCtrl(VolumeBaseClass):
     def mute(self):
         self._saved_volume = self.get_volume()
         return self._mpd_player_inst.set_volume(0)
+
+    @plugs.tag
+    def set_max_volume(self, max_volume):
+        logger.debug(f"Set Max Volume = {max_volume}")
+        if not 0 <= max_volume <= 100:
+            logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
+        self._max_volume = max_volume
+        return self.get_max_volume()
+
+    @plugs.tag
+    def get_max_volume(self):
+        return self._max_volume
 
 
 class MpdVolumeCtrlBuilder:

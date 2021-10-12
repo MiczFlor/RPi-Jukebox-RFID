@@ -88,3 +88,6 @@ def finalize():
         startup_volume = cfg.getn('volume', 'startup_volume', default=None)
         if startup_volume is not None:
             plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[startup_volume])
+        max_volume = cfg.getn('volume', 'max_volume', default=None)
+        if max_volume is not None:
+            plugin.call_ignore_errors('volume', 'ctrl', 'set_max_volume', args=[max_volume])
