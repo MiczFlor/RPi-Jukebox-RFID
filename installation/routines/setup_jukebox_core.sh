@@ -2,10 +2,8 @@
 
 # Helpers
 _download_file_from_google_drive() {
-  local GD_SHARING_ID=$1
-  local ZMQ_TAR_FILENAME=$2
-
-  wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O ${ZMQ_TAR_FILENAME} && rm -rf /tmp/cookies.txt
+  GD_SHARING_ID=$1
+  wget --quiet --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O libzmq.tar.gz && rm -rf /tmp/cookies.txt
 }
 
 _jukebox_core_install_os_dependencies() {
@@ -52,9 +50,9 @@ _jukebox_core_install_pyzmq() {
       LIBZMQ_GD_DOWNLOAD_ID="1SQNOG3q1KfsqqtPgJ36O_ZU19rEWja5T"
     fi
 
-    _download_file_from_google_drive LIBZMQ_GD_DOWNLOAD_ID ZMQ_TAR_FILENAME
-    tar -xzf ${ZMQ_TAR_FILENAME}
-    rm -f ${ZMQ_TAR_FILENAME}
+    _download_file_from_google_drive LIBZMQ_GD_DOWNLOAD_ID
+    tar -xzf libzmq.tar.gz
+    rm -f libzmq.tar.gz
     sudo rsync -a * ${ZMQ_PREFIX}/
 
     pip3 install --pre pyzmq \
