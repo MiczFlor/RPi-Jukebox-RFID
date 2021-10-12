@@ -65,6 +65,7 @@ import jukebox.utils as utils
 import jukebox.plugs as plugs
 import jukebox.multitimer as multitimer
 import jukebox.publishing as publishing
+from components.volume.volumebase import VolumeBaseClass
 from jukebox.NvManager import nv_manager
 import misc
 
@@ -497,15 +498,17 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.volume, volume)
 
 
-class MpdVolumeCtrl:
+class MpdVolumeCtrl(VolumeBaseClass):
     """
     The Volume Ctrl Service for the plugin 'volume'
 
     This allows volume ctrl through MPD rather than e.g. ALSA
     """
 
-    def __init__(self, mpd_player_inst):
+    def __init__(self, mpd_player_inst, logger: logging.Logger):
+        super().__init__(logger)
         self._mpd_player_inst = mpd_player_inst
+        self._saved_volume = self.get_volume()
 
     @plugs.tag
     def get_volume(self):
@@ -522,6 +525,15 @@ class MpdVolumeCtrl:
     @plugs.tag
     def dec_volume(self, step=3):
         return self.set_volume(self.get_volume() - step)
+
+    @plugs.tag
+    def unmute(self):
+        return self._mpd_player_inst.set_volume(self._saved_volume)
+
+    @plugs.tag
+    def mute(self):
+        self._saved_volume = self.get_volume()
+        return self._mpd_player_inst.set_volume(0)
 
 
 class MpdVolumeCtrlBuilder:
