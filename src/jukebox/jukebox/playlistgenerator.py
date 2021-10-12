@@ -138,6 +138,9 @@ class PlaylistCollector:
     #: Ignore files with the following endings.
     #: Attention: this will go into a regexp builder, i.e. ``.*`` will match anything!
     blacklist = ['zip', 'py', 'db', 'png', 'jpg', 'conf', 'yaml', 'json', '.*~', '.*#']
+    # Will generate a regex pattern string like this: r'.*\.((txt)|(zip))$
+    blacklist_str = '.*\\.((' + ')|('.join(blacklist) + '))$'
+    blacklist_re = re.compile(blacklist_str, re.IGNORECASE)
 
     def __init__(self, music_library_base_path='/'):
         """
@@ -152,10 +155,7 @@ class PlaylistCollector:
         self._folder = ''
         self._recursive = False
 
-        # Will generate a regex pattern string like this: r'.*\.((txt)|(zip))$
-        blacklist_str = '.*\\.((' + ')|('.join(PlaylistCollector.blacklist) + '))$'
-        logger.debug(f"Exclusion regex: '{blacklist_str}'")
-        self.blacklist_re = re.compile(blacklist_str, re.IGNORECASE)
+        logger.debug(f"Exclusion regex: '{PlaylistCollector.blacklist_str}'")
 
         # Special handlers are processed top-down, allowing specialization of file-endings
         self.special_handlers = {'livestream.txt': decode_livestream,
@@ -169,7 +169,8 @@ class PlaylistCollector:
         """
         Check if filename is valid
         """
-        return direntry.is_file() and not direntry.name.startswith('.') and self.blacklist_re.match(direntry.name) is None
+        return direntry.is_file() and not direntry.name.startswith('.') \
+               and PlaylistCollector.blacklist_re.match(direntry.name) is None
 
     def _parse_nonrecusive(self, path='.'):
         folder_playlist = []
