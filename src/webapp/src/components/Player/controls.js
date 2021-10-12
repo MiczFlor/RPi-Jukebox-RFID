@@ -52,16 +52,27 @@ const Controls = () => {
     });
   }, [playerstatus]);
 
+  const iconStyles = { padding: '7px' };
+
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid
+      container
+      alignItems="center"
+      direction="row"
+      flexWrap="nowrap"
+      justifyContent="space-evenly"
+      sx={{ margin: '7px 0' }}
+    >
 
       {/* Shuffle */}
       <IconButton
         aria-label="Shuffle"
         color={isShuffle ? 'primary' : undefined}
         onClick={toggleShuffle}
-        size="large">
-        <ShuffleRoundedIcon style={{ fontSize: 20 }} />
+        size="large"
+        sx={iconStyles}
+      >
+        <ShuffleRoundedIcon style={{ fontSize: 22 }} />
       </IconButton>
 
       {/* Skip previous track */}
@@ -69,7 +80,9 @@ const Controls = () => {
         aria-label="Skip previous track"
         disabled={!songIsScheduled}
         onClick={previous}
-        size="large">
+        size="large"
+        sx={iconStyles}
+      >
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
@@ -77,16 +90,24 @@ const Controls = () => {
       {
         !isPlaying &&
         <IconButton
-          aria-label="Play"
-          onClick={e => play()}
-          disabled={!songIsScheduled}
-          size="large">
+        aria-label="Play"
+        onClick={e => play()}
+        disabled={!songIsScheduled}
+        size="large"
+        sx={iconStyles}
+        >
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
       {
         isPlaying &&
-        <IconButton aria-label="Pause" onClick={pause} size="large">
+        <IconButton
+        aria-label="Pause"
+        onClick={pause}
+        size="large"
+        >
+          sx={iconStyles}
+
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
@@ -96,7 +117,9 @@ const Controls = () => {
         aria-label="Skip next track"
         disabled={!songIsScheduled}
         onClick={next}
-        size="large">
+        size="large"
+        sx={iconStyles}
+      >
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
@@ -105,14 +128,16 @@ const Controls = () => {
         aria-label="Repeat"
         color={isRepeat ? 'primary' : undefined}
         onClick={toggleRepeat}
-        size="large">
+        size="large"
+        sx={iconStyles}
+      >
         {
           !isSingle &&
-          <RepeatRoundedIcon style={{ fontSize: 20 }} />
+          <RepeatRoundedIcon style={{ fontSize: 22 }} />
         }
         {
           isSingle &&
-          <RepeatOneRoundedIcon style={{ fontSize: 25 }} />
+          <RepeatOneRoundedIcon style={{ fontSize: 22 }} />
         }
       </IconButton>
 
