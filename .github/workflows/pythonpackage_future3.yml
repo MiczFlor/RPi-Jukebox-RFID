@@ -49,4 +49,5 @@ jobs:
       run: |
         # Stop the build if documentation cannot be built
         # Treat all warnings as errors
+        pip install pyzmq
         sphinx-build -W -a -b html . _build
