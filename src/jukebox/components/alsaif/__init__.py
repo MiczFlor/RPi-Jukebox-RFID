@@ -8,6 +8,7 @@ import alsaaudio
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
+from components.volume.volumebase import VolumeBaseClass
 
 logger = logging.getLogger('jb.alsaif')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -22,10 +23,12 @@ def clamp(n, minn, maxn):
 # ---------------------------------------------------------------------------
 
 
-class AlsaCtrl:
+class AlsaCtrl(VolumeBaseClass):
     """ALSA Volume Control"""
 
     def __init__(self):
+        self._logger = logger
+        super().__init__(self._logger)
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)
 
