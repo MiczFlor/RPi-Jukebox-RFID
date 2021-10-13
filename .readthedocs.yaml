@@ -5,16 +5,6 @@
 # Required
 version: 2
 
-# Build documentation in the docs/ directory with Sphinx
-sphinx:
-   configuration: docs/sphinx/conf.py
-   builder: html
-   fail_on_warning: true
-
-# Optionally build your docs in additional formats such as PDF
-#formats:
-#   - pdf
-
 build:
   os: ubuntu-20.04
   tools:
@@ -22,10 +12,15 @@ build:
   apt_packages:
     - libasound2-dev
 
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+   configuration: docs/sphinx/conf.py
+   builder: html
+   fail_on_warning: true
+
 # Optionally set the version of Python and requirements required to build your docs
 # autodoc imports (!) modules. This means it needs ALL the dependencies, even the optional ones
 python:
-   version: "3.7"
    install:
    - requirements: requirements.txt
    - requirements: src/jukebox/components/rfid/fake_reader_gui/requirements.txt
