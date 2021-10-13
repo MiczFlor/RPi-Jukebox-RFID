@@ -87,8 +87,8 @@ class ReaderClass(ReaderBaseClass):
         super().__init__(reader_cfg_key=reader_cfg_key, description=DESCRIPTION, logger=self._logger)
         self._cancel = threading.Event()
 
-        config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default={})
         with cfg:
+            config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default={})
             default_padx = config.setdefault('default_padx', default=20)
             default_pady = config.setdefault('default_pady', default=20)
             default_btn_width = config.setdefault('default_btn_width', default=15)

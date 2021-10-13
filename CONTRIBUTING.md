@@ -53,6 +53,13 @@ There are a few guidelines that we need contributors to follow so that we can ha
 
 Development for Version 3 is done on the git branch `future3/develop`. How to move to that branch, see below.
 
+For bug fixes and improvements just open an issue or PR as described below. If you plan to port
+a feature from Version 2.X or implement a new feature, it is advisable to contact us first. In this case, 
+also open an issue describing what you are planning to do. We will just check that nobody else is already
+on the subject. We are looking forward to your work. Check the current 
+[feature list](file:///home/chris/PycharmProjects/RPi-Jukebox-RFID/docs/sphinx/_build/html/featurelist.html#)
+for available features and work in progress.
+
 ## Getting Started
 
 * Make sure you have a [GitHub account](https://github.com/signup/free)

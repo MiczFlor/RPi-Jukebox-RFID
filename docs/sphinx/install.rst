@@ -72,13 +72,3 @@ Run the following command in your SSH terminal and follow the instructions
 .. code-block:: bash
 
     cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
-
-.. important:: The one-installer script above will configure a static IP address. If this is not want
-    you want, follow this procedure:
-
-    .. code-block:: bash
-
-        $ wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh
-        $ nano install-jukebox.sh
-        # change the line ENABLE_STATIC_IP=true to false
-        $ ./install-jukebox.sh

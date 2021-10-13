@@ -54,13 +54,12 @@ https://mpd.readthedocs.io/en/latest/protocol.html
 
 sudo -u mpd speaker-test -t wav -c 2
 """  # noqa: E501
-import re
-
 import mpd
 import threading
 import logging
 import time
 import functools
+import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
 import jukebox.plugs as plugs
@@ -537,19 +536,6 @@ class MpdVolumeCtrlBuilder:
         return self._instance
 
 
-def get_music_directory(conf_file='/etc/mpd.conf'):
-    """Extract the music directory from the mpd.conf file"""
-    pattern = re.compile(r'^\s*music_directory\s*"(.*)"', re.I)
-    directory = None
-    with open(conf_file, 'r') as f:
-        for line in f:
-            res = pattern.match(line)
-            if res:
-                directory = res.group(1)
-                break
-    return directory
-
-
 # ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
@@ -570,19 +556,13 @@ def initialize():
     if library_update:
         player_ctrl.update()
 
-    # Check user rights: Where to get the music directory from? Should be mpd.conf, right?
-    audio_folder_path = None
-    mpd_conf_file = cfg.setndefault('playermpd', 'mpd_conf', value='/etc/mpd.conf')
-    try:
-        audio_folder_path = get_music_directory(mpd_conf_file)
-    except Exception as e:
-        logger.error(f"Could not determine music library directory from '{mpd_conf_file}'")
-        logger.error(f"Reason: {e.__class__.__name__}: {e}")
-
+    # Check user rights on music library
     library_check_user_rights = cfg.setndefault('playermpd', 'library', 'check_user_rights', value=True)
-    if library_check_user_rights is True and audio_folder_path is not None:
-        logger.info(f"Change user rights for {audio_folder_path}")
-        misc.recursive_chmod(audio_folder_path, mode_files=0o666, mode_dirs=0o777)
+    if library_check_user_rights is True:
+        music_library_path = components.player.get_music_library_path()
+        if music_library_path is not None:
+            logger.info(f"Change user rights for {music_library_path}")
+            misc.recursive_chmod(music_library_path, mode_files=0o666, mode_dirs=0o777)
 
 
 @plugs.atexit
