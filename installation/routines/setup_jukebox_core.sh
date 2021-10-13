@@ -3,14 +3,9 @@
 # Constants
 GD_ID_COMPILED_LIBZMQ_ARMV7="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
 GD_ID_COMPILED_LIBZMQ_ARMV6="1tE8oaikl3LhX85ESrwyn3vHSpsW_wsTn" # ARMv6: https://drive.google.com/file/d/1tE8oaikl3LhX85ESrwyn3vHSpsW_wsTn/view?usp=sharing
+GD_ID_COMPILED_PYZMQ_ARMV7=""
+GD_ID_COMPILED_PYZMQ_ARMV6="1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n" # https://drive.google.com/file/d/1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n/view?usp=sharing
 
-# Helpers
-_download_file_from_google_drive() {
-  GD_SHARING_ID=${1}
-  ZMQ_TAR_FILENAME=${2}
-  wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O ${ZMQ_TAR_FILENAME} && rm -rf /tmp/cookies.txt
-  echo "Downloaded libzmq from Google Drive ID ${GD_SHARING_ID} into ${ZMQ_TAR_FILENAME}"
-}
 
 _show_slow_hardware_message() {
 echo "  --------------------------------------------------------------------
@@ -23,7 +18,7 @@ echo "  --------------------------------------------------------------------
 # Functions
 _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
-  sudo apt-get -qq -y update; sudo apt-get -qq -y install \
+  sudo apt-get -y update; sudo apt-get -y install \
     at git \
     alsa-tools \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
@@ -39,7 +34,7 @@ _jukebox_core_install_python() {
   sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 }
 
-_jukebox_core_install_pyzmq() {
+_jukebox_core_build_and_install_pyzmq() {
   # ZMQ
   # Because the latest stable release of ZMQ does not support WebSockets
   # we need to compile the latest version in Github
@@ -47,7 +42,7 @@ _jukebox_core_install_pyzmq() {
   # Sources:
   # https://pyzmq.readthedocs.io/en/latest/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
-  echo "  Install pyzmq"
+  echo "  Build and install pyzmq with WebSockets Support"
   local ZMQ_TMP_PATH="libzmq"
   local ZMQ_PREFIX="/usr/local"
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
@@ -79,6 +74,24 @@ _jukebox_core_install_pyzmq() {
   fi
 }
 
+_jukebox_core_download_prebuilt_pyzmq() {
+  echo "  Download prebuilt pyzmq with WebSockets Support"
+  local PYZMQ_TAR_FILENAME="pyzmq-build-armv6.tar.gz"
+
+  cd ${HOME_PATH}
+
+  # ARMv7 as default
+  PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV7}
+  if [ `uname -m` = "armv6l" ]; then
+    # ARMv6 as fallback
+    PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV6}
+  fi
+
+  _download_file_from_google_drive ${PYZMQ_GD_DOWNLOAD_ID} ${PYZMQ_TAR_FILENAME}
+  tar -xvf ${PYZMQ_TAR_FILENAME} -C /
+  rm -f ${PYZMQ_TAR_FILENAME}
+}
+
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd ${INSTALLATION_PATH}
@@ -105,8 +118,12 @@ setup_jukebox_core() {
 
   _jukebox_core_install_os_dependencies
   _jukebox_core_install_python
-  _jukebox_core_install_pyzmq
   _jukebox_core_install_python_requirements
+  if [ "$IS_PRODUCTION" = true ] ; then
+    _jukebox_core_download_prebuilt_pyzmq
+  else
+    _jukebox_core_build_and_install_pyzmq
+  fi
   _jukebox_core_install_settings
   _jukebox_core_register_as_system_service
 

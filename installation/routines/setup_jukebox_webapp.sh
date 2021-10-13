@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Constants
+GD_ID_COMPILED_WEBAPP="13YVgpWH81kMdbltqeH0-0Tx5LR64bav8" # https://drive.google.com/file/d/13YVgpWH81kMdbltqeH0-0Tx5LR64bav8/view?usp=sharing
+
 # For ARMv7+
 NODE_SOURCE="https://deb.nodesource.com/setup_16.x"
 # For ARMv6
@@ -48,22 +51,42 @@ _jukebox_webapp_build() {
   npm run build
 }
 
-_jukebox_webapp_register_as_system_service() {
-  echo "  Register Webapp system service"
-  sudo cp -f ${INSTALLATION_PATH}/resources/default-services/jukebox-webapp.service ${SYSTEMD_PATH}
-  sudo chmod 644 ${SYSTEMD_PATH}/jukebox-webapp.service
-
-  sudo systemctl enable jukebox-webapp.service
-  sudo systemctl daemon-reload
+_jukebox_webapp_download() {
+  echo "  Downloading web application"
+  local TAR_FILENAME=""
+  cd ${INSTALLATION_PATH}/src/webapp
+  _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
+  tar -xzf ${TAR_FILENAME}
+  rm -f ${TAR_FILENAME}
+  cd ${INSTALLATION_PATH}
 }
+
+_jukebox_webapp_register_as_system_service_with_nginx() {
+  echo "  Install and configure nginx"
+  sudo apt-get -qq -y update
+  sudo apt-get -y purge apache2
+  sudo apt-get -y install nginx
+
+  sudo service nginx start
+
+  mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
+  cp -f ${INSTALLATION_PATH}/resources/default-settings/nginx.default /etc/nginx/sites-available/default
+
+  sudo service nginx restart
+}
+
 
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
   _jukebox_webapp_export_node_memory_limit
   _jukebox_webapp_install_node
-  _jukebox_webapp_build
-  _jukebox_webapp_register_as_system_service
+  if [ "$IS_PRODUCTION" = true ] ; then
+    _jukebox_webapp_download
+  else
+    _jukebox_webapp_build
+  fi
+  _jukebox_webapp_register_as_system_service_with_nginx
 
   echo "DONE: setup_jukebox_webapp"
 }
