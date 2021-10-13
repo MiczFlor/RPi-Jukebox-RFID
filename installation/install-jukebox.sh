@@ -31,9 +31,9 @@ install() {
   setup_jukebox_core
   if [ "$MPD_CONFIG" = true ] ; then setup_mpd; fi;
   if [ "$ENABLE_SAMBA" = true ] ; then setup_samba; fi;
-  setup_rfid_reader
   if [ "$ENABLE_WEBAPP" = true ] ; then setup_jukebox_webapp; fi;
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then setup_kiosk_mode; fi;
+  setup_rfid_reader
   optimize_boot_time
   cleanup
 }
@@ -47,6 +47,7 @@ echo "Log start: ${INSTALL_ID}"
 
 clear 1>&3
 echo "Downloading Phoniebox software from Github ..." 1>&3
+echo "Download Source: ${GIT_URL}" | tee /dev/fd/3
 
 download_jukebox_source
 cd ${INSTALLATION_PATH}
