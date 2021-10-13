@@ -106,7 +106,24 @@ For commits that address trivial repository maintenance tasks or packaging
 issues, start with `(maint)` or `(packaging)`,
 respectively.
 
+## Staying on the edge
+
+As new commits appear on Github you want to stay on the edge - especially if you are continuing to contribute.
+From time to time, you will need to update the Web App or the dependencies. To find out when, we provide a
+git hook script. To activate simply copy it in the git hook folder 
+
+~~~
+cp .githooks/post-merge .git/hooks/.
+~~~
+
 ## Before submitting
+
+Run the checks below on the code. Fix those issues! Or you are running in delays in the acceptance of your PR.
+We provide git hooks for those checks for convenience. To activate
+
+~~~
+cp .githooks/pre-commit` .git/hooks/.
+~~~ 
 
 ### Python Code
 
@@ -114,11 +131,9 @@ If you touched *any* Python file (even if only for fixing spelling errors), run 
 It contains out setup file.
 
 ~~~
-$ cd cd /home/pi/RPi-Jukebox-RFID
-$ flake8
+$ cd /home/pi/RPi-Jukebox-RFID
+$ ./run_flake8.sh
 ~~~
-
-Fix those issues! Or you are running in delays in accepting your PR.
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK. 
 Let us know in the pull request - we will look at it. 
@@ -127,12 +142,22 @@ Let us know in the pull request - we will look at it.
 
 When adding or improving documentation, build the documentation and look at it locally. 
 If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
-Also run through this step in this case!
+Also run through this step in this case! Fix all warnings!
 
 ~~~
-$ cd cd /home/pi/RPi-Jukebox-RFID/docs/sphinx
-$ make
-$ open file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html
+$ cd /home/pi/RPi-Jukebox-RFID/
+$ ./run_sphinx.sh
+$ # open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
+~~~
+
+### Tests
+
+Tests are very few at the moment, but it cannot hurt to run them. If you have tests for your new modules, please add
+them.
+
+~~~
+$ cd /home/pi/RPi-Jukebox-RFID/
+$ ./run_pytest.sh
 ~~~
 
 ## Submitting Changes
