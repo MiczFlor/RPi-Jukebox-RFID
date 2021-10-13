@@ -128,7 +128,7 @@ class PlaylistCollector:
         plc.parse('../../../../music/Traumfaenger')
         print(f"res = {plc}")
     """
-    #   There are two paths variables:
+    # There are two paths variables:
     # - (a) the full directory path
     # - (b) the relative directory path from the music_library_base_path
     # We need to
