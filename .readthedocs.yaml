@@ -15,12 +15,19 @@ sphinx:
 #formats:
 #   - pdf
 
+build:
+  os: ubuntu-20.04
+  tools:
+    python: "3.7"
+  apt_packages:
+    - libasound2-dev
+
 # Optionally set the version of Python and requirements required to build your docs
 # autodoc imports (!) modules. This means it needs ALL the dependencies, even the optional ones
 python:
    version: "3.7"
    install:
    - requirements: requirements.txt
-   - requirements: src/jukebox/components/fake_gui_reader/requirements.txt
+   - requirements: src/jukebox/components/rfid/fake_reader_gui/requirements.txt
    - requirements: docs/sphinx/requirements_pyzmq.txt
    - requirements: docs/sphinx/requirements.txt
