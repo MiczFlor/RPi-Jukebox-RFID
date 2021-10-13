@@ -151,6 +151,7 @@ class PlaylistCollector:
         """
         self.playlist = []
         self.noplaylist = []
+        self.yesplaylist = []
         self._music_library_base_path = os.path.abspath(music_library_base_path)
         # These two variables only store reference content to generate __str__
         self._folder = ''
