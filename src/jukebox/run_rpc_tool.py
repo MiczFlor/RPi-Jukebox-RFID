@@ -12,12 +12,11 @@ The list of available commands is fetched from the running Jukebox service.
 
 .. todo:
     - kwargs support
-    - configurable connection address
 
 """
 
 import argparse
-import zmq.error
+import zmq
 import curses
 import curses.ascii
 import jukebox.rpc.client as rpc
@@ -88,6 +87,14 @@ def format_help(scr, topic):
             scr.erase()
     scr.addstr("\n")
     scr.refresh()
+
+
+def format_welcome(scr):
+    scr.addstr("\n\n" + '-' * 70 + "\n")
+    scr.addstr("RPC Tool\n")
+    scr.addstr(f"Connected on '{client.address}'\n")
+    scr.addstr(f"Pyzmq version: {zmq.pyzmq_version()}; ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API}\n")
+    scr.addstr('-' * 70 + "\n")
 
 
 def format_usage(scr):
@@ -249,6 +256,7 @@ def main(scr):
     global candidates
     scr.idlok(True)
     scr.scrollok(True)
+    format_welcome(scr)
     get_help(scr)
     format_usage(scr)
     cmd = ''
