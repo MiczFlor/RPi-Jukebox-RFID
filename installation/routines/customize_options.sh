@@ -47,39 +47,6 @@ We recommend to turn off Bluetooth to save energy and booting time.
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 }
 
-_option_bootscreen() {
-  # DISABLE_BOOT_SCREEN
-  echo "Do you want to disable the Rainbow boot screen?
-We recommend to turn off it off booting time.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_SCREEN" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_SCREEN=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_SCREEN=${DISABLE_BOOT_SCREEN}"
-}
-
-_option_bootlogs() {
-  # DISABLE_BOOT_LOGS_PRINT
-  echo "Do you want to disable the boot logs?
-We recommend to turn off it off booting time. You will have to
-enable it if you need to debug the booting routine for some reason.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_LOGS_PRINT" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_LOGS_PRINT=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_LOGS_PRINT=${DISABLE_BOOT_LOGS_PRINT}"
-}
-
 _option_samba() {
   # ENABLE_SAMBA
   echo "Would you like to install and configure Samba for easy file transfer?
@@ -183,8 +150,6 @@ customize_options() {
   _option_static_ip
   _option_ipv6
   _option_bluetooth
-  _option_bootscreen
-  _option_bootlogs
   _option_samba
   _option_webapp
   if [ "$ENABLE_WEBAPP" = true ] ; then
