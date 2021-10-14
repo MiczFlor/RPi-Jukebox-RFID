@@ -116,6 +116,33 @@ you don't need to install the web application.
   echo "ENABLE_WEBAPP=${ENABLE_WEBAPP}"
 }
 
+_option_webapp_prod_build() {
+  # ENABLE_WEBAPP_PROD_BUILD
+
+  # Builing the app locally will not work in ARMv6 environments
+  if [ `uname -m` = "armv6l" ]; then
+    echo "  Only the latest production build of the web
+  will be installed due to limited hardware resources"
+  else
+    echo "  Regarding the web application: Would you like to install
+  the current production build (P) or do you want to
+  build the latest development version on your RPi?
+  The latter will install NodeJS and will proling the
+  installation time but you will get the latest features.
+  [P/d] " 1>&3
+    read -rp "ENABLE_WEBAPP_PROD_BUILD" response
+    case "$response" in
+      [pP])
+        ENABLE_WEBAPP_PROD_BUILD=true
+        ;;
+      *)
+        ;;
+    esac
+  fi
+
+  echo "ENABLE_WEBAPP_PROD_BUILD=${ENABLE_WEBAPP_PROD_BUILD}"
+}
+
 _option_kiosk_mode() {
   # ENABLE_KIOSK_MODE
   echo "Would you like to enable the Kiosk Mode?
@@ -160,7 +187,10 @@ customize_options() {
   _option_bootlogs
   _option_samba
   _option_webapp
-  if [ "$ENABLE_WEBAPP" = true ] ; then _option_kiosk_mode; fi
+  if [ "$ENABLE_WEBAPP" = true ] ; then
+    _option_webapp_prod_build
+    _option_kiosk_mode
+  fi
   _options_update_raspi_os
 
   echo "Customize Options ends"

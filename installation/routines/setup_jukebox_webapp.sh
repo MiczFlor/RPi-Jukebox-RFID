@@ -79,11 +79,11 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
-  _jukebox_webapp_export_node_memory_limit
-  _jukebox_webapp_install_node
   if [ "$IS_PRODUCTION" = true ] ; then
     _jukebox_webapp_download
   else
+    _jukebox_webapp_export_node_memory_limit
+    _jukebox_webapp_install_node
     _jukebox_webapp_build
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
