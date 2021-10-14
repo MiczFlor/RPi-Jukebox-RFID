@@ -4,9 +4,9 @@
 _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
   sudo apt-get -y update; sudo apt-get -y install \
+    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     at git \
     alsa-tools \
-    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg mpg123 \
     --no-install-recommends \
     --allow-downgrades \
@@ -23,6 +23,10 @@ _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd ${INSTALLATION_PATH}
   pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+
+  ZMQ_PREFIX=bundled
+  ZMQ_DRAFT_API=1
+  pip3 install --no-binary pyzmq pyzmq
 }
 
 _jukebox_core_install_settings() {

@@ -15,7 +15,7 @@ pyalsaaudio
 pyserial
 pytest
 python_mpd2
-pyzmq
+# pyzmq
 # RPi.GPIO
 ruamel.yaml
 # smbus
