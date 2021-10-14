@@ -53,7 +53,7 @@ _jukebox_webapp_build() {
 
 _jukebox_webapp_download() {
   echo "  Downloading web application"
-  local TAR_FILENAME=""
+  local TAR_FILENAME="webapp-build.tar.gz"
   cd ${INSTALLATION_PATH}/src/webapp
   _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
   tar -xzf ${TAR_FILENAME}
@@ -69,8 +69,8 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 
   sudo service nginx start
 
-  mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
-  cp -f ${INSTALLATION_PATH}/resources/default-settings/nginx.default /etc/nginx/sites-available/default
+  sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
+  sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/nginx.default /etc/nginx/sites-available/default
 
   sudo service nginx restart
 }
