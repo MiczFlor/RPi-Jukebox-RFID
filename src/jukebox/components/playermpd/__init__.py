@@ -530,7 +530,11 @@ class MpdVolumeCtrl(VolumeBaseClass):
 
     @plugs.tag
     def unmute(self):
-        return self._mpd_player_inst.set_volume(self._saved_volume)
+        if self._mpd_player_inst.get_volume() == 0:
+            return self._mpd_player_inst.set_volume(self._saved_volume)
+        else:
+            logger.debug("Volume was not muted")
+            return self._mpd_player_inst.get_volume()
 
     @plugs.tag
     def mute(self):
