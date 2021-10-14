@@ -147,7 +147,7 @@ Also run through this step in this case! Fix all warnings!
 ~~~
 $ cd /home/pi/RPi-Jukebox-RFID/
 $ ./run_sphinx.sh
-$ # open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
+# open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
 ~~~
 
 ### Tests

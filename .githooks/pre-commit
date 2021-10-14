@@ -29,7 +29,7 @@ if [[ -n $DOC_FILES || -n $PY_FILES ]]; then
   echo -e "\n**************************************************************"
   echo -e "Files for documentation modified. Testing re-build of docs ... \n"
   echo -e "**************************************************************\n"
-  cd docs/sphinx && rm -rf _build && sphinx-build -W -q -a -b html . _build
+  ./run_sphinx.sh -c
   sphinx_code=$?
   echo "Sphinx return code: $sphinx_code"
 fi
