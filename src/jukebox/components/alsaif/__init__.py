@@ -42,7 +42,7 @@ class AlsaCtrl(VolumeBaseClass):
         if not 0 <= volume <= 100:
             logger.warning(f"set_volume: volume out-of-range: {volume}")
             volume = clamp(volume, 0, 100)
-        self.mixer.setvolume(volume)
+        self.mixer.setvolume(volume if volume.__le__(self._max_volume) else self._max_volume)
         return self.get_volume()
 
     @plugin.tag
@@ -57,8 +57,7 @@ class AlsaCtrl(VolumeBaseClass):
 
     @plugin.tag
     def inc_volume(self, step=3):
-        new_volume = self.get_volume() + step
-        return self.set_volume(new_volume if new_volume.__le__(self._max_volume) else self._max_volume)
+        return self.set_volume(self.get_volume() + step)
 
     @plugin.tag
     def dec_volume(self, step=3):

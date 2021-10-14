@@ -518,12 +518,11 @@ class MpdVolumeCtrl(VolumeBaseClass):
     @plugs.tag
     def set_volume(self, volume):
         logger.debug(f"Set Volume = {volume}")
-        return self._mpd_player_inst.set_volume(volume)
+        return self._mpd_player_inst.set_volume(volume if volume.__le__(self._max_volume) else self._max_volume)
 
     @plugs.tag
     def inc_volume(self, step=3):
-        new_volume = self.get_volume() + step
-        return self.set_volume(new_volume if new_volume.__le__(self._max_volume) else self._max_volume)
+        return self.set_volume(self.get_volume() + step)
 
     @plugs.tag
     def dec_volume(self, step=3):
