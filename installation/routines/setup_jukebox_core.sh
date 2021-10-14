@@ -117,11 +117,7 @@ setup_jukebox_core() {
   _jukebox_core_install_os_dependencies
   _jukebox_core_install_python
   _jukebox_core_install_python_requirements
-  if [ `uname -m` = "armv6l" ]; then
-    _jukebox_core_download_prebuilt_pyzmq
-  else
-    _jukebox_core_build_and_install_pyzmq
-  fi
+  _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings
   _jukebox_core_register_as_system_service
 
