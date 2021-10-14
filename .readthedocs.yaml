@@ -23,6 +23,5 @@ sphinx:
 python:
    install:
    - requirements: requirements.txt
-   - requirements: src/jukebox/components/rfid/fake_reader_gui/requirements.txt
    - requirements: docs/sphinx/requirements_pyzmq.txt
    - requirements: docs/sphinx/requirements.txt
