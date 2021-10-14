@@ -18,7 +18,7 @@ _jukebox_webapp_export_node_memory_limit() {
 }
 
 _jukebox_webapp_install_node() {
-  sudo apt-get -qq -y update
+  sudo apt-get -y update
 
   if which node > /dev/null; then
     echo "  Found existing NodeJS. Hence, updating NodeJS"
@@ -35,9 +35,9 @@ _jukebox_webapp_install_node() {
       NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
     fi
 
-    wget -O - ${NODE_SOURCE} | bash
+    wget -O - ${NODE_SOURCE} | sudo bash
     sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm serve
+    sudo npm install --silent -g npm
   fi
 }
 
@@ -79,7 +79,7 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
-  if [ "$IS_PRODUCTION" = true ] ; then
+  if [ "$ENABLE_WEBAPP_PROD_BUILD" = true ] ; then
     _jukebox_webapp_download
   else
     _jukebox_webapp_export_node_memory_limit
