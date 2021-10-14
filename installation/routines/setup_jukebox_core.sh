@@ -66,7 +66,9 @@ _jukebox_core_build_and_install_pyzmq() {
     rm -f ${ZMQ_TAR_FILENAME}
     sudo rsync -a * ${ZMQ_PREFIX}/
 
-    pip3 install --no-binary pyzmq pyzmq
+    pip3 install --pre pyzmq \
+      --install-option=--enable-drafts \
+      --install-option=--zmq=${ZMQ_PREFIX}
   else
     echo "    Skipping. pyzmq already installed"
   fi
