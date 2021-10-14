@@ -28,13 +28,14 @@ do
   esac
 done
 
+SPHINX_OPTS="-W --keep-going -T"
+
 if [[ $CLEAN_BUILD = true ]]; then
   echo "Cleaning $BUILD_DIR"
   rm -rf $BUILD_DIR
-  echo "Building docs"
-  sphinx-build -W --keep-going -T -a -E -b html . $BUILD_DIR
-else
-  echo "Building docs"
-  sphinx-build -W --keep-going -T -b html . $BUILD_DIR
+  SPHINX_OPTS="-W --keep-going -T -a -E"
 fi
+
+echo "Building docs [ sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html ]"
+sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html
 
