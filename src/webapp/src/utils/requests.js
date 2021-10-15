@@ -11,22 +11,26 @@ const getMusicCoverByFilenameAsBase64 = async (audio_src) => {
   };
 }
 
-const getFlattenListOfDirectories = async () => {
-  const list = await socketRequest('player', 'ctrl', 'list_all_dirs');
-  return list.filter(entry => !!entry.directory);
+const fetchDirectoryTreeOfAudiofolder = async () => {
+  try {
+    const result = await socketRequest('player', 'ctrl', 'list_all_dirs');
+    return { result };
+  }
+  catch(error) {
+    console.error('registerCard error: ', error);
+    return { error };
+  }
 };
 
-const fetchCardsList = async (setIsLoading) => {
-  setIsLoading(true);
-
+const fetchCardsList = async () => {
   try {
     const result = await socketRequest('cards', 'list_cards');
-    setIsLoading(false);
+
     return { result };
   }
   catch (error) {
     console.error('registerCard error: ', error);
-    setIsLoading(false);
+
     return { error };
   };
 };
@@ -54,7 +58,7 @@ const deleteCard = async (card_id) => {
 
 export {
   getMusicCoverByFilenameAsBase64,
-  getFlattenListOfDirectories,
+  fetchDirectoryTreeOfAudiofolder,
   fetchCardsList,
   deleteCard,
   registerCard,

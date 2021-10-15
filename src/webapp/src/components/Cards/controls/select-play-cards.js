@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 
 import {
-  getFlattenListOfDirectories
+  fetchDirectoryTreeOfAudiofolder
 } from '../../../utils/requests';
 
 const SelectPlayCards = ({
@@ -14,13 +14,20 @@ const SelectPlayCards = ({
   handleFolderChange
 }) => {
   const [folders, setFolders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setFolders(await getFlattenListOfDirectories());
-    };
+    const getFlattenListOfDirectories = async () => {
+      setIsLoading(true);
+      const { result, error } = await fetchDirectoryTreeOfAudiofolder();
+      setIsLoading(false);
 
-    fetchData();
+      if(result) setFolders(result.filter(entry => !!entry.directory));
+      if(error) setError(error);
+    }
+
+    getFlattenListOfDirectories();
   }, []);
 
   return (
@@ -31,7 +38,11 @@ const SelectPlayCards = ({
         name="folders"
         inputProps={{ 'aria-label': 'Folders' }}
       >
-        <option key={0} value={'0'} disabled={true}>Select a folder</option>
+        {isLoading
+          ? <option key={0} value={'0'} disabled={true}>Loading</option>
+          : <option key={0} value={'0'} disabled={true}>Select a folder</option>
+        }
+        {error && <option key={0} value={'0'} disabled={true}>An error occurred loading the library.</option>}
         {folders.map((folder, i) =>
           <option key={i} value={folder.directory}>
             {folder.directory}

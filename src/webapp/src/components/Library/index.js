@@ -11,11 +11,13 @@ import {
   ListItemButton,
   ListItemText,
   TextField,
+  Typography,
 } from '@mui/material';
 
-import { socketRequest } from '../../sockets';
 import noCover from '../../assets/noCover.jpg';
 import PlayerContext from '../../context/player/context';
+
+import { fetchDirectoryTreeOfAudiofolder } from '../../utils/requests';
 
 const DirectoryItem = ({ directory, play }) => {
   const tree = directory.split('/');
@@ -43,8 +45,9 @@ const DirectoryItem = ({ directory, play }) => {
 const Library = () => {
   const { play } = useContext(PlayerContext);
 
-  const [isLoading, setIsLoading] = useState(true);
   const [folders, setFolders] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (event) => {
@@ -58,13 +61,15 @@ const Library = () => {
 
   useEffect(() => {
     const getFlattenListOfDirectories = async () => {
-      const list = await socketRequest('player', 'ctrl', 'list_all_dirs');
+      setIsLoading(true);
+      const { result, error } = await fetchDirectoryTreeOfAudiofolder();
+      setIsLoading(false);
 
-      setFolders(list.filter(entry => !!entry.directory));
-    };
+      if(result) setFolders(result.filter(entry => !!entry.directory));
+      if(error) setError(error);
+    }
 
     getFlattenListOfDirectories();
-    setIsLoading(false);
   }, []);
 
   return (
@@ -86,21 +91,33 @@ const Library = () => {
           </Grid>
         </Grid>
       </form>
-      {isLoading && <CircularProgress />}
-      {!isLoading &&
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {folders
-            .filter(directoryNameBySearchQuery)
-            .map(({ directory }) =>
-              <DirectoryItem
-                directory={directory}
-                key={directory}
-                play={play}
-              />
-            )
-          }
-        </List>
-      }
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        {isLoading
+          ? <CircularProgress />
+          : <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+              {folders
+                .filter(directoryNameBySearchQuery)
+                .map(({ directory }) =>
+                  <DirectoryItem
+                    directory={directory}
+                    key={directory}
+                    play={play}
+                  />
+                )
+              }
+            </List>
+        }
+        {error &&
+          <Typography>An error occurred while loading the library.</Typography>
+        }
+      </Grid>
     </div>
   );
 };

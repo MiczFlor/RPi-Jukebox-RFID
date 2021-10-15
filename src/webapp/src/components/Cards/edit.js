@@ -66,7 +66,9 @@ const CardEdit = () => {
     }
 
     const loadCardList = async () => {
-      const { result, error } = await fetchCardsList(setIsLoading);
+      setIsLoading(true);
+      const { result, error } = await fetchCardsList();
+      setIsLoading(false);
 
       if (result && params?.cardId && result[params.cardId]) {
         setCardId(params.cardId);

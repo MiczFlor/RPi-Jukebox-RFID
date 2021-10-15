@@ -26,7 +26,9 @@ const Cards = () => {
 
   useEffect(() => {
     const loadCardList = async () => {
-      const { result, error } = await fetchCardsList(setIsLoading);
+      setIsLoading(true);
+      const { result, error } = await fetchCardsList();
+      setIsLoading(false);
 
       if(result) setData(result);
       if(error) setError(error);
