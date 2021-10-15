@@ -7,8 +7,8 @@ a directory is parsed and files are added to the playlist in the following way
 2. files ending with ``*livestream.txt`` are unpacked and the containing URL(s) are added verbatim to the playlist
 3. files ending with ``*podcast.txt`` are unpacked and the containing Podcast URL(s) are expanded and added to the playlist
 4. files ending with ``*.m3u`` are treated as folder playlist. Regular folder processing is suspended and the playlist
-    is build solely from the ``*.m3u`` content. Only the alphabetically first ``*.m3u`` is processed. URLs are added verbatim
-    to the playlist except for ``*.xml`` and ``*.podcast`` URLS, which are expanded first
+   is build solely from the ``*.m3u`` content. Only the alphabetically first ``*.m3u`` is processed. URLs are added verbatim
+   to the playlist except for ``*.xml`` and ``*.podcast`` URLS, which are expanded first
 
 An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
 
