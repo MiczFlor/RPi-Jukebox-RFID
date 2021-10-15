@@ -102,16 +102,16 @@ ZMQ Publisher
 Playback
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Playlist generator (*in progress*)
+* |[X]| Playlist generator
 
-    * |[ ]| Local folders
+    * |[X]| Local folders
 
-        * |[ ]| Non-recursive folder play
-        * |[ ]| Recursive folder play
+        * |[X]| Non-recursive folder play
+        * |[X]| Recursive folder play
 
-    * |[ ]| Podcast
-    * |[ ]| Livestreams
-    * |[ ]| NEW: Playback of m3u playlists (e.g. folder.m3u) ?
+    * |[X]| Podcast
+    * |[X]| Livestreams
+    * |[X]| NEW: Playback of m3u playlists (e.g. folder.m3u) ?
 
 * |[ ]| Folder configuration  (*in progress*)
 
