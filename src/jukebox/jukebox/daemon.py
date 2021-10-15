@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import threading
 import sys
 import signal
@@ -13,6 +12,7 @@ import jukebox.publishing as publishing
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
 
+import jukebox
 import jukebox.cfghandler
 
 logger = logging.getLogger('jb.daemon')
@@ -26,7 +26,7 @@ class JukeBox:
         signal.signal(signal.SIGTERM, self.signal_handler)
 
         self._start_time = time.time()
-        logger.info("Starting Jukebox Daemon")
+        logger.info(f"Starting Jukebox Daemon (Version {jukebox.version()})")
 
         self.nvm = nv_manager()
         self._signal_cnt = 0

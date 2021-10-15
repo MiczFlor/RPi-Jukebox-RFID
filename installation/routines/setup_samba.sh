@@ -15,7 +15,6 @@ _samba_set_user() {
   local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
 
-  echo "Configure Samba" | tee /dev/fd/3
   # Samba has not been configured
   if grep -q "## Jukebox Samba Config" "$SMB_CONF"; then
     echo "  Skipping. Already set up!" | tee /dev/fd/3

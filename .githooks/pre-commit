@@ -9,6 +9,9 @@
 #   Note: This only checks the modified files
 # - docs build of if any python file or any doc file is staged
 #   Note: This builds the entire documentation if a changed file goes into the documentation
+#
+# If there are problem with this script, commit may still be done with
+# git commit --no-verify
 
 
 # Pass all staged python files through flake8
@@ -34,5 +37,13 @@ if [[ -n $DOC_FILES || -n $PY_FILES ]]; then
   echo "Sphinx return code: $sphinx_code"
 fi
 
-exit $(( flake8_code + sphinx_code ))
+code=$(( flake8_code + sphinx_code ))
+
+if [[ code -gt 0 ]]; then
+  echo -e "\n**************************************************************"
+  echo -e "ERROR(s) during pre-commit checks. Aborting commit!"
+  echo -e "**************************************************************\n"
+fi
+
+exit $code
 

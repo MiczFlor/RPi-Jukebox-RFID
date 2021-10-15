@@ -42,9 +42,9 @@ Base
 
   * |[ ]| Log and publish this!
 
-* |[ ]| Version number getter (Version number should be stored in a python file)
+* |[X]| Version number getter (Version number should be stored in a python file)
 
-    * |[ ]| Log and publish  this
+    * |[X]| Log and publish  this
 
 * |[ ]| Exit via RPC
 * |[ ]| Service restart via RPC

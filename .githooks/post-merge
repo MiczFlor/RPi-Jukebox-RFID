@@ -80,5 +80,5 @@ if [[ -n $githooks_changed ]]; then
     warn_githooks
 fi
 
-echo "To see a summary of what happened since your last pull, do:"
-echo -e "git show --oneline -s ORIG_HEAD HEAD\n"
+echo -e "\nTo see a summary of what happened since your last pull, do:"
+echo -e "git show --oneline -s ORIG_HEAD..HEAD\n"
