@@ -18,11 +18,13 @@ and works well but doesn't scale enough for future development. It's the mix of 
 
 ### ☝️ Looking for early adopters, testers and contributors
 
-We would like to invite you to try out this new version called `future3`. Let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
+👩‍💻 For Braveheats only! If you want to test or help develop this new version called `future3`, let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
 
-Just a handful of features from version 2.x have been ported to version 3 so far. Specifically GPIO support is currently missing but it's in active development and soon to arrive.
+But please be aware, Version 3 is still under heavy development and cannot be considered stable! Just a handful of features from version 2.x have been ported to version 3 so far. Specifically GPIO support is currently missing but it's in active development and soon to arrive. To install and run this version you will need some understanding of programming.
 
-If you like to try it out or contribute, check out the following references. If you post issues or pull requests on Github, make sure you label them with `[future3]`.
+⚠️ If you build a Jukebox and depend on a stable environment, please choose Version 2.x.
+
+If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
 * 🚀 **[Install Jukebox Version 3 Alpha](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
