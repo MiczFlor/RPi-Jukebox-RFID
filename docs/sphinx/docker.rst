@@ -52,7 +52,7 @@ Run development environment
 
 In contrary to how everything is set up on the Raspberry Pi, it's good practice to isolate different components in
 different Docker images. They can be run individually or in combination.
-To do that, we use ``docker compose``.
+To do that, we use ``docker-compose``.
 
 .. note:: During the build process, some binaries are being compiled.
     Depending your host environment, the Docker allocated Memory and Swap space might not be large enough.
@@ -66,13 +66,13 @@ Linux
 .. code-block:: bash
 
     // Build Images
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
 
     // Run Docker Environment
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
 
 
 
@@ -85,13 +85,13 @@ for Mac hosts.
 .. code-block:: bash
 
     // Build Images
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
 
     // Run Docker Environment
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down```
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down```
 
 Windows
 ^^^^^^^^^^^
@@ -117,13 +117,13 @@ Windows
 .. code-block:: bash
 
     // Build Images
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml build
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml build
 
     // Run Docker Environment
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml up
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml down
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml down
 
 Test & Develop
 ---------------------
