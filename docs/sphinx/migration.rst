@@ -11,7 +11,7 @@ You will need to do three things to update your version from develop (or the nex
 
 #. Pull the newest code base from Github
 #. Check for new entries in the configuration
-#. Build the WebUI
+#. Re-build the WebUI
 
 .. code-block:: bash
 
@@ -26,13 +26,7 @@ You will need to do three things to update your version from develop (or the nex
     $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
 
     $ cd src/webapp
-
-    # Optional: In rare cases you will need to update the npm dependencies
-    # This is the case when the package.json changed
-    $ npm install
-
-    # Rebuild Web App
-    $ npm run build
+    $ ./run_rebuild.sh
 
 
 Migration Path from Version 2

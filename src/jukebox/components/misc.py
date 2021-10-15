@@ -1,11 +1,11 @@
 """
 Miscellaneous function package
 """
-import time
-
-import jukebox.plugs as plugin
-import logging.handlers
 import os
+import time
+import logging.handlers
+import jukebox
+import jukebox.plugs as plugin
 from jukebox.daemon import get_jukebox_daemon
 
 logger = logging.getLogger('jb.misc')
@@ -77,3 +77,8 @@ def get_log_debug():
 def get_log_error():
     """Get the log file (from the error_file_handler)"""
     return get_log('error_file_handler')
+
+
+@plugin.register
+def get_version():
+    return jukebox.version()

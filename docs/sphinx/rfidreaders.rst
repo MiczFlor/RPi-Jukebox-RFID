@@ -54,7 +54,9 @@ module:
     Indicates the Python package used for this reader. Filled by the RFID configuration tool.
 
 config:
-    Filled by the RFID configuration tool based on default values and user input.
+    Filled by the
+    :ref:`RFID configuration tool <coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``
+    based on default values and user input.
     After running the tool, you may manually change some settings here, as not everything can
     be configured through the tool. Note that re-running the tool will completely rewrite the
     configuration file.
@@ -102,4 +104,4 @@ RDM6300 serial UART
 Mock RFID Reader
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: components.rfid.fake_reader_gui.fake_reader_gui
+.. include:: ../../src/jukebox/components/rfid/fake_reader_gui/README.rst

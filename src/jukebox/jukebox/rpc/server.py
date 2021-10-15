@@ -64,7 +64,8 @@ class RpcServer:
     def __init__(self, context=None):
         """Initialize the connections and bind to the ports"""
         # Get the global context (will be created if non-existing)
-        logger.info("Init RPC Server")
+        logger.info(f"Init RPC Server (Pyzmq version: {zmq.pyzmq_version()}; "
+                    f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
         self.context = context or zmq.Context.instance()
         self.socket = self.context.socket(zmq.REP)
 

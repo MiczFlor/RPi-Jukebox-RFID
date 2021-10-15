@@ -112,7 +112,7 @@ Plugins publishing state information should publish initial state at @plugin.fin
 
 .. important:: Do not direclty instantiate the Publisher in your plugin module. Only one Publisher is
     required per thread. But the publisher instance **must** be thread-local!
-    Always go through ``publishing.get_publisher()``.
+    Always go through :func:`publishing.get_publisher()`.
 
 **Sockets**
 
@@ -133,6 +133,7 @@ Three sockets are opened:
 #
 # The first .bind() "takes ownership" of the port and this is an exclusive role. [...]
 # You need just 1 .bind(), that may since that moment handle 0+ future .connect()-requests,
+# [https://zeromq.org/socket-api/#bind-vs-connect]
 # [https://stackoverflow.com/questions/50753588/zeromq-with-norm-address-already-in-use-error-was-thrown-on-2nd-bind-why]
 #
 # How to integrate MQTT:
@@ -237,7 +238,8 @@ class PublishServer(threading.Thread):
         self.frontend.on_recv(self.handle_message)
         self.backend.on_recv(self.handle_subscription)
         # Ready to go
-        logger.debug("PublishServer initialized")
+        logger.debug(f"PublishServer initialized (Pyzmq version: {zmq.pyzmq_version()}; "
+                     f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
 
     def run(self):
         """Thread's activity"""
