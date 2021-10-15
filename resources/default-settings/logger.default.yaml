@@ -48,9 +48,9 @@ filters:
 loggers:
   jb:
     level: DEBUG
-    # handlers: [console, debug_file_handler, error_file_handler]
-    handlers: [console, publisher]
-     # handlers: [console]
+    handlers: [console, debug_file_handler, error_file_handler]
+    # handlers: [console, publisher]
+    # handlers: [console]
     propagate: false
   jb.daemon:
     level: DEBUG
