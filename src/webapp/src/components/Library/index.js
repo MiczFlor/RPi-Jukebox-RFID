@@ -1,50 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
-  Avatar,
   CircularProgress,
-  Divider,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
   TextField,
   Typography,
 } from '@mui/material';
 
-import noCover from '../../assets/noCover.jpg';
-import PlayerContext from '../../context/player/context';
+
+import LibraryList from './library-list';
 
 import { fetchDirectoryTreeOfAudiofolder } from '../../utils/requests';
 
-const DirectoryItem = ({ directory, play }) => {
-  const tree = directory.split('/');
-  const folder = tree.pop();
-  const parentPath = tree.join('/');
-
-  return (
-    <>
-      <ListItem disablePadding>
-        <ListItemButton onClick={e => play(directory)}>
-          <ListItemAvatar>
-            <Avatar variant="rounded" alt="Cover" src={noCover} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={folder}
-            secondary={parentPath}
-          />
-        </ListItemButton>
-      </ListItem>
-      <Divider component="li" />
-    </>
-  );
-}
-
 const Library = () => {
-  const { play } = useContext(PlayerContext);
-
   const [folders, setFolders] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -101,18 +69,7 @@ const Library = () => {
       >
         {isLoading
           ? <CircularProgress />
-          : <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-              {folders
-                .filter(directoryNameBySearchQuery)
-                .map(({ directory }) =>
-                  <DirectoryItem
-                    directory={directory}
-                    key={directory}
-                    play={play}
-                  />
-                )
-              }
-            </List>
+          : <LibraryList folders={folders.filter(directoryNameBySearchQuery)} />
         }
         {error &&
           <Typography>An error occurred while loading the library.</Typography>

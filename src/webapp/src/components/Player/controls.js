@@ -87,27 +87,25 @@ const Controls = () => {
       </IconButton>
 
       {/* Play */}
-      {
-        !isPlaying &&
+      {!isPlaying &&
         <IconButton
-        aria-label="Play"
-        onClick={e => play()}
-        disabled={!songIsScheduled}
-        size="large"
-        sx={iconStyles}
+          aria-label="Play"
+          onClick={e => play()}
+          disabled={!songIsScheduled}
+          size="large"
+          sx={iconStyles}
         >
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
-      {
-        isPlaying &&
+      {/* Pause */}
+      {isPlaying &&
         <IconButton
-        aria-label="Pause"
-        onClick={pause}
-        size="large"
-        >
+          aria-label="Pause"
+          onClick={pause}
+          size="large"
           sx={iconStyles}
-
+        >
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
