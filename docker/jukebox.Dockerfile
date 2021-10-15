@@ -33,6 +33,7 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 COPY . ${INSTALLATION_PATH}
 
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+RUN pip3 install pyzmq
 
 EXPOSE 5555 5556
 
