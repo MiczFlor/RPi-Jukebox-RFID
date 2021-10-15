@@ -64,7 +64,8 @@ class ReaderRunner(threading.Thread):
         reader_type = cfg_rfid['rfid']['readers'][reader_cfg_key]['module'].lower()
         # Load the corresponding module
         self._logger.info(f"For reader config key '{reader_cfg_key}': loading module '{reader_type}'")
-        self._reader_module = importlib.import_module('components.rfid.' + reader_type + '.' + reader_type, 'pkg.subpkg')
+        self._reader_module = importlib.import_module('components.rfid.hardware.' + reader_type + '.' + reader_type,
+                                                      'pkg.subpkg')
         self._reader = None
         # Get additional configuration
         self._cfg_same_id_delay = cfg_rfid.setndefault('rfid', 'readers', reader_cfg_key,

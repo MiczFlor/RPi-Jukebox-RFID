@@ -26,6 +26,13 @@ def reader_install_dependencies(reader_path: str, dependency_install: str) -> No
         if os.path.exists(reader_path + '/requirements.txt'):
             # The python dependencies (if any)
             print("\nInstalling/Checking Python dependencies  ...\n")
+            print("IMPORTANT for developers: Python dependencies will be installed using "
+                  " $ sudo pip3 install --upgrade -r requirements.txt'\n"
+                  " i.e. on system level. This is target for the default RPI setup. "
+                  "If you do not want that, but rather have them in a local or virtual environment, "
+                  "hit No here and manually install the dependencies from your virtual environment\n"
+                  " $ pip3 install --upgrade -r requirements.txt'\n"
+                  "It is no problem to install them after running this script.\n\n")
             if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
                                                                 prompt_color=Colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
@@ -55,7 +62,7 @@ def reader_load_module(reader_name):
     :return: module
     """
     try:
-        reader_module = importlib.import_module('components.rfid.' + reader_name + '.' + reader_name, 'pkg.subpkg')
+        reader_module = importlib.import_module('components.rfid.hardware.' + reader_name + '.' + reader_name, 'pkg.subpkg')
     except ModuleNotFoundError as e:
         # This can have two reasons:
         # (1) The reader_type module itself cannot be found (for whatever unfathomable reason after all the checks above)
@@ -112,7 +119,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
     :rtype: dict as {section: {parameter: value}}
     """
 
-    package_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/..')
+    package_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../hardware')
     logger.debug(f"Package location: {package_dir}")
     # Get all local directories (i.e subpackages) that conform to naming/structuring convention
     # Naming convention: modname/modname.py
@@ -128,8 +135,8 @@ def query_user_for_reader(dependency_install='query') -> dict:
     reader_descriptions = []
     for reader_type in reader_dirs:
         try:
-            reader_description_modules.append(importlib.import_module('components.rfid.' + reader_type + '.description',
-                                                                      'pkg.subpkg'))
+            reader_description_modules.append(importlib.import_module('components.rfid.hardware.' + reader_type
+                                                                      + '.description', 'pkg.subpkg'))
             reader_descriptions.append(reader_description_modules[-1].DESCRIPTION)
         except ModuleNotFoundError:
             # The developer for this reader simply omitted to provide a description module

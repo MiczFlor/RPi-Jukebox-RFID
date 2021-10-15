@@ -22,7 +22,7 @@ Welcome to RPi Jukebox RFID's documentation!
    :caption: User Guide:
 
    concepts
-   rfidreaders
+   rfid/rfid
    carddatabase
    rpc_command_reference
 
