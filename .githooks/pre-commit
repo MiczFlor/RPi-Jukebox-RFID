@@ -37,5 +37,13 @@ if [[ -n $DOC_FILES || -n $PY_FILES ]]; then
   echo "Sphinx return code: $sphinx_code"
 fi
 
-exit $(( flake8_code + sphinx_code ))
+code=$(( flake8_code + sphinx_code ))
+
+if [[ code -gt 0 ]]; then
+  echo -e "\n**************************************************************"
+  echo -e "ERROR(s) during pre-commit checks. Aborting commit!"
+  echo -e "**************************************************************\n"
+fi
+
+exit $code
 
