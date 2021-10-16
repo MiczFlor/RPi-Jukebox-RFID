@@ -4,7 +4,7 @@ _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     at git \
-    alsa-tools \
+    alsa-utils \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg mpg123 \
     --no-install-recommends \
