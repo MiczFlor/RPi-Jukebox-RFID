@@ -44,7 +44,10 @@ jobs:
         pip install -r docs/sphinx/requirements_pyzmq.txt
         pip install -r docs/sphinx/requirements.txt
         # Also install all optional dependencies
-        pip install -r src/jukebox/components/rfid/fake_reader_gui/requirements.txt
+        pip install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt
+        pip install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
+        pip install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
+        pip install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
     - name: Lint with flake8
       run: |
         pip install flake8
