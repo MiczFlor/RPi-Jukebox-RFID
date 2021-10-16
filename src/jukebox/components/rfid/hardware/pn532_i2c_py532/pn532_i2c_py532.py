@@ -10,14 +10,12 @@ import jukebox.cfghandler
 from .description import DESCRIPTION
 
 
-# Create logger
-logger = logging.getLogger('jb.rfid.rdm6300')
 cfg = jukebox.cfghandler.get_handler('rfid')
 
 
 def query_customization() -> dict:
     print("There are no customization parameters necessary!")
-    return {'log_all_cards': 'false'}
+    return {'log_all_cards': False}
 
 
 class ReaderClass(ReaderBaseClass):
@@ -29,8 +27,10 @@ class ReaderClass(ReaderBaseClass):
 
         self.device = Mifare()
         self.device.SAMconfigure()
+        # This would block scan_field() indefinetly
         # self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
-        # Let's see how that behaves
+        # This comes back every 5 tries, allowing a clean exit of this thread
+        # And actually reduces CPU load by 0.3 % on PI 3
         self.device.set_max_retries(MIFARE_SAFE_RETRIES)
         self._keep_running = True
 
@@ -43,7 +43,10 @@ class ReaderClass(ReaderBaseClass):
 
     def read_card(self) -> str:
         # scan_field returns a byte array -> convert to true integer
+        # if not card is present comes back with False
         byte_uid = self.device.scan_field()
+        if byte_uid is False:
+            return ''
         if not self._keep_running:
             return ''
         try:
@@ -52,7 +55,7 @@ class ReaderClass(ReaderBaseClass):
             self._logger.debug(f"Error while reading card. Raw card ID = {byte_uid}")
             return ''
 
-        if self.log_all_cards:
+        if self.log_all_cards is True:
             self._logger.debug(f"Card detected with ID = {card_uid}")
 
         return card_uid
