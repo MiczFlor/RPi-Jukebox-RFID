@@ -101,13 +101,17 @@ class ReaderClass(ReaderBaseClass):
 
         This function is called before cleanup is called.
 
-        .. note: This is usually called from a different thread than the reader's thread!
+        .. note: This is usually called from a different thread than the reader's thread! And this is the reason for the
+            two-step exit strategy. This function works across threads to indicate to the reader that is should stop attempt
+            to read a card. Once called, the function read_card will not be called again. When the reader thread exits
+            cleanup is called from the reader thread itself.
+
         """
         self._keep_running = False
 
     def read_card(self) -> str:
         """
-        Blocking function that waits for a new card to appear and return the card's UID as string
+        Blocking or non-blocking function that waits for a new card to appear and return the card's UID as string
 
         This is were your main code goes :-)
         This function must return a string with the card id

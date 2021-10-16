@@ -189,7 +189,7 @@ class ReaderRunner(threading.Thread):
                         else:
                             self._logger.info(f"Unknown card: '{card_id}'")
                             self.publisher.send(self.topic, card_id)
-                    elif self._cfg_log_ignored_cards:
+                    elif self._cfg_log_ignored_cards is True:
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
                     previous_time = time.time()
                 else:

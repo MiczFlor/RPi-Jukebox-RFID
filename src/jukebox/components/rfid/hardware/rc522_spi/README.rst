@@ -27,8 +27,8 @@ spi_bus *(default=0)*
 spi_ce *(default=0)*
     SPI chip enable pin. On default SPI bus 0, this can be
 
-        * 0 = GPIO??
-        * 1 = GPIO??
+        * 0 = GPIO8 (Pin 24)
+        * 1 = GPIO7 (Pin 26)
 
     For other SPI buses refer to RPi documentation.
 
@@ -39,7 +39,7 @@ pin_rst *(default=0)*
     Reset pin for hardware reset. This is an optional pin.
     If not used,
 
-        * hardware reset will only be performed by power-on-reset. This is not a problem.
+        * hardware reset will only be performed by power-on-reset. This has been tested on works fine.
         * you **must** tie the reset pin of the MFRC522 board **high**!
 
 mode_legacy *(default=false)*
@@ -61,20 +61,31 @@ Board Connections
 
 The following pin-out is for the default SPI Bus 0 on Raspberry Pins
 
-(spi_bus=0, spi_ce=0, pin_irq=24)
-
 .. table:: MFRC522 default wiring (spi_bus=0, spi_ce=0)
     :widths: auto
 
-    ===============   ========  =======
-    Pin Board Name    Function  PI pin
-    ===============   ========  =======
-    SDA               CE        GPIO8
-    SCK               SCLK      GPIO11
-    MOSI              MOSI      GPIO10
-    MISO              MISO      GPIO9
-    IRQ               IRQ       GPIO24
+    ===============   ========  =========  =========
+    Pin Board Name    Function  RPI GPIO   RPI Pin
+    ===============   ========  =========  =========
+    SDA               CE        GPIO8      24
+    SCK               SCLK      GPIO11     21
+    MOSI              MOSI      GPIO10     19
+    MISO              MISO      GPIO9      21
+    IRQ               IRQ       GPIO24     18
     GND
-    RST               RST       GPIO25
+    RST               RST       GPIO25     22
     3.3V
-    ===============   ========  =======
+    ===============   ========  =========  =========
+
+
+Hardware
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+MFRC522 boards can be picked up from many places for little money.
+
+Good quality ones can be found e.g. here
+
+.. A word of caution: If you by directly from east asian sellers, be aware of highly fluctuating quality. meaning that
+    not all RFID cards or stickers can be read out.
+
+.. https://www.berrybase.de/sensoren-module/rfid-nfc/rfid-leseger-228-t-mit-spi-schnittstelle-inkl.-karte-dongle

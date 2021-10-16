@@ -27,10 +27,10 @@ class ReaderClass(ReaderBaseClass):
 
         self.device = Mifare()
         self.device.SAMconfigure()
-        # This would block scan_field() indefinetly
+        # This would block scan_field() indefinitely
         # self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
         # This comes back every 5 tries, allowing a clean exit of this thread
-        # And actually reduces CPU load by 0.3 % on PI 3
+        # And actually reduces CPU load by 0.3 %-points on a PI 3
         self.device.set_max_retries(MIFARE_SAFE_RETRIES)
         self._keep_running = True
 
@@ -43,7 +43,7 @@ class ReaderClass(ReaderBaseClass):
 
     def read_card(self) -> str:
         # scan_field returns a byte array -> convert to true integer
-        # if not card is present comes back with False
+        # if no card is present comes back with False
         byte_uid = self.device.scan_field()
         if byte_uid is False:
             return ''

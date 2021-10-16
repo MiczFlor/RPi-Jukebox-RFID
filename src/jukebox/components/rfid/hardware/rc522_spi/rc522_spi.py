@@ -23,16 +23,16 @@ def query_customization() -> dict:
           "Note: pin numbers refer to GPIOxx numbering!\n")
 
     print("\nThe SPI CE pin: CE0 or CE1")
-    spi_ce = pyil.input_int("SPI CEx?", blank=0, min=0, max=1, prompt_color=prompt_color, prompt_hint=True)
+    spi_ce = pyil.input_int("SPI CEx (CE0=GPIO8, CE1=GPIO7)?", blank=0, min=0, max=1, prompt_color=prompt_color, prompt_hint=True)
 
-    pin_irq = pyil.input_int("IRQ pin?", blank=24, min=1, max=27, prompt_color=prompt_color, prompt_hint=True)
+    pin_irq = pyil.input_int("IRQ GPIO pin (BCM numbering)?", blank=24, min=1, max=27, prompt_color=prompt_color, prompt_hint=True)
 
-    print("\nReset pin for hardware reset. This is an optional pin.\n"
+    print("\nReset GPIO pin for hardware reset. This is an optional pin.\n"
           "Enter 0 to disable use of reset pin if you are tight on pins."
           "If not used, "
           " - hardware reset will only be performed by power-on-reset, but not when simply rebooting.\n"
           " - you MUST tie the reset pin of the MFRC522 board HIGH!")
-    pin_rst = pyil.input_int("Reset pin?", blank=25, min=0, max=27, prompt_color=prompt_color, prompt_hint=True)
+    pin_rst = pyil.input_int("Reset GPIO pin (BCM numbering)?", blank=25, min=0, max=27, prompt_color=prompt_color, prompt_hint=True)
 
     print("\n4-byte-only legacy mode:\n"
           "Previously the pirc522 library could only read the lower 4 bytes of a card UID. "
@@ -47,7 +47,7 @@ def query_customization() -> dict:
             'pin_rst': pin_rst,
             'mode_legacy': mode_legacy,
             'antenna_gain': 4,
-            'log_all_cards': 'false'}
+            'log_all_cards': False}
 
 
 class ReaderClass(ReaderBaseClass):
@@ -101,10 +101,10 @@ class ReaderClass(ReaderBaseClass):
             error, uid = self.device.anticoll()
             if not error:
                 card_id = ''.join((str(x) for x in uid))
-                if self.log_all_cards:
+                if self.log_all_cards is True:
                     self._logger.debug(f"Card detected with ID = '{card_id}'")
                 return card_id
-        if self.log_all_cards:
+        if self.log_all_cards is True:
             self._logger.debug("Error during reading card.")
         return ''
 
@@ -119,11 +119,11 @@ class ReaderClass(ReaderBaseClass):
         uid = self.device.read_id(as_number=True)
         # Check for empty string or NoneType
         if not uid:
-            if self.log_all_cards:
+            if self.log_all_cards is True:
                 self._logger.debug("Error during reading card.")
             return ''
         card_id = str(uid)
-        if self.log_all_cards:
+        if self.log_all_cards is True:
             self._logger.debug(f"Card detected with ID = '{card_id}'")
         return card_id
 
