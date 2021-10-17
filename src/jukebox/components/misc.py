@@ -6,6 +6,7 @@ import time
 import logging.handlers
 import jukebox
 import jukebox.plugs as plugin
+import jukebox.utils
 from jukebox.daemon import get_jukebox_daemon
 
 logger = logging.getLogger('jb.misc')
@@ -82,3 +83,9 @@ def get_log_error():
 @plugin.register
 def get_version():
     return jukebox.version()
+
+
+@plugin.register()
+def get_git_state():
+    """Return git state information for the current branch"""
+    return get_jukebox_daemon().git_state

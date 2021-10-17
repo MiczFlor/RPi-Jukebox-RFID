@@ -8,6 +8,7 @@ from typing import (Optional)
 
 from misc import flatten
 import jukebox.plugs as plugin
+import jukebox.utils
 import jukebox.publishing as publishing
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
@@ -28,6 +29,9 @@ class JukeBox:
         self._start_time = time.time()
         logger.info(f"Starting Jukebox Daemon (Version {jukebox.version()})")
 
+        self._git_state = jukebox.utils.get_git_state()
+        logger.info(f"Git state: {self._git_state}")
+
         self.nvm = nv_manager()
         self._signal_cnt = 0
         self.rpc_server = None
@@ -39,6 +43,10 @@ class JukeBox:
     @property
     def start_time(self):
         return self._start_time
+
+    @property
+    def git_state(self):
+        return self._git_state
 
     def signal_handler(self, esignal, frame):
         """Signal handler for orderly shutdown
@@ -126,6 +134,7 @@ class JukeBox:
         publishing.get_publisher().send('core.plugins.loaded', pack_ok)
         publishing.get_publisher().send('core.plugins.error', pack_error)
         publishing.get_publisher().send('core.started_at', time.ctime(self._start_time))
+        publishing.get_publisher().send('core.git_state', self._git_state)
 
         # ps = plugin.summarize()
         # for k, v in ps.items():
