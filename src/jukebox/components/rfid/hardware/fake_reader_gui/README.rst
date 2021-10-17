@@ -1,3 +1,6 @@
+Mock Reader
+-----------------
+
 A fake reader using a TK GUI for development purposes
 
 **place-capable**: yes

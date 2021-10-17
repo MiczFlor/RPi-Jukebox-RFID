@@ -34,7 +34,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from ttkthemes import ThemedStyle
 
-from components.rfid.readerbase import ReaderBaseClass
+from components.rfid import ReaderBaseClass
 from components.rfid.cardutils import (card_to_str)
 import jukebox.cfghandler
 

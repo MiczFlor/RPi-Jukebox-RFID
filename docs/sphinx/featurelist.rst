@@ -151,15 +151,15 @@ RFID
 
     * |[X]| Configurable card removal action
 
-* |[ ]| Readers support (*in progress*)
+* |[X]| Readers support (*in progress*)
 
     * |[X]| USB (e.g. Neuftech)
     * |[X]| RDM6300
-    * |[ ]| MFRC522
-    * |[ ]| RC532
-    * |[ ]| PC/SC Cards
+    * |[X]| MFRC522
+    * |[X]| RC532
     * |[X]| Multi-reader support
     * |[X]| GUI Fake Reader for Development
+    * |[ ]| PC/SC Cards (what actually is this?)
 
 * |[X]| Publish RFID Card ID via PubSub
 
