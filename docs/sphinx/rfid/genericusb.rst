@@ -1,0 +1,1 @@
+.. include:: ../../../src/jukebox/components/rfid/hardware/generic_usb/README.rst
