@@ -23,3 +23,5 @@ extend-exclude =
     docs/sphinx/conf.py,
     # Ignore dirs and files that have not been ported yet
     */jukebox/NvManager.py
+    # ignore GitHub Codespaces
+    .venv/*
