@@ -67,8 +67,8 @@ loggers:
     propagate: false
   mpd:
     level: WARNING
-    handlers: [console]
-    propagate: false
+  urllib3:
+    level: WARNING
 root:
-  level: DEBUG
-  handlers: [console]
+  level: WARNING
+  handlers: [console, debug_file_handler, error_file_handler]

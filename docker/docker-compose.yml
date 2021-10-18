@@ -33,6 +33,7 @@ services:
     volumes:
       - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
       - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+      - ./config/docker.mpd.conf:/etc/mpd.conf
 
   webapp:
     build:
