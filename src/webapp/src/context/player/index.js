@@ -81,10 +81,16 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('volume', 'ctrl', 'set_volume', { volume });
   }
 
-  const setMaxVolume = (maxVolume) => {
+  const setMaxVolume = (max_volume) => {
     if (state.requestInFlight) return;
 
-    postJukeboxCommand('volume', 'ctrl', 'set_max_volume', { maxVolume });
+    postJukeboxCommand('volume', 'ctrl', 'set_max_volume', { max_volume });
+  }
+
+  const getMaxVolume = () => {
+    if (state.requestInFlight) return;
+
+    return postJukeboxCommand('volume', 'ctrl', 'get_max_volume');
   }
 
   const toggleMuteVolume = (mute_on) => {
@@ -123,6 +129,7 @@ const PlayerProvider = ({ children }) => {
     setState,
     setVolume,
     setMaxVolume,
+    getMaxVolume,
     state,
     toggleMuteVolume,
     repeat,

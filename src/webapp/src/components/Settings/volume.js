@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   Slider,
   Typography,
 } from '@mui/material';
+import PlayerContext from '../../context/player/context';
 
 const marks = [5, 25, 50, 75, 100].map(
   (value) => ({ value, label: `${value}%` })
@@ -17,30 +18,16 @@ const marks = [5, 25, 50, 75, 100].map(
 const SettingsVolume = () => {
   const {
     setMaxVolume,
+    getMaxVolume,
+    state,
   } = useContext(PlayerContext);
 
-  const [volumeStep] = useState(1);
-  const [maxVolume] = useState(75);
-  const [isChangingMaxVolume, setIsChangingMaxVolume] = useState(false);
-  const [_maxVolume, _setMaxVolume] = useState(0);
+  const [volumeStep] = useState(5);
+  const { maxVolume } = getMaxVolume;
 
-  const updateMaxVolume = () => {
-    setMaxVolume(_maxVolume);
-    // Delay the next command to avoid jumping slide control
-    setTimeout(() => setIsChangingMaxVolume(false), 500);
+  const updateMaxVolume = (event, newMaxVolume) => {
+    setMaxVolume(newMaxVolume);
   }
-
-  const handleMaxVolumeChange = (event, newMaxVolume) => {
-    setIsChangingMaxVolume(true);
-    _setMaxVolume(newMaxVolume);
-  }
-
-  useEffect(() => {
-    // Only trigger API when not dragging volume bar
-    if (!isChangingMaxVolume) {
-      _setMaxVolume(maxVolume);
-    }
-  }, [isChangingMaxVolume, maxVolume]);
 
   return (
     <Card>
@@ -52,14 +39,13 @@ const SettingsVolume = () => {
             <Typography>Maximum Volume</Typography>
             <Slider
               defaultValue={maxVolume}
-              onChange={handleMaxVolumeChange}
               onChangeCommitted={updateMaxVolume}
               marks={marks}
               max={100}
               min={0}
               size="small"
-              step={1}
-              value={typeof _maxVolume === 'number' ? _maxVolume : 75}
+              step={5}
+              value={maxVolume}
               valueLabelDisplay="auto"
             />
           </Grid>
