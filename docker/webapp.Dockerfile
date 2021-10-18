@@ -1,16 +1,13 @@
 FROM node:alpine
 
-ENV HOME /root
-ENV INSTALLATION_DIR /home/pi/RPi-Jukebox-RFID
+USER node
+RUN mkdir -p /home/node/webapp
+WORKDIR /home/node/webapp
 
-WORKDIR ${INSTALLATION_DIR}/webapp
-
-ENV PATH ${INSTALLATION_DIR}/webapp/node_modules/.bin:$PATH
-
-COPY ./src/webapp/package*.json ./
+COPY --chown=node:node ./src/webapp/package*.json ./
 
 RUN npm install
 
-COPY ./src/webapp ./
+COPY --chown=node:node ./src/webapp ./
 
 CMD ["npm", "start"]
