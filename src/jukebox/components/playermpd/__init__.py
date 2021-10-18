@@ -515,7 +515,7 @@ class PlayerMPD:
         as the user may have configured a volume control manager other than MPD"""
         with self.mpd_lock:
             volume = self.mpd_client.status().get('volume')
-        return volume
+        return int(volume)
 
     def set_volume(self, volume):
         """
@@ -524,7 +524,8 @@ class PlayerMPD:
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD"""
         with self.mpd_lock:
-            self.mpd_client.volume, volume()
+            self.mpd_client.setvol(volume)
+        return self.get_volume()
 
 
 class MpdVolumeCtrl(VolumeBaseClass):
