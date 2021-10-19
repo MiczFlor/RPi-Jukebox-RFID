@@ -19,7 +19,6 @@ const SettingsVolume = () => {
   const {
     setMaxVolume,
     getMaxVolume,
-    state,
   } = useContext(PlayerContext);
 
   const [volumeStep] = useState(5);
