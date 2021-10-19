@@ -50,5 +50,5 @@ services:
       - 3001:3000
     restart: unless-stopped
     volumes:
-      - ../src/webapp:/home/pi/RPi-Jukebox-RFID/webapp
-      - /home/pi/RPi-Jukebox-RFID/webapp/node_modules
+      - ../src/webapp:/home/node/webapp
+      - /home/node/webapp/node_modules

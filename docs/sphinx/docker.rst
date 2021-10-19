@@ -39,6 +39,10 @@ Prerequisites
 
     * Copy the ``./resources/default-settings/jukebox.default.yaml`` to ``./shared/settings`` and
       rename the file to ``jukebox.yaml``.
+
+        ``$ cp ./resources/default-settings/jukebox.default.yaml ./shared/settings/jukebox.yaml``
+
+
     * Override/Merge the values from the following
       `Override file
       <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml>`_
@@ -54,14 +58,11 @@ In contrary to how everything is set up on the Raspberry Pi, it's good practice 
 different Docker images. They can be run individually or in combination.
 To do that, we use ``docker-compose``.
 
-.. note:: During the build process, some binaries are being compiled.
-    Depending your host environment, the Docker allocated Memory and Swap space might not be large enough.
-    Consider assigning more Memory and Swap space within Docker
-    (Preferences > Resources, `Source <https://github.com/docker/cli/issues/2971#issuecomment-832865510>`_)
-    if building fails. Don't forget to restart Docker!
-
 Linux
 ^^^^^^^
+
+Make sure you don't use ``sudo`` to run your ``docker-compose``. Check out Docker's `post-installation guide <https://docs.docker.com/engine/install/linux-postinstall/>`
+for more information.
 
 .. code-block:: bash
 
@@ -91,7 +92,7 @@ for Mac hosts.
     $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down```
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
 
 Windows
 ^^^^^^^^^^^
@@ -131,6 +132,69 @@ Test & Develop
 The Dockerfile is defined to start all Phoniebox related services.
 
 Open `http://localhost:3001 <http://localhost:3001>`_ in your browser to see the web application.
+
+
+While the ``webapp`` container does not require a reload while working on it (hot-reload is enabled),
+you will have to restart your ``jukebox`` container whenever you make a change (in the Python code).
+Instead of stopping and starting the ``docker-compose`` command, you can individually restart your
+``jukebox`` container. Update the below path with your specific host environment.
+
+.. code-block:: bash
+
+    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.[ENVIRONMENT].yml restart jukebox
+
+Known issues
+----------------
+
+The docker environment only exists to make development easier and possible without a physical device. It won't
+replace it though. Therefore, we currently accept certain issues related to the individual Docker containers.
+Here is a list of known errors or weird behaviour which you can easily ignore unless they prevent you from progressing.
+If would be of course useful to get rid of them, but currently we make a trade-off between a development environment and
+solving the specific details.
+
+``mpd`` container
+^^^^^^^^^^^^^^^^^^
+
+When starting the ``mpd`` container, you will see the following errors. You can ignore them, MPD will run.
+
+.. code-block:: bash
+
+    mpd | exception: bind to '0.0.0.0:6600' failed (continuing anyway, because binding to '[::]:6600' succeeded): Failed to bind socket: Address already in use
+    mpd | exception: Failed to open '/root/.config/mpd/database': No such file or directory
+    mpd | exception: RTIOThread could not get realtime scheduling, continuing anyway: sched_setscheduler failed: Operation not permitted
+    mpd | avahi: Failed to create client: Daemon not running
+
+
+You might also notice the following errors after the ``mpd`` Docker ran for a while. Specifically the first error
+could fill up your console, sometimes it stops with the second error message. It's not a problem, sound continues to
+work. As a side effect, your CPU usage increases. Just kill the process and restart.
+
+.. code-block:: bash
+
+    mpd | alsa_mixer: snd_mixer_handle_events() failed: Input/output error
+    mpd | exception: Failed to read mixer for 'My ALSA Device': snd_mixer_handle_events() failed: Input/output error
+
+
+``jukebox`` container
+^^^^^^^^^^^^^^^^^^^^^^
+
+Many features of the Phoniebox are based on the Raspberry Pi hardware. This hardware can't be mocked in a virtual Docker
+environment. As a result, a few plugins like RFID, GPIO or CPU temperature will throw errors because they can't start
+successfully. Unless you want to develop such plugins, you will be able to ignore these errors. The plugin system is built in a way
+that the Jukebox daemon will come up. If you want to develop plugins that require hardware support, you will have to
+work on the hardware directly.
+
+Typical errors and following exceptions to be ignored in the Docker ``jukebox`` container are:
+
+.. code-block:: bash
+
+    jukebox    | 634:plugs.py           - jb.plugin            - MainThread      - ERROR    - Ignoring failed package load finalizer: 'rfid.finalize()'
+    jukebox    | 635:plugs.py           - jb.plugin            - MainThread      - ERROR    - Reason: FileNotFoundError: [Errno 2] No such file or directory: '/home/pi/RPi-Jukebox-RFID/shared/settings/rfid.yaml'
+    ...
+    jukebox    | 171:__init__.py        - jb.host.lnx          - MainThread      - ERROR    - Error reading temperature. Canceling temperature publisher. FileNotFoundError: [Errno 2] No such file or directory: '/sys/class/thermal/thermal_zone0/temp'
+    ...
+    jukebox    | 319:server.py          - jb.pub.server        - host.timer.cputemp - ERROR    - Publish command from different thread 'host.timer.cputemp' than publisher was created from 'MainThread'!
+
 
 
 Appendix
