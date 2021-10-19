@@ -498,8 +498,9 @@ class PlayerMPD:
     @plugs.tag
     def list_albums(self):
         with self.mpd_lock:
-            albums = self.mpd_client.lsinfo()
-            # albums = filter(lambda x: x, albums)
+            albums = self.mpd_retry_with_mutex(self.mpd_client.list, "list", 'album', 'group', 'albumartist')
+
+        # albums = filter(lambda x: x, albums)
 
         time.sleep(0.3)
 
