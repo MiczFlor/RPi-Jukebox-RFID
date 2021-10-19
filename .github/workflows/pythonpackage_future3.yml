@@ -35,22 +35,22 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libasound2-dev
-        python -m pip install --upgrade pip
-        pip install wheel
-        pip install spidev
-        pip install -r requirements.txt
+        python3 -m pip install --upgrade pip
+        pip3 install wheel
+        pip3 install spidev
+        pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
         # When just building the docs, the regular ZMQ package is sufficient
-        pip install -r docs/sphinx/requirements_pyzmq.txt
-        pip install -r docs/sphinx/requirements.txt
+        pip3 install -r docs/sphinx/requirements_pyzmq.txt
+        pip3 install -r docs/sphinx/requirements.txt
         # Also install all optional dependencies
-        pip install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt
-        pip install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
-        pip install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
-        pip install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
     - name: Lint with flake8
       run: |
-        pip install flake8
+        pip3 install flake8
         # Stop the build if linting fails
         ./run_flake8.sh
     - name: Build the docs

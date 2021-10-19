@@ -29,11 +29,6 @@ _jukebox_core_install_os_dependencies() {
     --allow-change-held-packages
 }
 
-_jukebox_core_install_python() {
-  echo "  Install Python"
-  sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-}
-
 _jukebox_core_build_and_install_pyzmq() {
   # ZMQ
   # Because the latest stable release of ZMQ does not support WebSockets
@@ -117,7 +112,6 @@ setup_jukebox_core() {
   echo "Install Jukebox Core" | tee /dev/fd/3
 
   _jukebox_core_install_os_dependencies
-  _jukebox_core_install_python
   _jukebox_core_install_python_requirements
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings

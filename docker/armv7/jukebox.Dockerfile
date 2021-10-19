@@ -34,8 +34,6 @@ RUN apt-get update && apt-get install -qq -y \
 #resolvconf
 #python3-spidev
 
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-
 COPY . ${INSTALLATION_DIR}
 
 # Install Jukebox
@@ -73,4 +71,4 @@ EXPOSE 5555 5556
 
 # Run Jukebox
 # CMD bash
-CMD python ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py
+CMD python3 ${INSTALLATION_DIR}/src/jukebox/run_jukebox.py
