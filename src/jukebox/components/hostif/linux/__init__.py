@@ -60,6 +60,7 @@ except Exception:
 # ---------------------------------------------------------------------------
 @plugin.register
 def shutdown():
+    """Shutdown the host machine"""
     logger.info('Shutting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
     # ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
@@ -80,6 +81,7 @@ def shutdown():
 
 @plugin.register
 def reboot():
+    """Reboot the host machine"""
     logger.info('Rebooting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
     ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True,

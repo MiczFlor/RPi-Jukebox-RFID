@@ -896,6 +896,13 @@ def summarize():
         return all_callables
 
 
+def _indent(doc, spaces=4):
+    lines = doc.split('\n')
+    for i in range(0, len(lines)):
+        lines[i] = " " * spaces + lines[i]
+    return "\n".join(lines)
+
+
 def generate_help_rst(stream):
     """Write a reference of all plugin callables in Restructured Text format"""
     with _lock_module:
@@ -915,27 +922,29 @@ def generate_help_rst(stream):
 
             print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
 
+            # From package only get header line
             description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
             print(f"{inspect.cleandoc(description)}\n\n", file=stream)
+
             for name, obj in _PLUGINS[package].plugins.items():
                 # description = inspect.cleandoc(obj.__doc__ or "")
-                description = obj.__doc__ or ""
+                description = _indent(inspect.cleandoc(obj.__doc__ or ""), 4)
                 if callable(obj):
                     fullname = f"{package}.{name}"
                     sign = f"{inspect.signature(obj)}"
                     print(f".. py:function:: {fullname}{sign}", file=stream)
                     print("    :noindex:\n", file=stream)
-                    print(f"    {description}\n\n", file=stream)
+                    print(f"{description}\n\n", file=stream)
                 else:
                     for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
                                         *inspect.getmembers(obj, predicate=inspect.isfunction)]:
                         if hasattr(fobj, 'plugs_callable'):
-                            description = fobj.__doc__ or ""
+                            description = _indent(inspect.cleandoc(fobj.__doc__ or ""), 4)
                             sign = f"{inspect.signature(fobj)}"
                             fullname = f"{package}.{name}.{fname}"
                             print(f".. py:function:: {fullname}{sign}", file=stream)
                             print("    :noindex:\n", file=stream)
-                            print(f"    {description}\n\n", file=stream)
+                            print(f"{description}\n\n", file=stream)
         print("\n\nGeneration notes", file=stream)
         print("-------------------------------------------\n\n", file=stream)
         print("This is an automatically generated file from the loaded plugins:\n", file=stream)
