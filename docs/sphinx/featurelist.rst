@@ -40,7 +40,7 @@ Base
 
 * |[X]| Git hash log information
 
-  * |[ ]| Log and publish this!
+  * |[X]| Log and publish this!
 
 * |[X]| Version number getter (Version number should be stored in a python file)
 
