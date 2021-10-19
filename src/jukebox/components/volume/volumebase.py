@@ -1,6 +1,8 @@
 import logging
 from abc import ABC, abstractmethod
 
+from jukebox import plugs
+
 
 class VolumeBaseClass(ABC):
     """
@@ -35,9 +37,13 @@ class VolumeBaseClass(ABC):
     def dec_volume(self, step):
         pass
 
-    @abstractmethod
+    @plugs.tag
     def set_max_volume(self, max_volume):
-        pass
+        self.logger.debug(f"Set Max Volume = {max_volume}")
+        if not 0 <= max_volume <= 100:
+            self.logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
+        self._max_volume = max_volume
+        return self.get_max_volume()
 
     @abstractmethod
     def get_max_volume(self):

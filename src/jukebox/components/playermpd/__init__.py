@@ -572,14 +572,6 @@ class MpdVolumeCtrl(VolumeBaseClass):
         return self._mpd_player_inst.set_volume(0)
 
     @plugs.tag
-    def set_max_volume(self, max_volume):
-        logger.debug(f"Set Max Volume = {max_volume}")
-        if not 0 <= max_volume <= 100:
-            logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
-        self._max_volume = max_volume
-        return self.get_max_volume()
-
-    @plugs.tag
     def get_max_volume(self):
         return self._max_volume
 
