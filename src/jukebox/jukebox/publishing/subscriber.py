@@ -22,6 +22,9 @@ class Subscriber:
             for t in topics:
                 self.socket.setsockopt_string(zmq.SUBSCRIBE, t)
 
+        logger.debug(f"ZMQ Subscriber initialized on '{url}' (Pyzmq version: {zmq.pyzmq_version()}; "
+                     f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
+
     def receive(self):
         [topic, message] = self.socket.recv_multipart()
         if message == b'':

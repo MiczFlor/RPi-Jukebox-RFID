@@ -40,11 +40,11 @@ Base
 
 * |[X]| Git hash log information
 
-  * |[ ]| Log and publish this!
+  * |[X]| Log and publish this!
 
-* |[ ]| Version number getter (Version number should be stored in a python file)
+* |[X]| Version number getter (Version number should be stored in a python file)
 
-    * |[ ]| Log and publish  this
+    * |[X]| Log and publish  this
 
 * |[ ]| Exit via RPC
 * |[ ]| Service restart via RPC
@@ -102,16 +102,16 @@ ZMQ Publisher
 Playback
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Playlist generator (*in progress*)
+* |[X]| Playlist generator
 
-    * |[ ]| Local folders
+    * |[X]| Local folders
 
-        * |[ ]| Non-recursive folder play
-        * |[ ]| Recursive folder play
+        * |[X]| Non-recursive folder play
+        * |[X]| Recursive folder play
 
-    * |[ ]| Podcast
-    * |[ ]| Livestreams
-    * |[ ]| NEW: Playback of m3u playlists (e.g. folder.m3u) ?
+    * |[X]| Podcast
+    * |[X]| Livestreams
+    * |[X]| NEW: Playback of m3u playlists (e.g. folder.m3u) ?
 
 * |[ ]| Folder configuration  (*in progress*)
 
@@ -151,15 +151,15 @@ RFID
 
     * |[X]| Configurable card removal action
 
-* |[ ]| Readers support (*in progress*)
+* |[X]| Readers support (*in progress*)
 
     * |[X]| USB (e.g. Neuftech)
     * |[X]| RDM6300
-    * |[ ]| MFRC522
-    * |[ ]| RC532
-    * |[ ]| PC/SC Cards
+    * |[X]| MFRC522
+    * |[X]| RC532
     * |[X]| Multi-reader support
     * |[X]| GUI Fake Reader for Development
+    * |[ ]| PC/SC Cards (what actually is this?)
 
 * |[X]| Publish RFID Card ID via PubSub
 

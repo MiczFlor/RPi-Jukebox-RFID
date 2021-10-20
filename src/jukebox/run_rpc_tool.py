@@ -12,12 +12,11 @@ The list of available commands is fetched from the running Jukebox service.
 
 .. todo:
     - kwargs support
-    - configurable connection address
 
 """
 
 import argparse
-import zmq.error
+import zmq
 import curses
 import curses.ascii
 import jukebox.rpc.client as rpc
@@ -88,6 +87,20 @@ def format_help(scr, topic):
             scr.erase()
     scr.addstr("\n")
     scr.refresh()
+
+
+def format_welcome(scr):
+    scr.addstr("\n\n" + '-' * 70 + "\n")
+    scr.addstr("RPC Tool\n")
+    scr.addstr('-' * 70 + "\n")
+    scr.addstr(f"Connection url: '{client.address}'\n")
+    try:
+        jukebox_version = client.enque('misc', 'get_version')
+    except Exception:
+        jukebox_version = "unknown"
+    scr.addstr(f"Jukebox version: {jukebox_version}\n")
+    scr.addstr(f"Pyzmq version: {zmq.pyzmq_version()}; ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API}\n")
+    scr.addstr('-' * 70 + "\n")
 
 
 def format_usage(scr):
@@ -167,7 +180,7 @@ def get_input(scr):  # noqa: C901
             msg = 'exit'
             break
         [y, x] = scr.getyx()
-        pos = x - 2
+        pos = x - len(prompt)
         if ch == ord(b'\t'):
             msg, matches = autocomplete(msg)
             if len(matches) > 1:
@@ -182,8 +195,9 @@ def get_input(scr):  # noqa: C901
             msg = 'exit'
             break
         elif ch == curses.KEY_BACKSPACE or ch == 127:
-            scr.delch(y, x - 1)
-            msg = msg[0:pos - 1] + msg[pos:]
+            if pos > 0:
+                scr.delch(y, x - 1)
+                msg = msg[0:pos - 1] + msg[pos:]
         elif ch == curses.KEY_DC:
             scr.delch(y, x)
             msg = msg[0:pos] + msg[pos + 1:]
@@ -249,6 +263,7 @@ def main(scr):
     global candidates
     scr.idlok(True)
     scr.scrollok(True)
+    format_welcome(scr)
     get_help(scr)
     format_usage(scr)
     cmd = ''

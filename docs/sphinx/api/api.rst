@@ -12,3 +12,5 @@ Developers API Introduction
    publishing
    rpc_server
    cfghandler
+   playlist
+   utils

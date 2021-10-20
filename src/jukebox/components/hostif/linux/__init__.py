@@ -60,6 +60,7 @@ except Exception:
 # ---------------------------------------------------------------------------
 @plugin.register
 def shutdown():
+    """Shutdown the host machine"""
     logger.info('Shutting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
     # ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
@@ -80,6 +81,7 @@ def shutdown():
 
 @plugin.register
 def reboot():
+    """Reboot the host machine"""
     logger.info('Rebooting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
     ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True,
@@ -130,19 +132,6 @@ def get_disk_usage(path='/'):
     """Return the disk usage in Megabytes as dictionary for RPC export"""
     [t, u, f] = shutil.disk_usage(path)
     return {'total': round(t / 1024 / 1024), 'used': round(u / 1024 / 1024), 'free': round(f / 1024 / 1024)}
-
-
-@plugin.register()
-def get_git_log():
-    """Return git log information for the current branch state"""
-    try:
-        sub = subprocess.run("git log --pretty='%h [%cs] %s %d' -n 1 --no-color",
-                             shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             check=True)
-    except Exception as e:
-        logger.error(f"{e.__class__.__name__}: {e}")
-        return "Unable to get git log"
-    return sub.stdout.decode('utf-8').strip()
 
 
 # ---------------------------------------------------------------------------

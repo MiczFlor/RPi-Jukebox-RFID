@@ -1,1 +1,1 @@
-# from components.rfid.readerbase import ReaderBaseClass
+from components.rfid.readerbase import ReaderBaseClass
