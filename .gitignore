@@ -5,6 +5,7 @@
 /shared/settings/*
 /shared/logs/*.log*
 /shared/*.*
+/shared/*
 
 # Documentation builder
 /docs/sphinx/_build/
