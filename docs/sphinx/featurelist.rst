@@ -226,6 +226,9 @@ Volume
 * |[X]| Default volume setting after boot-up
 * |[X]| MPD volume control service
 * |[X]| Min/Max Volume
+
+    * |[ ]| Current state of Max Volume in webapp
+
 * |[ ]| Error-safe mute/unmute for AlsaIF (not all sound cards support that)
 
 GPIO
