@@ -132,19 +132,6 @@ def get_disk_usage(path='/'):
     return {'total': round(t / 1024 / 1024), 'used': round(u / 1024 / 1024), 'free': round(f / 1024 / 1024)}
 
 
-@plugin.register()
-def get_git_log():
-    """Return git log information for the current branch state"""
-    try:
-        sub = subprocess.run("git log --pretty='%h [%cs] %s %d' -n 1 --no-color",
-                             shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             check=True)
-    except Exception as e:
-        logger.error(f"{e.__class__.__name__}: {e}")
-        return "Unable to get git log"
-    return sub.stdout.decode('utf-8').strip()
-
-
 # ---------------------------------------------------------------------------
 # Temperature
 # ---------------------------------------------------------------------------
