@@ -7,13 +7,11 @@ import {
   Typography,
 } from '@mui/material';
 
-
-import LibraryList from './library-list';
-
-import { fetchDirectoryTreeOfAudiofolder } from '../../utils/requests';
+import AlbumList from './album-list';
+import { fetchAlbumList } from '../../utils/requests';
 
 const Library = () => {
-  const [folders, setFolders] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,22 +20,34 @@ const Library = () => {
     setSearchQuery(event.target.value);
   };
 
-  const directoryNameBySearchQuery = ({ directory }) => {
+  const directoryNameBySearchQuery = ({ albumartist, album }) => {
     if (searchQuery === '') return true;
-    return directory.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
+    return albumartist.toLowerCase().includes(lowerCaseSearchQuery) ||
+      album.toLowerCase().includes(lowerCaseSearchQuery);
+  };
+
+  const flatByAlbum = (albumList, { albumartist, album }) => {
+    const list = Array.isArray(album)
+      ? album.map(name => ({ albumartist, album: name }))
+      : [{ albumartist, album }];
+
+    return [...albumList, ...list];
   };
 
   useEffect(() => {
-    const getFlattenListOfDirectories = async () => {
+    const getAlbumList = async () => {
       setIsLoading(true);
-      const { result, error } = await fetchDirectoryTreeOfAudiofolder();
+      const { result, error } = await fetchAlbumList();
       setIsLoading(false);
 
-      if(result) setFolders(result.filter(entry => !!entry.directory));
+      if(result) setAlbums(result.reduce(flatByAlbum, []));
       if(error) setError(error);
     }
 
-    getFlattenListOfDirectories();
+    getAlbumList();
   }, []);
 
   return (
@@ -69,7 +79,10 @@ const Library = () => {
       >
         {isLoading
           ? <CircularProgress />
-          : <LibraryList folders={folders.filter(directoryNameBySearchQuery)} />
+          : <AlbumList
+              albums={albums.filter(directoryNameBySearchQuery)}
+              searchQuery={searchQuery}
+            />
         }
         {error &&
           <Typography>An error occurred while loading the library.</Typography>

@@ -9,11 +9,7 @@ const PlayerProvider = ({ children }) => {
 
     try {
       const { status } = await socketRequest(_package, plugin, method, kwargs) || {};
-
-      if(status) {
-        setState({ ...state, playerstatus: status });
-      }
-
+  
       setState({ ...state, requestInFlight: false });
 
       return Promise.resolve();
@@ -103,6 +99,12 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('player', 'ctrl', 'shuffle', { random });
   }
 
+  const playSong = (songUrl) => {
+    if (state.requestInFlight) return;
+
+    postJukeboxCommand('player', 'ctrl', 'play_single', { song_url: songUrl });
+  }
+
   // Initialize sockets for player context
   useEffect(() => {
     initSockets({ setState });
@@ -112,6 +114,7 @@ const PlayerProvider = ({ children }) => {
     next,
     pause,
     play,
+    playSong,
     previous,
     seek,
     setState,

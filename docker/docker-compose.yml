@@ -11,7 +11,7 @@ services:
       - 8800:8800
     restart: unless-stopped
     volumes:
-      - ../shared/audiofolders:/root/.config/mpd/music:rw
+      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders:rw
       - ../shared/playlists:/root/.config/mpd/playlists:rw
       - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
 

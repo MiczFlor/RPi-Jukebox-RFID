@@ -219,11 +219,7 @@ class PlayerMPD:
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
         """
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
-
-        # get song name just if the song has changed
-        if self.mpd_status.get('song') != self.old_song:
-            self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
-            self.old_song = self.mpd_status['song']
+        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
 
         # If volume ctrl is over mpd, volume is always retrieve via a full call to client status
         # To avoid double calls to status with evey status poll, we need a case differentiation here
@@ -381,8 +377,12 @@ class PlayerMPD:
         raise NotImplementedError
 
     @plugs.tag
-    def playsingle(self):
-        raise NotImplementedError
+    def play_single(self, song_url):
+        with self.mpd_lock:
+            self.mpd_client.clear()
+            self.mpd_client.add(song_url)
+            self.mpd_client.play()
+
 
     @plugs.tag
     def resume(self):
@@ -498,11 +498,14 @@ class PlayerMPD:
     @plugs.tag
     def list_albums(self):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.list, "list", 'album', 'group', 'albumartist')
+            albums = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
 
-        # albums = filter(lambda x: x, albums)
+        return albums
 
-        time.sleep(0.3)
+    @plugs.tag
+    def list_song_by_artist_and_album(self, artist, album):
+        with self.mpd_lock:
+            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'artist', artist, 'album', album)
 
         return albums
 

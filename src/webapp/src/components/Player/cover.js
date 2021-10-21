@@ -8,10 +8,11 @@ import PlayerContext from '../../context/player/context';
 import { getMusicCoverByFilenameAsBase64 } from '../../utils/requests';
 import { pluginIsLoaded } from '../../utils/utils';
 
-const Cover = () => {
+const Cover = ({ song }) => {
   const { state } = useContext(PlayerContext);
   const { playerstatus, 'core.plugins.loaded': plugins } = state;
-  const { file } = playerstatus || {};
+  // If song is passed, it take presidence over playerstatus
+  const { file } = song || playerstatus || {};
 
   const [coverImage, setCoverImage] = useState(undefined);
 

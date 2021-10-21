@@ -6,7 +6,7 @@ const getMusicCoverByFilenameAsBase64 = async (audio_src) => {
     return { result };
   }
   catch (error) {
-    console.error('registerCard error: ', error);
+    console.error('get_by_filename_as_base64 error: ', error);
     return { error };
   };
 }
@@ -17,9 +17,36 @@ const fetchDirectoryTreeOfAudiofolder = async () => {
     return { result };
   }
   catch(error) {
-    console.error('registerCard error: ', error);
+    console.error('list_all_dirs error: ', error);
     return { error };
   }
+};
+
+const fetchAlbumList = async () => {
+  try {
+    const result = await socketRequest('player', 'ctrl', 'list_albums');
+
+    return { result };
+  }
+  catch (error) {
+    console.error('list_albums error: ', error);
+    return { error };
+  };
+};
+
+const fetchSongList = async (artist, album) => {
+  try {
+    const result = await socketRequest(
+      'player', 'ctrl', 'list_song_by_artist_and_album',
+      { artist, album }
+    );
+
+    return { result };
+  }
+  catch (error) {
+    console.error('list_albums error: ', error);
+    return { error };
+  };
 };
 
 const fetchCardsList = async () => {
@@ -29,8 +56,7 @@ const fetchCardsList = async () => {
     return { result };
   }
   catch (error) {
-    console.error('registerCard error: ', error);
-
+    console.error('list_cards error: ', error);
     return { error };
   };
 };
@@ -41,7 +67,7 @@ const registerCard = async (kwargs) => {
     return { result };
   }
   catch (error) {
-    console.error('registerCard error: ', error);
+    console.error('register_card error: ', error);
     return { error };
   }
 };
@@ -52,14 +78,17 @@ const deleteCard = async (card_id) => {
     return { result };
   }
   catch (error) {
+    console.error('delete_card error: ', error);
     return { error };
   }
 };
 
 export {
   getMusicCoverByFilenameAsBase64,
-  fetchDirectoryTreeOfAudiofolder,
+  fetchAlbumList,
   fetchCardsList,
+  fetchDirectoryTreeOfAudiofolder,
+  fetchSongList,
   deleteCard,
   registerCard,
 }
