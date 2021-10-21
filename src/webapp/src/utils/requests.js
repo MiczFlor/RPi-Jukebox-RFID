@@ -52,10 +52,34 @@ const deleteCard = async (card_id) => {
   }
 };
 
+const getMaxVolume = async () => {
+  try {
+    const result = await socketRequest('volume', 'ctrl', 'get_max_volume');
+    return { result };
+  }
+  catch (error) {
+    console.error('getMaxVolume error: ', error);
+    return { error };
+  }
+};
+
+const setMaxVolume = async (max_volume) => {
+  try {
+    const result = await socketRequest('volume', 'ctrl', 'set_max_volume', { max_volume });
+    return { result };
+  }
+  catch (error) {
+    console.error('setMaxVolume error: ', error);
+    return { error };
+  }
+};
+
 export {
   getMusicCoverByFilenameAsBase64,
   getFlattenListOfDirectories,
   fetchCardsList,
   deleteCard,
   registerCard,
+  getMaxVolume,
+  setMaxVolume,
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Card,
@@ -9,24 +9,38 @@ import {
   Slider,
   Typography,
 } from '@mui/material';
-import PlayerContext from '../../context/player/context';
+
+import {
+  getMaxVolume,
+  setMaxVolume
+} from '../../utils/requests';
 
 const marks = [5, 25, 50, 75, 100].map(
   (value) => ({ value, label: `${value}%` })
 );
 
 const SettingsVolume = () => {
-  const {
-    setMaxVolume,
-    getMaxVolume,
-  } = useContext(PlayerContext);
-
   const [volumeStep] = useState(5);
-  const { maxVolume } = getMaxVolume;
+  const [_maxVolume, _setMaxVolume] = useState(0);
 
-  const updateMaxVolume = (event, newMaxVolume) => {
-    setMaxVolume(newMaxVolume);
+  const updateMaxVolume = () => {
+    (async () => {
+      await setMaxVolume(_maxVolume);
+    })();
   }
+
+  const handleMaxVolumeChange = (event, newMaxVolume) => {
+    _setMaxVolume(newMaxVolume);
+  }
+
+  useEffect(() => {
+    const fetchMaxVolume = async () =>  {
+      const { result } = await getMaxVolume();
+      _setMaxVolume(result);
+    }
+
+    fetchMaxVolume();
+  }, []);
 
   return (
     <Card>
@@ -37,14 +51,14 @@ const SettingsVolume = () => {
           <Grid item>
             <Typography>Maximum Volume</Typography>
             <Slider
-              defaultValue={maxVolume}
+              value={typeof _maxVolume === 'number' ? _maxVolume : 0}
+              onChange={handleMaxVolumeChange}
               onChangeCommitted={updateMaxVolume}
               marks={marks}
               max={100}
               min={0}
               size="small"
               step={5}
-              value={maxVolume}
               valueLabelDisplay="auto"
             />
           </Grid>
