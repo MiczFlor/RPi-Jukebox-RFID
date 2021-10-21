@@ -45,11 +45,12 @@ import threading
 import time
 import jukebox.plugs as plugs
 import jukebox.cfghandler
-# import jukebox.utils as utils
+import jukebox.utils as utils
 # import jukebox.publishing as publishing
 import tkinter as tk
 import os
 import signal
+from components.rpc_command_alias import cmd_alias_definitions
 
 cfg_gpio = jukebox.cfghandler.get_handler('gpio')
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
@@ -84,7 +85,7 @@ class GpioSimulatorClass(threading.Thread):
         device = self.device_map.get(device_type)
 
         if (device is not None):
-            return (device['class'](self._window, name, self.button_cb))
+            return (device['class'](self._window, name, device_config))
         else:
             return None
 
@@ -94,35 +95,36 @@ class GpioSimulatorClass(threading.Thread):
         # There is now "close-down" by remote-thread call implemented at the moment
         os.kill(os.getpid(), signal.SIGINT)
 
-    def button_cb(self, text):
-        print(text)
+    def button_cb(self, cmd):
+        action = utils.decode_rpc_command(cmd, self._logger)
+        plugs.call_ignore_errors(action['package'], action['plugin'], action['method'], args=action['args'], kwargs=action['kwargs'])
 
-    def Button(self, top, name, cb):
-        B = tk.Button(top, text=name, command=lambda: self.button_cb("Button: " + name))
+    def Button(self, top, name, config):
+        B = tk.Button(top, text=name, command=lambda: self.button_cb(config['Function']))
         B.pack(side=tk.TOP, fill='x', expand=True)
         return(B)
 
-    def RockerButton(self, top, name, cb):
+    def RockerButton(self, top, name, config):
         frame = tk.Frame(top)
         frame.pack(side=tk.TOP, fill='x', expand=True)
         label = tk.Label(frame, text=name)
         label.pack(side=tk.LEFT)
-        inc = tk.Button(frame, text="→", command=lambda: self.button_cb("INC: " + name))
+        inc = tk.Button(frame, text="→", command=lambda: self.button_cb(""))
         inc.pack(side=tk.RIGHT)
-        both = tk.Button(frame, text="⇄", command=lambda: self.button_cb("BOTH: " + name))
+        both = tk.Button(frame, text="⇄", command=lambda: self.button_cb(""))
         both.pack(side=tk.RIGHT)
-        dec = tk.Button(frame, text="←", command=lambda: self.button_cb("DEC: " + name))
+        dec = tk.Button(frame, text="←", command=lambda: self.button_cb(""))
         dec.pack(side=tk.RIGHT)
         return(frame)
 
-    def RotaryEncoder(self, top, name, cb):
+    def RotaryEncoder(self, top, name, config):
         frame = tk.Frame(top)
         frame.pack(side=tk.TOP, fill='x', expand=True)
         label = tk.Label(frame, text=name)
         label.pack(side=tk.LEFT)
-        R = tk.Button(frame, text="⟳", command=lambda: self.button_cb("Turn Right: " + name))
+        R = tk.Button(frame, text="⟳", command=lambda: self.button_cb(config['FunctionRight']))
         R.pack(side=tk.RIGHT)
-        L = tk.Button(frame, text="⟲", command=lambda: self.button_cb("Turn Left: " + name))
+        L = tk.Button(frame, text="⟲", command=lambda: self.button_cb(config['FunctionLeft']))
         L.pack(side=tk.RIGHT)
         return(frame)
 
