@@ -9,20 +9,19 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useTheme } from '@mui/material/styles';
 
 import PlayerContext from '../../context/player/context';
+import request from '../../utils/request';
 
 const Volume = () => {
   const theme = useTheme();
 
   const {
-    setVolume,
     state,
-    toggleMuteVolume,
   } = useContext(PlayerContext);
 
   const { volume } = state.playerstatus || {};
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
-  const [_volume, _setVolume] = useState(0);
+  const [_volume, setVolume] = useState(0);
 
   const [volumeMute, setVolumeMute] = useState(false);
   const [volumeMax] = useState(100);
@@ -30,11 +29,11 @@ const Volume = () => {
 
   const toggleVolumeMute = () => {
     setVolumeMute(!volumeMute);
-    toggleMuteVolume(!volumeMute)
+    request('toggleMuteVolume', { mute_on: !volumeMute });
   };
 
   const updateVolume = () => {
-    setVolume(_volume);
+    request('setVolume', { volume: _volume });
     // Delay the next command to avoid jumping slide control
     setTimeout(() => setIsChangingVolume(false), 500);
   }
@@ -42,14 +41,14 @@ const Volume = () => {
   const handleVolumeChange = (event, newVolume) => {
     setIsChangingVolume(true);
     if (newVolume <= volumeMax) {
-      _setVolume(newVolume);
+      setVolume(newVolume);
     }
   }
 
   useEffect(() => {
     // Only trigger API when not dragging volume bar
     if (!isChangingVolume) {
-      _setVolume(volume);
+      setVolume(volume);
     }
   }, [isChangingVolume, volume]);
 

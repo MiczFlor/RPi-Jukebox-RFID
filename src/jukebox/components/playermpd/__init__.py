@@ -297,9 +297,8 @@ class PlayerMPD:
 
     @plugs.tag
     def shuffle(self, random):
-        """There is a bit of a name mix up here"""
-        raise NotImplementedError
-        # self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
+        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
     @plugs.tag
     def rewind(self):

@@ -33,6 +33,11 @@ const commands = {
   },
 
   // Player Actions
+  play: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play',
+  },
   playSong: {
     _package: 'player',
     plugin: 'ctrl',
@@ -42,7 +47,49 @@ const commands = {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_folder',
-  }
+  },
+  pause: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'pause',
+  },
+  previous: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'prev',
+  },
+  next: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'next',
+  },
+  shuffle: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'shuffle',
+  },
+  repeat: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'repeatmode',
+  },
+  seek: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'seek',
+  },
+
+  // Volume
+  setVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'set_volume',
+  },
+  toggleMuteVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'mute',
+  },
 };
 
 export default commands;

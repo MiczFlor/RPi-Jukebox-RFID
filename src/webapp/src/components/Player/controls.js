@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { memo, useContext, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -11,15 +11,10 @@ import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
 
 import PlayerContext from '../../context/player/context';
+import request from '../../utils/request';
 
 const Controls = () => {
   const {
-    play,
-    pause,
-    previous,
-    next,
-    shuffle,
-    repeat,
     state,
     setState,
   } = useContext(PlayerContext);
@@ -33,12 +28,16 @@ const Controls = () => {
     songIsScheduled
   } = state;
 
-  const toggleShuffle = (event) => {
-    shuffle(!isShuffle);
+  const toggleShuffle = () => {
+    request('shuffle', { random: !isShuffle });
   }
 
-  const toggleRepeat = (event) => {
-    repeat(isRepeat, isSingle);
+  const toggleRepeat = () => {
+    let mode = null;
+    if (!isRepeat && !isSingle) mode = 'repeat';
+    if (isRepeat && !isSingle) mode = 'single';
+
+    request('repeat', { mode });
   }
 
   useEffect(() => {
@@ -79,7 +78,7 @@ const Controls = () => {
       <IconButton
         aria-label="Skip previous track"
         disabled={!songIsScheduled}
-        onClick={previous}
+        onClick={e => request('previous')}
         size="large"
         sx={iconStyles}
       >
@@ -90,7 +89,7 @@ const Controls = () => {
       {!isPlaying &&
         <IconButton
           aria-label="Play"
-          onClick={e => play()}
+          onClick={e => request('play')}
           disabled={!songIsScheduled}
           size="large"
           sx={iconStyles}
@@ -102,7 +101,7 @@ const Controls = () => {
       {isPlaying &&
         <IconButton
           aria-label="Pause"
-          onClick={pause}
+          onClick={e => request('pause')}
           size="large"
           sx={iconStyles}
         >
@@ -114,7 +113,7 @@ const Controls = () => {
       <IconButton
         aria-label="Skip next track"
         disabled={!songIsScheduled}
-        onClick={next}
+        onClick={e => request('next')}
         size="large"
         sx={iconStyles}
       >
@@ -143,4 +142,4 @@ const Controls = () => {
   );
 };
 
-export default Controls;
+export default memo(Controls);
