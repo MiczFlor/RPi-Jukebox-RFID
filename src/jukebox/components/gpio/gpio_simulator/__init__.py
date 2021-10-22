@@ -97,7 +97,8 @@ class GpioSimulatorClass(threading.Thread):
 
     def button_cb(self, cmd):
         action = utils.decode_rpc_command(cmd, self._logger)
-        plugs.call_ignore_errors(action['package'], action['plugin'], action['method'], args=action['args'], kwargs=action['kwargs'])
+        if action is not None:
+            plugs.call_ignore_errors(action['package'], action['plugin'], action['method'], args=action['args'], kwargs=action['kwargs'])
 
     def Button(self, top, name, config):
         B = tk.Button(top, text=name, command=lambda: self.button_cb(config['Function']))
@@ -109,11 +110,11 @@ class GpioSimulatorClass(threading.Thread):
         frame.pack(side=tk.TOP, fill='x', expand=True)
         label = tk.Label(frame, text=name)
         label.pack(side=tk.LEFT)
-        inc = tk.Button(frame, text="→", command=lambda: self.button_cb(""))
+        inc = tk.Button(frame, text="→", command=lambda: self.button_cb(config['Function']))
         inc.pack(side=tk.RIGHT)
-        both = tk.Button(frame, text="⇄", command=lambda: self.button_cb(""))
+        both = tk.Button(frame, text="⇄", command=lambda: self.button_cb(config['Function']))
         both.pack(side=tk.RIGHT)
-        dec = tk.Button(frame, text="←", command=lambda: self.button_cb(""))
+        dec = tk.Button(frame, text="←", command=lambda: self.button_cb(config['Function']))
         dec.pack(side=tk.RIGHT)
         return(frame)
 

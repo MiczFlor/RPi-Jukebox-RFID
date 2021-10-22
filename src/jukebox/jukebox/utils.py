@@ -63,6 +63,7 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
     if alias not in valid:
         logger.error(f"Action configuration of 'alias: {alias}' must be one of"
                      f"{valid}. Default to 'none'.")
+        return None
     if alias == 'none':
         return None
     if alias == 'custom':
