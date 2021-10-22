@@ -96,7 +96,7 @@ _option_webapp_prod_build() {
   version will be installed.
   The latter will install NodeJS and will proling the
   installation time but you will get the latest features.
-  [P/d] " 1>&3
+  [Y/n] " 1>&3
     read -rp "ENABLE_WEBAPP_PROD_BUILD" response
     case "$response" in
       [nN])
