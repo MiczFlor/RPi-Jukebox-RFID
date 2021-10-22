@@ -29,11 +29,11 @@ const decodePubSubMessage = (_topic, _payload) => {
 }
 
 const preparePayload = (
+  requestId,
   _package,
+  plugin,
   method,
   kwargs = {},
-  requestId,
-  plugin,
 ) => {
   return {
     id: requestId,

@@ -10,10 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import {
-  getMaxVolume,
-  setMaxVolume
-} from '../../utils/requests';
+import request from '../../utils/request';
 
 const marks = [5, 25, 50, 75, 100].map(
   (value) => ({ value, label: `${value}%` })
@@ -21,22 +18,22 @@ const marks = [5, 25, 50, 75, 100].map(
 
 const SettingsVolume = () => {
   const [volumeStep] = useState(5);
-  const [_maxVolume, _setMaxVolume] = useState(0);
+  const [maxVolume, setMaxVolume] = useState(0);
 
   const updateMaxVolume = () => {
     (async () => {
-      await setMaxVolume(_maxVolume);
+      await request('setMaxVolume', { max_volume: maxVolume });
     })();
   }
 
   const handleMaxVolumeChange = (event, newMaxVolume) => {
-    _setMaxVolume(newMaxVolume);
+    setMaxVolume(newMaxVolume);
   }
 
   useEffect(() => {
     const fetchMaxVolume = async () =>  {
-      const { result } = await getMaxVolume();
-      _setMaxVolume(result);
+      const { result } = await request('getMaxVolume');
+      setMaxVolume(result);
     }
 
     fetchMaxVolume();
@@ -51,7 +48,7 @@ const SettingsVolume = () => {
           <Grid item>
             <Typography>Maximum Volume</Typography>
             <Slider
-              value={typeof _maxVolume === 'number' ? _maxVolume : 0}
+              value={typeof maxVolume === 'number' ? maxVolume : 0}
               onChange={handleMaxVolumeChange}
               onChangeCommitted={updateMaxVolume}
               marks={marks}

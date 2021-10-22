@@ -16,6 +16,7 @@ ENV HOME /root
 
 RUN mkdir ${HOME}/.config ${HOME}/.config/mpd ; \
     touch ${HOME}/.config/mpd/state
+RUN mkdir -p /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 
 RUN usermod -aG audio,pulse,pulse-access root
 

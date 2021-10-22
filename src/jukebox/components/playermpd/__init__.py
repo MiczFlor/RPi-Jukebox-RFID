@@ -221,11 +221,7 @@ class PlayerMPD:
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
         """
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
-
-        # get song name just if the song has changed
-        if self.mpd_status.get('song') != self.old_song:
-            self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
-            self.old_song = self.mpd_status['song']
+        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
 
         # If volume ctrl is over mpd, volume is always retrieve via a full call to client status
         # To avoid double calls to status with evey status poll, we need a case differentiation here
@@ -303,9 +299,8 @@ class PlayerMPD:
 
     @plugs.tag
     def shuffle(self, random):
-        """There is a bit of a name mix up here"""
-        raise NotImplementedError
-        # self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
+        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
     @plugs.tag
     def rewind(self):
@@ -383,8 +378,11 @@ class PlayerMPD:
         raise NotImplementedError
 
     @plugs.tag
-    def playsingle(self):
-        raise NotImplementedError
+    def play_single(self, song_url):
+        with self.mpd_lock:
+            self.mpd_client.clear()
+            self.mpd_client.add(song_url)
+            self.mpd_client.play()
 
     @plugs.tag
     def resume(self):
@@ -463,11 +461,6 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
-    def playlistaddplay(self, folder: str, recursive: bool = False) -> None:
-        # Deprecated interface to play_folder
-        self.play_folder(folder, recursive)
-
-    @plugs.tag
     def queue_load(self, folder):
         # There was something playing before -> stop and save state
         # Clear the queue
@@ -500,10 +493,14 @@ class PlayerMPD:
     @plugs.tag
     def list_albums(self):
         with self.mpd_lock:
-            albums = self.mpd_client.lsinfo()
-            # albums = filter(lambda x: x, albums)
+            albums = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
 
-        time.sleep(0.3)
+        return albums
+
+    @plugs.tag
+    def list_song_by_artist_and_album(self, artist, album):
+        with self.mpd_lock:
+            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'artist', artist, 'album', album)
 
         return albums
 

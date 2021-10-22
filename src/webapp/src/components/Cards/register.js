@@ -17,7 +17,7 @@ import PlayerContext from '../../context/player/context';
 
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
-import { registerCard } from '../../utils/requests';
+import request from '../../utils/request';
 
 const InfoNoCardSwiped = () => (
   <Typography>
@@ -63,7 +63,7 @@ const CardsRegister = () => {
       kwargs.args = selectedFolder;
     }
 
-    const { error } = await registerCard(kwargs);
+    const { error } = await request('registerCard', kwargs);
 
     if (error) {
       return console.error(error);
