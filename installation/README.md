@@ -9,6 +9,9 @@ Output to logfile only:                 "$ command"
 No output to both console and logfile:  "$ command > /dev/null"
 ```
 
+[Learn more about bash script outputs](
+# Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console)
+
 ## Quick Installation
 
 Note: Replace the branch in this command to be the one you like to install depending on your needs. Release branch is preset.
