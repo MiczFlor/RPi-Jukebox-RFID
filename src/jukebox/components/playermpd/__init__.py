@@ -383,7 +383,6 @@ class PlayerMPD:
             self.mpd_client.add(song_url)
             self.mpd_client.play()
 
-
     @plugs.tag
     def resume(self):
         with self.mpd_lock:
