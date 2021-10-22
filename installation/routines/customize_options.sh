@@ -92,15 +92,15 @@ _option_webapp_prod_build() {
   will be installed due to limited hardware resources"
   else
     echo "  Regarding the web application: Would you like to install
-  the current production build (P) or do you want to
-  build the latest development version on your RPi?
+  the current production build (Y)? Otherweise the latest development
+  version will be installed.
   The latter will install NodeJS and will proling the
   installation time but you will get the latest features.
   [P/d] " 1>&3
     read -rp "ENABLE_WEBAPP_PROD_BUILD" response
     case "$response" in
-      [pP])
-        ENABLE_WEBAPP_PROD_BUILD=true
+      [nN])
+        ENABLE_WEBAPP_PROD_BUILD=false
         ;;
       *)
         ;;
