@@ -28,8 +28,6 @@ RUN apt-get update && apt-get install -qq -y \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
     python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-
 COPY . ${INSTALLATION_PATH}
 
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
@@ -39,4 +37,4 @@ EXPOSE 5555 5556
 
 # Run Jukebox
 # CMD bash
-CMD python ${INSTALLATION_PATH}/src/jukebox/run_jukebox.py
+CMD python3 ${INSTALLATION_PATH}/src/jukebox/run_jukebox.py

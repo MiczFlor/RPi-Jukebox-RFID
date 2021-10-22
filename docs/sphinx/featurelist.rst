@@ -225,11 +225,7 @@ Volume
 * |[X]| Jingle playback volume as fixed value in config
 * |[X]| Default volume setting after boot-up
 * |[X]| MPD volume control service
-* |[ ]| Min/Max Volume
-
-    * There is two places that can control volume alsaif and playermpd.MpdVolumeCtrl. Both need this feature
-    * It might be advisable to build a BaseClass and inheret from that
-
+* |[X]| Min/Max Volume
 * |[ ]| Error-safe mute/unmute for AlsaIF (not all sound cards support that)
 
 GPIO
