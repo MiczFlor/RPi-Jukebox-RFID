@@ -4,7 +4,7 @@ import commands from "../commands";
 const request = async (command, kwargs = {}) => {
   try {
     if (!(command in commands)) {
-      throw new Error(`'${command}' does not exist in request object`);
+      throw new Error(`'${command}' does not exist in command object`);
     }
 
     const { _package, plugin, method = null } = commands[command];

@@ -13,18 +13,14 @@ import request from '../../utils/request';
 
 const Volume = () => {
   const theme = useTheme();
-
-  const {
-    state,
-  } = useContext(PlayerContext);
-
+  const { state } = useContext(PlayerContext);
   const { volume } = state.playerstatus || {};
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
   const [_volume, setVolume] = useState(0);
 
   const [volumeMute, setVolumeMute] = useState(false);
-  const [volumeMax] = useState(100);
+  const [maxVolume, setMaxVolume] = useState(100);
   const [volumeStep] = useState(1);
 
   const toggleVolumeMute = () => {
@@ -40,7 +36,7 @@ const Volume = () => {
 
   const handleVolumeChange = (event, newVolume) => {
     setIsChangingVolume(true);
-    if (newVolume <= volumeMax) {
+    if (newVolume <= maxVolume) {
       setVolume(newVolume);
     }
   }
@@ -51,6 +47,15 @@ const Volume = () => {
       setVolume(volume);
     }
   }, [isChangingVolume, volume]);
+
+  useEffect(() => {
+    const fetchMaxVolume = async () =>  {
+      const { result } = await request('getMaxVolume');
+      setMaxVolume(result);
+    }
+
+    fetchMaxVolume();
+  }, []);
 
   return (
     <Grid
@@ -76,7 +81,7 @@ const Volume = () => {
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
           disabled={volumeMute}
-          marks={[ { value: volumeMax } ]}
+          marks={[ { value: maxVolume } ]}
           size="small"
           step={volumeStep}
           value={typeof _volume === 'number' ? _volume : 0}

@@ -56,7 +56,7 @@ Run development environment
 
 In contrary to how everything is set up on the Raspberry Pi, it's good practice to isolate different components in
 different Docker images. They can be run individually or in combination.
-To do that, we use ``docker compose``.
+To do that, we use ``docker-compose``.
 
 Linux
 ^^^^^^^
@@ -93,7 +93,6 @@ for Mac hosts.
 
     // Shuts down Docker containers and Docker network
     $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
-
 
 Windows
 ^^^^^^^^^^^

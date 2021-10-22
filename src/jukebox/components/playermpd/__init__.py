@@ -66,8 +66,10 @@ import jukebox.plugs as plugs
 import jukebox.multitimer as multitimer
 import jukebox.publishing as publishing
 import jukebox.playlistgenerator as playlistgenerator
-from jukebox.NvManager import nv_manager
 import misc
+
+from components.volume.volumebase import VolumeBaseClass
+from jukebox.NvManager import nv_manager
 
 
 logger = logging.getLogger('jb.PlayerMPD')
@@ -510,7 +512,7 @@ class PlayerMPD:
         as the user may have configured a volume control manager other than MPD"""
         with self.mpd_lock:
             volume = self.mpd_client.status().get('volume')
-        return volume
+        return int(volume)
 
     def set_volume(self, volume):
         """
@@ -519,10 +521,11 @@ class PlayerMPD:
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD"""
         with self.mpd_lock:
-            self.mpd_client.volume, volume()
+            self.mpd_client.setvol(volume)
+        return self.get_volume()
 
 
-class MpdVolumeCtrl:
+class MpdVolumeCtrl(VolumeBaseClass):
     """
     The Volume Ctrl Service for the plugin 'volume'
 
@@ -530,7 +533,10 @@ class MpdVolumeCtrl:
     """
 
     def __init__(self, mpd_player_inst):
+        self._logger = logger
+        super().__init__(self._logger)
         self._mpd_player_inst = mpd_player_inst
+        self._saved_volume = self.get_volume()
 
     @plugs.tag
     def get_volume(self):
@@ -538,7 +544,8 @@ class MpdVolumeCtrl:
 
     @plugs.tag
     def set_volume(self, volume):
-        return self._mpd_player_inst.set_volume(volume)
+        logger.debug(f"Set Volume = {volume}")
+        return self._mpd_player_inst.set_volume(volume if volume.__le__(self._max_volume) else self._max_volume)
 
     @plugs.tag
     def inc_volume(self, step=3):
@@ -547,6 +554,23 @@ class MpdVolumeCtrl:
     @plugs.tag
     def dec_volume(self, step=3):
         return self.set_volume(self.get_volume() - step)
+
+    @plugs.tag
+    def unmute(self):
+        if self._mpd_player_inst.get_volume() == 0:
+            return self._mpd_player_inst.set_volume(self._saved_volume)
+        else:
+            logger.debug("Volume was not muted")
+            return self._mpd_player_inst.get_volume()
+
+    @plugs.tag
+    def mute(self):
+        self._saved_volume = self.get_volume()
+        return self._mpd_player_inst.set_volume(0)
+
+    @plugs.tag
+    def get_max_volume(self):
+        return self._max_volume
 
 
 class MpdVolumeCtrlBuilder:

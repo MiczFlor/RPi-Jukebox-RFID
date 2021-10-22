@@ -85,6 +85,16 @@ const commands = {
     plugin: 'ctrl',
     method: 'set_volume',
   },
+  getMaxVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_max_volume',
+  },
+  setMaxVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'set_max_volume',
+  },
   toggleMuteVolume: {
     _package: 'volume',
     plugin: 'ctrl',
