@@ -34,6 +34,12 @@ cmd_alias_definitions = {
         'plugin': 'ctrl',
         'method': 'prev',
         'ignore_card_removal_action': True},
+    'toggle': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'toggle',
+        'ignore_card_removal_action': True},
+
     # VOLUME
     'set_volume': {
         'package': 'volume',
