@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
 import Header from '../Header';
-import { fetchCardsList } from '../../utils/requests';
+import request from '../../utils/request';
 
 const Cards = () => {
   const history = useHistory();
@@ -27,7 +27,7 @@ const Cards = () => {
   useEffect(() => {
     const loadCardList = async () => {
       setIsLoading(true);
-      const { result, error } = await fetchCardsList();
+      const { result, error } = await request('cardsList');
       setIsLoading(false);
 
       if(result) setData(result);

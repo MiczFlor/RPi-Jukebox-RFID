@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 
 import AlbumList from './album-list';
-import { fetchAlbumList } from '../../utils/requests';
+import request from '../../utils/request';
 
 const Library = () => {
   const [albums, setAlbums] = useState([]);
@@ -40,7 +40,7 @@ const Library = () => {
   useEffect(() => {
     const getAlbumList = async () => {
       setIsLoading(true);
-      const { result, error } = await fetchAlbumList();
+      const { result, error } = await request('albumList');
       setIsLoading(false);
 
       if(result) setAlbums(result.reduce(flatByAlbum, []));

@@ -461,11 +461,6 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
-    def playlistaddplay(self, folder: str, recursive: bool = False) -> None:
-        # Deprecated interface to play_folder
-        self.play_folder(folder, recursive)
-
-    @plugs.tag
     def queue_load(self, folder):
         # There was something playing before -> stop and save state
         # Clear the queue

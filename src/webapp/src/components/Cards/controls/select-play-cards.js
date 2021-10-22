@@ -5,9 +5,7 @@ import {
   NativeSelect
 } from '@mui/material';
 
-import {
-  fetchDirectoryTreeOfAudiofolder
-} from '../../../utils/requests';
+import request from '../../../utils/request';
 
 const SelectPlayCards = ({
   selectedFolder,
@@ -20,7 +18,7 @@ const SelectPlayCards = ({
   useEffect(() => {
     const getFlattenListOfDirectories = async () => {
       setIsLoading(true);
-      const { result, error } = await fetchDirectoryTreeOfAudiofolder();
+      const { result, error } = await request('directoryTreeOfAudiofolder');
       setIsLoading(false);
 
       if(result) setFolders(result.filter(entry => !!entry.directory));

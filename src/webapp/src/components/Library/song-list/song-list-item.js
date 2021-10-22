@@ -8,8 +8,9 @@ import {
 
 import { LABELS } from '../../../config';
 import { toHHMMSS } from '../../../utils/utils';
+import request from '../../../utils/request';
 
-const SongListItem = ({ song, playSong }) => {
+const SongListItem = ({ song }) => {
   const {
     artist,
     duration,
@@ -21,7 +22,7 @@ const SongListItem = ({ song, playSong }) => {
     <ListItem disablePadding>
       <ListItemButton
         role={undefined}
-        onClick={e => playSong(file)}
+        onClick={e => request('playSong', { song_url: file })}
       >
         <ListItemText
           primary={title || LABELS.UNKNOW_TITLE}

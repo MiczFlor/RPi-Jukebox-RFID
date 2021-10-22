@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+// import Cover from '../../Player/cover';
 
 const SongListHeader = ({ song }) => (
   <Grid container>

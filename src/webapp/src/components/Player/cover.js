@@ -5,7 +5,7 @@ import Paper from '@mui/material/Paper';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import PlayerContext from '../../context/player/context';
-import { getMusicCoverByFilenameAsBase64 } from '../../utils/requests';
+import request from '../../utils/request';
 import { pluginIsLoaded } from '../../utils/utils';
 
 const Cover = ({ song }) => {
@@ -18,7 +18,7 @@ const Cover = ({ song }) => {
 
   useEffect(() => {
     const getMusicCover = async () => {
-      const { result } = await getMusicCoverByFilenameAsBase64(file);
+      const { result } = await request('musicCoverByFilenameAsBase64', { audio_src: file });
       if (result) setCoverImage(result);
     }
 

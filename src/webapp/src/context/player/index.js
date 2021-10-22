@@ -8,7 +8,7 @@ const PlayerProvider = ({ children }) => {
     setState({ ...state, requestInFlight: true });
 
     try {
-      const { status } = await socketRequest(_package, plugin, method, kwargs) || {};
+      await socketRequest(_package, plugin, method, kwargs);
   
       setState({ ...state, requestInFlight: false });
 
@@ -34,14 +34,11 @@ const PlayerProvider = ({ children }) => {
 
 
   // All global player actions available across the entire app
-  const play = (directory) => {
+  const play = () => {
     if (state.requestInFlight) return;
 
-    const method = directory ? 'playlistaddplay' : 'play';
-    const kwargs = method === 'playlistaddplay' ? { folder: directory } : {};
-
     setState({ ...state, isPlaying: true });
-    postJukeboxCommand('player', 'ctrl', method, kwargs);
+    postJukeboxCommand('player', 'ctrl', 'play');
   };
 
   const pause = () => {
@@ -99,12 +96,6 @@ const PlayerProvider = ({ children }) => {
     postJukeboxCommand('player', 'ctrl', 'shuffle', { random });
   }
 
-  const playSong = (songUrl) => {
-    if (state.requestInFlight) return;
-
-    postJukeboxCommand('player', 'ctrl', 'play_single', { song_url: songUrl });
-  }
-
   // Initialize sockets for player context
   useEffect(() => {
     initSockets({ setState });
@@ -114,7 +105,6 @@ const PlayerProvider = ({ children }) => {
     next,
     pause,
     play,
-    playSong,
     previous,
     seek,
     setState,
@@ -124,6 +114,9 @@ const PlayerProvider = ({ children }) => {
     repeat,
     shuffle,
   };
+
+  // Should be called <PlayerFunctions.Provider />
+  // and `state` should be moved to PlayerStatus.Provider
 
   return(
       <PlayerContext.Provider value={context}>

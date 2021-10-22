@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
+import request from '../../../utils/request';
 
 const SongListControls = ({ song, getDirectoryPathFromSong, play }) => (
   <Grid container sx={{ padding: '0 8px' }}>
@@ -18,7 +19,7 @@ const SongListControls = ({ song, getDirectoryPathFromSong, play }) => (
     >
       <IconButton
         aria-label="Play"
-        onClick={e => play(getDirectoryPathFromSong(song))}
+        onClick={e => request('playFolder', { folder: getDirectoryPathFromSong(song) })}
         disabled={!song}
         size="large"
       >
