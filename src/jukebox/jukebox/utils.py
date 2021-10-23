@@ -44,6 +44,12 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
         * Decode RPC command alias (if present)
         * Ensure all RPC call parameters have valid default values
 
+    If the command alias cannot be decoded correctly, the command is mapped to misc.empty_rpc_call
+    which emits a misuse warning when called
+    If an explicitly specified this is not done. However, it is ensured that the returned
+    dictionary contains all mandatory parameters for an RPC call. RPC call functions have error handling
+    for non-existing RPC commands and we get a clearer error message.
+
     :param cfg_rpc_cmd: RPC command as configuration entry
     :param logger: The logger to use
     :return: A decoded, fully populated deep copy of cfg_rpc_cmd
@@ -53,20 +59,28 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
         return None
     # Alias selection is not present: assume regular rpc call data format
     if 'alias' not in cfg_rpc_cmd:
-        return decode_rpc_call(cfg_rpc_cmd)
-    alias = cfg_rpc_cmd.get('alias', None)
-    # Alias is 'None', i.e. keyword is present but empty -> treat as 'none'
-    if alias is None:
-        alias = 'none'
+        alias = 'custom'
+    else:
+        alias = cfg_rpc_cmd.get('alias', 'none')
+        # Alias is 'None', i.e. keyword is present but empty -> treat as 'none'
+        if alias is None:
+            alias = 'none'
+
     # Check validity of alias
     valid = [*cmd_alias_definitions.keys(), 'none', 'custom']
     if alias not in valid:
         logger.error(f"Action configuration of 'alias: {alias}' must be one of"
                      f"{valid}. Default to 'none'.")
+        return {'package': 'misc', 'plugin': 'empty_rpc_call', 'method': None, 'kwargs': None,
+                'args': f"Invalid action alias definition: '{alias}' has been mapped to 'misc.empty_rpc_call()'"}
+
     if alias == 'none':
-        return None
+        return {'package': 'misc', 'plugin': 'empty_rpc_call',
+                'method': None, 'args': None, 'kwargs': None}
+
     if alias == 'custom':
         return decode_rpc_call(cfg_rpc_cmd)
+
     # True RPC command
     action = decode_rpc_call(cmd_alias_definitions[alias])
     # Possible override args / kwargs

@@ -39,7 +39,7 @@ def card_command_to_str(cfg_rpc_cmd: Mapping, long=False) -> List[str]:
 
 
 def card_to_str(card_id: str, long=False) -> List[str]:
-    """Returns a list strings from card entry command in the format of :func:`card_command_to_str`"""
+    """Returns a list of strings from card entry command in the format of :func:`card_command_to_str`"""
     readable = ["Error: Card ID not found in database!"]
     if card_id in cfg_cards:
         readable = card_command_to_str(cfg_cards.getn(card_id, default=None), long)
