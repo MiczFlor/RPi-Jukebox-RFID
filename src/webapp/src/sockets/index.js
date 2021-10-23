@@ -72,14 +72,19 @@ const socketRequest = (_package, plugin, method, kwargs) => (
       reject(err);
     };
 
-    socketRequest.server.connect(REQRES_ENDPOINT);
+    try {
+      socketRequest.server.connect(REQRES_ENDPOINT);
+    }
+    catch (error) {
+      console.error(`WebSockert connection to '${REQRES_ENDPOINT} failed: `, error);
+    }
 
     const payload = preparePayload(
+      requestId,
       _package,
+      plugin,
       method,
       kwargs,
-      requestId,
-      plugin,
     );
     socketRequest.server.send(encodeMessage(payload));
   })

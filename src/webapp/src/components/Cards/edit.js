@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid';
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
 import CardsDeleteDialog from './dialogs/delete';
-import { fetchCardsList, deleteCard, registerCard } from '../../utils/requests';
+import request from '../../utils/request';
 
 const CardEdit = () => {
   const history = useHistory();
@@ -38,7 +38,7 @@ const CardEdit = () => {
       kwargs.args = selectedFolder;
     }
 
-    const { error } = await registerCard(kwargs);
+    const { error } = await request('registerCard', kwargs);
 
     if (error) {
       return console.error(error);
@@ -48,8 +48,9 @@ const CardEdit = () => {
   };
 
   const handleDeleteCard = async () => {
-    const { error } = await deleteCard(cardId);
+    const { error } = await request('deleteCard', { cardId });
 
+    // TODO: Better Error handling in frontend
     if (error) {
       return console.error(error);
     }
@@ -66,7 +67,9 @@ const CardEdit = () => {
     }
 
     const loadCardList = async () => {
-      const { result, error } = await fetchCardsList(setIsLoading);
+      setIsLoading(true);
+      const { result, error } = await request('cardsList');
+      setIsLoading(false);
 
       if (result && params?.cardId && result[params.cardId]) {
         setCardId(params.cardId);

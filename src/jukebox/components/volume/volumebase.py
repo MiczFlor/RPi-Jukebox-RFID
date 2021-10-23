@@ -43,6 +43,8 @@ class VolumeBaseClass(ABC):
         if not 0 <= max_volume <= 100:
             self.logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
         self._max_volume = max_volume
+        if max_volume < self.get_volume():
+            self.set_volume(max_volume)
         return self.get_max_volume()
 
     @abstractmethod
