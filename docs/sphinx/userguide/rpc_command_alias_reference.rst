@@ -63,10 +63,10 @@ RPC Command Alias Reference
 
          **ignore_same_id_delay** |--| True
 
-.. py:function:: set_max_volume(...) -> volume.ctrl.set_max_volume(---UNKNOWN---)
+.. py:function:: set_max_volume(...) -> volume.ctrl.set_max_volume(max_volume)
     :noindex:
 
-    ERROR: NameError: Plugin object 'volume.ctrl' has not attribute 'set_max_volume'
+    
 
     Default actions modifiers
          **ignore_card_removal_action** |--| True

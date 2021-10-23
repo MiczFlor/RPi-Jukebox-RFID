@@ -56,6 +56,12 @@ Volume Control Factory for run-time switching of volume control plugin
     
 
 
+.. py:function:: volume.ctrl.get_max_volume()
+    :noindex:
+
+    
+
+
 .. py:function:: volume.ctrl.get_volume()
     :noindex:
 
@@ -69,6 +75,12 @@ Volume Control Factory for run-time switching of volume control plugin
 
 
 .. py:function:: volume.ctrl.mute(mute_on=True)
+    :noindex:
+
+    
+
+
+.. py:function:: volume.ctrl.set_max_volume(max_volume)
     :noindex:
 
     
@@ -167,6 +179,12 @@ Package for interfacing with the MPD Music Player Daemon
     
 
 
+.. py:function:: player.ctrl.list_song_by_artist_and_album(artist, album)
+    :noindex:
+
+    
+
+
 .. py:function:: player.ctrl.map_filename_to_playlist_pos(filename)
     :noindex:
 
@@ -224,25 +242,19 @@ Package for interfacing with the MPD Music Player Daemon
     :param recursive: Add folder recursively
 
 
+.. py:function:: player.ctrl.play_single(song_url)
+    :noindex:
+
+    
+
+
 .. py:function:: player.ctrl.playerstatus()
     :noindex:
 
     
 
 
-.. py:function:: player.ctrl.playlistaddplay(folder: str, recursive: bool = False) -> None
-    :noindex:
-
-    
-
-
 .. py:function:: player.ctrl.playlistinfo()
-    :noindex:
-
-    
-
-
-.. py:function:: player.ctrl.playsingle()
     :noindex:
 
     
@@ -303,6 +315,12 @@ Package for interfacing with the MPD Music Player Daemon
     Note: Will not re-read folder config, but leave settings untouched
 
 
+.. py:function:: player.ctrl.second_swipe_action()
+    :noindex:
+
+    Toggle pause state, i.e. do a pause / resume depending on current state
+
+
 .. py:function:: player.ctrl.seek(new_time)
     :noindex:
 
@@ -312,7 +330,7 @@ Package for interfacing with the MPD Music Player Daemon
 .. py:function:: player.ctrl.shuffle(random)
     :noindex:
 
-    There is a bit of a name mix up here
+    
 
 
 .. py:function:: player.ctrl.stop()
@@ -757,6 +775,20 @@ Miscellaneous function package
     :noindex:
 
     Return git state information for the current branch
+
+
+.. py:function:: misc.empty_rpc_call(msg: str = '')
+    :noindex:
+
+    This function does nothing.
+    
+    The RPC command alias 'none' is mapped to this function.
+    
+    This is also used when configuration errors lead to non existing RPC command alias definitions.
+    When the alias definition is void, we still want to return a valid function to simplify error handling
+    up the module call stack.
+    
+    :param msg: If present, this message is send to the logger with severity warning
 
 
 
