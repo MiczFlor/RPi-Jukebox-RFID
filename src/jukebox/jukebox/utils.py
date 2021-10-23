@@ -69,10 +69,10 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
     # Check validity of alias
     valid = [*cmd_alias_definitions.keys(), 'none', 'custom']
     if alias not in valid:
-        logger.error(f"Action configuration of 'alias: {alias}' must be one of"
+        logger.error(f"Invalid rpc command alias: '{alias}'! Must be one of "
                      f"{valid}. Default to 'none'.")
         return {'package': 'misc', 'plugin': 'empty_rpc_call', 'method': None, 'kwargs': None,
-                'args': f"Invalid action alias definition: '{alias}' has been mapped to 'misc.empty_rpc_call()'"}
+                'args': f"Invalid rpc command alias '{alias}' has been mapped to 'misc.empty_rpc_call()'"}
 
     if alias == 'none':
         return {'package': 'misc', 'plugin': 'empty_rpc_call',
