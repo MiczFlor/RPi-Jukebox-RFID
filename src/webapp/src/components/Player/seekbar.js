@@ -11,12 +11,10 @@ import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 
-const SeekBar = () => {
-  const {
-    seek,
-    state,
-  } = useContext(PlayerContext);
+import request from '../../utils/request';
 
+const SeekBar = () => {
+  const { state } = useContext(PlayerContext);
   const { playerstatus } = state;
 
   const [isSeeking, setIsSeeking] = useState(false);
@@ -38,7 +36,7 @@ const SeekBar = () => {
   // Only send commend to backend when user committed to new position
   // We don't send it while seeking (too many useless requests)
   const playFromNewTime = () => {
-    seek(timeElapsed);
+    request('seek', { new_time: timeElapsed.toFixed(3) });
     setIsSeeking(false);
   };
 

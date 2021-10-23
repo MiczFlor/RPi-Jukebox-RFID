@@ -40,8 +40,14 @@ const JUKEBOX_ACTIONS_MAP = {
   },
 }
 
+const LABELS = {
+  UNKNOW_ARTIST: 'Unknown Artist',
+  UNKNOW_ALBUM: 'Unknown Album',
+}
+
 export {
   JUKEBOX_ACTIONS_MAP,
+  LABELS,
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,
   SUBSCRIPTIONS,

@@ -1,70 +1,53 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
-  Avatar,
   CircularProgress,
-  Divider,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
   TextField,
+  Typography,
 } from '@mui/material';
 
-import { socketRequest } from '../../sockets';
-import noCover from '../../assets/noCover.jpg';
-import PlayerContext from '../../context/player/context';
-
-const DirectoryItem = ({ directory, play }) => {
-  const tree = directory.split('/');
-  const folder = tree.pop();
-  const parentPath = tree.join('/');
-
-  return (
-    <>
-      <ListItem disablePadding>
-        <ListItemButton onClick={e => play(directory)}>
-          <ListItemAvatar>
-            <Avatar variant="rounded" alt="Cover" src={noCover} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={folder}
-            secondary={parentPath}
-          />
-        </ListItemButton>
-      </ListItem>
-      <Divider component="li" />
-    </>
-  );
-}
+import AlbumList from './album-list';
+import request from '../../utils/request';
 
 const Library = () => {
-  const { play } = useContext(PlayerContext);
-
+  const [albums, setAlbums] = useState([]);
+  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const directoryNameBySearchQuery = ({ directory }) => {
+  const directoryNameBySearchQuery = ({ albumartist, album }) => {
     if (searchQuery === '') return true;
-    return directory.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
+    return albumartist.toLowerCase().includes(lowerCaseSearchQuery) ||
+      album.toLowerCase().includes(lowerCaseSearchQuery);
+  };
+
+  const flatByAlbum = (albumList, { albumartist, album }) => {
+    const list = Array.isArray(album)
+      ? album.map(name => ({ albumartist, album: name }))
+      : [{ albumartist, album }];
+
+    return [...albumList, ...list];
   };
 
   useEffect(() => {
-    const getFlattenListOfDirectories = async () => {
-      const list = await socketRequest('player', 'ctrl', 'list_all_dirs');
+    const getAlbumList = async () => {
+      setIsLoading(true);
+      const { result, error } = await request('albumList');
+      setIsLoading(false);
 
-      setFolders(list.filter(entry => !!entry.directory));
-    };
+      if(result) setAlbums(result.reduce(flatByAlbum, []));
+      if(error) setError(error);
+    }
 
-    getFlattenListOfDirectories();
-    setIsLoading(false);
+    getAlbumList();
   }, []);
 
   return (
@@ -86,21 +69,25 @@ const Library = () => {
           </Grid>
         </Grid>
       </form>
-      {isLoading && <CircularProgress />}
-      {!isLoading &&
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-          {folders
-            .filter(directoryNameBySearchQuery)
-            .map(({ directory }) =>
-              <DirectoryItem
-                directory={directory}
-                key={directory}
-                play={play}
-              />
-            )
-          }
-        </List>
-      }
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        {isLoading
+          ? <CircularProgress />
+          : <AlbumList
+              albums={albums.filter(directoryNameBySearchQuery)}
+              searchQuery={searchQuery}
+            />
+        }
+        {error &&
+          <Typography>An error occurred while loading the library.</Typography>
+        }
+      </Grid>
     </div>
   );
 };
