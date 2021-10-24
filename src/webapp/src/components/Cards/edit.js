@@ -24,18 +24,18 @@ const CardEdit = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cardId, setCardId] = useState(undefined);
   const [selectedAction, setSelectedAction] = useState(undefined);
-  const [selectedFolder, setSelectedFolder] = useState(undefined);
+  const [selectedAlbum, setSelectedAlbum] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegisterCard = async (card_id) => {
     const kwargs = {
       card_id: card_id.toString(),
-      quick_select: selectedAction,
+      cmd_alias: selectedAction,
       overwrite: true,
     };
 
     if (selectedAction === 'play_card') {
-      kwargs.args = selectedFolder;
+      kwargs.args = selectedAlbum;
     }
 
     const { error } = await request('registerCard', kwargs);
@@ -48,7 +48,7 @@ const CardEdit = () => {
   };
 
   const handleDeleteCard = async () => {
-    const { error } = await request('deleteCard', { cardId });
+    const { error } = await request('deleteCard', { card_id: cardId });
 
     // TODO: Better Error handling in frontend
     if (error) {
@@ -61,8 +61,8 @@ const CardEdit = () => {
   useEffect(() => {
     if (state && state.id) {
       setCardId(state.id);
-      setSelectedAction(state.from_quick_select);
-      setSelectedFolder(state.action?.args);
+      setSelectedAction(state.from_alias);
+      setSelectedAlbum(state.action?.args);
       return;
     }
 
@@ -73,8 +73,8 @@ const CardEdit = () => {
 
       if (result && params?.cardId && result[params.cardId]) {
         setCardId(params.cardId);
-        setSelectedAction(result[params.cardId].from_quick_select);
-        setSelectedFolder(result[params.cardId].action?.args);
+        setSelectedAction(result[params.cardId].from_alias);
+        setSelectedAlbum(result[params.cardId].action?.args);
       }
 
       if (error) {
@@ -107,8 +107,8 @@ const CardEdit = () => {
                     <ControlsSelector
                       selectedAction={selectedAction}
                       setSelectedAction={setSelectedAction}
-                      selectedFolder={selectedFolder}
-                      setSelectedFolder={setSelectedFolder}
+                      selectedAlbum={selectedAlbum}
+                      setSelectedAlbum={setSelectedAlbum}
                     />
                   </Grid>
               }

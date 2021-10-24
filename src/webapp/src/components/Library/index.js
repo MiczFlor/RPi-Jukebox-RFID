@@ -9,6 +9,7 @@ import {
 
 import AlbumList from './album-list';
 import request from '../../utils/request';
+import { flatByAlbum } from '../../utils/utils';
 
 const Library = () => {
   const [albums, setAlbums] = useState([]);
@@ -27,14 +28,6 @@ const Library = () => {
 
     return albumartist.toLowerCase().includes(lowerCaseSearchQuery) ||
       album.toLowerCase().includes(lowerCaseSearchQuery);
-  };
-
-  const flatByAlbum = (albumList, { albumartist, album }) => {
-    const list = Array.isArray(album)
-      ? album.map(name => ({ albumartist, album: name }))
-      : [{ albumartist, album }];
-
-    return [...albumList, ...list];
   };
 
   useEffect(() => {

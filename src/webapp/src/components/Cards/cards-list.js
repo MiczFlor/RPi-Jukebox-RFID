@@ -25,10 +25,10 @@ const CardsList = ({ cardsList }) => {
       return <Link ref={ref} to={location} {...props} />
     });
 
-    const description = cardsList[cardId].from_quick_select
+    const description = cardsList[cardId].from_alias
       ? reject(
           isNil,
-          [cardsList[cardId].from_quick_select, cardsList[cardId].action.args]
+          [cardsList[cardId].from_alias, cardsList[cardId].action.args]
         ).join(', ')
       : cardsList[cardId].func
 
