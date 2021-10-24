@@ -11,7 +11,7 @@ services:
       - 8800:8800
     restart: unless-stopped
     volumes:
-      - ../shared/audiofolders:/root/.config/mpd/music:rw
+      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders:rw
       - ../shared/playlists:/root/.config/mpd/playlists:rw
       - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
 
@@ -33,6 +33,7 @@ services:
     volumes:
       - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
       - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+      - ./config/docker.mpd.conf:/etc/mpd.conf
 
   webapp:
     build:
@@ -49,5 +50,5 @@ services:
       - 3001:3000
     restart: unless-stopped
     volumes:
-      - ../src/webapp:/home/pi/RPi-Jukebox-RFID/webapp
-      - /home/pi/RPi-Jukebox-RFID/webapp/node_modules
+      - ../src/webapp:/home/node/webapp
+      - /home/node/webapp/node_modules

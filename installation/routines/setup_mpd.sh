@@ -8,7 +8,7 @@ MPD_CONF_PATH="/etc/mpd.conf"
 
 _mpd_install_os_dependencies() {
   echo "Install MPD OS dependencies"
-  sudo apt-get -qq -y update; sudo apt-get -qq -y install \
+  sudo apt-get -y update; sudo apt-get -y install \
     mpd mpc \
     --no-install-recommends \
     --allow-downgrades \
@@ -19,14 +19,6 @@ _mpd_install_os_dependencies() {
 _mpd_configure() {
   # Make a backup of original file (and make it unreachable in case of non-default conf location)
   sudo mv -f ${MPD_CONF_PATH} ${MPD_CONF_PATH}.orig
-
-  if [ "$MPD_USE_DEFAULT_CONF_DIR" = true ] ; then
-    # As an option, the mpd.conf can be located in the Jukebox installation path
-    # TODO: If so done, also update the jukebox.yaml to point to the correct location!
-    MPD_CONF_PATH="${SETTINGS_PATH}/mpd.conf"
-      # Update mpd.service file to use Jukebox mpd.conf
-      sudo sed -i 's|$MPDCONF|'"$MPD_CONF_PATH"'|' ${SYSTEMD_PATH}/mpd.service
-  fi
 
   # Prepare new mpd.conf
   sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}

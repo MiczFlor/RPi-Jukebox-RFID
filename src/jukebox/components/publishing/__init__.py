@@ -8,6 +8,7 @@ This is the first package to be loaded and the last to be closed: put Hello and 
 """
 
 import logging
+import jukebox
 import jukebox.cfghandler
 import jukebox.plugs as plugin
 import jukebox.publishing as pub
@@ -35,6 +36,7 @@ def initialize():
     _PUBLISH_SERVER_THREAD = pub.server.PublishServer(tcp_port=tcp_port, websocket_port=ws_port)
     _PUBLISH_SERVER_THREAD.start()
     pub.get_publisher().send('core.welcome', 'Welcome! Let the sound begin')
+    pub.get_publisher().send('core.version', jukebox.version())
 
 
 @plugin.atexit

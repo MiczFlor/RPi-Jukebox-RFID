@@ -1,5 +1,5 @@
-RFID Reader
-*****************
+Basics
+---------
 
 Cards placed on the reader trigger an action. An action may be any callable plugin function through the RPC with any arguments.
 Typically, this would be "play some folder", but can also be "activate shutdown timer", or "increase volume".
@@ -9,24 +9,28 @@ You may configure a single or even multiple parallel readers (of different or id
 
 Successive card swipes are suppressed to avoid bouncing effects. This behavior can be deactivated for individual cards.
 
-.. contents::
-
 Reader Types
 ------------
 
 place-capable:
     Some readers give a single event signal when the card is placed on the reader. This is sufficient
     to build a fully-featured Jukebox. Other readers give a continuous signal. They allow both card placements
-    and card removals. This can be used to play the Jukebox when a card is placen and to pause it when it's removed.
+    and card removals. This can be used to play the Jukebox when a card is placed and to pause it when it's removed.
 
-    Generally, **not** all :ref:`USB-based RFID readers <rfidreaders:Generic USB reader>` are place-capable.
+    Generally, **not** all :ref:`USB-based RFID readers <rfid/genericusb:Generic USB Reader>` are place-capable.
 
-    The known place-capable readers are :ref:`RDM6300 <rfidreaders:RDM6300 serial UART>`, MFRC522 or PN532.
+    The known place-capable readers are :ref:`RDM6300 <rfid/rdm6300:RDM6300 Reader>`,
+    :ref:`MFRC522 <rfid/mfrc522_spi:MFRC522 SPI Reader>` or
+    :ref:`PN532 <rfid/pn532_i2c:PN532 I2C Reader>`.
+
+Frequency:
+    Readers operate on one of two different frequencies: 125kHz or 13.56 MHz.
+    Make sure to buy compatible cards, RFID stickers or key fobs working with the same frequency as the reader.
 
 Reader Configuration
 -----------------------
 
-During the installation process, youc an already configure a RFID reader. To manually configure RFID reader(s),
+During the installation process, you can already configure a RFID reader. To manually configure RFID reader(s),
 :ref:`please run the tool <coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``.
 
 It will generate a reader configuration file at ``shared/settings/rfid.yaml``.
@@ -54,7 +58,9 @@ module:
     Indicates the Python package used for this reader. Filled by the RFID configuration tool.
 
 config:
-    Filled by the RFID configuration tool based on default values and user input.
+    Filled by the
+    :ref:`RFID configuration tool <coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``
+    based on default values and user input.
     After running the tool, you may manually change some settings here, as not everything can
     be configured through the tool. Note that re-running the tool will completely rewrite the
     configuration file.
@@ -82,24 +88,3 @@ log_ignored_cards: true | false
 Second Swipe
     Looking for 'Second Swipe' option? That is part of the Player configuration and not part of the RFID configuration, as
     the 'Second Swipe' action needs to take into account the player state, which can also be altered through the WebUI.
-
-
-Supported RFID reader modules
--------------------------------------
-
-Generic USB reader
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: components.rfid.generic_usb.generic_usb
-
-
-RDM6300 serial UART
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: components.rfid.rdm6300_serial.rdm6300_serial
-
-
-Mock RFID Reader
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: components.rfid.fake_reader_gui.fake_reader_gui

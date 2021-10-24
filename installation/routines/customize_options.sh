@@ -47,39 +47,6 @@ We recommend to turn off Bluetooth to save energy and booting time.
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 }
 
-_option_bootscreen() {
-  # DISABLE_BOOT_SCREEN
-  echo "Do you want to disable the Rainbow boot screen?
-We recommend to turn off it off booting time.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_SCREEN" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_SCREEN=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_SCREEN=${DISABLE_BOOT_SCREEN}"
-}
-
-_option_bootlogs() {
-  # DISABLE_BOOT_LOGS_PRINT
-  echo "Do you want to disable the boot logs?
-We recommend to turn off it off booting time. You will have to
-enable it if you need to debug the booting routine for some reason.
-[Y/n] " 1>&3
-  read -rp "DISABLE_BOOT_LOGS_PRINT" response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_BOOT_LOGS_PRINT=false
-      ;;
-    *)
-      ;;
-  esac
-  echo "DISABLE_BOOT_LOGS_PRINT=${DISABLE_BOOT_LOGS_PRINT}"
-}
-
 _option_samba() {
   # ENABLE_SAMBA
   echo "Would you like to install and configure Samba for easy file transfer?
@@ -116,6 +83,33 @@ you don't need to install the web application.
   echo "ENABLE_WEBAPP=${ENABLE_WEBAPP}"
 }
 
+_option_webapp_prod_build() {
+  # ENABLE_WEBAPP_PROD_BUILD
+
+  # Builing the app locally will not work in ARMv6 environments
+  if [ `uname -m` = "armv6l" ]; then
+    echo "  Only the latest production build of the web
+  will be installed due to limited hardware resources"
+  else
+    echo "  Regarding the web application: Would you like to install
+  the current production build (Y)? Otherweise the latest development
+  version will be installed.
+  The latter will install NodeJS and will proling the
+  installation time but you will get the latest features.
+  [Y/n] " 1>&3
+    read -rp "ENABLE_WEBAPP_PROD_BUILD" response
+    case "$response" in
+      [nN])
+        ENABLE_WEBAPP_PROD_BUILD=false
+        ;;
+      *)
+        ;;
+    esac
+  fi
+
+  echo "ENABLE_WEBAPP_PROD_BUILD=${ENABLE_WEBAPP_PROD_BUILD}"
+}
+
 _option_kiosk_mode() {
   # ENABLE_KIOSK_MODE
   echo "Would you like to enable the Kiosk Mode?
@@ -134,20 +128,20 @@ xserver dependencies and not the entire RPi desktop environment.
   echo "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
 }
 
-_options_update_os() {
-  # UPDATE_OS
+_options_update_raspi_os() {
+  # UPDATE_RASPI_OS
   echo "Would you like to update the operating system?
 This shall be done eventually, but increases the installation time a lot.
 [y/N] " 1>&3
-  read -rp "UPDATE_OS" response
+  read -rp "UPDATE_RASPI_OS" response
   case "$response" in
     [yY])
-      UPDATE_OS=true
+      UPDATE_RASPI_OS=true
       ;;
     *)
       ;;
   esac
-  echo "UPDATE_OS=${UPDATE_OS}"
+  echo "UPDATE_RASPI_OS=${UPDATE_RASPI_OS}"
 }
 
 customize_options() {
@@ -156,12 +150,13 @@ customize_options() {
   _option_static_ip
   _option_ipv6
   _option_bluetooth
-  _option_bootscreen
-  _option_bootlogs
   _option_samba
   _option_webapp
-  if [ "$ENABLE_WEBAPP" = true ] ; then _option_kiosk_mode; fi
-  _options_update_os
+  if [ "$ENABLE_WEBAPP" = true ] ; then
+    _option_webapp_prod_build
+    _option_kiosk_mode
+  fi
+  _options_update_raspi_os
 
   echo "Customize Options ends"
 }

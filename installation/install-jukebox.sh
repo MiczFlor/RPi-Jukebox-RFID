@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-
-# Handle language configuration
 export LC_ALL=C
 
 # Variables
@@ -22,31 +20,14 @@ download_jukebox_source() {
   find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*" -exec mv {} $GIT_REPO_NAME  \;
 }
 
-install() {
-  customize_options
-  clear 1>&3
-  set_raspi_config
-  if [ "$DISABLE_SSH_QOS" = true ] ; then set_ssh_qos; fi;
-  if [ "$UPDATE_RASPI_OS" = true ] ; then update_raspi_os; fi;
-  setup_jukebox_core
-  if [ "$MPD_CONFIG" = true ] ; then setup_mpd; fi;
-  if [ "$ENABLE_SAMBA" = true ] ; then setup_samba; fi;
-  setup_rfid_reader
-  if [ "$ENABLE_WEBAPP" = true ] ; then setup_jukebox_webapp; fi;
-  if [ "$ENABLE_KIOSK_MODE" = true ] ; then setup_kiosk_mode; fi;
-  optimize_boot_time
-  cleanup
-}
-
 ### RUN INSTALLATION
-# Log installation for debugging reasons
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
-# Source: https://stackoverflow.com/questions/18460186/writing-outputs-to-log-file-and-console
 exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
 echo "Log start: ${INSTALL_ID}"
 
 clear 1>&3
 echo "Downloading Phoniebox software from Github ..." 1>&3
+echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
 download_jukebox_source
 cd ${INSTALLATION_PATH}
@@ -60,6 +41,4 @@ for j in $INSTALLATION_PATH/installation/routines/*;
   do source $j
 done
 
-welcome
 run_with_timer install
-finish

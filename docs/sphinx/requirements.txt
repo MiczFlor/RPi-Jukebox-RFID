@@ -1,3 +1,2 @@
-sphinx
-sphinx_rtd_theme
+# These are just the additional RTD-specific requirements
 readthedocs-sphinx-search

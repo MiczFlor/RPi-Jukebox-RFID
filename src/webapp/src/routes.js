@@ -5,6 +5,7 @@ import Cards from './components/Cards';
 import CardsRegister from './components/Cards/register';
 import CardsEdit from './components/Cards/edit';
 import Library from './components/Library';
+import SongList from './components/Library/song-list'
 import Navigation from './components/Navigation';
 import Player from './components/Player'
 import Settings from './components/Settings'
@@ -28,6 +29,9 @@ const Routes = () => {
           </Route>
           <Route exact path='/library'>
             <Library />
+          </Route>
+          <Route exact path='/library/artists/:artist/albums/:album'>
+            <SongList />
           </Route>
           <Route path='/cards/register'>
             <CardsRegister />
