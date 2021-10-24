@@ -1,0 +1,105 @@
+#!/bin/bash
+# from https://github.com/0unknwn/auto-hotspot
+
+# https://raspberrypi.stackexchange.com/questions/100195
+interfaceWifi=wlan0
+interfaceWired=eth0
+timeout=2m
+timeoutDiscon=10
+networkdCLIENT="/etc/systemd/network/08-${interfaceWifi}-CLI.network" # Configuration file for client connection
+
+### Check if run as root ############################
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root"
+	echo "Try \"sudo $0 $*\""
+	exit 1
+fi
+
+### FUNCTIONS ##########################################
+
+# Configure hotspot by moving .network file
+# and restarting systemd-networkd, if wpa_suppplicante has created one
+configure_ap () {
+	if [ -e $networkdCLIENT ]; then
+		mv $networkdCLIENT $networkdCLIENT~
+		systemctl restart systemd-networkd
+	fi
+}
+
+# Enable client configuration by moving .network file
+# and restarting systemd-networkd, if nobody is connected to the hotspot
+configure_client () {
+	if [ -e $networkdCLIENT~ ] && wpa_cli -i$interfaceWifi status | grep -q "mode=station"; then
+		mv $networkdCLIENT~ $networkdCLIENT
+		systemctl restart systemd-networkd
+	fi
+}
+
+# Reconfigure wpa_supplicant to search for networks again
+# after a given time, if nobody is connected to the hotspot
+reconfigure_wpa_supplicant () {
+	sleep "$1"
+	if [ "$(wpa_cli -i $interfaceWifi all_sta)" = "" ]; then
+		wpa_cli -i $interfaceWifi reconfigure
+	fi
+}
+
+
+### PROCEDURE ###########################################
+
+# Start or stop hotspot manually
+case "$1" in
+
+	--start-ap)
+		wpa_cli -i$interfaceWifi select_network 0
+		configure_ap
+		exit 0
+		;;
+
+	--start-ap-static)
+		wpa_cli -i$interfaceWifi select_network 0
+		configure_ap
+		sleep 1
+		systemctl stop wpa_cli@${interfaceWifi}.service
+		exit 0
+		;;
+
+	--stop-ap)
+		systemctl start wpa_cli@${interfaceWifi}.service
+		reconfigure_wpa_supplicant 0
+		exit 0
+		;;
+
+esac
+
+# Check if ethernet cable is plugged in. If so create hotspot and exit
+if [ "$(cat /sys/class/net/${interfaceWired}/carrier)" = "1" ]; then
+	echo "There is a wired connection. Enable hotspot"
+	if wpa_cli -i$interfaceWifi status | grep -q "mode=station"; then
+		wpa_cli -i$interfaceWifi select_network 0
+		configure_ap
+	fi
+	exit 0
+fi
+
+# Start or stop hotspot based on wpa_supplicant events
+# when run with ›wpa_cli -i wlan0 -a /usr/local/wifiService.sh‹
+case "$2" in
+
+	# Configure accesspoint if enabled
+	AP-ENABLED)
+		configure_ap
+		reconfigure_wpa_supplicant "$timeout" &
+		;;
+
+	# Configure as client, if connected to some wifi network
+	CONNECTED)
+		configure_client
+		;;
+
+	# Reconfigure wpa_supplicant to search for networks,
+	# if nobody is connected to the ap
+	AP-STA-DISCONNECTED)
+		reconfigure_wpa_supplicant "$timeoutDiscon" &
+		;;
+esac

@@ -31,6 +31,40 @@ _option_ipv6() {
   echo "DISABLE_IPv6=${DISABLE_IPv6}"
 }
 
+_option_autohotspot() {
+  # ENABLE_AUTOHOTSPOT
+  echo "Do you want to enable a WiFi hotspot on demand?
+This will enable a service which identifies if the
+Phoniebox is not connected to a known WiFi and enables
+a hotspot so that you can connect to the Phoniebox.
+[Y/n] " 1>&3
+  read -rp "ENABLE_AUTOHOTSPOT" response
+  case "$response" in
+    [yY])
+      ENABLE_AUTOHOTSPOT=true
+      echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [Y/n] " 1>&3
+      read -r response_pw_q
+      case "$response_pw_q" in
+        [yY])
+          AUTOHOTSPOT_CHANGE_PASSWORD=true
+          echo "Please type the new password." 1>&3
+          read -r response_pw
+          AUTOHOTSPOT_PASSWORD="${response_pw}"
+          ;;
+        *)
+          ;;
+      esac
+      ;;
+    *)
+      ;;
+  esac
+  echo "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
+  if [ "$AUTOHOTSPOT_CHANGE_PASSWORD" = true ]
+  then
+    echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
+  fi
+}
+
 _option_bluetooth() {
   # DISABLE_BLUETOOTH
   echo "Do you want to disable Bluethooth?
@@ -149,6 +183,7 @@ customize_options() {
 
   _option_static_ip
   _option_ipv6
+  _option_autohotspot
   _option_bluetooth
   _option_samba
   _option_webapp
