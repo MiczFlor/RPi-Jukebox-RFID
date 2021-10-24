@@ -7,7 +7,7 @@ import {
 
 import { JUKEBOX_ACTIONS_MAP } from '../../../config';
 
-const SelectQuickSelects = ({
+const SelectCommandAliases = ({
   selectedAction,
   handleActionChange
 }) => {
@@ -17,7 +17,7 @@ const SelectQuickSelects = ({
         value={selectedAction || '0'}
         onChange={handleActionChange}
         name="quick-select-actions"
-        inputProps={{ 'aria-label': 'Quick Select Actions' }}
+        inputProps={{ 'aria-label': 'Command Actions' }}
       >
         <option key={0} value={'0'} disabled={true}>Select an action</option>
         {Object.keys(JUKEBOX_ACTIONS_MAP).map((action) =>
@@ -33,4 +33,4 @@ const SelectQuickSelects = ({
   );
 };
 
-export default SelectQuickSelects;
+export default SelectCommandAliases;

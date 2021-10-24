@@ -184,7 +184,7 @@ class PlayerMPD:
         self.mpd_client.connect(self.mpd_host, 6600)
 
     def decode_2nd_swipe_option(self):
-        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'quick_select', value='none').lower()
+        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
         if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
             logger.error(f"Config mpd.second_swipe_action must be one of "
                          f"{[*self.second_swipe_action_dict.keys(), 'none', 'custom']}. Ignore setting.")
@@ -275,7 +275,11 @@ class PlayerMPD:
 
     @plugs.tag
     def pause(self, state: int = 1):
-        """Enforce pause to state (1: pause, 0: resume)"""
+        """Enforce pause to state (1: pause, 0: resume)
+
+        This is what you want as card removal action: pause the playback, so it can be resumed when card is placed
+        on the reader again. What happens on re-placement depends on configured second swipe option
+        """
         with self.mpd_lock:
             self.mpd_client.pause(state)
 
@@ -400,21 +404,20 @@ class PlayerMPD:
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
         accordingly.
 
-        Developers notes:
-
-            * 2nd swipe trigger may also happen, if playlist has already stopped playing
-              --> Generally, treat as first swipe
-            * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
-              --> Treat as first swipe
-            * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
-              placed again on the reader: Should be like first swipe
-            * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
-              second swipe
-
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
         """
-        # self.play_folder(folder, recursive)
+        # Developers notes:
+        #
+        #     * 2nd swipe trigger may also happen, if playlist has already stopped playing
+        #       --> Generally, treat as first swipe
+        #     * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
+        #       --> Treat as first swipe
+        #     * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
+        #       placed again on the reader: Should be like first swipe
+        #     * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
+        #       second swipe
+        #
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
         with self.mpd_lock:
             is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
@@ -430,7 +433,7 @@ class PlayerMPD:
         """
         Playback a music folder.
 
-        Folder content is added to the playlist as described by :ref:`jukebox.playlistgenerator`.
+        Folder content is added to the playlist as described by :mod:`jukebox.playlistgenerator`.
         The playlist is cleared first.
 
         :param folder: Folder path relative to music library path

@@ -85,7 +85,23 @@ def get_version():
     return jukebox.version()
 
 
-@plugin.register()
+@plugin.register
 def get_git_state():
     """Return git state information for the current branch"""
     return get_jukebox_daemon().git_state
+
+
+@plugin.register
+def empty_rpc_call(msg: str = ''):
+    """This function does nothing.
+
+    The RPC command alias 'none' is mapped to this function.
+
+    This is also used when configuration errors lead to non existing RPC command alias definitions.
+    When the alias definition is void, we still want to return a valid function to simplify error handling
+    up the module call stack.
+
+    :param msg: If present, this message is send to the logger with severity warning
+    """
+    if msg:
+        logger.warning(msg)

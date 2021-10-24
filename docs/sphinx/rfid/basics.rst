@@ -3,7 +3,7 @@ Basics
 
 Cards placed on the reader trigger an action. An action may be any callable plugin function through the RPC with any arguments.
 Typically, this would be "play some folder", but can also be "activate shutdown timer", or "increase volume".
-This is configured in the :ref:`carddatabase:Card Database`.
+This is configured in the :ref:`userguide/carddatabase:Card Database`.
 
 You may configure a single or even multiple parallel readers (of different or identical types).
 

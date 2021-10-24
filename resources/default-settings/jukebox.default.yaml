@@ -45,7 +45,8 @@ playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
   second_swipe_action:
-    quick_select: toggle
+    #
+    alias: toggle
   library:
     update_on_startup: true
     check_user_rights: true

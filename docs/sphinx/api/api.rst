@@ -13,3 +13,4 @@ Developers API Introduction
    rpc_server
    cfghandler
    playlist
+   utils

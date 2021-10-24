@@ -23,8 +23,10 @@ Welcome to RPi Jukebox RFID's documentation!
 
    concepts
    rfid/rfid
-   carddatabase
-   rpc_command_reference
+   userguide/rpc_commands
+   userguide/rpc_command_reference
+   userguide/rpc_command_alias_reference
+   userguide/carddatabase
 
 
 .. toctree::
