@@ -161,6 +161,16 @@ Package for interfacing with the MPD Music Player Daemon
     
 
 
+.. py:function:: player.ctrl.get_folder_content(folder: str)
+    :noindex:
+
+    Get the folder content as content list with meta-information. Depth is always 1.
+    
+    Call repeatedly to descend in hierarchy
+    
+    :param folder: Folder path relative to music library path
+
+
 .. py:function:: player.ctrl.get_player_type_and_version()
     :noindex:
 

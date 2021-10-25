@@ -455,6 +455,19 @@ class PlayerMPD:
             self.play_folder(folder, recursive)
 
     @plugs.tag
+    def get_folder_content(self, folder: str):
+        """
+        Get the folder content as content list with meta-information. Depth is always 1.
+
+        Call repeatedly to descend in hierarchy
+
+        :param folder: Folder path relative to music library path
+        """
+        plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+        plc.get_directory_content(folder)
+        return plc.playlist
+
+    @plugs.tag
     def play_folder(self, folder: str, recursive: bool = False) -> None:
         """
         Playback a music folder.
