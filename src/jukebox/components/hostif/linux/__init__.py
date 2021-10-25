@@ -32,20 +32,25 @@ import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
 
-# This is a slightly dirty way of checking if we are on an RPi
-# JukeBox installs the dependency RPI which has no meaning on other machines
-# It could still be installed, though, and this check will be false positive
-try:
-    import RPi.GPIO as gpio  # noqa: F401
-    IS_RPI = True
-except ModuleNotFoundError:
-    IS_RPI = False
-
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 # Get the main Thread Publisher
 publisher = jukebox.publishing.get_publisher()
+
+# This is a slightly dirty way of checking if we are on an RPi
+# JukeBox installs the dependency RPI which has no meaning on other machines
+# If it does not exist all is clear
+# It could still be installed, which results in a RuntimeError when loaded on a PC
+try:
+    import RPi.GPIO as gpio  # noqa: F401
+    IS_RPI = True
+except ModuleNotFoundError:
+    IS_RPI = False
+except RuntimeError as e:
+    logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
+    IS_RPI = False
+
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
