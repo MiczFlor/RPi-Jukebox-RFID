@@ -16,7 +16,17 @@ const pluginIsLoaded = (pluginList = {}, _package) => {
   return Object.keys(pluginList).includes(_package)
 }
 
+const flatByAlbum = (albumList, { albumartist, album }) => {
+  const list = Array.isArray(album)
+    ? album.map(name => ({ albumartist, album: name }))
+    : [{ albumartist, album }];
+
+  return [...albumList, ...list];
+};
+
+
 export {
+  flatByAlbum,
   pluginIsLoaded,
   progressToTime,
   timeToProgress,

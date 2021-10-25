@@ -444,18 +444,18 @@ class PlayerMPD:
             logger.info(f"Play folder: '{folder}' recursive: {recursive}")
             self.mpd_client.clear()
 
-            self.mpd_client.add(folder)
+            #self.mpd_client.add(folder)
 
-            #plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
-            #plc.parse(folder, recursive)
-            #uri = '--unset--'
-            #try:
-            #    for uri in plc:
-            #        self.mpd_client.addid(uri)
-            #except mpd.base.CommandError as e:
-            #    logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
-            #except Exception as e:
-            #    logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
+            plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+            plc.parse(folder, recursive)
+            uri = '--unset--'
+            try:
+                for uri in plc:
+                    self.mpd_client.addid(uri)
+            except mpd.base.CommandError as e:
+                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
+            except Exception as e:
+                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
 
             self.music_player_status['player_status']['last_played_folder'] = folder
 

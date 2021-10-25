@@ -6,44 +6,46 @@ import {
 } from '@mui/material';
 
 import request from '../../../utils/request';
+import { flatByAlbum } from '../../../utils/utils';
+import { LABELS } from '../../../config';
 
 const SelectPlayCards = ({
-  selectedFolder,
-  handleFolderChange
+  selectedAlbum,
+  handleAlbumChange
 }) => {
-  const [folders, setFolders] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getFlattenListOfDirectories = async () => {
+    const fetchAlbumList = async () => {
       setIsLoading(true);
-      const { result, error } = await request('directoryTreeOfAudiofolder');
+      const { result, error } = await request('albumList');
       setIsLoading(false);
 
-      if(result) setFolders(result.filter(entry => !!entry.directory));
+      if(result) setAlbums(result.reduce(flatByAlbum, []));
       if(error) setError(error);
     }
 
-    getFlattenListOfDirectories();
+    fetchAlbumList();
   }, []);
 
   return (
     <FormControl>
       <NativeSelect
-        value={selectedFolder || '0'}
-        onChange={handleFolderChange}
-        name="folders"
-        inputProps={{ 'aria-label': 'Folders' }}
+        value={selectedAlbum || '0'}
+        onChange={handleAlbumChange}
+        name="albums"
+        inputProps={{ 'aria-label': 'Albums' }}
       >
         {isLoading
           ? <option key={0} value={'0'} disabled={true}>Loading</option>
-          : <option key={0} value={'0'} disabled={true}>Select a folder</option>
+          : <option key={0} value={'0'} disabled={true}>Select an album</option>
         }
         {error && <option key={0} value={'0'} disabled={true}>An error occurred loading the library.</option>}
-        {folders.map((folder, i) =>
-          <option key={i} value={folder.directory}>
-            {folder.directory}
+        {albums.map(({ album }, i) =>
+          <option key={i} value={album}>
+            {album || LABELS.UNKNOW_ALBUM}
           </option>
         )}
       </NativeSelect>
