@@ -54,6 +54,32 @@ https://mpd.readthedocs.io/en/latest/protocol.html
 
 sudo -u mpd speaker-test -t wav -c 2
 """  # noqa: E501
+# Warum ist "Second Swipe" im Player und nicht im RFID Reader?
+# Second swipe ist abhängig vom Player State - nicht vom RFID state.
+# Beispiel: RFID triggered Folder1, Webapp triggered Folder2, RFID Folder1: Dann muss das 2. Mal Folder1 auch als "first swipe"
+# gewertet werden. Wenn der RFID das basierend auf IDs macht, kann der nicht  unterscheiden und glaubt es ist 2. Swipe.
+# Beispiel 2: Jemand hat RFID Reader (oder 1x RFID und 1x Barcode Scanner oder so) angeschlossen. Liest zuerst Karte mit
+# Reader 1 und dann mit Reader 2: Reader 2 weiß nicht, was bei Reader 1 passiert ist und denkt es ist 1. swipe.
+# Beispiel 3: RFID trigered Folder1, Playlist läuft durch und hat schon gestoppt, dann wird die Karte wieder vorgehalten.
+# Dann muss das als 1. Swipe gewertet werden
+# Beispiel 4: RFID triggered "Folder1", dann wird Karte "Volume Up" aufgelegt, dann wieder Karte "Folder1": Auch das ist
+# aus Sicht ders Playbacks 2nd Swipe
+# 2nd Swipe ist keine im Reader festgelegte Funktion extra fur den Player.
+#
+# In der aktuellen Implementierung weiß der Player (der second "swipe" dekodiert) überhaupt nichts vom RFID.
+# Im Prinzip gibt es zwei "Play" Funktionen: (1) play always from start und (2) play with toggle action.
+# Die Webapp ruft immer (1) auf und die RFID immer (2). Jetzt kann man sogar für einige Karten sagen
+# immer (1) - also kein Second Swipe und für andere (2).
+# Sollte der Reader das Swcond swipe dekodieren, muss aber der Reader den Status des Player kennen.
+# Das ist allerdings ein Problem. In Version 2 ist das nicht aufgefallen,
+# weil alles uber File I/Os lief - Thread safe ist das nicht!
+#
+# Beispiel: Second swipe bei anderen Funktionen, hier: WiFi on/off.
+# Was die Karte Action tut ist ein Toggle. Der Toggle hängt vom Wifi State ab, den der RFID Kartenleser nicht kennt.
+# Den kann der Leser auch nicht tracken. Der State kann ja auch über die WebApp oder Kommandozeile geändert werden.
+# Toggle (und 2nd Swipe generell) ist immer vom Status des Zielsystems abhängig und kann damit nur vom Zielsystem geändert
+# werden. Bei Wifi also braucht man 3 Funktionen: on / off / toggle. Toggle ist dann first swipe / second swipe
+
 import mpd
 import threading
 import logging
