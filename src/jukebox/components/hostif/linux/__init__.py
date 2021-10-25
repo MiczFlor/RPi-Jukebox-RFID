@@ -36,7 +36,7 @@ from jukebox.multitimer import GenericEndlessTimerClass
 # JukeBox installs the dependency RPI which has no meaning on other machines
 # It could still be installed, though, and this check will be false positive
 try:
-    import RPi.gpio as gpio  # noqa: F401
+    import RPi.GPIO as gpio  # noqa: F401
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False
@@ -96,17 +96,21 @@ def reboot():
 @plugin.register
 def jukebox_is_service():
     """Check if current Jukebox process is running as a service"""
-    ret = subprocess.run('systemctl show --property MainPID --value jukebox-daemon', shell=True,
+    ret = subprocess.run(['systemctl', 'show', '--property', 'MainPID', '--value', 'jukebox-daemon'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         msg = f"Error in finding service PID: {ret.stdout}"
         logger.error(msg)
-
-    if ret.stdout != os.getpid():
-        return False
+        pid = 0
     else:
-        return True
+        try:
+            pid = int(ret.stdout.decode().strip())
+        except Exception as e:
+            logger.error(f"{e.__class__.__name__}: {e}")
+            pid = 0
+
+    return pid == os.getpid()
 
 
 @plugin.register
@@ -116,7 +120,7 @@ def restart_service():
     if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
-        ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &',
+        ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &', shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                              stdin=subprocess.DEVNULL)
         if ret.returncode != 0:
@@ -178,7 +182,7 @@ def wlan_disable_power_down(card=None):
     This must be done after every reboot
     card=None takes card from configuration file"""
     if card is None:
-        card = cfg.setndefault('host', 'wlan_power', 'card', default='wlan0')
+        card = cfg.setndefault('host', 'wlan_power', 'card', value='wlan0')
     logger.info(f'Disable power down management of {card}')
     ret = subprocess.run(['sudo', 'iwconfig', card, 'power', 'off'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
@@ -218,7 +222,18 @@ def atexit(**ignored_kwargs):
 # ---------------------------------------------------------------------------
 # RPi-only stuff
 # ---------------------------------------------------------------------------
-if IS_RPI:
+if IS_RPI:  # noqa: C901
+
+    THROTTLE_CODES = {
+        0x1: "under-voltage detected",
+        0x2: "ARM frequency capped",
+        0x4: "currently throttled",
+        0x8: "soft temperature limit active",
+        0x10000: "under-voltage has occurred",
+        0x20000: "ARM frequency capped has occurred",
+        0x40000: "throttling has occurred",
+        0x80000: "soft temperature limit has occurred"
+    }
 
     @plugin.register
     def hdmi_power_down():
@@ -231,22 +246,36 @@ if IS_RPI:
         if ret.returncode != 0:
             logger.error(f"{ret.stdout}")
 
+    def filter_throttle_codes(code):
+        for error, msg in THROTTLE_CODES.items():
+            if code & error > 0:
+                yield msg
+
     @plugin.register
     def get_throttled():
         # https://www.raspberrypi.org/documentation/computers/os.html#get_throttled
         ret = subprocess.run(['sudo', 'vcgencmd', 'get_throttled'],
                              stdout=subprocess.PIPE, check=False)
-        status = int(ret.stdout)
-        # Decode the bit array
-        # TODO: Decode all error values into strings
-        if status == 0:
-            status_string = "OK"
+        if ret.returncode != 0:
+            status_string = f"Error in subprocess with code: {ret.returncode}"
+            logger.error(status_string)
         else:
-            status_string = f"Not OK (Code: {ret.status})"
+            try:
+                status_code = int(ret.stdout.decode().strip().split('0x')[1], base=16)
+            except Exception as e:
+                status_string = f"Error in interpreting return value: {e.__class__.__name__}: {e}"
+                logger.error(status_string)
+            else:
+                if status_code == 0:
+                    status_string = "All OK - not throttled"
+                else:
+                    # Decode the bit array after we have handled all the possible exceptions
+                    status_string = "Warning: " + ', '.join(filter_throttle_codes(status_code))
+
         return status_string
 
     @plugin.initialize
     def rpi_initialize():
-        hdmi_off = cfg.setndefault('host', 'rpi', 'hdmi_power_down', default=False)
+        hdmi_off = cfg.setndefault('host', 'rpi', 'hdmi_power_down', value=False)
         if hdmi_off:
             hdmi_power_down()
