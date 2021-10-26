@@ -22,6 +22,7 @@ An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
 All files are treated as music files and are added to the playlist, except those:
 
  * starting with ``.``,
+ * not having a file ending, i.e. do not contain a ``.``,
  * ending with ``.txt``,
  * ending with ``.m3u``,
  * ending with one of the excluded file endings in :attr:`PlaylistCollector._exclude_endings`
@@ -60,6 +61,33 @@ logger = logging.getLogger('jb.plgen')
 # '<enclosure url="https://podcast-mp3.dradio.de/podcast/2020/07/19/balzen_flirten_liebhaben_wie_tiere_fuer_nachwuchs_drk_20200719_0730_0126ac2f.mp3" length="19204101" type="audio/mpeg"/>'  # noqa: E501
 enclosure_re = re.compile(r'.*enclosure.*url="([^"]*)"')
 
+TYPE_FILE = 0
+TYPE_DIR = 1
+TYPE_STREAM = 2
+TYPE_PODCAST = 3
+
+#: Types if file entires in parsed directory
+TYPE_DECODE = ['file', 'directory', 'stream', 'podcast']
+
+
+class PlaylistEntry:
+    def __init__(self, filetype: int, name: str, path: str):
+        self._type = filetype
+        self._name = name
+        self._path = path
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def path(self):
+        return self._path
+
+    @property
+    def filetype(self):
+        return self._type
+
 
 def decode_podcast_core(url, playlist):
     # Example url:
@@ -77,7 +105,7 @@ def decode_podcast_core(url, playlist):
         logger.error(f"Zero file entries in parsed content from '{url}'")
     for exp in er:
         # print(f"{exp}")
-        playlist.append(exp)
+        playlist.append(PlaylistEntry(TYPE_PODCAST, exp, exp))
 
 
 def decode_podcast(filename: str, path, playlist):
@@ -95,14 +123,14 @@ def decode_livestream(filename: os.DirEntry, path, playlist):
         for line in f:
             line = line.strip()
             if len(line) > 0 and not line.startswith('#'):
-                playlist.append(line)
+                playlist.append(PlaylistEntry(TYPE_STREAM, line, line))
 
 
 def decode_musicfile(filename: os.DirEntry, path, playlist):
-    playlist.append(os.path.normpath(os.path.join(path, filename.name)))
+    playlist.append(PlaylistEntry(TYPE_FILE, filename.name, os.path.normpath(os.path.join(path, filename.name))))
 
 
-def decode_m3u(filename: os.DirEntry, path, playlist: List[str]):
+def decode_m3u(filename: os.DirEntry, path, playlist: List[PlaylistEntry]):
     logger.debug(f"Decode M3U '{filename.path}'. Replacing current (sub-)folder playlist")
     playlist.clear()
     with open(filename.path) as f:
@@ -113,9 +141,9 @@ def decode_m3u(filename: os.DirEntry, path, playlist: List[str]):
                 if line.endswith(".xml") or line.endswith(".podcast"):
                     decode_podcast(line, path, playlist)
                 elif line.startswith('http://') or line.startswith('https://') or line.startswith('ftp://'):
-                    playlist.append(line)
+                    playlist.append(PlaylistEntry(TYPE_STREAM, line, line))
                 else:
-                    playlist.append(os.path.normpath(os.path.join(path, line)))
+                    playlist.append(PlaylistEntry(TYPE_FILE, line, os.path.normpath(os.path.join(path, line))))
     # Returning True stops further processing on this directory
     return True
 
@@ -150,7 +178,7 @@ class PlaylistCollector:
     #: Ignore files with the following endings.
     #: Attention: this will go into a regexp builder, i.e. ``.*`` will match anything!
     #: Always set via :func:`set_exclusion_endings`
-    _exclude_endings = ['zip', 'py', 'db', 'png', 'jpg', 'conf', 'yaml', 'json', '.*~', '.*#']
+    _exclude_endings = ['zip', 'xcf', 'py', 'db', 'png', 'jpg', 'conf', 'yaml', 'json', '.*~', '.*#']
     # Will generate a regex pattern string like this: r'.*\.((txt)|(zip))$
     _exclude_str = '.*\\.((' + ')|('.join(_exclude_endings) + '))$'
     _exclude_re = re.compile(_exclude_str, re.IGNORECASE)
@@ -184,7 +212,7 @@ class PlaylistCollector:
         Check if filename is valid
         """
         return direntry.is_file() and not direntry.name.startswith('.') \
-               and PlaylistCollector._exclude_re.match(direntry.name) is None
+               and PlaylistCollector._exclude_re.match(direntry.name) is None and direntry.name.find('.') >= 0
 
     @classmethod
     def set_exclusion_endings(cls, endings: List[str]):
@@ -196,29 +224,63 @@ class PlaylistCollector:
         cls._exclude_str = '.*\\.((' + ')|('.join(cls._exclude_endings) + '))$'
         cls._exclude_re = re.compile(cls._exclude_str, re.IGNORECASE)
 
-    def _parse_nonrecusive(self, path='.'):
-        folder_playlist = []
-        directory = filter(PlaylistCollector._is_valid, os.scandir(path))
+    def _get_directory_content(self, path='.') -> List[PlaylistEntry]:
+        content: List[PlaylistEntry] = list()
+        dirs = []
+        files = []
+        playlist = []
+        self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        for f in os.scandir(self._folder):
+            if f.is_dir(follow_symlinks=True):
+                dirs.append(f)
+            if self._is_valid(f):
+                files.append(f)
         # Sort the directory content (case in-sensitive) to give reproducible results across different machines
         # And do this before parsing special content files. Reason: If there is a special content file (e.g. podcast)
         # which links to multiple streams, these will already be ordered
-        directory = sorted(directory, key=lambda x: x.name.casefold())
+        dirs = sorted(dirs, key=lambda x: x.name.casefold())
+        content = [PlaylistEntry(TYPE_DIR, d.name, d.path) for d in dirs]
+        files = sorted(files, key=lambda x: x.name.casefold())
         stop_processing = False
-        for filename in directory:
+        for filename in files:
             if stop_processing:
                 break
-            # print(f"{filename.name}")
             for key in self.special_handlers.keys():
                 if filename.name.casefold().endswith(key):
                     # Some handlers will disallow processing the remaining directory contents
                     # Save this information for the outer loop
-                    stop_processing = self.special_handlers[key](filename, path, folder_playlist)
+                    stop_processing = self.special_handlers[key](filename, path, playlist)
                     # Stop search though valid handlers on first match
                     break
             else:
                 # No special handler for this file
-                self.default_handler(filename, path, folder_playlist)
-        return folder_playlist
+                # print(f"{filename.name}")
+                self.default_handler(filename, path, playlist)
+
+        content = [*content, *playlist]
+        return content
+
+    def get_directory_content(self, path='.'):
+        """Parse the folder ``path`` and create a content list. Depth is always the current level
+
+        :param path: Path to folder **relative** to ``music_library_base_path``
+        :return: [ { type: 'directory', name: 'Simone', path: '/some/path/to/Simone' }, {...} ]
+            where type is one of :attr:`TYPE_DECODE`
+        """
+        self.playlist = []
+        self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        try:
+            content = self._get_directory_content(self._folder)
+        except NotADirectoryError as e:
+            logger.error(f" {e.__class__.__name__}: {e}")
+        except FileNotFoundError as e:
+            logger.error(f" {e.__class__.__name__}: {e}")
+        else:
+            for m in content:
+                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path})
+
+    def _parse_nonrecusive(self, path='.'):
+        return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
 
     def _parse_recursive(self, path='.'):
         # This can certainly be optimized, as os.walk is called on all

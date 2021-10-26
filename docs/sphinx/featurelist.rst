@@ -65,7 +65,6 @@ Base
 * |[X]| Basic Logging Config should enable Publisher stream handler
 * |[ ]| Disable Console Stream Handler (or set to warning) when running as a service
 * |[X]| Log & publish start time
-* |[ ]| /shared/references: plugin_reference / rpc commands reference / card actions reference / card db summary (*in progress*)
 * |[ ]| Method to change configuration through WebUI
 
   * The difficulty lies bringing the running Jukebox to accept the changes. There probably won't be a catch all solution
@@ -82,6 +81,16 @@ Via RPC
 * |[X]| Help command (available commands)
 
   * which basically is a plugin reference
+
+* |[X]| Simplified alias definitions for often used RPC commands (for RFID, GPIO, etc)
+
+    * |[ ]| Port all previous commands
+    * |[X]| Reference file write-out: now also included in Sphinx documentation
+    * |[ ]| Export available alias definitions to RPC
+    * |[ ]| Base quick select on yaml file (*in progress*)
+
+        * or write a yaml file as artifact which contains all the meta information about the functions as well?
+        * or include a ``get_signature`` function that returns the meta information for a given alias
 
 Config handler
 ^^^^^^^^^^^^^^^^^^^
@@ -151,7 +160,7 @@ RFID
 
     * |[X]| Configurable card removal action
 
-* |[X]| Readers support (*in progress*)
+* |[X]| Readers support
 
     * |[X]| USB (e.g. Neuftech)
     * |[X]| RDM6300
@@ -165,6 +174,8 @@ RFID
 
     * Needs to be thread safe
 
+* |[X]| Card reference IF via RPC
+
 * |[X]| Second Swipe Options -> must be part of player control
 
     * Freely configurable with an RPC call
@@ -172,17 +183,6 @@ RFID
     * Toggle Pause/Play
     * Skip to next track
     * Re-start playlist
-
-* |[X]| Simplified quick_select action shortcuts for often used card commands
-
-    * |[ ]| Port all previous card commands
-    * |[X]| Reference file write-out
-
-        * |[ ]| Improve readability
-
-    * |[X]| Card reference IF via RPC (?)
-    * |[ ]| Export available quick selects commands to RPC
-    * |[ ]| Base quick select on yaml file (*in progress*)
 
 Cards
 ^^^^^^^^^^^^^^^^^
@@ -194,7 +194,7 @@ Cards
 
 * |[ ]| Card assignment function for WebUI
 
-    * |[X]| Via Quick select
+    * |[X]| Via RPC command alias definitions
     * |[ ]| Full custom RPC call
 
 * |[X]| Remove card
@@ -293,6 +293,10 @@ WebUI
 * |[X]| Shutdown button
 * |[ ]| Settings configuration page
 * |[ ]| System information page
+
+    * |[ ]| Configure (one or multiple) WLANs
+    * |[ ]| Enable/Disable Auto-Hotspot
+
 * |[ ]| ``run_npm_build`` script
 
     * |[ ]| Must consider ``export NODE_OPTIONS=--max-old-space-size=512``
@@ -318,5 +322,9 @@ Documentation
 
 * |[X]| Sphinx / Restructured Text tool flow
 * |[ ]| What is the Phoniebox
-* |[ ]| Artifacts: Generate artifacts from plugins, quick actions, card db on command line switch
+* |[X]| Artifacts: Generate artifacts (on command line switch only) for
+
+    * |[X]| loaded plugins and rpc command aliases (to sphinx and shared/artifcats)
+    * |[X]| rpc command aliases (to sphinx and shared/artifcats)
+
 * |[ ]| How to: Write a plugin

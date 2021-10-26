@@ -60,4 +60,4 @@
       args: path/to/music/folder
 'V':
       alias: inc_volume
-      ignore_card_removal_action: false
+      ignore_card_removal_action: true

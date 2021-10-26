@@ -15,7 +15,7 @@ const SongListHeader = ({ song }) => (
       <IconButton
         aria-label="back"
         component={Link}
-        to="/library"
+        to="/library/lists/albums"
         size="large"
       >
         <ArrowBackIcon />
