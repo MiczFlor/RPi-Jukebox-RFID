@@ -50,6 +50,11 @@ a hotspot so that you can connect to the Phoniebox.
           echo "Please type the new password." 1>&3
           read -r response_pw
           AUTOHOTSPOT_PASSWORD="${response_pw}"
+          if [ "$ENABLE_STATIC_IP" = true ]
+          then
+            echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
+            ENABLE_STATIC_IP=false
+          fi
           ;;
         *)
           ;;
