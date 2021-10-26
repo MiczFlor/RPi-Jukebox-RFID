@@ -19,6 +19,11 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_song_by_artist_and_album',
   },
+  folderList: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_folder_content',
+  },
   cardsList: {
     _package: 'cards',
     plugin: 'list_cards',

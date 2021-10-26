@@ -41,7 +41,7 @@ export default function Navigation() {
       />
       <BottomNavigationAction
         component={Link}
-        to="/library"
+        to="/library/lists/albums"
         label="Library"
         icon={<MusicNoteIcon />}
       />

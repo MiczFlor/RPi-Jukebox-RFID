@@ -15,9 +15,13 @@ const JUKEBOX_ACTIONS_MAP = {
   // Command Aliases
 
   // Player
-  'play_card': {
+  // 'play_card': {
+  //   title: 'Play a folder',
+  //   args: ['folder']
+  // },
+  'play_album': {
     title: 'Play a album',
-    args: ['folder']
+    args: ['album']
   },
 
   // Volume

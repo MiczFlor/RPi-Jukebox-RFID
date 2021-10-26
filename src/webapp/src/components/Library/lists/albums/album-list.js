@@ -11,8 +11,8 @@ import {
   Typography,
 } from '@mui/material';
 
-import noCover from '../../assets/noCover.jpg';
-import { LABELS } from '../../config';
+import noCover from '../../../../assets/noCover.jpg';
+import { LABELS } from '../../../../config';
 
 const AlbumListItem = ({ albumartist, album }) => {
   const AlbumLink = forwardRef((props, ref) => {
