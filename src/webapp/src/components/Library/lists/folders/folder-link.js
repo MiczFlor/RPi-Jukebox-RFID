@@ -7,7 +7,7 @@ const FolderLink = forwardRef((props, ref) => {
 
   // TODO: Introduce fallback incase artist or album are undefined
   const location = {
-    pathname: `/library/lists/folders/${dir}`,
+    pathname: `/library/folders/${dir}`,
   };
 
   return <Link ref={ref} to={location} {...props} />

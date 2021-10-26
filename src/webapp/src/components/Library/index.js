@@ -1,19 +1,23 @@
 import React from 'react';
-import { Route, useRouteMatch, Switch } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  useRouteMatch,
+} from 'react-router-dom';
 
-import SongList from './song-list';
 import LibraryLists from './lists';
+import SongList from './lists/albums/song-list';
 
 const Library = () => {
   const { path } = useRouteMatch();
 
   return (
     <Switch>
-      <Route path={`${path}/lists`}>
-        <LibraryLists />
-      </Route>
-      <Route exact path={`${path}/artists/:artist/albums/:album`}>
+      <Route exact path={`${path}/albums/:artist/:album`}>
         <SongList />
+      </Route>
+      <Route path={`${path}`}>
+        <LibraryLists />
       </Route>
     </Switch>
   );

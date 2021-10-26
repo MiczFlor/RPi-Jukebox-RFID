@@ -6,9 +6,9 @@ import {
   ListItemText,
 } from '@mui/material';
 
-import { LABELS } from '../../../config';
-import { toHHMMSS } from '../../../utils/utils';
-import request from '../../../utils/request';
+import { LABELS } from '../../../../../config';
+import { toHHMMSS } from '../../../../../utils/utils';
+import request from '../../../../../utils/request'
 
 const SongListItem = ({ song }) => {
   const {
