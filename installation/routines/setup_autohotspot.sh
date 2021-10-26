@@ -9,12 +9,14 @@ ipAddress=192.168.99.1/24
 _modify_wpa_supplicant() {
     echo "Inserting Accesspoint information into wpa_supplicant.conf"
     INPUT_FILE="${INSTALLATION_PATH}"/resources/autohotspot/wpa_supplicant-AP.conf
+    WPA_FILE="/etc/wpa_supplicant/wpa_supplicant.conf"
+
     if [ "$AUTOHOTSPOT_CHANGE_PASSWORD" = true ]
     then
-      sed "s/PlayItLoud!/${AUTOHOTSPOT_PASSWORD}/g" "${INPUT_FILE}"
+      sed -i "s/PlayItLoud\!/${AUTOHOTSPOT_PASSWORD}/g" "${INPUT_FILE}"
       echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
     fi
-    sudo sed -i $"/network=/{e cat ${INPUT_FILE}\n}" /etc/wpa_supplicant/wpa_supplicant.conf
+    sudo awk '/^network=/{while((getline p<f)>0) print p}1' f=$INPUT_FILE $WPA_FILE | sudo tee $WPA_FILE
 }
 
 ## Change over to systemd-networkd
