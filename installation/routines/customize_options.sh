@@ -37,35 +37,38 @@ _option_autohotspot() {
 This will enable a service which identifies if the
 Phoniebox is not connected to a known WiFi and enables
 a hotspot so that you can connect to the Phoniebox.
-[Y/n] " 1>&3
+[Y/n] "
   read -rp "ENABLE_AUTOHOTSPOT" response
   case "$response" in
     [yY])
       ENABLE_AUTOHOTSPOT=true
-      echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [Y/n] " 1>&3
-      read -r response_pw_q
-      case "$response_pw_q" in
-        [yY])
-          AUTOHOTSPOT_CHANGE_PASSWORD=true
-          echo "Please type the new password." 1>&3
-          read -r response_pw
-          AUTOHOTSPOT_PASSWORD="${response_pw}"
-          ;;
-        *)
-          ;;
-      esac
-      echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
-      ENABLE_STATIC_IP=false
       ;;
     *)
       ;;
   esac
+
+  echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [Y/n] "
+  read -r response_pw_q
+  case "$response_pw_q" in
+    [yY])
+      echo "Please type the new password."
+      read -r response_pw
+      AUTOHOTSPOT_PASSWORD="${response_pw}"
+      ;;
+    *)
+      ;;
+  esac
+
+  if [ "$ENABLE_STATIC_IP" = true ]; then
+    echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
+    ENABLE_STATIC_IP=false
+    echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+  fi
+
   echo "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
-  if [ "$AUTOHOTSPOT_CHANGE_PASSWORD" = true ]
-  then
+  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
     echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
   fi
-  echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
 }
 
 _option_bluetooth() {
