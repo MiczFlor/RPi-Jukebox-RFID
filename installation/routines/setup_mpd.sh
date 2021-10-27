@@ -47,7 +47,7 @@ setup_mpd() {
   if [[ -f ${MPD_CONF_PATH} || -f ${SYSTEMD_PATH}/mpd.service ]]; then
     echo "  It seems there is a MPD already installed."
     echo "  Would you like to overwrite your configuration? [Y/n] " | tee /dev/fd/3
-      read -rp "MPD_OVERRIDE_CONFIG" response
+      read -r response
       case "$response" in
         [nN][oO]|[nN])
           MPD_EXECUTE_INSTALL=false
