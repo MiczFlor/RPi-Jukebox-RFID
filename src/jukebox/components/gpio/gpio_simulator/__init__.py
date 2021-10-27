@@ -73,7 +73,8 @@ class GpioSimulatorClass(threading.Thread):
 
         self.device_map = {'Button': {'class': self.Button},
                            'RotaryEncoder': {'class': self.RotaryEncoder},
-                           'RockerButton': {'class': self.RockerButton}}
+                           'RockerButton': {'class': self.RockerButton},
+                           'PortOut': {'class': self.PortOut}}
 
         # iterate over all GPIO devices
         for dev in self.devices.keys():
@@ -98,7 +99,8 @@ class GpioSimulatorClass(threading.Thread):
     def button_cb(self, cmd):
         action = utils.decode_rpc_command(cmd, self._logger)
         if action is not None:
-            plugs.call_ignore_errors(action['package'], action['plugin'], action['method'], args=action['args'], kwargs=action['kwargs'])
+            plugs.call_ignore_errors(action['package'], action['plugin'], 
+                                     action['method'], args=action['args'], kwargs=action['kwargs'])
 
     def Button(self, top, name, config):
         B = tk.Button(top, text=name, command=lambda: self.button_cb(config['Function']))
@@ -128,6 +130,61 @@ class GpioSimulatorClass(threading.Thread):
         L = tk.Button(frame, text="⟲", command=lambda: self.button_cb(config['FunctionLeft']))
         L.pack(side=tk.RIGHT)
         return(frame)
+
+    def PortOut(self, top, name, config):
+        frame = tk.Frame(top)
+        frame.pack(side=tk.TOP, fill='x', expand=True)
+        label = tk.Label(frame, text=name)
+        label.pack(side=tk.LEFT)
+
+        states = config['States']
+
+        n = 0
+        lpins = {}
+
+        for state in states:
+            print(state)
+            pins = states[state]
+            for pin in pins:
+                print(pin)
+                print(pins[pin])
+                if n == 0:
+                    lpins[pin] = pins[pin]
+                    n = n + 1
+                else:
+                    if pin not in pins:
+                        print("Pins musst match!!!")
+
+        print(f"added {n} pins")
+
+        # add canvas size
+
+        for state in states:
+            # get pins for each state, each state musst contain exact same pins!
+
+            # self.ws_signal = self.canvas.create_oval(x, y, x+20, y+20, fill="red")
+            # self.canvas.itemconfig(self.ws_signal, fill='red')
+            pass
+
+    def SetPort(self, name, state):
+        # get lock
+        # iterate pin list and set state
+        # release lock
+
+        return 0
+
+    def SetPortSequence(self, name, seq):
+        # get lock
+        # loop sequnce
+        # Set Port state
+        # wait for time
+        # set state
+        # release lock
+
+        # {1: {'delay',100,'pin':'xxx','state':1},
+        # 2: {'delay',100,'pin':'xxx','state':0}}
+
+        return (0)
 
     def stop(self):
         self._cancel.set()
