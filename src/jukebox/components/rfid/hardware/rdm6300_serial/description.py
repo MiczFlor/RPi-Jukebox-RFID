@@ -1,0 +1,2 @@
+DESCRIPTION = 'RDM6300 via serial UART'
+IS_PLACE_CAPABLE = True

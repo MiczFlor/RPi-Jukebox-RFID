@@ -16,6 +16,7 @@ ENV HOME /root
 
 RUN mkdir ${HOME}/.config ${HOME}/.config/mpd ; \
     touch ${HOME}/.config/mpd/state
+RUN mkdir -p /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 
 RUN usermod -aG audio,pulse,pulse-access root
 
@@ -23,4 +24,4 @@ VOLUME ${HOME}/.config/mpd
 
 EXPOSE 6600
 
-CMD [ ! -s ~/.config/mpd/pid ] && mpd --stdout --no-daemon /root/.config/mpd/mpd.conf
+CMD [ ! -s ~/.config/mpd/pid ] && mpd --stdout --no-daemon ${HOME}/.config/mpd/mpd.conf

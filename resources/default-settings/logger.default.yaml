@@ -1,0 +1,74 @@
+version: 1
+formatters:
+  color:
+    format: '{asctime} - {lineno:4}:{filename:18} - {name:20} - {threadName:15} - {levelnameColored:8} - {lightcyan}{message}{reset}'
+    datefmt: '%d.%m.%Y %H:%M:%S'
+    style: '{'
+  base:
+    format: '{asctime} - {lineno:4}:{filename:18} - {name:20} - {threadName:15} - {levelname:8} - {message}'
+    datefmt: '%d.%m.%Y %H:%M:%S'
+    style: '{'
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: color
+    stream: ext://sys.stdout
+    filters: [colorize]
+  debug_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: base
+    filename: ../../shared/logs/app.log
+    maxBytes: 20971520 # 2 MB
+    backupCount: 2
+    encoding: utf8
+    mode: w
+  error_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: ERROR
+    formatter: base
+    filename: ../../shared/logs/errors.log
+    maxBytes: 10485760 # 1 MB
+    backupCount: 2
+    encoding: utf8
+    mode: w
+  publisher:
+    # Publishes logging messages via the PublishServer
+    "()": misc.loggingext.PubStreamHandler
+    level: WARNING
+    formatter: base
+filters:
+  colorize:
+    # This filter adds all colors from simplecolors by using %(colorname)c or {colorname} in formatter string
+    # It also adds the keyword {levelnameColored} which auto-colors the levelname depending on severity
+    "()": misc.loggingext.ColorFilter
+    enable: True
+    color_levelname: True
+loggers:
+  jb:
+    level: DEBUG
+    handlers: [console, debug_file_handler, error_file_handler]
+    # handlers: [console, publisher]
+    # handlers: [console]
+    propagate: false
+  jb.daemon:
+    level: DEBUG
+  jb.plugin.call:
+    level: DEBUG
+  jb.pub.server:
+    level: DEBUG
+    # In case you recursion problems, make sure this logger does not go to the publisher
+    # propagate: false
+    # handlers: [console]
+  tornado:
+    level: DEBUG
+    handlers: [console]
+    propagate: false
+  mpd:
+    level: WARNING
+  urllib3:
+    level: WARNING
+root:
+  level: WARNING
+  handlers: [console, debug_file_handler, error_file_handler]

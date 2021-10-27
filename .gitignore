@@ -1,55 +1,34 @@
-# These files are created automatically or on individual purpose of the user. They shall not be push to the repository
-settings/Audio_Folders_Path
-settings/Audio_Volume_Change_Step
-settings/Audio_iFace_Name
-settings/cover.jpg
-settings/edition
-settings/Idle_Time_Before_Shutdown
-settings/Latest_Folder_Played
-settings/Latest_Played_File
-settings/Latest_Playlist_Played
-settings/Latest_RFID
-settings/Max_Volume_Limit
-settings/Playlists_Folders_Path
-settings/rfid_trigger_play.conf
-settings/Second_Swipe
-settings/ShowCover
-settings/version
-htdocs/config.php
-scripts/deviceName.txt
-scripts/gpio-buttons.py
+# Shared folder
+/shared/audiofolders/*
+/shared/logs/*
+/shared/playlists/*
+/shared/settings/*
+/shared/logs/*.log*
+/shared/*.*
 
-shared/*
-playlists/*
-pythonenv*/*
-logs/*
+# Documentation builder
+/docs/sphinx/_build/
+
+# Application
+/src/cli_client/pbc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 
 .git
+.venv
 *~
 *.*~
 *.pyc
 *.idea
 *.vscode
 .DS_Store
+**/.mypy_cache
 
+# Keep folders with .gitkeep
+!/**/.gitkeep
 
-# Created by https://www.gitignore.io/api/composer
-# Edit at https://www.gitignore.io/?templates=composer
-
-### Composer ###
-composer.phar
-/vendor/
-
-# Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
-# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
-# composer.lock
-
-# End of https://www.gitignore.io/api/composer
-
-
-components/cli_client/pbc
-
+# Development Scratchpads
+/**/scratch
+/**/scratch_*

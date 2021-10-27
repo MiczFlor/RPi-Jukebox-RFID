@@ -1,0 +1,5 @@
+# This GUI-based mock reader also requires: tkinter
+# tkinter is a standard Python package and needs not be installed separately
+# It is available on most Unix systems (but not on headless Raspbian RPi where running a GUI is difficult anyway)
+
+ttkthemes

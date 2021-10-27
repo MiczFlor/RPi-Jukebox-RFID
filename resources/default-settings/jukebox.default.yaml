@@ -1,0 +1,96 @@
+system:
+  box_name: Jukebox
+modules:
+  named:
+    # Do not change the order!
+    publishing: publishing
+    volume: volume
+    jingle: jingle
+    player: playermpd
+    cards: rfid.cards
+    rfid: rfid.reader
+    timers: timers
+    host: hostif.linux
+    # rfidpinaction: rfid.pinaction.rpi
+  others:
+  - alsaif
+  - alsaif.alsawave
+  - jingle.jinglemp3
+  - music_cover_art
+  - misc
+    # Write a reference of all loaded plugin callables to this file (Comment out disables)
+  reference_out: ../../shared/settings/plugin_reference.txt
+volume:
+    # Select the interface through which volume changes are applied. Currently supported 'alsa', 'mpd'
+  interface: alsa
+    # Reset system volume to this level after start. (Comment out disables and volume is not changed)
+  startup_volume: 40
+  max_volume: 100
+jingle:
+   # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
+  startup_sound: ../../resources/audio/startupsound.wav
+  # startup_sound: ../../resources/audio/startupsound.mp3
+  # Shutdown sound is not played on Ctrl-C (to reduce developer's stain)
+  shutdown_sound: ../../resources/audio/shutdownsound.wav
+  # Use file ending to choose player from available jingle services
+  service: auto
+  # The playback volume of the jingles. (Comment out means use current system volume)
+  volume: 30
+jinglemp3:
+  # These parameters are passed to the mpeg123 player (e.g. [-d 2])
+  call_parameters: []
+  # If jinglemp3 is completely empty, the cfg.getn('jinglemp3', 'something') throws an error
+  # call_parameters: [-d 2]
+playermpd:
+  host: localhost
+  status_file: ../../shared/settings/music_player_status.json
+  second_swipe_action:
+    #
+    alias: toggle
+  library:
+    update_on_startup: true
+    check_user_rights: true
+  mpd_conf: /etc/mpd.conf
+alsaif:
+  mixer: Headphone
+alsawave:
+  device: default
+rpc:
+  tcp_port: 5555
+  websocket_port: 5556
+publishing:
+  # Ports for the publisher. Setting a port number to 0 disables the port
+  # The WebUI requires the websocket connection
+  tcp_port: 5558
+  websocket_port: 5557
+rfid:
+  reader_config: ../../shared/settings/rfid.yaml
+  card_database: ../../shared/settings/cards.yaml
+    # Write a reference card action shortcuts to file (comment out disables)
+  card_action_reference_out: ../../shared/settings/card_actions_reference.txt
+timers:
+    # These timers are always disabled after start
+    # The following values only give the default values.
+    # These can be changed when enabling the respective timer on a case-by-case basis w/o saving
+  shutdown:
+    default_timeout_sec: 3600
+  stop_player:
+    default_timeout_sec: 3600
+  volume_fade_out:
+    default_time_per_iteration_sec: 900
+    number_of_steps: 10
+host:
+  # Do not actually execute system shutdown and reboot commands
+  debug_mode: false
+  # Whether to publish the host's temperature regularly
+  publish_temperature:
+    enabled: true
+    timer_interval_sec: 10
+  # Should we disable the power management of the WLAN to ensure reachability via WLAN?
+  wlan_power:
+    disable_power_down: False
+    # Specify the wlan interface. Get a list from $iwconfig. 'wlan0' is default on RPis
+    card: wlan0
+  # RPi-specific stuff. Will be silently ignored if not on an RPi
+  rpi:
+    hdmi_power_down: False
