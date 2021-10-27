@@ -24,7 +24,7 @@ _configure_hostapd() {
     sed -i "s/WIFI_REGION/${WIFI_REGION}/g" "${HOSTAPD_CUSTOM_FILE}"
     sudo cp "${HOSTAPD_CUSTOM_FILE}" "${HOSTAPD_CONF_FILE}"
 
-    sudo sed -i "s/^#DAEMON_CONF=.*/DAEMON_CONF=\"${HOSTAPD_CONF_FILE}\"/g" /etc/default/hostapd
+    sudo sed -i "s@^#DAEMON_CONF=.*@DAEMON_CONF=\"${HOSTAPD_CONF_FILE}\"@g" /etc/default/hostapd
 }
 
 _configure_dnsmasq() {
