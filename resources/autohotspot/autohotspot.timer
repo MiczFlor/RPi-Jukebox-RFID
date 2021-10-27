@@ -1,0 +1,9 @@
+[Unit]
+Description=autohotspot timer
+
+[Timer]
+OnActiveSec=5min
+OnUnitInactiveSec=5min
+
+[Install]
+WantedBy=basic.target

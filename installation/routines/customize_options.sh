@@ -51,8 +51,11 @@ a hotspot so that you can connect to the Phoniebox.
   read -r response_pw_q
   case "$response_pw_q" in
     [yY])
-      echo "Please type the new password."
-      read -r response_pw
+      echo "Please type the new password (at least 8 character)."
+      while [ $(echo ${response_pw}|wc -m) -lt 8 ]
+      do
+          read -r response_pw
+      done
       AUTOHOTSPOT_PASSWORD="${response_pw}"
       ;;
     *)
