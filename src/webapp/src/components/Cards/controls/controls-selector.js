@@ -37,7 +37,7 @@ const ControlsSelector = ({
         </Grid>
 
         {/* Albums */}
-        {selectedAction === 'play_card' &&
+        {selectedAction === 'play_album' &&
           <Grid container direction="row" alignItems="center">
             <Grid item xs={5}>
               <Typography>Albums</Typography>

@@ -19,6 +19,7 @@ const JUKEBOX_ACTIONS_MAP = {
   //   title: 'Play a folder',
   //   args: ['folder']
   // },
+
   'play_album': {
     title: 'Play a album',
     args: ['album']
