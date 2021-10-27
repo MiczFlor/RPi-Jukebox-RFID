@@ -59,7 +59,7 @@ const CardsRegister = () => {
       overwrite: true,
     };
 
-    if (selectedAction === 'play_card') {
+    if (selectedAction === 'play_album') {
       kwargs.args = selectedAlbum;
     }
 

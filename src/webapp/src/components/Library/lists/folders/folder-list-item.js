@@ -20,13 +20,9 @@ import FolderLink from './folder-link';
 
 const FolderListItem = ({ type, name, path }) => {
   const playItem = (type, path) => {
-    // TODO: Remove once get_folder_list returns relative URLs
-    const audiofolder = '/home/pi/RPi-Jukebox-RFID/shared/audiofolders/';
-    const song_url = path.split(audiofolder)[1];
-
     switch(type) {
       case 'directory': return request('playFolder', { folder: path, recursive: true });
-      case 'file': return request('playSong', { song_url });
+      case 'file': return request('playSong', { song_url: path });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
     }
