@@ -70,6 +70,6 @@ setup_autohotspot() {
     _other_configuration
     _install_autohotspot_script
     _install_service_and_timer
-    
+
     echo "DONE: setup_autohotspot"
 }
