@@ -6,21 +6,21 @@ import {
 } from '@mui/material';
 
 import SelectPlayCards from './select-play-cards';
-import SelectQuickSelects from './select-quick-selects';
+import SelectCommandAliases from './select-command-aliases';
 
 const ControlsSelector = ({
   selectedAction,
   setSelectedAction,
-  selectedFolder,
-  setSelectedFolder,
+  selectedAlbum,
+  setSelectedAlbum,
 }) => {
   const handleActionChange = (event) => {
     setSelectedAction(event.target.value);
-    setSelectedFolder(undefined);
+    setSelectedAlbum(undefined);
   };
 
-  const handleFolderChange = (event) => {
-    setSelectedFolder(event.target.value);
+  const handleAlbumChange = (event) => {
+    setSelectedAlbum(event.target.value);
   };
 
   return (
@@ -30,22 +30,22 @@ const ControlsSelector = ({
           <Typography>Jukebox action</Typography>
         </Grid>
         <Grid item xs={7}>
-          <SelectQuickSelects
+          <SelectCommandAliases
             selectedAction={selectedAction}
             handleActionChange={handleActionChange}
           />
         </Grid>
 
-        {/* Folders */}
-        {selectedAction === 'play_card' &&
+        {/* Albums */}
+        {selectedAction === 'play_album' &&
           <Grid container direction="row" alignItems="center">
             <Grid item xs={5}>
-              <Typography>Folders</Typography>
+              <Typography>Albums</Typography>
             </Grid>
             <Grid item xs={7}>
               <SelectPlayCards
-                selectedFolder={selectedFolder}
-                handleFolderChange={handleFolderChange}
+                selectedAlbum={selectedAlbum}
+                handleAlbumChange={handleAlbumChange}
               />
             </Grid>
           </Grid>

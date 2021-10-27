@@ -50,17 +50,17 @@ const CardsRegister = () => {
 
   const [lastSwipedCardId, setLastSwipedCardId] = useState(card_id || undefined);
   const [selectedAction, setSelectedAction] = useState(undefined);
-  const [selectedFolder, setSelectedFolder] = useState(undefined);
+  const [selectedAlbum, setSelectedAlbum] = useState(undefined);
 
   const handleRegisterCard = async () => {
     const kwargs = {
       card_id: lastSwipedCardId.toString(),
-      quick_select: selectedAction,
+      cmd_alias: selectedAction,
       overwrite: true,
     };
 
-    if (selectedAction === 'play_card') {
-      kwargs.args = selectedFolder;
+    if (selectedAction === 'play_album') {
+      kwargs.args = selectedAlbum;
     }
 
     const { error } = await request('registerCard', kwargs);
@@ -100,8 +100,8 @@ const CardsRegister = () => {
                   <ControlsSelector
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
-                    selectedFolder={selectedFolder}
-                    setSelectedFolder={setSelectedFolder}
+                    selectedAlbum={selectedAlbum}
+                    setSelectedAlbum={setSelectedAlbum}
                   />
                 </Grid>
               }

@@ -12,12 +12,17 @@ const SUBSCRIPTIONS = [
 ];
 
 const JUKEBOX_ACTIONS_MAP = {
-  // Quick Selects / QS
+  // Command Aliases
 
   // Player
-  'play_card': {
-    title: 'Play a folder',
-    args: ['folder']
+  // 'play_card': {
+  //   title: 'Play a folder',
+  //   args: ['folder']
+  // },
+
+  'play_album': {
+    title: 'Play a album',
+    args: ['album']
   },
 
   // Volume

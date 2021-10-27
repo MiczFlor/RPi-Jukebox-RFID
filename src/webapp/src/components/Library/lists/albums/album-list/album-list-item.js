@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom';
 
 import {
   Avatar,
-  List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Typography,
 } from '@mui/material';
 
-import noCover from '../../assets/noCover.jpg';
-import { LABELS } from '../../config';
+import noCover from '../../../../../assets/noCover.jpg';
+import { LABELS } from '../../../../../config';
 
 const AlbumListItem = ({ albumartist, album }) => {
   const AlbumLink = forwardRef((props, ref) => {
@@ -23,7 +21,7 @@ const AlbumListItem = ({ albumartist, album }) => {
 
     // TODO: Introduce fallback incase artist or album are undefined
     const location = {
-      pathname: `/library/artists/${artist}/albums/${album}`,
+      pathname: `/library/albums/${artist}/${album}`,
     };
 
     return <Link ref={ref} to={location} {...props} />
@@ -50,17 +48,4 @@ const AlbumListItem = ({ albumartist, album }) => {
   );
 }
 
-const AlbumList = ({ albums, searchQuery }) => {
-  if (albums?.length) {
-    return (
-      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {albums.map(AlbumListItem)}
-      </List>
-    );
-  }
-
-  if (searchQuery) return <Typography>☝️ No music found!</Typography>
-  return <Typography>Your library is empty! 🙈</Typography>
-}
-
-export default React.memo(AlbumList);
+export default AlbumListItem;

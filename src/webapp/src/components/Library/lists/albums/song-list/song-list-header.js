@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-// import Cover from '../../Player/cover';
+// import Cover from '../../../Player/cover';
 
 const SongListHeader = ({ song }) => (
   <Grid container>
@@ -15,7 +15,7 @@ const SongListHeader = ({ song }) => (
       <IconButton
         aria-label="back"
         component={Link}
-        to="/library"
+        to="/library/lists/albums"
         size="large"
       >
         <ArrowBackIcon />

@@ -7,8 +7,7 @@ import jukebox.plugs as plugs
 import jukebox.cfghandler
 import jukebox.utils as utils
 import jukebox.publishing as publishing
-from components.rfid.cardactions import (qs_action_place, qs_action_remove)
-from components.rfid.cardutils import (decode_card_action)
+from components.rfid.cardutils import (decode_card_command)
 
 
 log = logging.getLogger('jb.rfid')
@@ -77,7 +76,7 @@ class ReaderRunner(threading.Thread):
         # Get removal actions:
         cfg_removal_action = cfg_rfid.getn('rfid', 'readers', reader_cfg_key,
                                            'place_not_swipe', 'card_removal_action', default=None)
-        self._default_removal_action = utils.decode_action(cfg_removal_action, qs_action_remove, self._logger)
+        self._default_removal_action = utils.decode_rpc_command(cfg_removal_action, self._logger)
 
         if self._cfg_place_not_swipe is True and self._default_removal_action is None:
             self._logger.warning('Option place_not_swipe activated, but no card removal action specified. '
@@ -155,7 +154,7 @@ class ReaderRunner(threading.Thread):
                         if card_entry is not None:
 
                             # (4) Decode card action
-                            card_action = decode_card_action(card_entry, qs_action_place, self._logger)
+                            card_action = decode_card_command(card_entry, self._logger)
 
                             # (5) Send status update to PubSub
                             self.publisher.send(self.topic, card_id)

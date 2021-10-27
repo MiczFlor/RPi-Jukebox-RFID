@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import threading
+import os
 import sys
 import signal
 import logging
@@ -21,7 +22,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class JukeBox:
-    def __init__(self, configuration_file):
+    def __init__(self, configuration_file: str, write_artifacts: bool):
         # Set up the signal listeners
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
@@ -36,6 +37,8 @@ class JukeBox:
         self._signal_cnt = 0
         self.rpc_server = None
         jukebox.cfghandler.load_yaml(cfg, configuration_file)
+
+        self.write_artifacts = write_artifacts
 
         logger.info("Welcome to " + cfg.getn('system', 'box_name', default='Jukebox Version 3'))
         logger.info(f"Time of start: {time.ctime(self._start_time)}")
@@ -215,13 +218,35 @@ class JukeBox:
 
         logger.info(f"Start-up time: {((time.time_ns() - time_start) / 1000000.0):.3f} ms")
 
-        if 'reference_out' in cfg['modules']:
-            with open(cfg.getn('modules', 'reference_out'), 'w') as stream:
+        if self.write_artifacts:
+            # This writes out
+            # rpc_command_reference.rst
+            # rpc_command_reference.txt
+            # rpc_command_alias_reference.rst
+            # rpc_command_alias_reference.txt
+
+            artifacts_dir = '../../shared/artifacts/'
+            sphinx_dir = '../../docs/sphinx/userguide'
+
+            try:
+                os.mkdir(artifacts_dir)
+            except FileExistsError:
+                pass
+
+            with open(os.path.join(artifacts_dir, 'rpc_command_reference.txt'), 'w') as stream:
                 plugin.dump_plugins(stream)
 
-        # if 'reference_out' in cfg['modules']:
-        #     with open('../../docs/sphinx/rpc_command_reference.rst', 'w') as stream:
-        #         plugin.generate_help_rst(stream)
+            # Write reference of command shortcuts
+            with open(os.path.join(artifacts_dir, 'rpc_command_alias_reference.txt'), 'w') as stream:
+                jukebox.utils.generate_cmd_alias_reference(stream)
+
+            # Write RST files directly into Sphinx directory
+
+            with open(os.path.join(sphinx_dir, 'rpc_command_reference.rst'), 'w') as stream:
+                plugin.generate_help_rst(stream)
+
+            with open(os.path.join(sphinx_dir, 'rpc_command_alias_reference.rst'), 'w') as stream:
+                jukebox.utils.generate_cmd_alias_rst(stream)
 
         # Start the RPC Server
         self.rpc_server.run()
@@ -245,5 +270,3 @@ def get_jukebox_daemon(*args, **kwargs):
     if _JUKEBOX_BUILDER is None:
         _JUKEBOX_BUILDER = JukeBoxBuilder()
     return _JUKEBOX_BUILDER(*args, **kwargs)
-
-# components/rfid_reader,components/rfid_orig,components/MQTT-protocol,components/PirateAudioHAT,components/gpio_control,components/buttons_usb_encoder,jukebox/NvManager.py,components/displays,components/scratch

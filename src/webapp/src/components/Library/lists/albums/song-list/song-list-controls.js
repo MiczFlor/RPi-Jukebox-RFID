@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
-import request from '../../../utils/request';
+import request from '../../../../../utils/request';
 
 const SongListControls = ({ song, getDirectoryPathFromSong, play }) => (
   <Grid container sx={{ padding: '0 8px' }}>

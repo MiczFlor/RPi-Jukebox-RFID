@@ -1,36 +1,32 @@
 Card Database
 *****************
 
-In the card database, an action is assigned to every card. This action is triggered on every swipe of the card.
+In the card database, an RPC command is assigned to every card.
 
-Actions
--------------------------
+This RPC command is called every time when the card is swiped (or placed) on the reader. Every
+RPC callable function can be called. See :ref:`userguide/rpc_commands:RPC Commands` for an introduction.
 
-This is the function to be called every time when the card is swiped (or placed) on the reader. In principle every
-RPC-callable function can be triggered. There are pre-defined **quick selections** for commonly used functions.
-Take a look at the file ``shared/settings/card_actions_reference.txt`` to get an overview of available quick select options.
-It's an auto-generated file, that gets written after the first start of the Jukebox.
-
-Here are some examples for card is '0001' to '0003' using quick select options:
+The card database is stored in ``shared\settings\cards.yaml``.
+Here are some examples for RPC command assignments to cards '0001' to '0003' using the alias option:
 
 .. important:: Card IDs **must** be strings! So, be sure to quote numbers!
 
 .. code-block:: yaml
 
     '0001':
-        # A function without any arguments
+        # A RPC command using the alias definition without any arguments
         # Here: pause playback
-        quick_select: pause
+        alias: pause
     '0002':
-        # A pre-defined function with arguments
+        # A RPC command using the alias definition with one arguments
         # Here: Trigger music playback through the card interface
-        quick_select: play_card
+        alias: play_card
         args: [path/to/folder]
     '0003':
-        # A pre-defined function with keyword arguments. Args and kwargs can also be mixed.
+        # A RPC command using keyword arguments. Args and kwargs can also be mixed.
         # Args and Kwargs translate directly into the function python call
         # Some as in '0002' but using kwargs
-        quick_select: play_card
+        alias: play_card
         kwargs:
             folder: path/to/folder
 
@@ -42,7 +38,9 @@ Here are some examples for card is '0001' to '0003' using quick select options:
 Additional options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-ignore_card_removal_action: true | false
+In addition to the RPC commands, these options may be specified for every card
+
+ignore_card_removal_action: true | false (default: false)
     Only applies when using a place-capable reader and *place_not_swipe* is *true*. This option is ignored otherwise,
     so it does not hurt.
 
@@ -52,12 +50,13 @@ ignore_card_removal_action: true | false
     .. code-block:: yaml
 
         '0004':
-            quick_select: timer_shutdown
+            alias: timer_shutdown
             ignore_card_removal_action: true
 
 
-ignore_same_id_delay: true | false
-    Override the ``same_id_delay`` parameter for this card. If true, the ``same_id_delay`` for this card is treated as 0.
+ignore_same_id_delay: true | false (default: false)
+    Override the ``same_id_delay`` parameter from the reader configuration for this card.
+    If true, the ``same_id_delay`` for this card is treated as 0.
     This makes sense e.g., for an "increase volume" card in combination with a place-capable RFID reader.
     As long as the card is placed on the reader, the volume is increased.
 
@@ -66,29 +65,29 @@ ignore_same_id_delay: true | false
     .. code-block:: yaml
 
         '0005':
-            quick_select: incr_volume
+            alias: incr_volume
             ignore_same_id_delay: true
             ignore_card_removal_action: true
 
 Full RPC action specification
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You have seen some examples card actions using the *quick_select* configuration. A full RPC action can also be specified
-using the following syntax.
+You have seen some examples card actions using the *alias* configuration. A full RPC action can also be specified
+using the following syntax:
 
 .. code-block:: yaml
 
     '0006':
-        # Option 1: Don't specify 'quick_select'
+        # Option 1: Omit the keyword 'alias'
         # Here: Set the volume to level 12
         package: volume
         plugin: ctrl
         method: set_volume
         args: [12]
     '0007':
-        # Option 2: Set 'quick_select' to custom
+        # Option 2: Set 'alias' to custom
         # Here: Set the volume to level 12
-        quick_select: custom
+        alias: custom
         package: volume
         plugin: ctrl
         method: set_volume

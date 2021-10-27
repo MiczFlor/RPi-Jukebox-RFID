@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import request from '../../../utils/request';
+import request from '../../../../../utils/request';
 
 import SongListHeader from './song-list-header';
 import SongListHeadline from './song-list-headline';
@@ -26,7 +26,6 @@ const SongList = () => {
   // TODO: This could be done smarter ;-)
   const [firstSong, setFirstSong] = useState(undefined);
 
-  // const playSong = () => {}
   const getDirectoryPathFromSong = (song) => {
     const { file } = song;
     // Removes the file part of the URI to receive directory only
