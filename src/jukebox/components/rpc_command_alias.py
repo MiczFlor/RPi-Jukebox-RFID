@@ -18,6 +18,12 @@ cmd_alias_definitions = {
         'package': 'player',
         'plugin': 'ctrl',
         'method': 'play_card'},
+    'play_album': {
+        'title': 'Play Album triggered by card swipe',
+        'note': "This function plays the content of a given album",
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play_album'},
     'pause': {
         'package': 'player',
         'plugin': 'ctrl',

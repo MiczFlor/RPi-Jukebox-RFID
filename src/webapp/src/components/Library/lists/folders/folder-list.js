@@ -6,8 +6,9 @@ import { List } from '@mui/material';
 import FolderListItem from './folder-list-item';
 import FolderListItemBack from './folder-list-item-back';
 
-const FolderList = ({ folders, playFolder, dir }) => {
+const FolderList = ({ folders, dir }) => {
   const getParentDir = (dir) => {
+    // TODO: ROOTS should be removed after paths are relative
     const ROOTS = ['./', '/home/pi/RPi-Jukebox-RFID/shared/audiofolders'];
     const decodedDir = decodeURIComponent(dir);
 

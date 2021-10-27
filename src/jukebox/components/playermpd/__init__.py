@@ -411,7 +411,7 @@ class PlayerMPD:
     def play_single(self, song_url):
         with self.mpd_lock:
             self.mpd_client.clear()
-            self.mpd_client.add(song_url)
+            self.mpd_client.addid(song_url)
             self.mpd_client.play()
 
     @plugs.tag

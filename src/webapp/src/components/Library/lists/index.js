@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Route, Redirect, useRouteMatch, useHistory, Switch } from 'react-router-dom';
+import {
+  Redirect,
+  Route,
+  Switch,
+  useHistory,
+  useRouteMatch,
+} from 'react-router-dom';
 
 import { Grid } from '@mui/material';
 
-import LibraryHeader from "../library-header";
 import Albums from './albums';
 import Folders from './folders';
+import LibraryHeader from "../library-header";
 
 const LibraryLists = () => {
   const history = useHistory();
@@ -39,7 +45,7 @@ const LibraryLists = () => {
         }}
       >
         <Switch>
-          <Route path={`${path}/albums`}>
+          <Route exact path={`${path}/albums`}>
             <Albums searchQuery={searchQuery} />
           </Route>
           <Route path={`${path}/folders/:dir`}>
