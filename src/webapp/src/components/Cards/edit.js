@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid';
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
 import CardsDeleteDialog from './dialogs/delete';
-import { fetchCardsList, deleteCard, registerCard } from '../../utils/requests';
+import request from '../../utils/request';
 
 const CardEdit = () => {
   const history = useHistory();
@@ -24,21 +24,22 @@ const CardEdit = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cardId, setCardId] = useState(undefined);
   const [selectedAction, setSelectedAction] = useState(undefined);
-  const [selectedFolder, setSelectedFolder] = useState(undefined);
+  const [selectedAlbum, setSelectedAlbum] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegisterCard = async (card_id) => {
     const kwargs = {
       card_id: card_id.toString(),
-      quick_select: selectedAction,
+      cmd_alias: selectedAction,
       overwrite: true,
     };
 
-    if (selectedAction === 'play_card') {
-      kwargs.args = selectedFolder;
+    if (selectedAction === 'play_album') {
+      const { albumartist, album } = selectedAlbum;
+      kwargs.args = [albumartist, album];
     }
 
-    const { error } = await registerCard(kwargs);
+    const { error } = await request('registerCard', kwargs);
 
     if (error) {
       return console.error(error);
@@ -48,8 +49,9 @@ const CardEdit = () => {
   };
 
   const handleDeleteCard = async () => {
-    const { error } = await deleteCard(cardId);
+    const { error } = await request('deleteCard', { card_id: cardId });
 
+    // TODO: Better Error handling in frontend
     if (error) {
       return console.error(error);
     }
@@ -60,18 +62,22 @@ const CardEdit = () => {
   useEffect(() => {
     if (state && state.id) {
       setCardId(state.id);
-      setSelectedAction(state.from_quick_select);
-      setSelectedFolder(state.action?.args);
+      setSelectedAction(state.from_alias);
+      const [ albumartist, album ] = state.action?.args || [];
+      setSelectedAlbum({ albumartist, album });
       return;
     }
 
     const loadCardList = async () => {
-      const { result, error } = await fetchCardsList(setIsLoading);
+      setIsLoading(true);
+      const { result, error } = await request('cardsList');
+      setIsLoading(false);
 
       if (result && params?.cardId && result[params.cardId]) {
         setCardId(params.cardId);
-        setSelectedAction(result[params.cardId].from_quick_select);
-        setSelectedFolder(result[params.cardId].action?.args);
+        setSelectedAction(result[params.cardId].from_alias);
+        const [ albumartist, album ] = result[params.cardId].action?.args || [];
+        setSelectedAlbum({ albumartist, album });
       }
 
       if (error) {
@@ -104,8 +110,8 @@ const CardEdit = () => {
                     <ControlsSelector
                       selectedAction={selectedAction}
                       setSelectedAction={setSelectedAction}
-                      selectedFolder={selectedFolder}
-                      setSelectedFolder={setSelectedFolder}
+                      selectedAlbum={selectedAlbum}
+                      setSelectedAlbum={setSelectedAlbum}
                     />
                   </Grid>
               }

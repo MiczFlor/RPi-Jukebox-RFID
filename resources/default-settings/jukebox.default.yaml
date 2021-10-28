@@ -1,8 +1,5 @@
 system:
   box_name: Jukebox
-  # What are these dirs for? They must match the mpd config -> get them from there
-  audiofolder_path: ../../shared/audiofolders
-  playlistfolder_path: ../../shared/playlists
 modules:
   named:
     # Do not change the order!
@@ -28,6 +25,7 @@ volume:
   interface: alsa
     # Reset system volume to this level after start. (Comment out disables and volume is not changed)
   startup_volume: 40
+  max_volume: 100
 jingle:
    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
   startup_sound: ../../resources/audio/startupsound.wav
@@ -47,7 +45,8 @@ playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
   second_swipe_action:
-    quick_select: toggle
+    #
+    alias: toggle
   library:
     update_on_startup: true
     check_user_rights: true

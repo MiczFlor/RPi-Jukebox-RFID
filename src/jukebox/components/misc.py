@@ -1,11 +1,12 @@
 """
 Miscellaneous function package
 """
-import time
-
-import jukebox.plugs as plugin
-import logging.handlers
 import os
+import time
+import logging.handlers
+import jukebox
+import jukebox.plugs as plugin
+import jukebox.utils
 from jukebox.daemon import get_jukebox_daemon
 
 logger = logging.getLogger('jb.misc')
@@ -77,3 +78,30 @@ def get_log_debug():
 def get_log_error():
     """Get the log file (from the error_file_handler)"""
     return get_log('error_file_handler')
+
+
+@plugin.register
+def get_version():
+    return jukebox.version()
+
+
+@plugin.register
+def get_git_state():
+    """Return git state information for the current branch"""
+    return get_jukebox_daemon().git_state
+
+
+@plugin.register
+def empty_rpc_call(msg: str = ''):
+    """This function does nothing.
+
+    The RPC command alias 'none' is mapped to this function.
+
+    This is also used when configuration errors lead to non existing RPC command alias definitions.
+    When the alias definition is void, we still want to return a valid function to simplify error handling
+    up the module call stack.
+
+    :param msg: If present, this message is send to the logger with severity warning
+    """
+    if msg:
+        logger.warning(msg)

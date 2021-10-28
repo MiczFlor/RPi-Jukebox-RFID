@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import AddIcon from '@mui/icons-material/Add';
-import CardsList from './cardslist';
+import CardsList from './cards-list';
 import CircularProgress from '@mui/material/CircularProgress';
 import Fab from '@mui/material/Fab';
 import Grid from '@mui/material/Grid';
@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
 import Header from '../Header';
-import { fetchCardsList } from '../../utils/requests';
+import request from '../../utils/request';
 
 const Cards = () => {
   const history = useHistory();
@@ -26,7 +26,9 @@ const Cards = () => {
 
   useEffect(() => {
     const loadCardList = async () => {
-      const { result, error } = await fetchCardsList(setIsLoading);
+      setIsLoading(true);
+      const { result, error } = await request('cardsList');
+      setIsLoading(false);
 
       if(result) setData(result);
       if(error) setError(error);

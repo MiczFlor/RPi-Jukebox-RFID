@@ -25,34 +25,11 @@ The Remote Procedure Call (RPC) server allows to remotely trigger actions (e.g.,
 Only Python functions registered by the plugin interface can be called. This
 simplifies external APIs and let's us focus on the relevant user functions.
 
-Why should you care? Because we use the same protocol when triggering actions from other inputs like swiping a card swipe, a
-GPIO button press, etc. So, here is the essence of what you need to know:
+Why should you care? Because we use the same protocol when triggering actions from other inputs like a card swipe, a
+GPIO button press, etc. How that works is described in :ref:`userguide/rpc_commands:RPC Commands`.
 
-An RPC call consists of up to three parts
-
-    #. the function to execute (e.g. play_folder, incr_volume)
-    #. the positional arguments (optional)
-    #. the keyword arguments (optional)
-
-The function specification consists of two (e.g., ``host.shutdown``) or three terms (e.g., ``volume.ctrl.incr_volume``). In
-configuration files, this will look like this:
-
-.. code-block:: yaml
-
-        package: host
-        plugin: shutdown
-
-Or like this for a three part function with the argument set to ``5``:
-
-.. code-block:: yaml
-
-        package: volume
-        plugin: ctrl
-        method: incr_volume
-        args: [5]
-
-You will find a full list of RPC callable functions in :ref:`rpc_command_reference:RPC Command Reference` and in
-``shared/settings/plugin_reference``. Examples are given in the configuration of the :ref:`carddatabase:Card Database`
+You will find a full list of RPC callable functions in :ref:`userguide/rpc_command_reference:RPC Command Reference`
+and aliases for convinience in :ref:`userguide/rpc_command_alias_reference:RPC Command Alias Reference`
 
 For developers the details can be found here (TBD). We also have a tool to send RPC commands to the running Jukebox application:
 :ref:`coreapps:run_rpc_tool.py`

@@ -30,6 +30,8 @@ def main():
     argparser.add_argument('-c', '--conf', type=argparse.FileType('r'), default=default_cfg_jukebox,
                            help=f"jukebox configuration file [default: '{default_cfg_jukebox}'",
                            metavar="FILE")
+    argparser.add_argument('-a', '--artifacts', action="store_true",
+                           help="Write out all artifacts and auto-generated help files")
     verbose_group = argparser.add_mutually_exclusive_group()
     verbose_group.add_argument("-l", "--logger",
                                help=f"logger configuration file [default: '{default_cfg_logger}']",
@@ -57,7 +59,7 @@ def main():
                        "If you have relative filenames in your config, they may not be found!")
         logger.warning(f"working_path: '{working_path}'")
         logger.warning(f"script_path : '{script_path}'")
-    myjukebox = jukebox.daemon.get_jukebox_daemon(args.conf.name)
+    myjukebox = jukebox.daemon.get_jukebox_daemon(args.conf.name, args.artifacts)
     myjukebox.run()
 
 

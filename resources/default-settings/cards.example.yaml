@@ -56,8 +56,8 @@
       method: play_card
       args: [path/to/music/folder]
 'G':
-      quick_select: play_card
+      alias: play_card
       args: path/to/music/folder
 'V':
-      quick_select: inc_volume
-      ignore_card_removal_action: false
+      alias: inc_volume
+      ignore_card_removal_action: true

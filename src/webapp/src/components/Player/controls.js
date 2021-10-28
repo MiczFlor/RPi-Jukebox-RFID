@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { memo, useContext, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -11,15 +11,10 @@ import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
 
 import PlayerContext from '../../context/player/context';
+import request from '../../utils/request';
 
 const Controls = () => {
   const {
-    play,
-    pause,
-    previous,
-    next,
-    shuffle,
-    repeat,
     state,
     setState,
   } = useContext(PlayerContext);
@@ -33,12 +28,16 @@ const Controls = () => {
     songIsScheduled
   } = state;
 
-  const toggleShuffle = (event) => {
-    shuffle(!isShuffle);
+  const toggleShuffle = () => {
+    request('shuffle', { random: !isShuffle });
   }
 
-  const toggleRepeat = (event) => {
-    repeat(isRepeat, isSingle);
+  const toggleRepeat = () => {
+    let mode = null;
+    if (!isRepeat && !isSingle) mode = 'repeat';
+    if (isRepeat && !isSingle) mode = 'single';
+
+    request('repeat', { mode });
   }
 
   useEffect(() => {
@@ -52,41 +51,60 @@ const Controls = () => {
     });
   }, [playerstatus]);
 
+  const iconStyles = { padding: '7px' };
+
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid
+      container
+      alignItems="center"
+      direction="row"
+      flexWrap="nowrap"
+      justifyContent="space-evenly"
+      sx={{ margin: '7px 0' }}
+    >
 
       {/* Shuffle */}
       <IconButton
         aria-label="Shuffle"
         color={isShuffle ? 'primary' : undefined}
         onClick={toggleShuffle}
-        size="large">
-        <ShuffleRoundedIcon style={{ fontSize: 20 }} />
+        size="large"
+        sx={iconStyles}
+      >
+        <ShuffleRoundedIcon style={{ fontSize: 22 }} />
       </IconButton>
 
       {/* Skip previous track */}
       <IconButton
         aria-label="Skip previous track"
         disabled={!songIsScheduled}
-        onClick={previous}
-        size="large">
+        onClick={e => request('previous')}
+        size="large"
+        sx={iconStyles}
+      >
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
       {/* Play */}
-      {
-        !isPlaying &&
+      {!isPlaying &&
         <IconButton
           aria-label="Play"
-          onClick={e => play()}
+          onClick={e => request('play')}
           disabled={!songIsScheduled}
-          size="large">
+          size="large"
+          sx={iconStyles}
+        >
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
-      {
-        isPlaying &&
-        <IconButton aria-label="Pause" onClick={pause} size="large">
+      {/* Pause */}
+      {isPlaying &&
+        <IconButton
+          aria-label="Pause"
+          onClick={e => request('pause')}
+          size="large"
+          sx={iconStyles}
+        >
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
       }
@@ -95,8 +113,10 @@ const Controls = () => {
       <IconButton
         aria-label="Skip next track"
         disabled={!songIsScheduled}
-        onClick={next}
-        size="large">
+        onClick={e => request('next')}
+        size="large"
+        sx={iconStyles}
+      >
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
 
@@ -105,14 +125,16 @@ const Controls = () => {
         aria-label="Repeat"
         color={isRepeat ? 'primary' : undefined}
         onClick={toggleRepeat}
-        size="large">
+        size="large"
+        sx={iconStyles}
+      >
         {
           !isSingle &&
-          <RepeatRoundedIcon style={{ fontSize: 20 }} />
+          <RepeatRoundedIcon style={{ fontSize: 22 }} />
         }
         {
           isSingle &&
-          <RepeatOneRoundedIcon style={{ fontSize: 25 }} />
+          <RepeatOneRoundedIcon style={{ fontSize: 22 }} />
         }
       </IconButton>
 
@@ -120,4 +142,4 @@ const Controls = () => {
   );
 };
 
-export default Controls;
+export default memo(Controls);

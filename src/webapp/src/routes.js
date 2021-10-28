@@ -26,7 +26,7 @@ const Routes = () => {
           <Route exact path='/'>
             <Player />
           </Route>
-          <Route exact path='/library'>
+          <Route path='/library'>
             <Library />
           </Route>
           <Route path='/cards/register'>

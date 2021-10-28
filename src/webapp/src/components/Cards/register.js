@@ -17,7 +17,7 @@ import PlayerContext from '../../context/player/context';
 
 import Header from '../Header';
 import ControlsSelector from './controls/controls-selector';
-import { registerCard } from '../../utils/requests';
+import request from '../../utils/request';
 
 const InfoNoCardSwiped = () => (
   <Typography>
@@ -50,20 +50,21 @@ const CardsRegister = () => {
 
   const [lastSwipedCardId, setLastSwipedCardId] = useState(card_id || undefined);
   const [selectedAction, setSelectedAction] = useState(undefined);
-  const [selectedFolder, setSelectedFolder] = useState(undefined);
+  const [selectedAlbum, setSelectedAlbum] = useState(undefined);
 
   const handleRegisterCard = async () => {
     const kwargs = {
       card_id: lastSwipedCardId.toString(),
-      quick_select: selectedAction,
+      cmd_alias: selectedAction,
       overwrite: true,
     };
 
-    if (selectedAction === 'play_card') {
-      kwargs.args = selectedFolder;
+    if (selectedAction === 'play_album') {
+      const { albumartist, album } = selectedAlbum;
+      kwargs.args = [albumartist, album];
     }
 
-    const { error } = await registerCard(kwargs);
+    const { error } = await request('registerCard', kwargs);
 
     if (error) {
       return console.error(error);
@@ -100,8 +101,8 @@ const CardsRegister = () => {
                   <ControlsSelector
                     selectedAction={selectedAction}
                     setSelectedAction={setSelectedAction}
-                    selectedFolder={selectedFolder}
-                    setSelectedFolder={setSelectedFolder}
+                    selectedAlbum={selectedAlbum}
+                    setSelectedAlbum={setSelectedAlbum}
                   />
                 </Grid>
               }

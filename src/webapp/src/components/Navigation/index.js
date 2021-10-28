@@ -14,12 +14,10 @@ export default function Navigation() {
 
   // TODO: This needs to be done smarter!
   useEffect(() => {
-    switch(pathname) {
-      case '/library': return setValue(1);
-      case '/cards': return setValue(2);
-      case '/settings': return setValue(3);
-      default: return setValue(0);
-    }
+    if (pathname.startsWith('/library')) return setValue(1);
+    if (pathname.startsWith('/cards')) return setValue(2);
+    if (pathname.startsWith('/settings')) return setValue(3);
+    return setValue(0);
   }, [pathname]);
 
   return (
@@ -43,7 +41,7 @@ export default function Navigation() {
       />
       <BottomNavigationAction
         component={Link}
-        to="/library"
+        to="/library/lists/albums"
         label="Library"
         icon={<MusicNoteIcon />}
       />

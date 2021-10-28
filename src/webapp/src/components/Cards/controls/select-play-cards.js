@@ -1,40 +1,71 @@
 import React, { useEffect, useState } from 'react';
+import { findIndex, propEq } from 'ramda';
 
 import {
   FormControl,
   NativeSelect
 } from '@mui/material';
 
-import {
-  getFlattenListOfDirectories
-} from '../../../utils/requests';
+import request from '../../../utils/request';
+import { flatByAlbum } from '../../../utils/utils';
+import { LABELS } from '../../../config';
 
 const SelectPlayCards = ({
-  selectedFolder,
-  handleFolderChange
+  selectedAlbum,
+  handleAlbumChange
 }) => {
-  const [folders, setFolders] = useState([]);
+  const [albums, setAlbums] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setFolders(await getFlattenListOfDirectories());
-    };
+    const fetchAlbumList = async () => {
+      setIsLoading(true);
+      const { result, error } = await request('albumList');
+      setIsLoading(false);
 
-    fetchData();
+      if(result) setAlbums(result.reduce(flatByAlbum, []));
+      if(error) setError(error);
+    }
+
+    fetchAlbumList();
   }, []);
+
+  const onChange = (event) => {
+    const album = {
+      index: event.target?.value,
+      ...albums[event.target?.value]
+    }
+
+    handleAlbumChange(album);
+  }
+
+  const findSelectedIndexAsValue = ({ albumartist, album }) => {
+    const index = findIndex(
+      propEq('albumartist', albumartist) &&
+      propEq('album', album)
+    )(albums);
+
+    if (index === -1) return 'label';
+    return index;
+  }
 
   return (
     <FormControl>
       <NativeSelect
-        value={selectedFolder || '0'}
-        onChange={handleFolderChange}
-        name="folders"
-        inputProps={{ 'aria-label': 'Folders' }}
+        value={findSelectedIndexAsValue(selectedAlbum || {})}
+        onChange={onChange}
+        name="albums"
+        inputProps={{ 'aria-label': 'Albums' }}
       >
-        <option key={0} value={'0'} disabled={true}>Select a folder</option>
-        {folders.map((folder, i) =>
-          <option key={i} value={folder.directory}>
-            {folder.directory}
+        {isLoading
+          ? <option key={'label'} value={'label'} disabled={true}>Loading</option>
+          : <option key={'label'} value={'label'} disabled={true}>Select an album</option>
+        }
+        {error && <option key={'label'} value={'label'} disabled={true}>An error occurred loading the library.</option>}
+        {albums.map(({ album }, key) =>
+          <option key={key} value={key}>
+            {album || LABELS.UNKNOW_ALBUM}
           </option>
         )}
       </NativeSelect>

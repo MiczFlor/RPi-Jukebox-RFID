@@ -1,4 +1,4 @@
-name: Python Checks and Tests
+name: Python + Docs Checks and Tests
 
 on:
   push:
@@ -7,12 +7,14 @@ on:
     paths:
         - '**.py'
         - '**.py.*'
+        - 'docs/sphinx/**'
   pull_request:
     branches:
         - 'future3/**'
     paths:
         - '**.py'
         - '**.py.*'
+        - 'docs/sphinx/**'
 
 jobs:
   build:
@@ -21,7 +23,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v1
@@ -33,14 +35,27 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libasound2-dev
-        python -m pip install --upgrade pip
-        pip install wheel
-        pip install spidev
-        pip install -r requirements.txt
+        python3 -m pip install --upgrade pip
+        pip3 install wheel
+        pip3 install spidev
+        pip3 install -r requirements.txt
+        # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
+        # When just building the docs, the regular ZMQ package is sufficient
+        pip3 install -r docs/sphinx/requirements_pyzmq.txt
+        pip3 install -r docs/sphinx/requirements.txt
+        # Also install all optional dependencies
+        pip3 install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
+        pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
     - name: Lint with flake8
       run: |
-        pip install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --filename=*.py,*.py.*
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --filename=*.py,*.py.*
+        pip3 install flake8
+        # Stop the build if linting fails
+        ./run_flake8.sh
+    - name: Build the docs
+      working-directory: ./docs/sphinx
+      run: |
+        # Stop the build if documentation cannot be built
+        # Treat all warnings as errors
+        sphinx-build -W --keep-going -T -a -E -b html . _build

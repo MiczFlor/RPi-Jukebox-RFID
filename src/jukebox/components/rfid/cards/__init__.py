@@ -22,9 +22,8 @@ import jukebox.utils as utils
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 import jukebox.publishing as publishing
-from components.rfid.cardactions import (qs_action_place, qs_action_remove)
-from components.rfid.cardutils import decode_card_action
-from components.rfid.cardutils import (dump_card_action_reference)
+from components.rfid.cardutils import decode_card_command
+from components.rpc_command_alias import cmd_alias_definitions
 
 
 log = logging.getLogger('jb.cards')
@@ -38,11 +37,11 @@ def list_cards():
 
     This is intended as basis for a formatter function
 
-    Format: 'id': {decoded_function_call, ignore_same_id_delay, ignore_card_removal_action, description, from_quick_select}"""
+    Format: 'id': {decoded_function_call, ignore_same_id_delay, ignore_card_removal_action, description, from_alias}"""
     card_list = {}
     with cfg_cards:
         for card_id, card_action in cfg_cards.items():
-            action = decode_card_action(card_action, qs_action_place)
+            action = decode_card_command(card_action)
 
             try:
                 func = plugs.get(action['package'], action['plugin'], action.get('method', None))
@@ -50,7 +49,7 @@ def list_cards():
                 description = f"ERROR: {e.__class__.__name__}: {e}"
             else:
                 description = (func.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-            readable = utils.action_to_str(action)
+            readable = utils.rpc_call_to_str(action)
 
             card_list[card_id] = {
                 'func': readable,
@@ -62,9 +61,9 @@ def list_cards():
                 card_list[card_id]['ignore_same_id_delay'] = action['ignore_same_id_delay']
             if 'ignore_card_removal_action' in action.keys():
                 card_list[card_id]['ignore_card_removal_action'] = action['ignore_card_removal_action']
-            qs = card_action.get('quick_select', None)
-            if qs is not None:
-                card_list[card_id]['from_quick_select'] = qs
+            alias = card_action.get('alias', None)
+            if alias is not None:
+                card_list[card_id]['from_alias'] = alias
     return card_list
 
 
@@ -89,7 +88,7 @@ def delete_card(card_id: str, auto_save: bool = True):
 
 
 @plugs.register
-def register_card(card_id: str, quick_select: str,
+def register_card(card_id: str, cmd_alias: str,
                   args: Optional[List] = None, kwargs: Optional[Dict] = None,
                   ignore_card_removal_action: Optional[bool] = None, ignore_same_id_delay: Optional[bool] = None,
                   overwrite: bool = False,
@@ -106,8 +105,8 @@ def register_card(card_id: str, quick_select: str,
                                   kwargs={'args': [15], 'ignore_same_id_delay': True, 'overwrite': True})
 
     """
-    if quick_select not in qs_action_place.keys():
-        msg = f"Unknown quick_select: '{quick_select}'"
+    if cmd_alias not in cmd_alias_definitions.keys():
+        msg = f"Unknown RPC command alias: '{cmd_alias}'"
         log.error(msg)
         raise KeyError(msg)
     with cfg_cards:
@@ -115,7 +114,7 @@ def register_card(card_id: str, quick_select: str,
             msg = f"Card already registered: '{card_id}'. Abort. (use overwrite=True to overrule)"
             log.error(msg)
             raise KeyError(msg)
-        cfg_cards[card_id] = {'quick_select': quick_select}
+        cfg_cards[card_id] = {'alias': cmd_alias}
         if args is not None:
             cfg_cards[card_id]['args'] = args
         if kwargs is not None:
@@ -167,13 +166,6 @@ def save_card_database(filename=None, *, only_if_changed=True):
 @plugs.finalize
 def finalize():
     load_card_database(cfg_main.getn('rfid', 'card_database'))
-
-    # Write reference of command shortcuts
-    if 'card_action_reference_out' in cfg_main['rfid']:
-        with open(cfg_main.getn('rfid', 'card_action_reference_out'), 'w') as stream:
-            dump_card_action_reference(stream, qs_action_place, 'Card placement action shortcuts')
-            print('\n\n', file=stream)
-            dump_card_action_reference(stream, qs_action_remove, 'Card removal action shortcuts (only place-capable readers)')
 
 
 @plugs.atexit

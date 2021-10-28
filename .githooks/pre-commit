@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Script to be run by git hook: pre-commit
+#
+# TO ACTIVATE: cp .githooks/pre-commit .git/hooks/.
+#
+# Checks
+# - flake8 on staged python files
+#   Note: This only checks the modified files
+# - docs build of if any python file or any doc file is staged
+#   Note: This builds the entire documentation if a changed file goes into the documentation
+#
+# If there are problem with this script, commit may still be done with
+# git commit --no-verify
+
+
+# Pass all staged python files through flake8
+PY_FILES="$(git diff --diff-filter=d --staged --name-only -- **/*.py)"
+flake8_code=0
+if [[ -n $PY_FILES ]]; then
+  echo -e "\n**************************************************************"
+  echo "Modified Python source files. Running flake8 ... "
+  echo -e "**************************************************************\n"
+  ./run_flake8.sh $PY_FILES
+  flake8_code=$?
+  echo "Flake8 return code: $flake8_code"
+fi
+
+DOC_FILES="$(git diff --diff-filter=d --staged --name-only -- docs/sphinx/*)"
+sphinx_code=0
+if [[ -n $DOC_FILES || -n $PY_FILES ]]; then
+  echo -e "\n**************************************************************"
+  echo -e "Files for documentation modified. Testing re-build of docs ... \n"
+  echo -e "**************************************************************\n"
+  ./run_sphinx.sh -c
+  sphinx_code=$?
+  echo "Sphinx return code: $sphinx_code"
+fi
+
+code=$(( flake8_code + sphinx_code ))
+
+if [[ code -gt 0 ]]; then
+  echo -e "\n**************************************************************"
+  echo -e "ERROR(s) during pre-commit checks. Aborting commit!"
+  echo -e "**************************************************************\n"
+fi
+
+exit $code
+

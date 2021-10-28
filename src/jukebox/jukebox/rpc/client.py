@@ -22,7 +22,14 @@ class RpcClient:
         # Default values for enqueue behaviour
         self.default_ignore_errors = default_ignore_errors
         self.default_ignore_response = default_ignore_response
+        self._address = address
         self.queue.connect(address)
+        self.logger.debug(f"RPC Client initialized on '{address}' (Pyzmq version: {zmq.pyzmq_version()}; "
+                          f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
+
+    @property
+    def address(self):
+        return self._address
 
     def enque_raw(self, request, ignore_response: Optional[bool] = None, ignore_errors: Optional[bool] = None):
         if ignore_response is None:

@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+# Script to be run by git hook: post merge, i.e. git pull
+#
+# TO ACTIVATE: cp .githooks/post-merge .git/hooks/.
+#
+# Checks:
+# - Changes to web app
+# - Changes to web dependency
+# - Changes to python requirements
+#
+# Actions are not triggered automatically as they can take some
+# time. The user is warned if an action is required.
+#
+# Inspired by
+# https://davidwalsh.name/git-hook-npm-install-package-json-modified
+
+warn_npm_dependency() {
+  echo -e "\n"
+  echo "************************************************************"
+  echo "ATTENTION: npm dependencies have changed since last pull!"
+  echo ""
+  echo "To update dependencies and rebuilt WebApp run:"
+  echo "$ cd src/webapp && ./run_rebuild.sh -u"
+  echo "************************************************************"
+  echo -e "\n"
+}
+
+warn_webapp() {
+  echo -e "\n"
+  echo "************************************************************"
+  echo "ATTENTION: Web App sources have changed since last pull!"
+  echo ""
+  echo "To rebuilt the WebApp run:"
+  echo "$ cd src/webapp && ./run_rebuild.sh"
+  echo "************************************************************"
+  echo -e "\n"
+}
+
+warn_python_requirements() {
+  echo -e "\n"
+  echo "************************************************************"
+  echo "ATTENTION: Python requirements have changed since last pull!"
+  echo ""
+  echo "To update python requirements on the RPi run"
+  echo "$ sudo python3 -m pip install --upgrade -r requirements.txt"
+  echo "************************************************************"
+  echo -e "\n"
+}
+
+warn_githooks() {
+  echo -e "\n"
+  echo "************************************************************"
+  echo "ATTENTION: Recommended git hooks changed!"
+  echo ""
+  echo "To update, REVIEW and copy .githooks/* to .git/hooks"
+  echo "$ cp .githooks/* .git/hooks/."
+  echo "************************************************************"
+  echo -e "\n"
+
+}
+
+# files_changed="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+webapp_changed="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD src/webapp)"
+webapp_dep_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD src/webapp/package.json)"
+python_req_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD requirements.txt)"
+githooks_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD .githooks)"
+
+if [[ -n $python_req_changed ]]; then
+    warn_python_requirements
+fi
+
+if [[ -n $webapp_dep_changed ]]; then
+    warn_npm_dependency
+elif [[ -n $webapp_changed ]]; then
+    warn_webapp
+fi
+
+if [[ -n $githooks_changed ]]; then
+    warn_githooks
+fi
+
+echo -e "\nTo see a summary of what happened since your last pull, do:"
+echo -e "git show --oneline -s ORIG_HEAD..HEAD\n"

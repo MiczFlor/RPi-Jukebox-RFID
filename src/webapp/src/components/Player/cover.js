@@ -5,19 +5,20 @@ import Paper from '@mui/material/Paper';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 import PlayerContext from '../../context/player/context';
-import { getMusicCoverByFilenameAsBase64 } from '../../utils/requests';
+import request from '../../utils/request';
 import { pluginIsLoaded } from '../../utils/utils';
 
-const Cover = () => {
+const Cover = ({ song }) => {
   const { state } = useContext(PlayerContext);
   const { playerstatus, 'core.plugins.loaded': plugins } = state;
-  const { file } = playerstatus || {};
+  // If song is passed, it take presidence over playerstatus
+  const { file } = song || playerstatus || {};
 
   const [coverImage, setCoverImage] = useState(undefined);
 
   useEffect(() => {
     const getMusicCover = async () => {
-      const { result } = await getMusicCoverByFilenameAsBase64(file);
+      const { result } = await request('musicCoverByFilenameAsBase64', { audio_src: file });
       if (result) setCoverImage(result);
     }
 

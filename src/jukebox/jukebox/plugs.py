@@ -434,28 +434,29 @@ def register(plugin: Optional[Callable] = None, *,
     """
 
     # print(f"{plugin}")
-    if plugin is None:
-        # If the plugin is None, we assume this is used as decorator with params
-        # Case A: Used as 2-level decorator around a function
-        # Attention: very strong 2-level decorator voodoo. The actual function must be extracted by an inner decorator
-        # Argument plugin is never used, others depend on class / function
-        def inner_function(obj):
-            if inspect.isclass(obj):
-                return _register_class(obj, auto_tag=auto_tag)
-            else:
-                return _register_obj(obj, name=name, package=package, replace=replace)
-        return inner_function
-    if inspect.isclass(plugin):
-        # Case B: 1-level decorator around a class
-        return _register_class(cast(Type, plugin), auto_tag=False)
-    else:
-        # Everything else: throw it at object registration
-        # Case C.1: Used as 1-level decorator on a function
-        # Case D.1: Used as 1-level decorator on an unbound method inside a class: This is an error caught by register_obj
-        # Case E.1: Used as function to register a function
-        # Case E.2: Used as function to register an entire class instance
-        # Case E.3: Used as function to register a bound method
-        return _register_obj(plugin, name=name, package=package, replace=replace)
+    with _lock_module:
+        if plugin is None:
+            # If the plugin is None, we assume this is used as decorator with params
+            # Case A: Used as 2-level decorator around a function
+            # Attention: very strong 2-level decorator voodoo. The actual function must be extracted by an inner decorator
+            # Argument plugin is never used, others depend on class / function
+            def inner_function(obj):
+                if inspect.isclass(obj):
+                    return _register_class(obj, auto_tag=auto_tag)
+                else:
+                    return _register_obj(obj, name=name, package=package, replace=replace)
+            return inner_function
+        if inspect.isclass(plugin):
+            # Case B: 1-level decorator around a class
+            return _register_class(cast(Type, plugin), auto_tag=False)
+        else:
+            # Everything else: throw it at object registration
+            # Case C.1: Used as 1-level decorator on a function
+            # Case D.1: Used as 1-level decorator on an unbound method inside a class: This is an error caught by register_obj
+            # Case E.1: Used as function to register a function
+            # Case E.2: Used as function to register an entire class instance
+            # Case E.3: Used as function to register a bound method
+            return _register_obj(plugin, name=name, package=package, replace=replace)
 
 
 def tag(func: Callable) -> Callable:
@@ -482,11 +483,12 @@ def initialize(func: Callable) -> Callable:
     :param func: Function to decorate
     :return: The function itself
     """
-    plugin_origin = _deduce_package_origin(func)
-    if plugin_origin is None:
-        raise TypeError(f"Could not deduce corresponding package of {func}")
-    _PLUGINS[_PACKAGE_MAP[plugin_origin]].initializer.append(func)
-    return func
+    with _lock_module:
+        plugin_origin = _deduce_package_origin(func)
+        if plugin_origin is None:
+            raise TypeError(f"Could not deduce corresponding package of {func}")
+        _PLUGINS[_PACKAGE_MAP[plugin_origin]].initializer.append(func)
+        return func
 
 
 def finalize(func: Callable) -> Callable:
@@ -496,11 +498,12 @@ def finalize(func: Callable) -> Callable:
     :param func: Function to decorate
     :return: The function itself
     """
-    plugin_origin = _deduce_package_origin(func)
-    if plugin_origin is None:
-        raise TypeError(f"Could not deduce corresponding package of {func}")
-    _PLUGINS[_PACKAGE_MAP[plugin_origin]].finalizer.append(func)
-    return func
+    with _lock_module:
+        plugin_origin = _deduce_package_origin(func)
+        if plugin_origin is None:
+            raise TypeError(f"Could not deduce corresponding package of {func}")
+        _PLUGINS[_PACKAGE_MAP[plugin_origin]].finalizer.append(func)
+        return func
 
 
 def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
@@ -517,11 +520,12 @@ def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
     :param func: Function to decorate
     :return: The function itself
     """
-    plugin_origin = _deduce_package_origin(func)
-    if plugin_origin is None:
-        raise TypeError(f"Could not deduce corresponding package of {func}")
-    _PLUGINS[_PACKAGE_MAP[plugin_origin]].atexit.append(func)
-    return func
+    with _lock_module:
+        plugin_origin = _deduce_package_origin(func)
+        if plugin_origin is None:
+            raise TypeError(f"Could not deduce corresponding package of {func}")
+        _PLUGINS[_PACKAGE_MAP[plugin_origin]].atexit.append(func)
+        return func
 
 
 def load(package: str, load_as: Optional[str] = None, prefix: Optional[str] = None):
@@ -661,9 +665,9 @@ def close_down(**kwargs) -> Any:
 def _call(package: str, plugin: str, method: Optional[str] = None, *,
           args=None, kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
     """
-    The internals of the call functionality. See call(...) for documentation!
+    The internals of the call functionality. See :func:`call` for documentation!
 
-    This low-level core is not thread safe!
+    This low-level core is not thread safe! Surrounding function must lock the module properly.
     """
     if logger_call.isEnabledFor(logging.DEBUG):
         m = f".{method}" if method is not None else ''
@@ -767,15 +771,16 @@ def call_ignore_errors(package: str, plugin: str, method: Optional[str] = None, 
 
 def exists(package: str, plugin: Optional[str] = None, method: Optional[str] = None) -> bool:
     """Check if an object is registered within the plugs package"""
-    if package not in _PLUGINS:
-        return False
-    if plugin is None:
-        return True
-    if plugin not in _PLUGINS[package].plugins:
-        return False
-    if method is None:
-        return True
-    return hasattr(_PLUGINS[package].plugins[plugin], method)
+    with _lock_module:
+        if package not in _PLUGINS:
+            return False
+        if plugin is None:
+            return True
+        if plugin not in _PLUGINS[package].plugins:
+            return False
+        if method is None:
+            return True
+        return hasattr(_PLUGINS[package].plugins[plugin], method)
 
 
 def get(package: str, plugin: Optional[str] = None, method: Optional[str] = None) -> Any:
@@ -788,160 +793,178 @@ def get(package: str, plugin: Optional[str] = None, method: Optional[str] = None
     * 3 arguments: Get the plugin reference for the plugs *package.plugin.method*
 
     """
-    pack = _PLUGINS.get(package, None)
-    if pack is None:
-        raise NameError(f"Package '{package}' not registered")
-    if plugin is None:
-        if method is not None:
-            raise TypeError("Argument 'method' specified, but not argument 'plugin'")
-        return _PLUGINS[package].module
-    plug = _PLUGINS[package].plugins.get(plugin, None)
-    if plug is None:
-        raise NameError(f"Plugin object '{plugin}' not registered in package '{package}'")
-    if method is None:
-        return plug
-    func = getattr(plug, method, None)
-    if func is None:
-        raise NameError(f"Plugin object '{package}.{plugin}' has not attribute '{method}'")
-    return func
+    with _lock_module:
+        pack = _PLUGINS.get(package, None)
+        if pack is None:
+            raise NameError(f"Package '{package}' not registered")
+        if plugin is None:
+            if method is not None:
+                raise TypeError("Argument 'method' specified, but not argument 'plugin'")
+            return _PLUGINS[package].module
+        plug = _PLUGINS[package].plugins.get(plugin, None)
+        if plug is None:
+            raise NameError(f"Plugin object '{plugin}' not registered in package '{package}'")
+        if method is None:
+            return plug
+        func = getattr(plug, method, None)
+        if func is None:
+            raise NameError(f"Plugin object '{package}.{plugin}' has not attribute '{method}'")
+        return func
 
 
 def loaded_as(module_name: str) -> str:
     """Return the plugin name a python module is loaded as"""
-    if module_name not in _PACKAGE_MAP.keys():
-        raise KeyError(f"Not a loaded module: {module_name}")
-    return _PACKAGE_MAP[module_name]
+    with _lock_module:
+        if module_name not in _PACKAGE_MAP.keys():
+            raise KeyError(f"Not a loaded module: {module_name}")
+        return _PACKAGE_MAP[module_name]
 
 
 def delete(package: str, plugin: Optional[str] = None, ignore_errors=False):
     """Delete a plugin object from the registered plugs callables
 
     Note: This does not 'unload' the python module. It merely makes it un-callable via plugs!"""
-    if exists(package, plugin):
-        if plugin is None:
-            _PACKAGE_MAP.__delitem__(_PLUGINS[package].loaded_from)
-            _PLUGINS.__delitem__(package)
-        else:
-            _PLUGINS[package].plugins.__delitem__(plugin)
-    elif not ignore_errors:
-        p = "" if plugin is None else f".{plugin}"
-        raise NameError(f"Not registered: '{package}{p}'. Cannot delete it!")
+    with _lock_module:
+        if exists(package, plugin):
+            if plugin is None:
+                _PACKAGE_MAP.__delitem__(_PLUGINS[package].loaded_from)
+                _PLUGINS.__delitem__(package)
+            else:
+                _PLUGINS[package].plugins.__delitem__(plugin)
+        elif not ignore_errors:
+            p = "" if plugin is None else f".{plugin}"
+            raise NameError(f"Not registered: '{package}{p}'. Cannot delete it!")
 
 
 def dump_plugins(stream):
     """Write a human readable summary of all plugin callables to stream"""
-    width = 127
-    print('*' * width, file=stream)
-    print("Loaded plugins:", file=stream)
-    print('*' * width, file=stream)
-    for package, plugins in _PLUGINS.items():
-        description = (plugins.module.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-        print(f"Package: '{package}' loaded from: '{plugins.loaded_from}'", file=stream)
-        print(f"    {description}\n", file=stream)
-        for name, obj in _PLUGINS[package].plugins.items():
-            description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-            t = f"{name} [instance]"
-            if callable(obj):
-                t = f"{name}{inspect.signature(obj)}"
-            print(f"    {t:29}: {description}", file=stream)
-            if not callable(obj):
-                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
-                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
-                    if hasattr(fobj, 'plugs_callable'):
-                        description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-                        sign = f"{fname}{inspect.signature(fobj)}"
-                        print(f"        {sign:25}: {description}", file=stream)
-                print("", file=stream)
-        print("", file=stream)
-    print('*' * width, file=stream)
+    with _lock_module:
+        width = 127
+        print('*' * width, file=stream)
+        print("Loaded plugins:", file=stream)
+        print('*' * width, file=stream)
+        for package, plugins in _PLUGINS.items():
+            description = (plugins.module.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+            print(f"Package: '{package}' loaded from: '{plugins.loaded_from}'", file=stream)
+            print(f"    {description}\n", file=stream)
+            for name, obj in _PLUGINS[package].plugins.items():
+                description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                t = f"{name} [instance]"
+                if callable(obj):
+                    t = f"{name}{inspect.signature(obj)}"
+                print(f"    {t:29}: {description}", file=stream)
+                if not callable(obj):
+                    for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                        *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                        if hasattr(fobj, 'plugs_callable'):
+                            description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                            sign = f"{fname}{inspect.signature(fobj)}"
+                            print(f"        {sign:25}: {description}", file=stream)
+                    print("", file=stream)
+            print("", file=stream)
+        print('*' * width, file=stream)
 
 
 def summarize():
-    sum = {}
-    for package, plugins in _PLUGINS.items():
-        for name, obj in _PLUGINS[package].plugins.items():
-            description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-            if callable(obj):
-                sign = f"{inspect.signature(obj)}"
-                fullname = f"{package}.{name}"
-                entry = {'package': package,
-                         'plugin': name,
-                         'signature': sign,
-                         'description': description}
-                sum[fullname] = entry
-            else:
-                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
-                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
-                    if hasattr(fobj, 'plugs_callable'):
-                        description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-                        sign = f"{fname}{inspect.signature(fobj)}"
-                        fullname = f"{package}.{name}.{fname}"
-                        entry = {'package': package,
-                                 'plugin': name,
-                                 'method': fname,
-                                 'signature': sign,
-                                 'description': description}
-                        sum[fullname] = entry
-    return sum
+    """Create a reference summary of all plugin callables in dictionary format"""
+    with _lock_module:
+        all_callables = {}
+        for package, plugins in _PLUGINS.items():
+            for name, obj in _PLUGINS[package].plugins.items():
+                description = (obj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                if callable(obj):
+                    sign = f"{inspect.signature(obj)}"
+                    fullname = f"{package}.{name}"
+                    entry = {'package': package,
+                             'plugin': name,
+                             'signature': sign,
+                             'description': description}
+                    all_callables[fullname] = entry
+                else:
+                    for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                        *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                        if hasattr(fobj, 'plugs_callable'):
+                            description = (fobj.__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+                            sign = f"{fname}{inspect.signature(fobj)}"
+                            fullname = f"{package}.{name}.{fname}"
+                            entry = {'package': package,
+                                     'plugin': name,
+                                     'method': fname,
+                                     'signature': sign,
+                                     'description': description}
+                            all_callables[fullname] = entry
+        return all_callables
+
+
+def _indent(doc, spaces=4):
+    lines = doc.split('\n')
+    for i in range(0, len(lines)):
+        lines[i] = " " * spaces + lines[i]
+    return "\n".join(lines)
 
 
 def generate_help_rst(stream):
-    print("RPC Command Reference", file=stream)
-    print("***********************\n\n", file=stream)
-    print("This file provides a summary of all the callable functions through the RPC. It depends on the "
-          "loaded modules\n", file=stream)
-    print(".. contents::\n", file=stream)
-    for package, plugins in _PLUGINS.items():
+    """Write a reference of all plugin callables in Restructured Text format"""
+    with _lock_module:
+        print("RPC Command Reference", file=stream)
+        print("***********************\n\n", file=stream)
+        print("This file provides a summary of all the callable functions through the RPC. It depends on the "
+              "loaded modules\n", file=stream)
+        print(".. contents::\n", file=stream)
+        for package, plugins in _PLUGINS.items():
 
-        print(f"Module: {package}", file=stream)
+            print(f"Module: {package}", file=stream)
+            print("-------------------------------------------\n\n", file=stream)
+
+            # description = (get(package).__doc__ or "").strip('\n ')
+            # description = re.sub(r'\n', '\n    ', description, flags=re.MULTILINE)
+            # print(f"    {description}\n\n", file=stream)
+
+            print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
+
+            # From package only get header line
+            description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
+            print(f"{inspect.cleandoc(description)}\n\n", file=stream)
+
+            for name, obj in _PLUGINS[package].plugins.items():
+                # description = inspect.cleandoc(obj.__doc__ or "")
+                description = _indent(inspect.cleandoc(obj.__doc__ or ""), 4)
+                if callable(obj):
+                    fullname = f"{package}.{name}"
+                    sign = f"{inspect.signature(obj)}"
+                    print(f".. py:function:: {fullname}{sign}", file=stream)
+                    print("    :noindex:\n", file=stream)
+                    print(f"{description}\n\n", file=stream)
+                else:
+                    for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
+                                        *inspect.getmembers(obj, predicate=inspect.isfunction)]:
+                        if hasattr(fobj, 'plugs_callable'):
+                            description = _indent(inspect.cleandoc(fobj.__doc__ or ""), 4)
+                            sign = f"{inspect.signature(fobj)}"
+                            fullname = f"{package}.{name}.{fname}"
+                            print(f".. py:function:: {fullname}{sign}", file=stream)
+                            print("    :noindex:\n", file=stream)
+                            print(f"{description}\n\n", file=stream)
+        print("\n\nGeneration notes", file=stream)
         print("-------------------------------------------\n\n", file=stream)
-
-        # description = (get(package).__doc__ or "").strip('\n ')
-        # description = re.sub(r'\n', '\n    ', description, flags=re.MULTILINE)
-        # print(f"    {description}\n\n", file=stream)
-
-        print(f"**loaded_from**:    {plugins.loaded_from}\n", file=stream)
-
-        description = (get(package).__doc__ or "").split('\n\n', 1)[0].strip('\n ')
-        print(f"{inspect.cleandoc(description)}\n\n", file=stream)
-        for name, obj in _PLUGINS[package].plugins.items():
-            # description = inspect.cleandoc(obj.__doc__ or "")
-            description = obj.__doc__ or ""
-            if callable(obj):
-                fullname = f"{package}.{name}"
-                sign = f"{inspect.signature(obj)}"
-                print(f".. py:function:: {fullname}{sign}", file=stream)
-                print("    :noindex:\n", file=stream)
-                print(f"    {description}\n\n", file=stream)
-            else:
-                for fname, fobj in [*inspect.getmembers(obj, predicate=inspect.ismethod),
-                                    *inspect.getmembers(obj, predicate=inspect.isfunction)]:
-                    if hasattr(fobj, 'plugs_callable'):
-                        description = fobj.__doc__ or ""
-                        sign = f"{inspect.signature(fobj)}"
-                        fullname = f"{package}.{name}.{fname}"
-                        print(f".. py:function:: {fullname}{sign}", file=stream)
-                        print("    :noindex:\n", file=stream)
-                        print(f"    {description}\n\n", file=stream)
-    print("\n\nGeneration notes", file=stream)
-    print("-------------------------------------------\n\n", file=stream)
-    print("This is an automatically generated file from the loaded plugins:\n", file=stream)
-    for la, lf in get_all_loaded_packages().items():
-        print(f"* *{la}*: {lf}", file=stream)
-    fp = get_all_failed_packages()
-    if len(fp) > 0:
-        print("\n.. error::\n", file=stream)
-        print("   These packages failed to load or loaded with errors:\n", file=stream)
-        for la, lf in fp.items():
-            print(f"   * *{la}*: {lf}", file=stream)
-        print("\n   This reference may be incomplete!\n", file=stream)
+        print("This is an automatically generated file from the loaded plugins:\n", file=stream)
+        for la, lf in get_all_loaded_packages().items():
+            print(f"* *{la}*: {lf}", file=stream)
+        fp = get_all_failed_packages()
+        if len(fp) > 0:
+            print("\n.. error::\n", file=stream)
+            print("   These packages failed to load or loaded with errors:\n", file=stream)
+            for la, lf in fp.items():
+                print(f"   * *{la}*: {lf}", file=stream)
+            print("\n   This reference may be incomplete!\n", file=stream)
 
 
 def get_all_loaded_packages() -> Dict[str, str]:
     """Report a short summary of all loaded packages
 
     :return: Dictionary of the form `{loaded_as: loaded_from, ...}`"""
-    return {k: _PLUGINS[k].loaded_from for k in _PLUGINS.keys()}
+    with _lock_module:
+        return {k: _PLUGINS[k].loaded_from for k in _PLUGINS.keys()}
 
 
 def get_all_failed_packages() -> Dict[str, str]:
@@ -956,4 +979,5 @@ def get_all_failed_packages() -> Dict[str, str]:
         Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
 
     :return: Dictionary of the form `{loaded_as: loaded_from, ...}`"""
-    return {k: _PLUGINS_FAILED[k].loaded_from for k in _PLUGINS_FAILED.keys()}
+    with _lock_module:
+        return {k: _PLUGINS_FAILED[k].loaded_from for k in _PLUGINS_FAILED.keys()}

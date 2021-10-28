@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-
 import threading
+import os
 import sys
 import signal
 import logging
@@ -9,10 +9,12 @@ from typing import (Optional)
 
 from misc import flatten
 import jukebox.plugs as plugin
+import jukebox.utils
 import jukebox.publishing as publishing
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
 
+import jukebox
 import jukebox.cfghandler
 
 logger = logging.getLogger('jb.daemon')
@@ -20,18 +22,23 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class JukeBox:
-    def __init__(self, configuration_file):
+    def __init__(self, configuration_file: str, write_artifacts: bool):
         # Set up the signal listeners
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
         self._start_time = time.time()
-        logger.info("Starting Jukebox Daemon")
+        logger.info(f"Starting Jukebox Daemon (Version {jukebox.version()})")
+
+        self._git_state = jukebox.utils.get_git_state()
+        logger.info(f"Git state: {self._git_state}")
 
         self.nvm = nv_manager()
         self._signal_cnt = 0
         self.rpc_server = None
         jukebox.cfghandler.load_yaml(cfg, configuration_file)
+
+        self.write_artifacts = write_artifacts
 
         logger.info("Welcome to " + cfg.getn('system', 'box_name', default='Jukebox Version 3'))
         logger.info(f"Time of start: {time.ctime(self._start_time)}")
@@ -39,6 +46,10 @@ class JukeBox:
     @property
     def start_time(self):
         return self._start_time
+
+    @property
+    def git_state(self):
+        return self._git_state
 
     def signal_handler(self, esignal, frame):
         """Signal handler for orderly shutdown
@@ -126,6 +137,7 @@ class JukeBox:
         publishing.get_publisher().send('core.plugins.loaded', pack_ok)
         publishing.get_publisher().send('core.plugins.error', pack_error)
         publishing.get_publisher().send('core.started_at', time.ctime(self._start_time))
+        publishing.get_publisher().send('core.git_state', self._git_state)
 
         # ps = plugin.summarize()
         # for k, v in ps.items():
@@ -206,13 +218,35 @@ class JukeBox:
 
         logger.info(f"Start-up time: {((time.time_ns() - time_start) / 1000000.0):.3f} ms")
 
-        if 'reference_out' in cfg['modules']:
-            with open(cfg.getn('modules', 'reference_out'), 'w') as stream:
+        if self.write_artifacts:
+            # This writes out
+            # rpc_command_reference.rst
+            # rpc_command_reference.txt
+            # rpc_command_alias_reference.rst
+            # rpc_command_alias_reference.txt
+
+            artifacts_dir = '../../shared/artifacts/'
+            sphinx_dir = '../../docs/sphinx/userguide'
+
+            try:
+                os.mkdir(artifacts_dir)
+            except FileExistsError:
+                pass
+
+            with open(os.path.join(artifacts_dir, 'rpc_command_reference.txt'), 'w') as stream:
                 plugin.dump_plugins(stream)
 
-        # if 'reference_out' in cfg['modules']:
-        #     with open('../../docs/sphinx/rpc_command_reference.rst', 'w') as stream:
-        #         plugin.generate_help_rst(stream)
+            # Write reference of command shortcuts
+            with open(os.path.join(artifacts_dir, 'rpc_command_alias_reference.txt'), 'w') as stream:
+                jukebox.utils.generate_cmd_alias_reference(stream)
+
+            # Write RST files directly into Sphinx directory
+
+            with open(os.path.join(sphinx_dir, 'rpc_command_reference.rst'), 'w') as stream:
+                plugin.generate_help_rst(stream)
+
+            with open(os.path.join(sphinx_dir, 'rpc_command_alias_reference.rst'), 'w') as stream:
+                jukebox.utils.generate_cmd_alias_rst(stream)
 
         # Start the RPC Server
         self.rpc_server.run()
@@ -236,5 +270,3 @@ def get_jukebox_daemon(*args, **kwargs):
     if _JUKEBOX_BUILDER is None:
         _JUKEBOX_BUILDER = JukeBoxBuilder()
     return _JUKEBOX_BUILDER(*args, **kwargs)
-
-# components/rfid_reader,components/rfid_orig,components/MQTT-protocol,components/PirateAudioHAT,components/gpio_control,components/buttons_usb_encoder,jukebox/NvManager.py,components/displays,components/scratch
