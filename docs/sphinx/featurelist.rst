@@ -16,7 +16,7 @@ but probably **reflects more of where work is currently being put into**.
 **For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue
 or join us on in the chat room. You may pick topic marked as open below, but also any other topic missing in below list.
 As mentioned, that list is not complete in terms of open features. Check the
-`Contribution guide <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/CONTRIBUTING.md>`_.
+`Contribution guide <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/CONTRIBUTING.md>`_.
 Topics marked *in progress* are already in the process of implementation by community members.
 
 .. contents::
