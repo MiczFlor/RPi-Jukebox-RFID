@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { findIndex, propEq } from 'ramda';
 
 import {
   FormControl,
@@ -30,21 +31,40 @@ const SelectPlayCards = ({
     fetchAlbumList();
   }, []);
 
+  const onChange = (event) => {
+    const album = {
+      index: event.target?.value,
+      ...albums[event.target?.value]
+    }
+
+    handleAlbumChange(album);
+  }
+
+  const findSelectedIndexAsValue = ({ albumartist, album }) => {
+    const index = findIndex(
+      propEq('albumartist', albumartist) &&
+      propEq('album', album)
+    )(albums);
+
+    if (index === -1) return 'label';
+    return index;
+  }
+
   return (
     <FormControl>
       <NativeSelect
-        value={selectedAlbum || '0'}
-        onChange={handleAlbumChange}
+        value={findSelectedIndexAsValue(selectedAlbum || {})}
+        onChange={onChange}
         name="albums"
         inputProps={{ 'aria-label': 'Albums' }}
       >
         {isLoading
-          ? <option key={0} value={'0'} disabled={true}>Loading</option>
-          : <option key={0} value={'0'} disabled={true}>Select an album</option>
+          ? <option key={'label'} value={'label'} disabled={true}>Loading</option>
+          : <option key={'label'} value={'label'} disabled={true}>Select an album</option>
         }
-        {error && <option key={0} value={'0'} disabled={true}>An error occurred loading the library.</option>}
-        {albums.map(({ album }, i) =>
-          <option key={i} value={album}>
+        {error && <option key={'label'} value={'label'} disabled={true}>An error occurred loading the library.</option>}
+        {albums.map(({ album }, key) =>
+          <option key={key} value={key}>
             {album || LABELS.UNKNOW_ALBUM}
           </option>
         )}

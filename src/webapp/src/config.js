@@ -13,7 +13,6 @@ const SUBSCRIPTIONS = [
 
 const JUKEBOX_ACTIONS_MAP = {
   // Command Aliases
-
   // Player
   // 'play_card': {
   //   title: 'Play a folder',
@@ -22,7 +21,7 @@ const JUKEBOX_ACTIONS_MAP = {
 
   'play_album': {
     title: 'Play a album',
-    args: ['album']
+    args: ['album', 'artistartist']
   },
 
   // Volume

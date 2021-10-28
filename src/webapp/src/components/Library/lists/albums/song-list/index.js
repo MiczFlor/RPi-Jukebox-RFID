@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { dropLast, head } from 'ramda';
 
 import {
   CircularProgress,
@@ -22,31 +21,20 @@ const SongList = () => {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // We use the first song of the list to retrieve the Album Art
-  // TODO: This could be done smarter ;-)
-  const [firstSong, setFirstSong] = useState(undefined);
-
-  const getDirectoryPathFromSong = (song) => {
-    const { file } = song;
-    // Removes the file part of the URI to receive directory only
-    return dropLast(1, file.split('/')).join('/')
-  }
-
   useEffect(() => {
     const getSongList = async () => {
       setIsLoading(true);
       const { result, error } = await request(
         'songList',
         {
-          artist: decodeURIComponent(artist),
-          album: decodeURIComponent(album)
+          album: decodeURIComponent(album),
+          albumartist: decodeURIComponent(artist),
         }
       );
       setIsLoading(false);
 
       if(result) {
         setSongs(result);
-        setFirstSong(head(result));
       }
       if(error) setError(error);
     }
@@ -56,11 +44,15 @@ const SongList = () => {
 
   return (
     <div id="song-list">
-      <SongListHeader song={firstSong} />
-      <SongListHeadline song={firstSong} />
+      <SongListHeader />
+      <SongListHeadline
+        album={decodeURIComponent(album)}
+        artist={decodeURIComponent(artist)}
+      />
       <SongListControls
-        song={firstSong}
-        getDirectoryPathFromSong={getDirectoryPathFromSong}
+        album={decodeURIComponent(album)}
+        albumartist={decodeURIComponent(artist)}
+        disabled={songs.length === 0}
       />
       <Grid
         container

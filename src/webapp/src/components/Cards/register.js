@@ -60,7 +60,8 @@ const CardsRegister = () => {
     };
 
     if (selectedAction === 'play_album') {
-      kwargs.args = selectedAlbum;
+      const { albumartist, album } = selectedAlbum;
+      kwargs.args = [albumartist, album];
     }
 
     const { error } = await request('registerCard', kwargs);
