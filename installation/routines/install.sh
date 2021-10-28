@@ -1,5 +1,4 @@
 install() {
-  welcome
   customize_options
   clear 1>&3
   set_raspi_config
@@ -13,5 +12,4 @@ install() {
   setup_rfid_reader
   optimize_boot_time
   cleanup
-  finish
 }
