@@ -30,7 +30,9 @@ Let's set up your Phoniebox now?! [Y/n]" 1>&3
       exit
       ;;
     *)
-      echo "Starting installation ..." 1>&3
+      echo "Starting installation
+---------------------
+" 1>&3
       ;;
   esac
 }
