@@ -13,6 +13,14 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 ## 🔥 Version 3 is coming ...
 
+#### Newest release: future3 Alpha 2 -> 28. October 2021
+
+* Better Installation Script
+* More stable backend
+* Prepared playlist support
+* Refactored Card commands
+* Album & Folder view in web application
+
 Over the last few months, a few Phoniebox fans started to think about a potential future of the Jukebox code. Version 2 is mature
 and works well but doesn't scale enough for future development. It's the mix of Shell, Python and PHP. The goal was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://rpi-jukebox-rfid.readthedocs.io/en/latest/).
 
