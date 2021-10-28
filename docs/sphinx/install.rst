@@ -5,7 +5,7 @@ Install Raspberry Pi OS Lite
 -------------------------------------------
 
 .. important:: Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4!
-    1 and Zero's will require a bit more work and are currently not supported!
+    1 and Zero's are currently unstable and will require a bit more work!
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
@@ -71,4 +71,4 @@ Run the following command in your SSH terminal and follow the instructions
 
 .. code-block:: bash
 
-    cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+    cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
