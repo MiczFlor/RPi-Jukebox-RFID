@@ -8,7 +8,7 @@ import {
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
 import request from '../../../../../utils/request';
 
-const SongListControls = ({ artist, album, disabled }) => (
+const SongListControls = ({ albumartist, album, disabled }) => (
   <Grid container sx={{ padding: '0 8px' }}>
     <Grid item xs={9}></Grid>
     <Grid item xs={3}
@@ -19,7 +19,7 @@ const SongListControls = ({ artist, album, disabled }) => (
     >
       <IconButton
         aria-label="Play"
-        onClick={() => request('playAlbum', { artist, album })}
+        onClick={() => request('playAlbum', { albumartist, album })}
         disabled={disabled}
         size="large"
       >

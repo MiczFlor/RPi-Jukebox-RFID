@@ -34,8 +34,9 @@ const CardEdit = () => {
       overwrite: true,
     };
 
-    if (selectedAction === 'play_card') {
-      kwargs.args = selectedAlbum;
+    if (selectedAction === 'play_album') {
+      const { albumartist, album } = selectedAlbum;
+      kwargs.args = [albumartist, album];
     }
 
     const { error } = await request('registerCard', kwargs);
@@ -62,7 +63,8 @@ const CardEdit = () => {
     if (state && state.id) {
       setCardId(state.id);
       setSelectedAction(state.from_alias);
-      setSelectedAlbum(state.action?.args);
+      const [ albumartist, album ] = state.action?.args || [];
+      setSelectedAlbum({ albumartist, album });
       return;
     }
 
@@ -74,7 +76,8 @@ const CardEdit = () => {
       if (result && params?.cardId && result[params.cardId]) {
         setCardId(params.cardId);
         setSelectedAction(result[params.cardId].from_alias);
-        setSelectedAlbum(result[params.cardId].action?.args);
+        const [ albumartist, album ] = result[params.cardId].action?.args || [];
+        setSelectedAlbum({ albumartist, album });
       }
 
       if (error) {

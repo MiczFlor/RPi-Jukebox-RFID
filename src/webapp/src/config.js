@@ -21,7 +21,7 @@ const JUKEBOX_ACTIONS_MAP = {
 
   'play_album': {
     title: 'Play a album',
-    args: ['album']
+    args: ['album', 'artistartist']
   },
 
   // Volume

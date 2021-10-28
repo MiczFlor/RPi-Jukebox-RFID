@@ -27,8 +27,8 @@ const SongList = () => {
       const { result, error } = await request(
         'songList',
         {
-          artist: decodeURIComponent(artist),
-          album: decodeURIComponent(album)
+          album: decodeURIComponent(album),
+          albumartist: decodeURIComponent(artist),
         }
       );
       setIsLoading(false);
@@ -51,7 +51,7 @@ const SongList = () => {
       />
       <SongListControls
         album={decodeURIComponent(album)}
-        artist={decodeURIComponent(artist)}
+        albumartist={decodeURIComponent(artist)}
         disabled={songs.length === 0}
       />
       <Grid
