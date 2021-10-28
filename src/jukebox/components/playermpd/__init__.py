@@ -503,6 +503,23 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
+    def play_album(self, artist: str, album: str):
+        """
+        Playback a album found in MPD database.
+
+        All album songs are added to the playlist
+        The playlist is cleared first.
+
+        :param artist: Artist name provided by MPD database
+        :param album: Album name provided by MPD database
+        """
+        with self.mpd_lock:
+            logger.info(f"Play album: '{album}' by '{artist}")
+            self.mpd_client.clear()
+            self.mpd_retry_with_mutex(self.mpd_client.findadd, 'artist', artist, 'album', album)
+            self.mpd_client.play()
+
+    @plugs.tag
     def queue_load(self, folder):
         # There was something playing before -> stop and save state
         # Clear the queue

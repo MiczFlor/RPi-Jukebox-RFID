@@ -13,7 +13,6 @@ const SUBSCRIPTIONS = [
 
 const JUKEBOX_ACTIONS_MAP = {
   // Command Aliases
-
   // Player
   // 'play_card': {
   //   title: 'Play a folder',
