@@ -42,7 +42,7 @@ _jukebox_core_build_and_install_pyzmq() {
   local ZMQ_PREFIX="/usr/local"
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
 
-  if ! pip3 list | grep -F pyzmq >> /dev/null; then
+  if ! sudo pip3 list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
     echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
 
@@ -61,7 +61,7 @@ _jukebox_core_build_and_install_pyzmq() {
     rm -f ${ZMQ_TAR_FILENAME}
     sudo rsync -a * ${ZMQ_PREFIX}/
 
-    pip3 install --pre pyzmq \
+    sudo pip3 install --pre pyzmq \
       --install-option=--enable-drafts \
       --install-option=--zmq=${ZMQ_PREFIX}
   else
@@ -90,7 +90,7 @@ _jukebox_core_download_prebuilt_pyzmq() {
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd ${INSTALLATION_PATH}
-  pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+  sudo pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 }
 
 _jukebox_core_install_settings() {
