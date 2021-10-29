@@ -10,10 +10,14 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 ---
 
+## Install latest Phoniebox version
+
+If you are looking for the latest stable version, use the [install script for Raspberry Pi OS Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
+If you dare to go where only few have gone before, become an alpha-tester, bug reporter, contributor for the exciting, totally re-written, up and coming, yet feature incomplete and unstable version 3 of the Phoniebox code base:
 
 ## 🔥 Version 3 is coming ...
 
-#### Newest release: future3 Alpha 2 -> 28. October 2021
+#### Newest release: V3.0.0 Alpha 2 -> 28. October 2021
 
 * Better Installation Script
 * More stable backend
@@ -26,7 +30,7 @@ and works well but doesn't scale enough for future development. It's the mix of 
 
 ### ☝️ Looking for early adopters, testers and contributors
 
-👩‍💻 For Braveheats only! If you want to test or help develop this new version called `future3`, let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
+👩‍💻 For Bravehearts only! If you want to test or help develop this new version called `future3`, let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
 
 But please be aware, Version 3 is still under heavy development and cannot be considered stable! Just a handful of features from version 2.x have been ported to version 3 so far. Specifically GPIO support is currently missing but it's in active development and soon to arrive. To install and run this version you will need some understanding of programming.
 
