@@ -53,6 +53,11 @@ const commands = {
     plugin: 'ctrl',
     method: 'play_folder',
   },
+  playAlbum: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_album',
+  },
   pause: {
     _package: 'player',
     plugin: 'ctrl',

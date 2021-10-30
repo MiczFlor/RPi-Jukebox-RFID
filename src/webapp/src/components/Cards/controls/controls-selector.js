@@ -19,8 +19,8 @@ const ControlsSelector = ({
     setSelectedAlbum(undefined);
   };
 
-  const handleAlbumChange = (event) => {
-    setSelectedAlbum(event.target.value);
+  const handleAlbumChange = (album) => {
+    setSelectedAlbum(album);
   };
 
   return (

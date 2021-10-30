@@ -3,7 +3,7 @@ What is this?
 
 The exiting, new **Version 3** of the RPi Jukebox RFID. A complete rewrite of the Jukebox code base.
 
-.. important:: This documentation applies to the Version 3 which is developed in the branch *future3/develop*.
+.. important:: This documentation applies to the Version 3 which is developed in the branches *future3/main* and *future3/develop*.
     Currently the default Version is 2.X
 
 To find out more about the RPi Jukebox RFID

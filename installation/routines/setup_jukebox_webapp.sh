@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_WEBAPP="13YVgpWH81kMdbltqeH0-0Tx5LR64bav8" # https://drive.google.com/file/d/13YVgpWH81kMdbltqeH0-0Tx5LR64bav8/view?usp=sharing
+GD_ID_COMPILED_WEBAPP="1Dp04fBkMrfc6LT0NBG9hjItUDSjrhRh0" # https://drive.google.com/file/d/1Dp04fBkMrfc6LT0NBG9hjItUDSjrhRh0/view?usp=sharing
 
 # For ARMv7+
 NODE_SOURCE="https://deb.nodesource.com/setup_16.x"

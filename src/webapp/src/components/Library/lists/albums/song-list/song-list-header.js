@@ -9,7 +9,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // import Cover from '../../../Player/cover';
 
-const SongListHeader = ({ song }) => (
+const SongListHeader = () => (
   <Grid container>
     <Grid item xs={2}>
       <IconButton
