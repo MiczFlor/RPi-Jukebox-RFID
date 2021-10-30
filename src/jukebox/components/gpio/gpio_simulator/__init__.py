@@ -75,6 +75,7 @@ class GpioSimulatorClass(threading.Thread):
                            'RotaryEncoder': {'class': self.RotaryEncoder},
                            'RockerButton': {'class': self.RockerButton},
                            'PortOut': {'class': self.PortOut}}
+        self.portlist = {}
 
         # iterate over all GPIO devices
         for dev in self.devices.keys():
@@ -101,6 +102,7 @@ class GpioSimulatorClass(threading.Thread):
         if action is not None:
             plugs.call_ignore_errors(action['package'], action['plugin'], 
                                      action['method'], args=action['args'], kwargs=action['kwargs'])
+        
 
     def Button(self, top, name, config):
         B = tk.Button(top, text=name, command=lambda: self.button_cb(config['Function']))
@@ -138,38 +140,36 @@ class GpioSimulatorClass(threading.Thread):
         label.pack(side=tk.LEFT)
 
         states = config['States']
+        pins = config['Pins']
+        n = len(pins)
 
-        n = 0
-        lpins = {}
+        cwidth = 32 * n + 2
+        canvas = tk.Canvas(frame, height=22, width=cwidth)
+        canvas.pack(side=tk.RIGHT)
 
-        for state in states:
-            print(state)
-            pins = states[state]
-            for pin in pins:
-                print(pin)
-                print(pins[pin])
-                if n == 0:
-                    lpins[pin] = pins[pin]
-                    n = n + 1
-                else:
-                    if pin not in pins:
-                        print("Pins musst match!!!")
+        x = 0
+        ind = []
+        for pin in pins:
+            ind.append(canvas.create_oval(2 + x, 2, 20 + x, 20, fill="red"))
+            canvas.create_text(11 + x, 11, text=pin)
+            x += 32
 
-        print(f"added {n} pins")
-
-        # add canvas size
-
-        for state in states:
-            # get pins for each state, each state musst contain exact same pins!
-
-            # self.ws_signal = self.canvas.create_oval(x, y, x+20, y+20, fill="red")
-            # self.canvas.itemconfig(self.ws_signal, fill='red')
-            pass
+        self.portlist[name] = {'ind': ind, 'canvas': canvas, 'states': states}
 
     def SetPort(self, name, state):
         # get lock
         # iterate pin list and set state
         # release lock
+        port = self.portlist[name]
+        state = port['states'].get(state)
+
+        for i, ind in enumerate(port['ind']):
+            if state[i] == 1:
+                fill='red'
+            else:
+                fill='grey'
+            
+            port['canvas'].itemconfig(ind, fill=fill)
 
         return 0
 
@@ -180,6 +180,11 @@ class GpioSimulatorClass(threading.Thread):
         # wait for time
         # set state
         # release lock
+
+        for step in seq:
+            time.sleep(step['delay'] / 1000)
+            self.SetPort(name, step['state'])
+            self._window.update()
 
         # {1: {'delay',100,'pin':'xxx','state':1},
         # 2: {'delay',100,'pin':'xxx','state':0}}
