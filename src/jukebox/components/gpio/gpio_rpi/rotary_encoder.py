@@ -121,16 +121,12 @@ class RotaryEncoder:
 
         if self.KeyIncr == self.encoderState.asByte:
             steps = self._StepSize()
-            self._logger.info('{name}: Calling functionIncr {steps}'.format(
-                name=self.name, steps=steps))
-            # self.functionCallbackIncr(steps)
-            return utils.decode_and_call_rpc_command(self.functionCW, self._logger)
+            self._logger.debug(f'{self.name}: Calling functionIncr {steps}')
+            utils.decode_and_call_rpc_command(self.functionCW, self._logger)
         elif self.KeyDecr == self.encoderState.asByte:
             steps = self._StepSize()
-            self._logger.info('{name}: Calling functionDecr {steps}'.format(
-                name=self.name, steps=steps))
-            # self.functionCallbackDecr(steps)
-            return utils.decode_and_call_rpc_command(self.functionCCW, self._logger)
+            self._logger.debug(f'{self.name}: Calling functionDecr {steps}')
+            utils.decode_and_call_rpc_command(self.functionCCW, self._logger)
         else:
             self._logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
 

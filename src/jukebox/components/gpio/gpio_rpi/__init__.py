@@ -4,7 +4,7 @@ import jukebox.plugs as plugs
 import jukebox.cfghandler
 
 from .button import Button
-# from .rotary_encoder import RotaryEncoder
+from .rotary_encoder import RotaryEncoder
 
 log = logging.getLogger('jb.gpio')
 
@@ -23,7 +23,7 @@ class GpioRpiClass(threading.Thread):
         self.devices = cfg_gpio['devices']
 
         self.device_map = {'Button': Button,
-                           'RotaryEncoder': None,
+                           'RotaryEncoder': RotaryEncoder,
                            'RockerButton': None,
                            'PortOut': None}
         self.devicelist = []
