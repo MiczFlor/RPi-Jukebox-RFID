@@ -54,6 +54,32 @@ https://mpd.readthedocs.io/en/latest/protocol.html
 
 sudo -u mpd speaker-test -t wav -c 2
 """  # noqa: E501
+# Warum ist "Second Swipe" im Player und nicht im RFID Reader?
+# Second swipe ist abhängig vom Player State - nicht vom RFID state.
+# Beispiel: RFID triggered Folder1, Webapp triggered Folder2, RFID Folder1: Dann muss das 2. Mal Folder1 auch als "first swipe"
+# gewertet werden. Wenn der RFID das basierend auf IDs macht, kann der nicht  unterscheiden und glaubt es ist 2. Swipe.
+# Beispiel 2: Jemand hat RFID Reader (oder 1x RFID und 1x Barcode Scanner oder so) angeschlossen. Liest zuerst Karte mit
+# Reader 1 und dann mit Reader 2: Reader 2 weiß nicht, was bei Reader 1 passiert ist und denkt es ist 1. swipe.
+# Beispiel 3: RFID trigered Folder1, Playlist läuft durch und hat schon gestoppt, dann wird die Karte wieder vorgehalten.
+# Dann muss das als 1. Swipe gewertet werden
+# Beispiel 4: RFID triggered "Folder1", dann wird Karte "Volume Up" aufgelegt, dann wieder Karte "Folder1": Auch das ist
+# aus Sicht ders Playbacks 2nd Swipe
+# 2nd Swipe ist keine im Reader festgelegte Funktion extra fur den Player.
+#
+# In der aktuellen Implementierung weiß der Player (der second "swipe" dekodiert) überhaupt nichts vom RFID.
+# Im Prinzip gibt es zwei "Play" Funktionen: (1) play always from start und (2) play with toggle action.
+# Die Webapp ruft immer (1) auf und die RFID immer (2). Jetzt kann man sogar für einige Karten sagen
+# immer (1) - also kein Second Swipe und für andere (2).
+# Sollte der Reader das Swcond swipe dekodieren, muss aber der Reader den Status des Player kennen.
+# Das ist allerdings ein Problem. In Version 2 ist das nicht aufgefallen,
+# weil alles uber File I/Os lief - Thread safe ist das nicht!
+#
+# Beispiel: Second swipe bei anderen Funktionen, hier: WiFi on/off.
+# Was die Karte Action tut ist ein Toggle. Der Toggle hängt vom Wifi State ab, den der RFID Kartenleser nicht kennt.
+# Den kann der Leser auch nicht tracken. Der State kann ja auch über die WebApp oder Kommandozeile geändert werden.
+# Toggle (und 2nd Swipe generell) ist immer vom Status des Zielsystems abhängig und kann damit nur vom Zielsystem geändert
+# werden. Bei Wifi also braucht man 3 Funktionen: on / off / toggle. Toggle ist dann first swipe / second swipe
+
 import mpd
 import threading
 import logging
@@ -184,7 +210,7 @@ class PlayerMPD:
         self.mpd_client.connect(self.mpd_host, 6600)
 
     def decode_2nd_swipe_option(self):
-        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'quick_select', value='none').lower()
+        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
         if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
             logger.error(f"Config mpd.second_swipe_action must be one of "
                          f"{[*self.second_swipe_action_dict.keys(), 'none', 'custom']}. Ignore setting.")
@@ -275,7 +301,11 @@ class PlayerMPD:
 
     @plugs.tag
     def pause(self, state: int = 1):
-        """Enforce pause to state (1: pause, 0: resume)"""
+        """Enforce pause to state (1: pause, 0: resume)
+
+        This is what you want as card removal action: pause the playback, so it can be resumed when card is placed
+        on the reader again. What happens on re-placement depends on configured second swipe option
+        """
         with self.mpd_lock:
             self.mpd_client.pause(state)
 
@@ -381,7 +411,7 @@ class PlayerMPD:
     def play_single(self, song_url):
         with self.mpd_lock:
             self.mpd_client.clear()
-            self.mpd_client.add(song_url)
+            self.mpd_client.addid(song_url)
             self.mpd_client.play()
 
     @plugs.tag
@@ -400,21 +430,20 @@ class PlayerMPD:
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
         accordingly.
 
-        Developers notes:
-
-            * 2nd swipe trigger may also happen, if playlist has already stopped playing
-              --> Generally, treat as first swipe
-            * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
-              --> Treat as first swipe
-            * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
-              placed again on the reader: Should be like first swipe
-            * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
-              second swipe
-
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
         """
-        # self.play_folder(folder, recursive)
+        # Developers notes:
+        #
+        #     * 2nd swipe trigger may also happen, if playlist has already stopped playing
+        #       --> Generally, treat as first swipe
+        #     * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
+        #       --> Treat as first swipe
+        #     * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
+        #       placed again on the reader: Should be like first swipe
+        #     * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
+        #       second swipe
+        #
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
         with self.mpd_lock:
             is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
@@ -426,11 +455,24 @@ class PlayerMPD:
             self.play_folder(folder, recursive)
 
     @plugs.tag
+    def get_folder_content(self, folder: str):
+        """
+        Get the folder content as content list with meta-information. Depth is always 1.
+
+        Call repeatedly to descend in hierarchy
+
+        :param folder: Folder path relative to music library path
+        """
+        plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+        plc.get_directory_content(folder)
+        return plc.playlist
+
+    @plugs.tag
     def play_folder(self, folder: str, recursive: bool = False) -> None:
         """
         Playback a music folder.
 
-        Folder content is added to the playlist as described by :ref:`jukebox.playlistgenerator`.
+        Folder content is added to the playlist as described by :mod:`jukebox.playlistgenerator`.
         The playlist is cleared first.
 
         :param folder: Folder path relative to music library path
@@ -458,6 +500,23 @@ class PlayerMPD:
             if self.current_folder_status is None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
 
+            self.mpd_client.play()
+
+    @plugs.tag
+    def play_album(self, albumartist: str, album: str):
+        """
+        Playback a album found in MPD database.
+
+        All album songs are added to the playlist
+        The playlist is cleared first.
+
+        :param albumartist: Artist of the Album provided by MPD database
+        :param album: Album name provided by MPD database
+        """
+        with self.mpd_lock:
+            logger.info(f"Play album: '{album}' by '{albumartist}")
+            self.mpd_client.clear()
+            self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
             self.mpd_client.play()
 
     @plugs.tag
@@ -498,9 +557,9 @@ class PlayerMPD:
         return albums
 
     @plugs.tag
-    def list_song_by_artist_and_album(self, artist, album):
+    def list_song_by_artist_and_album(self, albumartist, album):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'artist', artist, 'album', album)
+            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
 
         return albums
 
