@@ -5,17 +5,13 @@ import {
   Typography,
 } from '@mui/material';
 
-const SongListHeadline = ({ song }) => (
+const SongListHeadline = ({ artist, album }) => (
   <Grid container sx={{ padding: '16px 8px 0' }}>
     <Grid item>
-      {song &&
-        <>
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }} component="h1">
-            {song?.album}
-          </Typography>
-          <Typography>{song?.albumartist}</Typography>
-        </>
-      }
+      <Typography variant="h6" sx={{ fontWeight: 'bold' }} component="h1">
+        {album}
+      </Typography>
+      <Typography>{artist}</Typography>
     </Grid>
   </Grid>
 );

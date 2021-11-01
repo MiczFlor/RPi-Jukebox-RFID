@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
 
+_option_install_from_development_branch() {
+  echo "Do you want to install the unstable version for Phoniebox V3?
+If so, the installation will use the future3/develop branch
+and will manually build the web application.
+[y/N] " 1>&3
+  read -r response
+  case "$response" in
+    [yY])
+      GIT_BRANCH="future3/develop"
+      ENABLE_WEBAPP_PROD_BUILD=false
+      if [ `uname -m` = "armv6l" ]; then
+        echo "  You are running on a hardware with less resources. Building
+  the webapp might fail. If so, try to install the stable
+  release installation instead."
+      fi
+      ;;
+    *)
+      ;;
+  esac
+  echo "GIT_BRANCH=${GIT_BRANCH}"
+  echo "ENABLE_WEBAPP_PROD_BUILD=${ENABLE_WEBAPP_PROD_BUILD}"
+}
+
 _option_static_ip() {
   # ENABLE_STATIC_IP
   CURRENT_IP_ADDRESS=$(hostname -I)
@@ -126,33 +149,6 @@ you don't need to install the web application.
   echo "ENABLE_WEBAPP=${ENABLE_WEBAPP}"
 }
 
-_option_webapp_prod_build() {
-  # ENABLE_WEBAPP_PROD_BUILD
-
-  # Builing the app locally will not work in ARMv6 environments
-  if [ `uname -m` = "armv6l" ]; then
-    echo "  Only the latest production build of the web
-  will be installed due to limited hardware resources"
-  else
-    echo "  Regarding the web application: Would you like to install
-  the current production build (Y)? Otherweise the latest development
-  version will be installed.
-  The latter will install NodeJS and will proling the
-  installation time but you will get the latest features.
-  [Y/n] " 1>&3
-    read -r response
-    case "$response" in
-      [nN])
-        ENABLE_WEBAPP_PROD_BUILD=false
-        ;;
-      *)
-        ;;
-    esac
-  fi
-
-  echo "ENABLE_WEBAPP_PROD_BUILD=${ENABLE_WEBAPP_PROD_BUILD}"
-}
-
 _option_kiosk_mode() {
   # ENABLE_KIOSK_MODE
   echo "Would you like to enable the Kiosk Mode?
@@ -190,6 +186,7 @@ This shall be done eventually, but increases the installation time a lot.
 customize_options() {
   echo "Customize Options starts"
 
+  _option_install_from_development_branch
   _option_static_ip
   _option_ipv6
   _option_autohotspot
@@ -197,7 +194,6 @@ customize_options() {
   _option_samba
   _option_webapp
   if [ "$ENABLE_WEBAPP" = true ] ; then
-    _option_webapp_prod_build
     _option_kiosk_mode
   fi
   _options_update_raspi_os

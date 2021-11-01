@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=false
 ENABLE_STATIC_IP=true
 DISABLE_IPv6=true
 ENABLE_AUTOHOTSPOT=false

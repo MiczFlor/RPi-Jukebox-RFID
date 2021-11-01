@@ -41,4 +41,6 @@ for j in $INSTALLATION_PATH/installation/routines/*;
   do source $j
 done
 
+welcome
 run_with_timer install
+finish

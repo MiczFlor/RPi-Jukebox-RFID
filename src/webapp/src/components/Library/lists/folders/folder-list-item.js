@@ -25,6 +25,7 @@ const FolderListItem = ({ type, name, path }) => {
       case 'file': return request('playSong', { song_url: path });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
+      default: return;
     }
   }
 
