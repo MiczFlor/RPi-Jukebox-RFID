@@ -1,15 +1,10 @@
 import logging
 import threading
-import time
-import importlib
-import functools
 import jukebox.plugs as plugs
 import jukebox.cfghandler
-import jukebox.utils as utils
-import jukebox.publishing as publishing
 
 from .button import Button
-#from .rotary_encoder import RotaryEncoder
+# from .rotary_encoder import RotaryEncoder
 
 log = logging.getLogger('jb.gpio')
 
@@ -33,7 +28,7 @@ class GpioRpiClass(threading.Thread):
                            'PortOut': None}
         self.devicelist = []
         self.portlist = {}
-        
+
         # iterate over all GPIO devices
         for dev in self.devices.keys():
             self.devicelist.append(self.generate_device(self.devices[dev], dev))
