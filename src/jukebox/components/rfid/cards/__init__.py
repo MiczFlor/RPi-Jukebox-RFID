@@ -146,10 +146,12 @@ def check_card_database():
 @plugs.register
 def load_card_database(filename):
     try:
-        jukebox.cfghandler.load_yaml(cfg_cards, filename)
+        cfg_cards.load(filename)
     except FileNotFoundError:
         cfg_cards.config_dict({})
-        log.error(f"Empty card database: Could not open file: {filename}")
+        log.warning(f"Card database file not found. Creating empty database: '{filename}'")
+        # Save the empty card database, to make sure we can create the file and have access to it
+        cfg_cards.save(only_if_changed=False)
     check_card_database()
     publishing.get_publisher().send(f'{plugs.loaded_as(__name__)}.database.has_changed', time.ctime())
 
