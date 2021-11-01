@@ -27,13 +27,16 @@ class GpioRpiClass(threading.Thread):
         self._cancel = threading.Event()
         self.devices = cfg_gpio['devices']
 
-        self.device_map = {'Button': {'class': None},
-                           'RotaryEncoder': {'class': None},
-                           'RockerButton': {'class': None}}
-
+        self.device_map = {'Button': Button,
+                           'RotaryEncoder': None,
+                           'RockerButton': None,
+                           'PortOut': None}
+        self.devicelist = []
+        self.portlist = {}
+        
         # iterate over all GPIO devices
         for dev in self.devices.keys():
-            self.generate_device(self.devices[dev], dev)
+            self.devicelist.append(self.generate_device(self.devices[dev], dev))
 
     def generate_device(self, device_config, name):
         device_type = device_config['Type']
@@ -41,7 +44,7 @@ class GpioRpiClass(threading.Thread):
         device = self.device_map.get(device_type)
 
         if (device is not None):
-            return (device['class'](self._window, name, device_config))
+            return (device(name, device_config))
         else:
             return None
 
