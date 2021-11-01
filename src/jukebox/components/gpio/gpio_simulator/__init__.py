@@ -50,7 +50,6 @@ import jukebox.utils as utils
 import tkinter as tk
 import os
 import signal
-from components.rpc_command_alias import cmd_alias_definitions
 
 cfg_gpio = jukebox.cfghandler.get_handler('gpio')
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
@@ -71,10 +70,10 @@ class GpioSimulatorClass(threading.Thread):
         self._window.title('GPIO Simulator')
         self._window.protocol("WM_DELETE_WINDOW", self.gui_close)
 
-        self.device_map = {'Button': {'class': self.Button},
-                           'RotaryEncoder': {'class': self.RotaryEncoder},
-                           'RockerButton': {'class': self.RockerButton},
-                           'PortOut': {'class': self.PortOut}}
+        self.device_map = {'Button': self.Button,
+                           'RotaryEncoder': self.RotaryEncoder,
+                           'RockerButton': self.RockerButton,
+                           'PortOut': self.PortOut}
         self.portlist = {}
 
         # iterate over all GPIO devices
@@ -87,7 +86,7 @@ class GpioSimulatorClass(threading.Thread):
         device = self.device_map.get(device_type)
 
         if (device is not None):
-            return (device['class'](self._window, name, device_config))
+            return (device(self._window, name, device_config))
         else:
             return None
 
@@ -98,11 +97,7 @@ class GpioSimulatorClass(threading.Thread):
         os.kill(os.getpid(), signal.SIGINT)
 
     def button_cb(self, cmd):
-        action = utils.decode_rpc_command(cmd, self._logger)
-        if action is not None:
-            plugs.call_ignore_errors(action['package'], action['plugin'], 
-                                     action['method'], args=action['args'], kwargs=action['kwargs'])
-        
+        utils.decode_and_call_rpc_command(cmd, self._logger)
 
     def Button(self, top, name, config):
         B = tk.Button(top, text=name, command=lambda: self.button_cb(config['Function']))
@@ -165,10 +160,10 @@ class GpioSimulatorClass(threading.Thread):
 
         for i, ind in enumerate(port['ind']):
             if state[i] == 1:
-                fill='red'
+                fill = 'red'
             else:
-                fill='grey'
-            
+                fill = 'grey'
+
             port['canvas'].itemconfig(ind, fill=fill)
 
         return 0

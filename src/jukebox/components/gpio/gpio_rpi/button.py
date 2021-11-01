@@ -1,5 +1,4 @@
 import time
-from signal import pause
 import logging
 import jukebox.utils as utils
 
@@ -78,24 +77,24 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class Button:
-    def __init__(self, pin, action=lambda *args: None, action2=lambda *args: None, name=None,
-                 bouncetime=500, antibouncehack=False, edge='falling', hold_time=.3, hold_mode=None, pull_up_down='pull_up'):
+    def __init__(self, name, config):
         self._logger = logger
-        self.edge = parse_edge_key(edge)
-        self.hold_time = hold_time
-        self.hold_mode = hold_mode
-        self.pull_up = True
-        self.pull_up_down = parse_pull_up_down(pull_up_down)
 
-        self.pin = pin
         self.name = name
-        self.bouncetime = bouncetime
-        self.antibouncehack = antibouncehack
+        self.pin = config.get('Pin')
+
+        self.edge = parse_edge_key(config.get('edge', default='falling'))
+        self.hold_time = config.get('hold_time', default='0.3')
+        self.hold_mode = config.get('hold_mode', default=None)
+        self.pull_up_down = parse_pull_up_down(config.get('pull_up_down', default='pull_down'))
+
+        self.bouncetime = config.get('bouncetime', default=500)
+        self.antibouncehack = config.get('antibouncehack', default=False)
+        self._action = config.get('Function')
+        self._action2 = config.get('Function2', default=None)
+
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)
-        self._action = action
-        self._action2 = action2
-        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
-                              bouncetime=self.bouncetime)
+        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
         self.callback_with_pin_argument = False
 
     def callbackFunctionHandler(self, *args):
@@ -113,7 +112,7 @@ class Button:
         if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc', 'SecondFuncRepeat'):
             return self.longPressHandler()
         else:
-            logger.info('{}: execute callback'.format(self.name))
+            self._logger.info('{}: execute callback'.format(self.name))
             return utils.decode_and_call_rpc_command(self._action, self._logger)
 
 #    @property
@@ -145,7 +144,7 @@ class Button:
 #       self.when_pressed = callbackFunction
 
     def longPressHandler(self):
-        logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
+        self._logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
         # instant action (except Postpone mode)
         if self.hold_mode != "Postpone":
             utils.decode_and_call_rpc_command(self._action, self._logger)
@@ -177,14 +176,14 @@ class Button:
         return ret
 
     def __del__(self):
-        logger.debug('remove event detection')
+        self._logger.debug('remove event detection for: {}'.format(self.name))
         GPIO.remove_event_detect(self.pin)
 
-    @property
-    def is_pressed(self):
-        if self.pull_up:
-            return not GPIO.input(self.pin)
-        return GPIO.input(self.pin)
+#    @property
+#    def is_pressed(self):
+#        if self.pull_up:
+#            return not GPIO.input(self.pin)
+#        return GPIO.input(self.pin)
 
     def __repr__(self):
         return '<SimpleButton-{}(pin={},edge={},hold_mode={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.\
@@ -192,9 +191,9 @@ class Button:
                self.antibouncehack, print_pull_up_down(self.pull_up_down))
 
 
-if __name__ == "__main__":
-    print('please enter pin no to test')
-    pin = int(input())
-    func = lambda *args: print('FunctionCall with {}'.format(args))
-    btn = Button(pin=pin, action=func, hold_mode='Repeat')
-    pause()
+# if __name__ == "__main__":
+#    print('please enter pin no to test')
+#    pin = int(input())
+#    func = lambda *args: print('FunctionCall with {}'.format(args))
+#    btn = Button(pin=pin, action=func, hold_mode='Repeat')
+#    pause()
