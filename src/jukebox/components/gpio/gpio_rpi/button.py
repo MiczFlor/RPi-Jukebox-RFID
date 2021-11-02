@@ -115,34 +115,6 @@ class Button:
             self._logger.info('{}: execute callback'.format(self.name))
             return utils.decode_and_call_rpc_command(self._action, self._logger)
 
-#    @property
-#    def when_pressed(self):
-#        self._logger.info('{}: action'.format(self.name))
-#        return self._action
-
-#    @property
-#    def when_held(self):
-#        self._logger.info('{}: action2'.format(self.name))#
-#
-#        action = utils.decode_rpc_command(self._action2, self._logger)
-#        if action is not None:
-#            plugs.call_ignore_errors(action['package'], action['plugin'],
-#                                     action['method'], args=action['args'], kwargs=action['kwargs'])#
-#
-#        return self._action2
-
-#   @when_pressed.setter
-#   def when_pressed(self, func):
-#       logger.info('{}: set when_pressed')
-#       self._action = func##
-
-#       GPIO.remove_event_detect(self.pin)
-#       logger.info('add new action')
-#       GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
-
-#   def set_callbackFunction(self, callbackFunction):
-#       self.when_pressed = callbackFunction
-
     def longPressHandler(self):
         self._logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
         # instant action (except Postpone mode)
@@ -175,25 +147,6 @@ class Button:
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
         return ret
 
-    def __del__(self):
+    def stop(self):
         self._logger.debug('remove event detection for: {}'.format(self.name))
         GPIO.remove_event_detect(self.pin)
-
-#    @property
-#    def is_pressed(self):
-#        if self.pull_up:
-#            return not GPIO.input(self.pin)
-#        return GPIO.input(self.pin)
-
-    def __repr__(self):
-        return '<SimpleButton-{}(pin={},edge={},hold_mode={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.\
-               format(self.name, self.pin, print_edge_key(self.edge), self.hold_mode, self.hold_time, self.bouncetime,
-               self.antibouncehack, print_pull_up_down(self.pull_up_down))
-
-
-# if __name__ == "__main__":
-#    print('please enter pin no to test')
-#    pin = int(input())
-#    func = lambda *args: print('FunctionCall with {}'.format(args))
-#    btn = Button(pin=pin, action=func, hold_mode='Repeat')
-#    pause()

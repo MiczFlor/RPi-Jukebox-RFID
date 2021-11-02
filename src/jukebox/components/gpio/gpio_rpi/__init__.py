@@ -30,8 +30,10 @@ class GpioRpiClass(threading.Thread):
         self.portlist = {}
 
         # iterate over all GPIO devices
-        for dev in self.devices.keys():
-            self.devicelist.append(self.generate_device(self.devices[dev], dev))
+        for dev_name in self.devices.keys():
+            dev = self.generate_device(self.devices[dev_name], dev_name)
+            if dev is not None:
+                self.devicelist.append(dev)
 
     def generate_device(self, device_config, name):
         device_type = device_config['Type']
@@ -48,6 +50,13 @@ class GpioRpiClass(threading.Thread):
 
         while not self._cancel.is_set():
             pass
+
+    def stop(self):
+        self._logger.debug("Stopping GPIO Rpi")
+        self._cancel.set()
+
+        for dev in self.devicelist:
+            dev.stop()
 
 
 @plugs.finalize

@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-
 # the basic function for the rotary encoder has been derived from
 # https://github.com/bobrathbone/pirotary/blob/master/rotary_class.py
 
@@ -37,24 +35,14 @@ class RotaryEncoder:
         self._is_active = False
         self.start()
 
-    def __repr__(self):
-        repr_str = '<{class_name}{object_name} on pin_a {pin_a},' + \
-                   ' pin_b {pin_b},timBase {time_base} is_active={is_active}%s>'
-        return repr_str.format(
-            class_name=self.__class__.__name__,
-            object_name=':{}'.format(self.name) if self.name is not None else '',
-            pin_a=self.pinA,
-            pin_b=self.pinB,
-            is_active=self.is_active)
-
     def start(self):
-        self._logger.debug('Start Event Detection on {} and {}'.format(self.pinA, self.pinB))
+        self._logger.debug(f'Start Event Detection for: {self.name} ({self.pinA},{self.pinB}')
         self._is_active = True
         GPIO.add_event_detect(self.pinA, GPIO.BOTH, callback=self._Callback)
         GPIO.add_event_detect(self.pinB, GPIO.BOTH, callback=self._Callback)
 
     def stop(self):
-        self._logger.debug('Stop Event Detection on {} and {}'.format(self.pinA, self.pinB))
+        self._logger.debug(f'Stop Event Detection for: {self.name} ({self.pinA},{self.pinB}')
         GPIO.remove_event_detect(self.pinA)
         GPIO.remove_event_detect(self.pinB)
         self._is_active = False
@@ -67,10 +55,10 @@ class RotaryEncoder:
     def is_active(self):
         return self._is_active
 
-    def _Callback(self,switch):
+    def _Callback(self, pin):
         statusA = GPIO.input(self.pinA)
         statusB = GPIO.input(self.pinB)
-        
+
         statusC = statusA ^ statusB
         new_state = statusA * 4 + statusB * 2 + statusC * 1
         delta = (new_state - self.last_state) % 4
@@ -80,9 +68,9 @@ class RotaryEncoder:
             self.position += 1
         elif delta == 3:
             self.position -= 1
-        
+
         delta_pos = self.position - self.old_position
-        
+
         if delta_pos >= self.action_after_increments:
             self._logger.debug(f'{self.name} @ {self.position}: Calling functionCW {self.functionCW}')
             utils.decode_and_call_rpc_command(self.functionCW, self._logger)
@@ -91,5 +79,3 @@ class RotaryEncoder:
             self._logger.debug(f'{self.name} @ {self.position}: Calling functionCCW {self.functionCW}')
             utils.decode_and_call_rpc_command(self.functionCCW, self._logger)
             self.old_position = self.position
-       
-        return
