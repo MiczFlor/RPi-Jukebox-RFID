@@ -6,7 +6,7 @@ install() {
   if [ "$UPDATE_RASPI_OS" = true ] ; then update_raspi_os; fi;
   if [ "$ENABLE_AUTOHOTSPOT" = true ] ; then setup_autohotspot; fi;
   setup_jukebox_core
-  init_git_repo
+  # init_git_repo
   if [ "$SETUP_MPD" = true ] ; then setup_mpd; fi;
   if [ "$ENABLE_SAMBA" = true ] ; then setup_samba; fi;
   if [ "$ENABLE_WEBAPP" = true ] ; then setup_jukebox_webapp; fi;
