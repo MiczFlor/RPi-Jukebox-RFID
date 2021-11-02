@@ -57,11 +57,11 @@ class AlsaCtrl(VolumeBaseClass):
 
     @plugin.tag
     def inc_volume(self, step=3):
-        return self.set_volume(self.get_volume() + step)
+        return self.set_volume(clamp(self.get_volume() + step, 0, 100))
 
     @plugin.tag
     def dec_volume(self, step=3):
-        return self.set_volume(self.get_volume() - step)
+        return self.set_volume(clamp(self.get_volume() - step, 0, 100))
 
     @plugin.tag
     def get_max_volume(self):

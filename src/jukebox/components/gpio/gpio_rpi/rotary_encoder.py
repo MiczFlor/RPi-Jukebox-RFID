@@ -1,49 +1,20 @@
 #!/usr/bin/env python3
-# rotary volume knob
-# these files belong all together:
-# RPi-Jukebox-RFID/scripts/rotary-encoder.py
-# RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-rotary-encoder.service.stretch-default.sample
-# See wiki for more info: https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki
+
+
+# the basic function for the rotary encoder has been derived from
+# https://github.com/bobrathbone/pirotary/blob/master/rotary_class.py
 
 import RPi.GPIO as GPIO
-from timeit import default_timer as timer
-import ctypes
 import logging
 import jukebox.utils as utils
 
 logger = logging.getLogger('jb.gpio')
 
-c_uint8 = ctypes.c_uint8
-
-
-class Flags_bits(ctypes.LittleEndianStructure):
-    _fields_ = [
-        ("A", c_uint8, 1),  # asByte & 1
-        ("B", c_uint8, 1),  # asByte & 2
-    ]
-
-
-class Flags(ctypes.Union):
-    _anonymous_ = ("bit",)
-    _fields_ = [
-        ("bit", Flags_bits),
-        ("asByte", c_uint8)
-    ]
-
 
 class RotaryEncoder:
-    # select Enocder state bits
-    KeyIncr = 0b00000010
-    KeyDecr = 0b00000001
-
-    tblEncoder = [
-        0b00000011, 0b00000111, 0b00010011, 0b00000011,
-        0b00001011, 0b00000111, 0b00000011, 0b00000011,
-        0b00001011, 0b00000111, 0b00001111, 0b00000011,
-        0b00001011, 0b00000011, 0b00001111, 0b00000001,
-        0b00010111, 0b00000011, 0b00010011, 0b00000011,
-        0b00010111, 0b00011011, 0b00010011, 0b00000011,
-        0b00010111, 0b00011011, 0b00000011, 0b00000010]
+    position = 0
+    old_position = 0
+    last_state = 0
 
     def __init__(self, name, config):
         self._logger = logger
@@ -58,8 +29,7 @@ class RotaryEncoder:
         self._logger.debug(f'Initialize {name} RotaryEncoder({self.pinA}, {self.pinB})')
         self.timeBase = config.get('timeBase', default=0.1)
 
-        self.encoderState = Flags()  # stores the encoder state machine state
-        self.startTime = timer()
+        self.action_after_increments = config.get('action_after_increments', default=2)
 
         # setup pins
         GPIO.setup(self.pinA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -75,7 +45,6 @@ class RotaryEncoder:
             object_name=':{}'.format(self.name) if self.name is not None else '',
             pin_a=self.pinA,
             pin_b=self.pinB,
-            time_base=self.timeBase,
             is_active=self.is_active)
 
     def start(self):
@@ -98,47 +67,29 @@ class RotaryEncoder:
     def is_active(self):
         return self._is_active
 
-    def _StepSize(self):
-        end = timer()
-        duration = end - self.startTime
-        self.startTime = end
-        return int(self.timeBase / duration) + 1
-
-    def _Callback(self, pin):
-        self._logger.debug('EventDetection Called')
-        # construct new state machine input from encoder state and old state
+    def _Callback(self,switch):
         statusA = GPIO.input(self.pinA)
         statusB = GPIO.input(self.pinB)
+        
+        statusC = statusA ^ statusB
+        new_state = statusA * 4 + statusB * 2 + statusC * 1
+        delta = (new_state - self.last_state) % 4
+        self.last_state = new_state
 
-        self.encoderState.A = statusA
-        self.encoderState.B = statusB
-        self._logger.debug('new encoderState: "{}" -> {}, {},{}'.format(
-            self.encoderState.asByte,
-            self.tblEncoder[self.encoderState.asByte], statusA, statusB
-        ))
-        current_state = self.encoderState.asByte
-        self.encoderState.asByte = self.tblEncoder[current_state]
-
-        if self.KeyIncr == self.encoderState.asByte:
-            steps = self._StepSize()
-            self._logger.debug(f'{self.name}: Calling functionIncr {steps}')
+        if delta == 1:
+            self.position += 1
+        elif delta == 3:
+            self.position -= 1
+        
+        delta_pos = self.position - self.old_position
+        
+        if delta_pos >= self.action_after_increments:
+            self._logger.debug(f'{self.name} @ {self.position}: Calling functionCW {self.functionCW}')
             utils.decode_and_call_rpc_command(self.functionCW, self._logger)
-        elif self.KeyDecr == self.encoderState.asByte:
-            steps = self._StepSize()
-            self._logger.debug(f'{self.name}: Calling functionDecr {steps}')
+            self.old_position = self.position
+        if delta_pos <= -self.action_after_increments:
+            self._logger.debug(f'{self.name} @ {self.position}: Calling functionCCW {self.functionCW}')
             utils.decode_and_call_rpc_command(self.functionCCW, self._logger)
-        else:
-            self._logger.debug('Ignoring encoderState: "{}"'.format(self.encoderState.asByte))
-
-
-# if __name__ == "__main__":
-#    logging.basicConfig(level='INFO')
-#    GPIO.setmode(GPIO.BCM)
-#    pin1 = int(input('please enter first pin'))
-#    pin2 = int(input('please enter second pin'))
-#    func1 = lambda *args: print('Function Incr executed with {}'.format(args))
-#    func2 = lambda *args: print('Function Decr executed with {}'.format(args))
-#    rotarty_encoder = RotaryEncoder(pin1, pin2, func1, func2)
-
-#    print('running')
-#    pause()
+            self.old_position = self.position
+       
+        return
