@@ -233,6 +233,7 @@ def start_autohotspot():
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 
+
 @plugin.initialize
 def initialize():
     wlan_power = cfg.setndefault('host', 'wlan_power', 'disable_power_down', value=True)
