@@ -24,6 +24,7 @@
 # - Christian Banz
 
 import os
+import re
 import shutil
 import subprocess
 import logging
@@ -194,6 +195,43 @@ def wlan_disable_power_down(card=None):
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 
+
+@plugin.register()
+def stop_autohotspot():
+    """Stop auto hotspot functionality
+
+    Basically disabling the cronjob and running the script one last time manually
+    """
+    cron_job = "/etc/cron.d/autohotspot"
+    with open(cron_job, "r") as cron_job_file:
+        old_lines = cron_job_file.readlines()
+    with open(cron_job, "w") as cron_job_file:
+        for line in old_lines:
+            cron_job_file.write(re.sub(r'(^\*/\d.*)', r'# \1', line))
+    subprocess.run(['sudo', 'systemctl', 'disable' 'autohotspot'],
+                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    if ret.returncode != 0:
+        logger.error(f"{ret.stdout}")
+
+
+@plugin.register()
+def start_autohotspot():
+    """start auto hotspot functionality
+
+    Basically enabling the cronjob and running the script one time manually
+    """
+    cron_job = "/etc/cron.d/autohotspot"
+    with open(cron_job, "r") as cron_job_file:
+        old_lines = cron_job_file.readlines()
+    with open(cron_job, "w") as cron_job_file:
+        for line in old_lines:
+            cron_job_file.write(re.sub(r'(^# )(\*/\d.*)', r'\2', line))
+    subprocess.run(['sudo', 'systemctl', 'enable' 'autohotspot'],
+                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    if ret.returncode != 0:
+        logger.error(f"{ret.stdout}")
 
 @plugin.initialize
 def initialize():
