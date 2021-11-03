@@ -60,7 +60,7 @@ _option_autohotspot() {
 This will enable a service which identifies if the
 Phoniebox is not connected to a known WiFi and enables
 a hotspot so that you can connect to the Phoniebox.
-[Y/n] " 1>&3
+[y/N] " 1>&3
   read -r response
   case "$response" in
     [yY])
@@ -70,7 +70,7 @@ a hotspot so that you can connect to the Phoniebox.
       ;;
   esac
 
-  echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [Y/n] " 1>&3
+  echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] " 1>&3
   read -r response_pw_q
   case "$response_pw_q" in
     [yY])
@@ -87,6 +87,7 @@ a hotspot so that you can connect to the Phoniebox.
 
   if [ "$ENABLE_STATIC_IP" = true ]; then
     echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration." 1>&3
+    echo "##############################" 1>&3
     ENABLE_STATIC_IP=false
     echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
   fi
