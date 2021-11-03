@@ -189,7 +189,7 @@ Package for interfacing with the MPD Music Player Daemon
     
 
 
-.. py:function:: player.ctrl.list_song_by_artist_and_album(artist, album)
+.. py:function:: player.ctrl.list_song_by_artist_and_album(albumartist, album)
     :noindex:
 
     
@@ -226,6 +226,18 @@ Package for interfacing with the MPD Music Player Daemon
     :noindex:
 
     
+
+
+.. py:function:: player.ctrl.play_album(albumartist: str, album: str)
+    :noindex:
+
+    Playback a album found in MPD database.
+    
+    All album songs are added to the playlist
+    The playlist is cleared first.
+    
+    :param albumartist: Artist of the Album provided by MPD database
+    :param album: Album name provided by MPD database
 
 
 .. py:function:: player.ctrl.play_card(folder: str, recursive: bool = False)
@@ -323,12 +335,6 @@ Package for interfacing with the MPD Music Player Daemon
     Re-start current playlist from first track
     
     Note: Will not re-read folder config, but leave settings untouched
-
-
-.. py:function:: player.ctrl.second_swipe_action()
-    :noindex:
-
-    Toggle pause state, i.e. do a pause / resume depending on current state
 
 
 .. py:function:: player.ctrl.seek(new_time)
@@ -676,6 +682,33 @@ Module: host
     Trigger the next target execution before the time is up
 
 
+Module: gpio
+-------------------------------------------
+
+
+**loaded_from**:    components.gpio.gpio_simulator
+
+A GPIO Simulator GUI using a TK for development purposes
+
+
+.. py:function:: gpio.gpio.SetPortState(name, state)
+    :noindex:
+
+    
+
+
+.. py:function:: gpio.gpio.StartPortSequence(name, seq)
+    :noindex:
+
+    
+
+
+.. py:function:: gpio.gpio.StopPortSequence(name)
+    :noindex:
+
+    
+
+
 Module: alsaif
 -------------------------------------------
 
@@ -817,6 +850,7 @@ This is an automatically generated file from the loaded plugins:
 * *rfid*: components.rfid.reader
 * *timers*: components.timers
 * *host*: components.hostif.linux
+* *gpio*: components.gpio.gpio_simulator
 * *alsaif*: components.alsaif
 * *alsaif.alsawave*: components.alsaif.alsawave
 * *jingle.jinglemp3*: components.jingle.jinglemp3

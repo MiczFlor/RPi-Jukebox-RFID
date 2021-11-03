@@ -45,6 +45,29 @@ class GpioRpiClass(threading.Thread):
         else:
             return None
 
+    @plugs.tag
+    def SetPortState(self, name, state):
+        # port = self.portlist[name]
+        # port.SetPortState(state)
+        return 0
+
+    @plugs.tag
+    def StartPortSequence(self, name, seq):
+        # for step in seq:
+        #    time.sleep(step['delay'] / 1000)
+
+        # {1: {'delay',100,'pin':'xxx','state':1},
+        # 2: {'delay',100,'pin':'xxx','state':0}}
+
+        # {1: {'delay',100,'pin':'xxx','state':1},
+        #  2: {'repeat',100,'pin':'xxx','state':0}}
+
+        return (0)
+
+    @plugs.tag
+    def StopPortSequence(self, name):
+        return (0)
+
     def run(self):
         self._logger.debug("Start GPIO Rpi")
 
@@ -64,6 +87,7 @@ def finalize():
     global gpio
     jukebox.cfghandler.load_yaml(cfg_gpio, cfg_main.getn('gpio', 'gpio_rpi_config'))
     gpio = GpioRpiClass(cfg_gpio)
+    plugs.register(gpio, name='gpio')
     gpio.start()
 
 

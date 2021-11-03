@@ -151,10 +151,8 @@ class GpioSimulatorClass(threading.Thread):
 
         self.portlist[name] = {'ind': ind, 'canvas': canvas, 'states': states}
 
-    def SetPort(self, name, state):
-        # get lock
-        # iterate pin list and set state
-        # release lock
+    @plugs.tag
+    def SetPortState(self, name, state):
         port = self.portlist[name]
         state = port['states'].get(state)
 
@@ -168,14 +166,8 @@ class GpioSimulatorClass(threading.Thread):
 
         return 0
 
-    def SetPortSequence(self, name, seq):
-        # get lock
-        # loop sequnce
-        # Set Port state
-        # wait for time
-        # set state
-        # release lock
-
+    @plugs.tag
+    def StartPortSequence(self, name, seq):
         for step in seq:
             time.sleep(step['delay'] / 1000)
             self.SetPort(name, step['state'])
@@ -184,6 +176,13 @@ class GpioSimulatorClass(threading.Thread):
         # {1: {'delay',100,'pin':'xxx','state':1},
         # 2: {'delay',100,'pin':'xxx','state':0}}
 
+        # {1: {'delay',100,'pin':'xxx','state':1},
+        #  2: {'repeat',100,'pin':'xxx','state':0}}
+
+        return (0)
+
+    @plugs.tag
+    def StopPortSequence(self, name):
         return (0)
 
     def stop(self):
@@ -205,6 +204,7 @@ def finalize():
     global gpio
     jukebox.cfghandler.load_yaml(cfg_gpio, cfg_main.getn('gpio', 'gpio_rpi_config'))
     gpio = GpioSimulatorClass(cfg_gpio)
+    plugs.register(gpio, name='gpio')
     gpio.start()
 
 
