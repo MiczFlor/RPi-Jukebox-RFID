@@ -48,8 +48,7 @@ _other_configuration() {
 _install_service_and_timer() {
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.service /etc/systemd/system/autohotspot.service
     sudo systemctl enable autohotspot.service
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.timer /etc/systemd/system/autohotspot.timer
-    sudo systemctl enable --now autohotspot.timer
+    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.timer /etc/cron.d/autohotspot
 }
 
 _install_autohotspot_script() {

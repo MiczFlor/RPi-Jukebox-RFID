@@ -1,9 +1,2 @@
-[Unit]
-Description=autohotspot timer
-
-[Timer]
-OnActiveSec=5min
-OnUnitInactiveSec=5min
-
-[Install]
-WantedBy=basic.target
+# cron timer for autohotspot
+*/5 * * * * pi sudo /usr/bin/autohotspot 2>&1 | logger -t autohotspot
