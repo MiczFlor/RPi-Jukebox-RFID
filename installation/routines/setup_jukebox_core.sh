@@ -30,7 +30,7 @@ _jukebox_core_install_os_dependencies() {
     --allow-remove-essential \
     --allow-change-held-packages
 
-  pip3 install --upgrade pip
+  sudo pip3 install --upgrade pip
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
