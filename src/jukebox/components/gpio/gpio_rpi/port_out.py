@@ -5,11 +5,15 @@ logger = logging.getLogger('jb.gpio')
 
 
 class PortOut:
+    def __new__(cls, name, config, config_name):
+        instance = super(PortOut, cls).__new__(cls)
+        return instance
 
-    def __init__(self, name, config):
+    def __init__(self, name, config, config_name):
         self.states = config['States']
         self.pins = config['Pins']
         self.name = name
+        self.trype = config['Type']
         initial_state = config.get('Pins', default=self.states[0])
 
         for pin in self.pins:
@@ -20,15 +24,16 @@ class PortOut:
 
         pin_state = self.states.get(state)
 
-        for i, pin in enumerate(self.pins):
-            if pin_state[i] == 1:
-                level = GPIO.HIGH
-            else:
-                level = GPIO.LOW
+        if pin_state is not None:
+            for i, pin in enumerate(self.pins):
+                if pin_state[i] == 1:
+                    level = GPIO.HIGH
+                else:
+                    level = GPIO.LOW
 
-            GPIO.output(pin, level)
+                GPIO.output(pin, level)
 
-        return 0
+        return state
 
     def StartPortSequence(self, seq):
 

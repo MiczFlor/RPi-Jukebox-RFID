@@ -88,6 +88,7 @@ class GpioSimulatorClass(threading.Thread):
         if (device is not None):
             return (device(self._window, name, device_config))
         else:
+            self._logger.error(f"Device Type \"{device_type}\" not supported in Device: {name} at {device_config.lc}")
             return None
 
     def gui_close(self):

@@ -77,11 +77,25 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 
 class Button:
-    def __init__(self, name, config):
+    def __new__(cls, name, config, config_name):
+        instance = None
+        pin = config.get('Pin')
+        function = config.get('Function')
+
+        if pin is None:
+            logger.error(f"Pin has to be specified for \"{name}\"{config.lc} in {config_name}")
+        elif function is None:
+            logger.error(f"FunctionCW required for \"{name}\"{config.lc} in {config_name}")
+        else:
+            instance = super(Button, cls).__new__(cls)
+            instance.pin = pin
+            instance._action = function
+        return instance
+
+    def __init__(self, name, config, config_name):
         self._logger = logger
 
         self.name = name
-        self.pin = config.get('Pin')
 
         self.edge = parse_edge_key(config.get('edge', default='falling'))
         self.hold_time = config.get('hold_time', default='0.3')
@@ -90,7 +104,6 @@ class Button:
 
         self.bouncetime = config.get('bouncetime', default=500)
         self.antibouncehack = config.get('antibouncehack', default=False)
-        self._action = config.get('Function')
         self._action2 = config.get('Function2', default=None)
 
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)

@@ -14,19 +14,32 @@ class RotaryEncoder:
     old_position = 0
     last_state = 0
 
-    def __init__(self, name, config):
-        self._logger = logger
+    def __new__(cls, name, config, config_name):
+        instance = None
+        pins = config.get('Pins')
+        functionCW = config.get('FunctionCW')
+        functionCCW = config.get('FunctionCCW')
 
+        if len(pins) != 2:
+            logger.error(f"2 Pins have to be specified for \"{name}\"{config.lc} in {config_name}")
+        elif functionCW is None:
+            logger.error(f"FunctionCW required for \"{name}\"{config.lc} in {config_name}")
+        elif functionCCW is None:
+            logger.error(f"FunctionCCW required for \"{name}\"{config.lc} in {config_name}")
+        else:
+            instance = super(RotaryEncoder, cls).__new__(cls)
+            instance.pins = pins
+            instance.functionCW = functionCW
+            instance.functionCCW = functionCCW
+        return instance
+
+    def __init__(self, name, config, config_name):
+        self._logger = logger
         self.name = name
-        self.pins = config.get('Pins')
-        self.functionCW = config.get('FunctionCW')
-        self.functionCCW = config.get('FunctionCCW')
         self.pinA = self.pins[0]
         self.pinB = self.pins[1]
 
         self._logger.debug(f'Initialize {name} RotaryEncoder({self.pinA}, {self.pinB})')
-        self.timeBase = config.get('timeBase', default=0.1)
-
         self.action_after_increments = config.get('action_after_increments', default=2)
 
         # setup pins
