@@ -61,7 +61,7 @@ class GpioRpiClass(threading.Thread):
     def SetPortState(self, name, state):
         # port = self.portlist[name]
         # port.SetPortState(state)
-       return 0
+        return 0
 
     @plugs.tag
     def StartPortSequence(self, name, seq):
