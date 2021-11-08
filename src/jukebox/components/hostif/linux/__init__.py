@@ -24,7 +24,6 @@
 # - Christian Banz
 
 import os
-import re
 import shutil
 import subprocess
 import logging
@@ -32,7 +31,6 @@ import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
-
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -45,13 +43,13 @@ publisher = jukebox.publishing.get_publisher()
 # It could still be installed, which results in a RuntimeError when loaded on a PC
 try:
     import RPi.GPIO as gpio  # noqa: F401
+
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False
 except RuntimeError as e:
     logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
     IS_RPI = False
-
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -203,14 +201,12 @@ def stop_autohotspot():
     Basically disabling the cronjob and running the script one last time manually
     """
     cron_job = "/etc/cron.d/autohotspot"
-    with open(cron_job, "r") as cron_job_file:
-        old_lines = cron_job_file.readlines()
-    with open(cron_job, "w") as cron_job_file:
-        for line in old_lines:
-            cron_job_file.write(re.sub(r'(^\*/\d.*)', r'# \1', line))
-    subprocess.run(['sudo', 'systemctl', 'disable' 'autohotspot'],
+    subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-    ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    subprocess.run(['sudo', 'systemctl', 'disable', 'autohotspot'], shell=True,
+                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         check=False)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 
@@ -222,14 +218,12 @@ def start_autohotspot():
     Basically enabling the cronjob and running the script one time manually
     """
     cron_job = "/etc/cron.d/autohotspot"
-    with open(cron_job, "r") as cron_job_file:
-        old_lines = cron_job_file.readlines()
-    with open(cron_job, "w") as cron_job_file:
-        for line in old_lines:
-            cron_job_file.write(re.sub(r'(^# )(\*/\d.*)', r'\2', line))
-    subprocess.run(['sudo', 'systemctl', 'enable' 'autohotspot'],
+    subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\\2/", cron_job],
                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-    ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    subprocess.run(['sudo', 'systemctl', 'enable' 'autohotspot'], shell=True,
+                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+    ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         check=False)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 

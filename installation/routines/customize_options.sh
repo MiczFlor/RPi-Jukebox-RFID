@@ -87,7 +87,8 @@ a hotspot so that you can connect to the Phoniebox.
 
   if [ "$ENABLE_STATIC_IP" = true ]; then
     echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration." 1>&3
-    echo "##############################" 1>&3
+    eecho "---------------------
+" 1>&3
     ENABLE_STATIC_IP=false
     echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
   fi
