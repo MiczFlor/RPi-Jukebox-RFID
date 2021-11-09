@@ -6,7 +6,7 @@
 #
 # If you want to get a specific branch or a different repository (mainly for developers)
 # you may specify them like this
-# GIT_REPO_NAME='MiczFlor' GIT_BRANCH='future3/develop' cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+# cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 #
 export LC_ALL=C
 

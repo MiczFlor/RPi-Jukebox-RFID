@@ -145,7 +145,7 @@ _option_disable_onboard_audio() {
   # not needed when external sound card is sued
 
   echo -e "Disable Pi's on-chip audio (headphone / jack output)?
-If you are used an external sound card (e.g. USB, HifiBerry, PriateAudio, etc),
+If you are using an external sound card (e.g. USB, HifiBerry, PirateAudio, etc),
 we recommend to disable the on-chip audio. It will make the ALSA sound configuration easier.
 If you are planning to only use Bluetooth speakers, leave the on-chip audio enabled!
 (This will touch your boot configuration in ${RPI_BOOT_CONFIG_FILE}.
