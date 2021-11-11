@@ -48,7 +48,8 @@ _jukebox_webapp_build() {
   cd ${INSTALLATION_PATH}/src/webapp
   npm ci --prefer-offline --no-audit --production
   rm -rf build
-  npm run build
+  # The build wrapper script checks available memory on system and sets Node options accordingly
+  ./run_rebuild
 }
 
 _jukebox_webapp_download() {
