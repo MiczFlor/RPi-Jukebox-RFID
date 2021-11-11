@@ -49,7 +49,7 @@ _jukebox_webapp_build() {
   npm ci --prefer-offline --no-audit --production
   rm -rf build
   # The build wrapper script checks available memory on system and sets Node options accordingly
-  ./run_rebuild
+  ./run_rebuild.sh
 }
 
 _jukebox_webapp_download() {
