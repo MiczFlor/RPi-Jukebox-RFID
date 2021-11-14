@@ -1,22 +1,23 @@
-AutoHotspot
+Auto-Hotspot
 ***********
 
-The AutoHotspoot function allows the phoniebox to switch between a connection to a known WiFi router and a automatically
-generated hotspot, so that you can still access the phoniebox webapp or SSH directly to the phoniebox.
+The Auto-Hotspot function allows the Jukebox to switch between its connection between a known WiFi and an automatically
+generated hotspot so that you can still access via SSH or Webapp.
 
 .. important:: Please configure the WiFi connection to your home access point before enabling these feature!
 
 To create a hotspot and allow clients to connect `hostapd` [1]_ and `dnsmasq` [2]_
 
-Changing basic configuration of the Hotspot
+Changing basic configuration of the hotspot
 -------------------------------------------
-The whole hotspot configuration can be found at ``/etc/hostapd/hostapd.conf``
 
-Interesting for you might be:
+The whole hotspot configuration can be found at ``/etc/hostapd/hostapd.conf``.
 
-* ``ssid`` for the displayed hotspot-name
+The following parameters are relevant:
+
+* ``ssid`` for the displayed hotspot name
 * ``wpa_passphrase`` for the password of the hotspot
-* ``country_code`` if you are located in another counry than Germany
+* ``country_code`` the country you are currently in
 
 .. code-block:: bash
 
@@ -45,37 +46,40 @@ Interesting for you might be:
 
 Disabling automatism
 --------------------
-Autohotspot can be enabled/disabled within the phoniebox webapp.
+
+Auto-Hotspot can be enabled or disabled using the Webapp.
 
 .. important:: Disabling or enabling will keep the last state.
 
 Troubleshooting
 --------------------
+
 Phoniebox is not connecting to the known WiFi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The script will fall back to the hotspot so you still have some type of connection.
 
 Check your password in ``/etc/wpa_supplicant/wpa_supplicant.conf``.
 
 AutoHotspot functionality is not working
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-You can check the output of the script by running
+
+You can check the output of the script by running the following script:
 
 .. code-block:: bash
 
     $ sudo /usr/bin/autohotspot
 
-You need to add a new wifi network to the RPi
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-But it is in Hotspot mode so you are unable to scan for new wifi signals.
+You need to add a new wifi network to the Raspberry Pi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You will need to add the new network to ``/etc/wpa_supplicant/wpa_supplicant.conf`` manually. Enter the following details
-replacing mySSID and myPassword with the correct details. If your router has a hidden SSID/not Broadcast then include
-the line `scan_ssid=1`
+Because it is in Auto-Hotspot mode, you won't be able to scan for new wifi signals.
+
+You will need to add a new network to ``/etc/wpa_supplicant/wpa_supplicant.conf`` manually. Enter the following details
+replacing mySSID and myPassword with your details. If your WiFi has a hidden SSID then include the line ``scan_ssid=1``.
 
 Resources
 ---------
-Transferred the installation routine and functionality from the following tutorial into the phoniebox environment:
 
 `Raspberry Pi - Auto WiFi Hotspot Switch - Direct Connection <https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection>`__
 
