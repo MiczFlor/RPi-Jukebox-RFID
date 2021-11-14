@@ -57,9 +57,9 @@ _option_ipv6() {
 _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
   echo "Do you want to enable a WiFi hotspot on demand?
-This will enable a service which identifies if the
-Phoniebox is not connected to a known WiFi and enables
-a hotspot so that you can connect to the Phoniebox.
+When enabled, this service spins up a WiFi hotspot 
+when the Phonbox is unable to connect to a known
+WiFi. This way you can still access it.
 [y/N] " 1>&3
   read -r response
   case "$response" in
