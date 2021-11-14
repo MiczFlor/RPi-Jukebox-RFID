@@ -193,6 +193,7 @@ def wlan_disable_power_down(card=None):
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 
+
 @plugin.register
 def get_autohotspot_status():
     """Get the status of the auto hotspot feature"""
@@ -211,6 +212,7 @@ def get_autohotspot_status():
             logger.error(f"{e.__class__.__name__}: {e}")
 
     return status
+
 
 @plugin.register()
 def stop_autohotspot():
