@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 RUN set -eux ; \
     apt-get update && apt-get install -y \
