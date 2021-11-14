@@ -1,5 +1,5 @@
 Auto-Hotspot
-***********
+************
 
 The Auto-Hotspot function allows the Jukebox to switch between its connection between a known WiFi and an automatically
 generated hotspot so that you can still access via SSH or Webapp.
