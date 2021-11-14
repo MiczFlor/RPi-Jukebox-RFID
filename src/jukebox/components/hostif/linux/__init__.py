@@ -193,6 +193,24 @@ def wlan_disable_power_down(card=None):
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
 
+@plugin.register
+def get_autohotspot_status():
+    """Get the status of the auto hotspot feature"""
+    status = 'inactive'
+
+    ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        msg = f"Error: {ret.stdout}"
+        logger.error(msg)
+    else:
+        try:
+            status = ret.stdout.decode().strip()
+        except Exception as e:
+            logger.error(f"{e.__class__.__name__}: {e}")
+
+    return status
 
 @plugin.register()
 def stop_autohotspot():

@@ -110,6 +110,20 @@ const commands = {
     plugin: 'ctrl',
     method: 'mute',
   },
+
+  // Host
+  getAutohotspotStatus: {
+    _package: 'host',
+    plugin: 'get_autohotspot_status',
+  },
+  startAutohotspot: {
+    _package: 'host',
+    plugin: 'start_autohotspot',
+  },
+  stopAutohotspot: {
+    _package: 'host',
+    plugin: 'stop_autohotspot',
+  },
 };
 
 export default commands;
