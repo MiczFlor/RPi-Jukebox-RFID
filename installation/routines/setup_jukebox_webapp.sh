@@ -13,8 +13,13 @@ NODE_SOURCE_EXPERIMENTAL="https://raw.githubusercontent.com/sdesalas/node-pi-zer
 
 # Slower PIs need this to finish building the Webapp
 _jukebox_webapp_export_node_memory_limit() {
-  export NODE_OPTIONS=--max-old-space-size=512
-  echo "NODE_OPTIONS set to: '${NODE_OPTIONS}'"
+  MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+  if [ "$MEMORY" -lt 600000 ]; then
+    export NODE_OPTIONS=--max-old-space-size=512
+    echo "NODE_OPTIONS set to: '${NODE_OPTIONS}'"
+  else
+    echo "NODE_OPTIONS setting skipped due to enough memory (${MEMORY} kB)"
+  fi
 }
 
 _jukebox_webapp_install_node() {
