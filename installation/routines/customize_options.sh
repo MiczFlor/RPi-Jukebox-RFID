@@ -185,6 +185,30 @@ This shall be done eventually, but increases the installation time a lot.
   echo "UPDATE_RASPI_OS=${UPDATE_RASPI_OS}"
 }
 
+_option_disable_onboard_audio() {
+  # Disable BCM on-chip audio (typically Headphones)
+  # not needed when external sound card is sued
+
+  echo -e "Disable Pi's on-chip audio (headphone / jack output)?
+If you are using an external sound card (e.g. USB, HifiBerry, PirateAudio, etc),
+we recommend to disable the on-chip audio. It will make the ALSA sound configuration easier.
+If you are planning to only use Bluetooth speakers, leave the on-chip audio enabled!
+(This will touch your boot configuration in ${RPI_BOOT_CONFIG_FILE}.
+We will do our best not to mess anything up. However, a backup copy will be written to
+${DISABLE_ONBOARD_AUDIO_BACKUP} if things go pear-shaped.)
+[y/N] " 1>&3
+  read -r response
+  case "$response" in
+    [yY])
+      DISABLE_ONBOARD_AUDIO=true
+      ;;
+    *)
+      ;;
+  esac
+  echo "DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO}"
+
+}
+
 customize_options() {
   echo "Customize Options starts"
 
@@ -193,6 +217,7 @@ customize_options() {
   _option_ipv6
   _option_autohotspot
   _option_bluetooth
+  _option_disable_onboard_audio
   _option_samba
   _option_webapp
   if [ "$ENABLE_WEBAPP" = true ] ; then
