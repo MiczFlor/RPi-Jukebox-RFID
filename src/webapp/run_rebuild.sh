@@ -59,6 +59,7 @@ fi
 
 export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
 
+echo "Free memory: ${FREEMEM}"
 echo "Setting Node Options:"
 env | grep NODE
 
