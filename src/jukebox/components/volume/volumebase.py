@@ -1,6 +1,6 @@
 import logging
-from abc import ABC, abstractmethod
 
+from abc import ABC, abstractmethod
 from jukebox import plugs
 
 
@@ -45,8 +45,9 @@ class VolumeBaseClass(ABC):
         self._max_volume = max_volume
         if max_volume < self.get_volume():
             self.set_volume(max_volume)
+        # Making maxvolume persistent for reboot
         return self.get_max_volume()
 
-    @abstractmethod
+    @plugs.tag
     def get_max_volume(self):
-        pass
+        return self._max_volume

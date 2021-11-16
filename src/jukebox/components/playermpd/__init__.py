@@ -627,10 +627,6 @@ class MpdVolumeCtrl(VolumeBaseClass):
         self._saved_volume = self.get_volume()
         return self._mpd_player_inst.set_volume(0)
 
-    @plugs.tag
-    def get_max_volume(self):
-        return self._max_volume
-
 
 class MpdVolumeCtrlBuilder:
 
