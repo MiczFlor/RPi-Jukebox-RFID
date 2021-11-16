@@ -47,6 +47,6 @@ class VolumeBaseClass(ABC):
             self.set_volume(max_volume)
         return self.get_max_volume()
 
-    @abstractmethod
+    @plugs.tag
     def get_max_volume(self):
-        pass
+        return self._max_volume

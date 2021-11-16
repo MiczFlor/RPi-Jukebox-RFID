@@ -252,14 +252,14 @@ class PlayerMPD:
         # If volume ctrl is over mpd, volume is always retrieve via a full call to client status
         # To avoid double calls to status with evey status poll, we need a case differentiation here
         # In case MPD is the active volume manager, we can directly use the volume value
-        if plugs.get('volume').factory.get_active != 'mpd':
-            # This will log all plugin calls in logger and spams the debug messages:
-            # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
-            # Do the same, but prevent the debug logging:
-            try:
-                self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
-            except Exception:
-                pass
+        # if plugs.get('volume').factory.get_active != 'mpd':
+        #     # This will log all plugin calls in logger and spams the debug messages:
+        #     # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
+        #     # Do the same, but prevent the debug logging:
+        #     try:
+        #         self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
+        #     except Exception:
+        #         pass
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -657,7 +657,7 @@ def initialize():
     player_ctrl = PlayerMPD()
     plugs.register(player_ctrl, name='ctrl')
     volume = plugs.get('volume')
-    volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
+    # volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
 
     # Update mpc library
     library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)
