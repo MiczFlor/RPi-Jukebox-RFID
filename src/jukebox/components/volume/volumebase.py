@@ -1,6 +1,8 @@
 import logging
 
 from abc import ABC, abstractmethod
+
+import jukebox.cfghandler
 from jukebox import plugs
 
 
@@ -8,9 +10,10 @@ class VolumeBaseClass(ABC):
     """
     Abstract Base Class for all Volume Classes to ensure common API
     """
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, cfg: jukebox.cfghandler):
         super().__init__()
         self.logger = logger
+        self.cfg = cfg
         self._max_volume = 100
 
     @abstractmethod
@@ -45,7 +48,8 @@ class VolumeBaseClass(ABC):
         self._max_volume = max_volume
         if max_volume < self.get_volume():
             self.set_volume(max_volume)
-        # Making maxvolume persistent for reboot
+        # Making max_volume persistent for reboot
+        self.cfg.setn('volume', 'max_volume', value=self._max_volume)
         return self.get_max_volume()
 
     @plugs.tag

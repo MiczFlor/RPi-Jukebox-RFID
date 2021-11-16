@@ -28,7 +28,8 @@ class AlsaCtrl(VolumeBaseClass):
 
     def __init__(self):
         self._logger = logger
-        super().__init__(self._logger)
+        self._cfg = cfg
+        super().__init__(self._logger, self._cfg)
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)
 
