@@ -193,4 +193,4 @@ else #ssid or MAC address not in range
 fi
 
 # make sure powermanagement is off
-iwconfig "$wifidev" power off
+# iwconfig "$wifidev" power off
