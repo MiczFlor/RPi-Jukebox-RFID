@@ -11,12 +11,6 @@ NODE_SOURCE="https://deb.nodesource.com/setup_16.x"
 # https://github.com/nodejs/unofficial-builds/
 NODE_SOURCE_EXPERIMENTAL="https://raw.githubusercontent.com/sdesalas/node-pi-zero/master/install-node-v16.3.0.sh"
 
-# Slower PIs need this to finish building the Webapp
-_jukebox_webapp_export_node_memory_limit() {
-  export NODE_OPTIONS=--max-old-space-size=512
-  echo "NODE_OPTIONS set to: '${NODE_OPTIONS}'"
-}
-
 _jukebox_webapp_install_node() {
   sudo apt-get -y update
 
@@ -48,7 +42,8 @@ _jukebox_webapp_build() {
   cd ${INSTALLATION_PATH}/src/webapp
   npm ci --prefer-offline --no-audit --production
   rm -rf build
-  npm run build
+  # The build wrapper script checks available memory on system and sets Node options accordingly
+  ./run_rebuild.sh
 }
 
 _jukebox_webapp_download() {
@@ -82,7 +77,6 @@ setup_jukebox_webapp() {
   if [ "$ENABLE_WEBAPP_PROD_BUILD" = true ] ; then
     _jukebox_webapp_download
   else
-    _jukebox_webapp_export_node_memory_limit
     _jukebox_webapp_install_node
     _jukebox_webapp_build
   fi

@@ -295,7 +295,7 @@ WebUI
 * |[ ]| System information page
 
     * |[ ]| Configure (one or multiple) WLANs
-    * |[ ]| Enable/Disable Auto-Hotspot
+    * |[X]| Enable/Disable Auto-Hotspot
 
 * |[ ]| ``run_npm_build`` script
 

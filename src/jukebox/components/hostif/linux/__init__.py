@@ -32,7 +32,6 @@ import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
 
-
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 # Get the main Thread Publisher
@@ -44,13 +43,13 @@ publisher = jukebox.publishing.get_publisher()
 # It could still be installed, which results in a RuntimeError when loaded on a PC
 try:
     import RPi.GPIO as gpio  # noqa: F401
+
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False
 except RuntimeError as e:
     logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
     IS_RPI = False
-
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -193,6 +192,70 @@ def wlan_disable_power_down(card=None):
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
+
+
+@plugin.register
+def get_autohotspot_status():
+    """Get the status of the auto hotspot feature"""
+    status = 'inactive'
+
+    ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        msg = f"Error: {ret.stdout}"
+        logger.error(msg)
+    else:
+        try:
+            status = ret.stdout.decode().strip()
+        except Exception as e:
+            logger.error(f"{e.__class__.__name__}: {e}")
+
+    return status
+
+
+@plugin.register()
+def stop_autohotspot():
+    """Stop auto hotspot functionality
+
+    Basically disabling the cronjob and running the script one last time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', 'systemctl', 'stop', 'autohotspot'], shell=True,
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', 'systemctl', 'disable', 'autohotspot'], shell=True,
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            logger.error(f"{ret.stdout}")
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
+
+
+@plugin.register()
+def start_autohotspot():
+    """start auto hotspot functionality
+
+    Basically enabling the cronjob and running the script one time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\\2/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', 'systemctl', 'start', 'autohotspot'], shell=True,
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', 'systemctl', 'enable' 'autohotspot'], shell=True,
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            logger.error(f"{ret.stdout}")
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
 
 
 @plugin.initialize

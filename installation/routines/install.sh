@@ -12,5 +12,6 @@ install() {
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then setup_kiosk_mode; fi;
   setup_rfid_reader
   optimize_boot_time
+  if [ "$ENABLE_AUTOHOTSPOT" = true ] ; then setup_autohotspot; fi;
   cleanup
 }
