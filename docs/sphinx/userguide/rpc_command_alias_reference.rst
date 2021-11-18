@@ -20,6 +20,21 @@ RPC Command Alias Reference
 
     .. note:: This function you'll want to use most often
 
+.. py:function:: play_album(...) -> player.ctrl.play_album(albumartist: str, album: str)
+    :noindex:
+
+    **Play Album triggered by card swipe**
+
+    Playback a album found in MPD database.
+    
+    All album songs are added to the playlist
+    The playlist is cleared first.
+    
+    :param albumartist: Artist of the Album provided by MPD database
+    :param album: Album name provided by MPD database
+
+    .. note:: This function plays the content of a given album
+
 .. py:function:: pause(...) -> player.ctrl.pause(state: int = 1)
     :noindex:
 
@@ -29,6 +44,30 @@ RPC Command Alias Reference
     on the reader again. What happens on re-placement depends on configured second swipe option
 
     .. note:: This is what you want as card removal action for place capable readers
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: next_song(...) -> player.ctrl.next()
+    :noindex:
+
+    Play next track in current playlist
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: prev_song(...) -> player.ctrl.prev()
+    :noindex:
+
+    
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: toggle(...) -> player.ctrl.toggle()
+    :noindex:
+
+    Toggle pause state, i.e. do a pause / resume depending on current state
 
     Default actions modifiers
          **ignore_card_removal_action** |--| True
@@ -53,7 +92,7 @@ RPC Command Alias Reference
 
          **ignore_same_id_delay** |--| True
 
-.. py:function:: dec_volume(...) -> volume.ctrl.inc_volume(step=3)
+.. py:function:: dec_volume(...) -> volume.ctrl.dec_volume(step=3)
     :noindex:
 
     

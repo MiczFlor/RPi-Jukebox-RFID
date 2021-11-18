@@ -23,6 +23,7 @@ Welcome to RPi Jukebox RFID's documentation!
 
    concepts
    rfid/rfid
+   gpio/gpio_rpi
    userguide/rpc_commands
    userguide/rpc_command_reference
    userguide/rpc_command_alias_reference

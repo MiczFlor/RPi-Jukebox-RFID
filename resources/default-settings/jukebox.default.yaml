@@ -11,6 +11,7 @@ modules:
     rfid: rfid.reader
     timers: timers
     host: hostif.linux
+    gpio: gpio.gpio_rpi
     # rfidpinaction: rfid.pinaction.rpi
   others:
   - alsaif
@@ -68,6 +69,8 @@ rfid:
   card_database: ../../shared/settings/cards.yaml
     # Write a reference card action shortcuts to file (comment out disables)
   card_action_reference_out: ../../shared/settings/card_actions_reference.txt
+gpio:
+  gpio_rpi_config: ../../shared/settings/gpio.yaml
 timers:
     # These timers are always disabled after start
     # The following values only give the default values.
