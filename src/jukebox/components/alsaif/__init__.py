@@ -28,7 +28,8 @@ class AlsaCtrl(VolumeBaseClass):
 
     def __init__(self):
         self._logger = logger
-        super().__init__(self._logger)
+        self._cfg = cfg
+        super().__init__(self._logger, self._cfg)
         mixer_name = cfg.setndefault('alsaif', 'mixer', value='Master')
         self.mixer = alsaaudio.Mixer(mixer_name, 0)
 
@@ -62,10 +63,6 @@ class AlsaCtrl(VolumeBaseClass):
     @plugin.tag
     def dec_volume(self, step=3):
         return self.set_volume(clamp(self.get_volume() - step, 0, 100))
-
-    @plugin.tag
-    def get_max_volume(self):
-        return self._max_volume
 
 
 class AlsaCtrlBuilder:

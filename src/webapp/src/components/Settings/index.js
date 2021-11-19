@@ -6,6 +6,7 @@ import SettingsAutoShutdown from './autoshutdown';
 import SettingsSecondSwipe from './secondswipe';
 import SystemControls from './systemcontrols';
 import SettingsVolume from './volume';
+import SettingsAutoHotspot from './autohotspot';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -31,6 +32,9 @@ const Settings = () => {
       </Grid>
       <Grid item>
         <SettingsSecondSwipe />
+      </Grid>
+      <Grid item>
+        <SettingsAutoHotspot />
       </Grid>
     </Grid>
   );
