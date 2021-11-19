@@ -4,7 +4,7 @@ import jukebox.cfghandler
 import jukebox.publishing
 import jukebox.multitimer as multitimer
 import jukebox.utils as utils
-import Adafruit_ADS1x15
+#import Adafruit_ADS1x15
 
 logger = logging.getLogger('jb.battmon')
 # cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -62,6 +62,10 @@ class battmon():
         self.batt_status['soc'] = 0
         self.batt_status['chargeing'] = 0
         self.batt_status['voltage'] = 0
+        self.interval = 5
+        self.scale_to_phy_num = 35
+        self.scale_to_phy_denom = 15
+        self.scale_to_phy = self.scale_to_phy_num / self.scale_to_phy_denom
 
         self.adc = Adafruit_ADS1x15.ADS1015()
 
@@ -75,28 +79,33 @@ class battmon():
         self.warning_voltage = 3300
         self.shutdown_voltage = 3000
 
-        batt_voltage_mV_raw = self.adc.read_adc(0, gain=2)
+        self.last_sample_time = -5
+        batt_voltage_mV = self.get_adc_scaled()
 
-        self.f1 = pt1_frac(0.5, batt_voltage_mV_raw)
-        self.fs = pt1_frac(0.01, batt_voltage_mV_raw)
+        self.f1 = pt1_frac(0.5, batt_voltage_mV)
+        self.fs = pt1_frac(0.01, batt_voltage_mV)
 
         self.warning_action = None
         self.all_clear_action = None
 
-        self.status_thread = multitimer.GenericEndlessTimerClass('batt_mon.timer_status', 10, self.publish_status)
+        self.status_thread = multitimer.GenericEndlessTimerClass('batt_mon.timer_status', self.interval, self.publish_status)
         self.status_thread.start()
 
-    @plugs.register
+    def get_adc_scaled(self):
+        batt_voltage_mV_raw = self.adc.read_adc(0, gain=2)
+        return int(batt_voltage_mV_raw * self.scale_to_phy)
+
+    @plugs.tag
     def get_batt_status(self):
         return(self.batt_status)
 
     def publish_status(self):
-        batt_voltage_mV_raw = self.adc.read_adc(0, gain=2)
+        batt_voltage_mV_raw = self.get_adc_scaled()
 
         batt_voltage_mV = self.f1.iter(batt_voltage_mV_raw)
-        batt_voltage_mV_slow = self.f2.iter(batt_voltage_mV_raw)
+        batt_voltage_mV_slow = self.fs.iter(batt_voltage_mV_raw)
 
-        soc = interpolate(self.soc_cc, batt_voltage_mV)
+        soc = int(interpolate(self.soc_cc, batt_voltage_mV))
 
         if (batt_voltage_mV - batt_voltage_mV_slow) > 0:
             chargeing = 1
