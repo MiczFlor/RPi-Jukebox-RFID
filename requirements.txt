@@ -6,6 +6,7 @@
 evdev
 nanotime
 pyalsaaudio
+pulsectl
 python_mpd2
 ruamel.yaml
 # For playlistgenerator
