@@ -4,7 +4,7 @@ import jukebox.cfghandler
 import jukebox.publishing
 import jukebox.multitimer as multitimer
 import jukebox.utils as utils
-#import Adafruit_ADS1x15
+import Adafruit_ADS1x15
 
 logger = logging.getLogger('jb.battmon')
 # cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -51,9 +51,43 @@ def interpolate(cc, input):
 
 
 class battmon():
-    '''battery monitor using the ads1015
-    attention, the time between sample needs be be as minimum 1sec when a high impedance voltage divider is used.
-    don't use the continious conversion mehtod!!!
+    '''Battery Monitor based on a ADS1015
+
+    Disclaimer - CAUTION WARNING
+    CAUTION - WARNING
+
+    ========================================================================
+    Lithium and other batteries are dangerous and must be treated with care.
+    Rechargeable Lithium Ion batteries are potentially hazardous and can
+    present aserious FIRE HAZARD if damaged, defective or improperly used.
+    Do not use this circuit to a lithium ion battery without expertise and
+    training in handling and use of batteries of this type.
+    Use appropriate test equipment and safety protocols during development.
+
+    There is no warranty, this may not work as expected or at all.
+    =========================================================================
+
+    This script is intended to read out the Voltage of a single Cell LiIon Battery using a CY-ADS1015 Board:
+
+                                                  3.3V
+                                                   +
+                                                   |
+                                              .----o----.
+                        ___                   |         |  SDA
+              .--------|___|---o----o---------o AIN0    o------
+              |         2MΩ    |    |         |         |  SCL
+              |               .-.   |         | ADS1015 o------
+             ---              | |  ---        |         |
+     Battery  -          1.5MΩ| |  ---100nF   '----o----'
+     2.9V-4.2V|               '-'   |              |
+              |                |    |              |
+             ===              ===  ===            ===
+
+    Attention:
+        - the circuit is constantly draining the battery! (leak current up to: 2.1µA)
+        - the time between sample needs to be a minimum 1sec with this high impedance voltage divider
+          don't use the continious conversion mehtod!
+
     '''
 
     def __init__(self):
@@ -107,10 +141,10 @@ class battmon():
 
         soc = int(interpolate(self.soc_cc, batt_voltage_mV))
 
-        if (batt_voltage_mV - batt_voltage_mV_slow) > 0:
-            chargeing = 1
-        else:
+        if (batt_voltage_mV - batt_voltage_mV_slow) < 0:
             chargeing = 0
+        else:
+            chargeing = 1
 
         if (batt_voltage_mV < self.shutdown_voltage):
             utils.decode_and_call_rpc_command("shutdown", self._logger)
