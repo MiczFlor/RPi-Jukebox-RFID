@@ -18,7 +18,7 @@ update_git_repo() {
   TIMESTAMP=$(date +%s)
 
   # Git Repo has local changes
-  if [[ `git status --porcelain` ]]; then
+  if [[ $(git status --porcelain) ]]; then
     echo "  Found local changes in git repository.
   Moving them to backup branch 'local-backup-${TIMESTAMP}' and git stash"
     git fetch origin --depth 1

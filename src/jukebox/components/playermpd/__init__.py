@@ -275,7 +275,7 @@ class PlayerMPD:
             self.current_folder_status["SHUFFLE"] = "OFF"
             self.current_folder_status["LOOP"] = "OFF"
             self.current_folder_status["SINGLE"] = "OFF"
-        publishing.get_publisher().send('playerstatus', self.mpd_status)
+        # publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     @plugs.tag
     def get_player_type_and_version(self):
@@ -656,7 +656,7 @@ def initialize():
     global player_ctrl
     player_ctrl = PlayerMPD()
     plugs.register(player_ctrl, name='ctrl')
-    volume = plugs.get('volume')
+    # volume = plugs.get('volume')
     # volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
 
     # Update mpc library
