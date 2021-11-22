@@ -40,6 +40,11 @@ FREEMEM=$(free -mt | sed -rn 's/Total:\s+[0-9]+\s+[0-9]+\s+([0-9])/\1/p')
 echo "Max memory: ${MEMORY}"
 echo "Free memory: ${FREEMEM}"
 
+echo "Free up memory"
+sync
+echo 3 > /proc/sys/vm/drop_caches
+echo "Free memory: ${FREEMEM}"
+
 if [[ -z $NODEMEM ]]; then
   # Keep a buffer of minimum 20 MB
   if [[ $FREEMEM -gt 1044 ]]; then
