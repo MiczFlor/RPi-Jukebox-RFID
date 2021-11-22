@@ -32,6 +32,11 @@ _jukebox_webapp_install_node() {
     wget -O - ${NODE_SOURCE} | sudo bash
     sudo apt-get -qq -y install nodejs
     sudo npm install --silent -g npm
+
+    echo "Free up memory after NodeJS install"
+    npm cache clean --force
+    sudo apt-get clean
+    echo "Free memory: ${FREEMEM}"
   fi
 }
 
