@@ -5,6 +5,7 @@ import jukebox.cfghandler
 
 from .button import Button
 from .rotary_encoder import RotaryEncoder
+from .port_out import PortOut
 
 log = logging.getLogger('jb.gpio')
 gpio = None
@@ -37,15 +38,14 @@ class GpioRpiClass(threading.Thread):
         self.device_map = {'Button': Button,
                            'RotaryEncoder': RotaryEncoder,
                            'RockerButton': None,
-                           'PortOut': None}
-        self.devicelist = []
-        self.portlist = {}
+                           'PortOut': PortOut}
+        self.devicelist = {}
 
         # iterate over all GPIO devices
         for dev_name in self.devices.keys():
             dev = self.generate_device(self.devices[dev_name], dev_name)
             if dev is not None:
-                self.devicelist.append(dev)
+                self.devicelist[dev_name] = dev
 
     def generate_device(self, device_config, name):
         device_type = device_config['Type']
@@ -59,8 +59,16 @@ class GpioRpiClass(threading.Thread):
 
     @plugs.tag
     def SetPortState(self, name, state):
-        # port = self.portlist[name]
-        # port.SetPortState(state)
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.SetPortState(state)
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
+            print(type(port))
         return 0
 
     @plugs.tag
@@ -91,7 +99,7 @@ class GpioRpiClass(threading.Thread):
         self._cancel.set()
 
         for dev in self.devicelist:
-            dev.stop()
+            self.devicelist[dev].stop()
 
 
 @plugs.finalize

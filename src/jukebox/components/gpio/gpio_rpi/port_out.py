@@ -13,12 +13,12 @@ class PortOut:
         self.states = config['States']
         self.pins = config['Pins']
         self.name = name
-        self.trype = config['Type']
-        initial_state = config.get('Pins', default=self.states[0])
+        self.type = config['Type']
+        initial_state = config.get('Pins', default=list(self.states.keys())[0])
 
         for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)
-            self.SetPort(self, initial_state)
+            self.SetPortState(initial_state)
 
     def SetPortState(self, state):
 
@@ -51,3 +51,7 @@ class PortOut:
 
     def StopPortSequence(self):
         return (0)
+
+    def stop(self):
+        self.StopPortSequence()
+        pass

@@ -98,6 +98,10 @@ class Button:
         self.name = name
 
         self.edge = parse_edge_key(config.get('edge', default='falling'))
+        if self.edge == GPIO.FALLING:
+            self.active_level = GPIO.LOW
+        else:
+            self.active_level = GPIO.HIGH
         self.hold_time = config.get('hold_time', default='0.3')
         self.hold_mode = config.get('hold_mode', default=None)
         self.pull_up_down = parse_pull_up_down(config.get('pull_up_down', default='pull_down'))
@@ -119,7 +123,7 @@ class Button:
         if self.antibouncehack:
             time.sleep(0.1)
             inval = GPIO.input(self.pin)
-            if inval != GPIO.LOW:
+            if inval != self.active_level:
                 return None
 
         if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc', 'SecondFuncRepeat'):
@@ -132,31 +136,31 @@ class Button:
         self._logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
         # instant action (except Postpone mode)
         if self.hold_mode != "Postpone":
-            utils.decode_and_call_rpc_command(self._action, self._logger)
+            ret = utils.decode_and_call_rpc_command(self._action, self._logger)
 
         # action(s) after hold_time
         if self.hold_mode == "Repeat":
             # Repeated call of main action (multiple times if button is held long enough)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
 
         elif self.hold_mode == "Postpone":
             # Postponed call of main action (once)
-            if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            if checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 pass
 
         elif self.hold_mode == "SecondFunc":
             # Call of secondary action (once)
-            if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            if checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action2, self._logger)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 pass
 
         elif self.hold_mode == "SecondFuncRepeat":
             # Repeated call of secondary action (multiple times if button is held long enough)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
         return ret
 
