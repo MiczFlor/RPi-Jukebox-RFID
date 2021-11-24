@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 convert_tardir_git_repo() {
   echo "****************************************************"
   echo "*** Converting tar-ball download into git repository"
@@ -54,7 +52,6 @@ convert_tardir_git_repo() {
   fi
 
   git add .
-
   # Checkout the exact Hash that we have downloaded as tarball
   git -c advice.detachedHead=false checkout "$GIT_HASH"
   # We also pull the branch the Hash belongs to
@@ -87,33 +84,6 @@ convert_tardir_git_repo() {
   cp -f .githooks/* .git/hooks
 
 }
-
-# git init -b future3/develop
-# git remote add origin git@github.com:ChisSoc/RPi-Jukebox-RFID.git
-# git remote add upstream "git@github.com:MiczFlor/RPi-Jukebox-RFID.git"
-# git config pull.rebase false
-# git fetch origin future3/develop --depth 1
-# git fetch origin future3/main --depth 1
-# git add .
-# git pull origin future3/develop
-# git branch --set-upstream-to=origin/future3/develop future3/develop
-#
-
-# git remote add origin https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-
-# git clone -b future3/develop https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-
-
-GIT_USER=${GIT_USER:-"MiczFlor"}
-GIT_BRANCH=${GIT_BRANCH:-"future3/develop"}
-GIT_REPO_NAME="RPi-Jukebox-RFID"
-GIT_USE_SSH=true
-GIT_HASH=12432e6
-# GIT_HASH=91ded8a
-
-make_tardir_git_repo
-# temp
-
 
 update_git_repo() {
   echo "Update Git repository: Branch='${GIT_BRANCH}'"
