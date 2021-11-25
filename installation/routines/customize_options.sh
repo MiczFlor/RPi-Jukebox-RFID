@@ -57,7 +57,7 @@ _option_ipv6() {
 _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
   echo "Do you want to enable a WiFi hotspot on demand?
-When enabled, this service spins up a WiFi hotspot 
+When enabled, this service spins up a WiFi hotspot
 when the Phonbox is unable to connect to a known
 WiFi. This way you can still access it.
 [y/N] " 1>&3
@@ -70,27 +70,29 @@ WiFi. This way you can still access it.
       ;;
   esac
 
-  echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] " 1>&3
-  read -r response_pw_q
-  case "$response_pw_q" in
-    [yY])
-      while [ $(echo ${response_pw}|wc -m) -lt 8 ]
-      do
-          echo "Please type the new password (at least 8 character)." 1>&3
-          read -r response_pw
-      done
-      AUTOHOTSPOT_PASSWORD="${response_pw}"
-      ;;
-    *)
-      ;;
-  esac
+  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+      echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] " 1>&3
+      read -r response_pw_q
+      case "$response_pw_q" in
+        [yY])
+          while [ $(echo ${response_pw}|wc -m) -lt 8 ]
+          do
+              echo "Please type the new password (at least 8 character)." 1>&3
+              read -r response_pw
+          done
+          AUTOHOTSPOT_PASSWORD="${response_pw}"
+          ;;
+        *)
+          ;;
+      esac
 
-  if [ "$ENABLE_STATIC_IP" = true ]; then
-    echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration." 1>&3
-    eecho "---------------------
-" 1>&3
-    ENABLE_STATIC_IP=false
-    echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+      if [ "$ENABLE_STATIC_IP" = true ]; then
+        echo "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration." 1>&3
+        echo "---------------------
+    " 1>&3
+        ENABLE_STATIC_IP=false
+        echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+      fi
   fi
 
   echo "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"

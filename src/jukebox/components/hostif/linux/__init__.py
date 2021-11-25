@@ -224,11 +224,11 @@ def stop_autohotspot():
         cron_job = "/etc/cron.d/autohotspot"
         subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', 'systemctl', 'stop', 'autohotspot'], shell=True,
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot'],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', 'systemctl', 'disable', 'autohotspot'], shell=True,
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot'],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=False)
         if ret.returncode != 0:
             logger.error(f"{ret.stdout}")
@@ -244,13 +244,13 @@ def start_autohotspot():
     """
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
         cron_job = "/etc/cron.d/autohotspot"
-        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\\2/", cron_job],
+        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\*/", cron_job],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', 'systemctl', 'start', 'autohotspot'], shell=True,
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot'],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', 'systemctl', 'enable' 'autohotspot'], shell=True,
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot'],
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        ret = subprocess.run(['sudo', 'autohotspot'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=False)
         if ret.returncode != 0:
             logger.error(f"{ret.stdout}")
