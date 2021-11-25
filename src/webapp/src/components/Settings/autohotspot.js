@@ -61,7 +61,7 @@ const SettingsAutoHotpot = () => {
         subheader={
           autohotspotStatus === 'not-installed' &&
           <>
-            ⚠️ This feature is not installed
+            ⚠️ This feature is not installed.
             <Link
               href={helpUrl}
               target="_blank"
