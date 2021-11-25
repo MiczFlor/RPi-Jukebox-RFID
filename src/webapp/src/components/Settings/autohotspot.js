@@ -53,7 +53,10 @@ const SettingsAutoHotpot = () => {
 
   return (
     <Card>
-      <CardHeader title="Auto Hotspot" />
+      <CardHeader
+        title="Auto Hotspot"
+        subheader={autohotspotStatus === 'not-installed' && '⚠️ This feature is not installed'}
+      />
       <Divider />
       <CardContent>
         <Grid container direction="column">
