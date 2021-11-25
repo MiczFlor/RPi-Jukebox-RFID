@@ -8,30 +8,47 @@ import {
   FormGroup,
   FormControlLabel,
   Grid,
-  Switch,
+  Link,
 } from '@mui/material';
+
+import { SwitchWithLoader } from '../custom';
 
 import request from '../../utils/request';
 
+const helpUrl = 'https://rpi-jukebox-rfid.readthedocs.io/en/latest/userguide/autohotspot.html';
+
 const SettingsAutoHotpot = () => {
-  const [autohotspotStatus, setAutohotspotStatus] = useState(undefined);
+  const [autohotspotStatus, setAutohotspotStatus] = useState('not-installed');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getAutohotspotStatus = async () => {
+    const { result, error } = await request('getAutohotspotStatus');
+
+    if(result && result !== 'error') setAutohotspotStatus(result);
+    if((result && result === 'error') || error) console.error(error);
+  }
 
   const toggleAutoHotspot = async () => {
-    if (autohotspotStatus === 'active') {
-      const { error } = await request('stopAutohotspot');
-      return !error && setAutohotspotStatus('inactive');
+    const status = autohotspotStatus === 'active' ? 'inactive' : 'active';
+    const action = autohotspotStatus === 'active' ? 'stop' : 'start';
+
+    setIsLoading(true);
+    setAutohotspotStatus(status);
+    const { result, error } = await request(`${action}Autohotspot`);
+
+    if (error || result === 'error') {
+      console.error(`An error occured while performing '${action}AutoHotspot'`);
+      await getAutohotspotStatus();
     }
 
-    const { error } = await request('startAutohotspot');
-    return !error && setAutohotspotStatus('active');
+    setIsLoading(false);
   }
 
   useEffect(() => {
     const fetchAutohotspotStatus = async () => {
-      const { result, error } = await request('getAutohotspotStatus');
-
-      if(result) setAutohotspotStatus(result);
-      if(error) console.error('RPC Error:', error);
+      setIsLoading(true);
+      await getAutohotspotStatus();
+      setIsLoading(false);
     }
 
     fetchAutohotspotStatus();
@@ -39,7 +56,25 @@ const SettingsAutoHotpot = () => {
 
   return (
     <Card>
-      <CardHeader title="Auto Hotspot" />
+      <CardHeader
+        title="Auto Hotspot"
+        subheader={
+          autohotspotStatus === 'not-installed' &&
+          <>
+            ⚠️ This feature is not installed.
+            <Link
+              href={helpUrl}
+              target="_blank"
+              rel="noreferrer"
+              sx={{
+                marginLeft: '10px'
+              }}
+            >
+              Why?
+            </Link>
+          </>
+        }
+      />
       <Divider />
       <CardContent>
         <Grid container direction="column">
@@ -51,9 +86,10 @@ const SettingsAutoHotpot = () => {
                   marginLeft: '0',
                 }}
                 control={
-                  <Switch
+                  <SwitchWithLoader
+                    isLoading={isLoading}
                     checked={autohotspotStatus === 'active'}
-                    disabled={autohotspotStatus === undefined}
+                    disabled={autohotspotStatus === 'not-installed'}
                     onChange={() => toggleAutoHotspot()}
                   />
                 }

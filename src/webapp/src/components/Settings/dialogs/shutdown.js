@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,14 +7,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 
-import PlayerContext from '../../../context/player/context';
+import request from '../../../utils/request';
 
 export default function ShutDownDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [shuttingDown, setShuttingDown] = useState(false);
   const [showError, setShowError] = useState(false);
-
-  const { state: { postJukeboxCommand } } = useContext(PlayerContext);
 
   const handleClickOpen = () => {
     setDialogOpen(true);
@@ -26,12 +24,12 @@ export default function ShutDownDialog() {
 
   const doShutdown = async () => {
     try {
-      await postJukeboxCommand('host', 'shutdown');
+      await request('shutdown');
       setShuttingDown(true);
-
     }
     catch(error) {
       setShuttingDown(false);
+      setDialogOpen(false);
       setShowError(true);
     }
   };

@@ -61,10 +61,17 @@ if [[ $NODEMEM -gt $FREEMEM ]]; then
   exit 1
 fi
 
-  export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
+export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
 
-  echo "Setting Node Options:"
-  env | grep NODE
+echo "Setting Node Options:"
+env | grep NODE
+
+if [ `uname -m` = "armv6l" ]; then
+  echo "  You are running on a hardware with less resources. Building
+  the webapp might fail. If so, try to install the stable
+  release installation instead."
+fi
+
 # In rare cases you will need to update the npm dependencies
 # This is the case when the file package.json changed
 if [[ $UPDATE_DEPENDENCIES == true ]]; then
