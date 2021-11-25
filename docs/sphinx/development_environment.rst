@@ -19,7 +19,7 @@ in production, but it can be slow while developing.
 
 1. Install the latest Pi OS on a SD card.
 2. Boot up your Raspberry Pi.
-3. :ref:`Install <install>` the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch if you wish which can be changed later as well. The original repository will be set as ``upstream``.
+3. :ref:`Install <install:Install Phoniebox software>` the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch if you wish which can be changed later as well. The original repository will be set as ``upstream``.
 4. Once the installation has successfully ran, reboot your Pi.
 5. Due to some resource constraints, the Webapp does not build the latest changes and instead consumes the latest official release. To change that, you need to install NodeJS and build the Webapp locally.
 6. Install NodeJS using the existing installer
