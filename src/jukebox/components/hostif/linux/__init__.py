@@ -205,14 +205,17 @@ def get_autohotspot_status():
         ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                             stdin=subprocess.DEVNULL)
-        if ret.returncode != 0:
-            msg = f"Error: {ret.stdout}"
-            logger.error(msg)
-        else:
+        # 0 = active, 3 = inactive
+        if ret.returncode == 0 or ret.returncode == 3:
             try:
                 status = ret.stdout.decode().strip()
             except Exception as e:
+                status = 'error'
                 logger.error(f"{e.__class__.__name__}: {e}")
+        else:
+            status = 'error'
+            msg = f"Error: {ret.stdout}"
+            logger.error(msg)
 
     return status
 
