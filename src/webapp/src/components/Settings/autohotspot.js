@@ -8,11 +8,14 @@ import {
   FormGroup,
   FormControlLabel,
   Grid,
+  Link,
 } from '@mui/material';
 
 import { SwitchWithLoader } from '../custom';
 
 import request from '../../utils/request';
+
+const helpUrl = 'https://rpi-jukebox-rfid.readthedocs.io/en/latest/userguide/autohotspot.html';
 
 const SettingsAutoHotpot = () => {
   const [autohotspotStatus, setAutohotspotStatus] = useState('not-installed');
@@ -55,7 +58,22 @@ const SettingsAutoHotpot = () => {
     <Card>
       <CardHeader
         title="Auto Hotspot"
-        subheader={autohotspotStatus === 'not-installed' && '⚠️ This feature is not installed'}
+        subheader={
+          autohotspotStatus === 'not-installed' &&
+          <>
+            ⚠️ This feature is not installed
+            <Link
+              href={helpUrl}
+              target="_blank"
+              rel="noreferrer"
+              sx={{
+                marginLeft: '10px'
+              }}
+            >
+              Why?
+            </Link>
+          </>
+        }
       />
       <Divider />
       <CardContent>
