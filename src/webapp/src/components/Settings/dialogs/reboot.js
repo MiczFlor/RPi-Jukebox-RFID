@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   Button,
@@ -12,19 +12,17 @@ import {
   Snackbar,
 } from '@mui/material';
 
-import PlayerContext from '../../../context/player/context';
+import request from '../../../utils/request';
 
 export default function RebootDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [waitingForReboot, setWaitingForReboot] = React.useState(false);
   const [showError, setShowError] = useState(false);
 
-  const { state: { postJukeboxCommand } } = useContext(PlayerContext);
-
   const checkIfBackendIsAvailable = () => {
     const checkingInterval = setInterval(async () => {
       try {
-        await postJukeboxCommand('player', 'ctrl', 'playerstatus');
+        await request('playerstatus');
         setDialogOpen(false);
         setWaitingForReboot(false);
         clearInterval(checkingInterval);
@@ -46,12 +44,13 @@ export default function RebootDialog() {
 
   const doReboot = async () => {
     try {
-      await postJukeboxCommand('host', 'reboot');
+      await request('reboot');
       setWaitingForReboot(true);
       checkIfBackendIsAvailable();
     }
     catch(error) {
       setWaitingForReboot(false);
+      setDialogOpen(false);
       setShowError(true);
     }
   };
