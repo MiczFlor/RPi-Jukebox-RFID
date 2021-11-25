@@ -26,8 +26,8 @@ in production, but it can be slow while developing.
 
 .. code-block:: bash
 
-    cd ~/RPi-Jukebox-RFID/installation/routines
-    source setup_jukebox_webapp.sh
+    cd ~/RPi-Jukebox-RFID/installation/routines; \
+    source setup_jukebox_webapp.sh; \
     _jukebox_webapp_install_node
 
 7. To free up RAM, reboot your Pi.
@@ -35,7 +35,7 @@ in production, but it can be slow while developing.
 
 .. code-block:: bash
 
-    cd ~/RPi-Jukebox-RFID/src/webapp
+    cd ~/RPi-Jukebox-RFID/src/webapp; \
     ./run_rebuild.sh -u
 
 9. The Webapp should now be updated.
