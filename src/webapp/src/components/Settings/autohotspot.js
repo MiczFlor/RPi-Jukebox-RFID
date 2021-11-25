@@ -14,7 +14,7 @@ import {
 import request from '../../utils/request';
 
 const SettingsAutoHotpot = () => {
-  const [autohotspotStatus, setAutohotspotStatus] = useState(undefined);
+  const [autohotspotStatus, setAutohotspotStatus] = useState('not-installed');
 
   const toggleAutoHotspot = async () => {
     if (autohotspotStatus === 'active') {
@@ -53,7 +53,7 @@ const SettingsAutoHotpot = () => {
                 control={
                   <Switch
                     checked={autohotspotStatus === 'active'}
-                    disabled={autohotspotStatus === undefined}
+                    disabled={autohotspotStatus === 'not-installed'}
                     onChange={() => toggleAutoHotspot()}
                   />
                 }
