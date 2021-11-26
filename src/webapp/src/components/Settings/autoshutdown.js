@@ -6,8 +6,8 @@ import {
   CardHeader,
   Divider,
   Grid,
+  InputLabel,
   NativeSelect,
-  Typography,
 } from '@mui/material';
 
 const TIMESLOTS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
@@ -22,16 +22,21 @@ const options = TIMESLOTS.map(
 const SettingsAutoShutdown = () => {
   return (
     <Card>
-      <CardHeader title="Automatic Shutdown" />
+      <CardHeader
+        title="Automatic Shutdown"
+        subheader="🚧 This feature is not yet enabled."
+      />
       <Divider />
       <CardContent>
         <Grid container direction="column">
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <Typography>Stop Playout Timer</Typography>
+              <InputLabel htmlFor="stopPlayoutTimer">Stop Playout Timer</InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect
+                disabled={true}
+                id="stopPlayoutTimer"
                 name="stopPlayoutTimer"
               >
                 {options.map(({ value, label }) => (
@@ -43,10 +48,12 @@ const SettingsAutoShutdown = () => {
 
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <Typography>Shutdown Timer</Typography>
+              <InputLabel htmlFor="shutdownTimer">Shutdown Timer</InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect
+                disabled={true}
+                id="shutdownTimer"
                 name="shutdownTimer"
               >
                 {options.map(({ value, label }) => (
@@ -58,10 +65,12 @@ const SettingsAutoShutdown = () => {
 
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <Typography>Idle Shutdown</Typography>
+              <InputLabel htmlFor="shutdownTimer">Idle Shutdown</InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect
+                disabled={true}
+                id="shutdownTimer"
                 name="shutdownTimer"
               >
                 {options.map(({ value, label }) => (

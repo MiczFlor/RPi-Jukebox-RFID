@@ -197,19 +197,25 @@ def wlan_disable_power_down(card=None):
 @plugin.register
 def get_autohotspot_status():
     """Get the status of the auto hotspot feature"""
-    status = 'inactive'
+    status = 'not-installed'
 
-    ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
-                         stdin=subprocess.DEVNULL)
-    if ret.returncode != 0:
-        msg = f"Error: {ret.stdout}"
-        logger.error(msg)
-    else:
-        try:
-            status = ret.stdout.decode().strip()
-        except Exception as e:
-            logger.error(f"{e.__class__.__name__}: {e}")
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        status = 'inactive'
+
+        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                            stdin=subprocess.DEVNULL)
+        # 0 = active, 3 = inactive
+        if ret.returncode == 0 or ret.returncode == 3:
+            try:
+                status = ret.stdout.decode().strip()
+            except Exception as e:
+                logger.error(f"{e.__class__.__name__}: {e}")
+                return {'error': {'code': -1, 'message': e}}
+        else:
+            msg = f"Error 'get_autohotspot_status': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
 
     return status
 
@@ -231,9 +237,14 @@ def stop_autohotspot():
         ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=False)
         if ret.returncode != 0:
-            logger.error(f"{ret.stdout}")
+            msg = f"Error 'stop_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'inactive'
     else:
         logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
 
 
 @plugin.register()
@@ -253,9 +264,14 @@ def start_autohotspot():
         ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=False)
         if ret.returncode != 0:
-            logger.error(f"{ret.stdout}")
+            msg = f"Error 'start_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'active'
     else:
         logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
 
 
 @plugin.initialize
