@@ -54,6 +54,14 @@ def print_pull_up_down(pull_up_down):
     return result
 
 
+def checkGpioIsInState(gpioChannel, gpioHoldingState):
+    time.sleep(0.1)
+    currentState = GPIO.input(gpioChannel)
+    if (gpioHoldingState != currentState):
+        return False
+    return True
+
+
 # This function takes a holding time (fractional seconds), a channel, a GPIO state and an action reference (function).
 # It checks if the GPIO is in the state since the function was called. If the state
 # changes it return False. If the time is over the function returns True.
@@ -113,6 +121,7 @@ class Button:
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
         self.callback_with_pin_argument = False
+        self._cancel = False
 
     def callbackFunctionHandler(self, *args):
         if len(args) > 0 and args[0] == self.pin and not self.callback_with_pin_argument:
@@ -142,28 +151,36 @@ class Button:
         if self.hold_mode == "Repeat":
             # Repeated call of main action (multiple times if button is held long enough)
             while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
+                if self._cancel:
+                    break
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
 
         elif self.hold_mode == "Postpone":
             # Postponed call of main action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
-            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
-                pass
+            while checkGpioIsInState(self.pin, self.active_level):
+                if self._cancel:
+                    break
 
         elif self.hold_mode == "SecondFunc":
             # Call of secondary action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
                 ret = utils.decode_and_call_rpc_command(self._action2, self._logger)
-            while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
-                pass
+            while checkGpioIsInState(self.pin, self.active_level):
+                if self._cancel:
+                    break
 
         elif self.hold_mode == "SecondFuncRepeat":
             # Repeated call of secondary action (multiple times if button is held long enough)
             while checkGpioStaysInState(self.hold_time, self.pin, self.active_level):
+                if self._cancel:
+                    break
                 ret = utils.decode_and_call_rpc_command(self._action, self._logger)
         return ret
 
     def stop(self):
         self._logger.debug('remove event detection for: {}'.format(self.name))
         GPIO.remove_event_detect(self.pin)
+        self._cancel = True
+        time.sleep(0.1)

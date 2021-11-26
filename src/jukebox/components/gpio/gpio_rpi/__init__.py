@@ -2,6 +2,7 @@ import logging
 import threading
 import jukebox.plugs as plugs
 import jukebox.cfghandler
+import time
 
 from .button import Button
 from .rotary_encoder import RotaryEncoder
@@ -92,14 +93,13 @@ class GpioRpiClass(threading.Thread):
         self._logger.debug("Start GPIO Rpi")
 
         while not self._cancel.is_set():
-            pass
+            time.sleep(0.2)
 
     def stop(self):
         self._logger.debug("Stopping GPIO Rpi")
-        self._cancel.set()
-
         for dev in self.devicelist:
             self.devicelist[dev].stop()
+        self._cancel.wait(0.2)
 
 
 @plugs.finalize

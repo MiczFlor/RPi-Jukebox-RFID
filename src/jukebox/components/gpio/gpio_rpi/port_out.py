@@ -35,8 +35,52 @@ class PortOut:
 
         return state
 
-    def StartPortSequence(self, seq):
+    def _run_sequence(self):
+        e = self.seq[self.seq_steps[self.seq_ptr]]
+        
+        self.seq_ptr += 1
 
+        if self.seq_ptr >= self.seq_len:
+            self.seq_ptr = 0
+            # stop sequece
+        else:
+
+            s = e.get('state')
+            if s is not None:
+                delay = e.get('repeat')
+                if delay is not None:
+                    func = 'r'
+                    self.seq_ptr = 0
+                else:
+                    delay = e.get('delay')
+                    if delay is not None:
+                        func = 'd'
+                    else:
+                        func = None
+                
+                if func is not None:
+                    t = Timer(delay/1000, self._run_sequence)
+                    t.start()
+                else:
+                    # log error, 
+                    # stop seqence
+                    pass
+            else:
+                # log error, 
+                # stop seqence
+                pass
+
+    
+    def StartPortSequence(self, seq):
+        self.seq = seq  # maybe deepcopy this?
+
+        self.seq_steps = seq.keys()
+        self.seq_len = len(self.seq_steps)
+
+        self.seq_ptr = 0
+
+
+        
         # for step in seq:
         #    time.sleep(step['delay'] / 1000)
         #    self.SetPort(step['state'])
