@@ -20,7 +20,7 @@ _configure_hostapd() {
     HOSTAPD_CUSTOM_FILE="${INSTALLATION_PATH}"/resources/autohotspot/hostapd.conf
     HOSTAPD_CONF_FILE="/etc/hostapd/hostapd.conf"
     sed -i "s/WIFI_INTERFACE/${WIFI_INTERFACE}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sed -i "s/AUTOHOTSPOT_PASSWORD/=${AUTOHOTSPOT_PASSWORD}/g" "${HOSTAPD_CUSTOM_FILE}"
+    sed -i "s/AUTOHOTSPOT_PASSWORD/${AUTOHOTSPOT_PASSWORD}/g" "${HOSTAPD_CUSTOM_FILE}"
     sed -i "s/WIFI_REGION/${WIFI_REGION}/g" "${HOSTAPD_CUSTOM_FILE}"
     sudo cp "${HOSTAPD_CUSTOM_FILE}" "${HOSTAPD_CONF_FILE}"
 
@@ -35,7 +35,7 @@ no-resolv
 #Interface to use
 interface=${WIFI_INTERFACE}
 bind-interfaces
-dhcp-range=192.168.42.50,192.168.42.150,12h
+dhcp-range=10.0.0.50,10.0.0.150,12h
 EOF
 }
 
