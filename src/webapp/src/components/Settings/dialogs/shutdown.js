@@ -25,7 +25,7 @@ export default function ShutDownDialog() {
   const doShutdown = async () => {
     try {
       setShuttingDown(true);
-      await request('shutdown');
+      request('shutdown');
     }
     catch(error) {
       setShuttingDown(false);

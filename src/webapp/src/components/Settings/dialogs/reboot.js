@@ -44,9 +44,9 @@ export default function RebootDialog() {
 
   const doReboot = async () => {
     try {
-      await request('reboot');
       setWaitingForReboot(true);
       checkIfBackendIsAvailable();
+      request('reboot');
     }
     catch(error) {
       setWaitingForReboot(false);
