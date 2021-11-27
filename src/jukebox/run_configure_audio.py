@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
+Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
+Run this once after installation. Can be re-run at any time to change the settings.
+For more information see :ref:`userguide/audio:Audio Configuration`.
 """
 import os
 import argparse

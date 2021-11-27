@@ -21,7 +21,7 @@ HOME_PATH="/home/pi"
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
-SYSTEMD_PATH="/lib/systemd/system"
+SYSTEMD_USR_PATH="/usr/lib/systemd/user/"
 INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {

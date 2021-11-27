@@ -20,6 +20,21 @@ RPC Command Alias Reference
 
     .. note:: This function you'll want to use most often
 
+.. py:function:: play_album(...) -> player.ctrl.play_album(albumartist: str, album: str)
+    :noindex:
+
+    **Play Album triggered by card swipe**
+
+    Playback a album found in MPD database.
+    
+    All album songs are added to the playlist
+    The playlist is cleared first.
+    
+    :param albumartist: Artist of the Album provided by MPD database
+    :param album: Album name provided by MPD database
+
+    .. note:: This function plays the content of a given album
+
 .. py:function:: pause(...) -> player.ctrl.pause(state: int = 1)
     :noindex:
 
@@ -33,18 +48,18 @@ RPC Command Alias Reference
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-.. py:function:: set_volume(...) -> volume.ctrl.set_volume(volume)
+.. py:function:: set_volume(...) -> volume.ctrl.set_volume(volume: int)
     :noindex:
 
-    
+    Set the volume (0-100) for the currently active output
 
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-.. py:function:: inc_volume(...) -> volume.ctrl.inc_volume(step=3)
+.. py:function:: change_volume(...) -> volume.ctrl.change_volume(step: int)
     :noindex:
 
-    
+    Increase/decrease the volume by step for the currently active output
 
     .. note:: For place-capable readers increment volume as long as card is on reader
 
@@ -53,20 +68,18 @@ RPC Command Alias Reference
 
          **ignore_same_id_delay** |--| True
 
-.. py:function:: dec_volume(...) -> volume.ctrl.inc_volume(step=3)
+.. py:function:: set_soft_max_volume(...) -> volume.ctrl.set_soft_max_volume(max_volume: int)
     :noindex:
 
-    
+    Limit the maximum volume to max_volume for the currently active output
 
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-         **ignore_same_id_delay** |--| True
-
-.. py:function:: set_max_volume(...) -> volume.ctrl.set_max_volume(max_volume)
+.. py:function:: toggle_output(...) -> volume.ctrl.toggle_output()
     :noindex:
 
-    
+    Toggle the audio output sink
 
     Default actions modifiers
          **ignore_card_removal_action** |--| True
