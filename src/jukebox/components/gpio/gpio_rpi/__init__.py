@@ -73,33 +73,43 @@ class GpioRpiClass(threading.Thread):
         return 0
 
     @plugs.tag
-    def StartPortSequence(self, name, seq):
-        # for step in seq:
-        #    time.sleep(step['delay'] / 1000)
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        # 2: {'delay',100,'pin':'xxx','state':0}}
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        #  2: {'repeat',100,'pin':'xxx','state':0}}
-
+    def StartPortSequence(self, seq):
+        name = seq.get('name')
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.StartPortSequence(seq)
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
         return (0)
 
     @plugs.tag
     def StopPortSequence(self, name):
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.StopPortSequence()
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
         return (0)
 
     def run(self):
         self._logger.debug("Start GPIO Rpi")
-
-        while not self._cancel.is_set():
-            time.sleep(0.2)
+        self._cancel.wait()
+        self._logger.debug("Stopped GPIO Rpi")
 
     def stop(self):
         self._logger.debug("Stopping GPIO Rpi")
         for dev in self.devicelist:
             self.devicelist[dev].stop()
-        self._cancel.wait(0.2)
+        time.sleep(0.2)
+        self._cancel.set()
 
 
 @plugs.finalize

@@ -64,8 +64,6 @@ RotaryEncoder
 PortOut
 ^^^^^^^^^^^^^^^^^
 
-|[ ]| Needs implementation (in progress)
-
 API:
 
 * SetPortState(self, name, state)
@@ -92,28 +90,35 @@ The order states is following the order of the pins before.
 So in the above case ``RED: [1, 0]`` means pin ``22 = 1``, pin ``21 = 0``.
 
 
-Squences
+Sequences
 ~~~~~~~~~~~~~~~~~~~~~~
 
 API:
 
-* StartPortSequence(PortName, Sequence)
+* StartPortSequence(Sequence)
 * StopPortSequence(PortName)
 
+Sequences are controlled via a dictionary containing the fields ``name``, ``mode`` and ``seq``
 
-.. code-block:: yaml   
-   
-   seq:  [{state:  On, delay: 200},     # state to be set, deley in ms
-          {state: Off, delay: 200},
-          {state:  On, delay: 200},
-          {state: Off, delay: 200}]
+- `name` is the name of a the PortOut which is to be actuated
+- `mode` can have the values ``single`` and ``cont``. 
+  If ``single`` is set, the Sequence will be run once, otherwise it will be repeated endlessly
+- `seq` is a list of lists containing the State to be set followed by the time in ms:
+  
+  [ [``State``, ``Time in ms``] , [``State``, ``Time in ms``] ]
 
-
-To support blinking, the sequencer understands the keyword ``repeat`` which will start the sequence from the beginning.
+  The State must be one of the States defined in the gpio.ymal for the coresponding PortOut
 
 .. code-block:: yaml
 
-    seq:  [{state: Off, delay: 200},   # state to be set, deley in ms
-           {state:  On, repeat: 200}]  # state to be set, deley in ms before the sequence is repeated
+    {'name': 'BLUE_LED',
+     'mode': 'single',
+     'seq': [['On',100],['Off',100],['On',100],['Off',0]]}
+
+.. code-block:: yaml
+
+    {'name': 'RED_LED',
+     'mode': 'cont',
+     'seq': [['On',100],['Off',100],['On',100],['Off',100]]}
 
 
