@@ -14,6 +14,7 @@ import os
 import sys
 import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../../src/jukebox'))
+import jukebox.utils
 
 # -- Project information -----------------------------------------------------
 
@@ -22,8 +23,13 @@ copyright = '2021, The RPi Jukebox RFID Community'
 author = 'The RPi Jukebox RFID Community'
 
 # The full version, including alpha/beta/rc tags
-release = '3.0.AlmostAlpha'
+release = jukebox.version()
+version = release
 
+try:
+    gitstate = jukebox.utils.get_git_state()
+except Exception as e:
+    gitstate = 'Unknown'
 
 # -- General configuration ---------------------------------------------------
 
@@ -48,6 +54,12 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # html_theme = 'alabaster'
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+# Define additional variables to for usage in HTML templates
+# https://stackoverflow.com/questions/14774603/sphinx-add-custom-field-variable-to-be-used-in-html-template
+html_context = {
+    'gitstate': gitstate
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

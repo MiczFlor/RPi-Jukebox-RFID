@@ -11,4 +11,10 @@ server {
 	location / {
 		try_files $uri $uri/ =404;
 	}
+
+    location /docs {
+        alias /home/pi/RPi-Jukebox-RFID/docs/sphinx/_build/html/;
+        index index.html index.htm;
+     }
+
 }
