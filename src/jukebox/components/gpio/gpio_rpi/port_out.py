@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import logging
-
-logger = logging.getLogger('jb.gpio')
+import threading
 
 
 class PortOut:
@@ -10,6 +9,7 @@ class PortOut:
         return instance
 
     def __init__(self, name, config, config_name):
+        self._logger = logging.getLogger('jb.gpio')
         self.states = config['States']
         self.pins = config['Pins']
         self.name = name
@@ -19,6 +19,9 @@ class PortOut:
         for pin in self.pins:
             GPIO.setup(pin, GPIO.OUT)
             self.SetPortState(initial_state)
+
+        self._seq_timer = None
+        self._seq_cancel = False
 
     def SetPortState(self, state):
 
@@ -36,64 +39,43 @@ class PortOut:
         return state
 
     def _run_sequence(self):
-        e = self.seq[self.seq_steps[self.seq_ptr]]
-        
+        if self._seq_cancel:
+            return
+
+        e = self.seq[self.seq_ptr]
         self.seq_ptr += 1
 
-        if self.seq_ptr >= self.seq_len:
-            self.seq_ptr = 0
-            # stop sequece
+        s = self.SetPortState(e[0])
+        if s is not None:
+            delay = e[1]
+
+            if self.seq_ptr >= self.seq_len:
+                self.seq_ptr = 0
+
+                if self.seq_mode == 'single':
+                    self._seq_cancel = True
+                    return
+
+            self._seq_timer = threading.Timer(delay / 1000, self._run_sequence)
+            self._seq_timer.start()
         else:
+            self._logger.debug("State is not existing")
 
-            s = e.get('state')
-            if s is not None:
-                delay = e.get('repeat')
-                if delay is not None:
-                    func = 'r'
-                    self.seq_ptr = 0
-                else:
-                    delay = e.get('delay')
-                    if delay is not None:
-                        func = 'd'
-                    else:
-                        func = None
-                
-                if func is not None:
-                    t = Timer(delay/1000, self._run_sequence)
-                    t.start()
-                else:
-                    # log error, 
-                    # stop seqence
-                    pass
-            else:
-                # log error, 
-                # stop seqence
-                pass
-
-    
     def StartPortSequence(self, seq):
-        self.seq = seq  # maybe deepcopy this?
-
-        self.seq_steps = seq.keys()
-        self.seq_len = len(self.seq_steps)
-
+        if (self._seq_cancel is False):
+            self.StopPortSequence()
+        self._seq_cancel = False
+        self.seq_mode = seq.get('mode')
+        self.seq = seq.get('seq')
+        self.seq_len = len(self.seq)
         self.seq_ptr = 0
-
-
-        
-        # for step in seq:
-        #    time.sleep(step['delay'] / 1000)
-        #    self.SetPort(step['state'])
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        #  2: {'delay',100,'pin':'xxx','state':0}}
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        #  2: {'repeat',100,'pin':'xxx','state':0}}
-
+        self._run_sequence()
         return (0)
 
     def StopPortSequence(self):
+        self._seq_cancel = True
+        if self._seq_timer is not None:
+            self._seq_timer.cancel()
         return (0)
 
     def stop(self):
