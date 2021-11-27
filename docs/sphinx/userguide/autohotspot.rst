@@ -8,6 +8,27 @@ generated hotspot so that you can still access via SSH or Webapp.
 
 To create a hotspot and allow clients to connect `hostapd` [1]_ and `dnsmasq` [2]_
 
+How to connect
+--------------
+
+When the Jukebox is not able to connect to a known WiFi it will create a hotspot named ``Phoniebox_Hotspot``. You will be
+able to connect to this hotspot using the given password in the installation or the default password: ``PlayItLoud!``
+
+Webapp
+^^^^^^
+
+After connecting to the ``Phoniebox_Hotspot`` you are able to connect to the webapp accessing the website `10.0.0.5 <http://10.0.0.5/>`_
+
+ssh
+^^^
+
+After connecting to the ``Phoniebox_Hotspot`` you are able to connect via ssh to your Jukebox
+
+.. code-block:: bash
+
+    ssh pi@10.0.0.5
+
+
 Changing basic configuration of the hotspot
 -------------------------------------------
 
