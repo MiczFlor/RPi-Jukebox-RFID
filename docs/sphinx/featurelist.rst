@@ -244,10 +244,11 @@ GPIO
     * |[ ]| needs testing
 * |[ ]| Rocker Button (former Two Button Control)
     * |[ ]| needs testing
-* |[ ]| Port Out (In progress)
-    * The former Status LED will turn into a PortOut Function supporting multible Pins and Sequences
-    * |[ ]| Port States
-    * |[ ]| Sequences
+* |[X]| Port Out
+    * The former Status LED will turn into a PortOut Function supporting multiple Pins and Sequences
+    * |[X]| Port States
+    * |[X]| Sequences
+    * |[ ]| needs testing
 
 * |[X]| GPIO Simulator
     * The GPIO Simulator is a quick & dirty implementation of a TK GUI to test the basic functionality
