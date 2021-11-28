@@ -47,17 +47,15 @@ run_publicity_sniffer.py
 run_sphinx.sh
 -------------------------
 
-This re-builds the documentation using a Sphinx flow. Located in the main directory.
+This command rebuilds the documentation using a Sphinx flow, located in the main directory.
 
-The documentation is build partially from auto-generated RST-files.
-The auto-generated files contain the :ref:`userguide/rpc_command_reference:RPC Command Reference`
+The documentation is built partially from auto-generated RST-files.
+Thee files contain the :ref:`userguide/rpc_command_reference:RPC Command Reference`
 and :ref:`userguide/rpc_command_alias_reference:RPC Command Alias Reference`.
-
-Call:
 
 .. code-block:: bash
 
     run_jukebox.py -a
 
-to regenerate these RST files. This only needs to be done when
-the RPC call references need to be updated in the documentation flow.
+The above command regenerate these RST files. This only needs to be done when
+the RPC call references need to be updated within the documentation flow.
