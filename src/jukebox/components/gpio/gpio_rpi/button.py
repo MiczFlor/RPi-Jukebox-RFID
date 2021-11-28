@@ -141,7 +141,7 @@ class Button:
             self._logger.info('{}: execute callback'.format(self.name))
             return utils.decode_and_call_rpc_command(self._action, self._logger)
 
-    def longPressHandler(self):
+    def longPressHandler(self): # noqa: C901
         self._logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
         # instant action (except Postpone mode)
         if self.hold_mode != "Postpone":
