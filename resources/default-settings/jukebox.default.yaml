@@ -13,6 +13,7 @@ modules:
     rfid: rfid.reader
     timers: timers
     host: hostif.linux
+    gpio: gpio.gpio_rpi
     # rfidpinaction: rfid.pinaction.rpi
   others:
   - music_cover_art
@@ -53,7 +54,7 @@ pulse:
       volume_limit: 100
       soft_max_volume: 100
       # Leave pulse_sink_name unfilled to disable secondary output
-      # pulse_sink_name: bluez_sink.C4_FB_20_63_B8_A2.a2dp_sink
+      # pulse_sink_name: bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink
 jingle:
    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
   startup_sound: ../../resources/audio/startupsound.wav
@@ -93,6 +94,8 @@ publishing:
 rfid:
   reader_config: ../../shared/settings/rfid.yaml
   card_database: ../../shared/settings/cards.yaml
+gpio:
+  gpio_rpi_config: ../../shared/settings/gpio.yaml
 timers:
   # These timers are always disabled after start
   # The following values only give the default values.

@@ -26,7 +26,13 @@ INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {
   wget -qO- ${GIT_URL}/tarball/${GIT_BRANCH} | tar xz
-  find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*" -exec mv {} $GIT_REPO_NAME  \;
+  GIT_REPO_DOWNLOAD=$(find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*")
+  echo "GIT REPO DOWNLOAD = $GIT_REPO_DOWNLOAD"
+  GIT_HASH=$(echo $GIT_REPO_DOWNLOAD | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/p")
+  # Save the git hash for this particular download for later git repo initialization
+  echo "GIT HASH = $GIT_HASH"
+  mv $GIT_REPO_DOWNLOAD $GIT_REPO_NAME
+  unset GIT_REPO_DOWNLOAD
 }
 
 ### RUN INSTALLATION

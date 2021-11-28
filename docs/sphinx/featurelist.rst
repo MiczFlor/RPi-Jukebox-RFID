@@ -230,12 +230,27 @@ Volume
 GPIO
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Everything needs porting (*in progress*)
+* |[ ]| General (In Progress)
+    * |[X]| Function call routines need replacing to do RPC Calls
+    * |[X]| Configuration format probably best changed to YAML
+    * |[ ]| Configuration Error Checking (no exception in case of YAML typos, but clear error messages)
+    * |[ ]| Documentation
 
-    * Function call routines need replacing to do RPC Calls
-    * Configuration format probably best changed to YAML
+* |[X]| GPIO Button
+    * |[ ]| needs testing
+* |[X]| GPIO Rotary Encoder
+    * Rotary Encoder implementation has been changed to support a higher resolution
+    * |[ ]| needs testing
+* |[ ]| Rocker Button (former Two Button Control)
+    * |[ ]| needs testing
+* |[ ]| Port Out (In progress)
+    * The former Status LED will turn into a PortOut Function supporting multible Pins and Sequences
+    * |[ ]| Port States
+    * |[ ]| Sequences
 
-* |[ ]| Status LED probably needs re-writing to benefit fully from plugin structure
+* |[X]| GPIO Simulator
+    * The GPIO Simulator is a quick & dirty implementation of a TK GUI to test the basic functionality
+
 * |[ ]| USB Buttons: It's a different category as it works similar to the RFID cards
 * |[ ]| Port rfid pin action to GPIO as a general pin service for all plugins
 
@@ -255,6 +270,7 @@ Others
 
 * |[ ]| MQTT
 * |[ ]| Record and Playback using a Mic
+* |[ ]| Dot Matrix Displays
 
 Start-up stuff
 ^^^^^^^^^^^^^^^^^
@@ -288,7 +304,7 @@ WebUI
 * |[ ]| System information page
 
     * |[ ]| Configure (one or multiple) WLANs
-    * |[ ]| Enable/Disable Auto-Hotspot
+    * |[X]| Enable/Disable Auto-Hotspot
 
 * |[ ]| ``run_npm_build`` script
 

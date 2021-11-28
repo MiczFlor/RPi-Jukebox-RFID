@@ -48,6 +48,30 @@ RPC Command Alias Reference
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
+.. py:function:: next_song(...) -> player.ctrl.next()
+    :noindex:
+
+    Play next track in current playlist
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: prev_song(...) -> player.ctrl.prev()
+    :noindex:
+
+    
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: toggle(...) -> player.ctrl.toggle()
+    :noindex:
+
+    Toggle pause state, i.e. do a pause / resume depending on current state
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
 .. py:function:: set_volume(...) -> volume.ctrl.set_volume(volume: int)
     :noindex:
 

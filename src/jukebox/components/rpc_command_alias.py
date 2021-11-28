@@ -30,6 +30,22 @@ cmd_alias_definitions = {
         'method': 'pause',
         'note': "This is what you want as card removal action for place capable readers",
         'ignore_card_removal_action': True},
+    'next_song': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'next',
+        'ignore_card_removal_action': True},
+    'prev_song': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'prev',
+        'ignore_card_removal_action': True},
+    'toggle': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'toggle',
+        'ignore_card_removal_action': True},
+
     # VOLUME
     'set_volume': {
         'package': 'volume',

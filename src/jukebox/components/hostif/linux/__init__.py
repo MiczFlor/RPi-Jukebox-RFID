@@ -32,7 +32,6 @@ import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
 
-
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 # Get the main Thread Publisher
@@ -44,13 +43,13 @@ publisher = jukebox.publishing.get_publisher()
 # It could still be installed, which results in a RuntimeError when loaded on a PC
 try:
     import RPi.GPIO as gpio  # noqa: F401
+
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False
 except RuntimeError as e:
     logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
     IS_RPI = False
-
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -193,6 +192,86 @@ def wlan_disable_power_down(card=None):
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
+
+
+@plugin.register
+def get_autohotspot_status():
+    """Get the status of the auto hotspot feature"""
+    status = 'not-installed'
+
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        status = 'inactive'
+
+        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                            stdin=subprocess.DEVNULL)
+        # 0 = active, 3 = inactive
+        if ret.returncode == 0 or ret.returncode == 3:
+            try:
+                status = ret.stdout.decode().strip()
+            except Exception as e:
+                logger.error(f"{e.__class__.__name__}: {e}")
+                return {'error': {'code': -1, 'message': e}}
+        else:
+            msg = f"Error 'get_autohotspot_status': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+    return status
+
+
+@plugin.register()
+def stop_autohotspot():
+    """Stop auto hotspot functionality
+
+    Basically disabling the cronjob and running the script one last time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            msg = f"Error 'stop_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'inactive'
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
+
+
+@plugin.register()
+def start_autohotspot():
+    """start auto hotspot functionality
+
+    Basically enabling the cronjob and running the script one time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\*/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            msg = f"Error 'start_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'active'
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
 
 
 @plugin.initialize

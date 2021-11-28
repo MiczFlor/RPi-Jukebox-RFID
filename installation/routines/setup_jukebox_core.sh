@@ -31,7 +31,7 @@ _jukebox_core_install_os_dependencies() {
     --allow-remove-essential \
     --allow-change-held-packages
 
-  pip3 install --upgrade pip
+  sudo pip3 install --upgrade pip
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
@@ -71,7 +71,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "  Build and install pyzmq with WebSockets Support"
 
-  if ! pip3 list | grep -F pyzmq >> /dev/null; then
+  if ! sudo pip3 list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
     echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
 
@@ -91,7 +91,7 @@ _jukebox_core_build_and_install_pyzmq() {
       _jukebox_core_download_prebuild_libzmq_with_drafts
     fi
 
-    pip3 install --pre pyzmq \
+    sudo pip3 install --pre pyzmq \
       --install-option=--enable-drafts \
       --install-option=--zmq=${ZMQ_PREFIX}
   else
@@ -120,7 +120,7 @@ _jukebox_core_download_prebuilt_pyzmq() {
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd ${INSTALLATION_PATH}
-  pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+  sudo pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 }
 
 _jukebox_core_install_settings() {

@@ -671,6 +671,28 @@ Module: host
     card=None takes card from configuration file
 
 
+.. py:function:: host.get_autohotspot_status()
+    :noindex:
+
+    Get the status of the auto hotspot feature
+
+
+.. py:function:: host.stop_autohotspot()
+    :noindex:
+
+    Stop auto hotspot functionality
+    
+    Basically disabling the cronjob and running the script one last time manually
+
+
+.. py:function:: host.start_autohotspot()
+    :noindex:
+
+    start auto hotspot functionality
+    
+    Basically enabling the cronjob and running the script one time manually
+
+
 .. py:function:: host.timer_temperature.cancel()
     :noindex:
 

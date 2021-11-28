@@ -81,5 +81,4 @@ specify the variables like this:
 
     cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 
-This will switch directly to the specified branch after the 'landing-page' install script
-has been processed.
+This will switch directly to the specified feature branch during installation.

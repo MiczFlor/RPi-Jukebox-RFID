@@ -36,6 +36,11 @@ const commands = {
     _package: 'cards',
     plugin: 'delete_card',
   },
+  playerstatus: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'playerstatus'
+  },
 
   // Player Actions
   play: {
@@ -109,6 +114,28 @@ const commands = {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'mute',
+  },
+
+  // Host
+  getAutohotspotStatus: {
+    _package: 'host',
+    plugin: 'get_autohotspot_status',
+  },
+  startAutohotspot: {
+    _package: 'host',
+    plugin: 'start_autohotspot',
+  },
+  stopAutohotspot: {
+    _package: 'host',
+    plugin: 'stop_autohotspot',
+  },
+  reboot: {
+    _package: 'host',
+    plugin: 'reboot',
+  },
+  shutdown: {
+    _package: 'host',
+    plugin: 'shutdown',
   },
 };
 
