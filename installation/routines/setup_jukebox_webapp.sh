@@ -70,6 +70,11 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo service nginx restart
 }
 
+_jukebox_build_local_docs() {
+  echo "  Build docs locally"
+  ./run_sphinx -c
+}
+
 
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
@@ -79,6 +84,9 @@ setup_jukebox_webapp() {
   else
     _jukebox_webapp_install_node
     _jukebox_webapp_build
+  fi
+  if [ "$ENABLE_LOCAL_DOCS" = true ]; then
+    _jukebox_build_local_docs
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
 
