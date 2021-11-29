@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-RPI_BOOT_CONFIG_FILE=/boot/config.txt
-
 BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=false
 ENABLE_STATIC_IP=true
 DISABLE_IPv6=true
