@@ -94,7 +94,6 @@ import jukebox.publishing as publishing
 import jukebox.playlistgenerator as playlistgenerator
 import misc
 
-from components.volume.volumebase import VolumeBaseClass
 from jukebox.NvManager import nv_manager
 
 

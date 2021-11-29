@@ -25,7 +25,7 @@ const Volume = () => {
 
   const toggleVolumeMute = () => {
     setVolumeMute(!volumeMute);
-    request('toggleMuteVolume', { mute_on: !volumeMute });
+    request('toggleMuteVolume', { mute: !volumeMute });
   };
 
   const updateVolume = () => {
@@ -43,8 +43,8 @@ const Volume = () => {
 
   useEffect(() => {
     // Only trigger API when not dragging volume bar
-    if (!isChangingVolume) {
-      setVolume(volume);
+    if (volume && !isChangingVolume) {
+      setVolume(parseInt(volume));
     }
   }, [isChangingVolume, volume]);
 
@@ -84,7 +84,7 @@ const Volume = () => {
           marks={[ { value: maxVolume } ]}
           size="small"
           step={volumeStep}
-          value={typeof _volume === 'number' ? _volume : 0}
+          value={_volume}
           valueLabelDisplay="auto"
         />
       </Grid>

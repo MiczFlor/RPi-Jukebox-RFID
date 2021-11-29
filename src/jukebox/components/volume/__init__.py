@@ -54,7 +54,6 @@ import time
 import pulsectl
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-from components.volume.volumebase import VolumeBaseClass
 import jukebox.publishing as publishing
 from typing import (List, Optional)
 
