@@ -30,7 +30,7 @@ You will find the MPD configuration file under
 
 All MPD *var*-files are also located in ``$HOME/.config/mpd``.
 
-The service can be controlled with the *systemctl*-command, when adding the parameter ``--user``:
+The service can be controlled with the *systemctl*-command when adding the parameter ``--user``:
 
 .. code-block:: bash
 
@@ -48,7 +48,7 @@ To check if MPD is running or has issues, use
     # or, if you need to get the full logs
     $ journalctl --user -b -u mpd
 
-The systemd service file is located at the default location for user services:
+The ``systemd`` service file is located at the default location for user services:
 
 .. code-block:: text
 
@@ -61,27 +61,29 @@ We use PulseAudio for the audio output configuration. Check out the Audio Config
 
 The is a set of reasons:
 
-    * On the current RaspianOS based on Bullseye, there is no other way to include Bluetooth support.
-      Bluealsa is currently not working with Bluez 5
-    * It is easier to support and setup different audio hardware. And trust me, almost everybody building a Jukebox
-      comes up with another audio hardware setup
+    * It is easier to support and setup different audio hardware. Over the years, many builders have
+      tried many different ways to set up audio on their Jukebox so this become the most reliable and compatible
+      solution
     * We can cleanly control and switch between different audio outputs independent of the playback software
+    * The current Pi OS based on Bullseye does not allow another way to control Bluetooth based speakers,
+      as Bluealsa is currently not working with Bluez 5
+
 
 
 Jukebox Core Service
 ---------------------
 
 The :ref:`developer/coreapps:Jukebox Core` runs as a *user-local* service with the name ``jukebox-daemon``.
-As with MPD it is important it does run as system-wide service so it can interact with PulseAudio.
+Similar to MPD, it's important that it does run as system-wide service to be able to interact with PulseAudio.
 
-The service can be controlled with the ``systemctl``-command, when adding the parameter ``--user``
+The service can be controlled with the ``systemctl``-command by adding the parameter ``--user``
 
 .. code-block:: bash
 
     $ systemctl --user start jukebox-daemon
     $ systemctl --user stop jukebox-daemon
 
-Check on the service with
+Check out the service with
 
 .. code-block:: bash
 
@@ -89,20 +91,18 @@ Check on the service with
     # and if you need to get the full log output
     $ journalctl --user -b -u jukebox-daemon
 
-The systemd service file is located at the default location for user services:
+The ``systemd`` service file is located at the default location for user services:
 
 .. code-block:: text
 
     /usr/lib/systemd/user/jukebox-daemon.service
 
-For debugging or configuration checks the service can be stopped and the app started from console.
+Starting and stopping the service can be useful for debugging or configuration checks.
 
 Web UI
 -----------------------
 
-The Web UI is served using nginx. Nginx runs as a system service.
-
-The Nginx serves the Web UI which is located at
+The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
 .. code-block:: text
 
