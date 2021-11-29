@@ -19,9 +19,6 @@ GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 HOME_PATH="/home/pi"
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
-SHARED_PATH="${INSTALLATION_PATH}/shared"
-SETTINGS_PATH="${SHARED_PATH}/settings"
-SYSTEMD_USR_PATH="/usr/lib/systemd/user/"
 INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {
