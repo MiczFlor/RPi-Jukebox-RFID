@@ -8,7 +8,17 @@ GIT_BRANCH_DEVELOP=${GIT_BRANCH_DEVELOP:-future3/develop}
 GIT_ABORT_MSG="Aborting dir to git repo conversion.
 Your directory content is untouched, you simply cannot use git for updating / developing"
 
-convert_tardir_git_repo() {
+_git_install_os_dependencies() {
+  echo "Install Git dependencies"
+  sudo apt-get -y update; sudo apt-get -y install \
+    git \
+    --no-install-recommends \
+    --allow-downgrades \
+    --allow-remove-essential \
+    --allow-change-held-packages
+}
+
+_git_convert_tardir_git_repo() {
   echo "****************************************************"
   echo "*** Converting tar-ball download into git repository"
   echo "****************************************************"
@@ -144,4 +154,14 @@ update_git_repo() {
     echo "  Updating version"
     git pull origin $(git rev-parse --abbrev-ref HEAD)
   fi
+}
+
+init_git_repo_from_tardir() {
+  echo "Install Git & init repository" | tee /dev/fd/3
+
+  cd ${INSTALLATION_PATH}
+  _git_install_os_dependencies
+  _git_convert_tardir_git_repo
+
+  echo "DONE: init_git_repo_from_tardir"
 }
