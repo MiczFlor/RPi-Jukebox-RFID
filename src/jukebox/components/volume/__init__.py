@@ -58,7 +58,7 @@ import jukebox.publishing as publishing
 from typing import (List, Optional)
 
 logger = logging.getLogger('jb.pulse')
-logger_event = logging.getLogger('jb.pulseEvent')
+logger_event = logging.getLogger('jb.pulse.event')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
@@ -211,7 +211,7 @@ class PulseVolumeControl:
 
     def __init__(self, sink_list: List[PulseAudioSinkClass]):
         self._sink_list: List[PulseAudioSinkClass] = sink_list
-        logger.debug(f'Pulse Audio sinks: {self._sink_list}')
+        logger.debug(f'Configured audio sinks: {self._sink_list}')
         # Prepare quick look-ups for volume_limit
         self._volume_limit = {x.pulse_sink_name: x.volume_limit / 100.0 for x in self._sink_list}
         self._soft_max_volume = {x.pulse_sink_name: x.soft_max_volume for x in self._sink_list}
@@ -264,21 +264,26 @@ class PulseVolumeControl:
         return sink_alias, sink_name
 
     def _set_output(self, pulse_inst: pulsectl.Pulse, sink_index: int):
-        if not 0 <= sink_index <= len(self._sink_list):
-            logger.error(f'Sink index out of range (0..{len(self._sink_list)}')
+        if not 0 <= sink_index < len(self._sink_list):
+            logger.error(f'Sink index out of range (0..{len(self._sink_list)-1}')
         else:
+            # Before we switch the sink, check the new sinks volume levels...
+            sink_name = self._sink_list[sink_index].pulse_sink_name
             try:
-                # Before we switch the sink, check the new sinks volume levels...
-                sink_name = self._sink_list[sink_index].pulse_sink_name
                 sink = pulse_inst.get_sink_by_name(sink_name)
+            except Exception as e:
+                logger.error(f"Could not set output! Selected sink '{sink_name}' not in available "
+                             f"sinks {[x.name for x in pulse_inst.sink_list()]} "
+                             f"// {e.__class__.__name__}: {e}")
+            else:
                 volume, mute = self._get_volume_and_mute(pulse_inst, sink_name)
                 if volume > self._soft_max_volume[sink_name] or volume > 100:
                     self._set_volume(pulse_inst, self._soft_max_volume[sink_name], sink_name)
+                # The existence of sink has already been checked above, but a disconnect in between
+                # could (theoretically cause) a missing sink (todo)
                 pulse_inst.default_set(sink)
-            except Exception as e:
-                logger.error(f'Could not set output: {e.__class__.__name__}: {e}')
         alias, sink_name = self._publish_outputs(pulse_inst)
-        logger.info(f'Audio sink is now: {alias}:, {sink_name}')
+        logger.info(f"Audio sink is now '{alias}' :: '{sink_name}'")
         self._publish_volume(pulse_inst)
         return alias, sink_name
 
@@ -408,6 +413,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
     with pulse_monitor as pulse_inst:
         default_sink_name = pulse_inst.server_info().default_sink_name
         default_sink = pulse_inst.get_sink_by_name(default_sink_name)
+        all_sinks = [x.name for x in pulse_inst.sink_list()]
     sink_list = []
 
     with cfg:
@@ -421,17 +427,26 @@ def parse_config() -> List[PulseAudioSinkClass]:
             logger.warning("The primary audio output configuration is incomplete. "
                            f"Creating an entry from the current default sink '{default_sink}'")
             cfg.setn('pulse', 'outputs', key, 'pulse_sink_name', value=pulse_sink_name)
-        # TODO: Check pulse sink name is valid
+        if pulse_sink_name not in all_sinks:
+            # No need to change sink here, set_output later falls back to default_sink
+            # We just reset volume scaling to unsuspecting 100 %
+            volume_limit = 100
+            logger.error(f"Configured sink '{pulse_sink_name}' not available sinks '{all_sinks}!\n"
+                         f"Using default sink '{default_sink_name}' as fallback\n"
+                         f"Things like audio sink toggle and volume limit will not work as expected!\n"
+                         f"Please run audio config tool: ./run_configure_audio.py")
+
         sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit, soft_max_volume))
         key = 'secondary'
-        alias = cfg.setndefault('pulse', 'outputs', key, 'alias', value='Unset alias')
-        volume_limit = cfg.setndefault('pulse', 'outputs', key, 'volume_limit', value=100)
-        soft_max_volume = cfg.setndefault('pulse', 'outputs', key, 'soft_max_volume', value=100)
         pulse_sink_name = cfg.getn('pulse', 'outputs', key, 'pulse_sink_name', default=None)
         # No need to check validity of pulse sink name: this could be a disconnected bluetooth device
         if pulse_sink_name is None:
             logger.info("Ignoring secondary audio output configuration because it is missing or incomplete")
         else:
+            # Only need to get the configuration, if device is actually configured
+            alias = cfg.setndefault('pulse', 'outputs', key, 'alias', value='Unset alias')
+            volume_limit = cfg.setndefault('pulse', 'outputs', key, 'volume_limit', value=100)
+            soft_max_volume = cfg.setndefault('pulse', 'outputs', key, 'soft_max_volume', value=100)
             sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit, soft_max_volume))
     return sink_list
 
