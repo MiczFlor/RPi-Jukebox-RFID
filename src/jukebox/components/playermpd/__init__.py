@@ -197,13 +197,10 @@ class PlayerMPD:
     def exit(self):
         logger.debug("Exit routine of playermpd started")
         self.status_is_closing = True
-        # Need to make sure we are not in the process of a status poll
-        # This currently causes 250 ms delay in shutdown (which otherwise takes 6 ms)
-        # --> Change it (self.status_thread.cancel() ?)
-        time.sleep(self.mpd_status_poll_interval)
-        # self.status_thread.cancel()
+        self.status_thread.cancel()
         self.mpd_client.disconnect()
         self.nvm.save_all()
+        return self.status_thread.timer_thread
 
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
@@ -262,6 +259,13 @@ class PlayerMPD:
             self.current_folder_status["SHUFFLE"] = "OFF"
             self.current_folder_status["LOOP"] = "OFF"
             self.current_folder_status["SINGLE"] = "OFF"
+
+        # Delete the volume key to avoid confusion
+        # Volume is published via the 'volume' component!
+        try:
+            del self.mpd_status['volume']
+        except KeyError:
+            pass
         publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     @plugs.tag
@@ -601,4 +605,4 @@ def initialize():
 @plugs.atexit
 def atexit(**ignored_kwargs):
     global player_ctrl
-    player_ctrl.exit()
+    return player_ctrl.exit()
