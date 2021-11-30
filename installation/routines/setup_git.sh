@@ -11,9 +11,11 @@ convert_tardir_git_repo() {
   echo "****************************************************"
 
   # Just in case, the git version is not new enough, we split up git init -b "${GIT_BRANCH}" into:
+  git config init.defaultBranch main
+  git config core.sshCommand 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+  git config pull.rebase false
   git init
   git checkout -b "${GIT_BRANCH}"
-  git config pull.rebase false
 
   # We always add origin as the selected (possible) user repository
   # and, if relevant, MiczFlor's repository as upstream
