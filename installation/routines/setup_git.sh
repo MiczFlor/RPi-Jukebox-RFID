@@ -13,10 +13,8 @@ convert_tardir_git_repo() {
   echo "*** Converting tar-ball download into git repository"
   echo "****************************************************"
 
-  # Prevent initial branch name. Needs to be done before git init, i.e. on global git config. *sigh*
-  git config --global init.defaultBranch main
   # Just in case, the git version is not new enough, we split up git init -b "${GIT_BRANCH}" into:
-  git init
+  git -c init.defaultBranch=main init
   git checkout -q -b "${GIT_BRANCH}"
   git config pull.rebase false
 
