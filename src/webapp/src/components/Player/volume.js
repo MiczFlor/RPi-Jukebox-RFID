@@ -14,11 +14,10 @@ import request from '../../utils/request';
 const Volume = () => {
   const theme = useTheme();
   const { state } = useContext(PlayerContext);
-  const { volume } = state.playerstatus || {};
+  const { 'volume.level': { volume, mute } = {} } = state;
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
   const [_volume, setVolume] = useState(0);
-
   const [volumeMute, setVolumeMute] = useState(false);
   const [maxVolume, setMaxVolume] = useState(100);
   const [volumeStep] = useState(1);
@@ -43,10 +42,11 @@ const Volume = () => {
 
   useEffect(() => {
     // Only trigger API when not dragging volume bar
-    if (volume && !isChangingVolume) {
-      setVolume(parseInt(volume));
+    if (volume !== undefined && mute !== undefined && !isChangingVolume) {
+      setVolume(volume);
+      setVolumeMute(!!mute);
     }
-  }, [isChangingVolume, volume]);
+  }, [isChangingVolume, volume, mute]);
 
   useEffect(() => {
     const fetchMaxVolume = async () =>  {
@@ -80,7 +80,7 @@ const Volume = () => {
           aria-labelledby="Volume Slider"
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
-          disabled={volumeMute}
+          disabled={!!volumeMute}
           marks={[ { value: maxVolume } ]}
           size="small"
           step={volumeStep}
