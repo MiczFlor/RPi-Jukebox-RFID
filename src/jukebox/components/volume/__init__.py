@@ -40,6 +40,12 @@ in ``/usr/pulse/default.pa``. So, we shouldn't need to worry about it.
     load-module module-switch-on-connect
     .endif
 
+Why PulseAudio?
+
+The audio configuration of the system is one of those topics,
+which has a myriad of options and possibilities. Every system is different and PulseAudio unifies these and
+makes our life easier. Besides, it is only option to support Bluetooth at the moment.
+
 """
 # TODO:
 # Callbacks for active sound card, on sound card switch error
@@ -79,11 +85,11 @@ class PulseMonitor(threading.Thread):
     """A thread for monitoring and interacting with the Pulse Lib via pulsectrl
 
     Whenever we want to access pulsectl, we need to exit the event listen loop.
-    This is hanlded by the context manager. It stops the event loop and returns
+    This is handled by the context manager. It stops the event loop and returns
     the pulsectl instance to be used (it does no return the monitor thread itself!)
 
     The context manager also locks the module to ensure proper thread sequencing,
-    as only a single thread may work with pulsectl at any time. Currenlty, an RLock is
+    as only a single thread may work with pulsectl at any time. Currently, an RLock is
     used, even if not be necessary
     """
 

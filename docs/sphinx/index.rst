@@ -15,6 +15,7 @@ Welcome to RPi Jukebox RFID's documentation!
    featurelist
    install
    migration
+   issues
 
 .. toctree::
    :maxdepth: 2
@@ -38,6 +39,7 @@ Welcome to RPi Jukebox RFID's documentation!
    :maxdepth: 2
    :caption: Developer Reference:
 
+   developer/developer_issues.rst
    developer/coreapps
    developer/development_environment
    api/api.rst

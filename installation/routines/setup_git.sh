@@ -53,7 +53,6 @@ _git_convert_tardir_git_repo() {
       git remote remove origin
       GIT_USE_SSH=false
     else
-      echo -e "$OUTPUT"
       # Only add upstream with SSH when fetch over SSH succeeded
       if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
         git remote add upstream "git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
