@@ -1,10 +1,3 @@
-# The default upstream user, release branch, and develop branch
-# These are used to prepare the repo for developers
-# but are not relevant for "production" checkouts
-GIT_UPSTREAM_USER=${GIT_UPSTREAM_USER:-MiczFlor}
-GIT_BRANCH_RELEASE=${GIT_BRANCH_RELEASE:-future3/main}
-GIT_BRANCH_DEVELOP=${GIT_BRANCH_DEVELOP:-future3/develop}
-
 GIT_ABORT_MSG="Aborting dir to git repo conversion.
 Your directory content is untouched, you simply cannot use git for updating / developing"
 

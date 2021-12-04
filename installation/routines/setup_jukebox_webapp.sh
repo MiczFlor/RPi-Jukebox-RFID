@@ -15,13 +15,13 @@ _jukebox_webapp_install_node() {
   sudo apt-get -y update
 
   if which node > /dev/null; then
-    echo "  Found existing NodeJS. Hence, updating NodeJS"
+    echo "  Found existing NodeJS. Hence, updating NodeJS" | tee /dev/fd/3
     sudo npm cache clean -f
     sudo npm install --silent -g n
     sudo n --quiet latest
     sudo npm update --silent -g
   else
-    echo "  Install NodeJS"
+    echo "  Install NodeJS" | tee /dev/fd/3
 
     # Zero and older versions of Pi with ARMv6 only
     # support experimental NodeJS
@@ -47,7 +47,7 @@ _jukebox_webapp_build() {
 }
 
 _jukebox_webapp_download() {
-  echo "  Downloading web application"
+  echo "  Downloading web application" | tee /dev/fd/3
   local TAR_FILENAME="webapp-build.tar.gz"
   cd ${INSTALLATION_PATH}/src/webapp
   _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
@@ -57,7 +57,7 @@ _jukebox_webapp_download() {
 }
 
 _jukebox_webapp_register_as_system_service_with_nginx() {
-  echo "  Install and configure nginx"
+  echo "  Install and configure nginx" | tee /dev/fd/3
   sudo apt-get -qq -y update
   sudo apt-get -y purge apache2
   sudo apt-get -y install nginx
@@ -71,19 +71,22 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 }
 
 _jukebox_build_local_docs() {
-  echo "  Build docs locally"
-  ./run_sphinx -c
+  echo "  Build docs locally" | tee /dev/fd/3
+  "${INSTALLATION_PATH}/run_sphinx.sh" -c
 }
 
 
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
-  if [ "$ENABLE_WEBAPP_PROD_BUILD" = true ] ; then
+  if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" = release-only ]] ; then
     _jukebox_webapp_download
-  else
+  fi
+  if [ "$ENABLE_INSTALL_NODE" = true ] ; then
     _jukebox_webapp_install_node
-    _jukebox_webapp_build
+    # Local Web App build during installation does not work at the moment
+    # Needs to be done after reboot! There will be a message at the end of the installation process
+    # _jukebox_webapp_build
   fi
   if [ "$ENABLE_LOCAL_DOCS" = true ]; then
     _jukebox_build_local_docs

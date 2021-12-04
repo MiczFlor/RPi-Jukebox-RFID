@@ -212,6 +212,34 @@ Build and serve docs locally? [y/N] " 1>&3
 
 }
 
+_option_webapp_devel_build() {
+
+  # Let's detect if we are on the official release branch
+  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
+    ENABLE_INSTALL_NODE=true
+    # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = "release-only" ]]; then
+      ENABLE_WEBAPP_PROD_DOWNLOAD=false
+    fi
+    echo -e "Your are installing from a non-release branch.
+    This means, you will need to build the web app locally.
+    For that you'll need Node.
+    Do you want to install Node now?  [Y/n] " 1>&3
+    read -r response
+    case "$response" in
+      [nN])
+        ENABLE_INSTALL_NODE=false
+        ;;
+      *)
+        ;;
+    esac
+    # This message will be displayed at the end of the installation process
+    FIN_MESSAGE="$FIN_MESSAGE\n\nATTENTION: You need to build the web app locally by
+    $ cd src/webapp && ./run_rebuild.sh
+    This must be done after reboot, due to memory restrictions."
+  fi
+
+}
 
 customize_options() {
   echo "Customize Options starts"
@@ -226,6 +254,7 @@ customize_options() {
   _option_build_local_docs
   if [ "$ENABLE_WEBAPP" = true ] ; then
     _option_kiosk_mode
+    _option_webapp_devel_build
   fi
   _options_update_raspi_os
 

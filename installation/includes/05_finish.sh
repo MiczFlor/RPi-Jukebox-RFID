@@ -6,6 +6,8 @@ finish() {
 
 Installation complete!
 
+${FIN_MESSAGE}
+
 In order to start, you need to reboot your Raspberry Pi.
 Your SSH connection will disconnect.
 
