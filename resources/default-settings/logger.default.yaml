@@ -52,7 +52,7 @@ loggers:
     # handlers: [console, publisher]
     # handlers: [console]
     propagate: false
-  jb.pulseEvent:
+  jb.pulse.event:
     level: WARNING
   jb.daemon:
     level: DEBUG
