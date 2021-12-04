@@ -77,8 +77,7 @@ def clamp(n, minn, maxn):
 
 PulseAudioSinkClass = collections.namedtuple('PaSink', ['alias',
                                                         'pulse_sink_name',
-                                                        'volume_limit',
-                                                        'soft_max_volume'])
+                                                        'volume_limit'])
 
 
 class PulseMonitor(threading.Thread):
@@ -220,7 +219,7 @@ class PulseVolumeControl:
         logger.debug(f'Configured audio sinks: {self._sink_list}')
         # Prepare quick look-ups for volume_limit
         self._volume_limit = {x.pulse_sink_name: x.volume_limit / 100.0 for x in self._sink_list}
-        self._soft_max_volume = {x.pulse_sink_name: x.soft_max_volume for x in self._sink_list}
+        self._soft_max_volume = cfg.setndefault('pulse', 'soft_max_volume', value=100)
 
     def _set_volume(self, pulse_inst: pulsectl.Pulse, volume: int, sink_name: Optional[str] = None):
         # Set volume triggers should not trigger a volume change event,
@@ -230,7 +229,7 @@ class PulseVolumeControl:
             sink_name = pulse_inst.server_info().default_sink_name
         sink = pulse_inst.get_sink_by_name(sink_name)
         # logger.debug('*' * 20 + 'Set volume')
-        volume = min(volume, self._soft_max_volume.get(sink_name, 100))
+        volume = min(volume, self._soft_max_volume)
         if volume == 0:
             pulse_inst.mute(sink, mute=True)
             pulse_inst.volume_set_all_chans(sink, 0)
@@ -283,8 +282,8 @@ class PulseVolumeControl:
                              f"// {e.__class__.__name__}: {e}")
             else:
                 volume, mute = self._get_volume_and_mute(pulse_inst, sink_name)
-                if volume > self._soft_max_volume[sink_name] or volume > 100:
-                    self._set_volume(pulse_inst, self._soft_max_volume[sink_name], sink_name)
+                if volume > self._soft_max_volume or volume > 100:
+                    self._set_volume(pulse_inst, self._soft_max_volume, sink_name)
                 # The existence of sink has already been checked above, but a disconnect in between
                 # could (theoretically cause) a missing sink (todo)
                 pulse_inst.default_set(sink)
@@ -380,32 +379,18 @@ class PulseVolumeControl:
         logger.debug(f"Set Max Volume = {max_volume}")
         if not 0 <= max_volume <= 100:
             logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
-        with pulse_monitor as pulse:
-            sink_name = pulse.server_info().default_sink_name
-            current_volume, mute = self._get_volume_and_mute(pulse)
-        if sink_name not in self._soft_max_volume:
-            logger.warning(f"Ignoring set_soft_max_volume: current pulse audio sink not known in configuration '{sink_name}'")
             return
-        self._soft_max_volume[sink_name] = max_volume
-        if max_volume < current_volume:
-            self.set_volume(max_volume)
-        # Need to write it back to config: Rather ugly at the moment, but it works
-        key = 'primary'
-        if sink_name == self._sink_list[1].pulse_sink_name:
-            key = 'secondary'
-        cfg.setn('pulse', 'outputs', key, 'soft_max_volume', value=max_volume)
+        self._soft_max_volume = max_volume
+        with pulse_monitor as pulse:
+            current_volume, mute = self._get_volume_and_mute(pulse)
+            if max_volume < current_volume:
+                self._set_volume(pulse, max_volume)
+        cfg.setn('pulse', 'soft_max_volume', value=max_volume)
 
     @plugin.tag
     def get_soft_max_volume(self):
         """Return the maximum volume limit for the currently active output"""
-        with pulse_monitor as pulse:
-            sink_name = pulse.server_info().default_sink_name
-        if sink_name not in self._soft_max_volume:
-            logger.warning(f"Current pulse audio sink not known in configuration '{sink_name}'")
-            volume = 100
-        else:
-            volume = self._soft_max_volume[sink_name]
-        return volume
+        return self._soft_max_volume
 
 
 pulse_control: PulseVolumeControl
@@ -426,7 +411,6 @@ def parse_config() -> List[PulseAudioSinkClass]:
         key = 'primary'
         alias = cfg.setndefault('pulse', 'outputs', key, 'alias', value='Unset alias')
         volume_limit = cfg.setndefault('pulse', 'outputs', key, 'volume_limit', value=100)
-        soft_max_volume = cfg.setndefault('pulse', 'outputs', key, 'soft_max_volume', value=100)
         pulse_sink_name = cfg.getn('pulse', 'outputs', key, 'pulse_sink_name', default=None)
         if pulse_sink_name is None:
             pulse_sink_name = default_sink_name
@@ -442,7 +426,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
                          f"Things like audio sink toggle and volume limit will not work as expected!\n"
                          f"Please run audio config tool: ./run_configure_audio.py")
 
-        sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit, soft_max_volume))
+        sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
         key = 'secondary'
         pulse_sink_name = cfg.getn('pulse', 'outputs', key, 'pulse_sink_name', default=None)
         # No need to check validity of pulse sink name: this could be a disconnected bluetooth device
@@ -452,8 +436,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
             # Only need to get the configuration, if device is actually configured
             alias = cfg.setndefault('pulse', 'outputs', key, 'alias', value='Unset alias')
             volume_limit = cfg.setndefault('pulse', 'outputs', key, 'volume_limit', value=100)
-            soft_max_volume = cfg.setndefault('pulse', 'outputs', key, 'soft_max_volume', value=100)
-            sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit, soft_max_volume))
+            sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
     return sink_list
 
 

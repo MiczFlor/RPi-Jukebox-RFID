@@ -24,6 +24,8 @@ pulse:
   # Automatically toggle output between primary and secondary audio output
   # when a device connects (Note: So far, toggle happens when ANY device connects)
   toggle_on_connect: true
+  # Limit maximum volume range to XX % - can be changed through the UI (for temporary use)
+  soft_max_volume: 70
   # Run the tool run_configure_audio.py to configure the pulseaudio sinks
   #
   # After startup, the audio output defaults to primary
@@ -33,14 +35,14 @@ pulse:
   # $ pactl list sinks short
   #
   # Test sinks with
-  # paplay -D sink_name /usr/share/sounds/alsa/Front_Center.wav
+  # $ paplay -D sink_name /usr/share/sounds/alsa/Front_Center.wav
   #
   # Parameters:
-  # -  volume_limit: a hard volume limit representing the new 100 %
-  #                  i.e. the user input range 0...100 % will be scaled into this range
-  #                  this can be used to attenuate the maximum volume levels between different outputs
-  # - soft_max_volume: a soft maximum volume limit that can be changed through the UI
-  #                    no scaling involved, user selectable range will be e.g. 0..70%
+  # - alias       : user defined alias for better readability
+  # - volume_limit: a hard volume limit representing the new 100 %
+  #                 i.e. the user input range 0...100 % will be scaled into this range
+  #                 this can be used to attenuate the maximum volume levels between different outputs
+  #                 i.e. make both channels equally load out 100 % and make sure it never gets too loud
   outputs:
     primary:
       alias: Built-in speakers
