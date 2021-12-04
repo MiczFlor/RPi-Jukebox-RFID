@@ -1,3 +1,6 @@
+# IMPORTANT:
+# Do not use paths with '~/some/dir' - always use '/home/pi/some/dir'
+# Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox
 modules:
