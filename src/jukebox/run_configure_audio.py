@@ -59,14 +59,12 @@ def configure_jukebox(filename, primary, secondary, toggle_on_connect):
     key = 'primary'
     cfg_jukebox.setn('pulse', 'outputs', key, 'alias', value='Speakers')
     cfg_jukebox.setn('pulse', 'outputs', key, 'volume_limit', value=100)
-    cfg_jukebox.setn('pulse', 'outputs', key, 'soft_max_volume', value=100)
     cfg_jukebox.setn('pulse', 'outputs', key, 'pulse_sink_name', value=primary)
 
     if secondary is not None:
         key = 'secondary'
         cfg_jukebox.setn('pulse', 'outputs', key, 'alias', value='Bluetooth Headset')
         cfg_jukebox.setn('pulse', 'outputs', key, 'volume_limit', value=100)
-        cfg_jukebox.setn('pulse', 'outputs', key, 'soft_max_volume', value=100)
         cfg_jukebox.setn('pulse', 'outputs', key, 'pulse_sink_name', value=secondary)
 
     cfg_jukebox.save()
