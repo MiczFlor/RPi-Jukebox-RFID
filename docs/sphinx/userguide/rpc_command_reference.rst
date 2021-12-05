@@ -636,6 +636,14 @@ Module: host
     Check if current Jukebox process is running as a service
 
 
+.. py:function:: host.is_any_jukebox_service_active()
+    :noindex:
+
+    Check if a Jukebox service is running
+    
+    .. note:: Does not have the be the current app, that is running as a service!
+
+
 .. py:function:: host.restart_service()
     :noindex:
 
