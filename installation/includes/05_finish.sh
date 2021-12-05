@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 finish() {
-  echo "
+  echo -e "
 ---
 
 Installation complete!
