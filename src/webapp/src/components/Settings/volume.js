@@ -17,7 +17,7 @@ const marks = [5, 25, 50, 75, 100].map(
 );
 
 const SettingsVolume = () => {
-  const [volumeStep] = useState(5);
+  // const [volumeStep] = useState(5);
   const [maxVolume, setMaxVolume] = useState(0);
 
   const updateMaxVolume = () => {
@@ -59,11 +59,12 @@ const SettingsVolume = () => {
               valueLabelDisplay="auto"
             />
           </Grid>
-
+{/* TODO: Currently not implemented on the backend side!
           <Grid item>
             <Typography>Volume Steps</Typography>
             <Slider
               defaultValue={volumeStep}
+              disabled={true}
               marks
               max={15}
               min={1}
@@ -71,7 +72,7 @@ const SettingsVolume = () => {
               step={1}
               valueLabelDisplay="auto"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </CardContent>
     </Card>

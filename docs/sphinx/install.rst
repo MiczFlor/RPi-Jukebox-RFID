@@ -82,3 +82,7 @@ specify the variables like this:
     cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 
 This will switch directly to the specified feature branch during installation.
+
+.. attention:: For all branches *except* the current Release, you will need to build the Web App locally on the Pi.
+    This is not part of the installation process due to memory limitation issues.
+    See :ref:`developer/development_environment:Steps to install`.

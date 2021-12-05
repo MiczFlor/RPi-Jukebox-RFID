@@ -52,23 +52,22 @@ cmd_alias_definitions = {
         'plugin': 'ctrl',
         'method': 'set_volume',
         'ignore_card_removal_action': True},
-    'inc_volume': {
+    'change_volume': {
         'note': "For place-capable readers increment volume as long as card is on reader",
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'inc_volume',
+        'method': 'change_volume',
         'ignore_card_removal_action': True,
         'ignore_same_id_delay': True},
-    'dec_volume': {
+    'set_soft_max_volume': {
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'dec_volume',
-        'ignore_card_removal_action': True,
-        'ignore_same_id_delay': True},
-    'set_max_volume': {
+        'method': 'set_soft_max_volume',
+        'ignore_card_removal_action': True},
+    'toggle_output': {
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'set_max_volume',
+        'method': 'toggle_output',
         'ignore_card_removal_action': True},
     # HOST
     'shutdown': {

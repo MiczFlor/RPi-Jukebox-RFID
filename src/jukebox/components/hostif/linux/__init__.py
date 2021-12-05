@@ -48,7 +48,7 @@ try:
 except ModuleNotFoundError:
     IS_RPI = False
 except RuntimeError as e:
-    logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
+    logger.info(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
     IS_RPI = False
 
 # In debug mode, shutdown and reboot command are not actually executed
@@ -79,7 +79,7 @@ def shutdown():
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
-    if not IS_DEBUG:
+    if IS_DEBUG:
         logger.info('Skipping system command due to debug mode')
 
 
@@ -94,13 +94,13 @@ def reboot():
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
     if IS_DEBUG:
-        logger.info('Reboot command executed in debug mode')
+        logger.info('Reboot command skipped due to debug mode')
 
 
 @plugin.register
 def jukebox_is_service():
     """Check if current Jukebox process is running as a service"""
-    ret = subprocess.run(['systemctl', 'show', '--property', 'MainPID', '--value', 'jukebox-daemon'],
+    ret = subprocess.run(['systemctl', 'show', '--user', '--property', 'MainPID', '--value', 'jukebox-daemon'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -118,13 +118,34 @@ def jukebox_is_service():
 
 
 @plugin.register
+def is_any_jukebox_service_active():
+    """Check if a Jukebox service is running
+
+    .. note:: Does not have the be the current app, that is running as a service!
+    """
+    ret = subprocess.run(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        logger.error(f"Error in finding service state: {ret.stdout}")
+        is_active = False
+    else:
+        try:
+            is_active = ret.stdout.decode().strip() == 'active'
+        except Exception as e:
+            logger.error(f"{e.__class__.__name__}: {e}")
+            is_active = False
+    return is_active
+
+
+@plugin.register
 def restart_service():
     """Restart Jukebox App if running as a service"""
     msg = ''
     if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
-        ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &', shell=True,
+        ret = subprocess.run('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                              stdin=subprocess.DEVNULL)
         if ret.returncode != 0:
@@ -301,6 +322,7 @@ def finalize():
 def atexit(**ignored_kwargs):
     global timer_temperature
     timer_temperature.cancel()
+    return timer_temperature.timer_thread
 
 
 # ---------------------------------------------------------------------------

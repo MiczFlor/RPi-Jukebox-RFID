@@ -3,9 +3,6 @@
 # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
 
 _optimize_disable_irrelevant_services() {
-  echo "  * Disable exim4.service"
-  sudo systemctl disable exim4.service
-
   echo "  * Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
 

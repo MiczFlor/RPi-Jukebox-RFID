@@ -103,12 +103,12 @@ const commands = {
   getMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'get_max_volume',
+    method: 'get_soft_max_volume',
   },
   setMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'set_max_volume',
+    method: 'set_soft_max_volume',
   },
   toggleMuteVolume: {
     _package: 'volume',

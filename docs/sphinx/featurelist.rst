@@ -139,10 +139,6 @@ MPD Player
 * |[ ]| Thread safety for status information / configuration  (*in progress*)
 * |[ ]| Differential status post  (*in progress*)
 * |[ ]| Second swipe option setter via RPC  (*in progress*)
-* |[ ]| Volume publisher for ALSA / MPD switchable  (*in progress*)
-
-    * |[ ]| ALSA volume check with select.poll()  (*in progress*)
-
 * |[ ]| Before every music lib update, player should check user rights (not only after start-up)
 
 RFID
@@ -224,9 +220,12 @@ Volume
 
 * |[X]| Jingle playback volume as fixed value in config
 * |[X]| Default volume setting after boot-up
-* |[X]| MPD volume control service
-* |[X]| Min/Max Volume
-* |[ ]| Error-safe mute/unmute for AlsaIF (not all sound cards support that)
+* |[X]| Max Volume
+* |[X]| PulseAudio integration with event handler
+* |[X]| Bluetooth support
+* |[X]| Automatic audio sink toggle
+
+    * |[ ]| Callbacks for audio sink change
 
 GPIO
 ^^^^^^^^^^^^^^^^^
@@ -270,7 +269,6 @@ Spotify
 Others
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Bluetooth sink toggle
 * |[ ]| MQTT
 * |[ ]| Record and Playback using a Mic
 * |[ ]| Dot Matrix Displays
@@ -281,12 +279,7 @@ Start-up stuff
 * |[X]| check music folder rights
 * |[X]| mpc update / (mpc rescan)
 * |[X]| sudo iwconfig wlan0 power off (need to be done after every restart)
-
-    * |[ ]| needs testing
-
 * |[X]| Optional power down HDMI circuits: /usr/bin/tvservice -o
-
-    * |[ ]| needs testing
 
 
 Debug Tools
@@ -323,12 +316,7 @@ Installation Procedure
 -----------------------
 
 * |[X]| Single call installation script
-* |[ ]| Query for settings vs. automatic version, e.g.
-
-    * |[ ]| before overwriting MPD config (i.e. for re-installs)
-    * |[ ]| static IP (DHCP or static IP from user input)
-    * |[ ]| ALSA Mixer interface
-
+* |[X]| Query for settings vs. automatic version
 * |[X]| IPQoS in SSH config
 * |[X]| Separate static IP and IPv6 disable
 * |[ ]| For all system config file changes, check prior to modification, if modification already exists

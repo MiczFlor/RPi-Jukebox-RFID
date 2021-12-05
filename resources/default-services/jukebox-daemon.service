@@ -9,7 +9,17 @@ WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/jukebox
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
+ConditionUser=!root
+
+# disallow writing to /usr, /bin, /sbin, ...
+ProtectSystem=yes
+
+# We currently do shutdown and reboot with sudo
+# NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

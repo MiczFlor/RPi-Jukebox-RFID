@@ -123,3 +123,4 @@ def atexit(**ignored_kwargs):
     timer_stop_player.cancel()
     global timer_fade_volume
     timer_fade_volume.cancel()
+    return [timer_shutdown.timer_thread, timer_stop_player.timer_thread, timer_fade_volume.timer_thread]

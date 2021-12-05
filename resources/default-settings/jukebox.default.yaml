@@ -1,3 +1,6 @@
+# IMPORTANT:
+# Do not use paths with '~/some/dir' - always use '/home/pi/some/dir'
+# Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox
 modules:
@@ -6,6 +9,8 @@ modules:
     publishing: publishing
     volume: volume
     jingle: jingle
+    jingle.alsawave: jingle.alsawave
+    jingle.jinglemp3: jingle.jinglemp3
     player: playermpd
     cards: rfid.cards
     rfid: rfid.reader
@@ -14,19 +19,46 @@ modules:
     gpio: gpio.gpio_rpi
     # rfidpinaction: rfid.pinaction.rpi
   others:
-  - alsaif
-  - alsaif.alsawave
-  - jingle.jinglemp3
   - music_cover_art
   - misc
-    # Write a reference of all loaded plugin callables to this file (Comment out disables)
-  reference_out: ../../shared/settings/plugin_reference.txt
-volume:
-    # Select the interface through which volume changes are applied. Currently supported 'alsa', 'mpd'
-  interface: alsa
-    # Reset system volume to this level after start. (Comment out disables and volume is not changed)
+pulse:
+  # Reset system volume to this level after start. (Comment out disables and volume is not changed)
   startup_volume: 40
-  max_volume: 100
+  # Automatically toggle output between primary and secondary audio output
+  # when a device connects (Note: So far, toggle happens when ANY device connects)
+  toggle_on_connect: true
+  # Limit maximum volume range to XX % - can be changed through the UI (for temporary use)
+  soft_max_volume: 70
+  # Run the tool run_configure_audio.py to configure the pulseaudio sinks
+  #
+  # After startup, the audio output defaults to primary
+  # Any Bluetooth device should be the secondary (as it may not always be available directly after boot)
+  #
+  # For manual setting of pulseaudio sinks use:
+  # $ pactl list sinks short
+  #
+  # Test sinks with
+  # $ paplay -D sink_name /usr/share/sounds/alsa/Front_Center.wav
+  #
+  # Parameters:
+  # - alias       : user defined alias for better readability
+  # - volume_limit: a hard volume limit representing the new 100 %
+  #                 i.e. the user input range 0...100 % will be scaled into this range
+  #                 this can be used to attenuate the maximum volume levels between different outputs
+  #                 i.e. make both channels equally load out 100 % and make sure it never gets too loud
+  outputs:
+    primary:
+      alias: Built-in speakers
+      volume_limit: 100
+      soft_max_volume: 100
+      # Leave pulse_sink_name empty for first start-up (will be filled with systems default sink)
+      # pulse_sink_name: alsa_output.pci-0000_00_1f.3.analog-stereo
+    secondary:
+      alias: Bluetooth headset
+      volume_limit: 100
+      soft_max_volume: 100
+      # Leave pulse_sink_name unfilled to disable secondary output
+      # pulse_sink_name: bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink
 jingle:
    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
   startup_sound: ../../resources/audio/startupsound.wav
@@ -38,24 +70,23 @@ jingle:
   # The playback volume of the jingles. (Comment out means use current system volume)
   volume: 30
 jinglemp3:
+  # Config of the MP3 Jingle Service
   # These parameters are passed to the mpeg123 player (e.g. [-d 2])
   call_parameters: []
-  # If jinglemp3 is completely empty, the cfg.getn('jinglemp3', 'something') throws an error
-  # call_parameters: [-d 2]
+alsawave:
+  # Config of the Wave through ALSA Jingle Service
+  device: default
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
   second_swipe_action:
-    #
+    # Note: Does not follow the RPC alias convention (yet)
+    # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
     alias: toggle
   library:
     update_on_startup: true
     check_user_rights: true
-  mpd_conf: /etc/mpd.conf
-alsaif:
-  mixer: Headphone
-alsawave:
-  device: default
+  mpd_conf: ~/.config/mpd/mpd.conf
 rpc:
   tcp_port: 5555
   websocket_port: 5556
@@ -67,14 +98,12 @@ publishing:
 rfid:
   reader_config: ../../shared/settings/rfid.yaml
   card_database: ../../shared/settings/cards.yaml
-    # Write a reference card action shortcuts to file (comment out disables)
-  card_action_reference_out: ../../shared/settings/card_actions_reference.txt
 gpio:
   gpio_rpi_config: ../../shared/settings/gpio.yaml
 timers:
-    # These timers are always disabled after start
-    # The following values only give the default values.
-    # These can be changed when enabling the respective timer on a case-by-case basis w/o saving
+  # These timers are always disabled after start
+  # The following values only give the default values.
+  # These can be changed when enabling the respective timer on a case-by-case basis w/o saving
   shutdown:
     default_timeout_sec: 3600
   stop_player:

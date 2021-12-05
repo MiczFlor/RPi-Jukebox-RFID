@@ -79,10 +79,10 @@ def play(filename):
     """Play the jingle using the configured jingle service
 
     Note: This runs in a separate thread. And this may cause troubles
-    when changing the volume ctrl interface and volume level before
+    when changing the volume level before
     and after the sound playback: There is nothing to prevent another
-    thread from changing the active factory while playback happens
-    and afterwards we change it back to where it was before!
+    thread from changing the volume and sink while playback happens
+    and afterwards we change the volume back to where it was before!
 
     There is no way around this dilemma except for not running the jingle as a
     separate thread. Currently (as thread) even the RPC is started before the sound
@@ -93,27 +93,18 @@ def play(filename):
     if (a) through the RPC or (b) some other plugin the volume is changed. Okay, now
     (a) let's hope that there is enough delay in the user requesting a volume change
     (b) let's hope no other plugin wants to do that
+    (c) no bluetooth device connects during this time (and pulseaudio control is set to toggle_on_connect)
     and take our changes with the threaded approach.
-
-    Also note that the MPD plugin starts while the jingle is still playing and starts polling and publishing
-    the volume through the current volume service immediately. But in a way that is correct, as this reflects
-    the current volume before going back to startup volume
     """
     global factory
     jingle_volume = cfg.getn('jingle', 'volume', default=None)
-    active_if = None
     active_volume = None
     if jingle_volume is not None:
-        # Change to alsa volume ctrl manager for jingle
-        # as this is not played back using MPD
-        active_if = plugin.call('volume', 'factory', 'get_active')
-        plugin.call('volume', 'factory', 'set_active', args=['alsa'])
         active_volume = plugin.call_ignore_errors('volume', 'ctrl', 'get_volume')
         plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[jingle_volume])
     factory.auto(filename).play(filename)
     if jingle_volume is not None:
         plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[active_volume])
-        plugin.call('volume', 'factory', 'set_active', args=[active_if])
 
 
 @plugin.register
