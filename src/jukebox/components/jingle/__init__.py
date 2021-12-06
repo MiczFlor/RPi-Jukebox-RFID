@@ -132,6 +132,9 @@ def atexit(signal_id: int, **ignored_kwargs):
     # Only play the shutdown sound when terminated with a proper command. Not on Ctrl-C (faster exit for developers :-)
     if signal_id == signal.SIGTERM:
         if 'shutdown_sound' in cfg['jingle']:
-            return plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=True, thread_name='ShutdownSound')
+            # Never play the shutdown sound as thread!
+            # It causes a race condition with the plugin volume, which shuts down faster
+            # But we need to have the plugin volume to reset the volume level after the sound was played
+            plugin.call_ignore_errors('jingle', 'play_shutdown', as_thread=False)
         else:
             logger.debug("No shutdown sound in config file")
