@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import {
   Avatar,
@@ -43,7 +43,7 @@ const ActionsControls = ({
 };
 
 const CardsRegister = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { state } = useContext(PlayerContext);
 
   const { 'rfid.card_id': card_id } = state;
@@ -70,7 +70,7 @@ const CardsRegister = () => {
       return console.error(error);
     }
 
-    history.push('/cards');
+    navigate('../');
   };
 
   useEffect(() => {

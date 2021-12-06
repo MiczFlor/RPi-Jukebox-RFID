@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-
+import {
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import {
   Grid,
   IconButton,
@@ -11,8 +14,20 @@ import {
 
 import SearchIcon from '@mui/icons-material/Search';
 
-const LibraryHeader = ({ handleSearch, searchQuery, view, setView }) => {
+const LibraryHeader = ({ handleSearch, searchQuery }) => {
+  const navigate = useNavigate();
+  const { '*': view } = useParams();
   const [showSearchInput, setShowSearchInput] = useState(false);
+
+  const getCurrentView = () => (
+    view.startsWith('folders') ? 'folders' : 'albums'
+  );
+
+  const toggleView = () => {
+    const path = view.startsWith('folders') ? 'albums' : 'folders';
+    localStorage.setItem('libraryLastListView', path);
+    navigate(path);
+  };
 
   return (
     <Grid container sx={{ marginBottom: '8px' }}>
@@ -49,19 +64,19 @@ const LibraryHeader = ({ handleSearch, searchQuery, view, setView }) => {
             sx={{ marginRight: '5px' }}
           >
             <Typography
-              color={view === 'albums' && 'primary'}
+              color={getCurrentView() === 'albums' && 'primary'}
               sx={{ transition: 'color .25s' }}
             >
               Albums
             </Typography>
             <Switch
-              checked={view === 'folders' ? true : false}
-              onChange={() => setView(view ==='folders' ? 'albums' : 'folders')}
+              checked={getCurrentView() === 'folders' ? true : false}
+              onChange={toggleView}
               inputProps={{ 'aria-label': 'Toggle Album/Folder view' }}
               color="default"
             />
             <Typography
-              color={view === 'folders' && 'primary'}
+              color={getCurrentView() === 'folders' && 'primary'}
               sx={{ transition: 'color .25s' }}
             >
               Folders

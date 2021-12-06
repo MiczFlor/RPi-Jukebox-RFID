@@ -31,6 +31,7 @@ export default function Navigation() {
         width: '100%',
         position: 'fixed',
         bottom: '0px',
+        paddingBottom: '10px',
       }}
     >
       <BottomNavigationAction
@@ -41,7 +42,7 @@ export default function Navigation() {
       />
       <BottomNavigationAction
         component={Link}
-        to="/library/lists/albums"
+        to="/library"
         label="Library"
         icon={<MusicNoteIcon />}
       />

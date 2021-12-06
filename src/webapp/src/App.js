@@ -3,7 +3,7 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 
 import PlayerProvider from './context/player';
-import Routes from './routes';
+import Router from './router';
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         id="routes"
         justifyContent="center"
       >
-        <Routes />
+        <Router />
       </Grid>
     </PlayerProvider>
   );

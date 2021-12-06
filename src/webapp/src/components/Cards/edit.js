@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import Avatar from '@mui/material/Avatar';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -17,9 +17,8 @@ import CardsDeleteDialog from './dialogs/delete';
 import request from '../../utils/request';
 
 const CardEdit = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const params = useParams();
-  const { location: { state } } = history;
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cardId, setCardId] = useState(undefined);
@@ -45,7 +44,7 @@ const CardEdit = () => {
       return console.error(error);
     }
 
-    history.push('/cards');
+    navigate('/cards');
   };
 
   const handleDeleteCard = async () => {
@@ -56,18 +55,10 @@ const CardEdit = () => {
       return console.error(error);
     }
 
-    history.push('/cards');
+    navigate('/cards');
   };
 
   useEffect(() => {
-    if (state && state.id) {
-      setCardId(state.id);
-      setSelectedAction(state.from_alias);
-      const [ albumartist, album ] = state.action?.args || [];
-      setSelectedAlbum({ albumartist, album });
-      return;
-    }
-
     const loadCardList = async () => {
       setIsLoading(true);
       const { result, error } = await request('cardsList');
@@ -82,12 +73,12 @@ const CardEdit = () => {
 
       if (error) {
         console.error(error);
-        history.push('/cards');
+        navigate('cards');
       }
     }
 
     loadCardList();
-  }, [history, params, state]);
+  }, [navigate, params]);
 
   return (
     <>
