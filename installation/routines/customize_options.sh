@@ -152,11 +152,11 @@ _options_update_raspi_os() {
   # UPDATE_RASPI_OS
   echo "Would you like to update the operating system?
 This shall be done eventually, but increases the installation time a lot.
-[y/N] " 1>&3
+[Y/n] " 1>&3
   read -r response
   case "$response" in
-    [yY])
-      UPDATE_RASPI_OS=true
+    [nN])
+      UPDATE_RASPI_OS=false
       ;;
     *)
       ;;
@@ -189,7 +189,6 @@ ${DISABLE_ONBOARD_AUDIO_BACKUP} if things go pear-shaped.)
 }
 
 _option_build_local_docs() {
-
   echo -e "Do you want to build the documentation locally and
 make it available under http://ip.of.your.box/docs ?
 
@@ -213,7 +212,6 @@ Build and serve docs locally? [y/N] " 1>&3
 }
 
 _option_webapp_devel_build() {
-
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
     ENABLE_INSTALL_NODE=true
