@@ -3,7 +3,9 @@ import { findIndex, propEq } from 'ramda';
 
 import {
   FormControl,
-  NativeSelect
+  Grid,
+  NativeSelect,
+  Typography,
 } from '@mui/material';
 
 import request from '../../../utils/request';
@@ -11,8 +13,8 @@ import { flatByAlbum } from '../../../utils/utils';
 import { LABELS } from '../../../config';
 
 const SelectPlayCards = ({
-  selectedAlbum,
-  handleAlbumChange
+  actionData,
+  handleActionDataChange,
 }) => {
   const [albums, setAlbums] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,12 +34,12 @@ const SelectPlayCards = ({
   }, []);
 
   const onChange = (event) => {
-    const album = {
+    const values = {
       index: event.target?.value,
       ...albums[event.target?.value]
     }
 
-    handleAlbumChange(album);
+    handleActionDataChange('play_album', values);
   }
 
   const findSelectedIndexAsValue = ({ albumartist, album }) => {
@@ -51,25 +53,32 @@ const SelectPlayCards = ({
   }
 
   return (
-    <FormControl>
-      <NativeSelect
-        value={findSelectedIndexAsValue(selectedAlbum || {})}
-        onChange={onChange}
-        name="albums"
-        inputProps={{ 'aria-label': 'Albums' }}
-      >
-        {isLoading
-          ? <option key={'label'} value={'label'} disabled={true}>Loading</option>
-          : <option key={'label'} value={'label'} disabled={true}>Select an album</option>
-        }
-        {error && <option key={'label'} value={'label'} disabled={true}>An error occurred loading the library.</option>}
-        {albums.map(({ album }, key) =>
-          <option key={key} value={key}>
-            {album || LABELS.UNKNOW_ALBUM}
-          </option>
-        )}
-      </NativeSelect>
-    </FormControl>
+    <Grid container direction="row" alignItems="center">
+      <Grid item xs={5}>
+        <Typography>Albums</Typography>
+      </Grid>
+      <Grid item xs={7}>
+        <FormControl>
+          <NativeSelect
+            value={findSelectedIndexAsValue(actionData.play_album || {})}
+            onChange={onChange}
+            name="albums"
+            inputProps={{ 'aria-label': 'Albums' }}
+          >
+            {isLoading
+              ? <option key={'label'} value={'label'} disabled={true}>Loading</option>
+              : <option key={'label'} value={'label'} disabled={true}>Select an album</option>
+            }
+            {error && <option key={'label'} value={'label'} disabled={true}>An error occurred loading the library.</option>}
+            {albums.map(({ album }, key) =>
+              <option key={key} value={key}>
+                {album || LABELS.UNKNOW_ALBUM}
+              </option>
+            )}
+          </NativeSelect>
+        </FormControl>
+      </Grid>
+    </Grid>
   );
 };
 

@@ -5,8 +5,7 @@ import {
 } from 'react-router-dom';
 
 import CardsOverview from './overview';
-import CardsRegister from './register';
-import CardsEdit from './edit';
+import CardsManage from './manage';
 
 const Cards = () => {
   return (
@@ -17,11 +16,11 @@ const Cards = () => {
       />
       <Route
         path="register"
-        element={<CardsRegister/>}
+        element={<CardsManage/>}
       />
       <Route
         path=":cardId/edit"
-        element={<CardsEdit/>}
+        element={<CardsManage/>}
       />
     </Routes>
   );

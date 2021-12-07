@@ -25,13 +25,8 @@ const JUKEBOX_ACTIONS_MAP = {
   },
 
   // Volume
-  'inc_volume': {
-    title: 'Increase volume by',
-    args: ['step']
-  },
-
-  'dec_volume': {
-    title: 'Decrease volume by',
+  'change_volume': {
+    title: 'Change volume by',
     args: ['step']
   },
 

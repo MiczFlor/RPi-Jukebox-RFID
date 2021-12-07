@@ -82,7 +82,6 @@ const Volume = () => {
           onChangeCommitted={updateVolume}
           disabled={!!volumeMute}
           marks={[ { value: maxVolume } ]}
-          size="small"
           step={volumeStep}
           value={_volume}
           valueLabelDisplay="auto"

@@ -54,25 +54,10 @@ const SettingsVolume = () => {
               marks={marks}
               max={100}
               min={0}
-              size="small"
               step={5}
               valueLabelDisplay="auto"
             />
           </Grid>
-{/* TODO: Currently not implemented on the backend side!
-          <Grid item>
-            <Typography>Volume Steps</Typography>
-            <Slider
-              defaultValue={volumeStep}
-              disabled={true}
-              marks
-              max={15}
-              min={1}
-              size="small"
-              step={1}
-              valueLabelDisplay="auto"
-            />
-          </Grid> */}
         </Grid>
       </CardContent>
     </Card>
