@@ -34,8 +34,8 @@ const CardsManage = () => {
   const [cardId, setCardId] = useState(
     state['rfid.card_id']
     || params.cardId
-    // || undefined
-    || "9123134298459334"
+    || undefined
+    // || "9123134298459334" // For testing purposes only
   );
 
   const [selectedAction, setSelectedAction] = useState(undefined);
