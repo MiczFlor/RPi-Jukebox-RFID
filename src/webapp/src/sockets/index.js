@@ -27,9 +27,9 @@ const socketEvents = ({ setState, events = [] }) => {
 
     if (events.includes(topic) && data) {
       setState(state => { return { ...state, [topic]: data } });
-      // if (topic !== 'playerstatus') {
+      if (topic !== 'playerstatus') {
         console.log(topic, data);
-      // }
+      }
     }
 
     if (error) {
