@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { omit } from 'ramda';
 
 import {
   Avatar,
@@ -11,7 +12,7 @@ import {
 } from '@mui/material';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 
-import PlayerContext from '../../context/player/context';
+import PubSubContext from '../../context/pubsub/context';
 import Header from '../Header';
 import ActionsControls from './controls/actions-controls';
 import ControlsSelector from './controls/controls-selector';
@@ -28,14 +29,16 @@ const InfoNoCardSwiped = () => (
 );
 
 const CardsManage = () => {
-  const params = useParams();
-  const { state } = useContext(PlayerContext);
+  const {
+    '*': path,
+    cardId: paramsCardId
+  } = useParams();
+  const { state, setState } = useContext(PubSubContext);
+  const { 'rfid.card_id': swipedCardId } = state;
 
-  console.log(state['rfid.card_id'])
-
-  const [cardId] = useState(
-    params.cardId
-    || state['rfid.card_id']
+  const [cardId, setCardId] = useState(
+    paramsCardId
+    || swipedCardId
     || undefined
     // || "9123134298459334" // For testing purposes only
   );
@@ -43,35 +46,44 @@ const CardsManage = () => {
   const [selectedAction, setSelectedAction] = useState(undefined);
   const [actionData, setActionData] = useState({});
 
+  // Edit
   useEffect(() => {
     const loadCardList = async () => {
-      const { result, error } = await request('cardsList');
+      if (cardId) {
+        const { result, error } = await request('cardsList');
 
-      if (result && cardId && result[cardId]) {
-        const {
-          action: { args },
-          from_alias: action
-        } = result[cardId];
-        const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[action];
+        if (result && result[cardId]) {
+          const {
+            action: { args },
+            from_alias: action
+          } = result[cardId];
+          const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[action];
 
-        setSelectedAction(action);
-        const values = argKeys.reduce((prev, arg, position) => (
-          {
-            ...prev,
-            [arg]: args[position],
-          }
-        ), {});
+          setSelectedAction(action);
+          const values = argKeys.reduce((prev, arg, position) => (
+            {
+              ...prev,
+              [arg]: args[position],
+            }
+          ), {});
 
-        setActionData({ [action]: values });
-      }
+          setActionData({ [action]: values });
+        }
 
-      if (error) {
-        console.error(error);
+        if (error) {
+          console.error(error);
+        }
       }
     }
 
     loadCardList();
   }, [cardId]);
+
+  // Register
+  useEffect(() => {
+    setCardId(paramsCardId || swipedCardId);
+    setState(omit(['rfid.card_id'], state));
+  }, [paramsCardId, swipedCardId])
 
   return (
     <>

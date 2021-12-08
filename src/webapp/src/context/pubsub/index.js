@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { without } from 'ramda';
 
-import PlayerContext from './context';
+import PubSubContext from './context';
 import { initSockets } from '../../sockets';
+import { SUBSCRIPTIONS } from '../../config';
 
-const PlayerProvider = ({ children }) => {
+const PubSubProvider = ({ children }) => {
   const [state, setState] = useState({});
 
   // Initialize sockets for player context
   useEffect(() => {
     initSockets({
-      events: ['playerstatus'],
+      events: without(['playerstatus'], SUBSCRIPTIONS),
       setState,
     });
   }, []);
@@ -23,10 +25,10 @@ const PlayerProvider = ({ children }) => {
   // and `state` should be moved to PlayerStatus.Provider
 
   return(
-      <PlayerContext.Provider value={context}>
+      <PubSubContext.Provider value={context}>
         { children }
-      </PlayerContext.Provider>
+      </PubSubContext.Provider>
     )
 };
 
-export default PlayerProvider;
+export default PubSubProvider;

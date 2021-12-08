@@ -21,15 +21,15 @@ SUBSCRIPTIONS.forEach(
 
 socket_sub.connect(PUBSUB_ENDPOINT);
 
-const socketEvents = ({ setState }) => {
+const socketEvents = ({ setState, events = [] }) => {
   socket_sub.on('message', (_topic, _payload) => {
     const { topic, data, error } = decodePubSubMessage(_topic, _payload);
 
-    if (data) {
+    if (events.includes(topic) && data) {
       setState(state => { return { ...state, [topic]: data } });
-      if (topic !== 'playerstatus') {
+      // if (topic !== 'playerstatus') {
         console.log(topic, data);
-      }
+      // }
     }
 
     if (error) {
@@ -39,8 +39,8 @@ const socketEvents = ({ setState }) => {
   });
 };
 
-const initSockets = ({ setState }) => {
-  socketEvents({ setState });
+const initSockets = ({ setState, events }) => {
+  socketEvents({ setState, events });
 };
 
 const socketRequest = (_package, plugin, method, kwargs) => (
