@@ -25,9 +25,10 @@ const ActionsControls = ({
       cmd_alias: selectedAction,
       overwrite: true,
     };
+    const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[selectedAction];
 
-    if (JUKEBOX_ACTIONS_MAP[selectedAction].args) {
-      kwargs.args = JUKEBOX_ACTIONS_MAP[selectedAction].args.map(
+    if (argKeys) {
+      kwargs.args = argKeys.map(
         key => actionData[selectedAction][key]
       );
     }

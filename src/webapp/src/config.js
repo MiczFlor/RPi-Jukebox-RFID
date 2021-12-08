@@ -16,18 +16,18 @@ const JUKEBOX_ACTIONS_MAP = {
   // Player
   // 'play_card': {
   //   title: 'Play a folder',
-  //   args: ['folder']
+  //   argKeys: ['folder']
   // },
 
   'play_album': {
     title: 'Play a album',
-    args: ['album', 'artistartist']
+    argKeys: ['album', 'artistartist']
   },
 
   // Volume
   'change_volume': {
     title: 'Change volume by',
-    args: ['step']
+    argKeys: ['step']
   },
 
   // Host

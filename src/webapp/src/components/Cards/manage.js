@@ -50,10 +50,10 @@ const CardsManage = () => {
           action: { args },
           from_alias: action
         } = result[cardId];
-        const { args = [] } = JUKEBOX_ACTIONS_MAP[action];
+        const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[action];
 
         setSelectedAction(action);
-        const values = JUKEBOX_ACTIONS_MAP[action].args.reduce((prev, arg, position) => (
+        const values = argKeys.reduce((prev, arg, position) => (
           {
             ...prev,
             [arg]: args[position],
