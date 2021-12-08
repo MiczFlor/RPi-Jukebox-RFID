@@ -34,8 +34,8 @@ const CardsManage = () => {
   console.log(state['rfid.card_id'])
 
   const [cardId] = useState(
-    state['rfid.card_id']
-    || params.cardId
+    params.cardId
+    || state['rfid.card_id']
     || undefined
     // || "9123134298459334" // For testing purposes only
   );
