@@ -4,25 +4,36 @@ import {
   Routes,
 } from 'react-router-dom';
 
+import Grid from '@mui/material/Grid';
+
 import CardsOverview from './overview';
-import CardsManage from './manage';
+import CardsEdit from './edit';
+import CardsRegister from './register';
 
 const Cards = () => {
   return (
-    <Routes>
-      <Route
-        index
-        element={<CardsOverview />}
-      />
-      <Route
-        path="register"
-        element={<CardsManage/>}
-      />
-      <Route
-        path=":cardId/edit"
-        element={<CardsManage/>}
-      />
-    </Routes>
+    <Grid
+      container
+      id="library"
+      sx={{
+        padding: '10px',
+      }}
+    >
+      <Routes>
+        <Route
+          index
+          element={<CardsOverview />}
+        />
+        <Route
+          path=":cardId/edit"
+          element={<CardsEdit/>}
+        />
+        <Route
+          path="register"
+          element={<CardsRegister/>}
+        />
+      </Routes>
+    </Grid>
   );
 };
 

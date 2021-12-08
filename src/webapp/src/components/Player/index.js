@@ -14,19 +14,28 @@ const Player = () => {
       container
       id="player"
       sx={{
+        padding: '10px',
+        background: 'brown'
+      }}
+    >
+      <Grid
+       item xs={12}
+      sx={{
         paddingTop: '20px',
         paddingLeft: '20px',
         paddingRight: '20px',
+        minHeight: 'calc(100vh - 64px - 20px)'
       }}
-    >
-      <Grid item xs={12} sm={5}>
-        <Cover />
-      </Grid>
-      <Grid item xs={12} sm={7}>
-        <Display />
-        <SeekBar />
-        <Controls />
-        <Volume />
+      >
+        <Grid item xs={12} sm={5}>
+          <Cover />
+        </Grid>
+        <Grid item xs={12} sm={7}>
+          <Display />
+          <SeekBar />
+          <Controls />
+          <Volume />
+        </Grid>
       </Grid>
     </Grid>
   );

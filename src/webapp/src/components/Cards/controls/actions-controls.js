@@ -57,6 +57,7 @@ const ActionsControls = ({
     <>
       <CardActions
         sx={{
+          marginTop: '40px',
           justifyContent: cardId ? 'space-between' : 'flex-end'
         }}
       >
@@ -64,14 +65,14 @@ const ActionsControls = ({
           <Button
             color="secondary"
             size="small"
-            onClick={(e) => setDeleteDialogOpen(true)}
+            onClick={() => setDeleteDialogOpen(true)}
           >
             Delete
           </Button>
         }
         <Button
           color="primary"
-          onClick={(e) => handleRegisterCard(cardId)}
+          onClick={() => handleRegisterCard(cardId)}
           size="small"
         >
           Save

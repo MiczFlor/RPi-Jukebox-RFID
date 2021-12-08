@@ -19,7 +19,10 @@ const Settings = () => {
       container
       direction="column"
       id="settings"
-      sx={{ '& > .MuiGrid-item': spacer }}
+      sx={{
+        '& > .MuiGrid-item': spacer,
+        padding: '10px',
+      }}
     >
       <Grid item>
         <SystemControls />

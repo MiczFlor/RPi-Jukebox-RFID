@@ -36,18 +36,23 @@ const ControlsSelector = ({
             handleActionChange={handleActionChange}
           />
         </Grid>
-
-        {/* Albums */}
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        sx={{ marginTop: '20px' }}
+      >
         {selectedAction === 'play_album' &&
           <SelectPlayCards
-            actionData={actionData}
-            handleActionDataChange={handleActionDataChange}
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
           />
         }
         {selectedAction === 'change_volume' &&
           <SliderChangeVolume
-            actionData={actionData}
-            handleActionDataChange={handleActionDataChange}
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
           />
         }
       </Grid>

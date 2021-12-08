@@ -16,7 +16,6 @@ const Router = () => {
         item xs={12}
         md={6}
         sx={{
-          margin: '10px',
           marginBottom: '64px',
         }}
       >
