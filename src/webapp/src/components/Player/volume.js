@@ -8,12 +8,12 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useTheme } from '@mui/material/styles';
 
-import PlayerContext from '../../context/player/context';
+import PubSubContext from '../../context/pubsub/context';
 import request from '../../utils/request';
 
 const Volume = () => {
   const theme = useTheme();
-  const { state } = useContext(PlayerContext);
+  const { state } = useContext(PubSubContext);
   const { 'volume.level': { volume, mute } = {} } = state;
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
@@ -49,11 +49,17 @@ const Volume = () => {
   }, [isChangingVolume, volume, mute]);
 
   useEffect(() => {
+    const fetchVolume = async () =>  {
+      const { result } = await request('getVolume');
+      setVolume(result);
+    }
+
     const fetchMaxVolume = async () =>  {
       const { result } = await request('getMaxVolume');
       setMaxVolume(result);
     }
 
+    fetchVolume();
     fetchMaxVolume();
   }, []);
 

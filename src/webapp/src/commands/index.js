@@ -100,6 +100,11 @@ const commands = {
     plugin: 'ctrl',
     method: 'set_volume',
   },
+  getVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_volume',
+  },
   getMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
