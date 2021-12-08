@@ -41,7 +41,7 @@ const CardsEdit = () => {
     }
 
     loadCardList();
-  }, []);
+  }, [cardId]);
 
   return (
     <CardsForm

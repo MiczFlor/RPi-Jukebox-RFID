@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import {
   Button,
@@ -17,6 +17,7 @@ const ActionsControls = ({
   selectedAction,
 }) => {
   const navigate = useNavigate();
+  const { '*': path } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleRegisterCard = async () => {
@@ -58,10 +59,10 @@ const ActionsControls = ({
       <CardActions
         sx={{
           marginTop: '40px',
-          justifyContent: cardId ? 'space-between' : 'flex-end'
+          justifyContent: path === 'register' ? 'flex-end' : 'space-between'
         }}
       >
-        {cardId &&
+        {path !== 'register' &&
           <Button
             color="secondary"
             size="small"
