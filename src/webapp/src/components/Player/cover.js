@@ -1,32 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
-import PlayerContext from '../../context/player/context';
-import request from '../../utils/request';
-import { pluginIsLoaded } from '../../utils/utils';
-
-const Cover = ({ song }) => {
-  const { state } = useContext(PlayerContext);
-  const { playerstatus, 'core.plugins.loaded': plugins } = state;
-  // If song is passed, it take presidence over playerstatus
-  const { file } = song || playerstatus || {};
-
-  const [coverImage, setCoverImage] = useState(undefined);
-
-  useEffect(() => {
-    const getMusicCover = async () => {
-      const { result } = await request('musicCoverByFilenameAsBase64', { audio_src: file });
-      if (result) setCoverImage(result);
-    }
-
-    if (pluginIsLoaded(plugins, 'music_cover_art') && file) {
-      getMusicCover();
-    }
-  }, [file, plugins]);
-
+const Cover = ({ coverImage }) => {
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Paper
