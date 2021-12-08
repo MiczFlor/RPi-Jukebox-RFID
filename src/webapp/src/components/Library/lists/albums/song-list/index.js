@@ -43,7 +43,7 @@ const SongList = () => {
   }, [album, artist]);
 
   return (
-    <div id="song-list">
+    <Grid container id="song-list">
       <SongListHeader />
       <SongListHeadline
         album={decodeURIComponent(album)}
@@ -75,7 +75,7 @@ const SongList = () => {
           <Typography>Strange, no songs in this album. 🤔</Typography>
         }
       </Grid>
-    </div>
+    </Grid>
   );
 }
 
