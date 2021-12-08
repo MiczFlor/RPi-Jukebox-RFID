@@ -26,9 +26,9 @@ const socketEvents = ({ setState, events = [] }) => {
     const { topic, data, error } = decodePubSubMessage(_topic, _payload);
 
     if (events.includes(topic) && data) {
-      setState(state => { return { ...state, [topic]: data } });
+      setState(state => ({ ...state, [topic]: data }));
       if (topic !== 'playerstatus') {
-        console.log(topic, data);
+        console.log(topic, data, events);
       }
     }
 

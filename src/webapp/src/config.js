@@ -7,6 +7,7 @@ const PUBSUB_ENDPOINT = `ws://${HOST}:5557`;
 
 const SUBSCRIPTIONS = [
   'core.plugins.loaded',
+  'core.started_at',
   'playerstatus',
   'rfid.card_id',
 ];

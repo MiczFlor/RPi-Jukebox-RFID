@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { omit } from 'ramda';
 
 import {
   Avatar,
@@ -35,6 +34,7 @@ const CardsManage = () => {
   } = useParams();
   const { state, setState } = useContext(PubSubContext);
   const { 'rfid.card_id': swipedCardId } = state;
+  console.log(state)
 
   const [cardId, setCardId] = useState(
     paramsCardId
@@ -82,7 +82,6 @@ const CardsManage = () => {
   // Register
   useEffect(() => {
     setCardId(paramsCardId || swipedCardId);
-    setState(omit(['rfid.card_id'], state));
   }, [paramsCardId, swipedCardId])
 
   return (
