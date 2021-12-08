@@ -31,6 +31,8 @@ const CardsManage = () => {
   const params = useParams();
   const { state } = useContext(PlayerContext);
 
+  console.log(state['rfid.card_id'])
+
   const [cardId] = useState(
     state['rfid.card_id']
     || params.cardId
