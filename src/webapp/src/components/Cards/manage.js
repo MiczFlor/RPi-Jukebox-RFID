@@ -31,7 +31,7 @@ const CardsManage = () => {
   const params = useParams();
   const { state } = useContext(PlayerContext);
 
-  const [cardId, setCardId] = useState(
+  const [cardId] = useState(
     state['rfid.card_id']
     || params.cardId
     || undefined
@@ -46,21 +46,21 @@ const CardsManage = () => {
       const { result, error } = await request('cardsList');
 
       if (result && cardId && result[cardId]) {
-        const { action: { args }, from_alias: action } = result[cardId];
+        const {
+          action: { args },
+          from_alias: action
+        } = result[cardId];
+        const { args = [] } = JUKEBOX_ACTIONS_MAP[action];
 
-        // setCardId(cardId);
         setSelectedAction(action);
+        const values = JUKEBOX_ACTIONS_MAP[action].args.reduce((prev, arg, position) => (
+          {
+            ...prev,
+            [arg]: args[position],
+          }
+        ), {});
 
-        if (JUKEBOX_ACTIONS_MAP[action].args) {
-          const values = JUKEBOX_ACTIONS_MAP[action].args.reduce((prev, arg, position) => (
-            {
-              ...prev,
-              [arg]: args[position],
-            }
-          ), {});
-
-          setActionData({ [action]: values })
-        }
+        setActionData({ [action]: values });
       }
 
       if (error) {
