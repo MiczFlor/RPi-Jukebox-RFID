@@ -10,6 +10,7 @@ const SUBSCRIPTIONS = [
   'core.started_at',
   'playerstatus',
   'rfid.card_id',
+  'volume.level',
 ];
 
 const JUKEBOX_ACTIONS_MAP = {
