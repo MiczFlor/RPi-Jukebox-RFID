@@ -1,7 +1,8 @@
 [Unit]
 Description=Jukebox Daemon
-After=network.target sound.target mpd.service
-Requires=mpd.service
+# pulseaudio.service is required during shut down of this service, as we play shutdown sound (and adjust the volume)
+After=network.target sound.target mpd.service pulseaudio.service
+Requires=mpd.service pulseaudio.service
 
 [Service]
 ExecStart=/usr/bin/python3 run_jukebox.py
@@ -9,16 +10,17 @@ WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/jukebox
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-ConditionUser=!root
+# ConditionUser=!root
 
+#  One of these sandbox settings prevents using sudo shutdown from inside the service
 # disallow writing to /usr, /bin, /sbin, ...
-ProtectSystem=yes
+# ProtectSystem=yes
 
 # We currently do shutdown and reboot with sudo
 # NoNewPrivileges=yes
-ProtectKernelTunables=yes
-ProtectControlGroups=yes
-RestrictNamespaces=yes
+# ProtectKernelTunables=yes
+# ProtectControlGroups=yes
+# RestrictNamespaces=yes
 
 
 [Install]

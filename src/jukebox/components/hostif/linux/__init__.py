@@ -67,20 +67,21 @@ def shutdown():
     """Shutdown the host machine"""
     logger.info('Shutting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
-    # ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
-    #                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # Detach the shell and wait 1 second before command execution
     # for return value to pass up the RPC call stack.
     # The return value has no meaning itself, but the RPC call stack should complete correctly
-    # This works on the RPi w/o further authentification, on other machines a systemctl reboot may work better
+    # In order to really detach the shell command, we also need to detach the pipes for outputs
+    # If omit that, there is a dead lock and the service will not shut down properly
+    # This works on the RPi w/o further authentication, on other machines a systemctl reboot may work better
     # If authentication is required, the command will simply not execute and time out
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True, capture_output=False,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
     if IS_DEBUG:
         logger.info('Skipping system command due to debug mode')
+    logger.info('Shutdown command dispatched to host')
 
 
 @plugin.register
@@ -88,13 +89,14 @@ def reboot():
     """Reboot the host machine"""
     logger.info('Rebooting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True, capture_output=False,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
     if IS_DEBUG:
         logger.info('Reboot command skipped due to debug mode')
+    logger.info('Reboot command dispatched to host')
 
 
 @plugin.register
@@ -145,8 +147,8 @@ def restart_service():
     if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
-        ret = subprocess.run('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+        ret = subprocess.run('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True, capture_output=False,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                              stdin=subprocess.DEVNULL)
         if ret.returncode != 0:
             msg = f"Error in restarting service: {ret.stdout}"
