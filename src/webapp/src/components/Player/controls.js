@@ -60,7 +60,6 @@ const Controls = () => {
       direction="row"
       flexWrap="nowrap"
       justifyContent="space-evenly"
-      sx={{ margin: '7px 0' }}
     >
 
       {/* Shuffle */}
