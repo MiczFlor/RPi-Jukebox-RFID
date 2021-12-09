@@ -16,7 +16,7 @@ import ControlsSelector from './controls/controls-selector';
 
 const InfoNoCardSwiped = () => (
   <Typography>
-    ⚠️ Please swipe a card to recieve and ID which will
+    ⚠️ Please swipe a card to recieve an ID which will
     be used to register a new action.
   </Typography>
 );

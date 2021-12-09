@@ -5,11 +5,14 @@ import PubSubContext from '../../context/pubsub/context';
 import CardsForm from './form';
 
 const CardsRegister = () => {
-  const { state: { 'rfid.card_id': swipedCardId }, setState } = useContext(PubSubContext);
+  const {
+    state: { 'rfid.card_id': swipedCardId },
+    setState
+  } = useContext(PubSubContext);
 
   const [cardId, setCardId] = useState(undefined);
-  const [selectedAction, setSelectedAction] = useState(undefined);
   const [actionData, setActionData] = useState({});
+  const [selectedAction, setSelectedAction] = useState(undefined);
 
   useEffect(() => {
     setState(state => (omit(['rfid.card_id'], state)));
