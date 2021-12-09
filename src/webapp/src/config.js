@@ -6,7 +6,9 @@ const REQRES_ENDPOINT = `ws://${HOST}:5556`;
 const PUBSUB_ENDPOINT = `ws://${HOST}:5557`;
 
 const SUBSCRIPTIONS = [
+  'batt_status',
   'core.plugins.loaded',
+  'core.version',
   'core.started_at',
   'playerstatus',
   'rfid.card_id',

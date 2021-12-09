@@ -7,6 +7,7 @@ import SettingsSecondSwipe from './secondswipe';
 import SystemControls from './systemcontrols';
 import SettingsVolume from './volume';
 import SettingsAutoHotspot from './autohotspot';
+import SettingsStatus from './status';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -24,6 +25,9 @@ const Settings = () => {
         padding: '10px',
       }}
     >
+      <Grid item>
+        <SettingsStatus />
+      </Grid>
       <Grid item>
         <SystemControls />
       </Grid>
