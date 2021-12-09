@@ -7,8 +7,10 @@ const PUBSUB_ENDPOINT = `ws://${HOST}:5557`;
 
 const SUBSCRIPTIONS = [
   'core.plugins.loaded',
+  'core.started_at',
   'playerstatus',
   'rfid.card_id',
+  'volume.level',
 ];
 
 const JUKEBOX_ACTIONS_MAP = {
@@ -16,23 +18,18 @@ const JUKEBOX_ACTIONS_MAP = {
   // Player
   // 'play_card': {
   //   title: 'Play a folder',
-  //   args: ['folder']
+  //   argKeys: ['folder']
   // },
 
   'play_album': {
     title: 'Play a album',
-    args: ['album', 'artistartist']
+    argKeys: ['albumartist', 'album']
   },
 
   // Volume
-  'inc_volume': {
-    title: 'Increase volume by',
-    args: ['step']
-  },
-
-  'dec_volume': {
-    title: 'Decrease volume by',
-    args: ['step']
+  'change_volume': {
+    title: 'Change volume by',
+    argKeys: ['step']
   },
 
   // Host

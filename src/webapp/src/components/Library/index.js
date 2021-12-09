@@ -1,25 +1,43 @@
 import React from 'react';
 import {
+  Navigate,
   Route,
-  Switch,
-  useRouteMatch,
+  Routes,
 } from 'react-router-dom';
+
+import Grid from '@mui/material/Grid';
 
 import LibraryLists from './lists';
 import SongList from './lists/albums/song-list';
 
 const Library = () => {
-  const { path } = useRouteMatch();
+  const lastListView = localStorage.getItem('libraryLastListView') || 'albums';
 
   return (
-    <Switch>
-      <Route exact path={`${path}/albums/:artist/:album`}>
-        <SongList />
-      </Route>
-      <Route path={`${path}`}>
-        <LibraryLists />
-      </Route>
-    </Switch>
+    <Grid
+      container
+      id="library"
+      sx={{
+        padding: '10px',
+      }}
+    >
+      <Routes>
+        <Route
+          index
+          element={<Navigate to={lastListView} replace />}
+          exact
+        />
+        <Route
+          path="*"
+          element={<LibraryLists />}
+        />
+        <Route
+          path="albums/:artist/:album"
+          element={<SongList />}
+          exact
+        />
+      </Routes>
+    </Grid>
   );
 };
 
