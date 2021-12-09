@@ -48,7 +48,7 @@ const Player = () => {
       }}
     >
       <Grid
-        item xs={12}
+        container
         sx={{
           paddingTop: '30px',
           paddingLeft: '30px',

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import AddIcon from '@mui/icons-material/Add';
-import CardsList from './cards-list';
+import CardsList from './list';
 import CircularProgress from '@mui/material/CircularProgress';
 import Fab from '@mui/material/Fab';
 import Grid from '@mui/material/Grid';
@@ -38,7 +38,7 @@ const CardsOverview = () => {
   }, []);
 
   return (
-    <div id="cards">
+    <Grid container id="cards">
       <Header title="Cards" />
       <Grid
         container
@@ -68,7 +68,7 @@ const CardsOverview = () => {
       >
         <AddIcon />
       </Fab>
-    </div>
+    </Grid>
   );
 };
 
