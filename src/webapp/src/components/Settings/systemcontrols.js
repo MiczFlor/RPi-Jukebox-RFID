@@ -12,6 +12,7 @@ import RebootDialog from './dialogs/reboot';
 import ShutDownDialog from './dialogs/shutdown';
 
 const SystemControls = () => {
+
   return (
     <Card>
       <CardHeader title="System Controls" />

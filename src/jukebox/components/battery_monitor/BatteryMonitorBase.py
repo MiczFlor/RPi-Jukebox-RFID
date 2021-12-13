@@ -77,7 +77,7 @@ class BattmonBase():
         self._logger = logger
         self.batt_status = {}
         self.batt_status['soc'] = 0
-        self.batt_status['chargeing'] = 0
+        self.batt_status['charging'] = 0
         self.batt_status['voltage'] = 0
         self.interval = 5
         num = cfg.setndefault('battmon', 'scale_to_phy_num', value=35)
@@ -127,9 +127,9 @@ class BattmonBase():
         soc = int(interpolate(self.soc_cc, batt_voltage_mV))
 
         if (batt_voltage_mV - batt_voltage_mV_slow) < 0:
-            chargeing = 0
+            charging = 0
         else:
-            chargeing = 1
+            charging = 1
 
         if (batt_voltage_mV < self.shutdown_voltage):
             self._logger.warning(f"Shutdown due to low Battery: {soc}%, Batt Voltage: {batt_voltage_mV}mV")
@@ -142,10 +142,10 @@ class BattmonBase():
             if (self.all_clear_action is not None):
                 utils.decode_and_call_rpc_command(self.all_clear_action, self._logger)
 
-        self._logger.info(f"SOC: {soc}%, Batt Voltage: {batt_voltage_mV}mV, charging:{chargeing}")
+        self._logger.info(f"SOC: {soc}%, Batt Voltage: {batt_voltage_mV}mV, charging:{charging}")
 
         self.batt_status['soc'] = soc
-        self.batt_status['chargeing'] = chargeing
+        self.batt_status['charging'] = charging
         self.batt_status['voltage'] = batt_voltage_mV
 
         jukebox.publishing.get_publisher().send('batt_status', self.batt_status)
