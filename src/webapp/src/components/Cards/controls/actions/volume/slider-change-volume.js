@@ -10,6 +10,11 @@ import {
 import Remove from '@mui/icons-material/Remove';
 import Add from '@mui/icons-material/Add';
 
+import {
+  getActionAndCommand,
+  getArgsValues,
+} from '../../../utils';
+
 const marks = [-10, -5, 0, 5, 10].map(
   (value) => ({ value, label: value })
 );
@@ -18,6 +23,13 @@ const SliderChangeVolume = ({
   actionData,
   handleActionDataChange,
 }) => {
+  const { action, command } = getActionAndCommand(actionData);
+  const [step] = getArgsValues(actionData);
+
+  const onChange = (event, step) => {
+    handleActionDataChange(action, command, { step })
+  };
+
   return (
     <Grid container alignItems="center">
       <Grid item xs={12}>
@@ -26,14 +38,14 @@ const SliderChangeVolume = ({
           <Remove />
           <Slider
             aria-label="Volume steps"
-            value={actionData.change_volume?.step || 0}
+            value={step || 0}
             marks={marks}
             step={1}
             min={-10}
             max={10}
             track={false}
             valueLabelDisplay="auto"
-            onChange={(event, step) => handleActionDataChange('change_volume', { step })}
+            onChange={onChange}
           />
           <Add />
         </Stack>

@@ -19,6 +19,12 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_song_by_artist_and_album',
   },
+  getSongByUrl: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_song_by_url',
+    argKeys: ['song_url']
+  },
   folderList: {
     _package: 'player',
     plugin: 'ctrl',
@@ -48,20 +54,23 @@ const commands = {
     plugin: 'ctrl',
     method: 'play',
   },
-  playSong: {
+  play_single: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_single',
+    argKeys: ['song_url']
   },
-  playFolder: {
+  play_folder: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_folder',
+    argKeys: ['folder']
   },
-  playAlbum: {
+  play_album: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_album',
+    argKeys: ['albumartist', 'album']
   },
   pause: {
     _package: 'player',
@@ -114,6 +123,12 @@ const commands = {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'set_soft_max_volume',
+  },
+  change_volume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'change_volume',
+    argKeys: ['step'],
   },
   toggleMuteVolume: {
     _package: 'volume',

@@ -10,7 +10,13 @@ import { LABELS } from '../../../../../config';
 import { toHHMMSS } from '../../../../../utils/utils';
 import request from '../../../../../utils/request'
 
-const SongListItem = ({ song }) => {
+const SongListItem = ({
+  isSelecting,
+  registerMusicToCard,
+  song,
+}) => {
+  const command = 'play_single';
+
   const {
     artist,
     duration,
@@ -18,11 +24,19 @@ const SongListItem = ({ song }) => {
     title,
   } = song;
 
+  const playSingle = () => {
+    request(command, { song_url: file })
+  }
+
+  const registerSongToCard = () => (
+    registerMusicToCard(command, { song_url: file })
+  );
+
   return (
     <ListItem disablePadding>
       <ListItemButton
         role={undefined}
-        onClick={e => request('playSong', { song_url: file })}
+        onClick={() => (isSelecting ? registerSongToCard() : playSingle())}
       >
         <ListItemText
           primary={title || LABELS.UNKNOW_TITLE}

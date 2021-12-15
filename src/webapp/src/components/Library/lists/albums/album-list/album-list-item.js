@@ -1,5 +1,8 @@
 import React, { forwardRef } from 'react';
-import { Link } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+} from 'react-router-dom';
 
 import {
   Avatar,
@@ -12,7 +15,9 @@ import {
 import noCover from '../../../../../assets/noCover.jpg';
 import { LABELS } from '../../../../../config';
 
-const AlbumListItem = ({ albumartist, album }) => {
+const AlbumListItem = ({ albumartist, album, isButton = true }) => {
+  const { search: urlSearch } = useLocation();
+
   const AlbumLink = forwardRef((props, ref) => {
     const { data } = props;
 
@@ -20,15 +25,15 @@ const AlbumListItem = ({ albumartist, album }) => {
     const album = encodeURIComponent(data?.album || LABELS.UNKNOW_ALBUM);
 
     // TODO: Introduce fallback incase artist or album are undefined
-    const location = `${artist}/${album}`;
+    const location = `${artist}/${album}${urlSearch}`;
 
     return <Link ref={ref} to={location} {...props} />
   });
 
   return (
     <ListItem
-      button
-      component={AlbumLink}
+      button={isButton}
+      component={isButton ? AlbumLink : null}
       data={{ albumartist, album }}
       disablePadding
       key={album}

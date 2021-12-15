@@ -5,23 +5,26 @@ import {
   Typography,
 } from '@mui/material';
 
-import SelectPlayCards from './select-play-cards';
 import SelectCommandAliases from './select-command-aliases';
-import SliderChangeVolume from './slider-change-volume';
+import SelectPlayMusic from './actions/play-music';
+import SelectVolume from './actions/volume';
+import { buildActionData } from '../utils';
 
 const ControlsSelector = ({
-  selectedAction,
-  setSelectedAction,
   actionData,
   setActionData,
+  cardId,
 }) => {
   const handleActionChange = (event) => {
-    setSelectedAction(event.target.value);
-    setActionData({});
+    setActionData(
+      buildActionData(event.target.value)
+    );
   };
 
-  const handleActionDataChange = (action, values) => {
-    setActionData({ [action]: values });
+  const handleActionDataChange = (action, command, args) => {
+    setActionData(
+      buildActionData(action, command, args)
+    );
   }
 
   return (
@@ -32,7 +35,7 @@ const ControlsSelector = ({
         </Grid>
         <Grid item xs={7}>
           <SelectCommandAliases
-            selectedAction={selectedAction}
+            actionData={actionData}
             handleActionChange={handleActionChange}
           />
         </Grid>
@@ -43,17 +46,21 @@ const ControlsSelector = ({
         alignItems="center"
         sx={{ marginTop: '20px' }}
       >
-        {selectedAction === 'play_album' &&
-          <SelectPlayCards
-          actionData={actionData}
-          handleActionDataChange={handleActionDataChange}
+        {actionData.action === 'play_music' &&
+          <SelectPlayMusic
+            actionData={actionData}
+            cardId={cardId}
           />
         }
-        {selectedAction === 'change_volume' &&
-          <SliderChangeVolume
-          actionData={actionData}
-          handleActionDataChange={handleActionDataChange}
+        {actionData.action === 'volume' &&
+          <SelectVolume
+            actionData={actionData}
+            handleActionDataChange={handleActionDataChange}
           />
+        }
+
+        {actionData.action === 'host' &&
+          <Typography>Host</Typography>
         }
       </Grid>
     </Grid>
