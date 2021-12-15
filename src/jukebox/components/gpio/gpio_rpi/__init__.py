@@ -2,9 +2,11 @@ import logging
 import threading
 import jukebox.plugs as plugs
 import jukebox.cfghandler
+import time
 
 from .button import Button
 from .rotary_encoder import RotaryEncoder
+from .port_out import PortOut
 
 log = logging.getLogger('jb.gpio')
 gpio = None
@@ -37,15 +39,14 @@ class GpioRpiClass(threading.Thread):
         self.device_map = {'Button': Button,
                            'RotaryEncoder': RotaryEncoder,
                            'RockerButton': None,
-                           'PortOut': None}
-        self.devicelist = []
-        self.portlist = {}
+                           'PortOut': PortOut}
+        self.devicelist = {}
 
         # iterate over all GPIO devices
         for dev_name in self.devices.keys():
             dev = self.generate_device(self.devices[dev_name], dev_name)
             if dev is not None:
-                self.devicelist.append(dev)
+                self.devicelist[dev_name] = dev
 
     def generate_device(self, device_config, name):
         device_type = device_config['Type']
@@ -59,39 +60,56 @@ class GpioRpiClass(threading.Thread):
 
     @plugs.tag
     def SetPortState(self, name, state):
-        # port = self.portlist[name]
-        # port.SetPortState(state)
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.SetPortState(state)
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
+            print(type(port))
         return 0
 
     @plugs.tag
-    def StartPortSequence(self, name, seq):
-        # for step in seq:
-        #    time.sleep(step['delay'] / 1000)
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        # 2: {'delay',100,'pin':'xxx','state':0}}
-
-        # {1: {'delay',100,'pin':'xxx','state':1},
-        #  2: {'repeat',100,'pin':'xxx','state':0}}
-
+    def StartPortSequence(self, seq):
+        name = seq.get('name')
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.StartPortSequence(seq)
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
         return (0)
 
     @plugs.tag
     def StopPortSequence(self, name):
+        port = self.devicelist.get(name)
+        if isinstance(port, PortOut):
+            port.StopPortSequence()
+        else:
+            if port is None:
+                fm = "not existing"
+            else:
+                fm = "not a PortOut"
+            log.error(f"Could not set Port State, \"{name}\" is {fm} ")
         return (0)
 
     def run(self):
         self._logger.debug("Start GPIO Rpi")
-
-        while not self._cancel.is_set():
-            pass
+        self._cancel.wait()
+        self._logger.debug("Stopped GPIO Rpi")
 
     def stop(self):
         self._logger.debug("Stopping GPIO Rpi")
-        self._cancel.set()
-
         for dev in self.devicelist:
-            dev.stop()
+            self.devicelist[dev].stop()
+        time.sleep(0.2)
+        self._cancel.set()
 
 
 @plugs.finalize

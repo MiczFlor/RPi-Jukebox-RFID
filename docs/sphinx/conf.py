@@ -14,7 +14,11 @@ import os
 import sys
 import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../../src/jukebox'))
-import jukebox.utils
+# This is needed for autodoc to load components.plugins with regular import - i.e. w/o going through plugs.load(...)
+import jukebox.plugs  # noqa: E402
+jukebox.plugs.ALLOW_DIRECT_IMPORTS = True
+import jukebox.utils  # noqa: E402
+
 
 # -- Project information -----------------------------------------------------
 

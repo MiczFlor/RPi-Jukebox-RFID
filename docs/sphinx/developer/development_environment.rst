@@ -65,7 +65,7 @@ You will have to start Jukebox core application and the WebUI separately. The MP
 Using Docker container
 ------------------------------
 
-There is a complete setup :ref:`docker workflow <docker:Phoniebox Development Runbook for Docker environments>`.
+There is a complete setup :ref:`docker workflow <developer/docker:Phoniebox Development Runbook for Docker environments>`.
 
 .. toctree::
     :hidden:

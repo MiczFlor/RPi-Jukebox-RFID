@@ -81,7 +81,7 @@ WiFi. This way you can still access it.
 _option_bluetooth() {
   # DISABLE_BLUETOOTH
   echo "Do you want to disable Bluethooth?
-We recommend to turn off Bluetooth to save energy and booting time.
+Turn off Bluetooth if you do not plan to use it. It saves energy and start up time.
 [Y/n] " 1>&3
   read -r response
   case "$response" in
@@ -96,9 +96,9 @@ We recommend to turn off Bluetooth to save energy and booting time.
 
 _option_samba() {
   # ENABLE_SAMBA
-  echo "Would you like to install and configure Samba for easy file transfer?
-There are other ways to copy music to your RPi but Samba is the simplest
-method. If you are unsure, say yes!
+  echo "Samba will be installed. It is required to conveniently copy files to
+your Phoniebox via a network share. If you don't need it, feel free to skip
+the installation. If you are unsure, stick to YES!
 [Y/n] " 1>&3
   read -r response
   case "$response" in
@@ -115,8 +115,8 @@ method. If you are unsure, say yes!
 _option_webapp() {
   # ENABLE_WEBAPP
   echo "Would you like to install the web application?
-If you don't want to use a graphical interface to manage your Phoniebox,
-you don't need to install the web application.
+This is only required if you want to use a graphical interface
+to manage your Phoniebox!
 [Y/n] " 1>&3
   read -r response
   case "$response" in
@@ -152,11 +152,11 @@ _options_update_raspi_os() {
   # UPDATE_RASPI_OS
   echo "Would you like to update the operating system?
 This shall be done eventually, but increases the installation time a lot.
-[y/N] " 1>&3
+[Y/n] " 1>&3
   read -r response
   case "$response" in
-    [yY])
-      UPDATE_RASPI_OS=true
+    [nN])
+      UPDATE_RASPI_OS=false
       ;;
     *)
       ;;
@@ -189,7 +189,6 @@ ${DISABLE_ONBOARD_AUDIO_BACKUP} if things go pear-shaped.)
 }
 
 _option_build_local_docs() {
-
   echo -e "Do you want to build the documentation locally and
 make it available under http://ip.of.your.box/docs ?
 
@@ -212,6 +211,34 @@ Build and serve docs locally? [y/N] " 1>&3
 
 }
 
+_option_webapp_devel_build() {
+  # Let's detect if we are on the official release branch
+  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
+    ENABLE_INSTALL_NODE=true
+    # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = "release-only" ]]; then
+      ENABLE_WEBAPP_PROD_DOWNLOAD=false
+    fi
+    echo -e "Your are installing from a non-release branch.
+This means, you will need to build the web app locally.
+For that you'll need Node.
+Do you want to install Node now?  [Y/n] " 1>&3
+    read -r response
+    case "$response" in
+      [nN])
+        ENABLE_INSTALL_NODE=false
+        ;;
+      *)
+        ;;
+    esac
+    # This message will be displayed at the end of the installation process
+    FIN_MESSAGE="$FIN_MESSAGE\n\nATTENTION: You need to build the web app locally with
+    $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+    This must be done after reboot, due to memory restrictions.
+    Read the documentation regarding local Web App builds!"
+  fi
+
+}
 _option_spotify() {
   # SETUP_SPOTIFY
   echo "Do you want to enable Spotify?
@@ -263,8 +290,11 @@ customize_options() {
   _option_build_local_docs
   if [ "$ENABLE_WEBAPP" = true ] ; then
     _option_kiosk_mode
+    _option_webapp_devel_build
   fi
-  _options_update_raspi_os
+  # Bullseye is currently under active development and should be updated in any case.
+  # Hence, removing the step below as it becomse mandatory
+  # _options_update_raspi_os
 
   echo "Customize Options ends"
 }

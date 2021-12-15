@@ -13,11 +13,11 @@ Here is the essence of what you need to know:
 
 An RPC command consists of up to three parts
 
-    #. the function to execute (e.g. play_folder, incr_volume)
+    #. the function to execute (e.g. play_folder, change_volume)
     #. the positional arguments (optional)
     #. the keyword arguments (optional)
 
-The function specification consists of two (e.g., ``host.shutdown``) or three terms (e.g., ``volume.ctrl.incr_volume``).
+The function specification consists of two (e.g., ``host.shutdown``) or three terms (e.g., ``volume.ctrl.change_volume``).
 In configuration files, this will look like this:
 
 .. code-block:: yaml
@@ -31,7 +31,7 @@ Or like this for a three part function with the argument set to ``5``:
 
         package: volume
         plugin: ctrl
-        method: incr_volume
+        method: change_volume
         args: [5]
 
 The keyword ``method`` is optional. If needs to be used depends on the function you want to call.

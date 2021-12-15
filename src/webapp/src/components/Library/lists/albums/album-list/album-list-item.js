@@ -20,9 +20,7 @@ const AlbumListItem = ({ albumartist, album }) => {
     const album = encodeURIComponent(data?.album || LABELS.UNKNOW_ALBUM);
 
     // TODO: Introduce fallback incase artist or album are undefined
-    const location = {
-      pathname: `/library/albums/${artist}/${album}`,
-    };
+    const location = `${artist}/${album}`;
 
     return <Link ref={ref} to={location} {...props} />
   });

@@ -2,26 +2,27 @@ import React from 'react';
 
 import {
   Grid,
-  Typography
+  Typography,
 } from '@mui/material';
 
 import SelectPlayCards from './select-play-cards';
 import SelectCommandAliases from './select-command-aliases';
+import SliderChangeVolume from './slider-change-volume';
 
 const ControlsSelector = ({
   selectedAction,
   setSelectedAction,
-  selectedAlbum,
-  setSelectedAlbum,
+  actionData,
+  setActionData,
 }) => {
   const handleActionChange = (event) => {
     setSelectedAction(event.target.value);
-    setSelectedAlbum(undefined);
+    setActionData({});
   };
 
-  const handleAlbumChange = (album) => {
-    setSelectedAlbum(album);
-  };
+  const handleActionDataChange = (action, values) => {
+    setActionData({ [action]: values });
+  }
 
   return (
     <Grid container direction="column">
@@ -35,20 +36,24 @@ const ControlsSelector = ({
             handleActionChange={handleActionChange}
           />
         </Grid>
-
-        {/* Albums */}
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        sx={{ marginTop: '20px' }}
+      >
         {selectedAction === 'play_album' &&
-          <Grid container direction="row" alignItems="center">
-            <Grid item xs={5}>
-              <Typography>Albums</Typography>
-            </Grid>
-            <Grid item xs={7}>
-              <SelectPlayCards
-                selectedAlbum={selectedAlbum}
-                handleAlbumChange={handleAlbumChange}
-              />
-            </Grid>
-          </Grid>
+          <SelectPlayCards
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+          />
+        }
+        {selectedAction === 'change_volume' &&
+          <SliderChangeVolume
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+          />
         }
       </Grid>
     </Grid>

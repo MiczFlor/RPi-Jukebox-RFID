@@ -19,21 +19,28 @@ GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 HOME_PATH="/home/pi"
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
-SHARED_PATH="${INSTALLATION_PATH}/shared"
-SETTINGS_PATH="${SHARED_PATH}/settings"
-SYSTEMD_PATH="/lib/systemd/system"
 INSTALL_ID=$(date +%s)
 
 download_jukebox_source() {
-  wget -qO- ${GIT_URL}/tarball/${GIT_BRANCH} | tar xz
-  GIT_REPO_DOWNLOAD=$(find . -maxdepth 1 -type d -name "${GIT_USER}-${GIT_REPO_NAME}-*")
+  wget -qO- "${GIT_URL}/tarball/${GIT_BRANCH}" | tar xz
+  # Use case insensitive search/sed because user names in Git Hub are case insensitive
+  GIT_REPO_DOWNLOAD=$(find . -maxdepth 1 -type d -iname "${GIT_USER}-${GIT_REPO_NAME}-*")
   echo "GIT REPO DOWNLOAD = $GIT_REPO_DOWNLOAD"
-  GIT_HASH=$(echo $GIT_REPO_DOWNLOAD | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/p")
+  GIT_HASH=$(echo "$GIT_REPO_DOWNLOAD" | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/ip")
   # Save the git hash for this particular download for later git repo initialization
   echo "GIT HASH = $GIT_HASH"
-  mv $GIT_REPO_DOWNLOAD $GIT_REPO_NAME
+  if [[ -z ${GIT_REPO_DOWNLOAD} ]]; then
+    echo "ERROR in finding git download. Panic."
+    exit 1
+  fi
+  if [[ -z ${GIT_HASH} ]]; then
+    echo "ERROR in determining git hash from download. Panic."
+    exit 1
+  fi
+  mv "$GIT_REPO_DOWNLOAD" "$GIT_REPO_NAME"
   unset GIT_REPO_DOWNLOAD
 }
+
 
 ### RUN INSTALLATION
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"

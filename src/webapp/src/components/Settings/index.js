@@ -7,6 +7,7 @@ import SettingsSecondSwipe from './secondswipe';
 import SystemControls from './systemcontrols';
 import SettingsVolume from './volume';
 import SettingsAutoHotspot from './autohotspot';
+import SettingsStatus from './status';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -19,8 +20,14 @@ const Settings = () => {
       container
       direction="column"
       id="settings"
-      sx={{ '& > .MuiGrid-item': spacer }}
+      sx={{
+        '& > .MuiGrid-item': spacer,
+        padding: '10px',
+      }}
     >
+      <Grid item>
+        <SettingsStatus />
+      </Grid>
       <Grid item>
         <SystemControls />
       </Grid>

@@ -6,9 +6,7 @@ const FolderLink = forwardRef((props, ref) => {
   const dir = encodeURIComponent(data?.dir);
 
   // TODO: Introduce fallback incase artist or album are undefined
-  const location = {
-    pathname: `/library/folders/${dir}`,
-  };
+  const location = `/library/folders/${dir}`;
 
   return <Link ref={ref} to={location} {...props} />
 });

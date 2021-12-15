@@ -4,17 +4,14 @@ import PlayerContext from './context';
 import { initSockets } from '../../sockets';
 
 const PlayerProvider = ({ children }) => {
-  const [state, setState] = useState({
-    // requestInFlight is required to prevent sending requests
-    // to the server while another request is still being
-    // processed. This can happen when users click an action in
-    // a very fast manner
-    requestInFlight: false,
-  });
+  const [state, setState] = useState({});
 
   // Initialize sockets for player context
   useEffect(() => {
-    initSockets({ setState });
+    initSockets({
+      events: ['playerstatus'],
+      setState,
+    });
   }, []);
 
   const context = {

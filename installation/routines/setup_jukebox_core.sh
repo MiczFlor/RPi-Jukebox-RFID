@@ -21,10 +21,11 @@ echo "  --------------------------------------------------------------------
 _jukebox_core_install_os_dependencies() {
   echo "Install Jukebox OS dependencies"
   sudo apt-get -y update; sudo apt-get -y install \
-    at git \
+    at \
     alsa-utils \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg mpg123 \
+    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
@@ -37,7 +38,7 @@ _jukebox_core_build_libzmq_with_drafts() {
   LIBSODIUM_VERSION="1.0.18"
   ZMQ_VERSION="4.3.4"
 
-  cd cd ${HOME_PATH} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
+  cd ${HOME_PATH} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
       wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz; \
       tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz; \
       cd libsodium-${LIBSODIUM_VERSION}/; \
@@ -128,13 +129,13 @@ _jukebox_core_install_settings() {
   cp -f ${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml ${SETTINGS_PATH}/logger.yaml
 }
 
-_jukebox_core_register_as_system_service() {
-  echo "  Register Core system service"
-  sudo cp -f ${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service ${SYSTEMD_PATH}
-  sudo chmod 644 ${SYSTEMD_PATH}/jukebox-daemon.service
+_jukebox_core_register_as_service() {
+  echo "  Register Jukebox Core user service"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${SYSTEMD_USR_PATH}"
+  sudo chmod 644 "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
-  sudo systemctl enable jukebox-daemon.service
-  sudo systemctl daemon-reload
+  systemctl --user daemon-reload
+  systemctl --user enable jukebox-daemon.service
 }
 
 setup_jukebox_core() {
@@ -144,7 +145,7 @@ setup_jukebox_core() {
   _jukebox_core_install_python_requirements
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings
-  _jukebox_core_register_as_system_service
+  _jukebox_core_register_as_service
 
   echo "DONE: setup_jukebox_core"
 }

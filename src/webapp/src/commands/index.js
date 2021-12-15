@@ -100,15 +100,20 @@ const commands = {
     plugin: 'ctrl',
     method: 'set_volume',
   },
+  getVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_volume',
+  },
   getMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'get_max_volume',
+    method: 'get_soft_max_volume',
   },
   setMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'set_max_volume',
+    method: 'set_soft_max_volume',
   },
   toggleMuteVolume: {
     _package: 'volume',

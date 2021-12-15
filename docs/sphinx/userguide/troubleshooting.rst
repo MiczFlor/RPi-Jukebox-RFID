@@ -1,79 +1,3 @@
-.. Some helpful links
-    https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-    https://www.sphinx-doc.org/en/master/usage/extensions/index.html
-    https://www.sphinx-doc.org/en/master/usage/extensions/autosectionlabel.html#module-sphinx.ext.autosectionlabel
-    https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html#ref-role
-    https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#directive-code-block
-    https://pygments.org/docs/lexers/
-    Python Directives:
-    https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html
-    Content
-    https://docutils.sourceforge.io/docs/ref/rst/directives.html#table-of-contents
-
-Jukebox Core Apps
-*****************
-
-The Jukebox's core apps are located in ``src/jukebox``. Run the following command to learn more about each app and its parameters:
-
-.. code-block:: bash
-
-  $ ./run_app_name.py -h
-
-run_jukebox.py
----------------
-
-.. automodule:: run_jukebox
-
-run_register_rfid_reader.py
------------------------------
-
-.. automodule:: run_register_rfid_reader
-
-run_rpc_tool.py
----------------
-
-.. automodule:: run_rpc_tool
-
-run_publicity_sniffer.py
--------------------------
-
-.. automodule:: run_publicity_sniffer
-
-Configuration
-**************
-
-The Jukebox configuration is managed by set of files located in ``../shared/settings``.
-Some configuration changes can be made through the WebUI and take immediate effect.
-
-The majority of configuration options is only available by editing the config files.
-Don't fear (overly), they contain commentaries.
-
-Best practice procedure:
-
-.. code-block:: bash
-
-    # Make sure the Jukebox service is stopped
-    $ sudo systemctl stop jukebox
-
-    # Edit the file(s)
-    $ nano ../shared/jukebox.yaml
-
-    # Start Jukebox in console and check the log output (optional)
-    $ ./run_jukebox.py
-    # and if OK, press Ctrl-C and restart the service
-
-    # Restart the service
-    $ sudo systemctl start jukebox-daemon
-
-
-To try different configurations, you can start the Jukebox with a custom config file. 
-This could be useful if you want your Jukebox to only allow a lower volume when started
-at night time when there is time to go to bed :-)
-
-.. code-block:: bash
-
-    $./run_jukebox.py --conf ../path/to/custom/config.yaml
-
 Troubleshooting
 *****************
 
@@ -82,6 +6,12 @@ In full debug mode, this may become very verbose. In fact, better observability
 has been one of the design goals for version 3.
 
 There are various options to get access to debug information.
+
+Debugging your setup runs in several steps
+
+    #. Check that :ref:`audio output works<userguide/audio:Checking system sound output>`
+    #. Check that :ref:`MPD works<userguide/system:Music Player Daemon (MPD)>`
+    #. Checking log messages from the Jukebox Core App as described below
 
 The short answer
 ----------------
@@ -129,7 +59,7 @@ on the console log.
 .. code-block:: bash
 
     # Make sure the Jukebox service is stopped:
-    $ sudo systemctl stop jukebox-daemon
+    $ systemctl --user stop jukebox-daemon
 
     # Start the Jukebox in debug mode:
     # with default logger:
@@ -164,4 +94,4 @@ Things are just not behaving as expected? Time to check the system logs:
 
 .. code-block:: bash
 
-    $journalctl -b -u jukebox-daemon
+    $journalctl --user -b -u jukebox-daemon

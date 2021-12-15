@@ -14,3 +14,4 @@ Developers API Introduction
    cfghandler
    playlist
    utils
+   volume
