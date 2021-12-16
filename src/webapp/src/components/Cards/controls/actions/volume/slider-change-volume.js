@@ -31,10 +31,10 @@ const SliderChangeVolume = ({
   };
 
   return (
-    <Grid container alignItems="center">
+    <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
         <Typography>Volume Steps</Typography>
-        <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+        <Stack spacing={2} direction="row" alignItems="center">
           <Remove />
           <Slider
             aria-label="Volume steps"

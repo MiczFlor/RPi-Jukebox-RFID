@@ -47,6 +47,7 @@ const SongListControls = ({
             : <Button
                 variant="outlined"
                 onClick={registerAlbumToCard}
+                sx={{ margin: '20px 0 4px' }}
               >
                 Assign album to card
               </Button>
