@@ -9,6 +9,7 @@ import SelectCommandAliases from './select-command-aliases';
 import SelectPlayMusic from './actions/play-music';
 import SelectVolume from './actions/volume';
 import { buildActionData } from '../utils';
+import SelectHost from './actions/host';
 
 const ControlsSelector = ({
   actionData,
@@ -60,7 +61,10 @@ const ControlsSelector = ({
         }
 
         {actionData.action === 'host' &&
-          <Typography>Host</Typography>
+          <SelectHost
+            actionData={actionData}
+            handleActionDataChange={handleActionDataChange}
+          />
         }
       </Grid>
     </Grid>
