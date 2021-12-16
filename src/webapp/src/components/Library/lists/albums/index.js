@@ -10,18 +10,18 @@ import { flatByAlbum } from '../../../../utils/utils';
 
 import AlbumList from "./album-list";
 
-const Albums = ({ searchQuery }) => {
+const Albums = ({ musicFilter }) => {
   const [albums, setAlbums] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const search = ({ albumartist, album }) => {
-    if (searchQuery === '') return true;
+    if (musicFilter === '') return true;
 
-    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    const lowerCaseMusicFilter = musicFilter.toLowerCase();
 
-    return albumartist.toLowerCase().includes(lowerCaseSearchQuery) ||
-      album.toLowerCase().includes(lowerCaseSearchQuery);
+    return albumartist.toLowerCase().includes(lowerCaseMusicFilter) ||
+      album.toLowerCase().includes(lowerCaseMusicFilter);
   };
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const Albums = ({ searchQuery }) => {
         ? <CircularProgress />
         : <AlbumList
             albums={albums.filter(search)}
-            searchQuery={searchQuery}
+            musicFilter={musicFilter}
       />}
       {error &&
         <Typography>An error occurred while loading the library.</Typography>

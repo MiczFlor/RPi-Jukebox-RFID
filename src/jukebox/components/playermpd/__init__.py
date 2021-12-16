@@ -554,6 +554,13 @@ class PlayerMPD:
 
         return albums
 
+    @plugs.tag
+    def get_song_by_url(self, song_url):
+        with self.mpd_lock:
+            song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
+
+        return song
+
     def get_volume(self):
         """
         Get the current volume

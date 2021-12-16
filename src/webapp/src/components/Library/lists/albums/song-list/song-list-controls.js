@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  Button,
   Grid,
   IconButton,
 } from '@mui/material';
@@ -8,25 +9,52 @@ import {
 import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
 import request from '../../../../../utils/request';
 
-const SongListControls = ({ albumartist, album, disabled }) => (
-  <Grid container sx={{ padding: '0 8px' }}>
-    <Grid item xs={9}></Grid>
-    <Grid item xs={3}
-      sx={{
-        display: 'flex',
-        justifyContent: 'right',
-      }}
-    >
-      <IconButton
-        aria-label="Play"
-        onClick={() => request('playAlbum', { albumartist, album })}
-        disabled={disabled}
-        size="large"
+const SongListControls = ({
+  albumartist,
+  album,
+  disabled,
+  registerMusicToCard,
+  isSelecting
+}) => {
+  const command = 'play_album';
+
+  const playAlbum = () => (
+    request(command, { albumartist, album })
+  );
+
+  const registerAlbumToCard = () => (
+    registerMusicToCard(command, { albumartist, album })
+  );
+
+  return (
+    <Grid container sx={{ padding: '0 8px' }}>
+      <Grid item xs={12}
+        sx={{
+          display: 'flex',
+          justifyContent: 'right',
+        }}
       >
-        <PlayCircleFilledRoundedIcon color="primary" style={{ fontSize: 64 }} />
-      </IconButton>
+        {
+          !isSelecting
+            ? <IconButton
+                aria-label="Play"
+                onClick={playAlbum}
+                disabled={disabled}
+                size="large"
+              >
+                <PlayCircleFilledRoundedIcon color="primary" style={{ fontSize: 64 }} />
+              </IconButton>
+            : <Button
+                variant="outlined"
+                onClick={registerAlbumToCard}
+                sx={{ margin: '20px 0 4px' }}
+              >
+                Assign album to card
+              </Button>
+        }
+      </Grid>
     </Grid>
-  </Grid>
-);
+  );
+};
 
 export default SongListControls;

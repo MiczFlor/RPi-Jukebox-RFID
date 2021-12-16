@@ -9,18 +9,22 @@ import {
 import request from '../../../../utils/request';
 import FolderList from "./folder-list";
 
-const Folders = ({ searchQuery }) => {
+const Folders = ({
+  musicFilter,
+  isSelecting,
+  registerMusicToCard,
+}) => {
   const { dir = './' } = useParams();
   const [folders, setFolders] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const search = ({ name }) => {
-    if (searchQuery === '') return true;
+    if (musicFilter === '') return true;
 
-    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    const lowerCaseMusicFilter = musicFilter.toLowerCase();
 
-    return name.toLowerCase().includes(lowerCaseSearchQuery);
+    return name.toLowerCase().includes(lowerCaseMusicFilter);
   };
 
   useEffect(() => {
@@ -44,14 +48,16 @@ const Folders = ({ searchQuery }) => {
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>An error occurred while loading the library.</Typography>;
   if (!filteredFolders.length) {
-    if (searchQuery) return <Typography>☝️ No music found!</Typography>;
+    if (musicFilter) return <Typography>☝️ No music found!</Typography>;
     return <Typography>This folder is empty! 🙈</Typography>;
   }
 
   return (
     <FolderList
-      folders={filteredFolders}
       dir={dir}
+      folders={filteredFolders}
+      isSelecting={isSelecting}
+      registerMusicToCard={registerMusicToCard}
     />
   );
 };

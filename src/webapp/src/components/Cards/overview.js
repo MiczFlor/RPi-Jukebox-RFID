@@ -21,7 +21,7 @@ const CardsOverview = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const openRegisterCard = () => {
-    navigate('register', { state: { unsetCardId: true } });
+    navigate('register');
   };
 
   useEffect(() => {

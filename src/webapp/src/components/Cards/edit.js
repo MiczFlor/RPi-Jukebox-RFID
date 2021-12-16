@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import request from '../../utils/request';
-import { JUKEBOX_ACTIONS_MAP } from '../../config';
 import CardsForm from './form';
+import {
+  buildActionData,
+  findActionByCommand,
+} from './utils';
 
 const CardsEdit = () => {
   const { cardId } = useParams();
-
-  const [selectedAction, setSelectedAction] = useState(undefined);
   const [actionData, setActionData] = useState({});
 
   useEffect(() => {
@@ -19,19 +20,13 @@ const CardsEdit = () => {
         if (result && result[cardId]) {
           const {
             action: { args },
-            from_alias: action
+            from_alias: command
           } = result[cardId];
-          const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[action];
 
-          setSelectedAction(action);
-          const values = argKeys.reduce((prev, arg, position) => (
-            {
-              ...prev,
-              [arg]: args[position],
-            }
-          ), {});
+          const action = findActionByCommand(command);
+          const actionData = buildActionData(action, command, args);
 
-          setActionData({ [action]: values });
+          setActionData(actionData);
         }
 
         if (error) {
@@ -47,8 +42,6 @@ const CardsEdit = () => {
     <CardsForm
       title="Edit card"
       cardId={cardId}
-      selectedAction={selectedAction}
-      setSelectedAction={setSelectedAction}
       actionData={actionData}
       setActionData={setActionData}
     />

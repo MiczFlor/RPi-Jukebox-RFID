@@ -8,31 +8,29 @@ import {
 
 import CardsDeleteDialog from '../dialogs/delete';
 import request from '../../../utils/request';
-
-import { JUKEBOX_ACTIONS_MAP } from '../../../config';
+import {
+  getActionAndCommand,
+  getArgsValues
+} from '../utils';
 
 const ActionsControls = ({
   actionData,
   cardId,
-  selectedAction,
 }) => {
   const navigate = useNavigate();
   const { '*': path } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleRegisterCard = async () => {
+    const args = getArgsValues(actionData);
+    const { command: cmd_alias } = getActionAndCommand(actionData);
+
     const kwargs = {
       card_id: cardId.toString(),
-      cmd_alias: selectedAction,
+      cmd_alias,
       overwrite: true,
+      ...(args.length && { args }),
     };
-    const { argKeys = [] } = JUKEBOX_ACTIONS_MAP[selectedAction];
-
-    if (argKeys) {
-      kwargs.args = argKeys.map(
-        key => actionData[selectedAction][key]
-      );
-    }
 
     const { error } = await request('registerCard', kwargs);
 
