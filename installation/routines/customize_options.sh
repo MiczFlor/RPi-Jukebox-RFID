@@ -287,6 +287,7 @@ customize_options() {
   _option_disable_onboard_audio
   _option_samba
   _option_webapp
+  _option_spotify
   _option_build_local_docs
   if [ "$ENABLE_WEBAPP" = true ] ; then
     _option_kiosk_mode
