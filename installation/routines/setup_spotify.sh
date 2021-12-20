@@ -17,7 +17,7 @@ _download_jar() {
 }
 
 _configure_librespot_java() {
-    ehco "Placing config file and inserting username and password"
+    echo "Placing config file and inserting username and password"
     SPOTIFY_CONFIG_FILE="${SHARED_PATH}/spotify/config.toml"
     cp "${INSTALLATION_PATH}"/resources/default-settings/spotify.config.toml "${SPOTIFY_CONFIG_FILE}"
     sed -i "s/HERE_USERNAME/${SPOTIFY_USERNAME}/g" "${SPOTIFY_CONFIG_FILE}"
