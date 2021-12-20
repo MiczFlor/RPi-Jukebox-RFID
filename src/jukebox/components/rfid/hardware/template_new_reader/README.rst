@@ -8,7 +8,7 @@ Or in full: *Template for creating and integrating a new RFID Reader*
 This template provides the skeleton API for a new Reader.
 If you follow the conventions outlined below, your new reader will be picked up automatically
 There is no extra need to register the reader module with the Phoniebox.
-Just re-run :ref:`the reader config tool <coreapps:run_register_rfid_reader.py>`.
+Just re-run :ref:`the reader config tool <developer/coreapps:run_register_rfid_reader.py>`.
 
 Follow the instructions in `template_new_reader.py`
 

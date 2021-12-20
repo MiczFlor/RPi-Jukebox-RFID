@@ -15,25 +15,33 @@ Welcome to RPi Jukebox RFID's documentation!
    featurelist
    install
    migration
-   coreapps
+   issues
 
 .. toctree::
    :maxdepth: 2
    :caption: User Guide:
 
-   concepts
+   userguide/concepts
+   userguide/system
+   userguide/configuration
+   userguide/audio
+   userguide/troubleshooting
    rfid/rfid
+   gpio/gpio_rpi
    userguide/rpc_commands
    userguide/rpc_command_reference
    userguide/rpc_command_alias_reference
    userguide/carddatabase
+   userguide/autohotspot
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Developer Reference:
 
-   development_environment
+   developer/developer_issues.rst
+   developer/coreapps
+   developer/development_environment
    api/api.rst
 
 

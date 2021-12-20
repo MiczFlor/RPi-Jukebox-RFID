@@ -82,3 +82,9 @@ def input_yesno(prompt, blank=None,
         elif blank is not None and len(inp_raw) == 0:
             return blank
         print(f"Not a valid input: '{inp_raw}'. Please enter one of {res_yes + res_no}")
+
+
+def msg_highlight(msg, color=Colors.lightblue, deliminator_length=79):
+    print(f"\n{color}" + "*" * deliminator_length)
+    print(msg)
+    print("*" * deliminator_length + f"{Colors.reset}")

@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEmpty } from 'ramda';
 
 import {
   FormControl,
@@ -6,24 +7,29 @@ import {
 } from '@mui/material';
 
 import { JUKEBOX_ACTIONS_MAP } from '../../../config';
+import { getActionAndCommand } from '../utils';
 
 const SelectCommandAliases = ({
-  selectedAction,
+  actionData,
   handleActionChange
 }) => {
+  const { action = {} } = getActionAndCommand(actionData);
+  const actionsList = Object.keys(JUKEBOX_ACTIONS_MAP);
+  const value = isEmpty(action) ? 0 : action;
+
   return (
     <FormControl>
       <NativeSelect
-        value={selectedAction || '0'}
+        value={value}
         onChange={handleActionChange}
         name="quick-select-actions"
-        inputProps={{ 'aria-label': 'Command Actions' }}
+        inputProps={{ 'aria-label': 'Actions' }}
       >
         <option key={0} value={'0'} disabled={true}>Select an action</option>
-        {Object.keys(JUKEBOX_ACTIONS_MAP).map((action) =>
+        {actionsList.map((action, key) =>
           <option
-            key={action}
-            value={action}
+            key={key}
+            value={actionsList[key]}
           >
             {JUKEBOX_ACTIONS_MAP[action].title}
           </option>

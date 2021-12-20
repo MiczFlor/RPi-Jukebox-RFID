@@ -12,8 +12,8 @@ The core app is centered around a plugin concept. This serves three purposes:
     #. Dynamically load packages with additional functionality based on configuration files.
     #. Initialize and close these packages at app start / close. This happens automatically in the background. Failing
        packages (for any reason) are ignored during start-up. So when some functionality is not available, always
-       check the logs to ensure all packages have loaded successfully! See :ref:`coreapps:Troubleshooting`.
-    #. Register and present functions which can be called via the :ref:`concepts:Remote Procedure Call Server (RPC)`
+       check the logs to ensure all packages have loaded successfully! See :ref:`userguide/troubleshooting:Troubleshooting`.
+    #. Register and present functions which can be called via the :ref:`userguide/concepts:Remote Procedure Call Server (RPC)`
 
 That's about what you need to know for the plugin concept. Developer detailed information
 can be found here (TBD).
@@ -32,7 +32,7 @@ You will find a full list of RPC callable functions in :ref:`userguide/rpc_comma
 and aliases for convinience in :ref:`userguide/rpc_command_alias_reference:RPC Command Alias Reference`
 
 For developers the details can be found here (TBD). We also have a tool to send RPC commands to the running Jukebox application:
-:ref:`coreapps:run_rpc_tool.py`
+:ref:`developer/coreapps:run_rpc_tool.py`
 
 Publishing Message Queue
 --------------------------
@@ -42,5 +42,5 @@ As a user, you need not worry about it.
 
 If you want to interact with the Jukebox from your own application, this is where you get the current
 state from. Details about the protocol can be found here (TBD). A sniffer tool exists which listens and prints the incoming
-status messages: :ref:`coreapps:run_publicity_sniffer.py`.
+status messages: :ref:`developer/coreapps:run_publicity_sniffer.py`.
 

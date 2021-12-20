@@ -9,6 +9,51 @@ server {
 	server_name _;
 
 	location / {
+ 		location = /index.html {
+ 			 error_page 404 = @buildwebui;
+ 			 log_not_found off;
+ 		}
+ 		location = / {
+		         error_page 404 = @buildwebui;
+			 log_not_found off;
+ 		}
 		try_files $uri $uri/ =404;
 	}
+
+
+	location /docs {
+		root /home/pi/RPi-Jukebox-RFID/docs/sphinx/_build/html;
+		try_files $uri $uri/ =404;
+ 		location = /docs/index.html {
+ 			 error_page 404 = @runsphinx;
+ 			 log_not_found off;
+ 		}
+ 		location = /docs {
+			 error_page 404 = @runsphinx;
+			 log_not_found off;
+ 		}
+ 		location = /docs/ {
+			 error_page 404 = @runsphinx;
+			 log_not_found off;
+ 		}
+
+	}
+
+	location @runsphinx {
+ 		 root /home/pi/RPi-Jukebox-RFID/resources/html;
+		 try_files /runsphinx.html =404;
+ 		 internal;
+ 	}
+
+	location @buildwebui {
+ 		 root /home/pi/RPi-Jukebox-RFID/resources/html;
+		 try_files /runbuildui.html =404;
+ 		 internal;
+ 	}
+
+    error_page 404 = /404.html;
+    location /404.html {
+        root /home/pi/RPi-Jukebox-RFID/resources/html;
+        internal;
+    }
 }

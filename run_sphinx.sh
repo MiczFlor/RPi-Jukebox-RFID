@@ -38,6 +38,6 @@ if [[ $CLEAN_BUILD = true ]]; then
   SPHINX_OPTS="$SPHINX_OPTS -a -E"
 fi
 
-echo "Building docs [ sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html ]"
-sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html
+echo "Building docs [ sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html/docs ]"
+sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html/docs
 

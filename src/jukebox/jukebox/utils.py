@@ -14,6 +14,17 @@ import jukebox.plugs as plugs
 log = logging.getLogger('jb.utils')
 
 
+def decode_and_call_rpc_command(rpc_cmd: Dict, logger: logging.Logger = log):
+    """convinence function which ich combining decode_rpc_command and plugs.call_ignore_errors"""
+    action = decode_rpc_command(rpc_cmd, logger)
+    if action is not None:
+        res = plugs.call_ignore_errors(action['package'], action['plugin'],
+                                       action['method'], args=action['args'], kwargs=action['kwargs'])
+    else:
+        res = None
+    return res
+
+
 def decode_rpc_call(cfg_rpc_call: Dict) -> Optional[Dict]:
     """Makes sure that the core rpc call parameters have valid default values in cfg_rpc_call.
 

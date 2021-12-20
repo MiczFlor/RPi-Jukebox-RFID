@@ -3,8 +3,9 @@
 # TODO: Could this be read from the jukebox.yaml?
 AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
 PLAYLISTS_PATH="${SHARED_PATH}/playlists"
-ALSA_MIXER_CONTROL="Headphone"
-MPD_CONF_PATH="/etc/mpd.conf"
+
+# Do not change this directory! It must match MPDs expectation where to find the user configuration
+MPD_CONF_PATH="$HOME/.config/mpd/mpd.conf"
 
 _mpd_install_os_dependencies() {
   echo "Install MPD OS dependencies"
@@ -17,26 +18,25 @@ _mpd_install_os_dependencies() {
 }
 
 _mpd_configure() {
-  # Make a backup of original file (and make it unreachable in case of non-default conf location)
-  sudo mv -f ${MPD_CONF_PATH} ${MPD_CONF_PATH}.orig
+  # MPD will be setup as user process (rather than a system-wide process)
+  mkdir -p ~/.config/mpd
+
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf" "${MPD_CONF_PATH}"
 
   # Prepare new mpd.conf
-  sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' ${MPD_CONF_PATH}
-  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' ${MPD_CONF_PATH}
-  sudo chown mpd:audio "${MPD_CONF_PATH}"
-  sudo chmod 640 "${MPD_CONF_PATH}"
-}
+  sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' "${MPD_CONF_PATH}"
+  sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' "${MPD_CONF_PATH}"
 
-_mpd_start_system_services() {
-  sudo systemctl daemon-reload
-  sudo systemctl start mpd.service
-  mpc update
-}
+  # Make the system-wide file unreachable (just in case)
+  # sudo mv -f "${MPD_CONF_PATH}" "${MPD_CONF_PATH}.orig"
 
-_mpd_stop_system_services() {
-  sudo systemctl stop mpd.service
+#  # Prepare new mpd.conf
+#  sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/mpd.default.conf ${MPD_CONF_PATH}
+#  sudo sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' ${MPD_CONF_PATH}
+#  sudo sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' ${MPD_CONF_PATH}
+#  sudo sed -i 's|%%JUKEBOX_ALSA_MIXER_CONTROL%%|'"$ALSA_MIXER_CONTROL"'|' ${MPD_CONF_PATH}
+#  sudo chown mpd:audio "${MPD_CONF_PATH}"
+#  sudo chmod 640 "${MPD_CONF_PATH}"
 }
 
 setup_mpd() {
@@ -46,6 +46,7 @@ setup_mpd() {
 
   if [[ -f ${MPD_CONF_PATH} || -f ${SYSTEMD_PATH}/mpd.service ]]; then
     echo "  It seems there is a MPD already installed."
+    echo "  Note: It is important that MPD runs as a user service!"
     echo "  Would you like to overwrite your configuration? [Y/n] " | tee /dev/fd/3
       read -r response
       case "$response" in
@@ -62,9 +63,14 @@ setup_mpd() {
   _mpd_install_os_dependencies # Install or update anyways
 
   if [ "$MPD_EXECUTE_INSTALL" = true ] ; then
-    _mpd_stop_system_services
+    # Make sure system-wide mpd is disabled
+    sudo systemctl stop mpd
+    sudo systemctl disable mpd
     _mpd_configure
-    _mpd_start_system_services
+    # Prepare user-service MPD to be started at next boot
+    systemctl --user daemon-reload
+    systemctl --user enable mpd
+    systemctl --user start mpd
   fi
 
   echo "DONE: setup_mpd"

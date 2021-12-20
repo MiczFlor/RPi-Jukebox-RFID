@@ -58,6 +58,11 @@
 'G':
       alias: play_card
       args: path/to/music/folder
-'V':
-      alias: inc_volume
+'V+':
+      alias: change_volume
+      args: 3
+      ignore_card_removal_action: true
+'V-':
+      alias: change_volume
+      args: -3
       ignore_card_removal_action: true

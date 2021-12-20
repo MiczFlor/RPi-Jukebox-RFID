@@ -15,7 +15,10 @@ import SongListHeadline from './song-list-headline';
 import SongListControls from './song-list-controls';
 import SongListItem from './song-list-item';
 
-const SongList = () => {
+const SongList = ({
+  isSelecting,
+  registerMusicToCard,
+}) => {
   const { artist, album } = useParams();
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
@@ -43,7 +46,7 @@ const SongList = () => {
   }, [album, artist]);
 
   return (
-    <div id="song-list">
+    <Grid container id="song-list">
       <SongListHeader />
       <SongListHeadline
         album={decodeURIComponent(album)}
@@ -53,6 +56,8 @@ const SongList = () => {
         album={decodeURIComponent(album)}
         albumartist={decodeURIComponent(artist)}
         disabled={songs.length === 0}
+        isSelecting={isSelecting}
+        registerMusicToCard={registerMusicToCard}
       />
       <Grid
         container
@@ -65,9 +70,14 @@ const SongList = () => {
       >
         {isLoading
           ? <CircularProgress />
-          : <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          : <List sx={{ width: '100%' }}>
               {songs.map(song =>
-                <SongListItem key={song.track} song={song} />
+                <SongListItem
+                  key={song.track}
+                  song={song}
+                  isSelecting={isSelecting}
+                  registerMusicToCard={registerMusicToCard}
+                />
               )}
             </List>
         }
@@ -75,7 +85,7 @@ const SongList = () => {
           <Typography>Strange, no songs in this album. 🤔</Typography>
         }
       </Grid>
-    </div>
+    </Grid>
   );
 }
 

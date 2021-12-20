@@ -94,7 +94,6 @@ import jukebox.publishing as publishing
 import jukebox.playlistgenerator as playlistgenerator
 import misc
 
-from components.volume.volumebase import VolumeBaseClass
 from jukebox.NvManager import nv_manager
 
 
@@ -198,13 +197,10 @@ class PlayerMPD:
     def exit(self):
         logger.debug("Exit routine of playermpd started")
         self.status_is_closing = True
-        # Need to make sure we are not in the process of a status poll
-        # This currently causes 250 ms delay in shutdown (which otherwise takes 6 ms)
-        # --> Change it (self.status_thread.cancel() ?)
-        time.sleep(self.mpd_status_poll_interval)
-        # self.status_thread.cancel()
+        self.status_thread.cancel()
         self.mpd_client.disconnect()
         self.nvm.save_all()
+        return self.status_thread.timer_thread
 
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
@@ -249,18 +245,6 @@ class PlayerMPD:
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
 
-        # If volume ctrl is over mpd, volume is always retrieve via a full call to client status
-        # To avoid double calls to status with evey status poll, we need a case differentiation here
-        # In case MPD is the active volume manager, we can directly use the volume value
-        if plugs.get('volume').factory.get_active != 'mpd':
-            # This will log all plugin calls in logger and spams the debug messages:
-            # self.mpd_status['volume'] = plugs.call_ignore_errors('volume', 'ctrl', 'get_volume')
-            # Do the same, but prevent the debug logging:
-            try:
-                self.mpd_status['volume'] = plugs.get('volume', 'ctrl').get_volume()
-            except Exception:
-                pass
-
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
             self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mpd_status['song']
@@ -275,6 +259,13 @@ class PlayerMPD:
             self.current_folder_status["SHUFFLE"] = "OFF"
             self.current_folder_status["LOOP"] = "OFF"
             self.current_folder_status["SINGLE"] = "OFF"
+
+        # Delete the volume key to avoid confusion
+        # Volume is published via the 'volume' component!
+        try:
+            del self.mpd_status['volume']
+        except KeyError:
+            pass
         publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     @plugs.tag
@@ -563,6 +554,13 @@ class PlayerMPD:
 
         return albums
 
+    @plugs.tag
+    def get_song_by_url(self, song_url):
+        with self.mpd_lock:
+            song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
+
+        return song
+
     def get_volume(self):
         """
         Get the current volume
@@ -584,66 +582,6 @@ class PlayerMPD:
         return self.get_volume()
 
 
-class MpdVolumeCtrl(VolumeBaseClass):
-    """
-    The Volume Ctrl Service for the plugin 'volume'
-
-    This allows volume ctrl through MPD rather than e.g. ALSA
-    """
-
-    def __init__(self, mpd_player_inst):
-        self._logger = logger
-        super().__init__(self._logger)
-        self._mpd_player_inst = mpd_player_inst
-        self._saved_volume = self.get_volume()
-
-    @plugs.tag
-    def get_volume(self):
-        return self._mpd_player_inst.get_volume()
-
-    @plugs.tag
-    def set_volume(self, volume):
-        logger.debug(f"Set Volume = {volume}")
-        return self._mpd_player_inst.set_volume(volume if volume.__le__(self._max_volume) else self._max_volume)
-
-    @plugs.tag
-    def inc_volume(self, step=3):
-        return self.set_volume(self.get_volume() + step)
-
-    @plugs.tag
-    def dec_volume(self, step=3):
-        return self.set_volume(self.get_volume() - step)
-
-    @plugs.tag
-    def unmute(self):
-        if self._mpd_player_inst.get_volume() == 0:
-            return self._mpd_player_inst.set_volume(self._saved_volume)
-        else:
-            logger.debug("Volume was not muted")
-            return self._mpd_player_inst.get_volume()
-
-    @plugs.tag
-    def mute(self):
-        self._saved_volume = self.get_volume()
-        return self._mpd_player_inst.set_volume(0)
-
-    @plugs.tag
-    def get_max_volume(self):
-        return self._max_volume
-
-
-class MpdVolumeCtrlBuilder:
-
-    def __init__(self, mpd_player_inst):
-        self._mpd_player_inst = mpd_player_inst
-        self._instance = None
-
-    def __call__(self, *args, **kwargs):
-        if not self._instance:
-            self._instance = MpdVolumeCtrl(self._mpd_player_inst)
-        return self._instance
-
-
 # ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
@@ -656,8 +594,6 @@ def initialize():
     global player_ctrl
     player_ctrl = PlayerMPD()
     plugs.register(player_ctrl, name='ctrl')
-    volume = plugs.get('volume')
-    volume.factory.register("mpd", MpdVolumeCtrlBuilder(player_ctrl))
 
     # Update mpc library
     library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)
@@ -676,4 +612,4 @@ def initialize():
 @plugs.atexit
 def atexit(**ignored_kwargs):
     global player_ctrl
-    player_ctrl.exit()
+    return player_ctrl.exit()

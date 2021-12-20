@@ -139,10 +139,6 @@ MPD Player
 * |[ ]| Thread safety for status information / configuration  (*in progress*)
 * |[ ]| Differential status post  (*in progress*)
 * |[ ]| Second swipe option setter via RPC  (*in progress*)
-* |[ ]| Volume publisher for ALSA / MPD switchable  (*in progress*)
-
-    * |[ ]| ALSA volume check with select.poll()  (*in progress*)
-
 * |[ ]| Before every music lib update, player should check user rights (not only after start-up)
 
 RFID
@@ -224,19 +220,38 @@ Volume
 
 * |[X]| Jingle playback volume as fixed value in config
 * |[X]| Default volume setting after boot-up
-* |[X]| MPD volume control service
-* |[X]| Min/Max Volume
-* |[ ]| Error-safe mute/unmute for AlsaIF (not all sound cards support that)
+* |[X]| Max Volume
+* |[X]| PulseAudio integration with event handler
+* |[X]| Bluetooth support
+* |[X]| Automatic audio sink toggle
+
+    * |[ ]| Callbacks for audio sink change
 
 GPIO
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Everything needs porting (*in progress*)
+* |[ ]| General (In Progress)
+    * |[X]| Function call routines need replacing to do RPC Calls
+    * |[X]| Configuration format probably best changed to YAML
+    * |[ ]| Configuration Error Checking (no exception in case of YAML typos, but clear error messages)
+    * |[ ]| Documentation
 
-    * Function call routines need replacing to do RPC Calls
-    * Configuration format probably best changed to YAML
+* |[X]| GPIO Button
+    * |[ ]| needs testing
+* |[X]| GPIO Rotary Encoder
+    * Rotary Encoder implementation has been changed to support a higher resolution
+    * |[ ]| needs testing
+* |[ ]| Rocker Button (former Two Button Control)
+    * |[ ]| needs testing
+* |[X]| Port Out
+    * The former Status LED will turn into a PortOut Function supporting multiple Pins and Sequences
+    * |[X]| Port States
+    * |[X]| Sequences
+    * |[ ]| needs testing
 
-* |[ ]| Status LED probably needs re-writing to benefit fully from plugin structure
+* |[X]| GPIO Simulator
+    * The GPIO Simulator is a quick & dirty implementation of a TK GUI to test the basic functionality
+
 * |[ ]| USB Buttons: It's a different category as it works similar to the RFID cards
 * |[ ]| Port rfid pin action to GPIO as a general pin service for all plugins
 
@@ -254,9 +269,9 @@ Spotify
 Others
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Bluetooth sink toggle
 * |[ ]| MQTT
 * |[ ]| Record and Playback using a Mic
+* |[ ]| Dot Matrix Displays
 
 Start-up stuff
 ^^^^^^^^^^^^^^^^^
@@ -264,12 +279,7 @@ Start-up stuff
 * |[X]| check music folder rights
 * |[X]| mpc update / (mpc rescan)
 * |[X]| sudo iwconfig wlan0 power off (need to be done after every restart)
-
-    * |[ ]| needs testing
-
 * |[X]| Optional power down HDMI circuits: /usr/bin/tvservice -o
-
-    * |[ ]| needs testing
 
 
 Debug Tools
@@ -295,7 +305,7 @@ WebUI
 * |[ ]| System information page
 
     * |[ ]| Configure (one or multiple) WLANs
-    * |[ ]| Enable/Disable Auto-Hotspot
+    * |[X]| Enable/Disable Auto-Hotspot
 
 * |[ ]| ``run_npm_build`` script
 
@@ -306,12 +316,7 @@ Installation Procedure
 -----------------------
 
 * |[X]| Single call installation script
-* |[ ]| Query for settings vs. automatic version, e.g.
-
-    * |[ ]| before overwriting MPD config (i.e. for re-installs)
-    * |[ ]| static IP (DHCP or static IP from user input)
-    * |[ ]| ALSA Mixer interface
-
+* |[X]| Query for settings vs. automatic version
 * |[X]| IPQoS in SSH config
 * |[X]| Separate static IP and IPv6 disable
 * |[ ]| For all system config file changes, check prior to modification, if modification already exists

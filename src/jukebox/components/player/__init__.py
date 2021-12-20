@@ -1,3 +1,4 @@
+import os
 import re
 import logging
 import jukebox.cfghandler
@@ -8,7 +9,7 @@ logger = logging.getLogger('jb.player')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
-def _get_music_library_path(self, conf_file='/etc/mpd.conf'):
+def _get_music_library_path(conf_file):
     """Parse the music directory from the mpd.conf file"""
     pattern = re.compile(r'^\s*music_directory\s*"(.*)"', re.I)
     directory = None
@@ -20,6 +21,7 @@ def _get_music_library_path(self, conf_file='/etc/mpd.conf'):
                 break
         else:
             logger.error(f"Could not find music library path in {conf_file}")
+    logger.debug(f"MPD music lib path = {directory}; from {conf_file}")
     return directory
 
 
@@ -27,9 +29,9 @@ class MusicLibPath:
     """Extract the music directory from the mpd.conf file"""
     def __init__(self):
         self._music_library_path = None
-        mpd_conf_file = cfg.setndefault('playermpd', 'mpd_conf', value='/etc/mpd.conf')
+        mpd_conf_file = cfg.setndefault('playermpd', 'mpd_conf', value='~/.config/mpd/mpd.conf')
         try:
-            self._music_library_path = _get_music_library_path(mpd_conf_file)
+            self._music_library_path = _get_music_library_path(os.path.expanduser(mpd_conf_file))
         except Exception as e:
             logger.error(f"Could not determine music library directory from '{mpd_conf_file}'")
             logger.error(f"Reason: {e.__class__.__name__}: {e}")

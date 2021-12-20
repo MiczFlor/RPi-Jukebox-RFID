@@ -19,6 +19,12 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_song_by_artist_and_album',
   },
+  getSongByUrl: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_song_by_url',
+    argKeys: ['song_url']
+  },
   folderList: {
     _package: 'player',
     plugin: 'ctrl',
@@ -36,6 +42,11 @@ const commands = {
     _package: 'cards',
     plugin: 'delete_card',
   },
+  playerstatus: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'playerstatus'
+  },
 
   // Player Actions
   play: {
@@ -43,20 +54,23 @@ const commands = {
     plugin: 'ctrl',
     method: 'play',
   },
-  playSong: {
+  play_single: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_single',
+    argKeys: ['song_url']
   },
-  playFolder: {
+  play_folder: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_folder',
+    argKeys: ['folder']
   },
-  playAlbum: {
+  play_album: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_album',
+    argKeys: ['albumartist', 'album']
   },
   pause: {
     _package: 'player',
@@ -95,20 +109,53 @@ const commands = {
     plugin: 'ctrl',
     method: 'set_volume',
   },
+  getVolume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_volume',
+  },
   getMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'get_max_volume',
+    method: 'get_soft_max_volume',
   },
   setMaxVolume: {
     _package: 'volume',
     plugin: 'ctrl',
-    method: 'set_max_volume',
+    method: 'set_soft_max_volume',
+  },
+  change_volume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'change_volume',
+    argKeys: ['step'],
   },
   toggleMuteVolume: {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'mute',
+  },
+
+  // Host
+  getAutohotspotStatus: {
+    _package: 'host',
+    plugin: 'get_autohotspot_status',
+  },
+  startAutohotspot: {
+    _package: 'host',
+    plugin: 'start_autohotspot',
+  },
+  stopAutohotspot: {
+    _package: 'host',
+    plugin: 'stop_autohotspot',
+  },
+  reboot: {
+    _package: 'host',
+    plugin: 'reboot',
+  },
+  shutdown: {
+    _package: 'host',
+    plugin: 'shutdown',
   },
 };
 

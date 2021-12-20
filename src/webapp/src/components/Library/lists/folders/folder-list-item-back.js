@@ -10,7 +10,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import FolderLink from './folder-link';
 
-const FolderListItemBack = ({ component, dir }) => {
+const FolderListItemBack = ({ dir }) => {
   return (
     <ListItem disablePadding>
       <ListItemButton

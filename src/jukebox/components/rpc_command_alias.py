@@ -24,35 +24,62 @@ cmd_alias_definitions = {
         'package': 'player',
         'plugin': 'ctrl',
         'method': 'play_album'},
+    'play_single': {
+        'title': 'Play a single song triggered by card swipe',
+        'note': "This function plays the content of a given song URL",
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play_single'},
+    'play_folder': {
+        'title': 'Play a folder URL triggered by card swipe',
+        'note': "This function plays the content of a given folder URL",
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play_folder'},
     'pause': {
         'package': 'player',
         'plugin': 'ctrl',
         'method': 'pause',
         'note': "This is what you want as card removal action for place capable readers",
         'ignore_card_removal_action': True},
+    'next_song': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'next',
+        'ignore_card_removal_action': True},
+    'prev_song': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'prev',
+        'ignore_card_removal_action': True},
+    'toggle': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'toggle',
+        'ignore_card_removal_action': True},
+
     # VOLUME
     'set_volume': {
         'package': 'volume',
         'plugin': 'ctrl',
         'method': 'set_volume',
         'ignore_card_removal_action': True},
-    'inc_volume': {
+    'change_volume': {
         'note': "For place-capable readers increment volume as long as card is on reader",
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'inc_volume',
+        'method': 'change_volume',
         'ignore_card_removal_action': True,
         'ignore_same_id_delay': True},
-    'dec_volume': {
+    'set_soft_max_volume': {
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'inc_volume',
-        'ignore_card_removal_action': True,
-        'ignore_same_id_delay': True},
-    'set_max_volume': {
+        'method': 'set_soft_max_volume',
+        'ignore_card_removal_action': True},
+    'toggle_output': {
         'package': 'volume',
         'plugin': 'ctrl',
-        'method': 'set_max_volume',
+        'method': 'toggle_output',
         'ignore_card_removal_action': True},
     # HOST
     'shutdown': {

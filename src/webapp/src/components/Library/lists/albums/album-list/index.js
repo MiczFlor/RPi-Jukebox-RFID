@@ -7,16 +7,22 @@ import {
 
 import AlbumListItem from './album-list-item';
 
-const AlbumList = ({ albums, searchQuery }) => {
+const AlbumList = ({ albums, musicFilter }) => {
   if (albums?.length) {
     return (
-      <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-        {albums.map(AlbumListItem)}
+      <List sx={{ width: '100%' }}>
+        {albums.map(({ albumartist, album }, i) => (
+          <AlbumListItem
+            key={i}
+            albumartist={albumartist}
+            album={album}
+          />
+        ))}
       </List>
     );
   }
 
-  if (searchQuery) return <Typography>☝️ No music found!</Typography>
+  if (musicFilter) return <Typography>☝️ No music found!</Typography>
   return <Typography>Your library is empty! 🙈</Typography>
 }
 

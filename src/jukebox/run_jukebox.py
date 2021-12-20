@@ -5,11 +5,11 @@ This is the main app and starts the Jukebox Core.
 Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart
 the service.
 For example after a configuration change. Not all configuration changes can be applied on-the-fly.
-See :ref:`coreapps:Configuration`.
+See :ref:`userguide/configuration:Jukebox Configuration`.
 
 For debugging, it is usually desirable to run the Jukebox directly from the console rather than
 as service. This gives direct logging info in the console and allows changing command line parameters.
-See :ref:`coreapps:Troubleshooting`.
+See :ref:`userguide/troubleshooting:Troubleshooting`.
 """
 import os.path
 import argparse

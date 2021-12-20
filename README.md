@@ -27,7 +27,7 @@ $ make
 Then navigate your browser to 
 
 ~~~
-file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html
+file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/docs/index.html
 ~~~
 
 ### Installation?

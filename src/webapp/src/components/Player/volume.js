@@ -8,24 +8,23 @@ import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import { useTheme } from '@mui/material/styles';
 
-import PlayerContext from '../../context/player/context';
+import PubSubContext from '../../context/pubsub/context';
 import request from '../../utils/request';
 
 const Volume = () => {
   const theme = useTheme();
-  const { state } = useContext(PlayerContext);
-  const { volume } = state.playerstatus || {};
+  const { state } = useContext(PubSubContext);
+  const { 'volume.level': { volume, mute } = {} } = state;
 
   const [isChangingVolume, setIsChangingVolume] = useState(false);
   const [_volume, setVolume] = useState(0);
-
   const [volumeMute, setVolumeMute] = useState(false);
   const [maxVolume, setMaxVolume] = useState(100);
   const [volumeStep] = useState(1);
 
   const toggleVolumeMute = () => {
     setVolumeMute(!volumeMute);
-    request('toggleMuteVolume', { mute_on: !volumeMute });
+    request('toggleMuteVolume', { mute: !volumeMute });
   };
 
   const updateVolume = () => {
@@ -43,17 +42,24 @@ const Volume = () => {
 
   useEffect(() => {
     // Only trigger API when not dragging volume bar
-    if (!isChangingVolume) {
+    if (volume !== undefined && mute !== undefined && !isChangingVolume) {
       setVolume(volume);
+      setVolumeMute(!!mute);
     }
-  }, [isChangingVolume, volume]);
+  }, [isChangingVolume, volume, mute]);
 
   useEffect(() => {
+    const fetchVolume = async () =>  {
+      const { result } = await request('getVolume');
+      setVolume(result);
+    }
+
     const fetchMaxVolume = async () =>  {
       const { result } = await request('getMaxVolume');
       setMaxVolume(result);
     }
 
+    fetchVolume();
     fetchMaxVolume();
   }, []);
 
@@ -80,11 +86,10 @@ const Volume = () => {
           aria-labelledby="Volume Slider"
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
-          disabled={volumeMute}
+          disabled={!!volumeMute}
           marks={[ { value: maxVolume } ]}
-          size="small"
           step={volumeStep}
-          value={typeof _volume === 'number' ? _volume : 0}
+          value={_volume}
           valueLabelDisplay="auto"
         />
       </Grid>

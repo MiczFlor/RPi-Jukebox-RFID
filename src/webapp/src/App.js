@@ -2,22 +2,25 @@ import React from 'react';
 
 import Grid from '@mui/material/Grid';
 
+import PubSubProvider from './context/pubsub';
 import PlayerProvider from './context/player';
-import Routes from './routes';
+import Router from './router';
 
 function App() {
   return (
-    <PlayerProvider>
-      <Grid
-        alignItems="center"
-        container
-        direction="row"
-        id="routes"
-        justifyContent="center"
-      >
-        <Routes />
-      </Grid>
-    </PlayerProvider>
+    <PubSubProvider>
+      <PlayerProvider>
+        <Grid
+          alignItems="center"
+          container
+          direction="row"
+          id="routes"
+          justifyContent="center"
+        >
+          <Router />
+        </Grid>
+      </PlayerProvider>
+    </PubSubProvider>
   );
 }
 

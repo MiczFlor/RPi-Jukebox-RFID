@@ -3,9 +3,6 @@
 # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
 
 _optimize_disable_irrelevant_services() {
-  echo "  * Disable exim4.service"
-  sudo systemctl disable exim4.service
-
   echo "  * Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
 
@@ -56,7 +53,7 @@ _optimize_handle_network_connection() {
       echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
       echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
 
-      cat << EOF | sudo tee -a $DHCP_CONF
+      sudo tee -a $DHCP_CONF <<-EOF
 
 ## Jukebox DHCP Config
 interface ${INTERFACE}
@@ -76,7 +73,7 @@ EOF
 _optimize_ipv6_arp() {
   if [ "$DISABLE_IPv6" = true ] ; then
       echo "  * Disabling IPV6 and ARP"
-      cat << EOF | sudo tee -a $DHCP_CONF
+      sudo tee -a $DHCP_CONF <<-EOF
 
 ## Jukebox boot speed-up settings
 noarp
@@ -93,7 +90,7 @@ _optimize_handle_boot_screen() {
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
     echo "  * Disable RPi rainbow screen"
     BOOT_CONFIG='/boot/config.txt'
-    cat << EOF | sudo tee -a $BOOT_CONFIG
+    sudo tee -a $BOOT_CONFIG <<-EOF
 
 ## Jukebox Settings
 disable_splash=1

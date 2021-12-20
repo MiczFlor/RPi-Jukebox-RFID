@@ -32,7 +32,6 @@ import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
 
-
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 # Get the main Thread Publisher
@@ -44,13 +43,13 @@ publisher = jukebox.publishing.get_publisher()
 # It could still be installed, which results in a RuntimeError when loaded on a PC
 try:
     import RPi.GPIO as gpio  # noqa: F401
+
     IS_RPI = True
 except ModuleNotFoundError:
     IS_RPI = False
 except RuntimeError as e:
-    logger.warning(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
+    logger.info(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
     IS_RPI = False
-
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -68,20 +67,21 @@ def shutdown():
     """Shutdown the host machine"""
     logger.info('Shutting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
-    # ret = subprocess.run(['sudo', 'shutdown', '-h', 'now'],
-    #                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     # Detach the shell and wait 1 second before command execution
     # for return value to pass up the RPC call stack.
     # The return value has no meaning itself, but the RPC call stack should complete correctly
-    # This works on the RPi w/o further authentification, on other machines a systemctl reboot may work better
+    # In order to really detach the shell command, we also need to detach the pipes for outputs
+    # If omit that, there is a dead lock and the service will not shut down properly
+    # This works on the RPi w/o further authentication, on other machines a systemctl reboot may work better
     # If authentication is required, the command will simply not execute and time out
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True, capture_output=False,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
-    if not IS_DEBUG:
+    if IS_DEBUG:
         logger.info('Skipping system command due to debug mode')
+    logger.info('Shutdown command dispatched to host')
 
 
 @plugin.register
@@ -89,19 +89,20 @@ def reboot():
     """Reboot the host machine"""
     logger.info('Rebooting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True, capture_output=False,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
     if IS_DEBUG:
-        logger.info('Reboot command executed in debug mode')
+        logger.info('Reboot command skipped due to debug mode')
+    logger.info('Reboot command dispatched to host')
 
 
 @plugin.register
 def jukebox_is_service():
     """Check if current Jukebox process is running as a service"""
-    ret = subprocess.run(['systemctl', 'show', '--property', 'MainPID', '--value', 'jukebox-daemon'],
+    ret = subprocess.run(['systemctl', 'show', '--user', '--property', 'MainPID', '--value', 'jukebox-daemon'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -119,14 +120,35 @@ def jukebox_is_service():
 
 
 @plugin.register
+def is_any_jukebox_service_active():
+    """Check if a Jukebox service is running
+
+    .. note:: Does not have the be the current app, that is running as a service!
+    """
+    ret = subprocess.run(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                         stdin=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        logger.error(f"Error in finding service state: {ret.stdout}")
+        is_active = False
+    else:
+        try:
+            is_active = ret.stdout.decode().strip() == 'active'
+        except Exception as e:
+            logger.error(f"{e.__class__.__name__}: {e}")
+            is_active = False
+    return is_active
+
+
+@plugin.register
 def restart_service():
     """Restart Jukebox App if running as a service"""
     msg = ''
     if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
-        ret = subprocess.run('(sleep 1; sudo systemctl restart jukebox-daemon.service) &', shell=True,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+        ret = subprocess.run('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True, capture_output=False,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                              stdin=subprocess.DEVNULL)
         if ret.returncode != 0:
             msg = f"Error in restarting service: {ret.stdout}"
@@ -195,6 +217,86 @@ def wlan_disable_power_down(card=None):
         logger.error(f"{ret.stdout}")
 
 
+@plugin.register
+def get_autohotspot_status():
+    """Get the status of the auto hotspot feature"""
+    status = 'not-installed'
+
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        status = 'inactive'
+
+        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
+                            stdin=subprocess.DEVNULL)
+        # 0 = active, 3 = inactive
+        if ret.returncode == 0 or ret.returncode == 3:
+            try:
+                status = ret.stdout.decode().strip()
+            except Exception as e:
+                logger.error(f"{e.__class__.__name__}: {e}")
+                return {'error': {'code': -1, 'message': e}}
+        else:
+            msg = f"Error 'get_autohotspot_status': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+    return status
+
+
+@plugin.register()
+def stop_autohotspot():
+    """Stop auto hotspot functionality
+
+    Basically disabling the cronjob and running the script one last time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            msg = f"Error 'stop_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'inactive'
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
+
+
+@plugin.register()
+def start_autohotspot():
+    """start auto hotspot functionality
+
+    Basically enabling the cronjob and running the script one time manually
+    """
+    if os.path.isfile("/etc/systemd/system/autohotspot.service"):
+        cron_job = "/etc/cron.d/autohotspot"
+        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\*/", cron_job],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot'],
+                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             check=False)
+        if ret.returncode != 0:
+            msg = f"Error 'start_autohotspot': {ret.stdout} (Code: {ret.returncode})"
+            logger.error(msg)
+            return {'error': {'code': -1, 'message': msg}}
+
+        return 'active'
+    else:
+        logger.info("Skipping since no autohotspot functionality is installed.")
+        return 'not-installed'
+
+
 @plugin.initialize
 def initialize():
     wlan_power = cfg.setndefault('host', 'wlan_power', 'disable_power_down', value=True)
@@ -222,6 +324,7 @@ def finalize():
 def atexit(**ignored_kwargs):
     global timer_temperature
     timer_temperature.cancel()
+    return timer_temperature.timer_thread
 
 
 # ---------------------------------------------------------------------------

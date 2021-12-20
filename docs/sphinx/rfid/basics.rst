@@ -31,7 +31,7 @@ Reader Configuration
 -----------------------
 
 During the installation process, you can already configure a RFID reader. To manually configure RFID reader(s),
-:ref:`please run the tool <coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``.
+:ref:`please run the tool <developer/coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``.
 
 It will generate a reader configuration file at ``shared/settings/rfid.yaml``.
 You can re-run the tool to change the settings any time.
@@ -59,7 +59,7 @@ module:
 
 config:
     Filled by the
-    :ref:`RFID configuration tool <coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``
+    :ref:`RFID configuration tool <developer/coreapps:run_register_rfid_reader.py>` ``src/jukebox/run_register_rfid_reader.py``
     based on default values and user input.
     After running the tool, you may manually change some settings here, as not everything can
     be configured through the tool. Note that re-running the tool will completely rewrite the

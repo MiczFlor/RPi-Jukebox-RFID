@@ -1,0 +1,26 @@
+devices:
+  volume:
+    Type: RotaryEncoder
+    Pins: [7, 8]
+    timeBase: 0.02
+    FunctionCW: {alias: inc_volume}
+    FunctionCCW: {alias: dec_volume}
+  PrevNextControl:
+    Type: RotaryEncoder
+    Pins: [16, 20]
+    timeBase: 0.02
+    FunctionCW: {alias: next_song}
+    FunctionCCW: {alias: prev_song}
+  Shutdown:
+    Type: Button
+    Pin: 17
+    hold_time: 1
+    pull_up_down: pull_down
+    edge: rising
+    Function: {alias: shutdown}
+  PlayPause:
+    Type: Button
+    Pin: 25
+    pull_up_down: pull_up
+    edge: falling
+    Function: {alias: toggle}

@@ -160,6 +160,25 @@ class ConfigHandler:
                     break
         return sub
 
+    def setn(self, *keys, value, hierarchy_type=None) -> None:
+        """
+        Set the ``key: value`` pair at arbitrary hierarchy depth
+
+        All non-existing hierarchy levels are created.
+
+        :param keys: Key hierarchy path through the nested levels
+        :param value: The value to set
+        :param hierarchy_type: The type for new hierarchy levels. If *None*, the top-level type
+            is used
+        """
+        with self._lock:
+            if hierarchy_type is None:
+                hierarchy_type = type(self._data)
+            sub = self._data
+            for idx in range(0, len(keys) - 1):
+                sub = sub.setdefault(keys[idx], hierarchy_type())
+            sub[keys[-1]] = value
+
     def setndefault(self, *keys, value, hierarchy_type=None):
         """
         Set the ``key: value`` pair at arbitrary hierarchy depth unless the key already exists

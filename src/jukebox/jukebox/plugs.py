@@ -123,6 +123,12 @@ logger_call = logging.getLogger('jb.plugin.call')
 # Do I want to use this?
 PluginType = Callable[..., Any]
 
+# Modules must be loaded with plugs.load(...) instead import()
+# In some cases, it is necessary to load a module normally used as
+# plugin with an regular import (e.g. automodule in Sphinx docs)
+# Loading plugs first, and setting this variable to True, allows to do so
+# In this case, initializer functions are not executed!
+ALLOW_DIRECT_IMPORTS: bool = False
 
 # ---------------------------------------------------------------------------
 # Global thread-related stuff
@@ -280,7 +286,16 @@ def _register_obj(plugin: Any,
         # Let's see if that works out ...
         raise TypeError(f"Trying to register object with incompatible type: '{type(plugin)}")
     if package is None:
-        package = _PACKAGE_MAP[plugin_origin]
+        if plugin_origin in _PACKAGE_MAP.keys():
+            package = _PACKAGE_MAP[plugin_origin]
+        elif ALLOW_DIRECT_IMPORTS:
+            package = plugin_origin
+            _PACKAGE_MAP[plugin_origin] = plugin_origin
+            _PLUGINS[plugin_origin] = PluginPackageClass(plugin_origin)
+            setattr(sys.modules[plugin_origin], 'plugs_loaded_as', package)
+        else:
+            raise KeyError(f"Module '{plugin_origin}' not loaded as plugin! "
+                           f"Did you wrongly use import {plugin_origin}?")
 
     if inspect.isfunction(plugin):
         if plugin.__qualname__ != plugin.__name__:
@@ -487,7 +502,8 @@ def initialize(func: Callable) -> Callable:
         plugin_origin = _deduce_package_origin(func)
         if plugin_origin is None:
             raise TypeError(f"Could not deduce corresponding package of {func}")
-        _PLUGINS[_PACKAGE_MAP[plugin_origin]].initializer.append(func)
+        if not ALLOW_DIRECT_IMPORTS:
+            _PLUGINS[_PACKAGE_MAP[plugin_origin]].initializer.append(func)
         return func
 
 
@@ -502,7 +518,8 @@ def finalize(func: Callable) -> Callable:
         plugin_origin = _deduce_package_origin(func)
         if plugin_origin is None:
             raise TypeError(f"Could not deduce corresponding package of {func}")
-        _PLUGINS[_PACKAGE_MAP[plugin_origin]].finalizer.append(func)
+        if not ALLOW_DIRECT_IMPORTS:
+            _PLUGINS[_PACKAGE_MAP[plugin_origin]].finalizer.append(func)
         return func
 
 
@@ -524,7 +541,8 @@ def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
         plugin_origin = _deduce_package_origin(func)
         if plugin_origin is None:
             raise TypeError(f"Could not deduce corresponding package of {func}")
-        _PLUGINS[_PACKAGE_MAP[plugin_origin]].atexit.append(func)
+        if not ALLOW_DIRECT_IMPORTS:
+            _PLUGINS[_PACKAGE_MAP[plugin_origin]].atexit.append(func)
         return func
 
 

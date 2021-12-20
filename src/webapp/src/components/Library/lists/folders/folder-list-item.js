@@ -1,28 +1,40 @@
 import React from 'react';
 
 import {
-  Avatar,
   IconButton,
   ListItem,
-  ListItemAvatar,
   ListItemButton,
   ListItemText,
 } from '@mui/material';
 
-import FolderIcon from '@mui/icons-material/Folder';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import MusicNoteIcon from '@mui/icons-material/MusicNote';
-import PodcastsIcon from '@mui/icons-material/Podcasts';
-import RadioIcon from '@mui/icons-material/Radio';
 
 import request from '../../../../utils/request';
 import FolderLink from './folder-link';
+import FolderTypeAvatar from './folder-type-avatar';
+import { DEFAULT_AUDIO_DIR } from '../../../../config';
 
-const FolderListItem = ({ type, name, path }) => {
-  const playItem = (type, path) => {
+const FolderListItem = ({
+  folder,
+  isSelecting,
+  registerMusicToCard,
+}) => {
+  const { type, name, path } = folder;
+
+  const playItem = () => {
     switch(type) {
-      case 'directory': return request('playFolder', { folder: path, recursive: true });
-      case 'file': return request('playSong', { song_url: path });
+      case 'directory': return request('play_folder', { folder: path, recursive: true });
+      case 'file': return request('play_single', { song_url: path.replace(`${DEFAULT_AUDIO_DIR}/`, '') });
+      // TODO: Add missing Podcast
+      // TODO: Add missing Stream
+      default: return;
+    }
+  }
+
+  const registerItemToCard = () => {
+    switch(type) {
+      case 'directory': return registerMusicToCard('play_folder', { folder: path, recursive: true });
+      case 'file': return registerMusicToCard('play_single', { song_url: path.replace(`${DEFAULT_AUDIO_DIR}/`, '') });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;
@@ -31,7 +43,6 @@ const FolderListItem = ({ type, name, path }) => {
 
   return (
     <ListItem
-      key={path}
       disablePadding
       secondaryAction={
         type === 'directory'
@@ -46,18 +57,9 @@ const FolderListItem = ({ type, name, path }) => {
           : undefined
       }
     >
-      <ListItemButton onClick={() => playItem(type, path)}>
-        <ListItemAvatar>
-          <Avatar>
-            {type === 'directory' && <FolderIcon />}
-            {type === 'file' && <MusicNoteIcon />}
-            {type === 'podcast' && <PodcastsIcon />}
-            {type === 'stream' && <RadioIcon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={name}
-        />
+      <ListItemButton onClick={() => (isSelecting ? registerItemToCard() : playItem())}>
+        <FolderTypeAvatar type={type} />
+        <ListItemText primary={name} />
       </ListItemButton>
     </ListItem>
   );

@@ -29,73 +29,73 @@ Module: volume
 
 **loaded_from**:    components.volume
 
-Volume Control Factory for run-time switching of volume control plugin
+PulseAudio Volume Control Plugin Package
 
 
-.. py:function:: volume.factory.get_active()
+.. py:function:: volume.ctrl.change_volume(step: int)
     :noindex:
 
-    
+    Increase/decrease the volume by step for the currently active output
 
 
-.. py:function:: volume.factory.list()
+.. py:function:: volume.ctrl.get_mute()
     :noindex:
 
-    List the available volume services
+    Return mute status for the currently active output
 
 
-.. py:function:: volume.factory.set_active(key)
+.. py:function:: volume.ctrl.get_soft_max_volume()
     :noindex:
 
-    Set the active volume service which gets registered as 'ctrl'
-
-
-.. py:function:: volume.ctrl.dec_volume(step=3)
-    :noindex:
-
-    
-
-
-.. py:function:: volume.ctrl.get_max_volume()
-    :noindex:
-
-    
+    Return the maximum volume limit for the currently active output
 
 
 .. py:function:: volume.ctrl.get_volume()
     :noindex:
 
-    
+    Get the volume
 
 
-.. py:function:: volume.ctrl.inc_volume(step=3)
+.. py:function:: volume.ctrl.mute(mute=True)
     :noindex:
 
-    
+    Set mute status for the currently active output
 
 
-.. py:function:: volume.ctrl.mute(mute_on=True)
+.. py:function:: volume.ctrl.publish_outputs()
     :noindex:
 
-    
+    Publish current output and list of outputs
 
 
-.. py:function:: volume.ctrl.set_max_volume(max_volume)
+.. py:function:: volume.ctrl.publish_volume()
     :noindex:
 
-    
+    Publish (volume, mute)
 
 
-.. py:function:: volume.ctrl.set_volume(volume)
+.. py:function:: volume.ctrl.set_output(sink_index: int)
     :noindex:
 
-    
+    Set the active output (sink_index = 0: primary, 1: secondary)
 
 
-.. py:function:: volume.ctrl.unmute()
+.. py:function:: volume.ctrl.set_soft_max_volume(max_volume: int)
     :noindex:
 
-    
+    Limit the maximum volume to max_volume for the currently active output
+
+
+.. py:function:: volume.ctrl.set_volume(volume: int)
+    :noindex:
+
+    Set the volume (0-100) for the currently active output
+
+
+.. py:function:: volume.ctrl.toggle_output()
+    :noindex:
+
+    Toggle the audio output sink
 
 
 Module: jingle
@@ -113,10 +113,10 @@ Jingle Playback Factory for extensible run-time support of various file types
     Play the jingle using the configured jingle service
     
     Note: This runs in a separate thread. And this may cause troubles
-    when changing the volume ctrl interface and volume level before
+    when changing the volume level before
     and after the sound playback: There is nothing to prevent another
-    thread from changing the active factory while playback happens
-    and afterwards we change it back to where it was before!
+    thread from changing the volume and sink while playback happens
+    and afterwards we change the volume back to where it was before!
     
     There is no way around this dilemma except for not running the jingle as a
     separate thread. Currently (as thread) even the RPC is started before the sound
@@ -127,11 +127,8 @@ Jingle Playback Factory for extensible run-time support of various file types
     if (a) through the RPC or (b) some other plugin the volume is changed. Okay, now
     (a) let's hope that there is enough delay in the user requesting a volume change
     (b) let's hope no other plugin wants to do that
+    (c) no bluetooth device connects during this time (and pulseaudio control is set to toggle_on_connect)
     and take our changes with the threaded approach.
-    
-    Also note that the MPD plugin starts while the jingle is still playing and starts polling and publishing
-    the volume through the current volume service immediately. But in a way that is correct, as this reflects
-    the current volume before going back to startup volume
 
 
 .. py:function:: jingle.play_startup()
@@ -144,6 +141,36 @@ Jingle Playback Factory for extensible run-time support of various file types
     :noindex:
 
     Play the shutdown sound (using jingle.play)
+
+
+Module: jingle.alsawave
+-------------------------------------------
+
+
+**loaded_from**:    components.jingle.alsawave
+
+ALSA wave jingle Service for jingle.JingleFactory
+
+
+.. py:function:: jingle.alsawave.alsawave.play(filename)
+    :noindex:
+
+    Play the wave file
+
+
+Module: jingle.jinglemp3
+-------------------------------------------
+
+
+**loaded_from**:    components.jingle.jinglemp3
+
+Generic MP3 jingle Service for jingle.JingleFactory
+
+
+.. py:function:: jingle.jinglemp3.jinglemp3.play(filename)
+    :noindex:
+
+    Play the MP3 file
 
 
 Module: player
@@ -189,7 +216,7 @@ Package for interfacing with the MPD Music Player Daemon
     
 
 
-.. py:function:: player.ctrl.list_song_by_artist_and_album(artist, album)
+.. py:function:: player.ctrl.list_song_by_artist_and_album(albumartist, album)
     :noindex:
 
     
@@ -226,6 +253,18 @@ Package for interfacing with the MPD Music Player Daemon
     :noindex:
 
     
+
+
+.. py:function:: player.ctrl.play_album(albumartist: str, album: str)
+    :noindex:
+
+    Playback a album found in MPD database.
+    
+    All album songs are added to the playlist
+    The playlist is cleared first.
+    
+    :param albumartist: Artist of the Album provided by MPD database
+    :param album: Album name provided by MPD database
 
 
 .. py:function:: player.ctrl.play_card(folder: str, recursive: bool = False)
@@ -597,6 +636,14 @@ Module: host
     Check if current Jukebox process is running as a service
 
 
+.. py:function:: host.is_any_jukebox_service_active()
+    :noindex:
+
+    Check if a Jukebox service is running
+    
+    .. note:: Does not have the be the current app, that is running as a service!
+
+
 .. py:function:: host.restart_service()
     :noindex:
 
@@ -630,6 +677,28 @@ Module: host
     
     This must be done after every reboot
     card=None takes card from configuration file
+
+
+.. py:function:: host.get_autohotspot_status()
+    :noindex:
+
+    Get the status of the auto hotspot feature
+
+
+.. py:function:: host.stop_autohotspot()
+    :noindex:
+
+    Stop auto hotspot functionality
+    
+    Basically disabling the cronjob and running the script one last time manually
+
+
+.. py:function:: host.start_autohotspot()
+    :noindex:
+
+    start auto hotspot functionality
+    
+    Basically enabling the cronjob and running the script one time manually
 
 
 .. py:function:: host.timer_temperature.cancel()
@@ -674,45 +743,6 @@ Module: host
     :noindex:
 
     Trigger the next target execution before the time is up
-
-
-Module: alsaif
--------------------------------------------
-
-
-**loaded_from**:    components.alsaif
-
-ALSA Volume Control Plugin Package for volume.VolumeFactory
-
-
-Module: alsaif.alsawave
--------------------------------------------
-
-
-**loaded_from**:    components.alsaif.alsawave
-
-ALSA wave jingle Service for jingle.JingleFactory
-
-
-.. py:function:: alsaif.alsawave.alsawave.play(filename)
-    :noindex:
-
-    Play the wave file
-
-
-Module: jingle.jinglemp3
--------------------------------------------
-
-
-**loaded_from**:    components.jingle.jinglemp3
-
-Generic MP3 jingle Service for jingle.JingleFactory
-
-
-.. py:function:: jingle.jinglemp3.jinglemp3.play(filename)
-    :noindex:
-
-    Play the MP3 file
 
 
 Module: music_cover_art
@@ -812,13 +842,12 @@ This is an automatically generated file from the loaded plugins:
 * *publishing*: components.publishing
 * *volume*: components.volume
 * *jingle*: components.jingle
+* *jingle.alsawave*: components.jingle.alsawave
+* *jingle.jinglemp3*: components.jingle.jinglemp3
 * *player*: components.playermpd
 * *cards*: components.rfid.cards
 * *rfid*: components.rfid.reader
 * *timers*: components.timers
 * *host*: components.hostif.linux
-* *alsaif*: components.alsaif
-* *alsaif.alsawave*: components.alsaif.alsawave
-* *jingle.jinglemp3*: components.jingle.jinglemp3
 * *music_cover_art*: components.music_cover_art
 * *misc*: components.misc

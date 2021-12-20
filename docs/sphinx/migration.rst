@@ -1,6 +1,19 @@
 Updating
 **************
 
+Updating from Version 3.0 to 3.1
+---------------------------------------
+
+There are a number of significant changes to the overall system setup, which require a fresh install. Notable changes in this respect include:
+
+   #. Shift system setup to PulseAudio
+   #. Run MPD as user-local service
+   #. Run Jukebox Daemon as user local service
+
+.. important:: You need re-install on a fresh SD card!
+    A git pull procedure as described below will not work!
+
+
 Updating your Jukebox Version 3
 -------------------------------------
 
@@ -33,15 +46,10 @@ Migration Path from Version 2
 -------------------------------------
 
 There is no update path coming from Version 2.x of the Jukebox.
-You will need to remove the 2.x Jukebox installation manually and then do a fresh install of Version 3.
+You need to do a fresh install of Version 3 on a fresh Raspian Bullseye image.
 
-.. note:: The recommended way is to start with a fresh SD card image.
+.. important:: Do start with a fresh SD card image!
 
-If you do not want to wipe your SD card, follow this procedure:
-
-#. Disable all Phoniebox services, reboot
-#. Remove/Rename the current Phoniebox working directory
-#. Run the :ref:`installer script <install:Install Phoniebox software>`
-
-Do not just pull the future3 branch into you existing Version 2.x directory.
+Do not just pull the future3 branch into you existing Version 2.x directory. 
+Do not run the installer on an system that had Version 2.x running before on it. 
 Stuff has changed too much to make this feasible.

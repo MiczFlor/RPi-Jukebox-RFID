@@ -2,26 +2,31 @@ import React from 'react';
 
 import {
   Grid,
-  Typography
+  Typography,
 } from '@mui/material';
 
-import SelectPlayCards from './select-play-cards';
 import SelectCommandAliases from './select-command-aliases';
+import SelectPlayMusic from './actions/play-music';
+import SelectVolume from './actions/volume';
+import { buildActionData } from '../utils';
+import SelectHost from './actions/host';
 
 const ControlsSelector = ({
-  selectedAction,
-  setSelectedAction,
-  selectedAlbum,
-  setSelectedAlbum,
+  actionData,
+  setActionData,
+  cardId,
 }) => {
   const handleActionChange = (event) => {
-    setSelectedAction(event.target.value);
-    setSelectedAlbum(undefined);
+    setActionData(
+      buildActionData(event.target.value)
+    );
   };
 
-  const handleAlbumChange = (album) => {
-    setSelectedAlbum(album);
-  };
+  const handleActionDataChange = (action, command, args) => {
+    setActionData(
+      buildActionData(action, command, args)
+    );
+  }
 
   return (
     <Grid container direction="column">
@@ -31,24 +36,35 @@ const ControlsSelector = ({
         </Grid>
         <Grid item xs={7}>
           <SelectCommandAliases
-            selectedAction={selectedAction}
+            actionData={actionData}
             handleActionChange={handleActionChange}
           />
         </Grid>
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        sx={{ marginTop: '20px' }}
+      >
+        {actionData.action === 'play_music' &&
+          <SelectPlayMusic
+            actionData={actionData}
+            cardId={cardId}
+          />
+        }
+        {actionData.action === 'volume' &&
+          <SelectVolume
+            actionData={actionData}
+            handleActionDataChange={handleActionDataChange}
+          />
+        }
 
-        {/* Albums */}
-        {selectedAction === 'play_album' &&
-          <Grid container direction="row" alignItems="center">
-            <Grid item xs={5}>
-              <Typography>Albums</Typography>
-            </Grid>
-            <Grid item xs={7}>
-              <SelectPlayCards
-                selectedAlbum={selectedAlbum}
-                handleAlbumChange={handleAlbumChange}
-              />
-            </Grid>
-          </Grid>
+        {actionData.action === 'host' &&
+          <SelectHost
+            actionData={actionData}
+            handleActionDataChange={handleActionDataChange}
+          />
         }
       </Grid>
     </Grid>

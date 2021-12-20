@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 finish() {
-  echo "
+  echo -e "
 ---
 
 Installation complete!
+
+${FIN_MESSAGE}
 
 In order to start, you need to reboot your Raspberry Pi.
 Your SSH connection will disconnect.
 
 After the reboot, open either http://raspberrypi.local
-(for Mac / iOS) or http://raspberrypi (for Android / Windows)
+(for Mac / iOS) or http://[IP-ADDRESS] (for Android / Windows)
 in a browser to get started. Don't forget to upload files
 via Samba.
 
