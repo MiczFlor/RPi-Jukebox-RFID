@@ -15,6 +15,18 @@ services:
       - ../shared/playlists:/root/.config/mpd/playlists:rw
       - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
 
+  spotify:
+    build:
+      context: ../
+      dockerfile: ./docker/spotify.Dockerfile
+    container_name: spotify
+    ports:
+      - 12345:12345
+      - 24879:24879
+    restart: unless-stopped
+    volumes:
+      - ./config/docker.spotify.config.toml:/home/pi/librespot-java/config.toml:rw
+
   jukebox:
     build:
       context: ../

@@ -239,6 +239,23 @@ The following command can be run on a Mac.
         -e PULSE_SERVER=tcp:host.docker.internal:4713 \
         --name jukebox jukebox
 
+
+Run Spotify in a single container like this (on Mac)
+
+.. code-block:: bash
+
+    $ docker build -f docker/spotify.Dockerfile -t spotify .
+    $ docker run -it --rm \
+        -v $(PWD)/docker/config/docker.spotify.config.toml:/home/pi/librespot-java/config.toml:rw \
+        --hostname spotify \
+        -p 12345:12345 \
+        -p 24879:24879 \
+        -v ~/.config/pulse:/root/.config/pulse \
+        -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
+        -e PULSE_SERVER=tcp:host.docker.internal:4713 \
+        --name spotify spotify
+
+
 Resources
 ^^^^^^^^^^^
 
