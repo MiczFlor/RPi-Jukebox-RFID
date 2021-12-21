@@ -7,8 +7,7 @@ RUN set -eux ; \
     libasound2-plugins \
     pulseaudio \
     pulseaudio-utils \
-    default-jdk \
-    wget
+    default-jdk
 
 RUN usermod -aG audio,pulse,pulse-access root
 
@@ -18,9 +17,9 @@ ENV LIBRESPOT_JAVA_VERSION 1.6.2
 WORKDIR $INSTALLATION_PATH
 VOLUME $INSTALLATION_PATH
 
-RUN wget https://github.com/librespot-org/librespot-java/releases/download/v${LIBRESPOT_JAVA_VERSION}/librespot-api-${LIBRESPOT_JAVA_VERSION}.jar
+ADD https://github.com/librespot-org/librespot-java/releases/download/v${LIBRESPOT_JAVA_VERSION}/librespot-api-${LIBRESPOT_JAVA_VERSION}.jar ${INSTALLATION_PATH}
 
 EXPOSE 12345
 EXPOSE 24879
 
-CMD java -jar ${INSTALLATION_PATH}/librespot-api-${LIBRESPOT_JAVA_VERSION}.jar
+CMD java -jar librespot-api-${LIBRESPOT_JAVA_VERSION}.jar
