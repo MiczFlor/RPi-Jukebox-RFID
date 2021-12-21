@@ -7,6 +7,9 @@
 /shared/*.*
 /shared/*
 
+# Docker
+/docker/config/docker.spotify.config.toml
+
 # Documentation builder
 /docs/sphinx/_build/
 
