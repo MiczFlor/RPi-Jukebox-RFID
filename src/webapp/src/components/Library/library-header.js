@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  useLocation,
   useNavigate,
   useParams,
 } from 'react-router-dom';
@@ -14,7 +15,8 @@ import {
 
 import SearchIcon from '@mui/icons-material/Search';
 
-const LibraryHeader = ({ handleSearch, searchQuery }) => {
+const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
+  const { search: urlSearch } = useLocation();
   const navigate = useNavigate();
   const { '*': view } = useParams();
   const [showSearchInput, setShowSearchInput] = useState(false);
@@ -26,7 +28,7 @@ const LibraryHeader = ({ handleSearch, searchQuery }) => {
   const toggleView = () => {
     const path = view.startsWith('folders') ? 'albums' : 'folders';
     localStorage.setItem('libraryLastListView', path);
-    navigate(path);
+    navigate(`${path}${urlSearch}`);
   };
 
   return (
@@ -46,8 +48,8 @@ const LibraryHeader = ({ handleSearch, searchQuery }) => {
           <TextField
             id="library-search"
             label="Search"
-            onChange={handleSearch}
-            value={searchQuery}
+            onChange={handleMusicFilter}
+            value={musicFilter}
             variant="outlined"
             size="small"
             autoFocus

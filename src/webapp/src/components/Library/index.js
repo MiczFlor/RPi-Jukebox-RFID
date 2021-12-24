@@ -3,41 +3,28 @@ import {
   Navigate,
   Route,
   Routes,
+  useLocation,
 } from 'react-router-dom';
 
-import Grid from '@mui/material/Grid';
-
 import LibraryLists from './lists';
-import SongList from './lists/albums/song-list';
 
 const Library = () => {
-  const lastListView = localStorage.getItem('libraryLastListView') || 'albums';
+  const { search: urlSearch } = useLocation();
+  const lastListView =
+    `${localStorage.getItem('libraryLastListView') || 'albums'}${urlSearch}`;
 
   return (
-    <Grid
-      container
-      id="library"
-      sx={{
-        padding: '10px',
-      }}
-    >
-      <Routes>
-        <Route
-          index
-          element={<Navigate to={lastListView} replace />}
-          exact
-        />
-        <Route
-          path="*"
-          element={<LibraryLists />}
-        />
-        <Route
-          path="albums/:artist/:album"
-          element={<SongList />}
-          exact
-        />
-      </Routes>
-    </Grid>
+    <Routes>
+      <Route
+        index
+        element={<Navigate to={lastListView} replace />}
+        exact
+      />
+      <Route
+        path="*"
+        element={<LibraryLists />}
+      />
+    </Routes>
   );
 };
 

@@ -24,8 +24,6 @@ const InfoNoCardSwiped = () => (
 const CardsForm = ({
   title,
   cardId,
-  selectedAction,
-  setSelectedAction,
   actionData,
   setActionData,
 }) => (
@@ -51,16 +49,14 @@ const CardsForm = ({
               <>
                 <Grid container direction="row" alignItems="center">
                   <ControlsSelector
-                    selectedAction={selectedAction}
-                    setSelectedAction={setSelectedAction}
                     actionData={actionData}
                     setActionData={setActionData}
+                    cardId={cardId}
                   />
                 </Grid>
                 <ActionsControls
                   actionData={actionData}
                   cardId={cardId}
-                  selectedAction={selectedAction}
                 />
               </>
             }
@@ -71,6 +67,7 @@ const CardsForm = ({
     </Grid>
   </>
 );
+
 
 
 export default CardsForm;
