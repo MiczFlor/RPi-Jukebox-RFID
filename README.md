@@ -10,7 +10,7 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 
 ## The Phoniebox Calendar 2022 is here!!!
 
-Another bunch of wonderful designs! 2022 is the fourth Phoniebox calendar. If you are interested, you can see the [2019, 2020 and 2021 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2022 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
+Another bunch of wonderful designs! 2022 is the fourth Phoniebox calendar. If you are interested, you can see the [2019, 2020 and 2021 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2022 here](https://mi.cz/static/2022-Phoniebox-Calendar.pdf). 
 
 ![The 2022 Phoniebox Calendar](docs/2022-Phoniebox-Calendar.jpg "The 2022 Phoniebox Calendar")
 
