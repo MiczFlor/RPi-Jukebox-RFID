@@ -7,6 +7,10 @@ services:
     volumes:
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
 
+  spotify:
+    environment:
+      - PULSE_SERVER=tcp:host.docker.internal:4713
+
   jukebox:
     environment:
       - PULSE_SERVER=tcp:host.docker.internal:4713

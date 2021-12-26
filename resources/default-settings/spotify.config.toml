@@ -1,0 +1,84 @@
+deviceId = "" ### Device ID (40 chars, leave empty for random)  ###
+deviceName = "docker-spotify" ### Device name ###
+deviceType = "SPEAKER" ### Device type (COMPUTER, TABLET, SMARTPHONE, SPEAKER, TV, AVR, STB, AUDIO_DONGLE, GAME_CONSOLE, CAST_VIDEO, CAST_AUDIO, AUTOMOBILE, WEARABLE, UNKNOWN_SPOTIFY, CAR_THING, UNKNOWN) ###
+preferredLocale = "en" ### Preferred locale ###
+logLevel = "TRACE" ### Log level (OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL) ###
+
+[auth] ### Authentication ###
+strategy = "USER_PASS" # Strategy (USER_PASS, ZEROCONF, BLOB, FACEBOOK, STORED)
+username = "" # Spotify username (BLOB, USER_PASS only)
+password = "" # Spotify password (USER_PASS only)
+blob = "" # Spotify authentication blob Base64-encoded (BLOB only)
+storeCredentials = false # Whether to store reusable credentials on disk (not a plain password)
+credentialsFile = "credentials.json" # Credentials file (JSON)
+
+[zeroconf] ### Zeroconf ###
+listenPort = 12345 # Listen on this TCP port (`-1` for random)
+listenAll = true # Listen on all interfaces (overrides `zeroconf.interfaces`)
+interfaces = "" # Listen on these interfaces (comma separated list of names)
+
+[cache] ### Cache ###
+enabled = false # Cache enabled
+dir = "./cache/"
+doCleanUp = true
+
+[network] ### Network ###
+connectionTimeout = 10 # If ping isn't received within this amount of seconds, reconnect
+
+[preload] ### Preload ###
+enabled = true # Preload enabled
+
+[time] ### Time correction ###
+synchronizationMethod = "NTP" # Time synchronization method (NTP, PING, MELODY, MANUAL)
+manualCorrection = 0 # Manual time correction in millis
+
+[player] ### Player ###
+autoplayEnabled = true # Autoplay similar songs when your music ends
+preferredAudioQuality = "NORMAL" # Preferred audio quality (NORMAL, HIGH, VERY_HIGH)
+enableNormalisation = true # Whether to apply the Spotify loudness normalisation
+normalisationPregain = +3.0 # Normalisation pregain in decibels (loud at +6, normal at +3, quiet at -5)
+initialVolume = 65536 # Initial volume (0-65536)
+volumeSteps = 64 # Number of volume notches
+logAvailableMixers = true # Log available mixers
+mixerSearchKeywords = "" # Mixer/backend search keywords (semicolon separated)
+crossfadeDuration = 0 # Crossfade overlap time (in milliseconds)
+output = "MIXER" # Audio output device (MIXER, PIPE, STDOUT, CUSTOM)
+outputClass = "" # Audio output Java class name
+releaseLineDelay = 20 # Release mixer line after set delay (in seconds)
+pipe = "" # Output raw (signed) PCM to this file (`player.output` must be PIPE)
+retryOnChunkError = true # Whether the player should retry fetching a chuck if it fails
+metadataPipe = "" # Output metadata in Shairport Sync format (https://github.com/mikebrady/shairport-sync-metadata-reader)
+bypassSinkVolume = false # Whether librespot-java should ignore volume events, sink volume is set to the max
+localFilesPath = "" # Where librespot-java should search for local files
+
+[api] ### API ###
+port = 24879 # API port (`api` module only)
+host = "0.0.0.0" # API listen interface (`api` module only)
+
+[proxy] ### Proxy ###
+enabled = false # Whether the proxy is enabled
+type = "HTTP" # The proxy type (HTTP, SOCKS)
+ssl = false # Connect to proxy using SSL (HTTP only)
+address = "" # The proxy hostname
+port = 0 # The proxy port
+auth = false # Whether authentication is enabled on the server
+username = "" # Basic auth username
+password = "" # Basic auth password
+
+[shell] ### Shell ###
+enabled = false # Shell events enabled
+executeWithBash = false # Execute the command with `bash -c`
+onContextChanged = ""
+onTrackChanged = ""
+onPlaybackEnded = ""
+onPlaybackPaused = ""
+onPlaybackResumed = ""
+onTrackSeeked = ""
+onMetadataAvailable = ""
+onVolumeChanged = ""
+onInactiveSession = ""
+onPanicState = ""
+onConnectionDropped = ""
+onConnectionEstablished = ""
+onStartedLoading = ""
+onFinishedLoading = ""
