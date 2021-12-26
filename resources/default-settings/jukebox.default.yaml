@@ -87,6 +87,14 @@ playermpd:
     update_on_startup: true
     check_user_rights: true
   mpd_conf: ~/.config/mpd/mpd.conf
+playerspot:
+  host: localhost
+  status_file: ../../shared/settings/spotify_player_status.json
+  second_swipe_action:
+      # Note: Does not follow the RPC alias convention (yet)
+      # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
+      alias: toggle
+  spot_conf: ../../shared/spotify/config.toml"
 rpc:
   tcp_port: 5555
   websocket_port: 5556
