@@ -13,12 +13,12 @@ storeCredentials = false # Whether to store reusable credentials on disk (not a 
 credentialsFile = "credentials.json" # Credentials file (JSON)
 
 [zeroconf] ### Zeroconf ###
-listenPort = -1 # Listen on this TCP port (`-1` for random)
+listenPort = 12345 # Listen on this TCP port (`-1` for random)
 listenAll = true # Listen on all interfaces (overrides `zeroconf.interfaces`)
 interfaces = "" # Listen on these interfaces (comma separated list of names)
 
 [cache] ### Cache ###
-enabled = true # Cache enabled
+enabled = false # Cache enabled
 dir = "./cache/"
 doCleanUp = true
 
@@ -58,6 +58,7 @@ host = "0.0.0.0" # API listen interface (`api` module only)
 [proxy] ### Proxy ###
 enabled = false # Whether the proxy is enabled
 type = "HTTP" # The proxy type (HTTP, SOCKS)
+ssl = false # Connect to proxy using SSL (HTTP only)
 address = "" # The proxy hostname
 port = 0 # The proxy port
 auth = false # Whether authentication is enabled on the server
@@ -79,3 +80,5 @@ onInactiveSession = ""
 onPanicState = ""
 onConnectionDropped = ""
 onConnectionEstablished = ""
+onStartedLoading = ""
+onFinishedLoading = ""

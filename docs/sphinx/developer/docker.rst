@@ -35,7 +35,7 @@ Prerequisites
 2. Pull the Jukebox repository: ``git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git``
 
 
-3. Create a jukebox.yaml file
+3. Create a ``jukebox.yaml`` file
 
     * Copy the ``./resources/default-settings/jukebox.default.yaml`` to ``./shared/settings`` and
       rename the file to ``jukebox.yaml``.
@@ -50,6 +50,13 @@ Prerequisites
     * **[Currently required]** Update all relative paths (``../..``) in to ``/home/pi/RPi-Jukebox-RFID``.
 
 4. Change directory into the ``./RPi-Jukebox-RFID/shared/audiofolders`` and copy a set of MP3 files into this folder (for more fun when testing).
+
+5. If you like to use Spotify as well, you need to create a ``docker.spotify.config.toml`` file
+
+    * Copy the ``./resources/default-settings/spotify.config.toml`` to ``./docker/config/docker.spotify.config.toml`` and
+      update the username (under ``[auth]``) and password within the file.
+
+        ``$ cp ./resources/default-settings/spotify.config.toml ./docker/config/docker.spotify.config.toml``
 
 Run development environment
 ------------------------------
@@ -238,6 +245,23 @@ The following command can be run on a Mac.
         -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
         -e PULSE_SERVER=tcp:host.docker.internal:4713 \
         --name jukebox jukebox
+
+
+Run Spotify in a single container like this (on Mac)
+
+.. code-block:: bash
+
+    $ docker build -f docker/spotify.Dockerfile -t spotify .
+    $ docker run -it --rm \
+        -v $(PWD)/docker/config/docker.spotify.config.toml:/home/pi/librespot-java/config.toml:rw \
+        --hostname spotify \
+        -p 12345:12345 \
+        -p 24879:24879 \
+        -v ~/.config/pulse:/root/.config/pulse \
+        -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
+        -e PULSE_SERVER=tcp:host.docker.internal:4713 \
+        --name spotify spotify
+
 
 Resources
 ^^^^^^^^^^^
