@@ -8,12 +8,18 @@
 
 A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. Update: if you must, it now also features a howto for adding GPIO buttons controls.
 
+## The Phoniebox Calendar 2022 is here!!!
+
+Another bunch of wonderful designs! 2022 is the fourth Phoniebox calendar. If you are interested, you can see the [2019, 2020 and 2021 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2022 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
+
+![The 2022 Phoniebox Calendar](docs/2022-Phoniebox-Calendar.jpg "The 2022 Phoniebox Calendar")
+
 ---
 
 ## Install latest Phoniebox version
 
-If you are looking for the latest stable version, use the [install script for Raspberry Pi OS Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
-If you dare to go where only few have gone before, become an alpha-tester, bug reporter, contributor for the exciting, totally re-written, up and coming, yet feature incomplete and unstable version 3 of the Phoniebox code base:
+If you are looking for **the latest stable version**, use the [install script for Raspberry Pi OS Stretch](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
+If you dare to go where only few have gone before, **become an alpha-tester, bug reporter, contributor** for the exciting, totally re-written, up and coming, yet feature incomplete and unstable version 3 of the Phoniebox code base:
 
 ## 🔥 Version 3 is coming ...
 
@@ -46,14 +52,6 @@ If you seek the adventure, your support will be more then welcome. Before contri
 * 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/main), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop)
 
 ---
-
-## The Phoniebox Calendar 2021 is here!!!
-
-Another bunch of wonderful designs! 2021 is the third Phoniebox calendar. If you are interested, you can see the [2019 and 2020 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2021 here](https://mi.cz/static/2021-Phoniebox-Calendar.pdf). 
-
-![The 2021 Phoniebox Calendar](docs/2021-Phoniebox-Calendar.jpg "The 2021 Phoniebox Calendar")
-
-The year 2020 also has a clear *:star: community hero :star:*: @s-martin has been doing outstanding work for the Phoniebox community:sparkles:. Thanks to you and may 2021 be a wonderful year for you.
 
 ## Important updates / news
 
