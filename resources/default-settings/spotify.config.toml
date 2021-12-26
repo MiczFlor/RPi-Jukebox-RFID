@@ -1,13 +1,13 @@
 deviceId = "" ### Device ID (40 chars, leave empty for random)  ###
-deviceName = "docker-spotify" ### Device name ###
+deviceName = "Phoniebox" ### Device name ###
 deviceType = "SPEAKER" ### Device type (COMPUTER, TABLET, SMARTPHONE, SPEAKER, TV, AVR, STB, AUDIO_DONGLE, GAME_CONSOLE, CAST_VIDEO, CAST_AUDIO, AUTOMOBILE, WEARABLE, UNKNOWN_SPOTIFY, CAR_THING, UNKNOWN) ###
-preferredLocale = "en" ### Preferred locale ###
+preferredLocale = "de" ### Preferred locale ###
 logLevel = "TRACE" ### Log level (OFF, FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL) ###
 
 [auth] ### Authentication ###
 strategy = "USER_PASS" # Strategy (USER_PASS, ZEROCONF, BLOB, FACEBOOK, STORED)
-username = "" # Spotify username (BLOB, USER_PASS only)
-password = "" # Spotify password (USER_PASS only)
+username = "HERE_USERNAME" # Spotify username (BLOB, USER_PASS only)
+password = "HERE_PASSWORD" # Spotify password (USER_PASS only)
 blob = "" # Spotify authentication blob Base64-encoded (BLOB only)
 storeCredentials = false # Whether to store reusable credentials on disk (not a plain password)
 credentialsFile = "credentials.json" # Credentials file (JSON)

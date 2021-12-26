@@ -239,6 +239,43 @@ Do you want to install Node now?  [Y/n] " 1>&3
   fi
 
 }
+_option_spotify() {
+  # SETUP_SPOTIFY
+  echo "Do you want to enable Spotify?
+You need Spotify Premium to use these functionality.
+[y/N] " 1>&3
+  read -r response
+  case "$response" in
+    [yY])
+      SETUP_SPOTIFY=true
+      ;;
+    *)
+      ;;
+  esac
+
+  if [ "$SETUP_SPOTIFY" = true ]; then
+    while [ "${spotify_username}" == "" ]
+    do
+      echo "Please provide your spotify username." 1>&3
+      read -r spotify_username
+    done
+    SPOTIFY_USERNAME="${spotify_username}"
+
+    while [ "${spotify_password}" == "" ]
+    do
+      echo "Please provide your spotify password." 1>&3
+      read -r -s spotify_password
+    done
+    SPOTIFY_PASSWORD="${spotify_password}"
+
+    echo "SETUP_SPOTIFY=${SETUP_SPOTIFY}"
+    if [ "$SETUP_SPOTIFY" = true ]; then
+      echo "SPOTIFY_USERNAME=${SPOTIFY_USERNAME}"
+      echo "SPOTIFY_PASSWORD=${SPOTIFY_PASSWORD}"
+    fi
+  fi
+}
+
 
 customize_options() {
   echo "Customize Options starts"
@@ -250,6 +287,7 @@ customize_options() {
   _option_disable_onboard_audio
   _option_samba
   _option_webapp
+  _option_spotify
   _option_build_local_docs
   if [ "$ENABLE_WEBAPP" = true ] ; then
     _option_kiosk_mode
