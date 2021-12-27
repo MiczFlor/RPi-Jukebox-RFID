@@ -18,10 +18,8 @@ https://github.com/librespot-org/librespot-java
 https://github.com/librespot-org/librespot-java/tree/dev/api
 https://github.com/spocon/spocon
 """
-
 import logging
 import functools
-import threading
 import urllib.parse
 import requests
 
@@ -59,7 +57,16 @@ class PlayerSpot:
         self.spot_host = cfg.getn('playerspot', 'host')
         self.spot_api_port = 24879
         self.spot_api_baseurl = f"{self.spot_host}:{self.spot_api_port}"
-        self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
+
+        # Info as dict
+        # Example: {"device_id":"ABC",
+        #           "device_name":"Phoniebox",
+        #           "device_type":"SPEAKER",
+        #           "country_code":"DE",
+        #           "preferred_locale":"de"}
+        self.device_info = requests.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance")).json()
+
+        self.music_player_status = self.nvm.load(cfg.getn('playerspot', 'status_file'))
 
         self.second_swipe_action_dict = {'toggle': self.toggle,
                                          'play': self.play,
@@ -92,14 +99,13 @@ class PlayerSpot:
         self.music_player_status['player_status']['last_played_folder'] = ''
 
         self.old_song = None
-        self.mpd_status = {}
-        self.mpd_status_poll_interval = 0.25
+        self.spot_status = {}
+        self.spot_status_poll_interval = 0.25
         # ToDo: check of spot_lock works
         self.status_is_closing = False
-        # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
-        self.status_thread = multitimer.GenericEndlessTimerClass('mpd.timer_status',
-                                                                 self.mpd_status_poll_interval, self._mpd_status_poll)
+        self.status_thread = multitimer.GenericEndlessTimerClass('spot.timer_status',
+                                                                 self.spot_status_poll_interval, self._spot_status_poll)
         self.status_thread.start()
 
         self.old_song = None
@@ -114,14 +120,14 @@ class PlayerSpot:
         return "payerspot exited"
 
     def decode_2nd_swipe_option(self):
-        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
+        cfg_2nd_swipe_action = cfg.setndefault('playerspot', 'second_swipe_action', 'alias', value='none').lower()
         if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
-            logger.error(f"Config mpd.second_swipe_action must be one of "
+            logger.error(f"Config spot.second_swipe_action must be one of "
                          f"{[*self.second_swipe_action_dict.keys(), 'none', 'custom']}. Ignore setting.")
         if cfg_2nd_swipe_action in self.second_swipe_action_dict.keys():
             self.second_swipe_action = self.second_swipe_action_dict[cfg_2nd_swipe_action]
         if cfg_2nd_swipe_action == 'custom':
-            custom_action = utils.decode_rpc_call(cfg.getn('playermpd', 'second_swipe_action', default=None))
+            custom_action = utils.decode_rpc_call(cfg.getn('playerspot', 'second_swipe_action', default=None))
             self.second_swipe_action = functools.partial(plugs.call_ignore_errors,
                                                          custom_action['package'],
                                                          custom_action['plugin'],
@@ -131,34 +137,17 @@ class PlayerSpot:
 
     def _spot_status_poll(self):
         """
-        this method polls the status from mpd and stores the important inforamtion in the music_player_status,
-        it will repeat itself in the intervall specified by self.mpd_status_poll_interval
+        this method polls the status from spot and stores the important inforamtion in the music_player_status,
+        it will repeat itself in the intervall specified by self.spot_status_poll_interval
         """
-        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
-        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
-
-        if self.mpd_status.get('elapsed') is not None:
-            self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
-            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
-
-        if self.mpd_status.get('file') is not None:
-            self.current_folder_status["CURRENTFILENAME"] = self.mpd_status['file']
-            self.current_folder_status["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.current_folder_status["ELAPSED"] = self.mpd_status.get('elapsed', '0.0')
-            self.current_folder_status["PLAYSTATUS"] = self.mpd_status['state']
-            self.current_folder_status["RESUME"] = "OFF"
-            self.current_folder_status["SHUFFLE"] = "OFF"
-            self.current_folder_status["LOOP"] = "OFF"
-            self.current_folder_status["SINGLE"] = "OFF"
 
         # Delete the volume key to avoid confusion
         # Volume is published via the 'volume' component!
         try:
-            del self.mpd_status['volume']
+            del self.spot_status['volume']
         except KeyError:
             pass
-        publishing.get_publisher().send('playerstatus', self.mpd_status)
+        publishing.get_publisher().send('playerstatus', self.spot_status)
 
     @plugs.tag
     def load(self, uri: str, start_playing: bool):
@@ -244,7 +233,7 @@ class PlayerSpot:
         .. note:: To me this seems much like the behaviour of play,
             but we keep it as it is specifically implemented in box 2.X"""
         logger.debug("replay_if_stopped")
-        if self.mpd_status['state'] == 'stop':
+        if self.spot_status['state'] == 'stop':
             self.play_playlist(self.music_player_status['player_status']['last_played_folder'])
 
     @plugs.tag
@@ -322,11 +311,11 @@ class PlayerSpot:
     @plugs.tag
     def get_playlist_content(self, playlist_uri: str):
         """
-        Get the spotify playlist content as content list with meta-information
+        Get the spotify playlist as content list with meta-information
 
         :param playlist_uri: URI for the spotify playlist as string
         """
-        # ToDo: implement
+        # ToDo: implement using status
         track_list = []
         return track_list
 
@@ -358,9 +347,8 @@ class PlayerSpot:
         :param album_uri: Album URI from spotify
         """
         logger.debug("play_album")
-        with self.spot_lock:
-            logger.info(f"Play album: '{album_uri}'")
-            self.load(album_uri, start_playing=True)
+        logger.info(f"Play album: '{album_uri}'")
+        self.load(album_uri, start_playing=True)
 
     @plugs.tag
     def queue_load(self, folder):
@@ -395,10 +383,7 @@ class PlayerSpot:
 
     @plugs.tag
     def list_song_by_artist_and_album(self, albumartist, album):
-        # with self.mpd_lock:
-        #     albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
-        #
-        # return albums
+        # ToDo: Do we need this for spotify?
         pass
 
     def get_volume(self):
@@ -420,6 +405,11 @@ class PlayerSpot:
         api_path = f"/player/volume?volume_percent={volume}"
         requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         return self.get_volume()
+
+    def get_playback_state(self):
+        api_path = "/web-api/v1/me/player"
+        playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path)).json()
+        return playback_state if playback_state["device"]["id"] == self.device_info["device_id"] else {}
 
     @staticmethod
     def check_uri(uri: str):
