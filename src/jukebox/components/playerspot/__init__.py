@@ -49,36 +49,6 @@ test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder',
                                     'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
 
 
-class SpotLock:
-    def __init__(self, host: str, port: int):
-        self._lock = threading.RLock()
-        self.host = host
-        self.port = port
-
-    def _try_connect(self):
-        pass
-
-    def __enter__(self):
-        self._lock.acquire()
-        self._try_connect()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self._lock.release()
-
-    def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
-        locked = self._lock.acquire(blocking, timeout)
-        if locked:
-            self._try_connect()
-        return locked
-
-    def release(self):
-        self._lock.release()
-
-    def locked(self):
-        return self._lock.locked()
-
-
 class PlayerSpot:
     """Interface to librespot-java API"""
 
@@ -125,7 +95,6 @@ class PlayerSpot:
         self.mpd_status = {}
         self.mpd_status_poll_interval = 0.25
         # ToDo: check of spot_lock works
-        self.spot_lock = SpotLock(self.spot_host, self.spot_api_port)
         self.status_is_closing = False
         # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
@@ -195,14 +164,12 @@ class PlayerSpot:
     def load(self, uri: str, start_playing: bool):
         self.check_uri(uri)
         api_path = f"/player/load?uri={uri}&play={start_playing}"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def play(self):
         api_path = "/player/resume"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def stop(self):
@@ -217,22 +184,19 @@ class PlayerSpot:
         """
         if state == 1:
             api_path = "/player/pause"
-            with self.spot_lock:
-                requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         else:
             self.play()
 
     @plugs.tag
     def prev(self):
         api_path = "/player/prev"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def next(self):
         api_path = "/player/next"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def seek(self, new_time: int):
@@ -240,14 +204,12 @@ class PlayerSpot:
         Seek to a given position in milliseconds specified by new_time
         """
         api_path = f"/player/seek?position_ms={new_time}"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def shuffle(self, random: bool):
         api_path = f"/player/shuffle?state={1 if random else 0}"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def rewind(self):
@@ -265,16 +227,14 @@ class PlayerSpot:
 
         Will reset settings to folder config"""
         logger.debug("Replay")
-        with self.spot_lock:
-            self.play_playlist(self.music_player_status['player_status']['last_played_folder'])
+        self.play_playlist(self.music_player_status['player_status']['last_played_folder'])
 
     @plugs.tag
     def toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         logger.debug("Toggle")
         api_path = "/player/play-pause"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def replay_if_stopped(self):
@@ -284,9 +244,8 @@ class PlayerSpot:
         .. note:: To me this seems much like the behaviour of play,
             but we keep it as it is specifically implemented in box 2.X"""
         logger.debug("replay_if_stopped")
-        with self.spot_lock:
-            if self.mpd_status['state'] == 'stop':
-                self.play_playlist(self.music_player_status['player_status']['last_played_folder'])
+        if self.mpd_status['state'] == 'stop':
+            self.play_playlist(self.music_player_status['player_status']['last_played_folder'])
 
     @plugs.tag
     def repeatmode(self, mode: str):
@@ -297,8 +256,7 @@ class PlayerSpot:
         else:
             rep_state = "none"
         api_path = f"/player/repeat?state={rep_state}"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def get_current_song(self, param):
@@ -320,15 +278,13 @@ class PlayerSpot:
     def play_single(self, song_uri: str):
         self.check_uri(song_uri)
         api_path = f"/player/repeat?uri={song_uri}&play=true"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
 
     @plugs.tag
     def resume(self):
-        with self.spot_lock:
-            songpos = self.current_folder_status["CURRENTSONGPOS"]
-            self.seek(songpos)
-            self.play()
+        songpos = self.current_folder_status["CURRENTSONGPOS"]
+        self.seek(songpos)
+        self.play()
 
     @plugs.tag
     def play_card(self, folder: str, recursive: bool = False):
@@ -355,8 +311,7 @@ class PlayerSpot:
         #
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
         logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
-        with self.spot_lock:
-            is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
+        is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
         if self.second_swipe_action is not None and is_second_swipe:
             logger.debug('Calling second swipe action')
             self.second_swipe_action()
@@ -385,16 +340,15 @@ class PlayerSpot:
         """
         logger.debug("play_folder")
         # TODO: This changes the current state -> Need to save last state
-        with self.spot_lock:
-            logger.info(f"Play spotify playlist: '{playlist_uri}'")
+        logger.info(f"Play spotify playlist: '{playlist_uri}'")
 
-            self.music_player_status['player_status']['last_played_folder'] = playlist_uri
+        self.music_player_status['player_status']['last_played_folder'] = playlist_uri
 
-            self.current_folder_status = self.music_player_status['audio_folder_status'].get(playlist_uri)
-            if self.current_folder_status is None:
-                self.current_folder_status = self.music_player_status['audio_folder_status'][playlist_uri] = {}
+        self.current_folder_status = self.music_player_status['audio_folder_status'].get(playlist_uri)
+        if self.current_folder_status is None:
+            self.current_folder_status = self.music_player_status['audio_folder_status'][playlist_uri] = {}
 
-            self.load(self.current_folder_status, start_playing=True)
+        self.load(self.current_folder_status, start_playing=True)
 
     @plugs.tag
     def play_album(self, album_uri: str):
@@ -426,9 +380,8 @@ class PlayerSpot:
 
     @plugs.tag
     def playlistinfo(self):
-        with self.spot_lock:
-            # ToDo: implement
-            value = ["this is a list"]
+        # ToDo: implement
+        value = ["this is a list"]
         return value
 
     @plugs.tag
@@ -437,8 +390,7 @@ class PlayerSpot:
 
     @plugs.tag
     def list_albums(self):
-        with self.spot_lock:
-            albums = ["this is a list"]
+        albums = ["this is a list"]
         return albums
 
     @plugs.tag
@@ -466,8 +418,7 @@ class PlayerSpot:
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than Spotify"""
         api_path = f"/player/volume?volume_percent={volume}"
-        with self.spot_lock:
-            requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         return self.get_volume()
 
     @staticmethod
@@ -503,13 +454,8 @@ def initialize():
     player_ctrl = PlayerSpot()
     plugs.register(player_ctrl, name='ctrl')
 
-    # Update mpc library
-    library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)
-    if library_update:
-        player_ctrl.update()
-
     # Check user rights on music library
-    library_check_user_rights = cfg.setndefault('playermpd', 'library', 'check_user_rights', value=True)
+    library_check_user_rights = cfg.setndefault('playerspot', 'library', 'check_user_rights', value=True)
     if library_check_user_rights is True:
         music_library_path = components.player.get_music_library_path()
         if music_library_path is not None:
