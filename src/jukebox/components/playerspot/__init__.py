@@ -36,15 +36,15 @@ from jukebox.NvManager import nv_manager
 logger = logging.getLogger('jb.PlayerSpot')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
-test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
-                               'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
-             'audio_folder_status':
-                 {'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-                                               'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF',
-                                               'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
-                  'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-                                    'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF',
-                                    'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
+# test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
+#                                'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
+#              'audio_folder_status':
+#                  {'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
+#                                                'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF',
+#                                                'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
+#                   'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
+#                                     'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF',
+#                                     'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
 
 
 class PlayerSpot:
@@ -311,12 +311,25 @@ class PlayerSpot:
     @plugs.tag
     def get_playlist_content(self, playlist_uri: str):
         """
-        Get the spotify playlist as content list with meta-information
+        Get the spotify playlist as content list with spotify id
+
+        Example:
+        ["artists" : [{
+           "id" : "5lpH0xAS4fVfLkACg9DAuM",
+           "name" : "Wham!"
+         }],
+         "id" : "2FRnf9qhLbvw8fu4IBXx78",
+         "name" : "Last Christmas"
+         }]
+
 
         :param playlist_uri: URI for the spotify playlist as string
         """
-        # ToDo: implement using status
         track_list = []
+        api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name,id,artists(name,id))"
+        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path)).json()
+        for elem in playlist_response["items"]:
+            track_list.append(elem["track"])
         return track_list
 
     @plugs.tag
@@ -328,7 +341,6 @@ class PlayerSpot:
         :param recursive: Add folder recursively
         """
         logger.debug("play_folder")
-        # TODO: This changes the current state -> Need to save last state
         logger.info(f"Play spotify playlist: '{playlist_uri}'")
 
         self.music_player_status['player_status']['last_played_folder'] = playlist_uri
@@ -368,23 +380,26 @@ class PlayerSpot:
 
     @plugs.tag
     def playlistinfo(self):
-        # ToDo: implement
-        value = ["this is a list"]
-        return value
-
-    @plugs.tag
-    def list_all_dirs(self):
-        raise NotImplementedError
+        """
+        Returns a list of all songs in the playlist
+        """
+        track_list = []
+        playlist_uri = self.get_playback_state()["context"]["uri"]
+        api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name))"
+        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path)).json()
+        for elem in playlist_response["items"]:
+            track_list.append(elem["track"]["name"])
+        return track_list
 
     @plugs.tag
     def list_albums(self):
-        albums = ["this is a list"]
-        return albums
+        # ToDo: Do we need this for spotify?
+        raise NotImplementedError
 
     @plugs.tag
     def list_song_by_artist_and_album(self, albumartist, album):
         # ToDo: Do we need this for spotify?
-        pass
+        raise NotImplementedError
 
     def get_volume(self):
         """
@@ -392,9 +407,7 @@ class PlayerSpot:
 
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than Spotify"""
-        # ToDo: get volume from Playback state
-        # https://developer.spotify.com/documentation/web-api/reference/#/operations/get-information-about-the-users-current-playback
-        pass
+        return self.get_playback_state()["device"]["volume_percent"]
 
     def set_volume(self, volume):
         """
