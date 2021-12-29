@@ -36,6 +36,7 @@ from jukebox.NvManager import nv_manager
 logger = logging.getLogger('jb.PlayerSpot')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
+
 # test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
 #                                'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
 #              'audio_folder_status':
@@ -56,6 +57,7 @@ class PlayerSpot:
         self.spot_host = cfg.getn('playerspot', 'host')
         self.spot_api_port = 24879
         self.spot_api_baseurl = f"{self.spot_host}:{self.spot_api_port}"
+        self.requests_json_headers = {'content-type': 'application/json'}
         try:
             # Info as dict
             # Example: {"device_id":"ABC",
@@ -63,7 +65,8 @@ class PlayerSpot:
             #           "device_type":"SPEAKER",
             #           "country_code":"DE",
             #           "preferred_locale":"de"}
-            self.device_info = requests.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance")).json()
+            self.device_info = requests.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance"),
+                                            headers=self.requests_json_headers).json()
             self.device_info.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not get device information")
@@ -123,7 +126,7 @@ class PlayerSpot:
         logger.debug("Exit routine of playerspot started")
         self.nvm.save_all()
         api_path = "/instance/close"
-        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path), headers=self.requests_json_headers)
         return "payerspot exited"
 
     def decode_2nd_swipe_option(self):
@@ -162,7 +165,8 @@ class PlayerSpot:
         self.check_uri(uri)
         api_path = f"/player/load?uri={uri}&play={start_playing}"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error(f"Could not load playlist {uri}")
@@ -174,7 +178,8 @@ class PlayerSpot:
     def play(self):
         api_path = "/player/resume"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute play command")
@@ -196,7 +201,8 @@ class PlayerSpot:
         if state == 1:
             api_path = "/player/pause"
             try:
-                spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+                spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                              headers=self.requests_json_headers)
                 spot_response.raise_for_status()
             except requests.HTTPError as http_error:
                 logger.error("Could not execute pause command")
@@ -210,7 +216,8 @@ class PlayerSpot:
     def prev(self):
         api_path = "/player/prev"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute prev command")
@@ -222,7 +229,8 @@ class PlayerSpot:
     def next(self):
         api_path = "/player/next"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute next command")
@@ -237,7 +245,8 @@ class PlayerSpot:
         """
         api_path = f"/player/seek?position_ms={new_time}"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute seek command")
@@ -249,7 +258,8 @@ class PlayerSpot:
     def shuffle(self, random: bool):
         api_path = f"/player/shuffle?state={1 if random else 0}"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute shuffle command")
@@ -281,7 +291,8 @@ class PlayerSpot:
         logger.debug("Toggle")
         api_path = "/player/play-pause"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute toggle command")
@@ -310,7 +321,8 @@ class PlayerSpot:
             rep_state = "none"
         api_path = f"/player/repeat?state={rep_state}"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute repeat command")
@@ -339,7 +351,8 @@ class PlayerSpot:
         self.check_uri(song_uri)
         api_path = f"/player/repeat?uri={song_uri}&play=true"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not execute play single track command")
@@ -406,7 +419,8 @@ class PlayerSpot:
         track_list = []
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name,id,artists(name,id))"
         try:
-            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                              headers=self.requests_json_headers)
             playlist_response.raise_for_status()
             playlist_dict = playlist_response.json()
             for elem in playlist_dict["items"]:
@@ -473,7 +487,8 @@ class PlayerSpot:
         playlist_uri = self.get_playback_state()["context"]["uri"]
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name))"
         try:
-            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                              headers=self.requests_json_headers)
             playlist_response.raise_for_status()
             playlist_dict = playlist_response.json()
             for elem in playlist_dict["items"]:
@@ -511,7 +526,8 @@ class PlayerSpot:
         as the user may have configured a volume control manager other than Spotify"""
         api_path = f"/player/volume?volume_percent={volume}"
         try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
             spot_response.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not set spotify volume")
@@ -524,7 +540,8 @@ class PlayerSpot:
         playback_state_dict = {}
         api_path = "/web-api/v1/me/player"
         try:
-            playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
+            playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                           headers=self.requests_json_headers)
             playback_state.raise_for_status()
             playback_state_dict = playback_state.json()
         except requests.HTTPError as http_error:
