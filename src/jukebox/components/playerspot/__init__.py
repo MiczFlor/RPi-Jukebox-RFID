@@ -69,6 +69,9 @@ class PlayerSpot:
             logger.error("Could not get device information")
             logger.error(f"Reason: {http_error}")
             self.device_info = {}
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
+            self.device_info = {}
 
         self.music_player_status = self.nvm.load(cfg.getn('playerspot', 'status_file'))
 
@@ -164,6 +167,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error(f"Could not load playlist {uri}")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def play(self):
@@ -174,6 +179,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute play command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def stop(self):
@@ -194,6 +201,8 @@ class PlayerSpot:
             except requests.HTTPError as http_error:
                 logger.error("Could not execute pause command")
                 logger.error(f"Reason: {http_error}")
+            except Exception as err:
+                logger.error(f"Other error occurred: {err}")
         else:
             self.play()
 
@@ -206,6 +215,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute prev command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def next(self):
@@ -216,6 +227,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute next command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def seek(self, new_time: int):
@@ -229,6 +242,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute seek command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def shuffle(self, random: bool):
@@ -239,6 +254,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute shuffle command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def rewind(self):
@@ -269,6 +286,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute toggle command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def replay_if_stopped(self):
@@ -296,6 +315,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute repeat command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def get_current_song(self, param):
@@ -323,6 +344,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not execute play single track command")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
 
     @plugs.tag
     def resume(self):
@@ -391,6 +414,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not get playlist content")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
         return track_list
 
     @plugs.tag
@@ -456,6 +481,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not get playlist info")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
         return track_list
 
     @plugs.tag
@@ -489,6 +516,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could not set spotify volume")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
         return self.get_volume()
 
     def get_playback_state(self):
@@ -501,6 +530,8 @@ class PlayerSpot:
         except requests.HTTPError as http_error:
             logger.error("Could get the current playback state")
             logger.error(f"Reason: {http_error}")
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
         return playback_state_dict if playback_state_dict["device"]["id"] == self.device_info["device_id"] else {}
 
     @staticmethod
