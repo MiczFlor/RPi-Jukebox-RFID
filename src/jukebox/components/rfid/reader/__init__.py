@@ -77,6 +77,7 @@ class ReaderRunner(threading.Thread):
         cfg_removal_action = cfg_rfid.getn('rfid', 'readers', reader_cfg_key,
                                            'place_not_swipe', 'card_removal_action', default=None)
         self._default_removal_action = utils.decode_rpc_command(cfg_removal_action, self._logger)
+        self._logger.debug(f"Decoded removal action: {utils.rpc_call_to_str(self._default_removal_action)}")
 
         if self._cfg_place_not_swipe is True and self._default_removal_action is None:
             self._logger.warning('Option place_not_swipe activated, but no card removal action specified. '
@@ -84,9 +85,7 @@ class ReaderRunner(threading.Thread):
             self._cfg_place_not_swipe = False
         self._timer_thread = None
         if self._cfg_place_not_swipe:
-            self._timer_thread = CardRemovalTimerClass(functools.partial(plugs.call_ignore_errors,
-                                                                         **self._default_removal_action),
-                                                       self._logger)
+            self._timer_thread = CardRemovalTimerClass(utils.bind_rpc_command(self._default_removal_action, self._logger))
             self._timer_thread.daemon = True
             self._timer_thread.name = f"{reader_cfg_key}CRemover"
             self._timer_thread.start()

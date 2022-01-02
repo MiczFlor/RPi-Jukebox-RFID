@@ -50,7 +50,7 @@ Some options are not covered by the tool. You may change the file manually.
             place_not_swipe:
                 enabled: true|false
                 card_removal_action:
-                    quick_selection: none | pause
+                    alias: pause
 
 For each reader, there is an entry ``read_XX``.
 
@@ -75,7 +75,8 @@ place_not_swipe: true | false
 
 card_removal_action: Dictionary
     Executes the given function on card removal. Only relevant if place_not_swipe is true. The action is identical for all cards read on
-    that reader. The removal-action can be set to ignored on a card-by-card basis. More on card action configurations in [Actions]
+    that reader. The removal-action can be set to ignored on a card-by-card basis.
+    More on card action configurations in :ref:`userguide/rpc_commands:RPC Commands`.
 
     Developer's note: The reason for a unique removal action for all cards is that card triggering and card removal are happening
     in two separate threads. Removal needs to be in a time-out thread. Thus, we would need to transport information  from
