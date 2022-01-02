@@ -153,8 +153,12 @@ class PlayerMPD:
         self.decode_2nd_swipe_option()
 
         self.mpd_client = mpd.MPDClient()
-        self.mpd_client.timeout = 0.5               # network timeout in seconds (floats allowed), default: None
-        self.mpd_client.idletimeout = 0.5           # timeout for fetching the result of the idle command
+        # The timeout refer to the low-level socket time-out
+        # If these are too short and the response is not fast enough (due to the PI being busy),
+        # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket
+        # in any relevant matter anyway
+        self.mpd_client.timeout = None               # network timeout in seconds (floats allowed), default: None
+        self.mpd_client.idletimeout = None           # timeout for fetching the result of the idle command
         self.connect()
         logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
