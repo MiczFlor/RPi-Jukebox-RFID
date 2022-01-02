@@ -126,3 +126,8 @@ host:
   # RPi-specific stuff. Will be silently ignored if not on an RPi
   rpi:
     hdmi_power_down: False
+bluetooth_audio_buttons:
+  # When a bluetooth sound device (headphone, speakers) connects
+  # attempt to automatically listen to it's buttons (play, next, ...)
+  # Note that volume up/down is handled independently from this by the bluetooth audio protocol
+  enable: true
