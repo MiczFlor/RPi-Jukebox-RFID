@@ -1,8 +1,7 @@
 [Unit]
 Description=Jukebox Daemon
 # pulseaudio.service is required during shut down of this service, as we play shutdown sound (and adjust the volume)
-After=network.target sound.target mpd.service
-Requires=mpd.service 
+After=network.target sound.target
 
 [Service]
 ExecStart=/usr/bin/python3 run_jukebox.py
