@@ -25,13 +25,19 @@ _jukebox_core_install_os_dependencies() {
     alsa-utils \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
     ffmpeg mpg123 \
-    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils \
+    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps\
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages
 
   sudo pip3 install --upgrade pip
+}
+
+_jukebox_core_configure_pulseaudio() {
+  echo "Copy PulseAudio configuration"
+  mkdir -p ~/.config/pulse
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" ~/.config/pulse/default.pa
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
@@ -142,6 +148,7 @@ setup_jukebox_core() {
   echo "Install Jukebox Core" | tee /dev/fd/3
 
   _jukebox_core_install_os_dependencies
+  _jukebox_core_configure_pulseaudio
   _jukebox_core_install_python_requirements
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings
