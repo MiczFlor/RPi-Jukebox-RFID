@@ -216,18 +216,19 @@ def query_user_for_reader(dependency_install='query') -> dict:
                                                                                      'place_not_swipe':
                                                                                          {'enabled': False,
                                                                                           'card_removal_action':
-                                                                                              {'quick_select': 'pause'}}}
+                                                                                              {'alias': 'pause'}}}
 
         if not pyil.input_yesno("\nDo you want to add another RFID reader? ", blank=False,
                                 prompt_color=Colors.lightgreen, prompt_hint=True):
             break
 
-    print("\n\nDo you want to configure a GPIO output pin to sound a Buzzer or flash an LED on successful card read?\n"
-          "Enter '0' or leave blank to disable a Buzzer/LED pin\n"
-          "If enabled you may change the active duration manually in the configuration file")
-    buzzer_pin = pyil.input_int("Buzzer/LED pin number?", min=0, max=27, blank=0,
-                                prompt_color=Colors.lightgreen, prompt_hint=True)
-
+    # TODO: This is currently not in use: needs to be integrated with new GPIO concept
+    # print("\n\nDo you want to configure a GPIO output pin to sound a Buzzer or flash an LED on successful card read?\n"
+    #       "Enter '0' or leave blank to disable a Buzzer/LED pin\n"
+    #       "If enabled you may change the active duration manually in the configuration file")
+    # buzzer_pin = pyil.input_int("Buzzer/LED pin number?", min=0, max=27, blank=0,
+    #                             prompt_color=Colors.lightgreen, prompt_hint=True)
+    buzzer_pin = False
     if buzzer_pin:
         config_dict['rfid.pinaction.rpi']['enabled'] = True
         config_dict['rfid.pinaction.rpi']['pin'] = buzzer_pin
