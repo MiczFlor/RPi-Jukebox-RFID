@@ -7,7 +7,7 @@ RUN set -eux ; \
     libasound2-plugins \
     pulseaudio \
     pulseaudio-utils \
-    default-jdk
+    default-jre
 
 RUN usermod -aG audio,pulse,pulse-access root
 
