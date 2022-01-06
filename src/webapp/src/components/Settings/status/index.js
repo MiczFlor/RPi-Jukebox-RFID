@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 
 import StatusBattery from './battery';
+import StatusIpAddress from './ip-address';
 import StatusVersion from './version';
 
 const SettingsStatus = () => (
@@ -22,6 +23,7 @@ const SettingsStatus = () => (
           <List>
             <StatusVersion />
             <StatusBattery />
+            <StatusIpAddress />
           </List>
         </Grid>
       </Grid>

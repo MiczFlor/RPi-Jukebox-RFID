@@ -149,6 +149,10 @@ const commands = {
     _package: 'host',
     plugin: 'stop_autohotspot',
   },
+  getIpAddress: {
+    _package: 'host',
+    plugin: 'get_ip_address',
+  },
   reboot: {
     _package: 'host',
     plugin: 'reboot',

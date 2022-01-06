@@ -31,6 +31,7 @@ import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
 from jukebox.multitimer import GenericEndlessTimerClass
+import socket
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -197,6 +198,24 @@ def publish_cpu_temperature():
     else:
         # May be called from different threads: get thread-correct publisher instance
         jukebox.publishing.get_publisher().send('host.temperature.cpu', str(temperature))
+
+
+# ---------------------------------------------------------------------------
+# Network
+# ---------------------------------------------------------------------------
+
+@plugin.register
+def get_ip_address():
+    """Get the IP address"""
+
+    ip_address = 'None'
+
+    try:
+        ip_address = socket.gethostbyname(socket.gethostname())
+    except Exception as e:
+        logger.error(f"Error retrieving IP address. {e.__class__.__name__}: {e}")
+
+    return ip_address
 
 
 # ---------------------------------------------------------------------------
