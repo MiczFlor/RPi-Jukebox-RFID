@@ -153,6 +153,10 @@ const commands = {
     _package: 'host',
     plugin: 'get_ip_address',
   },
+  getDiskUsage: {
+    _package: 'host',
+    plugin: 'get_disk_usage',
+  },
   reboot: {
     _package: 'host',
     plugin: 'reboot',

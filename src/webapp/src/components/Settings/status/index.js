@@ -11,6 +11,7 @@ import {
 
 import StatusBattery from './battery';
 import StatusCpuTemp from './cpu-temp';
+import StatusDiskUsage from './disk-usage';
 import StatusIpAddress from './ip-address';
 import StatusVersion from './version';
 
@@ -24,6 +25,7 @@ const SettingsStatus = () => (
           <List>
             <StatusVersion />
             <StatusBattery />
+            <StatusDiskUsage />
             <StatusIpAddress />
             <StatusCpuTemp />
           </List>
