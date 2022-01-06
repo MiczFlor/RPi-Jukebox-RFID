@@ -10,6 +10,7 @@ const SUBSCRIPTIONS = [
   'core.plugins.loaded',
   'core.version',
   'core.started_at',
+  'host.timer.cputemp',
   'playerstatus',
   'rfid.card_id',
   'volume.level',

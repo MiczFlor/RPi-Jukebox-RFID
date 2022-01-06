@@ -12,7 +12,7 @@ const StatusIpAddress = () => {
   const [primaryText, setPrimaryText] = useState(undefined);
 
   useEffect(() => {
-    const fetchIpAddress = async () => {
+    const fetchData = async () => {
       setIsLoading(true);
       const { result, error } = await request('getIpAddress');
 
@@ -24,7 +24,7 @@ const StatusIpAddress = () => {
       setIsLoading(false);
     }
 
-    fetchIpAddress();
+    fetchData();
   }, []);
 
   return (
