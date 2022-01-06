@@ -8,27 +8,28 @@ import {
 import PubSubContext from '../../../context/pubsub/context';
 
 const StatusCpuTemp = () => {
-  const { state: { 'host.timer.cputemp': cpuTemp } } = useContext(PubSubContext);
+  const { state: {
+    'host.timer.cputemp': hostTimerCputemp,
+    'host.temperature.cpu': hostTemperatureCpu
+  } } = useContext(PubSubContext);
 
-  let temperature = 'Not available';
+  let primaryText = 'Unavailable';
 
-  // Backend sends object when CPU Temp is disabled in jukebox.yaml
-  // or not supported in backend (e.g. when using Docker)
-  if (typeof cpuTemp === 'object' && cpuTemp !== null) {
-    if (cpuTemp?.enabled === false) {
-      temperature = 'Functionality not enabled or not supported'
+  if (typeof hostTimerCputemp === 'object' && hostTimerCputemp !== null) {
+    if (hostTimerCputemp?.enabled === true) {
+      if (typeof hostTemperatureCpu === 'string' || hostTemperatureCpu instanceof String) {
+        primaryText = `${hostTemperatureCpu}°C`;
+      }
     }
-  }
-
-  // Backend sense string when temperature is available
-  if (typeof cpuTemp === 'string' || cpuTemp instanceof String) {
-    temperature = `${cpuTemp}°C`;
+    else {
+      primaryText = 'Not enabled or not supported';
+    }
   }
 
   return (
     <ListItem disableGutters>
       <ListItemText
-        primary={temperature}
+        primary={primaryText}
         secondary="CPU Temperature"
       />
     </ListItem>

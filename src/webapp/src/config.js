@@ -11,6 +11,7 @@ const SUBSCRIPTIONS = [
   'core.version',
   'core.started_at',
   'host.timer.cputemp',
+  'host.temperature.cpu',
   'playerstatus',
   'rfid.card_id',
   'volume.level',
