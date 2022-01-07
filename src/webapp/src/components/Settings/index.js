@@ -7,7 +7,7 @@ import SettingsSecondSwipe from './secondswipe';
 import SystemControls from './systemcontrols';
 import SettingsVolume from './volume';
 import SettingsAutoHotspot from './autohotspot';
-import SettingsStatus from './status';
+import SettingsStatus from './status/index';
 
 import { useTheme } from '@mui/material/styles';
 
