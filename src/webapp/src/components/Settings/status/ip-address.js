@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 import {
+  IconButton,
   ListItem,
   ListItemText,
 } from '@mui/material';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 import request from '../../../utils/request';
 
 const StatusIpAddress = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [primaryText, setPrimaryText] = useState(undefined);
+
+  const sayIpAddress = () => (
+    request('say_my_ip_long')
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +34,18 @@ const StatusIpAddress = () => {
   }, []);
 
   return (
-    <ListItem disableGutters>
+    <ListItem
+      disableGutters
+      secondaryAction={
+        <IconButton
+          aria-label="Say my IP address"
+          edge="end"
+          onClick={sayIpAddress}
+        >
+          <VolumeUpIcon />
+        </IconButton>
+      }
+    >
       <ListItemText
         primary={isLoading ? 'Loading ...' : primaryText}
         secondary="IP address"

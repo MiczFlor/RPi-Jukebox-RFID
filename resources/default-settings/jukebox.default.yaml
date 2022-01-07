@@ -15,6 +15,7 @@ modules:
     cards: rfid.cards
     rfid: rfid.reader
     timers: timers
+    tts: tts
     host: hostif.linux
     gpio: gpio.gpio_rpi
     # rfidpinaction: rfid.pinaction.rpi

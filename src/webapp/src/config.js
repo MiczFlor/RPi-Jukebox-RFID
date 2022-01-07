@@ -60,6 +60,12 @@ const JUKEBOX_ACTIONS_MAP = {
       reboot: {
         title: 'Reboot',
       },
+      say_my_ip_long: {
+        title: 'Speak IP address',
+      },
+      say_my_ip_short: {
+        title: 'Speak last part of IP address',
+      },
     }
   }
 }

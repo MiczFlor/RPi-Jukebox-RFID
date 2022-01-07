@@ -30,6 +30,7 @@ import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
+import components.tts
 from jukebox.multitimer import GenericEndlessTimerClass
 import socket
 
@@ -220,6 +221,26 @@ def get_ip_address():
     finally:
         sock.close()
     return ip_address
+
+@plugin.register
+def say_my_ip_short():
+    """
+    Say the last part of the IP address
+    """
+
+    ip_address = get_ip_address()
+    ip_last_part = ip_address.split('.')[3]
+
+    components.tts.say(ip_last_part)
+
+
+@plugin.register
+def say_my_ip_long():
+    """
+    Say the entire IP address
+    """
+
+    components.tts.say(get_ip_address())
 
 
 # ---------------------------------------------------------------------------
