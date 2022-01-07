@@ -222,6 +222,7 @@ def get_ip_address():
         sock.close()
     return ip_address
 
+
 @plugin.register
 def say_my_ip_short():
     """
