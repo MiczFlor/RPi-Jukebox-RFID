@@ -206,15 +206,19 @@ def publish_cpu_temperature():
 
 @plugin.register
 def get_ip_address():
-    """Get the IP address"""
+    """
+    Get the IP address
+    Source: https://stackoverflow.com/a/28950776/1062438
+    """
 
-    ip_address = 'None'
-
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        ip_address = socket.gethostbyname(socket.gethostname())
-    except Exception as e:
-        logger.error(f"Error retrieving IP address. {e.__class__.__name__}: {e}")
-
+        sock.connect(('10.255.255.255', 1))
+        ip_address = sock.getsockname()[0]
+    except Exception:
+        ip_address = '127.0.0.1'
+    finally:
+        sock.close()
     return ip_address
 
 
