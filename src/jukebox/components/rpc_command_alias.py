@@ -90,14 +90,10 @@ cmd_alias_definitions = {
         'package': 'host',
         'plugin': 'reboot',
         'ignore_card_removal_action': True},
-    'say_my_ip_short': {
+    'say_my_ip': {
         'package': 'host',
-        'plugin': 'say_my_ip_short',
-    },
-    'say_my_ip_long': {
-        'package': 'host',
-        'plugin': 'say_my_ip_long',
-    },
+        'plugin': 'say_my_ip',
+        'ignore_card_removal_action': True},
     # TIMER
     'shutdown_after': {
         'package': 'timers',

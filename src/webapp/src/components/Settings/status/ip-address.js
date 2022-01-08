@@ -13,9 +13,7 @@ const StatusIpAddress = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [primaryText, setPrimaryText] = useState(undefined);
 
-  const sayIpAddress = () => (
-    request('say_my_ip_long')
-  );
+  const sayIpAddress = () => request('say_my_ip');
 
   useEffect(() => {
     const fetchData = async () => {

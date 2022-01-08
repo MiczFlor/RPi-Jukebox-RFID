@@ -165,13 +165,10 @@ const commands = {
     _package: 'host',
     plugin: 'shutdown',
   },
-  say_my_ip_long: {
+  say_my_ip: {
     _package: 'host',
-    plugin: 'say_my_ip_long',
-  },
-  say_my_ip_short: {
-    _package: 'host',
-    plugin: 'say_my_ip_short',
+    plugin: 'say_my_ip',
+    argKeys: ['option'],
   },
 };
 
