@@ -18,32 +18,50 @@ def run_unix_command(command):
 
 # http://espeak.sourceforge.net/commands.html
 def with_espeak(text, params):
-    lang = params['lang']
+    # Language
+    lang = cfg.getn('speaking_text', 'lang') or 'en'
+    if 'lang' in params:
+        lang = params['lang']
 
+    # Speak punctuation?
     speakPunct = ''
-    if params['speakPunct']:
+    speakPunctOption = cfg.getn('speaking_text', 'speakPunct') or False
+    if 'speakPunct' in params:
+        speakPunctOption = params['speakPunct']
+
+    if speakPunctOption:
         speakPunct = '--punct="<characters>"'
 
-    if params['speed'] == 'slow':
+    # speed in words-per-minute
+    speedOption = cfg.getn('speaking_text', 'speed') or 'normal'
+    if 'speed' in params:
+        speedOption = params['speed']
+
+    if speedOption == 'slow':
         speed = 75
-    elif params['speed'] == 'fast':
+    elif speedOption == 'fast':
         speed = 125
     else:
         speed = 100
 
-    if params['voice'] == 'male':
+    # Voice for the speech
+    voiceOption = cfg.getn('speaking_text', 'voice') or 'female'
+    if 'voice' in params:
+        voiceOption = params['voice']
+
+    if voiceOption == 'male':
         voice = 'm3'
-    elif params['voice'] == 'croak':
+    elif voiceOption == 'croak':
         voice = 'croak'
-    elif params['voice'] == 'whisper':
+    elif voiceOption == 'whisper':
         voice = 'whisper'
     # female is default
     else:
-        voice = 'f3'
+        voice = 'f2'
 
-    command = 'espeak -v%s+%s -s%s %s "%s" 2>>/dev/null' % (lang, voice , speed, speakPunct, text)
+    command = 'espeak -v%s+%s -s%s %s "%s" 2>>/dev/null' % (lang, voice, speed, speakPunct, text)
     run_unix_command(command)
 
 
-def say(text, params={'lang': 'en', 'speed': 'normal', 'speakPunct': False, 'voice': 'female'}):
+def say(text, params={}):
     with_espeak(text, params)
