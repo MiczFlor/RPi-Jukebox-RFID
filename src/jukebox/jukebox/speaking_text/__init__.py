@@ -30,29 +30,28 @@ def with_espeak(text, lang=None, speed=None, speak_punct=None, voice=None):
 
     # speed in words-per-minute
     speed = speed or cfg.setndefault('speaking_text', 'speed', value='normal')
-    if speed == 'slow':
+    if speed == 'normal':
+        speed = 125
+    elif speed == 'slow':
         speed = 85
     elif speed == 'fast':
         speed = 150
-    else:
-        speed = 125
 
     # Voice for the speech
     voice = voice or cfg.setndefault('speaking_text', 'voice', value='female')
-    if voice == 'male':
+    if voice == 'female':
+        voice = 'f2'
+    elif voice == 'male':
         voice = 'm3'
     elif voice == 'croak':
         voice = 'croak'
     elif voice == 'whisper':
         voice = 'whisper'
-    # female is default
-    else:
-        voice = 'f2'
 
     command = 'espeak -v%s+%s -s%s %s "%s" 2>>/dev/null' % (lang, voice, speed, speak_punct, text)
     logger.info(f"Command: '{command}'")
     run_unix_command(command)
 
 
-def say(text,lang=None, speed=None, speak_punct=None, voice=None):
+def say(text, lang=None, speed=None, speak_punct=None, voice=None):
     with_espeak(text, lang, speed, speak_punct, voice)
