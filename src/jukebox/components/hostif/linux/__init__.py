@@ -30,6 +30,7 @@ import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
+import jukebox.speaking_text
 from jukebox.multitimer import GenericEndlessTimerClass
 import socket
 
@@ -220,6 +221,18 @@ def get_ip_address():
     finally:
         sock.close()
     return ip_address
+
+
+@plugin.register
+def say_my_ip(option='full'):
+    ip_address = get_ip_address()
+
+    if option == 'short':
+        ip_address = ip_address.split('.')[3]
+
+    ip_address = ip_address.replace('.', '. ')
+
+    jukebox.speaking_text.say(ip_address)
 
 
 # ---------------------------------------------------------------------------

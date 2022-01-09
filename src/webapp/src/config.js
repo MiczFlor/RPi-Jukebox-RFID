@@ -60,6 +60,9 @@ const JUKEBOX_ACTIONS_MAP = {
       reboot: {
         title: 'Reboot',
       },
+      say_my_ip: {
+        title: 'Say IP address',
+      },
     }
   }
 }
