@@ -50,18 +50,12 @@ makes our life easier. Besides, it is only option to support Bluetooth at the mo
 
 Callbacks:
 
-Two callbacks are provided. Register callbacks with these two functions (see their documentation for details):
+The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
 
     #. :func:`add_on_connect_callback`
     #. :func:`add_on_output_change_callbacks`
-
-
+    #. :func:`add_on_volume_change_callback`
 """
-# TODO:
-# Callbacks for active sound card, on sound card switch error
-# Docs, Typing
-# Publish soft max volume
-
 import collections
 import logging
 import threading
@@ -256,6 +250,7 @@ class PulseVolumeControl:
         self._volume_limit = {x.pulse_sink_name: x.volume_limit / 100.0 for x in self._sink_list}
         self._soft_max_volume = cfg.setndefault('pulse', 'soft_max_volume', value=100)
         self._on_output_change_callbacks: List[Callable[[str, str, int, int], None]] = []
+        self._on_volume_change_callbacks: List[Callable[[int], None]] = []
 
     def _set_volume(self, pulse_inst: pulsectl.Pulse, volume: int, sink_name: Optional[str] = None):
         # Set volume triggers should not trigger a volume change event,
@@ -289,6 +284,11 @@ class PulseVolumeControl:
     def _publish_volume(self, pulse_inst: pulsectl.Pulse):
         volume, mute = self._get_volume_and_mute(pulse_inst)
         publishing.get_publisher().send('volume.level', {'volume': volume, 'mute': mute})
+        for f in self._on_volume_change_callbacks:
+            try:
+                f(volume)
+            except Exception as e:
+                logger.error(f"Run _on_volume_change_callbacks callback: {e.__class__.__name__}: {e}")
         return volume, mute
 
     def _publish_outputs(self, pulse_inst: pulsectl.Pulse):
@@ -480,6 +480,17 @@ def add_on_output_change_callbacks(func: Callable[[str, str, int, int], None]):
         pulse_control._on_output_change_callbacks.append(func)
 
 
+def add_on_volume_change_callback(func):
+    """Then the volume changes, call func(volume)
+
+    volume is an integer in the range from 0 ... 100
+    """
+    global pulse_monitor
+    global pulse_control
+    with pulse_monitor:
+        pulse_control._on_volume_change_callbacks.append(func)
+
+
 def parse_config() -> List[PulseAudioSinkClass]:
     global pulse_monitor
 
@@ -536,6 +547,7 @@ def initialize():
 
 @plugin.finalize
 def finalize():
+    global pulse_control
     # Set default output and start-up volume
     # Note: PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
     # with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration.

@@ -99,8 +99,9 @@ publishing:
 rfid:
   reader_config: ../../shared/settings/rfid.yaml
   card_database: ../../shared/settings/cards.yaml
-gpio:
-  gpio_rpi_config: ../../shared/settings/gpio.yaml
+gpioz:
+  enable: false
+  config_file: ../../shared/settings/gpioz.yaml
 timers:
   # These timers are always disabled after start
   # The following values only give the default values.
@@ -121,12 +122,12 @@ host:
     timer_interval_sec: 10
   # Should we disable the power management of the WLAN to ensure reachability via WLAN?
   wlan_power:
-    disable_power_down: False
+    disable_power_down: false
     # Specify the wlan interface. Get a list from $iwconfig. 'wlan0' is default on RPis
     card: wlan0
   # RPi-specific stuff. Will be silently ignored if not on an RPi
   rpi:
-    hdmi_power_down: False
+    hdmi_power_down: false
 bluetooth_audio_buttons:
   # When a bluetooth sound device (headphone, speakers) connects
   # attempt to automatically listen to it's buttons (play, next, ...)

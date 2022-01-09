@@ -1,0 +1,44 @@
+# Provides 4 selected examples of GPIO configuration
+# For many more configuration recipe go to the documentation!
+# https://rpi-jukebox-rfid.readthedocs.io/en/latest/index.html
+pin_factory:
+#  type: rpigpio.RPiGPIOFactory
+  type: mock.MockFactory
+output_devices:
+  RfidBuzzer:
+    # Sound a Piezzo Buzzer once when a card swipe has been detected. For unknown cards, sound it three times.
+    # Extend the card read buzzer to also sound one long beed after completed boot up and two beeps on shutdown.
+    type: Buzzer
+    connect:
+      - gpio.gpioz.plugin.connectivity.register_rfid_callback
+      - gpio.gpioz.plugin.connectivity.register_status_buzzer_callback
+    kwargs:
+      pin: 12
+  VolumeLED:
+    # Have an LED change it’s brightness to reflect the current volume level.
+    type: PWMLED
+    connect: gpio.gpioz.plugin.connectivity.register_volume_led_callback
+    kwargs:
+      pin: 18
+input_devices:
+  TogglePlayback:
+    # A button to toggle music playback on single press
+    type: Button
+    kwargs:
+      pin: 13
+    actions:
+      on_press:
+        alias: toggle
+  VolumeRotator:
+    # A rotary encoder like the KY-040 to change the volume.
+    type: RotaryEncoder
+    kwargs:
+      a: 5
+      b: 6
+    actions:
+      on_rotate_clockwise:
+        alias: change_volume
+        args: 5
+      on_rotate_counter_clockwise:
+        alias: change_volume
+        args: -5
