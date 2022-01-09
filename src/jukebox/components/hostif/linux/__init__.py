@@ -230,6 +230,8 @@ def say_my_ip(option='full'):
     if option == 'short':
         ip_address = ip_address.split('.')[3]
 
+    ip_address = ip_address.replace('.', '. ')
+
     jukebox.speaking_text.say(ip_address)
 
 

@@ -133,6 +133,6 @@ speaking_text:
   # Must be one of: normal, fast, slow
   speed: normal
   # Whether you want to read punctuation or not
-  speakPunct: False
+  speak_punct: False
   # Must be one of: female, male, croak, whisper
   voice: female

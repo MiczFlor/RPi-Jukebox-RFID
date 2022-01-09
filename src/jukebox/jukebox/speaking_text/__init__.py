@@ -17,51 +17,42 @@ def run_unix_command(command):
 
 
 # http://espeak.sourceforge.net/commands.html
-def with_espeak(text, params):
+def with_espeak(text, lang=None, speed=None, speak_punct=None, voice=None):
     # Language
-    lang = cfg.getn('speaking_text', 'lang') or 'en'
-    if 'lang' in params:
-        lang = params['lang']
+    lang = lang or cfg.setndefault('speaking_text', 'lang', value='en')
 
     # Speak punctuation?
-    speakPunct = ''
-    speakPunctOption = cfg.getn('speaking_text', 'speakPunct') or False
-    if 'speakPunct' in params:
-        speakPunctOption = params['speakPunct']
-
-    if speakPunctOption:
-        speakPunct = '--punct="<characters>"'
+    speak_punct = speak_punct or cfg.setndefault('speaking_text', 'speak_punct', value=False)
+    if speak_punct:
+        speak_punct = '--punct="<characters>"'
+    else:
+        speak_punct = ''
 
     # speed in words-per-minute
-    speedOption = cfg.getn('speaking_text', 'speed') or 'normal'
-    if 'speed' in params:
-        speedOption = params['speed']
-
-    if speedOption == 'slow':
-        speed = 75
-    elif speedOption == 'fast':
-        speed = 125
+    speed = speed or cfg.setndefault('speaking_text', 'speed', value='normal')
+    if speed == 'slow':
+        speed = 85
+    elif speed == 'fast':
+        speed = 150
     else:
-        speed = 100
+        speed = 125
 
     # Voice for the speech
-    voiceOption = cfg.getn('speaking_text', 'voice') or 'female'
-    if 'voice' in params:
-        voiceOption = params['voice']
-
-    if voiceOption == 'male':
+    voice = voice or cfg.setndefault('speaking_text', 'voice', value='female')
+    if voice == 'male':
         voice = 'm3'
-    elif voiceOption == 'croak':
+    elif voice == 'croak':
         voice = 'croak'
-    elif voiceOption == 'whisper':
+    elif voice == 'whisper':
         voice = 'whisper'
     # female is default
     else:
         voice = 'f2'
 
-    command = 'espeak -v%s+%s -s%s %s "%s" 2>>/dev/null' % (lang, voice, speed, speakPunct, text)
+    command = 'espeak -v%s+%s -s%s %s "%s" 2>>/dev/null' % (lang, voice, speed, speak_punct, text)
+    logger.info(f"Command: '{command}'")
     run_unix_command(command)
 
 
-def say(text, params={}):
-    with_espeak(text, params)
+def say(text,lang=None, speed=None, speak_punct=None, voice=None):
+    with_espeak(text, lang, speed, speak_punct, voice)
