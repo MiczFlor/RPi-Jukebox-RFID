@@ -1,4 +1,5 @@
 import os
+from typing import (Any)
 
 
 def recursive_chmod(path, mode_files, mode_dirs):
@@ -27,3 +28,10 @@ def flatten(iterable):
         for it in iterator:
             res = [*res, *flatten(it)]
     return res
+
+
+def getattr_hierarchical(obj: Any, name: str) -> Any:
+    """Like the builtin getattr, but descends though the hierarchy levels"""
+    for sub_name in name.split("."):
+        obj = getattr(obj, sub_name)
+    return obj
