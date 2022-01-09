@@ -8,6 +8,7 @@ modules:
     # Do not change the order!
     publishing: publishing
     volume: volume
+    bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     jingle: jingle
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
@@ -126,6 +127,11 @@ host:
   # RPi-specific stuff. Will be silently ignored if not on an RPi
   rpi:
     hdmi_power_down: False
+bluetooth_audio_buttons:
+  # When a bluetooth sound device (headphone, speakers) connects
+  # attempt to automatically listen to it's buttons (play, next, ...)
+  # Note that volume up/down is handled independently from this by the bluetooth audio protocol
+  enable: true
 # Espeak is the current speech synthesizer
 speaking_text:
   # All languages available here: http://espeak.sourceforge.net/languages.html
