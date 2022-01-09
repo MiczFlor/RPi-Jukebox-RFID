@@ -3,6 +3,8 @@ import threading
 import time
 import importlib
 import functools
+from typing import (List, Callable)
+
 import jukebox.plugs as plugs
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -16,6 +18,20 @@ _READERS = {}
 cfg_rfid = jukebox.cfghandler.get_handler('rfid')
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_cards = jukebox.cfghandler.get_handler('cards')
+
+callbacks: List[Callable[[str, int], None]] = []
+
+
+def add_rfid_card_detect_callback(func: Callable[[str, int], None]):
+    callbacks.append(func)
+
+
+def run_callbacks(card_id: str, state: int, logger):
+    for f in callbacks:
+        try:
+            f(card_id, state)
+        except Exception as e:
+            logger.error(f"Error in rfid card detect callback: {e.__class__.__name__}: {e}")
 
 
 class CardRemovalTimerClass(threading.Thread):
@@ -85,7 +101,8 @@ class ReaderRunner(threading.Thread):
             self._cfg_place_not_swipe = False
         self._timer_thread = None
         if self._cfg_place_not_swipe:
-            self._timer_thread = CardRemovalTimerClass(utils.bind_rpc_command(self._default_removal_action, self._logger))
+            self._timer_thread = CardRemovalTimerClass(utils.bind_rpc_command(self._default_removal_action, dereference=False,
+                                                                              logger=self._logger))
             self._timer_thread.daemon = True
             self._timer_thread.name = f"{reader_cfg_key}CRemover"
             self._timer_thread.start()
@@ -181,13 +198,16 @@ class ReaderRunner(threading.Thread):
                                 # dodgy cards database entry
                                 # TODO: This call happens from the reader thread, which is not necessarily what we want ...
                                 # TODO: Change to RPC call to transfer execution into main thread
+                                run_callbacks(card_id, 0, self._logger)
                                 plugs.call_ignore_errors(card_action['package'], card_action['plugin'], card_action['method'],
                                                          args=card_action['args'], kwargs=card_action['kwargs'])
 
                         else:
+                            run_callbacks(card_id, 1, self._logger)
                             self._logger.info(f"Unknown card: '{card_id}'")
                             self.publisher.send(self.topic, card_id)
                     elif self._cfg_log_ignored_cards is True:
+                        run_callbacks(card_id, 2, self._logger)
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
                     previous_time = time.time()
                 else:
