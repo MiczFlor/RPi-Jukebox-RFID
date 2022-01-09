@@ -8,7 +8,6 @@ modules:
     # Do not change the order!
     publishing: publishing
     volume: volume
-    bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     jingle: jingle
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
@@ -17,6 +16,7 @@ modules:
     rfid: rfid.reader
     timers: timers
     host: hostif.linux
+    bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     gpio: gpio.gpio_rpi
     # rfidpinaction: rfid.pinaction.rpi
   others:
