@@ -15,3 +15,4 @@ Developers API Introduction
    playlist
    utils
    volume
+   controls
