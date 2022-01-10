@@ -57,15 +57,9 @@ const JUKEBOX_ACTIONS_MAP = {
   }
 }
 
-const LABELS = {
-  UNKNOW_ARTIST: 'Unknown Artist',
-  UNKNOW_ALBUM: 'Unknown Album',
-}
-
 export {
   DEFAULT_AUDIO_DIR,
   JUKEBOX_ACTIONS_MAP,
-  LABELS,
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,
   ROOT_DIRS,

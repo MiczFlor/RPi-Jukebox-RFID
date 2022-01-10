@@ -14,7 +14,6 @@ import {
 
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-import { JUKEBOX_ACTIONS_MAP } from '../../../../../config';
 import { getActionAndCommand, getArgsValues } from '../../../utils';
 
 import SelectedAlbum from './selected-album';
@@ -28,7 +27,7 @@ const SelectPlayMusic = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { action, command } = getActionAndCommand(actionData);
+  const { command } = getActionAndCommand(actionData);
   const values = getArgsValues(actionData);
 
   const selectMusic = () => {

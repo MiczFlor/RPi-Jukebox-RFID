@@ -79,6 +79,35 @@
   "header": {
     "back": "Back"
   },
+  "library": {
+    "header": {
+      "search-toggle": "Toggle Search Input",
+      "search-label": "Search",
+      "toggle-label": "Toggle Album/Folder view",
+      "albums": "Albums",
+      "folders": "Folders"
+    },
+    "selector-header": {
+      "title": "Select an album, folder or song",
+      "cancel": "Cancel"
+    },
+    "folders": {
+      "loading-error": "An error occurred while loading the library.",
+      "no-music": "No music found!",
+      "empty-folder": "This folder is empty!",
+      "show-folder-content": "Show folder content",
+      "back-button-label": "Back"
+    },
+    "albums": {
+      "unknown-album": "Unknown album",
+      "unknown-artist": "Unknown artist",
+      "unknown-title": "Unknown title",
+      "no-music": "No music found!",
+      "empty-library": "Your library is empty!",
+      "no-songs-in-album": "Strange, no songs in this album.",
+      "assign-to-card": "Assign album to card"
+    }
+  },
   "navigation": {
     "start": "Start",
     "library": "Library",

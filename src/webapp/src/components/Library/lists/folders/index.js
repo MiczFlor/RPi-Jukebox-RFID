@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import {
   CircularProgress,
@@ -14,6 +15,7 @@ const Folders = ({
   isSelecting,
   registerMusicToCard,
 }) => {
+  const { t } = useTranslation();
   const { dir = './' } = useParams();
   const [folders, setFolders] = useState([]);
   const [error, setError] = useState(null);
@@ -46,10 +48,10 @@ const Folders = ({
   const filteredFolders = folders.filter(search);
 
   if (isLoading) return <CircularProgress />;
-  if (error) return <Typography>An error occurred while loading the library.</Typography>;
+  if (error) return <Typography>{t('library.folders.loading-error')}</Typography>;
   if (!filteredFolders.length) {
-    if (musicFilter) return <Typography>☝️ No music found!</Typography>;
-    return <Typography>This folder is empty! 🙈</Typography>;
+    if (musicFilter) return <Typography>{`☝️ ${t('library.folders.no-music')}`}</Typography>;
+    return <Typography>{`${t('library.folders.empty-folder')} 🙈`}</Typography>;
   }
 
   return (

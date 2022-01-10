@@ -79,6 +79,35 @@
   "header": {
     "back": "Zurück"
   },
+  "library": {
+    "header": {
+      "search-toggle": "Suche benuzten",
+      "search-label": "Suche",
+      "toggle-label": "Schalte zwischen Album und Ordner Ansicht hin und her",
+      "albums": "Alben",
+      "folders": "Ordner"
+    },
+    "selector-header": {
+      "title": "Wähle ein Album, einen Ordner oder einen Song aus",
+      "cancel": "Abbrechen"
+    },
+    "folders": {
+      "loading-error": "Die Bibliothek konnte nicht geladen werden.",
+      "no-music": "Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer!",
+      "show-folder-content": "Zeige den Ordner Inhalt an",
+      "back-button-label": "Zurück"
+    },
+    "albums": {
+      "unknown-album": "Unbekanntes Album",
+      "unknown-artist": "Unbekannter Künstler",
+      "unknown-title": "Unbekannter Titel",
+      "no-music": "Keine Musik vorhanden!",
+      "empty-library": "Deine Bibliothek ist noch leer!",
+      "no-songs-in-album": "Komisch, in diesem Album gibt es keine Songs.",
+      "assign-to-card": "Dieses Album registrieren"
+    }
+  },
   "navigation": {
     "start": "Start",
     "library": "Bibliothek",
