@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -10,28 +11,41 @@ import {
   NativeSelect,
 } from '@mui/material';
 
-const TIMESLOTS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
-
-const options = TIMESLOTS.map(
-  (value) => {
-    if (value === 0) return { value, label: 'Off' };
-    return { value, label: `${value} min` }
-  }
-);
-
 const SettingsAutoShutdown = () => {
+  const { t } = useTranslation();
+
+  const TIMESLOTS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
+
+  const options = TIMESLOTS.map(
+    (value) => {
+      if (value === 0) {
+        return {
+          value,
+          label: t('settings.autoshutdown.option-label-off')
+        };
+      }
+
+      return {
+        value,
+        label: t('settings.autoshutdown.option-label-timeslot', { value })
+      };
+    }
+  );
+
   return (
     <Card>
       <CardHeader
-        title="Automatic Shutdown"
-        subheader="🚧 This feature is not yet enabled."
+        title={t('settings.autoshutdown.title')}
+        subheader={t('settings.feature-not-enabled')}
       />
       <Divider />
       <CardContent>
         <Grid container direction="column">
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <InputLabel htmlFor="stopPlayoutTimer">Stop Playout Timer</InputLabel>
+              <InputLabel htmlFor="stopPlayoutTimer">
+              {t('settings.autoshutdown.stop-playout-timer')}
+              </InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect
@@ -48,7 +62,9 @@ const SettingsAutoShutdown = () => {
 
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <InputLabel htmlFor="shutdownTimer">Shutdown Timer</InputLabel>
+              <InputLabel htmlFor="shutdownTimer">
+                {t('settings.autoshutdown.shutdown-timer')}
+              </InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect
@@ -65,7 +81,9 @@ const SettingsAutoShutdown = () => {
 
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <Grid item>
-              <InputLabel htmlFor="shutdownTimer">Idle Shutdown</InputLabel>
+              <InputLabel htmlFor="shutdownTimer">
+                {t('settings.autoshutdown.idle-shutdown')}
+              </InputLabel>
             </Grid>
             <Grid item>
               <NativeSelect

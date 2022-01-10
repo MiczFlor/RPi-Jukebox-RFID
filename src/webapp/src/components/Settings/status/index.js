@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -15,24 +16,28 @@ import StatusDiskUsage from './disk-usage';
 import StatusIpAddress from './ip-address';
 import StatusVersion from './version';
 
-const SettingsStatus = () => (
-  <Card>
-    <CardHeader title="System Status" />
-    <Divider />
-    <CardContent>
-      <Grid container>
-        <Grid item xs={12}>
-          <List>
-            <StatusVersion />
-            <StatusBattery />
-            <StatusDiskUsage />
-            <StatusIpAddress />
-            <StatusCpuTemp />
-          </List>
+const SettingsStatus = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Card>
+      <CardHeader title={t('settings.status.title')} />
+      <Divider />
+      <CardContent>
+        <Grid container>
+          <Grid item xs={12}>
+            <List>
+              <StatusVersion />
+              <StatusBattery />
+              <StatusDiskUsage />
+              <StatusIpAddress />
+              <StatusCpuTemp />
+            </List>
+          </Grid>
         </Grid>
-      </Grid>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+}
 
 export default SettingsStatus;

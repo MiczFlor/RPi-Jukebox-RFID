@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Grid,
@@ -19,6 +20,8 @@ const SayMyIpOptions = ({
   actionData,
   handleActionDataChange,
 }) => {
+  const { t } = useTranslation();
+
   const { action, command } = getActionAndCommand(actionData);
   const [option] = getArgsValues(actionData);
 
@@ -29,7 +32,9 @@ const SayMyIpOptions = ({
   return (
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
-        <Typography>Do you want to hear the full IP address or just the last quadrant?</Typography>
+        <Typography>
+          {t('cards.controls.actions.host.description')}
+        </Typography>
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="gender"
@@ -37,8 +42,16 @@ const SayMyIpOptions = ({
             value={option || 'full'}
             onChange={onChange}
           >
-            <FormControlLabel value="full" control={<Radio />} label="Full (e.g. 192.168.1.53)" />
-            <FormControlLabel value="short" control={<Radio />} label="Short (e.g. 53)" />
+            <FormControlLabel
+              control={<Radio />}
+              label={t('cards.controls.actions.host.label-full')}
+              value="full"
+            />
+            <FormControlLabel
+              control={<Radio />}
+              label={t('cards.controls.actions.host.label-short')}
+              value="short"
+            />
           </RadioGroup>
         </FormControl>
       </Grid>

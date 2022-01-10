@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
 
 const Cover = ({ coverImage }) => {
+  const { t } = useTranslation();
+
   return (
     <Grid container direction="row" justifyContent="center" alignItems="center">
       <Paper
@@ -28,11 +31,16 @@ const Cover = ({ coverImage }) => {
         >
           {coverImage &&
             <img
-              alt="Cover"
+              alt={t('player.cover.title')}
               src={`data:image/jpeg;base64,${coverImage}`}
               style={{ width: '100%', height: '100%' }}
             />}
-          {!coverImage && <MusicNoteIcon style={{ fontSize: 75 }} />}
+          {!coverImage &&
+            <MusicNoteIcon
+              style={{ fontSize: 75 }}
+              title={t('player.cover.unavailable')}
+            />
+          }
         </Grid>
       </Paper>
     </Grid>

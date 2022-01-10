@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import {
   CircularProgress,
@@ -19,6 +20,7 @@ const SongList = ({
   isSelecting,
   registerMusicToCard,
 }) => {
+  const { t } = useTranslation();
   const { artist, album } = useParams();
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
@@ -82,7 +84,7 @@ const SongList = ({
             </List>
         }
         {error &&
-          <Typography>Strange, no songs in this album. 🤔</Typography>
+          <Typography>{`${t('library.albums.no-songs-in-album')} 🤔`}</Typography>
         }
       </Grid>
     </Grid>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   ListItem,
@@ -10,6 +11,8 @@ import request from '../../../utils/request';
 import { Box } from '@mui/system';
 
 const StatusDiskUsage = () => {
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(true);
   const [primaryText, setPrimaryText] = useState(undefined);
   const [diskUsage, setDiskUsage] = useState(0);
@@ -30,18 +33,25 @@ const StatusDiskUsage = () => {
       if(result) {
         setDiskUsage(calcPercantage(result));
 
-        const text = ` ${calcMbToGb(result?.used)} GB of ${calcMbToGb(result?.total)} GB used (${calcPercantage(result)}%)`;
+        const text = t(
+          'settings.status.disk-usage.result',
+          {
+            used: calcMbToGb(result?.used),
+            total: calcMbToGb(result?.total),
+            result: calcPercantage(result)
+          }
+        );
         setPrimaryText(text);
       }
       if(error) {
-        setPrimaryText('⚠️ Disk usage could not be loaded.')
+        setPrimaryText(`⚠️ ${t('settings.status.disk-usage.loading-error')}`)
         console.error(error);
       };
       setIsLoading(false);
     }
 
     fetchData();
-  }, []);
+  }, [t]);
 
   return (
     <ListItem
@@ -53,8 +63,8 @@ const StatusDiskUsage = () => {
       </Box>
       <ListItemText
         sx={{ width: '100%' }}
-        primary={isLoading ? 'Loading ...' : primaryText}
-        secondary="Disk usage"
+        primary={isLoading ? `${t('general.loading')} ...` : primaryText}
+        secondary={t('settings.status.disk-usage.label')}
       />
     </ListItem>
   );
