@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Grid,
@@ -16,6 +17,8 @@ const ControlsSelector = ({
   setActionData,
   cardId,
 }) => {
+  const { t } = useTranslation();
+
   const handleActionChange = (event) => {
     setActionData(
       buildActionData(event.target.value)
@@ -32,7 +35,9 @@ const ControlsSelector = ({
     <Grid container direction="column">
       <Grid container direction="row" alignItems="center">
         <Grid item xs={5}>
-          <Typography>Jukebox action</Typography>
+          <Typography>
+            {t('cards.controls.controls-selector.label')}
+          </Typography>
         </Grid>
         <Grid item xs={7}>
           <SelectCommandAliases

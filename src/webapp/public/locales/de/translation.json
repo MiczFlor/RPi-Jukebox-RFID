@@ -1,4 +1,81 @@
 {
+  "cards": {
+    "controls": {
+      "action-controls": {
+        "delete": "Löschen",
+        "save": "Speichern"
+      },
+      "command-selector": {
+        "title": "Befehl",
+        "label": "{{title}} Befehler",
+        "placeholder": "Wähle einen Befehl aus",
+        "commands": {
+          "change_volume": "Lautstärke anpassen",
+          "shutdown": "Herunterfahren",
+          "reboot": "Neustarten",
+          "say_my_ip": "IP Addresse aufsagen"
+        }
+      },
+      "controls-selector": {
+        "label": "Jukebox Aktion"
+      },
+      "select-command-aliases": {
+        "label": "Aktionen",
+        "placeholder": "Wähle eine Aktion aus",
+        "actions": {
+          "play_music": "Musik abspielen",
+          "volume": "Lautstärke",
+          "host": "System"
+        }
+      },
+      "actions": {
+        "host": {
+          "description": "Möchtest du die gesamte IP Addresse aufsagen lassen oder nur den letzten Qudranten?",
+          "label-full": "Gesamte Addresse (e.g. 192.168.1.53)",
+          "label-short": "Letzter Qudrant (e.g. 53)"
+        },
+        "play-music": {
+          "commands": {
+            "play_album": "Ausgewähltes Album",
+            "play_folder": "Ausgewählter Ordner",
+            "play_single": "Ausgewählter Song"
+          },
+          "button-label": "Musik auswählen",
+          "no-music-selected": "Es ist keine Musik ausgewählt.",
+          "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
+        },
+        "volume": {
+          "title": "Lautstärke Schritte"
+        }
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Karte löschen '{{cardId}}'",
+        "description": "Bist du sicher, dass du diese Karte löschen möchtest?",
+        "cancel": "Abbrechen",
+        "delete": "Löschen"
+      }
+    },
+    "edit": {
+      "edit-card": "Karte bearbeiten"
+    },
+    "form": {
+      "no-card-swiped": "Bitte scanne eine Karte um einen ID zu erhalten. Diese wird dann zur Registrierung einer neuen Aktion verwendet.",
+      "no-card-id": "Keine Karten-ID vorhanden"
+    },
+    "list": {
+      "no-cards-registered": "Es wurden noch keine Karten registriert!"
+    },
+    "overview": {
+      "cards": "Karten",
+      "loading-error": "Während des Ladens der Karten ist ein Fehler aufgetreten",
+      "register-card": "Registriere eine Karte"
+    },
+    "register": {
+      "register-card": "Registriere eine Karte"
+    }
+  },
   "header": {
     "back": "Zurück"
   },
@@ -22,24 +99,24 @@
         "activate": "Wiederholen aktivieren",
         "activate-single": "1 Wiederholen aktivieren",
         "deactivate": "Wiederholen deaktivieren"
-      },
-      "cover": {
-        "title": "Cover Art",
-        "unavailable": "Kein Cover vorhanden"
-      },
-      "display": {
-        "unknown-title": "Unbekannter Titel",
-        "unknown-artist": "Unbekannter Künstler",
-        "no-song-in-queue": "Es wird kein Titel abgespielt"
-      },
-      "seekbar": {
-        "song-position": "Aktuelle Position"
-      },
-      "volume": {
-        "slider": "Lautstärkeregler",
-        "mute": "Stumm schalten",
-        "unmute": "Stumm schalten deaktivieren"
       }
+    },
+    "cover": {
+      "title": "Cover Art",
+      "unavailable": "Kein Cover vorhanden"
+    },
+    "display": {
+      "unknown-title": "Unbekannter Titel",
+      "unknown-artist": "Unbekannter Künstler",
+      "no-song-in-queue": "Es wird kein Titel abgespielt"
+    },
+    "seekbar": {
+      "song-position": "Aktuelle Position"
+    },
+    "volume": {
+      "slider": "Lautstärkeregler",
+      "mute": "Stumm schalten",
+      "unmute": "Stumm schalten deaktivieren"
     }
   }
 }

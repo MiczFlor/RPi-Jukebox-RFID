@@ -90,7 +90,7 @@ const Volume = () => {
           {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
         </IconButton>
       </Grid>
-      <Grid container xs>
+      <Grid item xs sx={{ marginTop: theme.spacing(1) }}>
         <Slider
           aria-labelledby={t('player.volume.slider')}
           onChange={handleVolumeChange}

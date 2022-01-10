@@ -1,4 +1,81 @@
 {
+  "cards": {
+    "controls": {
+      "action-controls": {
+        "delete": "Delete",
+        "save": "Save"
+      },
+      "command-selector": {
+        "title": "Commands",
+        "label": "{{title}} commands",
+        "placeholder": "Select a command",
+        "commands": {
+          "change_volume": "Change volume by",
+          "shutdown": "Shutdown",
+          "reboot": "Reboot",
+          "say_my_ip": "Say IP address"
+        }
+      },
+      "controls-selector": {
+        "label": "Jukebox action"
+      },
+      "select-command-aliases": {
+        "label": "Actions",
+        "placeholder": "Select an action",
+        "actions": {
+          "play_music": "Play music",
+          "volume": "Volume",
+          "host": "System"
+        }
+      },
+      "actions": {
+        "host": {
+          "description": "Do you want to hear the full IP address or just the last quadrant?",
+          "label-full": "Full address (e.g. 192.168.1.53)",
+          "label-short": "Last quadrant (e.g. 53)"
+        },
+        "play-music": {
+          "commands": {
+            "play_album": "Selected album",
+            "play_folder": "Selected folder",
+            "play_single": "Selected song"
+          },
+          "button-label": "Select music",
+          "no-music-selected": "No music selected",
+          "loading-song-error": "An error occurred while loading song."
+        },
+        "volume": {
+          "title": "Volume Steps"
+        }
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Delete Card '{{cardId}}'",
+        "description": "Are you sure you want to delete this card?",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      }
+    },
+    "edit": {
+      "edit-card": "Edit card"
+    },
+    "form": {
+      "no-card-swiped": "Please swipe a card to recieve an ID which will be used to register a new action.",
+      "no-card-id": "No card ID"
+    },
+    "list": {
+      "no-cards-registered": "No cards registered!"
+    },
+    "overview": {
+      "cards": "Cards",
+      "loading-error": "An error occurred while loading cards list.",
+      "register-card": "Register a card"
+    },
+    "register": {
+      "register-card": "Register a card"
+    }
+  },
   "header": {
     "back": "Back"
   },

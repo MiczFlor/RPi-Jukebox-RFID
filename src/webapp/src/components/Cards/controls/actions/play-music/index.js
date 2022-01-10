@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   createSearchParams,
@@ -24,10 +25,10 @@ const SelectPlayMusic = ({
   actionData,
   cardId,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const { action, command } = getActionAndCommand(actionData);
-  const commandTitle = command && JUKEBOX_ACTIONS_MAP[action].commands[command]?.title;
   const values = getArgsValues(actionData);
 
   const selectMusic = () => {
@@ -46,7 +47,9 @@ const SelectPlayMusic = ({
     <Grid container>
       {command &&
         <Grid item xs={12}>
-          <Typography>{`Selected ${commandTitle}`}</Typography>
+          <Typography>
+            {t(`cards.controls.actions.play-music.commands.${command}`)}
+          </Typography>
         </Grid>
       }
       <Grid item xs={12}>
@@ -61,7 +64,7 @@ const SelectPlayMusic = ({
           onClick={selectMusic}
           endIcon={<KeyboardArrowRightIcon />}
         >
-          Select music
+          {t('cards.controls.actions.play-music.button-label')}
         </Button>
       </Grid>
     </Grid>

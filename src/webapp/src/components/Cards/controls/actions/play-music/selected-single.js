@@ -27,7 +27,11 @@ const SelectecSingle = ({ values: [song_url] }) => {
   }, [song_url]);
 
   if (error) {
-    return <Typography>An error occurred while loading song.</Typography>
+    return (
+      <Typography>
+        {t('cards.controls.actions.play-music.loading-song-error')}
+      </Typography>
+    );
   }
 
   if (isLoading) {
