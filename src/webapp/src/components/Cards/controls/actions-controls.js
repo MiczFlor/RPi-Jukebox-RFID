@@ -68,7 +68,7 @@ const ActionsControls = ({
             size="small"
             onClick={() => setDeleteDialogOpen(true)}
           >
-            {t('cards.controls.action-controls.delete')}
+            {t('general.buttons.delete')}
           </Button>
         }
         <Button
@@ -76,7 +76,7 @@ const ActionsControls = ({
           onClick={() => handleRegisterCard(cardId)}
           size="small"
         >
-          {t('cards.controls.action-controls.save')}
+          {t('general.buttons.save')}
         </Button>
       </CardActions>
       <CardsDeleteDialog

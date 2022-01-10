@@ -2,16 +2,13 @@
   "general": {
     "buttons": {
       "cancel": "Cancel",
+      "delete": "Delete",
       "save": "Save"
     },
     "loading": "Loading"
   },
   "cards": {
     "controls": {
-      "action-controls": {
-        "delete": "Delete",
-        "save": "Save"
-      },
       "command-selector": {
         "title": "Commands",
         "label": "{{title}} commands",
@@ -59,9 +56,7 @@
     "dialogs": {
       "delete": {
         "title": "Delete Card '{{cardId}}'",
-        "description": "Are you sure you want to delete this card?",
-        "cancel": "Cancel",
-        "delete": "Delete"
+        "description": "Are you sure you want to delete this card?"
       }
     },
     "edit": {
@@ -95,8 +90,7 @@
       "folders": "Folders"
     },
     "selector-header": {
-      "title": "Select an album, folder or song",
-      "cancel": "Cancel"
+      "title": "Select an album, folder or song"
     },
     "folders": {
       "loading-error": "An error occurred while loading the library.",
@@ -196,7 +190,7 @@
       "ignore": "Ignore audio playout triggers, only system commands"
     },
     "status": {
-      "title": "System Status",
+      "title": "System",
       "battery": {
         "title": "Battery",
         "charging": "Battery is charging",

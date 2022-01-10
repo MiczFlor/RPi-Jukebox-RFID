@@ -2,16 +2,13 @@
   "general": {
     "buttons": {
       "cancel": "Abbrechen",
+      "delete": "Löschen",
       "save": "Speichern"
     },
     "loading": "Wird geladen"
   },
   "cards": {
     "controls": {
-      "action-controls": {
-        "delete": "Löschen",
-        "save": "Speichern"
-      },
       "command-selector": {
         "title": "Befehl",
         "label": "{{title}} Befehle",
@@ -59,9 +56,7 @@
     "dialogs": {
       "delete": {
         "title": "Karte löschen '{{cardId}}'",
-        "description": "Bist du sicher, dass du diese Karte löschen möchtest?",
-        "cancel": "Abbrechen",
-        "delete": "Löschen"
+        "description": "Bist du sicher, dass du diese Karte löschen möchtest?"
       }
     },
     "edit": {
@@ -95,8 +90,7 @@
       "folders": "Ordner"
     },
     "selector-header": {
-      "title": "Wähle ein Album, einen Ordner oder einen Song aus",
-      "cancel": "Abbrechen"
+      "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
       "loading-error": "Die Bibliothek konnte nicht geladen werden.",

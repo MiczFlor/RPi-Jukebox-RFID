@@ -41,7 +41,7 @@ const SelectorHeader = () => {
           size="small"
           variant="contained"
         >
-          {t('library.selector-header.cancel')}
+          {t('general.buttons.cancel')}
         </Button>
       </Grid>
     </Grid>

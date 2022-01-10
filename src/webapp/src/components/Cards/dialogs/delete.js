@@ -28,10 +28,10 @@ const CardsDeleteDialog = ({ open, onClose, doDelete, cardId }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary" autoFocus>
-          {t('cards.dialogs.delete.cancel')}
+          {t('general.buttons.cancel')}
         </Button>
         <Button onClick={doDelete} color="secondary">
-          {t('cards.dialogs.delete.delete')}
+          {t('general.buttons.delete')}
         </Button>
       </DialogActions>
     </Dialog>
