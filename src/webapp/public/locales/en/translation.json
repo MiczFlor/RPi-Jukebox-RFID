@@ -1,1 +1,8 @@
-{}
+{
+  "navigation": {
+    "start": "Start",
+    "library": "Library",
+    "cards": "Cards",
+    "settings": "Settings"
+  }
+}
