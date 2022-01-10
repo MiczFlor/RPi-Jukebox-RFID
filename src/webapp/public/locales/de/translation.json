@@ -23,6 +23,11 @@
       "cover": {
         "title": "Cover Art",
         "unavailable": "Kein Cover vorhanden"
+      },
+      "display": {
+        "unknown-title": "Unbekannter Titel",
+        "unknown-artist": "Unbekannter Künstler",
+        "no-song-in-queue": "Es wird kein Titel abgespielt"
       }
     }
   }
