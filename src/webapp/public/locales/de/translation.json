@@ -19,6 +19,10 @@
         "activate": "Wiederholen aktivieren",
         "activate-single": "1 Wiederholen aktivieren",
         "deactivate": "Wiederholen deaktivieren"
+      },
+      "cover": {
+        "title": "Cover Art",
+        "unavailable": "Kein Cover vorhanden"
       }
     }
   }

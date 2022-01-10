@@ -20,6 +20,10 @@
         "activate-single": "Activate single repeat",
         "deactivate": "Deactivate repeat"
       }
+    },
+    "cover": {
+      "title": "Cover Art",
+      "unavailable": "Cover Art not available"
     }
   }
 }
