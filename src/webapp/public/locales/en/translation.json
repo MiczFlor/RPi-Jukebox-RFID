@@ -29,6 +29,9 @@
       "unknown-title": "Unknown title",
       "unknown-artist": "Unknown artists",
       "no-song-in-queue": "No song in queue"
+    },
+    "seekbar": {
+      "song-position": "Current position"
     }
   }
 }

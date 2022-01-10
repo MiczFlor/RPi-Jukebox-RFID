@@ -28,6 +28,9 @@
         "unknown-title": "Unbekannter Titel",
         "unknown-artist": "Unbekannter Künstler",
         "no-song-in-queue": "Es wird kein Titel abgespielt"
+      },
+      "seekbar": {
+        "song-position": "Aktuelle Position"
       }
     }
   }
