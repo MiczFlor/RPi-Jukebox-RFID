@@ -17,7 +17,7 @@
           "change_volume": "Lautstärke anpassen",
           "shutdown": "Herunterfahren",
           "reboot": "Neustarten",
-          "say_my_ip": "IP Addresse aufsagen"
+          "say_my_ip": "IP Addresse vorlesen"
         }
       },
       "controls-selector": {
@@ -34,9 +34,9 @@
       },
       "actions": {
         "host": {
-          "description": "Möchtest du die gesamte IP Addresse aufsagen lassen oder nur den letzten Qudranten?",
-          "label-full": "Gesamte Addresse (e.g. 192.168.1.53)",
-          "label-short": "Letzter Qudrant (e.g. 53)"
+          "description": "Möchtest du die gesamte IP Addresse vorlesen lassen oder nur den letzten Quadranten?",
+          "label-full": "Gesamte Addresse (z.B. 192.168.1.53)",
+          "label-short": "Letzter Quadrant (z.B. 53)"
         },
         "play-music": {
           "commands": {
@@ -49,7 +49,7 @@
           "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
         },
         "volume": {
-          "title": "Lautstärke Schritte"
+          "title": "Lautstärke Stufen"
         }
       }
     },
@@ -83,9 +83,10 @@
   },
   "library": {
     "header": {
-      "search-toggle": "Suche benuzten",
+      "search-hide": "Suche ausblenden",
+      "search-show": "Suche einblenden",
       "search-label": "Suche",
-      "toggle-label": "Schalte zwischen Album und Ordner Ansicht hin und her",
+      "toggle-label": "Album- und Ordner-Ansicht",
       "albums": "Alben",
       "folders": "Ordner"
     },
@@ -96,7 +97,7 @@
       "loading-error": "Die Bibliothek konnte nicht geladen werden.",
       "no-music": "Keine Musik vorhanden!",
       "empty-folder": "Dieser Ordner ist leer!",
-      "show-folder-content": "Zeige den Ordner Inhalt an",
+      "show-folder-content": "Zeige den Ordnerinhalt an",
       "back-button-label": "Zurück"
     },
     "albums": {
@@ -209,7 +210,7 @@
       },
       "ip-address": {
         "label": "IP Adresse",
-        "button-title": "Spreche IP Adresse",
+        "button-title": "Lese die IP Adresse vor",
         "loading-error": "Die IP Adresse konnte nicht geladen werden."
       },
       "version": {

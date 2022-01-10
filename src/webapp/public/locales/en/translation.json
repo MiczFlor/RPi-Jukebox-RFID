@@ -63,7 +63,7 @@
       "edit-card": "Edit card"
     },
     "form": {
-      "no-card-swiped": "Please swipe a card to recieve an ID which will be used to register a new action.",
+      "no-card-swiped": "Please swipe a card to receive an ID which will be used to register a new action.",
       "no-card-id": "No card ID"
     },
     "list": {
@@ -83,7 +83,8 @@
   },
   "library": {
     "header": {
-      "search-toggle": "Toggle Search Input",
+      "search-hide": "Hide search",
+      "search-show": "Show search",
       "search-label": "Search",
       "toggle-label": "Toggle Album/Folder view",
       "albums": "Albums",

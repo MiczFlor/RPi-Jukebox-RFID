@@ -34,6 +34,10 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
     navigate(`${path}${urlSearch}`);
   };
 
+  const iconLabel = showSearchInput
+    ? t('library.header.search-hide')
+    : t('library.header.search-show');
+
   return (
     <Grid container sx={{ marginBottom: '8px' }}>
       <Grid item
@@ -41,9 +45,10 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
         sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}
       >
         <IconButton
-          aria-label={t('library.header.search-toggle')}
+          aria-label={iconLabel}
           onClick={() => setShowSearchInput(!showSearchInput)}
           color={showSearchInput ? 'primary' : undefined}
+          title={iconLabel}
         >
           <SearchIcon />
         </IconButton>
