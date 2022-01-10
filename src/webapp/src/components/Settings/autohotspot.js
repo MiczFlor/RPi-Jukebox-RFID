@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -18,6 +19,7 @@ import request from '../../utils/request';
 const helpUrl = 'https://rpi-jukebox-rfid.readthedocs.io/en/latest/userguide/autohotspot.html';
 
 const SettingsAutoHotpot = () => {
+  const { t } = useTranslation();
   const [autohotspotStatus, setAutohotspotStatus] = useState('not-installed');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -57,11 +59,11 @@ const SettingsAutoHotpot = () => {
   return (
     <Card>
       <CardHeader
-        title="Auto Hotspot"
+        title={t('settings.autohotspot.title')}
         subheader={
           autohotspotStatus === 'not-installed' &&
           <>
-            ⚠️ This feature is not installed.
+            {`⚠️ ${t('settings.autohotspot.not-installed')}`}
             <Link
               href={helpUrl}
               target="_blank"
@@ -70,7 +72,7 @@ const SettingsAutoHotpot = () => {
                 marginLeft: '10px'
               }}
             >
-              Why?
+              {t('settings.autohotspot.why')}
             </Link>
           </>
         }
@@ -93,7 +95,7 @@ const SettingsAutoHotpot = () => {
                     onChange={() => toggleAutoHotspot()}
                   />
                 }
-                label="Enable Auto Hotspot"
+                label={t('settings.autohotspot.control-label')}
                 labelPlacement="start"
               />
             </FormGroup>

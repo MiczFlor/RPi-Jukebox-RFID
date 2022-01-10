@@ -1,4 +1,11 @@
 {
+  "general": {
+    "buttons": {
+      "cancel": "Abbrechen",
+      "save": "Speichern"
+    },
+    "loading": "Wird geladen"
+  },
   "cards": {
     "controls": {
       "action-controls": {
@@ -7,7 +14,7 @@
       },
       "command-selector": {
         "title": "Befehl",
-        "label": "{{title}} Befehler",
+        "label": "{{title}} Befehle",
         "placeholder": "Wähle einen Befehl aus",
         "commands": {
           "change_volume": "Lautstärke anpassen",
@@ -146,6 +153,81 @@
       "slider": "Lautstärkeregler",
       "mute": "Stumm schalten",
       "unmute": "Stumm schalten deaktivieren"
+    }
+  },
+  "settings": {
+    "feature-not-enabled": "🚧 Diese Funktion ist noch nicht aktiviert.",
+    "dialogs": {
+      "reboot": {
+        "title": "Neustart",
+        "rebooting": "Das System wird neu gestartet.",
+        "button-title": "Neustart",
+        "description-confirm": "Möchtest Du jetzt wirklich neu starten?",
+        "failed": "Neustart fehlgeschlagen"
+      },
+      "shutdown": {
+        "title": "Herunterfahren",
+        "bye": "👋 Bis bald",
+        "button-title": "Herunterfahren",
+        "description-confirm": "Möchtest Du jetzt wirklich herunterfahren?",
+        "description-success": "Das System wurde erfolgreich heruntergefahren",
+        "failed": "Herunterfahren fehlgeschlagen"
+      }
+    },
+    "autohotspot": {
+      "title": "Auto Hotspot",
+      "not-installed": "Diese Funktion ist nicht installiert",
+      "why": "Warum?",
+      "control-label": "Auto Hotspot"
+    },
+    "autoshutdown": {
+      "option-label-timeslot": "{{value}} min",
+      "option-label-off": "Aus",
+      "title": "Automatisches Herunterfahren",
+      "stop-playout-timer": "Wiedergabe-Timer stoppen",
+      "shutdown-timer": "Abschalttimer",
+      "idle-shutdown": "Leerlaufabschaltung"
+    },
+    "secondswipe": {
+      "title": "Erneute Aktivierung (Second Swipe)",
+      "description": "Aktion, wenn dieselbe Karte ein weiteres Mal aktiviert wird",
+      "restart": "Wiedergabeliste neu starten",
+      "toggle": "Pause / Wiedergabe umschalten",
+      "skip": "Zum nächsten Track springen",
+      "ignore": "Nur Systembefehle mehrfach ausführen"
+    },
+    "status": {
+      "title": "Systemstatus",
+      "battery": {
+        "title": "Batterieladung",
+        "charging": "Batterie wird geladen",
+        "not-charging": "Batterie wird nicht geladen"
+      },
+      "cpu-temp": {
+        "label": "CPU Temperatur",
+        "unavailable": "Nicht verfügbar",
+        "not-enabled": "Nicht aktiviert oder nicht unterstützt"
+      },
+      "disk-usage": {
+        "label": "Speicherverbrauch",
+        "loading-error": "Die Angaben zum Speicherverbrauch konntent nicht geladen werden.",
+        "result": "{{used}} GB von {{total}} GB sind belegt ({{result}}%)"
+      },
+      "ip-address": {
+        "label": "IP Adresse",
+        "button-title": "Spreche IP Adresse",
+        "loading-error": "Die IP Adresse konnte nicht geladen werden."
+      },
+      "version": {
+        "label": "Jukebox Core Version"
+      }
+    },
+    "systemcontrols": {
+      "title": "Systemsteuerung"
+    },
+    "volume": {
+      "title": "Lautstärke",
+      "max-volume": "Maximale Lautstärke"
     }
   }
 }

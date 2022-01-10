@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -15,6 +16,8 @@ import {
 import request from '../../../utils/request';
 
 export default function RebootDialog() {
+  const { t } = useTranslation();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [waitingForReboot, setWaitingForReboot] = React.useState(false);
   const [showError, setShowError] = useState(false);
@@ -63,7 +66,10 @@ export default function RebootDialog() {
     <>
       <Button
         variant="outlined"
-        onClick={handleClickOpen}>Reboot</Button>
+        onClick={handleClickOpen}
+      >
+        {t('settings.dialogs.reboot.button-title')}
+      </Button>
       <Dialog
         open={dialogOpen}
         onClose={handleCancelReboot}
@@ -71,14 +77,14 @@ export default function RebootDialog() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {!waitingForReboot && "Reboot"}
-          {waitingForReboot && "Rebooting"}
+          {!waitingForReboot && t('settings.dialogs.reboot.title')}
+          {waitingForReboot && t('settings.dialogs.reboot.rebooting')}
         </DialogTitle>
         <DialogContent>
           {
             !waitingForReboot &&
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to reboot your Phoniebox now?
+              {t('settings.dialogs.reboot.description-confirm')}
             </DialogContentText>
           }
 
@@ -94,10 +100,10 @@ export default function RebootDialog() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelReboot} color="secondary">
-            Cancel
+            {t('general.buttons.cancel')}
           </Button>
           <Button onClick={doReboot} color="primary" autoFocus>
-            Reboot
+            {t('settings.dialogs.reboot.button-title')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -107,7 +113,7 @@ export default function RebootDialog() {
         open={showError}
         autoHideDuration={5000}
         onClose={handleCloseError}
-        message="Reboot failed"
+        message={t('settings.dialogs.reboot.failed')}
       />
     </>
   );

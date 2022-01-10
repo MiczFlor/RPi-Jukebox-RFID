@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   IconButton,
@@ -10,6 +11,8 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import request from '../../../utils/request';
 
 const StatusIpAddress = () => {
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(true);
   const [primaryText, setPrimaryText] = useState(undefined);
 
@@ -22,21 +25,21 @@ const StatusIpAddress = () => {
 
       if(result) setPrimaryText(result);
       if(error) {
-        setPrimaryText('⚠️ IP address could not be loaded.')
+        setPrimaryText(`⚠️ ${t('settings.status.ip-address.loading-error')}`)
         console.error(error);
       };
       setIsLoading(false);
     }
 
     fetchData();
-  }, []);
+  }, [t]);
 
   return (
     <ListItem
       disableGutters
       secondaryAction={
         <IconButton
-          aria-label="Say my IP address"
+          aria-label={t('settings.status.ip-address.button-title')}
           edge="end"
           onClick={sayIpAddress}
         >
@@ -45,8 +48,8 @@ const StatusIpAddress = () => {
       }
     >
       <ListItemText
-        primary={isLoading ? 'Loading ...' : primaryText}
-        secondary="IP address"
+        primary={isLoading ? `${t('general.loading')} ...` : primaryText}
+        secondary={t('settings.status.ip-address.label')}
       />
     </ListItem>
   );

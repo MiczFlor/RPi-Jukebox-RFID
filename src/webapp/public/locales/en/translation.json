@@ -1,4 +1,11 @@
 {
+  "general": {
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "loading": "Loading"
+  },
   "cards": {
     "controls": {
       "action-controls": {
@@ -146,6 +153,80 @@
       "slider": "Volume Slider",
       "mute": "Mute volume",
       "unmute": "Unmute volume"
+    }
+  },
+  "settings": {
+    "feature-not-enabled": "🚧 This feature is not yet enabled.",
+    "dialogs": {
+      "reboot": {
+        "title": "Reboot",
+        "rebooting": "Rebooting",
+        "button-title": "Reboot",
+        "description-confirm": "Are you sure you want to reboot now?",
+        "failed": "Reboot failed"
+      },
+      "shutdown": {
+        "title": "Shut Down",
+        "bye": "👋 Good bye",
+        "button-title": "Shut Down",
+        "description-confirm": "Are you sure you want to shut down now?",
+        "description-success": "Successfully shut down",
+        "failed": "Shut Down failed"
+      }
+    },
+    "autohotspot": {
+      "title": "Auto Hotspot",
+      "not-installed": "This feature is not installed.",
+      "why": "Why?",
+      "control-label": "Auto Hotspot"
+    },
+    "autoshutdown": {
+      "option-label-timeslot": "{{value}} min",
+      "option-label-off": "Off",
+      "title": "Automatic Shutdown",
+      "stop-playout-timer": "Stop Playout Timer",
+      "shutdown-timer": "Shutdown Timer",
+      "idle-shutdown": "Idle Shutdown"
+    },
+    "secondswipe": {
+      "title": "Second Swipe",
+      "restart": "Restart playlist",
+      "toggle": "Toggle pause / play",
+      "skip": "Skip to next track",
+      "ignore": "Ignore audio playout triggers, only system commands"
+    },
+    "status": {
+      "title": "System Status",
+      "battery": {
+        "title": "Battery",
+        "charging": "Battery is charging",
+        "not-charging": "Battery is not charging"
+      },
+      "cpu-temp": {
+        "label": "CPU Temperature",
+        "unavailable": "Unavailable",
+        "not-enabled": "Not enabled or not supported"
+      },
+      "disk-usage": {
+        "label": "Disk usage",
+        "loading-error": "Disk usage could not be loaded.",
+        "result": "{{used}} GB of {{total}} GB used ({{result}}%)"
+      },
+      "ip-address": {
+        "label": "IP address",
+        "button-title": "Say my IP address",
+        "loading-error": "IP address could not be loaded."
+      },
+      "version": {
+        "label": "Jukebox Core Version"
+      }
+    },
+    "systemcontrols": {
+      "title": "System Controls"
+    },
+    "volume": {
+      "title": "Volume",
+      "max-volume": "Maximum Volume"
     }
   }
 }
