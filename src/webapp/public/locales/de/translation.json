@@ -4,5 +4,22 @@
     "library": "Bibliothek",
     "cards": "Karten",
     "settings": "Einstellungen"
+  },
+  "player": {
+    "controls": {
+      "shuffle": {
+        "activate": "Shuffle aktivieren",
+        "deactivate": "Shuffle deaktivieren"
+      },
+      "skip": "Zurück",
+      "play": "Abspielen",
+      "pause": "Pause",
+      "next": "Weiter",
+      "repeat": {
+        "activate": "Wiederholen aktivieren",
+        "activate-single": "1 Wiederholen aktivieren",
+        "deactivate": "Wiederholen deaktivieren"
+      }
+    }
   }
 }

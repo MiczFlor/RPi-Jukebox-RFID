@@ -4,5 +4,22 @@
     "library": "Library",
     "cards": "Cards",
     "settings": "Settings"
+  },
+  "player": {
+    "controls": {
+      "shuffle": {
+        "activate": "Activate shuffle",
+        "deactivate": "Deactivate shuffle"
+      },
+      "skip": "Skip previous track",
+      "play": "Play",
+      "pause": "Pause",
+      "next": "Skip next track",
+      "repeat": {
+        "activate": "Activate repeat",
+        "activate-single": "Activate single repeat",
+        "deactivate": "Deactivate repeat"
+      }
+    }
   }
 }
