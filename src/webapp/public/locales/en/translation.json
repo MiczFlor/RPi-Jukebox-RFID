@@ -32,6 +32,11 @@
     },
     "seekbar": {
       "song-position": "Current position"
+    },
+    "volume": {
+      "slider": "Volume Slider",
+      "mute": "Mute volume",
+      "unmute": "Unmute volume"
     }
   }
 }
