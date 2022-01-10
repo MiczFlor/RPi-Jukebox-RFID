@@ -1,4 +1,7 @@
 {
+  "header": {
+    "back": "Zurück"
+  },
   "navigation": {
     "start": "Start",
     "library": "Bibliothek",
