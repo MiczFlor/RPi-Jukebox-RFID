@@ -34,7 +34,7 @@ def _gpioz_press_short(device):
 
 def _gpioz_press_long(device):
     """
-    Simulate a ling press on an input device. Long means longer than the configured hold_time
+    Simulate a long press on an input device. Long means longer than the configured hold_time
     """
     logger.debug(f"Press button long {device.pin.number}")
     delay = device.hold_time + 0.05

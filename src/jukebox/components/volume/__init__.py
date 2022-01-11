@@ -481,7 +481,7 @@ def add_on_output_change_callbacks(func: Callable[[str, str, int, int], None]):
 
 
 def add_on_volume_change_callback(func):
-    """Then the volume changes, call func(volume)
+    """When the volume changes, call func(volume)
 
     volume is an integer in the range from 0 ... 100
     """
