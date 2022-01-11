@@ -82,6 +82,7 @@
     "back": "Back"
   },
   "library": {
+    "loading-error": "An error occurred while loading the library.",
     "header": {
       "search-hide": "Hide search",
       "search-show": "Show search",
@@ -94,7 +95,6 @@
       "title": "Select an album, folder or song"
     },
     "folders": {
-      "loading-error": "An error occurred while loading the library.",
       "no-music": "No music found!",
       "empty-folder": "This folder is empty!",
       "show-folder-content": "Show folder content",

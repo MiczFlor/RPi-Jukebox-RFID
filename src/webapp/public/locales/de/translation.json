@@ -82,6 +82,7 @@
     "back": "Zurück"
   },
   "library": {
+    "loading-error": "Die Bibliothek konnte nicht geladen werden.",
     "header": {
       "search-hide": "Suche ausblenden",
       "search-show": "Suche einblenden",
@@ -94,7 +95,6 @@
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
-      "loading-error": "Die Bibliothek konnte nicht geladen werden.",
       "no-music": "Keine Musik vorhanden!",
       "empty-folder": "Dieser Ordner ist leer!",
       "show-folder-content": "Zeige den Ordnerinhalt an",

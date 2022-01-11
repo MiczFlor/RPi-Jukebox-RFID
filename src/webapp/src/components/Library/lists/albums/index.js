@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 import {
   CircularProgress,
@@ -11,6 +12,8 @@ import { flatByAlbum } from '../../../../utils/utils';
 import AlbumList from "./album-list";
 
 const Albums = ({ musicFilter }) => {
+  const { t } = useTranslation();
+
   const [albums, setAlbums] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +49,7 @@ const Albums = ({ musicFilter }) => {
             musicFilter={musicFilter}
       />}
       {error &&
-        <Typography>An error occurred while loading the library.</Typography>
+        <Typography>{t('library.loading-error')}</Typography>
       }
     </>
   );

@@ -48,7 +48,7 @@ const Folders = ({
   const filteredFolders = folders.filter(search);
 
   if (isLoading) return <CircularProgress />;
-  if (error) return <Typography>{t('library.folders.loading-error')}</Typography>;
+  if (error) return <Typography>{t('library.loading-error')}</Typography>;
   if (!filteredFolders.length) {
     if (musicFilter) return <Typography>{`☝️ ${t('library.folders.no-music')}`}</Typography>;
     return <Typography>{`${t('library.folders.empty-folder')} 🙈`}</Typography>;
