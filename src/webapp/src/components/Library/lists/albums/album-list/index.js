@@ -25,8 +25,8 @@ const AlbumList = ({ albums, musicFilter }) => {
     );
   }
 
-  if (musicFilter) return <Typography>{`☝️  ${t('library.albums.unknown-artist')}`}</Typography>
-  return <Typography>{`${t('library.albums.unknown-artist')} 🙈`}</Typography>
+  if (musicFilter) return <Typography>{`☝️  ${t('library.albums.no-music')}`}</Typography>
+  return <Typography>{`${t('library.albums.empty-library')} 🙈`}</Typography>
 }
 
 export default React.memo(AlbumList);
