@@ -55,6 +55,7 @@ class PlayerSpot:
     def __init__(self):
         self.nvm = nv_manager()
         self.spot_host = cfg.getn('playerspot', 'host')
+        logger.debug(f"Using spotify host: {self.spot_host}")
         self.spot_api_port = 24879
         self.spot_api_baseurl = f"{self.spot_host}:{self.spot_api_port}"
         self.requests_json_headers = {'content-type': 'application/json'}
@@ -159,33 +160,34 @@ class PlayerSpot:
             pass
         publishing.get_publisher().send('playerstatus', self.spot_status)
 
+    @staticmethod
+    def _handle_http_errors(requests_response: requests.Response):
+        try:
+            requests_response.raise_for_status()
+        except requests.HTTPError as http_error:
+            logger.error("Could not communicate with spotify API")
+            logger.error(f"Reason: {http_error}")
+            return False
+        except Exception as err:
+            logger.error(f"Other error occurred: {err}")
+            return False
+        return True
+
     @plugs.tag
     def load(self, uri: str, start_playing: bool):
         logger.debug(f"loading playlist {uri} and with option playing={start_playing}")
         self.check_uri(uri)
         api_path = f"/player/load?uri={uri}&play={start_playing}"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error(f"Could not load playlist {uri}")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def play(self):
         api_path = "/player/resume"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute play command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def stop(self):
@@ -200,43 +202,26 @@ class PlayerSpot:
         """
         if state == 1:
             api_path = "/player/pause"
-            try:
-                spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                              headers=self.requests_json_headers)
-                spot_response.raise_for_status()
-            except requests.HTTPError as http_error:
-                logger.error("Could not execute pause command")
-                logger.error(f"Reason: {http_error}")
-            except Exception as err:
-                logger.error(f"Other error occurred: {err}")
+            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
+            self._handle_http_errors(spot_response)
         else:
             self.play()
 
     @plugs.tag
     def prev(self):
         api_path = "/player/prev"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute prev command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def next(self):
         api_path = "/player/next"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute next command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def seek(self, new_time: int):
@@ -244,28 +229,16 @@ class PlayerSpot:
         Seek to a given position in milliseconds specified by new_time
         """
         api_path = f"/player/seek?position_ms={new_time}"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute seek command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def shuffle(self, random: bool):
         api_path = f"/player/shuffle?state={1 if random else 0}"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute shuffle command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def rewind(self):
@@ -290,15 +263,9 @@ class PlayerSpot:
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         logger.debug("Toggle")
         api_path = "/player/play-pause"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute toggle command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def replay_if_stopped(self):
@@ -320,15 +287,9 @@ class PlayerSpot:
         else:
             rep_state = "none"
         api_path = f"/player/repeat?state={rep_state}"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute repeat command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def get_current_song(self, param):
@@ -350,15 +311,9 @@ class PlayerSpot:
     def play_single(self, song_uri: str):
         self.check_uri(song_uri)
         api_path = f"/player/repeat?uri={song_uri}&play=true"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not execute play single track command")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
 
     @plugs.tag
     def resume(self):
@@ -418,18 +373,12 @@ class PlayerSpot:
         """
         track_list = []
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name,id,artists(name,id))"
-        try:
-            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                              headers=self.requests_json_headers)
-            playlist_response.raise_for_status()
+        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
+        if self._handle_http_errors(playlist_response):
             playlist_dict = playlist_response.json()
             for elem in playlist_dict["items"]:
                 track_list.append(elem["track"])
-        except requests.HTTPError as http_error:
-            logger.error("Could not get playlist content")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
         return track_list
 
     @plugs.tag
@@ -486,18 +435,13 @@ class PlayerSpot:
         track_list = []
         playlist_uri = self.get_playback_state()["context"]["uri"]
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name))"
-        try:
-            playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                              headers=self.requests_json_headers)
+        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                          headers=self.requests_json_headers)
+        if self._handle_http_errors(playlist_response):
             playlist_response.raise_for_status()
             playlist_dict = playlist_response.json()
             for elem in playlist_dict["items"]:
                 track_list.append(elem["track"]["name"])
-        except requests.HTTPError as http_error:
-            logger.error("Could not get playlist info")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
         return track_list
 
     @plugs.tag
@@ -525,30 +469,18 @@ class PlayerSpot:
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than Spotify"""
         api_path = f"/player/volume?volume_percent={volume}"
-        try:
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
-            spot_response.raise_for_status()
-        except requests.HTTPError as http_error:
-            logger.error("Could not set spotify volume")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
+        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                      headers=self.requests_json_headers)
+        self._handle_http_errors(spot_response)
         return self.get_volume()
 
     def get_playback_state(self):
         playback_state_dict = {}
         api_path = "/web-api/v1/me/player"
-        try:
-            playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                           headers=self.requests_json_headers)
-            playback_state.raise_for_status()
+        playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
+                                       headers=self.requests_json_headers)
+        if self._handle_http_errors(playback_state):
             playback_state_dict = playback_state.json()
-        except requests.HTTPError as http_error:
-            logger.error("Could get the current playback state")
-            logger.error(f"Reason: {http_error}")
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
         return playback_state_dict if playback_state_dict["device"]["id"] == self.device_info["device_id"] else {}
 
     @staticmethod
