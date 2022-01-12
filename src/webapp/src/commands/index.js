@@ -136,6 +136,57 @@ const commands = {
     method: 'mute',
   },
 
+  // Timers
+  'timers.timer_fade_volume.cancel': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'cancel',
+  },
+  'timers.timer_fade_volume.get_state': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'get_state',
+  },
+  'timers.timer_fade_volume.start': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+  'timers.timer_shutdown.cancel': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'cancel',
+  },
+  'timers.timer_shutdown.get_state': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'get_state',
+  },
+  'timers.timer_shutdown.start': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+  'timers.timer_stop_player.cancel': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'cancel',
+  },
+  'timers.timer_stop_player.get_state': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'get_state',
+  },
+  'timers.timer_stop_player.start': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+
+
   // Host
   getAutohotspotStatus: {
     _package: 'host',

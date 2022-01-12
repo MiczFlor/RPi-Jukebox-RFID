@@ -179,9 +179,11 @@
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Aus",
       "title": "Timer",
-      "stop-playout-timer": "Wiedergabe-Timer stoppen",
-      "shutdown-timer": "Abschalttimer",
-      "idle-shutdown": "Leerlaufabschaltung"
+      "stop-player": "Wiedergabe stoppen",
+      "shutdown": "Herunterfahren",
+      "fade-volume": "Lautstärke ausblenden",
+      "idle-shutdown": "Leerlaufabschaltung",
+      "ended": "Beendet"
     },
     "secondswipe": {
       "title": "Erneute Aktivierung (Second Swipe)",

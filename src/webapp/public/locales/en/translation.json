@@ -15,7 +15,7 @@
         "placeholder": "Select a command",
         "commands": {
           "change_volume": "Change volume by",
-          "shutdown": "Shutdown",
+          "shutdown": "Shut Down",
           "reboot": "Reboot",
           "say_my_ip": "Say IP address"
         }
@@ -179,9 +179,11 @@
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
       "title": "Timers",
-      "stop-playout-timer": "Stop Playout Timer",
-      "shutdown-timer": "Shutdown Timer",
-      "idle-shutdown": "Idle Shutdown"
+      "stop-player": "Stop player",
+      "shutdown": "Shut Down",
+      "fade-volume": "Fade volume",
+      "idle-shutdown": "Idle Shut Down",
+      "ended": "Done"
     },
     "secondswipe": {
       "title": "Second Swipe",
