@@ -21,7 +21,10 @@ https://github.com/spocon/spocon
 import logging
 import functools
 import urllib.parse
+
+import asyncio
 import requests
+import websockets
 
 import components.player
 import jukebox.cfghandler
@@ -58,6 +61,7 @@ class PlayerSpot:
         logger.debug(f"Using spotify host: {self.spot_host}")
         self.spot_api_port = 24879
         self.spot_api_baseurl = f"{self.spot_host}:{self.spot_api_port}"
+        self.spot_websocket_uri = f"{self.spot_host}:{self.spot_api_port}/events"
         self.requests_json_headers = {'content-type': 'application/json'}
         try:
             # Info as dict
@@ -77,51 +81,36 @@ class PlayerSpot:
             logger.error(f"Other error occurred: {err}")
             self.device_info = {}
 
-        self.music_player_status = self.nvm.load(cfg.getn('playerspot', 'status_file'))
+        # Establish WebSocket connection:
+        loop = asyncio.get_event_loop()
+        self.spot_websocket_connection = loop.run_until_complete(self._connect_websocket())
+        loop.run_until_complete(
+            asyncio.wait(asyncio.ensure_future(self.receive_message_from_websocket(self.spot_websocket_connection))))
 
-        self.second_swipe_action_dict = {'toggle': self.toggle,
-                                         'play': self.play,
-                                         'skip': self.next,
-                                         'rewind': self.rewind,
-                                         'replay': self.replay,
-                                         'replay_if_stopped': self.replay_if_stopped}
-        self.second_swipe_action = None
-        self.decode_2nd_swipe_option()
+    async def _connect_websocket(self):
+        """
+            Connecting to spotify webSocket server
 
-        self.current_folder_status = {}
-        if not self.music_player_status:
-            self.music_player_status['player_status'] = {}
-            self.music_player_status['audio_folder_status'] = {}
-            self.music_player_status.save_to_json()
-            self.current_folder_status = {}
-            self.music_player_status['player_status']['last_played_folder'] = ''
-        else:
-            last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
-            if last_played_folder:
-                # current_folder_status is a dict, but last_played_folder a str
-                self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
-                logger.info(f"Last Played Folder: {last_played_folder}")
+            websockets.client.connect returns a WebSocketClientProtocol, which is used to receive messages
+        """
+        ws_connection = await websockets.client.connect(self.spot_websocket_uri)
+        if ws_connection.open:
+            logger.debug(f"Connection to websocket sever established."
+                         f"Client correcly connected to {self.spot_websocket_uri}")
+            return ws_connection
 
-        # Clear last folder played, as we actually did not play any folder yet
-        # Needed for second swipe detection
-        # TODO: This will loose the last_played_folder information is the box is started and closed with
-        #  playing anything...
-        # Change this to last_played_folder and shutdown_state (for restoring)
-        self.music_player_status['player_status']['last_played_folder'] = ''
-
-        self.old_song = None
-        self.spot_status = {}
-        self.spot_status_poll_interval = 0.25
-        # ToDo: check of spot_lock works
-        self.status_is_closing = False
-
-        self.status_thread = multitimer.GenericEndlessTimerClass('spot.timer_status',
-                                                                 self.spot_status_poll_interval, self._spot_status_poll)
-        self.status_thread.start()
-
-        self.old_song = None
-        self.spot_status_poll_interval = 0.25
-        self.status_is_closing = False
+    async def receive_message_from_websocket(self, ws_connection):
+        """
+            Receiving all server messages and handling them
+        """
+        while True:
+            try:
+                message = await ws_connection.recv()
+                logger.debug(f"Received message from server: {message}")
+                # ToDo: handle messages
+            except websockets.exceptions.ConnectionClosed:
+                logger.debug("Connection with websocket server closed")
+                break
 
     def exit(self):
         logger.debug("Exit routine of playerspot started")

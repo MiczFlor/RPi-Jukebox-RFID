@@ -15,6 +15,9 @@ requests
 eyed3
 # For the publisher event reactor loop:
 tornado
+# For spotify
+websockets
+asyncio
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support
