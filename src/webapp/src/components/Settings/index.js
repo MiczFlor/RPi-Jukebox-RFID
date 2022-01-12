@@ -2,12 +2,12 @@ import React from 'react';
 
 import { Grid } from '@mui/material';
 
-import SettingsAutoShutdown from './autoshutdown';
-import SettingsSecondSwipe from './secondswipe';
-import SystemControls from './systemcontrols';
-import SettingsVolume from './volume';
 import SettingsAutoHotspot from './autohotspot';
+import SettingsSecondSwipe from './secondswipe';
 import SettingsStatus from './status/index';
+import SettingsTimers from './timers';
+import SettingsVolume from './volume';
+import SystemControls from './systemcontrols';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -35,7 +35,7 @@ const Settings = () => {
         <SettingsVolume />
       </Grid>
       <Grid item>
-        <SettingsAutoShutdown />
+        <SettingsTimers />
       </Grid>
       <Grid item>
         <SettingsSecondSwipe />

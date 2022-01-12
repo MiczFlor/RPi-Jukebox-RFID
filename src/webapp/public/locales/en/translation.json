@@ -175,10 +175,10 @@
       "why": "Why?",
       "control-label": "Auto Hotspot"
     },
-    "autoshutdown": {
+    "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
-      "title": "Automatic Shutdown",
+      "title": "Timers",
       "stop-playout-timer": "Stop Playout Timer",
       "shutdown-timer": "Shutdown Timer",
       "idle-shutdown": "Idle Shutdown"

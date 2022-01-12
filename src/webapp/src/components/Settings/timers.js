@@ -11,7 +11,7 @@ import {
   NativeSelect,
 } from '@mui/material';
 
-const SettingsAutoShutdown = () => {
+const SettingsTimers = () => {
   const { t } = useTranslation();
 
   const TIMESLOTS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
@@ -21,13 +21,13 @@ const SettingsAutoShutdown = () => {
       if (value === 0) {
         return {
           value,
-          label: t('settings.autoshutdown.option-label-off')
+          label: t('settings.timers.option-label-off')
         };
       }
 
       return {
         value,
-        label: t('settings.autoshutdown.option-label-timeslot', { value })
+        label: t('settings.timers.option-label-timeslot', { value })
       };
     }
   );
@@ -35,16 +35,21 @@ const SettingsAutoShutdown = () => {
   return (
     <Card>
       <CardHeader
-        title={t('settings.autoshutdown.title')}
+        title={t('settings.timers.title')}
         subheader={t('settings.feature-not-enabled')}
       />
       <Divider />
       <CardContent>
         <Grid container direction="column">
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Grid item>
               <InputLabel htmlFor="stopPlayoutTimer">
-              {t('settings.autoshutdown.stop-playout-timer')}
+              {t('settings.timers.stop-playout-timer')}
               </InputLabel>
             </Grid>
             <Grid item>
@@ -60,10 +65,15 @@ const SettingsAutoShutdown = () => {
             </Grid>
           </Grid>
 
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Grid item>
               <InputLabel htmlFor="shutdownTimer">
-                {t('settings.autoshutdown.shutdown-timer')}
+                {t('settings.timers.shutdown-timer')}
               </InputLabel>
             </Grid>
             <Grid item>
@@ -79,10 +89,15 @@ const SettingsAutoShutdown = () => {
             </Grid>
           </Grid>
 
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Grid item>
               <InputLabel htmlFor="shutdownTimer">
-                {t('settings.autoshutdown.idle-shutdown')}
+                {t('settings.timers.idle-shutdown')}
               </InputLabel>
             </Grid>
             <Grid item>
@@ -103,4 +118,4 @@ const SettingsAutoShutdown = () => {
   );
 };
 
-export default SettingsAutoShutdown;
+export default SettingsTimers;
