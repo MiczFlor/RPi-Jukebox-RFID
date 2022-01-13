@@ -137,49 +137,49 @@ const commands = {
   },
 
   // Timers
-  'timers.timer_fade_volume.cancel': {
+  'timer_fade_volume.cancel': {
     _package: 'timers',
     plugin: 'timer_fade_volume',
     method: 'cancel',
   },
-  'timers.timer_fade_volume.get_state': {
+  'timer_fade_volume.get_state': {
     _package: 'timers',
     plugin: 'timer_fade_volume',
     method: 'get_state',
   },
-  'timers.timer_fade_volume.start': {
+  'timer_fade_volume': {
     _package: 'timers',
     plugin: 'timer_fade_volume',
     method: 'start',
     argKeys: ['wait_seconds'],
   },
-  'timers.timer_shutdown.cancel': {
+  'timer_shutdown.cancel': {
     _package: 'timers',
     plugin: 'timer_shutdown',
     method: 'cancel',
   },
-  'timers.timer_shutdown.get_state': {
+  'timer_shutdown.get_state': {
     _package: 'timers',
     plugin: 'timer_shutdown',
     method: 'get_state',
   },
-  'timers.timer_shutdown.start': {
+  'timer_shutdown': {
     _package: 'timers',
     plugin: 'timer_shutdown',
     method: 'start',
     argKeys: ['wait_seconds'],
   },
-  'timers.timer_stop_player.cancel': {
+  'timer_stop_player.cancel': {
     _package: 'timers',
     plugin: 'timer_stop_player',
     method: 'cancel',
   },
-  'timers.timer_stop_player.get_state': {
+  'timer_stop_player.get_state': {
     _package: 'timers',
     plugin: 'timer_stop_player',
     method: 'get_state',
   },
-  'timers.timer_stop_player.start': {
+  'timer_stop_player': {
     _package: 'timers',
     plugin: 'timer_stop_player',
     method: 'start',

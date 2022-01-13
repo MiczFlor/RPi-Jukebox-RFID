@@ -12,7 +12,7 @@ import {
   Link,
 } from '@mui/material';
 
-import { SwitchWithLoader } from '../custom';
+import { SwitchWithLoader } from '../general';
 
 import request from '../../utils/request';
 

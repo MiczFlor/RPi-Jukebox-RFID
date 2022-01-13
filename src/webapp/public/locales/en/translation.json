@@ -17,7 +17,10 @@
           "change_volume": "Change volume by",
           "shutdown": "Shut Down",
           "reboot": "Reboot",
-          "say_my_ip": "Say IP address"
+          "say_my_ip": "Say IP address",
+          "timer_shutdown": "Shut Down",
+          "timer_stop_player": "Stop player",
+          "timer_fade_volume": "Fade volume"
         }
       },
       "controls-selector": {
@@ -29,7 +32,8 @@
         "actions": {
           "play_music": "Play music",
           "volume": "Volume",
-          "host": "System"
+          "host": "System",
+          "timers": "Timers"
         }
       },
       "actions": {
@@ -49,7 +53,10 @@
           "loading-song-error": "An error occurred while loading song."
         },
         "volume": {
-          "title": "Volume Steps"
+          "title": "Volume steps"
+        },
+        "timers": {
+          "description": "Choose the amount of minutes you want the action to be performed."
         }
       }
     },

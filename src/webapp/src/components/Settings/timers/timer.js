@@ -4,14 +4,16 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Grid,
-  Slider,
   Switch,
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 import request from '../../../utils/request';
-import Countdown from './countdown';
+import {
+  Countdown,
+  SliderTimer
+} from '../../general';
 import { TIMER_STEPS } from '../../../config';
 
 const Timer = ({ type }) => {
@@ -20,13 +22,6 @@ const Timer = ({ type }) => {
 
   // Constants
   const pluginName = `timer_${type.replace('-', '_')}`;
-  const marks = TIMER_STEPS.map((value, index) => (
-    { label: value, value: index }
-  ));
-  const valueLabelFormat = (value) => {
-    if (value === 0) return t('settings.timers.option-label-off');
-    return t('settings.timers.option-label-timeslot', { value });
-  }
 
   // State
   const [error, setError] = useState(null);
@@ -37,7 +32,7 @@ const Timer = ({ type }) => {
 
   // Requests
   const cancelTimer = async () => {
-    await request(`timers.${pluginName}.cancel`);
+    await request(`${pluginName}.cancel`);
     setStatus({ enabled: false });
   };
 
@@ -47,10 +42,7 @@ const Timer = ({ type }) => {
     await cancelTimer();
 
     if (step > 0) {
-      await request(
-        `timers.${pluginName}.start`,
-        { wait_seconds: seconds }
-      );
+      await request(pluginName, { wait_seconds: seconds } );
       await fetchTimerStatus();
     }
   }
@@ -61,7 +53,7 @@ const Timer = ({ type }) => {
     const {
       result: timerStatus,
       error: timerStatusError
-    } = await request(`timers.${pluginName}.get_state`);
+    } = await request(`${pluginName}.get_state`);
 
     if(timerStatusError) {
       setEnabled(false);
@@ -79,10 +71,6 @@ const Timer = ({ type }) => {
     setEnabled(event.target.checked);
     setStep(0); // Always start the slider at 0
     cancelTimer();
-  }
-
-  const handleSliderChange = (event, step) => {
-    setStep(step);
   }
 
   // Effects
@@ -105,6 +93,7 @@ const Timer = ({ type }) => {
             <Countdown
               seconds={status.remaining_seconds}
               onEnd={() => setEnabled(false)}
+              stringEnded={t('settings.timers.ended')}
             />
           }
           {error &&
@@ -119,17 +108,8 @@ const Timer = ({ type }) => {
       </Grid>
       {enabled &&
         <Grid item sx={{ padding: theme.spacing(1) }}>
-          <Slider
+          <SliderTimer
             value={step}
-            marks={marks}
-            max={TIMER_STEPS.length-1}
-            getAriaValueText={valueLabelFormat}
-            valueLabelFormat={valueLabelFormat}
-            min={0}
-            step={1}
-            scale={(value) => TIMER_STEPS[value]}
-            valueLabelDisplay="auto"
-            onChange={handleSliderChange}
             onChangeCommitted={setTimer}
           />
         </Grid>
