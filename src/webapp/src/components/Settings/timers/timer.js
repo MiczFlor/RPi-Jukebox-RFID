@@ -14,7 +14,6 @@ import {
   Countdown,
   SliderTimer
 } from '../../general';
-import { TIMER_STEPS } from '../../../config';
 
 const Timer = ({ type }) => {
   const { t } = useTranslation();
@@ -28,7 +27,7 @@ const Timer = ({ type }) => {
   const [enabled, setEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState({ enabled: false });
-  const [step, setStep] = useState(0);
+  const [waitSeconds, setWaitSeconds] = useState(0);
 
   // Requests
   const cancelTimer = async () => {
@@ -36,13 +35,11 @@ const Timer = ({ type }) => {
     setStatus({ enabled: false });
   };
 
-  const setTimer = async (event, step) => {
-    const seconds = TIMER_STEPS[step] * 60;
-
+  const setTimer = async (event, wait_seconds) => {
     await cancelTimer();
 
-    if (step > 0) {
-      await request(pluginName, { wait_seconds: seconds } );
+    if (wait_seconds > 0) {
+      await request(pluginName, { wait_seconds } );
       await fetchTimerStatus();
     }
   }
@@ -60,16 +57,16 @@ const Timer = ({ type }) => {
       return setError(timerStatusError);
     }
 
-    setEnabled(timerStatus?.enabled);
     setStatus(timerStatus);
-    setStep(TIMER_STEPS.indexOf(timerStatus.wait_seconds / 60));
+    setEnabled(timerStatus?.enabled);
+    setWaitSeconds(timerStatus?.wait_seconds || 0);
     setIsLoading(false);
   }
 
   // Event Handlers
   const handleSwitch = (event) => {
     setEnabled(event.target.checked);
-    setStep(0); // Always start the slider at 0
+    setWaitSeconds(0); // Always start the slider at 0
     cancelTimer();
   }
 
@@ -109,7 +106,7 @@ const Timer = ({ type }) => {
       {enabled &&
         <Grid item sx={{ padding: theme.spacing(1) }}>
           <SliderTimer
-            value={step}
+            value={waitSeconds}
             onChangeCommitted={setTimer}
           />
         </Grid>

@@ -17,12 +17,22 @@ const SliderTimer = ({ onChangeCommitted, value }) => {
     return t('settings.timers.option-label-timeslot', { value });
   }
 
-  const [step, setStep] = useState(value);
+  const getStepFromSeconds = (seconds) => (
+    TIMER_STEPS.indexOf(seconds / 60)
+  );
+
+  const [step, setStep] = useState(
+    getStepFromSeconds(value)
+  );
   const handleChange = (event, step) => setStep(step);
+
+  const handleOnChangeCommitted = (event, value) => (
+    onChangeCommitted(event, TIMER_STEPS[value] * 60)
+  );
 
   return (
     <Slider
-      value={step || value}
+      value={step}
       marks={marks}
       max={TIMER_STEPS.length-1}
       getAriaValueText={valueLabelFormat}
@@ -32,7 +42,7 @@ const SliderTimer = ({ onChangeCommitted, value }) => {
       scale={(value) => TIMER_STEPS[value]}
       valueLabelDisplay="auto"
       onChange={handleChange}
-      onChangeCommitted={onChangeCommitted}
+      onChangeCommitted={handleOnChangeCommitted}
     />
   );
 };
