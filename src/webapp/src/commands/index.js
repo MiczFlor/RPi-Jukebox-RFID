@@ -146,7 +146,7 @@ const commands = {
     method: 'set_output',
     argKeys: ['sink_index'],
   },
-  toggleAudioOutput: {
+  toggle_output: {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'toggle_output',
