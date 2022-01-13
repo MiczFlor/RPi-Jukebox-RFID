@@ -54,8 +54,19 @@ const JUKEBOX_ACTIONS_MAP = {
       reboot: {},
       say_my_ip: {},
     }
-  }
+  },
+
+  // Timers
+  timers: {
+    commands: {
+      timer_shutdown: {},
+      timer_stop_player: {},
+      timer_fade_volume: {},
+    }
+  },
 }
+
+const TIMER_STEPS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
 
 export {
   DEFAULT_AUDIO_DIR,
@@ -64,4 +75,5 @@ export {
   REQRES_ENDPOINT,
   ROOT_DIRS,
   SUBSCRIPTIONS,
+  TIMER_STEPS,
 }

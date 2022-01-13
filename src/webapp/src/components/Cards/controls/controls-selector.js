@@ -8,6 +8,7 @@ import {
 
 import SelectCommandAliases from './select-command-aliases';
 import SelectPlayMusic from './actions/play-music';
+import SelectTimers from './actions/timers';
 import SelectVolume from './actions/volume';
 import { buildActionData } from '../utils';
 import SelectHost from './actions/host';
@@ -52,21 +53,29 @@ const ControlsSelector = ({
         alignItems="center"
         sx={{ marginTop: '20px' }}
       >
+        {actionData.action === 'host' &&
+          <SelectHost
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+          />
+        }
+
         {actionData.action === 'play_music' &&
           <SelectPlayMusic
             actionData={actionData}
             cardId={cardId}
           />
         }
-        {actionData.action === 'volume' &&
-          <SelectVolume
+
+        {actionData.action === 'timers' &&
+          <SelectTimers
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />
         }
 
-        {actionData.action === 'host' &&
-          <SelectHost
+        {actionData.action === 'volume' &&
+          <SelectVolume
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />

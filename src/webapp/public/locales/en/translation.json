@@ -15,9 +15,12 @@
         "placeholder": "Select a command",
         "commands": {
           "change_volume": "Change volume by",
-          "shutdown": "Shutdown",
+          "shutdown": "Shut Down",
           "reboot": "Reboot",
-          "say_my_ip": "Say IP address"
+          "say_my_ip": "Say IP address",
+          "timer_shutdown": "Shut Down",
+          "timer_stop_player": "Stop player",
+          "timer_fade_volume": "Fade volume"
         }
       },
       "controls-selector": {
@@ -29,7 +32,8 @@
         "actions": {
           "play_music": "Play music",
           "volume": "Volume",
-          "host": "System"
+          "host": "System",
+          "timers": "Timers"
         }
       },
       "actions": {
@@ -49,7 +53,10 @@
           "loading-song-error": "An error occurred while loading song."
         },
         "volume": {
-          "title": "Volume Steps"
+          "title": "Volume steps"
+        },
+        "timers": {
+          "description": "Choose the amount of minutes you want the action to be performed."
         }
       }
     },
@@ -175,13 +182,15 @@
       "why": "Why?",
       "control-label": "Auto Hotspot"
     },
-    "autoshutdown": {
+    "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
-      "title": "Automatic Shutdown",
-      "stop-playout-timer": "Stop Playout Timer",
-      "shutdown-timer": "Shutdown Timer",
-      "idle-shutdown": "Idle Shutdown"
+      "title": "Timers",
+      "stop-player": "Stop player",
+      "shutdown": "Shut Down",
+      "fade-volume": "Fade volume",
+      "idle-shutdown": "Idle Shut Down",
+      "ended": "Done"
     },
     "secondswipe": {
       "title": "Second Swipe",

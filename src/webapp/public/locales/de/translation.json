@@ -17,7 +17,10 @@
           "change_volume": "Lautstärke anpassen",
           "shutdown": "Herunterfahren",
           "reboot": "Neustarten",
-          "say_my_ip": "IP Addresse vorlesen"
+          "say_my_ip": "IP Addresse vorlesen",
+          "timer_shutdown": "Shut Down",
+          "timer_stop_player": "Stop player",
+          "timer_fade_volume": "Fade volume"
         }
       },
       "controls-selector": {
@@ -29,7 +32,8 @@
         "actions": {
           "play_music": "Musik abspielen",
           "volume": "Lautstärke",
-          "host": "System"
+          "host": "System",
+          "timers": "Timer"
         }
       },
       "actions": {
@@ -50,6 +54,9 @@
         },
         "volume": {
           "title": "Lautstärke Stufen"
+        },
+        "timers": {
+          "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
         }
       }
     },
@@ -175,13 +182,15 @@
       "why": "Warum?",
       "control-label": "Auto Hotspot"
     },
-    "autoshutdown": {
+    "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Aus",
-      "title": "Automatisches Herunterfahren",
-      "stop-playout-timer": "Wiedergabe-Timer stoppen",
-      "shutdown-timer": "Abschalttimer",
-      "idle-shutdown": "Leerlaufabschaltung"
+      "title": "Timer",
+      "stop-player": "Wiedergabe stoppen",
+      "shutdown": "Herunterfahren",
+      "fade-volume": "Lautstärke ausblenden",
+      "idle-shutdown": "Leerlaufabschaltung",
+      "ended": "Beendet"
     },
     "secondswipe": {
       "title": "Erneute Aktivierung (Second Swipe)",

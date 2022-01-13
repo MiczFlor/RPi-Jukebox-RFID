@@ -10,6 +10,7 @@ import {
   Slider,
   Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import request from '../../utils/request';
 
@@ -19,6 +20,7 @@ const marks = [5, 25, 50, 75, 100].map(
 
 const SettingsVolume = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [maxVolume, setMaxVolume] = useState(0);
 
@@ -47,8 +49,8 @@ const SettingsVolume = () => {
       <Divider />
       <CardContent>
         <Grid container direction="column">
-          <Grid item>
-            <Typography>{t('settings.volume.max-volume')}</Typography>
+          <Typography>{t('settings.volume.max-volume')}</Typography>
+          <Grid item sx={{ padding: theme.spacing(1) }}>
             <Slider
               value={typeof maxVolume === 'number' ? maxVolume : 0}
               onChange={handleMaxVolumeChange}
