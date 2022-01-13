@@ -226,12 +226,17 @@
         "label": "Jukebox Core Version"
       }
     },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Audio Ausgänge"
+      },
+      "volume": {
+        "max-volume": "Maximale Lautstärke"
+      }
+    },
     "systemcontrols": {
       "title": "Systemsteuerung"
-    },
-    "volume": {
-      "title": "Lautstärke",
-      "max-volume": "Maximale Lautstärke"
     }
   }
 }

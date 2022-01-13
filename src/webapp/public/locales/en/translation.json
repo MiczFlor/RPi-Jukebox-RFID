@@ -225,12 +225,19 @@
         "label": "Jukebox Core Version"
       }
     },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Outputs",
+        "settings.audio.outputs.radio-primary": "Speaker (Primary)",
+        "settings.audio.outputs.radio-secondary": "Bluetooth (Secondary)"
+      },
+      "volume": {
+        "max-volume": "Maximum Volume"
+      }
+    },
     "systemcontrols": {
       "title": "System Controls"
-    },
-    "volume": {
-      "title": "Volume",
-      "max-volume": "Maximum Volume"
     }
   }
 }
