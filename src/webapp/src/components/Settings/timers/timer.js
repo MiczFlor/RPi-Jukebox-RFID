@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -40,13 +40,11 @@ const Timer = ({ type }) => {
 
     if (wait_seconds > 0) {
       await request(pluginName, { wait_seconds } );
-      await fetchTimerStatus();
+      fetchTimerStatus();
     }
   }
 
-  const fetchTimerStatus = async () => {
-    if (!enabled) setIsLoading(true);
-
+  const fetchTimerStatus = useCallback(async () => {
     const {
       result: timerStatus,
       error: timerStatusError
@@ -60,8 +58,8 @@ const Timer = ({ type }) => {
     setStatus(timerStatus);
     setEnabled(timerStatus?.enabled);
     setWaitSeconds(timerStatus?.wait_seconds || 0);
-    setIsLoading(false);
-  }
+  }, [pluginName]);
+
 
   // Event Handlers
   const handleSwitch = (event) => {
@@ -73,7 +71,8 @@ const Timer = ({ type }) => {
   // Effects
   useEffect(() => {
     fetchTimerStatus();
-  }, []);
+    setIsLoading(false);
+  }, [fetchTimerStatus]);
 
   return (
     <Grid container direction="column" justifyContent="center">
