@@ -13,7 +13,7 @@ Typical controls like buttons or encoders can be attached to these pins, assosia
 GPIO Configuration
 ---------------------
 
-The GPIO moule is configured via a yaml file, typically ``gpio.yaml``. Just create it as shared/settings/gpio.yaml
+The GPIO moule is configured via a yaml file, typically ``gpio.yaml``. Just create it as ``shared/settings/gpio.yaml``.
 
 .. code-block:: yaml
 
