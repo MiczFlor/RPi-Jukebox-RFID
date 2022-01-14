@@ -25,6 +25,9 @@ import urllib.parse
 
 import requests
 import websockets
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -41,6 +44,16 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 # Patch asyncio to make its event loop reentrant.
 nest_asyncio.apply()
 
+# We need to wait until the spotify API is up and running.
+# Therefore, we need to implement a retry option to wait for the connection.
+requests_session = requests.Session()
+
+retries = Retry(total=5,
+                backoff_factor=5,
+                status_forcelist=[500, 502, 503, 504])
+
+requests_session.mount('http://', HTTPAdapter(max_retries=retries))
+requests_session.headers.update({'content-type': 'application/json'})
 
 # test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
 #                                'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
@@ -66,7 +79,6 @@ class PlayerSpot:
         logger.debug(f"Using spotify api base url: {self.spot_api_baseurl}")
         self.spot_websocket_uri = urllib.parse.urljoin(f"ws://{self.spot_host}:{self.spot_api_port}", "/events")
         logger.debug(f"Using spotify websocket uri: {self.spot_websocket_uri}")
-        self.requests_json_headers = {'content-type': 'application/json'}
         try:
             # Info as dict
             # Example: {"device_id":"ABC",
@@ -74,8 +86,7 @@ class PlayerSpot:
             #           "device_type":"SPEAKER",
             #           "country_code":"DE",
             #           "preferred_locale":"de"}
-            self.device_info = requests.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance"),
-                                            headers=self.requests_json_headers).json()
+            self.device_info = requests_session.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance")).json()
             self.device_info.raise_for_status()
         except requests.HTTPError as http_error:
             logger.error("Could not get device information")
@@ -112,7 +123,7 @@ class PlayerSpot:
                 message = await ws_connection.recv()
                 logger.debug(f"Received message from server: {message}")
                 # ToDo: handle messages
-            except websockets.exceptions.ConnectionClosed:
+            except websockets.ConnectionClosed:
                 logger.debug("Connection with websocket server closed")
                 break
 
@@ -120,7 +131,7 @@ class PlayerSpot:
         logger.debug("Exit routine of playerspot started")
         self.nvm.save_all()
         api_path = "/instance/close"
-        requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path), headers=self.requests_json_headers)
+        requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         return "payerspot exited"
 
     def decode_2nd_swipe_option(self):
@@ -171,15 +182,13 @@ class PlayerSpot:
         logger.debug(f"loading playlist {uri} and with option playing={start_playing}")
         self.check_uri(uri)
         api_path = f"/player/load?uri={uri}&play={start_playing}"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
     def play(self):
         api_path = "/player/resume"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -195,8 +204,7 @@ class PlayerSpot:
         """
         if state == 1:
             api_path = "/player/pause"
-            spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
+            spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
             self._handle_http_errors(spot_response)
         else:
             self.play()
@@ -205,15 +213,13 @@ class PlayerSpot:
     def prev(self):
         api_path = "/player/prev"
 
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
     def next(self):
         api_path = "/player/next"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -222,15 +228,13 @@ class PlayerSpot:
         Seek to a given position in milliseconds specified by new_time
         """
         api_path = f"/player/seek?position_ms={new_time}"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
     def shuffle(self, random: bool):
         api_path = f"/player/shuffle?state={1 if random else 0}"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -256,8 +260,7 @@ class PlayerSpot:
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         logger.debug("Toggle")
         api_path = "/player/play-pause"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -280,8 +283,7 @@ class PlayerSpot:
         else:
             rep_state = "none"
         api_path = f"/player/repeat?state={rep_state}"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -304,8 +306,7 @@ class PlayerSpot:
     def play_single(self, song_uri: str):
         self.check_uri(song_uri)
         api_path = f"/player/repeat?uri={song_uri}&play=true"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
 
     @plugs.tag
@@ -366,8 +367,7 @@ class PlayerSpot:
         """
         track_list = []
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name,id,artists(name,id))"
-        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
+        playlist_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         if self._handle_http_errors(playlist_response):
             playlist_dict = playlist_response.json()
             for elem in playlist_dict["items"]:
@@ -428,8 +428,7 @@ class PlayerSpot:
         track_list = []
         playlist_uri = self.get_playback_state()["context"]["uri"]
         api_path = f"/web-api/v1/playlists/{playlist_uri}/tracks?fields=items(track(name))"
-        playlist_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                          headers=self.requests_json_headers)
+        playlist_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         if self._handle_http_errors(playlist_response):
             playlist_response.raise_for_status()
             playlist_dict = playlist_response.json()
@@ -462,16 +461,14 @@ class PlayerSpot:
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than Spotify"""
         api_path = f"/player/volume?volume_percent={volume}"
-        spot_response = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                      headers=self.requests_json_headers)
+        spot_response = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         self._handle_http_errors(spot_response)
         return self.get_volume()
 
     def get_playback_state(self):
         playback_state_dict = {}
         api_path = "/web-api/v1/me/player"
-        playback_state = requests.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path),
-                                       headers=self.requests_json_headers)
+        playback_state = requests_session.post(urllib.parse.urljoin(self.spot_api_baseurl, api_path))
         if self._handle_http_errors(playback_state):
             playback_state_dict = playback_state.json()
         return playback_state_dict if playback_state_dict["device"]["id"] == self.device_info["device_id"] else {}

@@ -19,6 +19,7 @@ tornado
 websockets
 asyncio
 nest_asyncio
+urllib3
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support
