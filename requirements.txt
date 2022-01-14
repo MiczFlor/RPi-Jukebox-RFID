@@ -18,6 +18,7 @@ tornado
 # For spotify
 websockets
 asyncio
+nest_asyncio
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support

@@ -13,6 +13,7 @@ modules:
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
     player: playermpd
+    spotify: playerspot
     cards: rfid.cards
     rfid: rfid.reader
     timers: timers
