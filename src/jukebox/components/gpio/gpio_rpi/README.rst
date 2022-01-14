@@ -13,7 +13,7 @@ Typical controls like buttons or encoders can be attached to these pins, assosia
 GPIO Configuration
 ---------------------
 
-The GPIO moule is configured via a yaml file, typically ``gpio.yaml``.
+The GPIO moule is configured via a yaml file, typically ``gpio.yaml``. Just create it as shared/settings/gpio.yaml
 
 .. code-block:: yaml
 
@@ -54,12 +54,12 @@ RotaryEncoder
 ^^^^^^^^^^^^^^^^^
 .. code-block:: yaml
 
-  volume:                                               # Name
-    Type: RotaryEncoder                                 # Device type
-    Pins: [7, 8]                                        # I/O pins
-    FunctionCW: {alias: inc_volume, kwargs: {step: 1}}  # RPC command called when turning [c]lock[w]ise
-    FunctionCCW:  {alias: dec_volume,kwargs: {step: 1}} # RPC command called when turning [c]ounter[c]lock[w]ise
-    action_after_increments: 1                          # [Optional] Resolution, default is 2
+  volume:                                                     # Name
+    Type: RotaryEncoder                                       # Device type
+    Pins: [7, 8]                                              # I/O pins
+    FunctionCW: {alias: change_volume, kwargs: {step: 5}}     # RPC command called when turning [c]lock[w]ise
+    FunctionCCW: {alias: change_volume, kwargs: {step: -5}}   # RPC command called when turning [c]ounter[c]lock[w]ise
+    action_after_increments: 2                                # [Optional] Resolution, default is 2
 
 PortOut
 ^^^^^^^^^^^^^^^^^
