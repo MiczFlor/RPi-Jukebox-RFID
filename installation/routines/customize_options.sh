@@ -80,7 +80,7 @@ WiFi. This way you can still access it.
 
 _option_bluetooth() {
   # DISABLE_BLUETOOTH
-  echo "Do you want to disable Bluethooth?
+  echo "Do you want to disable Bluetooth?
 Turn off Bluetooth if you do not plan to use it. It saves energy and start up time.
 [Y/n] " 1>&3
   read -r response

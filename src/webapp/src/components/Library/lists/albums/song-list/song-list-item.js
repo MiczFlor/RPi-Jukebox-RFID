@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   ListItem,
@@ -6,7 +7,6 @@ import {
   ListItemText,
 } from '@mui/material';
 
-import { LABELS } from '../../../../../config';
 import { toHHMMSS } from '../../../../../utils/utils';
 import request from '../../../../../utils/request'
 
@@ -15,8 +15,9 @@ const SongListItem = ({
   registerMusicToCard,
   song,
 }) => {
-  const command = 'play_single';
+  const { t } = useTranslation();
 
+  const command = 'play_single';
   const {
     artist,
     duration,
@@ -39,8 +40,8 @@ const SongListItem = ({
         onClick={() => (isSelecting ? registerSongToCard() : playSingle())}
       >
         <ListItemText
-          primary={title || LABELS.UNKNOW_TITLE}
-          secondary={`${artist || LABELS.UNKNOW_ARTIST} • ${toHHMMSS(duration)}`}
+          primary={title || t('library.albums.unknown-title')}
+          secondary={`${artist || t('library.albums.unknown-artist')} • ${toHHMMSS(duration)}`}
         />
       </ListItemButton>
     </ListItem>

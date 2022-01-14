@@ -1,7 +1,7 @@
 """
 Common utility functions
 """
-
+import functools
 import logging
 import copy
 import subprocess
@@ -12,17 +12,6 @@ import jukebox.plugs as plugs
 
 
 log = logging.getLogger('jb.utils')
-
-
-def decode_and_call_rpc_command(rpc_cmd: Dict, logger: logging.Logger = log):
-    """convinence function which ich combining decode_rpc_command and plugs.call_ignore_errors"""
-    action = decode_rpc_command(rpc_cmd, logger)
-    if action is not None:
-        res = plugs.call_ignore_errors(action['package'], action['plugin'],
-                                       action['method'], args=action['args'], kwargs=action['kwargs'])
-    else:
-        res = None
-    return res
 
 
 def decode_rpc_call(cfg_rpc_call: Dict) -> Optional[Dict]:
@@ -100,6 +89,31 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
     if 'kwargs' in cfg_rpc_cmd:
         action['kwargs'] = cfg_rpc_cmd['kwargs']
     return action
+
+
+def decode_and_call_rpc_command(rpc_cmd: Dict, logger: logging.Logger = log):
+    """Convenience function combining decode_rpc_command and plugs.call_ignore_errors"""
+    action = decode_rpc_command(rpc_cmd, logger)
+    if action is not None:
+        res = plugs.call_ignore_errors(action['package'], action['plugin'],
+                                       action['method'], args=action['args'], kwargs=action['kwargs'])
+    else:
+        res = None
+    return res
+
+
+def bind_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log):
+    """Decode an RPC command configuration entry and bind it to a function
+
+    :return: Callable function w/o parameters which directly runs the RPC command
+        using plugs.call_ignore_errors"""
+    action = decode_rpc_command(cfg_rpc_cmd, logger)
+    return functools.partial(plugs.call_ignore_errors,
+                             action['package'],
+                             action['plugin'],
+                             action['method'],
+                             args=action['args'],
+                             kwargs=action['kwargs'])
 
 
 def rpc_call_to_str(cfg_rpc_call: Dict, with_args=True) -> str:

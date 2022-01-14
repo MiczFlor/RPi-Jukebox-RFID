@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Slider from '@mui/material/Slider';
 import VolumeDownIcon from '@mui/icons-material/VolumeDown';
 import VolumeMuteIcon from '@mui/icons-material/VolumeMute';
@@ -13,6 +15,7 @@ import request from '../../utils/request';
 
 const Volume = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { state } = useContext(PubSubContext);
   const { 'volume.level': { volume, mute } = {} } = state;
 
@@ -63,27 +66,33 @@ const Volume = () => {
     fetchMaxVolume();
   }, []);
 
+  const labelIcon = () => (
+    volumeMute
+      ? t('player.volume.unmute')
+      : t('player.volume.mute')
+  );
+
   return (
     <Grid
       alignItems="center"
       container
-      direction="row"
-      justifyContent="center"
       sx={{ width: '100%' }}
     >
-      <Grid
-        item
-        onClick={toggleVolumeMute}
-        sx={{ marginRight: theme.spacing(2) }}
-      >
-        {volumeMute && <VolumeOffIcon />}
-        {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
-        {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
-        {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
+      <Grid item sx={{ marginRight: theme.spacing(1) }}>
+        <IconButton
+          aria-label={labelIcon()}
+          onClick={toggleVolumeMute}
+          title={labelIcon()}
+        >
+          {volumeMute && <VolumeOffIcon />}
+          {!volumeMute && _volume === 0 && <VolumeMuteIcon />}
+          {!volumeMute && _volume > 0 && _volume < 50 && <VolumeDownIcon />}
+          {!volumeMute && _volume >= 50 && <VolumeUpIcon />}
+        </IconButton>
       </Grid>
-      <Grid item xs>
+      <Grid item xs sx={{ marginTop: theme.spacing(1) }}>
         <Slider
-          aria-labelledby="Volume Slider"
+          aria-labelledby={t('player.volume.slider')}
           onChange={handleVolumeChange}
           onChangeCommitted={updateVolume}
           disabled={!!volumeMute}

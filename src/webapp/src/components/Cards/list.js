@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { isNil, reject } from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import {
   Avatar,
@@ -14,6 +15,8 @@ import {
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 const CardsList = ({ cardsList }) => {
+  const { t } = useTranslation();
+
   const ListItemLink = (cardId) => {
     const EditCardLink = forwardRef((props, ref) => {
       const { data } = props;
@@ -57,7 +60,7 @@ const CardsList = ({ cardsList }) => {
       ? <List sx={{ width: '100%' }}>
           {Object.keys(cardsList).map(ListItemLink)}
         </List>
-      : <Typography>No cards registered!</Typography>
+      : <Typography>{t('cards.list.no-cards-registered')}</Typography>
   );
 }
 

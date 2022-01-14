@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import Grid from '@mui/material/Grid';
 
@@ -24,4 +24,11 @@ function App() {
   );
 }
 
-export default App;
+// here app catches the suspense from page in case translations are not yet loaded
+export default function WrappedApp() {
+  return (
+    <Suspense fallback="Loading ...">
+      <App />
+    </Suspense>
+  );
+}

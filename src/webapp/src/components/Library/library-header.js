@@ -4,6 +4,8 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 import {
   Grid,
   IconButton,
@@ -19,6 +21,7 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
   const { search: urlSearch } = useLocation();
   const navigate = useNavigate();
   const { '*': view } = useParams();
+  const { t } = useTranslation();
   const [showSearchInput, setShowSearchInput] = useState(false);
 
   const getCurrentView = () => (
@@ -31,6 +34,10 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
     navigate(`${path}${urlSearch}`);
   };
 
+  const iconLabel = showSearchInput
+    ? t('library.header.search-hide')
+    : t('library.header.search-show');
+
   return (
     <Grid container sx={{ marginBottom: '8px' }}>
       <Grid item
@@ -38,16 +45,17 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
         sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}
       >
         <IconButton
-          aria-label="Toggle Search Input"
+          aria-label={iconLabel}
           onClick={() => setShowSearchInput(!showSearchInput)}
           color={showSearchInput ? 'primary' : undefined}
+          title={iconLabel}
         >
           <SearchIcon />
         </IconButton>
         {showSearchInput &&
           <TextField
             id="library-search"
-            label="Search"
+            label={t('library.header.search-label')}
             onChange={handleMusicFilter}
             value={musicFilter}
             variant="outlined"
@@ -69,19 +77,19 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
               color={getCurrentView() === 'albums' && 'primary'}
               sx={{ transition: 'color .25s' }}
             >
-              Albums
+              {t('library.header.albums')}
             </Typography>
             <Switch
               checked={getCurrentView() === 'folders' ? true : false}
               onChange={toggleView}
-              inputProps={{ 'aria-label': 'Toggle Album/Folder view' }}
+              inputProps={{ 'aria-label': t('library.header.toggle-label') }}
               color="default"
             />
             <Typography
               color={getCurrentView() === 'folders' && 'primary'}
               sx={{ transition: 'color .25s' }}
             >
-              Folders
+              {t('library.header.folders')}
             </Typography>
           </Stack>
         }
