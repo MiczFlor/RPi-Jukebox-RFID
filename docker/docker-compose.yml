@@ -34,6 +34,7 @@ services:
     container_name: jukebox
     depends_on:
       - mpd
+      - spotify
     links:
       - mpd
     ports:
