@@ -43,6 +43,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 # Patch asyncio to make its event loop reentrant.
 nest_asyncio.apply()
+loop = asyncio.get_event_loop()
 
 # We need to wait until the spotify API is up and running.
 # Therefore, we need to implement a retry option to wait for the connection.
@@ -98,10 +99,14 @@ class PlayerSpot:
             self.device_info = {}
 
         # Establish WebSocket connection:
-        loop = asyncio.get_event_loop()
-        self.spot_websocket_connection = loop.run_until_complete(self._connect_websocket())
-        loop.run_until_complete(
-            asyncio.wait(asyncio.ensure_future(self.receive_message_from_websocket(self.spot_websocket_connection))))
+        self.spot_websocket_connection = asyncio.run_coroutine_threadsafe(self._connect_websocket(), loop)
+        tasks = [
+            asyncio.ensure_future(
+                self.receive_message_from_websocket(
+                    self.spot_websocket_connection
+                )),
+        ]
+        loop.run_until_complete(asyncio.wait(tasks))
 
     async def _connect_websocket(self):
         """
@@ -121,7 +126,7 @@ class PlayerSpot:
         """
         while True:
             try:
-                message = await ws_connection.recv()
+                message = await ws_connection.result()
                 logger.debug(f"Received message from server: {message}")
                 # ToDo: handle messages
             except websockets.ConnectionClosed:
