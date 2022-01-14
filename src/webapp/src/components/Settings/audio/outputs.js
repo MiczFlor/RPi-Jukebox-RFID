@@ -27,7 +27,7 @@ const Outputs = () => {
 
     setIsLoading(true);
     (async () => {
-      await request('setAudioOutput', { sink_index });
+      await request('setAudioOutput', { sink_index: parseInt(sink_index) });
     })();
     setIsLoading(false);
   }
