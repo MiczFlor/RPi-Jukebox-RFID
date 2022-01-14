@@ -86,8 +86,9 @@ class PlayerSpot:
             #           "device_type":"SPEAKER",
             #           "country_code":"DE",
             #           "preferred_locale":"de"}
-            self.device_info = requests_session.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance")).json()
-            self.device_info.raise_for_status()
+            requests_response = requests_session.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance"))
+            requests_response.raise_for_status()
+            self.device_info = requests_response.json()
         except requests.HTTPError as http_error:
             logger.error("Could not get device information")
             logger.error(f"Reason: {http_error}")
