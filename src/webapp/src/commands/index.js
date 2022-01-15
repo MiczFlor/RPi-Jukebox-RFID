@@ -135,6 +135,22 @@ const commands = {
     plugin: 'ctrl',
     method: 'mute',
   },
+  getAudioOutputs: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_outputs',
+  },
+  setAudioOutput: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'set_output',
+    argKeys: ['sink_index'],
+  },
+  toggle_output: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'toggle_output',
+  },
 
   // Timers
   'timer_fade_volume.cancel': {
