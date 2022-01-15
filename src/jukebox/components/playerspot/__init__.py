@@ -20,13 +20,7 @@ https://github.com/spocon/spocon
 """
 import logging
 import functools
-import asyncio
 import urllib.parse
-
-import requests
-import websockets
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 
 import components.player
 import jukebox.cfghandler
@@ -34,104 +28,33 @@ import jukebox.utils as utils
 import jukebox.plugs as plugs
 import jukebox.publishing as publishing
 import misc
-import nest_asyncio
+
+from .http_client import SpotifyHttpClient
+from .ws_client import SpotifyWsClient
 
 from jukebox.NvManager import nv_manager
 
 logger = logging.getLogger('jb.PlayerSpot')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
-# Patch asyncio to make its event loop reentrant.
-nest_asyncio.apply()
-loop = asyncio.get_event_loop()
-
-# We need to wait until the spotify API is up and running.
-# Therefore, we need to implement a retry option to wait for the connection.
-requests_session = requests.Session()
-
-retries = Retry(total=5,
-                backoff_factor=5,
-                status_forcelist=[500, 502, 503, 504])
-
-requests_session.mount('http://', HTTPAdapter(max_retries=retries))
-requests_session.headers.update({'content-type': 'application/json'})
-
-# test_dict = {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
-#                                'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
-#              'audio_folder_status':
-#                  {'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-#                                                'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF',
-#                                                'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
-#                   'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-#                                     'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF',
-#                                     'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
-
 
 class PlayerSpot:
     """Interface to librespot-java API"""
 
-    # ToDo: spot_state
     def __init__(self):
         self.nvm = nv_manager()
-        self.spot_host = cfg.getn('playerspot', 'host')
-        logger.debug(f"Using spotify host: {self.spot_host}")
-        self.spot_api_port = 24879
-        self.spot_api_baseurl = f"http://{self.spot_host}:{self.spot_api_port}"
-        logger.debug(f"Using spotify api base url: {self.spot_api_baseurl}")
-        self.spot_websocket_uri = urllib.parse.urljoin(f"ws://{self.spot_host}:{self.spot_api_port}", "/events")
-        logger.debug(f"Using spotify websocket uri: {self.spot_websocket_uri}")
-        try:
-            # Info as dict
-            # Example: {"device_id":"ABC",
-            #           "device_name":"Phoniebox",
-            #           "device_type":"SPEAKER",
-            #           "country_code":"DE",
-            #           "preferred_locale":"de"}
-            requests_response = requests_session.get(urllib.parse.urljoin(self.spot_api_baseurl, "/instance"))
-            requests_response.raise_for_status()
-            self.device_info = requests_response.json()
-        except requests.HTTPError as http_error:
-            logger.error("Could not get device information")
-            logger.error(f"Reason: {http_error}")
-            self.device_info = {}
-        except Exception as err:
-            logger.error(f"Other error occurred: {err}")
-            self.device_info = {}
+        host = cfg.getn('playerspot', 'host')
+        http_client = SpotifyHttpClient(host)
+        http_client.play_uri('spotify:track:3u0W3gJQNV5gegMmntzby8')
 
-        # Establish WebSocket connection:
-        self.spot_websocket_connection = asyncio.run_coroutine_threadsafe(self._connect_websocket(), loop)
-        tasks = [
-            asyncio.ensure_future(
-                self.receive_message_from_websocket(
-                    self.spot_websocket_connection
-                )),
-        ]
-        loop.run_until_complete(asyncio.wait(tasks))
+        # ws_client = SpotifyWsClient(host)
+        # ws_client.connect()
 
-    async def _connect_websocket(self):
-        """
-            Connecting to spotify webSocket server
 
-            websockets.client.connect returns a WebSocketClientProtocol, which is used to receive messages
-        """
-        ws_connection = await websockets.connect(self.spot_websocket_uri)
-        if ws_connection.open:
-            logger.debug(f"Connection to websocket sever established."
-                         f"Client correcly connected to {self.spot_websocket_uri}")
-            return ws_connection
+    ###
+    # TODO: The following functions have not been adopted to the new clients
+    ###
 
-    async def receive_message_from_websocket(self, ws_connection):
-        """
-            Receiving all server messages and handling them
-        """
-        while True:
-            try:
-                message = await ws_connection.result()
-                logger.debug(f"Received message from server: {message}")
-                # ToDo: handle messages
-            except websockets.ConnectionClosed:
-                logger.debug("Connection with websocket server closed")
-                break
 
     def exit(self):
         logger.debug("Exit routine of playerspot started")
