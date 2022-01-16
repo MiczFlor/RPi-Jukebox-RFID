@@ -28,6 +28,11 @@ class SpotifyHttpClient:
     logger.debug(f'Spotify HTTP Client initialized. Will connect to {self.authority}')
 
 
+  def close(self):
+    logger.debug("Exiting Spotify HTTP session")
+    self._post_request('/instance/close')
+
+
   def _request(self, request_func, path: str):
     try:
       url = urllib.parse.urljoin(self.authority, path)
@@ -83,12 +88,12 @@ class SpotifyHttpClient:
 
 
   def seek(self, new_time: int):
-    json = self._post_request(f'/player/seek?position_ms={new_time}')
+    json = self._post_request(f'/player/seek?pos={new_time}')
     return json
 
 
-  def shuffle(self, random: bool):
-    json = self._post_request(f'/player/shuffle?state={1 if random else 0}')
+  def shuffle(self, val: bool):
+    json = self._post_request(f'/player/shuffle?val={1 if val else 0}')
     return json
 
 
@@ -100,11 +105,5 @@ class SpotifyHttpClient:
     else:
         repeat_state = 'none'
 
-    json = self._post_request(f'/player/repeat?state={repeat_state}')
+    json = self._post_request(f'/player/repeat?val={repeat_state}')
     return json
-
-
-
-  def exit(self):
-    logger.debug("Exiting Spotify HTTP session")
-    self._post_request('/instance/close')

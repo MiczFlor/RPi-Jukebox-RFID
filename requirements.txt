@@ -16,9 +16,7 @@ eyed3
 # For the publisher event reactor loop:
 tornado
 # For spotify
-websockets
-asyncio
-nest_asyncio
+websocket-client
 urllib3
 
 # PyZMQ is a special case:
