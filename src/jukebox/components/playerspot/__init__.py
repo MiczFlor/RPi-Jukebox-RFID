@@ -2,32 +2,17 @@
 """
 Package for interfacing with the librespot-java API
 
-Saving
-{'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0',
-                     'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
-    'audio_folder_status':
-       {'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-                                     'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF',
-                                     'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
-        'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3',
-                          'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF',
-                          'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
-
 References:
 https://github.com/librespot-org/librespot-java
 https://github.com/librespot-org/librespot-java/tree/dev/api
 https://github.com/spocon/spocon
 """
 import logging
-
-import components.player
 import jukebox.cfghandler
 import jukebox.plugs as plugs
-import misc
 
 from .http_client import SpotifyHttpClient
 from .ws_client import SpotifyWsClient
-
 from jukebox.NvManager import nv_manager
 
 logger = logging.getLogger('jb.PlayerSpot')
@@ -46,7 +31,6 @@ class PlayerSpot:
         self.ws_client = SpotifyWsClient(host)
         self.ws_client.connect()
 
-
     ###
     # TODO: The following functions have not been adopted to the new clients
     ###
@@ -55,7 +39,6 @@ class PlayerSpot:
         self.nvm.save_all()
         self.http_client.close()
         self.ws_client.close()
-
 
     # def decode_2nd_swipe_option(self):
     #     cfg_2nd_swipe_action = cfg.setndefault('playerspot', 'second_swipe_action', 'alias', value='none').lower()
@@ -73,37 +56,17 @@ class PlayerSpot:
     #                                                      custom_action['args'],
     #                                                      custom_action['kwargs'])
 
-
-    # def _spot_status_poll(self):
-    #     """
-    #     this method polls the status from spot and stores the important inforamtion in the music_player_status,
-    #     it will repeat itself in the intervall specified by self.spot_status_poll_interval
-    #     """
-
-
-    #     # Delete the volume key to avoid confusion
-    #     # Volume is published via the 'volume' component!
-    #     try:
-    #         del self.spot_status['volume']
-    #     except KeyError:
-    #         pass
-    #     publishing.get_publisher().send('playerstatus', self.spot_status)
-
-
     @plugs.tag
     def play_uri(self, uri: str, play: bool = True):
         self.http_client.play_uri(uri, play)
-
 
     @plugs.tag
     def play(self):
         self.http_client.play()
 
-
     @plugs.tag
     def stop(self):
         self.pause(state=1)
-
 
     @plugs.tag
     def pause(self, state: int = 1):
@@ -112,16 +75,13 @@ class PlayerSpot:
         else:
             self.play()
 
-
     @plugs.tag
     def prev(self):
         self.http_client.prev()
 
-
     @plugs.tag
     def next(self):
         self.http_client.next()
-
 
     @plugs.tag
     def seek(self, new_time: int):
@@ -130,17 +90,14 @@ class PlayerSpot:
         """
         self.http_client.seek(new_time)
 
-
     @plugs.tag
     def shuffle(self, val: bool):
         self.http_client.shuffle(val)
-
 
     @plugs.tag
     def repeatmode(self, mode: str):
         # modes are none, track, context
         self.http_client.repeatmode(mode)
-
 
     # @plugs.tag
     # def rewind(self):
@@ -254,7 +211,6 @@ class PlayerSpot:
     #      "id" : "2FRnf9qhLbvw8fu4IBXx78",
     #      "name" : "Last Christmas"
     #      }]
-
 
     #     :param playlist_uri: URI for the spotify playlist as string
     #     """
