@@ -22,6 +22,9 @@ class PlayersFactory:
             raise ValueError(key)
         return builder(**kwargs)
 
+    def get(self, service_id, **kwargs):
+        return self.create(service_id, **kwargs)
+
 factory: PlayersFactory
 
 
@@ -29,8 +32,8 @@ factory: PlayersFactory
 def initialize():
     global players
     players = PlayersFactory()
-    players.register_builder('Spotify', SpotifyPlayerBuilder)
-    players.register_builder('MPD', MpdPlayerBuilder)
+    players.register_builder('Spotify', SpotifyPlayerBuilder())
+    players.register_builder('MPD', MpdPlayerBuilder())
 
 
 @plugin.register
