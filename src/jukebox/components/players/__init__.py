@@ -5,11 +5,11 @@ import jukebox.plugs as plugin
 from .mpd import MpdPlayerBuilder
 from .spotify import SpotifyPlayerBuilder
 
-logger = logging.getLogger('jb.player')
+logger = logging.getLogger('jb.players')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
-class PlayerFactory:
+class PlayersFactory:
     def __init__(self):
         self._builders = {}
 
@@ -22,13 +22,13 @@ class PlayerFactory:
             raise ValueError(key)
         return builder(**kwargs)
 
-factory: PlayerFactory
+factory: PlayersFactory
 
 
 @plugin.initialize
 def initialize():
     global players
-    players = PlayerFactory()
+    players = PlayersFactory()
     players.register_builder('Spotify', SpotifyPlayerBuilder)
     players.register_builder('MPD', MpdPlayerBuilder)
 
