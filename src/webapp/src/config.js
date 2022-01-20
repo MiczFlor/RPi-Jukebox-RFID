@@ -13,6 +13,7 @@ const SUBSCRIPTIONS = [
   'host.timer.cputemp',
   'host.temperature.cpu',
   'playerstatus',
+  'player_status',
   'rfid.card_id',
   'volume.level',
 ];

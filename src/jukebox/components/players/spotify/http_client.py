@@ -58,8 +58,8 @@ class SpotifyHttpClient:
         response = self._request(self.session.post, path)
         return response
 
-    def play_uri(self, uri: str, play: bool = True):
-        json = self._post_request(f'/player/load?uri={uri}&play={play}')
+    def play_uri(self, uri: str, play: bool = True, shuffle: bool = False):
+        json = self._post_request(f'/player/load?uri={uri}&play={play}&shuffle={shuffle}')
         return json
 
     def play(self):
@@ -83,16 +83,9 @@ class SpotifyHttpClient:
         return json
 
     def shuffle(self, val: bool):
-        json = self._post_request(f'/player/shuffle?val={1 if val else 0}')
+        json = self._post_request(f'/player/shuffle?val={val}')
         return json
 
-    def repeatmode(self, mode: str):
-        if mode == 'repeat':
-            repeat_state = 'context'
-        elif mode == 'single':
-            repeat_state = 'track'
-        else:
-            repeat_state = 'none'
-
-        json = self._post_request(f'/player/repeat?val={repeat_state}')
+    def repeat(self, val: str):
+        json = self._post_request(f'/player/repeat?val={val}')
         return json
