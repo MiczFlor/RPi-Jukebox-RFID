@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect } from 'react';
+import React, { memo, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Grid from '@mui/material/Grid';
@@ -11,61 +11,48 @@ import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
 import RepeatRoundedIcon from '@mui/icons-material/RepeatRounded';
 import RepeatOneRoundedIcon from '@mui/icons-material/RepeatOneRounded';
 
-import PlayerContext from '../../context/player/context';
+import PubSubContext from '../../context/pubsub/context';
 import request from '../../utils/request';
 
 // TODO: Should be broken up in sub-modules
 const Controls = () => {
   const { t } = useTranslation();
-  const {
-    state,
-    setState,
-  } = useContext(PlayerContext);
+  const { state: { player_status } } = useContext(PubSubContext);
 
   const {
-    isPlaying,
-    playerstatus,
-    isShuffle,
-    isRepeat,
-    isSingle,
-    songIsScheduled
-  } = state;
+    playing,
+    shuffle,
+    repeat,
+    trackid,
+  } = player_status;
 
   const toggleShuffle = () => {
-    request('shuffle', { random: !isShuffle });
+    request('shuffle', { val: !shuffle });
   }
 
   const toggleRepeat = () => {
-    let mode = null;
-    if (!isRepeat && !isSingle) mode = 'repeat';
-    if (isRepeat && !isSingle) mode = 'single';
-
-    request('repeat', { mode });
+    let mode = repeat + 1;
+    if (mode > 2) mode = -1;
+    request('repeat', { val: mode });
   }
-
-  useEffect(() => {
-    setState({
-      ...state,
-      isPlaying: playerstatus?.state === 'play' ? true : false,
-      songIsScheduled: playerstatus?.songid ? true : false,
-      isShuffle: playerstatus?.random === '1' ? true : false,
-      isRepeat: playerstatus?.repeat === '1' ? true : false,
-      isSingle: playerstatus?.single === '1' ? true : false,
-    });
-  }, [playerstatus]);
 
   const iconStyles = { padding: '7px' };
 
   const labelShuffle = () => (
-    isShuffle
+    shuffle
       ? t('player.controls.shuffle.deactivate')
       : t('player.controls.shuffle.activate')
   );
 
+  // Toggle or set repeat (-1 toggle, 0 no repeat, 1 context, 2 single)
   const labelRepeat = () => {
-    if (!isRepeat) return t('player.controls.repeat.activate');
-    if (isRepeat && !isSingle) return t('player.controls.repeat.activate-single');
-    if (isRepeat && isSingle) return t('player.controls.repeat.deactivate');
+    const labels = [
+      t('player.controls.repeat.activate'),
+      t('player.controls.repeat.activate-single'),
+      t('player.controls.repeat.deactivate'),
+    ];
+
+    return labels[repeat];
   };
 
   return (
@@ -80,7 +67,7 @@ const Controls = () => {
       {/* Shuffle */}
       <IconButton
         aria-label={labelShuffle()}
-        color={isShuffle ? 'primary' : undefined}
+        color={shuffle ? 'primary' : undefined}
         onClick={toggleShuffle}
         size="large"
         sx={iconStyles}
@@ -92,8 +79,8 @@ const Controls = () => {
       {/* Skip previous track */}
       <IconButton
         aria-label={t('player.controls.skip')}
-        disabled={!songIsScheduled}
-        onClick={e => request('previous')}
+        disabled={!trackid}
+        onClick={() => request('previous')}
         size="large"
         sx={iconStyles}
         title={t('player.controls.skip')}
@@ -102,11 +89,11 @@ const Controls = () => {
       </IconButton>
 
       {/* Play */}
-      {!isPlaying &&
+      {!playing &&
         <IconButton
           aria-label={t('player.controls.play')}
-          onClick={e => request('play')}
-          disabled={!songIsScheduled}
+          onClick={() => request('play')}
+          disabled={!trackid}
           size="large"
           sx={iconStyles}
           title={t('player.controls.play')}
@@ -115,10 +102,10 @@ const Controls = () => {
         </IconButton>
       }
       {/* Pause */}
-      {isPlaying &&
+      {playing &&
         <IconButton
           aria-label={t('player.controls.pause')}
-          onClick={e => request('pause')}
+          onClick={() => request('pause')}
           size="large"
           sx={iconStyles}
           title={t('player.controls.pause')}
@@ -130,8 +117,8 @@ const Controls = () => {
       {/* Skip next track */}
       <IconButton
         aria-label={t('player.controls.next')}
-        disabled={!songIsScheduled}
-        onClick={e => request('next')}
+        disabled={!trackid}
+        onClick={() => request('next')}
         size="large"
         sx={iconStyles}
         title={t('player.controls.next')}
@@ -142,18 +129,18 @@ const Controls = () => {
       {/* Repeat */}
       <IconButton
         aria-label={labelRepeat()}
-        color={isRepeat ? 'primary' : undefined}
+        color={repeat > 0 ? 'primary' : undefined}
         onClick={toggleRepeat}
         size="large"
         sx={iconStyles}
         title={labelRepeat()}
       >
         {
-          !isSingle &&
+          repeat < 2 &&
           <RepeatRoundedIcon style={{ fontSize: 22 }} />
         }
         {
-          isSingle &&
+          repeat === 2 &&
           <RepeatOneRoundedIcon style={{ fontSize: 22 }} />
         }
       </IconButton>

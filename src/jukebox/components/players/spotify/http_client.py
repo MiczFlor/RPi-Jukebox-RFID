@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 from requests.adapters import HTTPAdapter
@@ -48,7 +49,7 @@ class SpotifyHttpClient:
             response = {}
             logger.error(f'Error {error}')
 
-        return response
+        return json.loads(response.content)
 
     def _get_request(self, path: str):
         response = self._request(self.session.get, path)
@@ -57,6 +58,12 @@ class SpotifyHttpClient:
     def _post_request(self, path: str):
         response = self._request(self.session.post, path)
         return response
+
+    def get_status(self):
+        # json = self._get_request('/web-api/v1//me/player')
+        json = self._post_request('/player/current')
+        logger.debug(json)
+        return json
 
     def play_uri(self, uri: str, play: bool = True, shuffle: bool = False):
         json = self._post_request(f'/player/load?uri={uri}&play={play}&shuffle={shuffle}')

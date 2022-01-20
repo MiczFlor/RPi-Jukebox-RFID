@@ -33,6 +33,7 @@ factory: PlayersFactory
 def initialize():
     global players
     player_status = PlayerStatus()
+    player_status.publish()
     players = PlayersFactory()
     players.register_builder('Spotify', SpotifyPlayerBuilder(player_status))
     # players.register_builder('MPD', MpdPlayerBuilder())

@@ -18,12 +18,12 @@ class SpotifyWsClient:
         self.thread = None
 
         self.state_callbacks = {
-            'contextChanged': self.context_changed,
-            'trackChanged': self.track_changed,
             'playbackPaused': self.playback_paused,
             'playbackResumed': self.playback_resumed,
+            'playbackHaltStateChanged': self.playback_halted,
             'trackSeeked': self.track_seeked,
             'metadataAvailable': self.metadata_available,
+            'inactiveSession': self.inactive_session,
         }
 
         logger.debug('Spotify WS Client initialized')
@@ -46,7 +46,7 @@ class SpotifyWsClient:
         self.socket.close()
 
     def _on_message(self, socket, message):
-        logger.debug(f'Message received: {message}')
+        logger.debug(f'_on_message: {message}')
         data = json.loads(message)
         event = data['event']
 
@@ -62,38 +62,42 @@ class SpotifyWsClient:
     def _on_error(self, socket, error):
         logger.error(f'Websocket error: {error}')
 
-    def metadata_available(self, message: dict):
+    def metadata_available(self, data: dict):
         self.player_status.update(
             player = 'Spotify', # TODO: Should this be done differently?
-            title = message['track']['name'],
-            artist = message['track']['artist'][0]['name'],
-            album = message['track']['album']['name'],
-            albumartist = message['track']['album']['artist'][0]['name'],
-            totalTime = message['track']['duration']
+            trackid = data['track']['gid'],
+            title = data['track']['name'],
+            artist = data['track']['artist'][0]['name'],
+            album = data['track']['album']['name'],
+            albumartist = data['track']['album']['artist'][0]['name'],
+            totalTime = data['track']['duration'],
+            coverArt = data['track']['album']['coverGroup']['image'][2]['fileId'].lower()
         )
 
-    def context_changed(self, message: dict):
-        # ['context-uri'] = message['uri']
-        pass
-
-    def track_changed(self, message: dict):
-        # ['track-uri'] = message['uri']
-        pass
-
-    def playback_paused(self, message: dict):
+    def playback_paused(self, data: dict):
         self.player_status.update(
             playing = False,
-            timeElapsed = message['trackTime']
+            timeElapsed = data['trackTime']
         )
 
-    def playback_resumed(self, message: dict):
+    def playback_resumed(self, data: dict):
         self.player_status.update(
             playing = True,
-            timeElapsed = message['trackTime']
+            timeElapsed = data['trackTime']
         )
 
-    def track_seeked(self, message: dict):
+    def playback_halted(self, data: dict):
         self.player_status.update(
-            timeElapsed = message['trackTime']
+            playing = data['halted'],
+            timeElapsed = data['trackTime']
         )
 
+    def track_seeked(self, data: dict):
+        self.player_status.update(
+            timeElapsed = data['trackTime']
+        )
+
+    # When Spotify session is routed to another device,
+    # the local session goes inactive
+    def inactive_session(self, data: dict):
+        self.player_status.update(playing = False)

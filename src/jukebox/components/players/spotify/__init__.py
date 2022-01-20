@@ -45,7 +45,7 @@ class SpotifyPlayer:
 
 
     def play_playlist(self, uri: str):
-        if not id.startswith('spotify:playlist:'):
+        if not uri.startswith('spotify:playlist:'):
             return logger.error('Provided URI does not match a playlist')
 
         self.http_client.play_uri(uri)

@@ -50,9 +50,8 @@ const commands = {
 
   // Player Actions
   play: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'play',
+    _package: 'players',
+    plugin: 'play',
   },
   play_single: {
     _package: 'player',
@@ -73,34 +72,28 @@ const commands = {
     argKeys: ['albumartist', 'album']
   },
   pause: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'pause',
+    _package: 'players',
+    plugin: 'pause',
   },
   previous: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'prev',
+    _package: 'players',
+    plugin: 'prev',
   },
   next: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'next',
+    _package: 'players',
+    plugin: 'next',
   },
   shuffle: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'shuffle',
+    _package: 'players',
+    plugin: 'shuffle',
   },
   repeat: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'repeatmode',
+    _package: 'players',
+    plugin: 'repeat',
   },
   seek: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'seek',
+    _package: 'players',
+    plugin: 'seek',
   },
 
   // Volume

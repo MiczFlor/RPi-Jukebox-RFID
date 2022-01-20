@@ -8,35 +8,24 @@ import Display from './display';
 import SeekBar from './seekbar';
 import Volume from './volume';
 
-import PlayerContext from '../../context/player/context';
 import PubSubContext from '../../context/pubsub/context';
-import request from '../../utils/request';
-import { pluginIsLoaded } from '../../utils/utils';
 
 const Player = () => {
-  const { state: { playerstatus } } = useContext(PlayerContext);
-  const { state: { 'core.plugins.loaded': plugins } } = useContext(PubSubContext);
-  const { file } = playerstatus || {};
+  const { state: { player_status } } = useContext(PubSubContext);
 
   const [coverImage, setCoverImage] = useState(undefined);
   const [backgroundImage, setBackgroundImage] = useState('none');
 
   useEffect(() => {
-    const getMusicCover = async () => {
-      const { result } = await request('musicCoverByFilenameAsBase64', { audio_src: file });
-      if (result) {
-        setCoverImage(result);
-        setBackgroundImage([
-          'linear-gradient(to bottom, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 1))',
-          `url(data:image/jpeg;base64,${result})`
-        ].join(','));
-      };
+    if (player_status?.coverArt) {
+      const coverImageSrc = `https://i.scdn.co/image/${player_status.coverArt}`;
+      setCoverImage(coverImageSrc);
+      setBackgroundImage([
+        'linear-gradient(to bottom, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 1))',
+        `url(${coverImageSrc})`
+      ].join(','));
     }
-
-    if (pluginIsLoaded(plugins, 'music_cover_art') && file) {
-      getMusicCover();
-    }
-  }, [file, plugins]);
+  }, [player_status]);
 
   return (
     <Grid

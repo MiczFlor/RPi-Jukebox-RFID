@@ -6,28 +6,29 @@ logger = logging.getLogger('jb.players.player_status')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 class PlayerStatus:
-    ATTRS = [
-        'player',
-        'playing', # bool
-        'shuffle',
-        'repeat',
-        'trackid', # was `songid` before
-        'title',
-        'artist',
-        'albumartist',
-        'album',
-        'timeTotal', # was `elapsed` before
-        'timeElapsed', # was `duration` before
-        'file', # required for MPD // check if really is required
-    ]
+    STATUS = {
+        'player': '',
+        'playing': False,
+        'shuffle': False,
+        'repeat': 0,
+        'trackid': '',
+        'title': '',
+        'artist': '',
+        'albumartist': '',
+        'album': '',
+        'timeTotal': 0,
+        'timeElapsed': 0,
+        'file': '', # required for MPD // check if really is required
+        'coverArt': ''
+    }
 
     def __init__(self):
-        self._player_status = dict.fromkeys(self.ATTRS)
+        self._player_status = self.STATUS
 
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
-            if key in self.ATTRS:
+            if key in self.STATUS:
                 self._player_status[key] = value
 
         self.publish()
