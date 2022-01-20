@@ -1,17 +1,18 @@
-# Provides 4 selected examples of GPIO configuration
-# For many more configuration recipe go to the documentation!
+# Provides a few selected examples of GPIO configuration
+# For many more configuration recipes go to the documentation!
 # https://rpi-jukebox-rfid.readthedocs.io/en/latest/index.html
 pin_factory:
-#  type: rpigpio.RPiGPIOFactory
   type: mock.MockFactory
 output_devices:
   RfidBuzzer:
-    # Sound a Piezzo Buzzer once when a card swipe has been detected. For unknown cards, sound it three times.
-    # Extend the card read buzzer to also sound one long beed after completed boot up and two beeps on shutdown.
+    # Sound an active Piezo Buzzer once when a card swipe has been detected. For unknown cards, sound it three times.
+    # Extend the card read buzzer to also sound one long beep after completed boot up and two beeps on shutdown.
+    # Extend the buzzer also to sound once when maximum or minimum volume is reached
     type: Buzzer
     connect:
       - gpio.gpioz.plugin.connectivity.register_rfid_callback
       - gpio.gpioz.plugin.connectivity.register_status_buzzer_callback
+      - gpio.gpioz.plugin.connectivity.register_volume_buzzer_callback
     kwargs:
       pin: 12
   VolumeLED:
@@ -25,7 +26,7 @@ input_devices:
     # A button to toggle music playback on single press
     type: Button
     kwargs:
-      pin: 13
+      pin: 14
     actions:
       on_press:
         alias: toggle
@@ -42,3 +43,25 @@ input_devices:
       on_rotate_counter_clockwise:
         alias: change_volume
         args: -5
+  SixActionBeast:
+    # Two buttons encoding six different actions
+    type: TwinButton
+    kwargs:
+      a: 12
+      b: 13
+      hold_repeat: true
+    actions:
+      on_short_press_a:
+        alias: prev_song
+      on_short_press_b:
+        alias: next_song
+      on_short_press_ab:
+        alias: toggle
+      on_long_press_a:
+        alias: change_volume
+        args: -3
+      on_long_press_b:
+        alias: change_volume
+        args: 3
+      on_long_press_ab:
+        alias: toggle_output

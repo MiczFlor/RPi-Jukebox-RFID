@@ -152,6 +152,14 @@ class GenericTimerClass:
             self.timer_thread.cancel()
 
     @plugin.tag
+    def toggle(self):
+        """Toggle the activation of the timer"""
+        if self.is_alive():
+            self.timer_thread.cancel()
+        else:
+            self.start()
+
+    @plugin.tag
     def trigger(self):
         """Trigger the next target execution before the time is up"""
         if self.is_alive():

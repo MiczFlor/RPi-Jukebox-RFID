@@ -1,3 +1,7 @@
+# Copyright (c) 2022 Chris Banz
+#
+# SPDX-License-Identifier: MIT License
+#
 """
 Changes to the GPIOZero devices for using with the Mock RFID Reader
 """

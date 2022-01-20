@@ -77,7 +77,7 @@ def activate_from_pulse(card_driver: str, device_name: str):
 @plugin.initialize
 def initialize():
     if cfg.setndefault('bluetooth_audio_buttons', 'enable', value=True):
-        components.volume.add_on_connect_callback(activate_from_pulse)
+        components.volume.pulse_monitor.on_connect_callbacks.register(activate_from_pulse)
         button_mapping = cfg.getn('bluetooth_audio_buttons', 'mapping', default=None)
         if button_mapping:
             for key, action_request in button_mapping.items():

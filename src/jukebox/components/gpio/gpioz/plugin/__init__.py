@@ -1,30 +1,18 @@
-"""Output devices
-
-5 devices:
-- LED
-- PWMLED
-- RGBLED
-- Buzzer
-- TonalBuzzer
-
-Usable via RPC Call
-and via direct callbacks
-
-Internal API
-
-List of Class -> Index via configured Name
-    returns direct GPIOZero Device?
-
-RPC API
-    Possible: module.class.func(args)
-    Need an access function for every internal function ....
-    Need tranlation function anyway, becuase is_lit etc are properties, not functions
-
+# Copyright (c) 2022 Chris Banz
+#
+# SPDX-License-Identifier: MIT License
+#
+"""
+The GPIOZ plugin interface build all input and output devices from the configuration file and connects
+the actions and callbacks. It also provides a very restricted, but common API for the output devices to the RPC.
+That API is mainly used for testing. All the relevant output state changes are usually made through callbacks directly
+using the output device's API.
 """
 import atexit
 import importlib
 import logging
-import gpiozero
+import traceback
+
 import gpiozero.pins
 from gpiozero.pins.mock import MockFactory, MockPWMPin
 import components.gpio.gpioz.core.input_devices
@@ -34,52 +22,75 @@ import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
 import jukebox.utils
-from typing import (Dict, Callable, List, Optional, Set)
+from typing import (Dict, Any, Callable)
 import components
 import components.volume
 import components.rfid.reader
 from components.gpio.gpioz.core.mock import patch_mock_outputs_with_callback
 from misc import getattr_hierarchical
+from jukebox.callingback import CallbackHandler
 
 logger = logging.getLogger('jb.gpioz')
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_gpio = jukebox.cfghandler.get_handler('gpioz')
 
 
-# Keep record of all output devices
-output_devices: Dict[str, gpiozero.DigitalOutputDevice] = {}
-input_devices: Dict = {}
+#: List of all created output devices
+output_devices: Dict[str, Any] = {}
+#: List of all created input devices
+input_devices: Dict[str, Any] = {}
 
-# The global pin factory
+#: The global pin factory used in this module
+#: Using different pin factories for different devices is not supported
 factory: gpiozero.pins.Factory
 
+#: Indicates that the GPIOZ module is enabled and loaded w/o errors
 IS_ENABLED: bool = False
+#: Indicates that the pin factory is a mock factory
 IS_MOCKED: bool
+#: The path of the config file the GPIOZ configuration was loaded from
 CONFIG_FILE: str
 
 
 # ---------------------------------------------------
-# Service Running Status LED
+# Service Running Status Callback
 # ---------------------------------------------------
-# The status LED is integrated into this module because
-# - we need the GPIO to control a LED
-# - the plugin & atexit callback functions provide all the functionality to control the status of the LED
-# - which means no need to adapt other modules at the moment
-_status_callbacks: List[Callable] = []
+class ServiceIsRunningCallbacks(CallbackHandler):
+    """
+    Callbacks are executed when
+
+       * Jukebox app started
+       * Jukebox shuts down
+
+    This is intended to e.g. signal an LED to change state.
+    This is integrated into this module because:
+
+        * we need the GPIO to control a LED (it must be available when the status callback comes)
+        * the plugin callback functions provide all the functionality to control the status of the LED
+        * which means no need to adapt other modules
+    """
+
+    def register(self, func: Callable[[int], None]):
+        """
+        Add a new callback function :attr:`func`.
+
+        Callback signature is
+
+        .. py:function:: func(status: int)
+            :noindex:
+
+            :param status: 1 if app started, 0 if app shuts down
+        """
+        super().register(func)
+
+    def run_callbacks(self, status: int):
+        """:meta private:"""
+        super().run_callbacks(status)
 
 
-def add_status_callback(func: Callable[[int], None]):
-    global _status_callbacks
-    _status_callbacks.append(func)
-
-
-def run_status_callbacks(*args, **kwargs):
-    global _status_callbacks
-    for f in _status_callbacks:
-        try:
-            f(*args, **kwargs)
-        except Exception as e:
-            logger.error(f"{f.__name__}: {e.__class__.__name__}: {e}")
+#: Callback handler instance for service_is_running_callbacks events.
+#: See :class:`ServiceIsRunningCallbacks`
+service_is_running_callbacks = ServiceIsRunningCallbacks('service_running_callbacks', logger)
 
 
 # ---------------------------------------------------
@@ -109,6 +120,7 @@ def build_pin_factory():
     kwargs = cfg_gpio.getn('pin_factory', pin_factory_name, 'kwargs', default={})
     if issubclass(obj, MockFactory):
         IS_MOCKED = True
+        logger.warning("GPIOZ devices are mocked! Not connected to actual hardware!")
         kwargs['pin_class'] = MockPWMPin
         patch_mock_outputs_with_callback()
     factory = obj(**kwargs)
@@ -138,7 +150,8 @@ def connect_output_device(device, name, config: Dict):
             func(device)
         except Exception as e:
             logger.error(f"Error in connection function '{func_name}' for output device '{name}': "
-                         f"{e.__class__.__name__}: {e}")
+                         f"{e.__class__.__name__}: {e}\n"
+                         f"{traceback.format_exc()}")
             continue
 
 
@@ -154,17 +167,17 @@ def build_output_device(name: str, config: Dict):
     if name in output_devices.keys():
         raise KeyError(f"Output with name '{name}' already exists. Ignoring new configuration.")
 
-    logger.debug(f"Create output device '{name}', type='{device_type}', kwargs={config}")
+    logger.debug(f"Create output device '{name}', type='{device_type}', config={config}")
 
     if device_type is None:
         raise KeyError(f"Missing mandatory parameter 'type' for device '{name}'.")
 
     try:
-        device_cls = getattr(gpiozero, device_type)
+        device_cls = getattr(components.gpio.gpioz.core.output_devices, device_type)
     except AttributeError as e:
         raise AttributeError(f"Unknown device type '{device_type}' for '{name}' ({e})")
 
-    device = device_cls(**kwargs, pin_factory=factory)
+    device = device_cls(**kwargs, pin_factory=factory, name=name)
     connect_output_device(device, name, config)
     output_devices[name] = device
 
@@ -188,7 +201,9 @@ def build_input_device(name: str, config):
     Supported input devices are those from gpio.gpioz.core.input_devices"""
     global factory
     device_type = config.get('type')
-    kwargs = config.get('kwargs')
+    kwargs = config.get('kwargs', {})
+
+    logger.debug(f"Create input device '{name}', type='{device_type}', config={config}")
 
     try:
         device_cls = getattr(components.gpio.gpioz.core.input_devices, device_type)
@@ -218,38 +233,70 @@ def _build_all_input_devices():
 # ---------------------------------------------------
 # API and RPC function definitions
 # ---------------------------------------------------
-def get_output(name):
-    """Get the output device instance based on the configured name """
+def get_output(name: str):
+    """Get the output device instance based on the configured name
+
+    :param name: The alias name output device instance
+    """
     if name not in output_devices.keys():
         raise KeyError(f"No such output device with name '{name}'")
     return output_devices[name]
 
 
 @plugin.register
-def on(name):
-    """Turn an output device on"""
+def on(name: str):
+    """Turn an output device on
+
+    :param name: The alias name output device instance
+    """
     get_output(name).on()
 
 
 @plugin.register
-def off(name):
-    """Turn an output device off"""
+def off(name: str):
+    """Turn an output device off
+
+    :param name: The alias name output device instance
+    """
     get_output(name).off()
 
 
 @plugin.register
-def blink(name, on_time=1, off_time=1, n=1):
-    """Blink (or beep) an output device
+def set_value(name: str, value: Any):
+    """Set the output device to :attr:`value`
 
-    Supported for LED, PWMLED, Buzzer"""
-    # Note: LED, PWMLED, Buzzer all have the function blink(...)
-    # In case of Buzzer it is undocumented and dubbed beep. But it exists and is the same!
-    get_output(name).blink(on_time=on_time, off_time=off_time, n=n)
+    :param name: The alias name output device instance
+
+    :param value: Value to set the device to
+    """
+    get_output(name).value = value
 
 
 @plugin.register
-def set_value(name, value):
-    get_output(name).value = value
+def flash(name, on_time=1, off_time=1, n=1, *, fade_in_time=0, fade_out_time=0, tone=None, color=(1, 1, 1)):
+    """Flash (blink or beep) an output device
+
+    This is a generic function for all types of output devices. Parameters not applicable to an
+    specific output device are silently ignored
+
+    :param name: The alias name output device instance
+
+    :param on_time: Time in seconds in state ``ON``
+
+    :param off_time: Time in seconds in state ``OFF``
+
+    :param n: Number of flash cycles
+
+    :param tone: The tone in to play, e.g. 'A4'. *Only for TonalBuzzer*.
+
+    :param color: The RGB color *only for PWMLED*.
+
+    :param fade_in_time: Time in seconds for transitioning to on. *Only for PWMLED and RGBLED*
+
+    :param fade_out_time: Time in seconds for transitioning to off. *Only for PWMLED and RGBLED*
+    """
+    get_output(name).flash(on_time=on_time, off_time=off_time, n=n, fade_in_time=fade_in_time, fade_out_time=fade_out_time,
+                           tone=tone, color=color)
 
 
 # ---------------------------------------------------
@@ -317,13 +364,13 @@ def finalize():
 
     # GPIOZ is one of the last modules loaded, so we can enable the status led here
     # we are so close to operational, that the time difference is not noticeable
-    run_status_callbacks(1)
+    service_is_running_callbacks.run_callbacks(1)
 
 
 @plugin.atexit
 def plugin_atexit(**ignored_kwargs):
     # GPIOZ is one first module to close down: update operational status
-    run_status_callbacks(0)
+    service_is_running_callbacks.run_callbacks(0)
 
     # Need to close down input and output devices explicitly here
     # Otherwise we run into some trouble with the garbage collector and the automatic GPIOZero shutdown routines

@@ -2,8 +2,7 @@ import logging
 import threading
 import time
 import importlib
-import functools
-from typing import (List, Callable)
+from typing import Callable
 
 import jukebox.plugs as plugs
 import jukebox.cfghandler
@@ -11,6 +10,7 @@ import jukebox.utils as utils
 import jukebox.publishing as publishing
 from components.rfid.cardutils import (decode_card_command)
 
+from jukebox.callingback import CallbackHandler
 
 log = logging.getLogger('jb.rfid')
 
@@ -19,19 +19,37 @@ cfg_rfid = jukebox.cfghandler.get_handler('rfid')
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_cards = jukebox.cfghandler.get_handler('cards')
 
-callbacks: List[Callable[[str, int], None]] = []
+
+class ServiceIsRunningCallbacks(CallbackHandler):
+    """
+    Callbacks are executed when
+
+        * valid rfid card detect
+        * unknown card detect
+    """
+
+    def register(self, func: Callable[[str, int], None]):
+        """
+        Add a new callback function :attr:`func`.
+
+        Callback signature is
+
+        .. py:function:: func(card_id: str, state: int)
+            :noindex:
+
+            :param card_id: Card ID
+            :param state: 0 if card id is registered, 1 if card id is unknown
+        """
+        super().register(func)
+
+    def run_callbacks(self, card_id: str, state: int):
+        """:meta private:"""
+        super().run_callbacks(card_id, state)
 
 
-def add_rfid_card_detect_callback(func: Callable[[str, int], None]):
-    callbacks.append(func)
-
-
-def run_callbacks(card_id: str, state: int, logger):
-    for f in callbacks:
-        try:
-            f(card_id, state)
-        except Exception as e:
-            logger.error(f"Error in rfid card detect callback: {e.__class__.__name__}: {e}")
+#: Callback handler instance for rfid_card_detect_callbacks events.
+#: See :class:`ServiceIsRunningCallbacks`
+rfid_card_detect_callbacks: ServiceIsRunningCallbacks = ServiceIsRunningCallbacks('rfid_card_detect_callbacks', log)
 
 
 class CardRemovalTimerClass(threading.Thread):
@@ -198,16 +216,15 @@ class ReaderRunner(threading.Thread):
                                 # dodgy cards database entry
                                 # TODO: This call happens from the reader thread, which is not necessarily what we want ...
                                 # TODO: Change to RPC call to transfer execution into main thread
-                                run_callbacks(card_id, 0, self._logger)
+                                rfid_card_detect_callbacks.run_callbacks(card_id, 0)
                                 plugs.call_ignore_errors(card_action['package'], card_action['plugin'], card_action['method'],
                                                          args=card_action['args'], kwargs=card_action['kwargs'])
 
                         else:
-                            run_callbacks(card_id, 1, self._logger)
+                            rfid_card_detect_callbacks.run_callbacks(card_id, 1)
                             self._logger.info(f"Unknown card: '{card_id}'")
                             self.publisher.send(self.topic, card_id)
                     elif self._cfg_log_ignored_cards is True:
-                        run_callbacks(card_id, 2, self._logger)
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
                     previous_time = time.time()
                 else:

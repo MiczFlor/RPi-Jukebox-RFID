@@ -1,3 +1,7 @@
+# Copyright (c) 2022 Chris Banz
+#
+# SPDX-License-Identifier: MIT License
+#
 """
 Add GPIO input devices and output devices to the RFID Mock Reader GUI
 """
