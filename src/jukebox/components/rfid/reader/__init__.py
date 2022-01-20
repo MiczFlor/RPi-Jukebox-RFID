@@ -86,13 +86,11 @@ class CardRemovalTimerClass(threading.Thread):
 
 class ReaderRunner(threading.Thread):
     def __init__(self, reader_cfg_key: str,
-                 action_thread=None,
                  logger: logging.Logger = None):
         super().__init__(name=f"{reader_cfg_key}Thread", daemon=True)
         self._logger = logger
         if logger is None:
             self._logger = logging.getLogger(f'jb.rfid({reader_cfg_key})')
-        self._action_thread = action_thread
         self._reader_cfg_key = reader_cfg_key
         reader_type = cfg_rfid['rfid']['readers'][reader_cfg_key]['module'].lower()
         # Load the corresponding module
@@ -153,10 +151,6 @@ class ReaderRunner(threading.Thread):
             self._logger.debug(f"card_removal_timer_thread.native_id = {self._timer_thread.ident}")
             self._timer_thread.trigger.clear()
 
-        if self._action_thread is not None:
-            self._logger.debug(f"pin_action_thread.native_id = {self._action_thread.ident}")
-            self._action_thread.trigger.clear()
-
         with self._reader as reader:
             # Raises a StopIteration (if blocking) or simply returns '' (if non-blocking)
             for card_id in reader:
@@ -173,10 +167,7 @@ class ReaderRunner(threading.Thread):
                     if valid_for_removal_action and self._timer_thread is not None and card_id == previous_id:
                         self._timer_thread.trigger.set()
                     if card_id != previous_id or (time.time() - previous_time) >= self._cfg_same_id_delay:
-                        # (2) Trigger audible/visual feed-back
-                        # Do this first to provide fast audible/visual feed-back
-                        if self._action_thread:
-                            self._action_thread.trigger.set()
+                        # (2) Log this: do this first to provide log entry in case something does not run through
                         self._logger.info(f"Received card id = '{card_id}'")
 
                         previous_id = card_id
@@ -242,17 +233,10 @@ class ReaderRunner(threading.Thread):
 def finalize():
     jukebox.cfghandler.load_yaml(cfg_rfid, cfg_main.getn('rfid', 'reader_config'))
 
-    # Pin Action Thread
-    # TODO: Change to factory pattern?
-    buzzer_thread = None
-    if plugs.exists('rfidpinaction'):
-        buzzer_module = plugs.get('rfidpinaction')
-        buzzer_thread = buzzer_module.get_handler()
-
     # Load all the required modules
     # Start a ReaderRunner-Thread for each Reader
     for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
-        _READERS[reader_cfg_key] = ReaderRunner(reader_cfg_key, buzzer_thread)
+        _READERS[reader_cfg_key] = ReaderRunner(reader_cfg_key)
     for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
         _READERS[reader_cfg_key].start()
 

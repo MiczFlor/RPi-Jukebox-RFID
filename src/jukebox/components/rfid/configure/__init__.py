@@ -157,11 +157,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
             reader_descriptions.append('(No description provided!)')
 
     # Prepare the configuration collector with the base values
-    config_dict = {'rfid': {'readers': {}},
-                   'rfid.pinaction.rpi': {'enabled': False,
-                                  'pin': 0,
-                                  'duration': 0.2,
-                                  'retrigger': True}}
+    config_dict = {'rfid': {'readers': {}}}
 
     # Ask the user to configure new RFID readers until he has enough of it
     reader_select_name = []
@@ -222,16 +218,8 @@ def query_user_for_reader(dependency_install='query') -> dict:
                                 prompt_color=Colors.lightgreen, prompt_hint=True):
             break
 
-    # TODO: This is currently not in use: needs to be integrated with new GPIO concept
-    # print("\n\nDo you want to configure a GPIO output pin to sound a Buzzer or flash an LED on successful card read?\n"
-    #       "Enter '0' or leave blank to disable a Buzzer/LED pin\n"
-    #       "If enabled you may change the active duration manually in the configuration file")
-    # buzzer_pin = pyil.input_int("Buzzer/LED pin number?", min=0, max=27, blank=0,
-    #                             prompt_color=Colors.lightgreen, prompt_hint=True)
-    buzzer_pin = False
-    if buzzer_pin:
-        config_dict['rfid.pinaction.rpi']['enabled'] = True
-        config_dict['rfid.pinaction.rpi']['pin'] = buzzer_pin
+    print("\n\nIf you want to configure a Buzzer or LED for detected card swipes\n"
+          "please go to the documentation and read the section 'GPIO Recipes'\n")
 
     return config_dict
 
