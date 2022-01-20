@@ -107,7 +107,7 @@ def bind_rpc_command(cfg_rpc_cmd: Dict, dereference=False, logger: logging.Logge
 
     :param dereference: Dereference even the call to plugs.call(...)
 
-            #. If false the returned function is ``plugs.call(package, plugin, method, *args, **kwargs)`` with
+            #. If false, the returned function is ``plugs.call(package, plugin, method, *args, **kwargs)`` with
                 all checks applied at bind time
             #. If true, the returned function is ``package.plugin.method(*args, **kwargs)`` with
                 all checks applied at bind time.
@@ -115,7 +115,7 @@ def bind_rpc_command(cfg_rpc_cmd: Dict, dereference=False, logger: logging.Logge
         Setting deference to True, circumvents the dynamic nature of the plugins: the function to call
             must exist at bind time and cannot change. If False, the function to call must only exist at call time.
             This can be important during the initialization where package ordering and initialization means that not all
-            class have been instantiated yet. With dereference=True also the plugs thread lock for serialization of calls
+            classes have been instantiated yet. With dereference=True also the plugs thread lock for serialization of calls
             is circumvented. Use with care!
 
     :return: Callable function w/o parameters which directly runs the RPC command

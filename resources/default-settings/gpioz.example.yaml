@@ -1,5 +1,5 @@
 # Provides a few selected examples of GPIO configuration
-# For many more configuration recipes go to the documentation!
+# Check out the documentation for many more configuration recipes
 # https://rpi-jukebox-rfid.readthedocs.io/en/latest/index.html
 pin_factory:
   type: mock.MockFactory
@@ -16,7 +16,7 @@ output_devices:
     kwargs:
       pin: 12
   VolumeLED:
-    # Have an LED change it’s brightness to reflect the current volume level.
+    # Have an LED change its brightness to reflect the current volume level.
     type: PWMLED
     connect: gpio.gpioz.plugin.connectivity.register_volume_led_callback
     kwargs:
@@ -31,7 +31,7 @@ input_devices:
       on_press:
         alias: toggle
   VolumeRotator:
-    # A rotary encoder like the KY-040 to change the volume.
+    # A rotary encoder (e.g. KY-040) to change the volume.
     type: RotaryEncoder
     kwargs:
       a: 5
