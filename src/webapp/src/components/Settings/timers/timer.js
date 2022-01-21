@@ -11,7 +11,7 @@ import { useTheme } from '@mui/material/styles';
 
 import request from '../../../utils/request';
 import {
-  Countdown,
+  Counter,
   SliderTimer
 } from '../../general';
 
@@ -86,7 +86,7 @@ const Timer = ({ type }) => {
           marginLeft: '0',
         }}>
           {status?.enabled &&
-            <Countdown
+            <Counter
               seconds={status.remaining_seconds}
               onEnd={() => setEnabled(false)}
               stringEnded={t('settings.timers.ended')}

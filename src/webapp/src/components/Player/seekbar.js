@@ -1,28 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PlayerContext from '../../context/player/context';
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+
+import PubSubContext from '../../context/pubsub/context';
+import { Counter } from '../general';
 import {
   progressToTime,
   timeToProgress,
   toHHMMSS,
 } from '../../utils/utils';
-
-import Grid from '@mui/material/Grid';
-import Slider from '@mui/material/Slider';
-import Typography from '@mui/material/Typography';
-
 import request from '../../utils/request';
 
 const SeekBar = () => {
   const { t } = useTranslation();
-  const { state } = useContext(PlayerContext);
-  const { playerstatus } = state;
+  const { state: { player_status } } = useContext(PubSubContext);
 
+  const [isRunning, setIsRunning] = useState(player_status?.playing);
   const [isSeeking, setIsSeeking] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [timeElapsed, setTimeElapsed] = useState(parseFloat(playerstatus?.elapsed) || 0);
-  const timeTotal = parseFloat(playerstatus?.duration) || 0;
+  const [timeElapsed, setTimeElapsed] = useState(parseFloat(player_status?.elapsed) || 0);
+  const timeTotal = parseFloat(player_status?.duration) || 0;
 
   const updateTimeAndProgress = (newTime) => {
     setTimeElapsed(newTime);
@@ -35,7 +35,7 @@ const SeekBar = () => {
     updateTimeAndProgress(progressToTime(timeTotal, newPosition));
   };
 
-  // Only send commend to backend when user committed to new position
+  // Only send command to backend when user committed to new position
   // We don't send it while seeking (too many useless requests)
   const playFromNewTime = () => {
     request('seek', { new_time: timeElapsed.toFixed(3) });
@@ -46,16 +46,16 @@ const SeekBar = () => {
     // Avoid updating time and progress when user is seeking to new
     // song position
     if (!isSeeking) {
-      updateTimeAndProgress(playerstatus?.elapsed);
+      updateTimeAndProgress(player_status?.elapsed);
     }
-  }, [playerstatus]);
+  }, [player_status]);
 
   return <>
     <Grid container>
       <Grid item xs>
         <Slider
           aria-labelledby={t('player.seekbar.song-position')}
-          disabled={!playerstatus?.title}
+          disabled={!player_status?.title}
           onChange={handleSeekToPosition}
           onChangeCommitted={playFromNewTime}
           size="small"
@@ -74,7 +74,12 @@ const SeekBar = () => {
     >
       <Grid item>
         <Typography color="textSecondary">
-          {toHHMMSS(parseInt(timeElapsed))}
+          <Counter
+            direction="up"
+            paused={!isRunning}
+            seconds={timeElapsed}
+            end={timeTotal}
+          />
         </Typography>
       </Grid>
       <Grid item>

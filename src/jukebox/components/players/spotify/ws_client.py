@@ -62,7 +62,14 @@ class SpotifyWsClient:
     def _on_error(self, socket, error):
         logger.error(f'Websocket error: {error}')
 
+
+    # We only care about seconds, not ms as provided by Spotify
+    def _round_time_to_seconds(self, time):
+        return '{:.1f}'.format(time / 1000)
+
     def metadata_available(self, data: dict):
+        cover_art = data['track']['album']['coverGroup']['image'][2]['fileId'].lower()
+
         self.player_status.update(
             player = 'Spotify', # TODO: Should this be done differently?
             trackid = data['track']['gid'],
@@ -70,31 +77,31 @@ class SpotifyWsClient:
             artist = data['track']['artist'][0]['name'],
             album = data['track']['album']['name'],
             albumartist = data['track']['album']['artist'][0]['name'],
-            totalTime = data['track']['duration'],
-            coverArt = data['track']['album']['coverGroup']['image'][2]['fileId'].lower()
+            duration = self._round_time_to_seconds(data['track']['duration']),
+            coverArt =cover_art
         )
 
     def playback_paused(self, data: dict):
         self.player_status.update(
             playing = False,
-            timeElapsed = data['trackTime']
+            elapsed = self._round_time_to_seconds(data['trackTime'])
         )
 
     def playback_resumed(self, data: dict):
         self.player_status.update(
             playing = True,
-            timeElapsed = data['trackTime']
+            elapsed = self._round_time_to_seconds(data['trackTime'])
         )
 
     def playback_halted(self, data: dict):
         self.player_status.update(
             playing = data['halted'],
-            timeElapsed = data['trackTime']
+            elapsed = self._round_time_to_seconds(data['trackTime'])
         )
 
     def track_seeked(self, data: dict):
         self.player_status.update(
-            timeElapsed = data['trackTime']
+            elapsed = self._round_time_to_seconds(data['trackTime'])
         )
 
     # When Spotify session is routed to another device,

@@ -7,19 +7,19 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 class PlayerStatus:
     STATUS = {
-        'player': '',
+        'album': '',
+        'albumartist': '',
+        'artist': '',
+        'coverArt': '',
+        'duration': 0,
+        'elapsed': 0,
+        'file': '', # required for MPD // check if really is required
+        'player': '', # TODO: TBD, Spotify or MPD
         'playing': False,
         'shuffle': False,
         'repeat': 0,
-        'trackid': '',
         'title': '',
-        'artist': '',
-        'albumartist': '',
-        'album': '',
-        'timeTotal': 0,
-        'timeElapsed': 0,
-        'file': '', # required for MPD // check if really is required
-        'coverArt': ''
+        'trackid': '',
     }
 
     def __init__(self):
