@@ -8,7 +8,6 @@ the actions and callbacks. It also provides a very restricted, but common API fo
 That API is mainly used for testing. All the relevant output state changes are usually made through callbacks directly
 using the output device's API.
 """
-import atexit
 import importlib
 import logging
 import traceback
