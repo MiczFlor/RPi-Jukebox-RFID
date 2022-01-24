@@ -135,6 +135,73 @@ const commands = {
     plugin: 'ctrl',
     method: 'mute',
   },
+  getAudioOutputs: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'get_outputs',
+  },
+  setAudioOutput: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'set_output',
+    argKeys: ['sink_index'],
+  },
+  toggle_output: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'toggle_output',
+  },
+
+  // Timers
+  'timer_fade_volume.cancel': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'cancel',
+  },
+  'timer_fade_volume.get_state': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'get_state',
+  },
+  'timer_fade_volume': {
+    _package: 'timers',
+    plugin: 'timer_fade_volume',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+  'timer_shutdown.cancel': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'cancel',
+  },
+  'timer_shutdown.get_state': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'get_state',
+  },
+  'timer_shutdown': {
+    _package: 'timers',
+    plugin: 'timer_shutdown',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+  'timer_stop_player.cancel': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'cancel',
+  },
+  'timer_stop_player.get_state': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'get_state',
+  },
+  'timer_stop_player': {
+    _package: 'timers',
+    plugin: 'timer_stop_player',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+
 
   // Host
   getAutohotspotStatus: {
@@ -149,6 +216,14 @@ const commands = {
     _package: 'host',
     plugin: 'stop_autohotspot',
   },
+  getIpAddress: {
+    _package: 'host',
+    plugin: 'get_ip_address',
+  },
+  getDiskUsage: {
+    _package: 'host',
+    plugin: 'get_disk_usage',
+  },
   reboot: {
     _package: 'host',
     plugin: 'reboot',
@@ -156,6 +231,11 @@ const commands = {
   shutdown: {
     _package: 'host',
     plugin: 'shutdown',
+  },
+  say_my_ip: {
+    _package: 'host',
+    plugin: 'say_my_ip',
+    argKeys: ['option'],
   },
 };
 

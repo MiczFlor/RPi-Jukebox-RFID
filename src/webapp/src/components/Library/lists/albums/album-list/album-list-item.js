@@ -3,6 +3,7 @@ import {
   Link,
   useLocation,
 } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import {
   Avatar,
@@ -13,16 +14,16 @@ import {
 } from '@mui/material';
 
 import noCover from '../../../../../assets/noCover.jpg';
-import { LABELS } from '../../../../../config';
 
 const AlbumListItem = ({ albumartist, album, isButton = true }) => {
+  const { t } = useTranslation();
   const { search: urlSearch } = useLocation();
 
   const AlbumLink = forwardRef((props, ref) => {
     const { data } = props;
 
-    const artist = encodeURIComponent(data?.albumartist || LABELS.UNKNOW_ARTIST);
-    const album = encodeURIComponent(data?.album || LABELS.UNKNOW_ALBUM);
+    const artist = encodeURIComponent(data?.albumartist || t('library.albums.unknown-artist'));
+    const album = encodeURIComponent(data?.album || t('library.albums.unknown-album'));
 
     // TODO: Introduce fallback incase artist or album are undefined
     const location = `${artist}/${album}${urlSearch}`;
@@ -43,7 +44,7 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
           <Avatar variant="rounded" alt="Cover" src={noCover} />
         </ListItemAvatar>
         <ListItemText
-          primary={album || LABELS.UNKNOW_ALBUM}
+          primary={album || t('library.albums.unknown-album')}
           secondary={albumartist || null}
         />
       </ListItemButton>

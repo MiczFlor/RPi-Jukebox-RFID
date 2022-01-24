@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -16,6 +17,7 @@ const SongListControls = ({
   registerMusicToCard,
   isSelecting
 }) => {
+  const { t } = useTranslation();
   const command = 'play_album';
 
   const playAlbum = () => (
@@ -49,7 +51,7 @@ const SongListControls = ({
                 onClick={registerAlbumToCard}
                 sx={{ margin: '20px 0 4px' }}
               >
-                Assign album to card
+                {t('library.albums.assign-to-card')}
               </Button>
         }
       </Grid>

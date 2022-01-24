@@ -3,11 +3,11 @@
 
 # pi-rc522 use latest version from Github
 # This is the original versions. Seems unmaintained for the moment
-# git+git://github.com/ondryaso/pi-rc522.git#egg=pi-rc522
+# git+https://github.com/ondryaso/pi-rc522.git#egg=pi-rc522
 
 # The fork of kevinvalk has some good improvements
 # https://github.com/kevinvalk/pi-rc522
 # Get the kevinvalk fork yet again from a different fork which ensures compatibility with the Phoniebox
-git+git://github.com/ChisSoc/pi-rc522.git#egg=pi-rc522
+git+https://github.com/ChisSoc/pi-rc522.git#egg=pi-rc522
 
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Grid,
@@ -7,7 +8,8 @@ import {
 
 import SelectCommandAliases from './select-command-aliases';
 import SelectPlayMusic from './actions/play-music';
-import SelectVolume from './actions/volume';
+import SelectTimers from './actions/timers';
+import SelectAudio from './actions/audio';
 import { buildActionData } from '../utils';
 import SelectHost from './actions/host';
 
@@ -16,6 +18,8 @@ const ControlsSelector = ({
   setActionData,
   cardId,
 }) => {
+  const { t } = useTranslation();
+
   const handleActionChange = (event) => {
     setActionData(
       buildActionData(event.target.value)
@@ -32,7 +36,9 @@ const ControlsSelector = ({
     <Grid container direction="column">
       <Grid container direction="row" alignItems="center">
         <Grid item xs={5}>
-          <Typography>Jukebox action</Typography>
+          <Typography>
+            {t('cards.controls.controls-selector.label')}
+          </Typography>
         </Grid>
         <Grid item xs={7}>
           <SelectCommandAliases
@@ -47,21 +53,29 @@ const ControlsSelector = ({
         alignItems="center"
         sx={{ marginTop: '20px' }}
       >
+        {actionData.action === 'host' &&
+          <SelectHost
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+          />
+        }
+
         {actionData.action === 'play_music' &&
           <SelectPlayMusic
             actionData={actionData}
             cardId={cardId}
           />
         }
-        {actionData.action === 'volume' &&
-          <SelectVolume
+
+        {actionData.action === 'timers' &&
+          <SelectTimers
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />
         }
 
-        {actionData.action === 'host' &&
-          <SelectHost
+        {actionData.action === 'audio' &&
+          <SelectAudio
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />

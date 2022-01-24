@@ -1,5 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import {
   FormControl,
@@ -15,6 +16,7 @@ const CommandSelector = ({
   actionData,
   handleActionDataChange,
 }) => {
+  const { t } = useTranslation();
   const { action, command = {} } = getActionAndCommand(actionData);
   const commandList = Object.keys(JUKEBOX_ACTIONS_MAP[action].commands);
   const value = isEmpty(command) ? 0 : command;
@@ -26,7 +28,9 @@ const CommandSelector = ({
   return (
     <Grid container direction="row" alignItems="center">
       <Grid item xs={5}>
-        <Typography>Commands</Typography>
+        <Typography>
+          {t('cards.controls.command-selector.title')}
+        </Typography>
       </Grid>
       <Grid item xs={7}>
         <FormControl>
@@ -34,11 +38,16 @@ const CommandSelector = ({
             value={value}
             onChange={onChange}
             name="commands"
-            inputProps={{ 'aria-label': `${JUKEBOX_ACTIONS_MAP[action]?.title} commands` }}
+            inputProps={{
+              'aria-label': t(
+                'cards.controls.command-selector.label',
+                { title: JUKEBOX_ACTIONS_MAP[action]?.title }
+              )
+            }}
           >
             {commandList.length &&
               <option key={0} value={'0'} disabled={true}>
-                Select a command
+                {t('cards.controls.command-selector.placeholder')}
               </option>
             }
             {commandList.map((command, key) =>
@@ -46,7 +55,7 @@ const CommandSelector = ({
                 key={key}
                 value={commandList[key]}
               >
-                {JUKEBOX_ACTIONS_MAP[action]?.commands[command]?.title}
+                {t(`cards.controls.command-selector.commands.${command}`)}
               </option>
             )}
           </NativeSelect>
