@@ -26,6 +26,7 @@ class PlayersFactory:
     def get(self, player_name, **kwargs):
         return self.create(player_name, **kwargs)
 
+
 factory: PlayersFactory
 
 
@@ -70,7 +71,7 @@ def play_album(player: str, album: str, albumartist: str = None):
         return players.get(player).play_album(album, albumartist)
 
     if player == 'Spotify':
-        return players.get(player).play_album(uri = album)
+        return players.get(player).play_album(uri=album)
 
 
 @plugin.register

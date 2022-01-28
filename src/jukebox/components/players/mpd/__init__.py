@@ -3,11 +3,12 @@ import mpd
 
 logger = logging.getLogger('jb.players.mpd')
 
+
 # MPD Interface
 class MpdPlayer:
     def __init__(self):
         logger.debug('Init MPD')
-        self.mpd_client = mpd.MPDClient() # This is pseudo code, not functionl yet
+        self.mpd_client = mpd.MPDClient()  # This is pseudo code, not functionl yet
 
     def play_single(self, uri: str):
         self.mpd_client.clear()
