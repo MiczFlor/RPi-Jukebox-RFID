@@ -5,6 +5,7 @@ import threading
 
 logger = logging.getLogger("jb.SpotifyWsClient")
 
+
 class SpotifyWsClient:
     def __init__(self, host: str, player_status, port: int = 24879):
         self.protocol = 'ws'
@@ -32,11 +33,11 @@ class SpotifyWsClient:
         websocket.enableTrace(True)
         self.socket = websocket.WebSocketApp(
             self.url,
-            on_close = self._on_close,
-            on_error = self._on_error,
-            on_message = self._on_message
+            on_close=self._on_close,
+            on_error=self._on_error,
+            on_message=self._on_message
         )
-        self.thread = threading.Thread(target = self.socket.run_forever)
+        self.thread = threading.Thread(target=self.socket.run_forever)
         self.thread.daemon = True
         self.thread.start()
 
@@ -62,7 +63,6 @@ class SpotifyWsClient:
     def _on_error(self, socket, error):
         logger.error(f'Websocket error: {error}')
 
-
     # We only care about seconds, not ms as provided by Spotify
     def _round_time_to_seconds(self, time):
         return '{:.1f}'.format(time / 1000)
@@ -71,40 +71,40 @@ class SpotifyWsClient:
         cover_art = data['track']['album']['coverGroup']['image'][2]['fileId'].lower()
 
         self.player_status.update(
-            player = 'Spotify', # TODO: Should this be done differently?
-            trackid = data['track']['gid'],
-            title = data['track']['name'],
-            artist = data['track']['artist'][0]['name'],
-            album = data['track']['album']['name'],
-            albumartist = data['track']['album']['artist'][0]['name'],
-            duration = self._round_time_to_seconds(data['track']['duration']),
-            coverArt =cover_art
+            player='Spotify',  # TODO: Should this be done differently?
+            trackid=data['track']['gid'],
+            title=data['track']['name'],
+            artist=data['track']['artist'][0]['name'],
+            album=data['track']['album']['name'],
+            albumartist=data['track']['album']['artist'][0]['name'],
+            duration=self._round_time_to_seconds(data['track']['duration']),
+            coverArt=cover_art
         )
 
     def playback_paused(self, data: dict):
         self.player_status.update(
-            playing = False,
-            elapsed = self._round_time_to_seconds(data['trackTime'])
+            playing=False,
+            elapsed=self._round_time_to_seconds(data['trackTime'])
         )
 
     def playback_resumed(self, data: dict):
         self.player_status.update(
-            playing = True,
-            elapsed = self._round_time_to_seconds(data['trackTime'])
+            playing=True,
+            elapsed=self._round_time_to_seconds(data['trackTime'])
         )
 
     def playback_halted(self, data: dict):
         self.player_status.update(
-            playing = data['halted'],
-            elapsed = self._round_time_to_seconds(data['trackTime'])
+            playing=data['halted'],
+            elapsed=self._round_time_to_seconds(data['trackTime'])
         )
 
     def track_seeked(self, data: dict):
         self.player_status.update(
-            elapsed = self._round_time_to_seconds(data['trackTime'])
+            elapsed=self._round_time_to_seconds(data['trackTime'])
         )
 
     # When Spotify session is routed to another device,
     # the local session goes inactive
     def inactive_session(self, data: dict):
-        self.player_status.update(playing = False)
+        self.player_status.update(playing=False)
