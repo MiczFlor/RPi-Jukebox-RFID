@@ -16,9 +16,10 @@ eyed3
 # For the publisher event reactor loop:
 tornado
 
-# RPi's GPIO packages
-RPi.GPIO
-gpiozero
+# RPi's GPIO packages: these are installed via APT on the PI
+# On regular machines, install them manually if needed for development
+# RPi.GPIO
+# gpiozero
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support
