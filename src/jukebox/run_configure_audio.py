@@ -2,12 +2,15 @@
 """
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
+Will also setup equalizer and mono down mixer in the pulseaudio config file.
+
 Run this once after installation. Can be re-run at any time to change the settings.
 For more information see :ref:`userguide/audio:Audio Configuration`.
 """
 import os
 import argparse
 import re
+import shutil
 import sys
 
 import pulsectl
@@ -25,11 +28,13 @@ import components.hostif.linux as host  # noqa: E402
 
 class PaConfigClass:
     def __init__(self, jukebox_cfg_file: str, pulse_cfg_file: str,
+                 script_path: str,
                  treat_pulse_as_readonly: bool = False,
                  full_secondary_list: bool = False,
                  disable_switch_on_connect: bool = True):
         self.jukebox_cfg_file: str = jukebox_cfg_file
         self.pulse_cfg_file: str = pulse_cfg_file
+        self.script_path: str = script_path
         self.primary: Optional[str] = None
         self.secondary: Optional[str] = None
         self.toggle_on_connect: bool = False
@@ -95,7 +100,6 @@ def yield_upstream_sink(sink: pulsectl.PulseSinkInfo):
             print("  3) There is a stale entry in your config.")
             print("     Solution: Delete one of the offending source from the PulseAudio configuration file\n")
             sys.exit(1)
-            # raise ValueError(f'Non-uniuqu signal processing chain.')
         if cnt == 1:
             sink = next_sink[0]
             cnt = 0
@@ -297,10 +301,28 @@ def configure_pa_switch_on_connect(pulse_cfg_file_content):
     return pulse_cfg_file_content
 
 
+def query_create_default_pa_config(script_path, config_file_path):
+    default_config_path = os.path.normpath(os.path.join(script_path,
+                                                        '../../resources/default-settings/pulseaudio.default.pa'))
+    print(f"\n*** PulseAudio configuration file does not exist: '{config_file_path}'.")
+    print(f"    RPI-Jukebox-RFID's default is: '{default_config_path}'.\n")
+    query = pyil.input_yesno(f"Create new config file from RPi-Jukebox-RFID default?",
+                             blank=True,
+                             prompt_color=Colors.lightgreen,
+                             prompt_hint=True)
+
+    if query:
+        shutil.copyfile(default_config_path, config_file_path)
+    return query
+
+
 def configure_pulseaudio(pulse_config: PaConfigClass):
     if pulse_config.treat_pulse_as_readonly:
         print("\n*** Not touching pulse audio configuration file due to command line parameter")
         return pulse_config
+
+    if not os.path.isfile(pulse_config.pulse_cfg_file):
+        query_create_default_pa_config(pulse_config.script_path, pulse_config.pulse_cfg_file)
 
     with open(pulse_config.pulse_cfg_file) as f:
         pulse_cfg_file_content = f.read()
@@ -381,7 +403,9 @@ def goodbye(pulse_config: PaConfigClass):
     print('Summary:')
     print(pulse_config)
 
-    print('\nNote that you must restart PulseAudio and the Jukebox Service for changes to take effect:')
+    msg_highlight('Note:')
+    print('You must restart PulseAudio if you changed and of the PulseAudio settings (equalizer, mono mixer, system default')
+    print('You must always restart the Jukebox Service for changes to take effect.')
     print('Do this also even if you want to re-run this tool right now!')
     print('$ systemctl --user restart pulseaudio')
     print('$ systemctl --user restart jukebox-daemon\n')
@@ -397,7 +421,7 @@ def main():
     argparser.add_argument('-j', '--jukebox', type=argparse.FileType('r'), default=default_cfg_jukebox,
                            help=f"Jukebox configuration file [default: '{default_cfg_jukebox}'",
                            metavar="FILE")
-    argparser.add_argument('-p', '--pulseaudio', type=argparse.FileType('r'), default=default_cfg_pulse,
+    argparser.add_argument('-p', '--pulseaudio', default=default_cfg_pulse,
                            help=f"PulseAudio configuration file [default: '{default_cfg_pulse}'",
                            metavar="FILE")
     argparser.add_argument('-n', '--ro_pulse', default=False, action='store_true',
@@ -407,7 +431,8 @@ def main():
     args = argparser.parse_args()
 
     pulse_config = PaConfigClass(jukebox_cfg_file=os.path.abspath(os.path.expanduser(args.jukebox.name)),
-                                 pulse_cfg_file=os.path.abspath(os.path.expanduser(args.pulseaudio.name)),
+                                 pulse_cfg_file=os.path.abspath(os.path.expanduser(args.pulseaudio)),
+                                 script_path=script_path,
                                  treat_pulse_as_readonly=args.ro_pulse,
                                  full_secondary_list=args.full)
 
