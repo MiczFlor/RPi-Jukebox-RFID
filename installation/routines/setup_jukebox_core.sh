@@ -24,7 +24,7 @@ _jukebox_core_install_os_dependencies() {
     at \
     alsa-utils \
     python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
-    ffmpeg mpg123 \
+    espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils \
     --no-install-recommends \
     --allow-downgrades \

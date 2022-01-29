@@ -406,13 +406,18 @@ class PulseVolumeControl:
         self.on_volume_change_callbacks._run_callbacks(volume, volume <= 0, volume >= self._soft_max_volume)
         return volume, mute
 
-    def _publish_outputs(self, pulse_inst: pulsectl.Pulse):
+    def _get_outputs(self, pulse_inst: pulsectl.Pulse):
         sink_name = pulse_inst.server_info().default_sink_name
         sink_alias = 'Unset alias'
         for e in self._sink_list:
             if e.pulse_sink_name == sink_name:
                 sink_alias = e.alias
                 break
+        return sink_alias, sink_name
+
+    def _publish_outputs(self, pulse_inst: pulsectl.Pulse):
+        sink_alias, sink_name = self._get_outputs(pulse_inst)
+
         publishing.get_publisher().send('volume.sink',
                                         {'active_alias': sink_alias,
                                          'active_sink': sink_name,
@@ -467,6 +472,15 @@ class PulseVolumeControl:
         """Toggle the audio output sink"""
         with pulse_monitor as pulse:
             self._toggle_output(pulse)
+
+    @plugin.tag
+    def get_outputs(self):
+        """Get current output and list of outputs"""
+        with pulse_monitor as pulse:
+            sink_alias, sink_name = self._get_outputs(pulse)
+        return {'active_alias': sink_alias,
+                'active_sink': sink_name,
+                'sink_list': [s._asdict() for s in self._sink_list]}
 
     @plugin.tag
     def publish_volume(self):

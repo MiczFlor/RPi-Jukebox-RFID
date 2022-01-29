@@ -1,0 +1,243 @@
+{
+  "general": {
+    "buttons": {
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "save": "Speichern"
+    },
+    "loading": "Wird geladen"
+  },
+  "cards": {
+    "controls": {
+      "command-selector": {
+        "title": "Befehl",
+        "label": "{{title}} Befehle",
+        "placeholder": "Wähle einen Befehl aus",
+        "commands": {
+          "change_volume": "Lautstärke anpassen",
+          "shutdown": "Herunterfahren",
+          "reboot": "Neustarten",
+          "say_my_ip": "IP Addresse vorlesen",
+          "timer_shutdown": "Shut Down",
+          "timer_stop_player": "Stop player",
+          "timer_fade_volume": "Fade volume",
+          "toggle_output": "Audio-Ausgang umschalten"
+        }
+      },
+      "controls-selector": {
+        "label": "Jukebox Aktion"
+      },
+      "select-command-aliases": {
+        "label": "Aktionen",
+        "placeholder": "Wähle eine Aktion aus",
+        "actions": {
+          "play_music": "Musik abspielen",
+          "audio": "Audio & Lautstärke",
+          "host": "System",
+          "timers": "Timer"
+        }
+      },
+      "actions": {
+        "host": {
+          "description": "Möchtest du die gesamte IP Addresse vorlesen lassen oder nur den letzten Quadranten?",
+          "label-full": "Gesamte Addresse (z.B. 192.168.1.53)",
+          "label-short": "Letzter Quadrant (z.B. 53)"
+        },
+        "play-music": {
+          "commands": {
+            "play_album": "Ausgewähltes Album",
+            "play_folder": "Ausgewählter Ordner",
+            "play_single": "Ausgewählter Song"
+          },
+          "button-label": "Musik auswählen",
+          "no-music-selected": "Es ist keine Musik ausgewählt.",
+          "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
+        },
+        "volume": {
+          "title": "Lautstärke Stufen"
+        },
+        "timers": {
+          "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
+        }
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Karte löschen '{{cardId}}'",
+        "description": "Bist du sicher, dass du diese Karte löschen möchtest?"
+      }
+    },
+    "edit": {
+      "edit-card": "Karte bearbeiten"
+    },
+    "form": {
+      "no-card-swiped": "Bitte scanne eine Karte um einen ID zu erhalten. Diese wird dann zur Registrierung einer neuen Aktion verwendet.",
+      "no-card-id": "Keine Karten-ID vorhanden"
+    },
+    "list": {
+      "no-cards-registered": "Es wurden noch keine Karten registriert!"
+    },
+    "overview": {
+      "cards": "Karten",
+      "loading-error": "Während des Ladens der Karten ist ein Fehler aufgetreten",
+      "register-card": "Registriere eine Karte"
+    },
+    "register": {
+      "register-card": "Registriere eine Karte"
+    }
+  },
+  "header": {
+    "back": "Zurück"
+  },
+  "library": {
+    "loading-error": "Die Bibliothek konnte nicht geladen werden.",
+    "header": {
+      "search-hide": "Suche ausblenden",
+      "search-show": "Suche einblenden",
+      "search-label": "Suche",
+      "toggle-label": "Album- und Ordner-Ansicht",
+      "albums": "Alben",
+      "folders": "Ordner"
+    },
+    "selector-header": {
+      "title": "Wähle ein Album, einen Ordner oder einen Song aus"
+    },
+    "folders": {
+      "no-music": "Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer!",
+      "show-folder-content": "Zeige den Ordnerinhalt an",
+      "back-button-label": "Zurück"
+    },
+    "albums": {
+      "unknown-album": "Unbekanntes Album",
+      "unknown-artist": "Unbekannter Künstler",
+      "unknown-title": "Unbekannter Titel",
+      "no-music": "Keine Musik vorhanden!",
+      "empty-library": "Deine Bibliothek ist noch leer!",
+      "no-songs-in-album": "Komisch, in diesem Album gibt es keine Songs.",
+      "assign-to-card": "Dieses Album registrieren"
+    }
+  },
+  "navigation": {
+    "start": "Start",
+    "library": "Bibliothek",
+    "cards": "Karten",
+    "settings": "Einstellungen"
+  },
+  "player": {
+    "controls": {
+      "shuffle": {
+        "activate": "Shuffle aktivieren",
+        "deactivate": "Shuffle deaktivieren"
+      },
+      "skip": "Zurück",
+      "play": "Abspielen",
+      "pause": "Pause",
+      "next": "Weiter",
+      "repeat": {
+        "activate": "Wiederholen aktivieren",
+        "activate-single": "1 Wiederholen aktivieren",
+        "deactivate": "Wiederholen deaktivieren"
+      }
+    },
+    "cover": {
+      "title": "Cover Art",
+      "unavailable": "Kein Cover vorhanden"
+    },
+    "display": {
+      "unknown-title": "Unbekannter Titel",
+      "unknown-artist": "Unbekannter Künstler",
+      "no-song-in-queue": "Es wird kein Titel abgespielt"
+    },
+    "seekbar": {
+      "song-position": "Aktuelle Position"
+    },
+    "volume": {
+      "slider": "Lautstärkeregler",
+      "mute": "Stumm schalten",
+      "unmute": "Stumm schalten deaktivieren"
+    }
+  },
+  "settings": {
+    "feature-not-enabled": "🚧 Diese Funktion ist noch nicht aktiviert.",
+    "dialogs": {
+      "reboot": {
+        "title": "Neustart",
+        "rebooting": "Das System wird neu gestartet.",
+        "button-title": "Neustart",
+        "description-confirm": "Möchtest Du jetzt wirklich neu starten?",
+        "failed": "Neustart fehlgeschlagen"
+      },
+      "shutdown": {
+        "title": "Herunterfahren",
+        "bye": "👋 Bis bald",
+        "button-title": "Herunterfahren",
+        "description-confirm": "Möchtest Du jetzt wirklich herunterfahren?",
+        "description-success": "Das System wurde erfolgreich heruntergefahren",
+        "failed": "Herunterfahren fehlgeschlagen"
+      }
+    },
+    "autohotspot": {
+      "title": "Auto Hotspot",
+      "not-installed": "Diese Funktion ist nicht installiert",
+      "why": "Warum?",
+      "control-label": "Auto Hotspot"
+    },
+    "timers": {
+      "option-label-timeslot": "{{value}} min",
+      "option-label-off": "Aus",
+      "title": "Timer",
+      "stop-player": "Wiedergabe stoppen",
+      "shutdown": "Herunterfahren",
+      "fade-volume": "Lautstärke ausblenden",
+      "idle-shutdown": "Leerlaufabschaltung",
+      "ended": "Beendet"
+    },
+    "secondswipe": {
+      "title": "Erneute Aktivierung (Second Swipe)",
+      "description": "Aktion, wenn dieselbe Karte ein weiteres Mal aktiviert wird",
+      "restart": "Wiedergabeliste neu starten",
+      "toggle": "Pause / Wiedergabe umschalten",
+      "skip": "Zum nächsten Track springen",
+      "ignore": "Nur Systembefehle mehrfach ausführen"
+    },
+    "status": {
+      "title": "Systemstatus",
+      "battery": {
+        "title": "Batterieladung",
+        "charging": "Batterie wird geladen",
+        "not-charging": "Batterie wird nicht geladen"
+      },
+      "cpu-temp": {
+        "label": "CPU Temperatur",
+        "unavailable": "Nicht verfügbar",
+        "not-enabled": "Nicht aktiviert oder nicht unterstützt"
+      },
+      "disk-usage": {
+        "label": "Speicherverbrauch",
+        "loading-error": "Die Angaben zum Speicherverbrauch konntent nicht geladen werden.",
+        "result": "{{used}} GB von {{total}} GB sind belegt ({{result}}%)"
+      },
+      "ip-address": {
+        "label": "IP Adresse",
+        "button-title": "Lese die IP Adresse vor",
+        "loading-error": "Die IP Adresse konnte nicht geladen werden."
+      },
+      "version": {
+        "label": "Jukebox Core Version"
+      }
+    },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Audio-Ausgänge"
+      },
+      "volume": {
+        "max-volume": "Maximale Lautstärke"
+      }
+    },
+    "systemcontrols": {
+      "title": "Systemsteuerung"
+    }
+  }
+}

@@ -22,59 +22,59 @@ const SUBSCRIPTIONS = [
 const DEFAULT_AUDIO_DIR = '/home/pi/RPi-Jukebox-RFID/shared/audiofolders';
 const ROOT_DIRS = ['./', DEFAULT_AUDIO_DIR];
 
+
+// TODO: The reason why thos commands are empty objects is due to a legacy
+// situation where titles associated with those commands were stored here
+// After the intro of i18n, those titles became obsolete. Because changing
+// the data structure from object to array requires some refactoring, this
+// was not done yet to maintain functionality. It's ok to change the command
+// object keys to arrays, but some downstream methods need to change as well
 const JUKEBOX_ACTIONS_MAP = {
   // Command Aliases
   // Player
   play_music: {
-    title: 'Play music',
     commands: {
-      play_album: {
-        title: 'album',
-      },
-      play_folder: {
-        title: 'folder',
-      },
-      play_single: {
-        title: 'song',
-      },
+      play_album: {},
+      play_folder: {},
+      play_single: {},
     }
   },
 
-  // Volume
-  volume: {
-    title: 'Volume',
+  // Audio & Volume
+  audio: {
     commands: {
-      change_volume: {
-        title: 'Change volume by',
-      }
+      change_volume: {},
+      toggle_output: {}
     },
   },
 
   // Host
   host: {
-    title: 'System',
     commands: {
-      shutdown: {
-        title: 'Shutdown',
-      },
-      reboot: {
-        title: 'Reboot',
-      },
+      shutdown: {},
+      reboot: {},
+      say_my_ip: {},
     }
-  }
+  },
+
+  // Timers
+  timers: {
+    commands: {
+      timer_shutdown: {},
+      timer_stop_player: {},
+      timer_fade_volume: {},
+    }
+  },
 }
 
-const LABELS = {
-  UNKNOW_ARTIST: 'Unknown Artist',
-  UNKNOW_ALBUM: 'Unknown Album',
-}
+const TIMER_STEPS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
 
 export {
   DEFAULT_AUDIO_DIR,
   JUKEBOX_ACTIONS_MAP,
-  LABELS,
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,
   ROOT_DIRS,
   SUBSCRIPTIONS,
+  TIMER_STEPS,
 }

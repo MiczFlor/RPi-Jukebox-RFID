@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -17,6 +18,7 @@ const ActionsControls = ({
   actionData,
   cardId,
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { '*': path } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -66,7 +68,7 @@ const ActionsControls = ({
             size="small"
             onClick={() => setDeleteDialogOpen(true)}
           >
-            Delete
+            {t('general.buttons.delete')}
           </Button>
         }
         <Button
@@ -74,7 +76,7 @@ const ActionsControls = ({
           onClick={() => handleRegisterCard(cardId)}
           size="small"
         >
-          Save
+          {t('general.buttons.save')}
         </Button>
       </CardActions>
       <CardsDeleteDialog

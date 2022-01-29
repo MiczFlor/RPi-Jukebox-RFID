@@ -1,5 +1,6 @@
 import React from 'react';
 import { isEmpty } from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import {
   FormControl,
@@ -13,6 +14,8 @@ const SelectCommandAliases = ({
   actionData,
   handleActionChange
 }) => {
+  const { t } = useTranslation();
+
   const { action = {} } = getActionAndCommand(actionData);
   const actionsList = Object.keys(JUKEBOX_ACTIONS_MAP);
   const value = isEmpty(action) ? 0 : action;
@@ -23,15 +26,17 @@ const SelectCommandAliases = ({
         value={value}
         onChange={handleActionChange}
         name="quick-select-actions"
-        inputProps={{ 'aria-label': 'Actions' }}
+        inputProps={{ 'aria-label': t('cards.controls.select-command-aliases.label') }}
       >
-        <option key={0} value={'0'} disabled={true}>Select an action</option>
+        <option key={0} value={'0'} disabled={true}>
+          {t('cards.controls.select-command-aliases.placeholder')}
+        </option>
         {actionsList.map((action, key) =>
           <option
             key={key}
             value={actionsList[key]}
           >
-            {JUKEBOX_ACTIONS_MAP[action].title}
+            {t(`cards.controls.select-command-aliases.actions.${action}`)}
           </option>
         )}
       </NativeSelect>

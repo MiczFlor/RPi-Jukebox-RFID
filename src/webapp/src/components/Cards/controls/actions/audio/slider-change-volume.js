@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Grid,
@@ -23,6 +24,8 @@ const SliderChangeVolume = ({
   actionData,
   handleActionDataChange,
 }) => {
+  const { t } = useTranslation();
+
   const { action, command } = getActionAndCommand(actionData);
   const [step] = getArgsValues(actionData);
 
@@ -33,11 +36,13 @@ const SliderChangeVolume = ({
   return (
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
-        <Typography>Volume Steps</Typography>
+        <Typography>
+          {t('cards.controls.actions.volume.title')}
+        </Typography>
         <Stack spacing={2} direction="row" alignItems="center">
           <Remove />
           <Slider
-            aria-label="Volume steps"
+            aria-label={t('cards.controls.actions.volume.title')}
             value={step || 0}
             marks={marks}
             step={1}

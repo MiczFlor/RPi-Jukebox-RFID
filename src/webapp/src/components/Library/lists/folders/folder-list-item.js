@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   IconButton,
@@ -19,6 +20,7 @@ const FolderListItem = ({
   isSelecting,
   registerMusicToCard,
 }) => {
+  const { t } = useTranslation();
   const { type, name, path } = folder;
 
   const playItem = () => {
@@ -50,7 +52,7 @@ const FolderListItem = ({
               component={FolderLink}
               data={{ dir: path }}
               edge="end"
-              aria-label="Show folder content"
+              aria-label={t('library.folders.show-folder-content')}
             >
               <NavigateNextIcon />
             </IconButton>

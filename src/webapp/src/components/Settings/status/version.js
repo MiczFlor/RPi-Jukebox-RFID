@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   ListItem,
@@ -12,6 +13,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import PubSubContext from '../../../context/pubsub/context';
 
 const StatusVersion = () => {
+  const { t } = useTranslation();
+
   const { state: { 'core.version': coreVersion } } = useContext(PubSubContext);
 
   return (
@@ -22,8 +25,8 @@ const StatusVersion = () => {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={coreVersion ? `${coreVersion}` : 'Loading ...'}
-        secondary="Jukebox Core Version"
+        primary={coreVersion ? `${coreVersion}` : `${t('general.loading')} ...`}
+        secondary={t('settings.status.version.label')}
       />
     </ListItem>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -9,6 +10,7 @@ import MusicNoteIcon from '@mui/icons-material/MusicNote';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 export default function Navigation() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const [value, setValue] = React.useState(0);
 
@@ -37,25 +39,25 @@ export default function Navigation() {
       <BottomNavigationAction
         component={Link}
         to="/"
-        label="Start"
+        label={t('navigation.start')}
         icon={<HomeIcon />}
       />
       <BottomNavigationAction
         component={Link}
         to="/library"
-        label="Library"
+        label={t('navigation.library')}
         icon={<MusicNoteIcon />}
       />
       <BottomNavigationAction
         component={Link}
         to="/cards"
-        label="Cards"
+        label={t('navigation.cards')}
         icon={<BookmarksIcon />}
       />
       <BottomNavigationAction
         component={Link}
         to="/settings"
-        label="Settings"
+        label={t('navigation.settings')}
         icon={<SettingsIcon />}
       />
     </BottomNavigation>

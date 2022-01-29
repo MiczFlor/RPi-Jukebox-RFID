@@ -133,3 +133,13 @@ bluetooth_audio_buttons:
   # attempt to automatically listen to it's buttons (play, next, ...)
   # Note that volume up/down is handled independently from this by the bluetooth audio protocol
   enable: true
+# Espeak is the current speech synthesizer
+speaking_text:
+  # All languages available here: http://espeak.sourceforge.net/languages.html
+  lang: en
+  # Must be one of: normal, fast, slow
+  speed: normal
+  # Whether you want to read punctuation or not
+  speak_punct: False
+  # Must be one of: female, male, croak, whisper
+  voice: female

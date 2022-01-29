@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import request from '../../utils/request';
 import CardsForm from './form';
@@ -9,6 +10,7 @@ import {
 } from './utils';
 
 const CardsEdit = () => {
+  const { t } = useTranslation();
   const { cardId } = useParams();
   const [actionData, setActionData] = useState({});
 
@@ -40,7 +42,7 @@ const CardsEdit = () => {
 
   return (
     <CardsForm
-      title="Edit card"
+      title={t('cards.edit.edit-card')}
       cardId={cardId}
       actionData={actionData}
       setActionData={setActionData}
