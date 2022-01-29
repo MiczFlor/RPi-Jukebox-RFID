@@ -1,6 +1,11 @@
 [Unit]
 Description=Jukebox Daemon
-# pulseaudio.service is required during shut down of this service, as we play shutdown sound (and adjust the volume)
+# pulseaudio.service is required during shut down of this service,
+# as we play shutdown sound (and adjust the volume). Else the service hangs and kills itself after 10s.
+# This means we have must enforce the ordering AFTER pulseaudio
+# pulseaudio is wanted by default.target, which means sound.target is not enough as after requirement
+# https://serverfault.com/questions/812584/in-systemd-whats-the-difference-between-after-and-requires
+# https://unix.stackexchange.com/questions/390898/understanding-systemd-requires-option
 After=network.target sound.target mpd.service pulseaudio.service
 Requires=mpd.service pulseaudio.service
 

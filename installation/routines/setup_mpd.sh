@@ -64,12 +64,16 @@ setup_mpd() {
 
   if [ "$MPD_EXECUTE_INSTALL" = true ] ; then
     # Make sure system-wide mpd is disabled
+    sudo systemctl stop mpd.socket
     sudo systemctl stop mpd
+    sudo systemctl disable mpd.socket
     sudo systemctl disable mpd
     _mpd_configure
     # Prepare user-service MPD to be started at next boot
     systemctl --user daemon-reload
+    systemctl --user enable mpd.socket
     systemctl --user enable mpd
+    systemctl --user start mpd.socket
     systemctl --user start mpd
   fi
 

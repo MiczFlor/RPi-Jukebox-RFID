@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import PlayerContext from '../../context/player/context';
 import {
@@ -14,6 +15,7 @@ import Typography from '@mui/material/Typography';
 import request from '../../utils/request';
 
 const SeekBar = () => {
+  const { t } = useTranslation();
   const { state } = useContext(PlayerContext);
   const { playerstatus } = state;
 
@@ -52,7 +54,7 @@ const SeekBar = () => {
     <Grid container>
       <Grid item xs>
         <Slider
-          aria-labelledby="Song position"
+          aria-labelledby={t('player.seekbar.song-position')}
           disabled={!playerstatus?.title}
           onChange={handleSeekToPosition}
           onChangeCommitted={playFromNewTime}

@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { omit } from 'ramda';
+import { useTranslation } from 'react-i18next';
 
 import PubSubContext from '../../context/pubsub/context';
 import CardsForm from './form';
 import { useLocation } from 'react-router';
 
 const CardsRegister = () => {
+  const { t } = useTranslation();
   const {
     state: { 'rfid.card_id': swipedCardId },
     setState
@@ -26,7 +28,7 @@ const CardsRegister = () => {
 
   return (
     <CardsForm
-      title="Register a card"
+      title={t('cards.register.register-card')}
       cardId={cardId}
       actionData={actionData}
       setActionData={setActionData}

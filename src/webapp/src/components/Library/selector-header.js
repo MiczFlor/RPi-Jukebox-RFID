@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 
 import {
   Button,
@@ -10,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import { Link } from "react-router-dom";
 
 const SelectorHeader = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
 
   return (
@@ -30,7 +32,7 @@ const SelectorHeader = () => {
         }}
       >
         <Typography>
-          Select an album, folder or song
+          {t('library.selector-header.title')}
         </Typography>
         <Button
           component={Link}
@@ -39,7 +41,7 @@ const SelectorHeader = () => {
           size="small"
           variant="contained"
         >
-          Cancel
+          {t('general.buttons.cancel')}
         </Button>
       </Grid>
     </Grid>

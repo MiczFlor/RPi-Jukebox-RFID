@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { CircularProgress, Grid, List, Typography } from '@mui/material';
 
 import SongListItem from '../../../../Library/lists/albums/song-list/song-list-item'
@@ -7,6 +9,7 @@ import NoMusicSelected from './no-music-selected';
 import request from '../../../../../utils/request';
 
 const SelectecSingle = ({ values: [song_url] }) => {
+  const { t } = useTranslation();
   const [song, setSong] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +30,11 @@ const SelectecSingle = ({ values: [song_url] }) => {
   }, [song_url]);
 
   if (error) {
-    return <Typography>An error occurred while loading song.</Typography>
+    return (
+      <Typography>
+        {t('cards.controls.actions.play-music.loading-song-error')}
+      </Typography>
+    );
   }
 
   if (isLoading) {

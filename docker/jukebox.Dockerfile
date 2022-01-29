@@ -25,7 +25,7 @@ WORKDIR $INSTALLATION_PATH
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     gcc at wget \
-    mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
+    espeak mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
     python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 
 COPY . ${INSTALLATION_PATH}

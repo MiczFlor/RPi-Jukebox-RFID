@@ -3,8 +3,9 @@ devices:
     Type: RotaryEncoder
     Pins: [7, 8]
     timeBase: 0.02
-    FunctionCW: {alias: inc_volume}
-    FunctionCCW: {alias: dec_volume}
+    FunctionCW: {alias: change_volume, kwargs: {step: 5}}  
+    FunctionCCW: {alias: change_volume, kwargs: {step: -5}}
+    action_after_increments: 2     
   PrevNextControl:
     Type: RotaryEncoder
     Pins: [16, 20]

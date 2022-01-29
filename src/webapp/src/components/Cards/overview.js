@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import AddIcon from '@mui/icons-material/Add';
 import CardsList from './list';
@@ -15,6 +16,7 @@ import request from '../../utils/request';
 const CardsOverview = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const [data, setData] = useState({});
   const [error, setError] = useState(null);
@@ -39,7 +41,7 @@ const CardsOverview = () => {
 
   return (
     <Grid container id="cards">
-      <Header title="Cards" />
+      <Header title={t('cards.overview.cards')} />
       <Grid
         container
         spacing={1}
@@ -53,11 +55,11 @@ const CardsOverview = () => {
           : <CardsList cardsList={data} />
         }
         {error &&
-          <Typography>An error occurred while loading cards list.</Typography>
+          <Typography>{t('cards.overview.loading-error')}</Typography>
         }
       </Grid>
       <Fab
-        aria-label="Register card"
+        aria-label={t('cards.overview.register-card')}
         color="primary"
         onClick={openRegisterCard}
         sx={{

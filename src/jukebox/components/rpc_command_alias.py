@@ -90,20 +90,24 @@ cmd_alias_definitions = {
         'package': 'host',
         'plugin': 'reboot',
         'ignore_card_removal_action': True},
+    'say_my_ip': {
+        'package': 'host',
+        'plugin': 'say_my_ip',
+        'ignore_card_removal_action': True},
     # TIMER
-    'shutdown_after': {
+    'timer_shutdown': {
         'package': 'timers',
         'plugin': 'timer_shutdown',
         'method': 'start',
         'title': 'Start the shutdown timer',
         'ignore_card_removal_action': True},
-    'fade_volume': {
+    'timer_fade_volume': {
         'package': 'timers',
         'plugin': 'timer_fade_volume',
         'method': 'start',
         'title': 'Start the volume fade out timer and shutdown',
         'ignore_card_removal_action': True},
-    'stop_after': {
+    'timer_stop_player': {
         'package': 'timers',
         'plugin': 'timer_stop_player',
         'method': 'start',
