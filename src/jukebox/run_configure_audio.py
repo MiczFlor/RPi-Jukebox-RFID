@@ -250,7 +250,7 @@ def configure_pa_equalizer(pulse_cfg_file_content, pulse_config: PaConfigClass):
     pulse_cfg_file_content += 'For each frequency band the factor must be in range -48.0 ... + 24.0 (db)'
     pulse_cfg_file_content += f'load-module module-ladspa-sink sink_name={equalizer_name} ' \
                               f'sink_master={pulse_config.primary} ' \
-                              f'plugin=caps label=Eq10X2 control=8.88,3.12,-1.92,-6.24,-6.24,-6.24,-6.24,-6.24,-3.36,-1.92,\n'
+                              f'plugin=caps label=Eq10X2 control=15.12,9.36,4.32,0,0,0,0,0,2.88,4.32,\n'
     pulse_config.primary = equalizer_name
 
     return pulse_cfg_file_content, pulse_config
@@ -306,7 +306,7 @@ def query_create_default_pa_config(script_path, config_file_path):
                                                         '../../resources/default-settings/pulseaudio.default.pa'))
     print(f"\n*** PulseAudio configuration file does not exist: '{config_file_path}'.")
     print(f"    RPI-Jukebox-RFID's default is: '{default_config_path}'.\n")
-    query = pyil.input_yesno(f"Create new config file from RPi-Jukebox-RFID default?",
+    query = pyil.input_yesno("Create new config file from RPi-Jukebox-RFID default?",
                              blank=True,
                              prompt_color=Colors.lightgreen,
                              prompt_hint=True)
