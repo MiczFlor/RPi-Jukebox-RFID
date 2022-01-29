@@ -61,10 +61,6 @@ class PaConfigClass:
         return string
 
 
-pulse = pulsectl.Pulse('jukebox-config')
-sinks = pulse.sink_list()
-
-
 def sink_is_equalizer(sink: pulsectl.PulseSinkInfo):
     return sink.driver == 'module-ladspa-sink.c' and sink.description.__contains__('Eq10X2')
 
@@ -73,11 +69,11 @@ def sink_is_monomixer(sink: pulsectl.PulseSinkInfo):
     return sink.driver == 'module-remap-sink.c' and sink.description.__contains__('Mono')
 
 
-def yield_upstream_sink(sink: pulsectl.PulseSinkInfo):
+def yield_upstream_sink(sink: pulsectl.PulseSinkInfo, all_sinks):
     while True:
         cnt = 0
         next_sink = []
-        for candidate in sinks:
+        for candidate in all_sinks:
             print(f"Eval {candidate.name} // {sink.name}")
             if sink.name == candidate.proplist.get('device.master_device', ''):
                 print(f" ---- {sink.name}")
@@ -106,20 +102,9 @@ def yield_upstream_sink(sink: pulsectl.PulseSinkInfo):
             yield next_sink[0]
 
 
-def yield_upstream_sink2(sink: pulsectl.PulseSinkInfo):
+def yield_downstream_sink(sink: pulsectl.PulseSinkInfo, all_sinks):
     while True:
-        for candidate in sinks:
-            if sink.name == candidate.proplist.get('device.master_device', ''):
-                break
-        else:
-            return
-        sink = candidate
-        yield candidate
-
-
-def yield_downstream_sink(sink: pulsectl.PulseSinkInfo):
-    while True:
-        for candidate in sinks:
+        for candidate in all_sinks:
             if candidate.name == sink.proplist.get('device.master_device', ''):
                 break
         else:
@@ -128,18 +113,20 @@ def yield_downstream_sink(sink: pulsectl.PulseSinkInfo):
         yield candidate
 
 
-def build_processing_chain(sink: pulsectl.PulseSinkInfo):
+def build_processing_chain(sink: pulsectl.PulseSinkInfo, all_sinks):
     chain: List[pulsectl.PulseSinkInfo] = [sink]
     index = 0
-    for downstream in yield_downstream_sink(sink):
+    for downstream in yield_downstream_sink(sink, all_sinks):
         chain.append(downstream)
-    for upstream in yield_upstream_sink(sink):
+    for upstream in yield_upstream_sink(sink, all_sinks):
         chain = [upstream, *chain]
         index += 1
     return chain, index
 
 
 def query_sinks(pulse_config: PaConfigClass):  # noqa: C901
+    pulse = pulsectl.Pulse('jukebox-config')
+    sinks = pulse.sink_list()
     msg_highlight('Available audio outputs')
     for idx, sink in enumerate(sinks):
         print(f"{Colors.lightgreen}{idx:2d}{Colors.reset}:"
@@ -159,7 +146,7 @@ def query_sinks(pulse_config: PaConfigClass):  # noqa: C901
 
     if pulse_config.treat_pulse_as_readonly is False:
         print("\n*** Signal chain: ")
-        primary_signal_chain, sidx = build_processing_chain(sinks[primary_idx])
+        primary_signal_chain, sidx = build_processing_chain(sinks[primary_idx], sinks)
         for idx, r in enumerate(primary_signal_chain):
             mark = '-->' if sidx == idx else '   '
             print(f"***   {mark} {idx} :: {r.name}")
