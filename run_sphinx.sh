@@ -2,9 +2,11 @@
 
 usage() {
   echo "Runner script for sphinx documentation build"
+  echo -e "\nWarnings are treated as errors as preparation for documentation releases.\n"
   echo "Usage:"
   echo "   ./run_sphinx.sh    : incremental build"
   echo "   ./run_sphinx.sh -c : clean re-build"
+  echo "   ./run_sphinx.sh -n : Don't escalate warning to errors (for debug only!)"
   exit 1
 }
 

@@ -77,17 +77,21 @@ def activate_from_pulse(card_driver: str, device_name: str):
 @plugin.initialize
 def initialize():
     if cfg.setndefault('bluetooth_audio_buttons', 'enable', value=True):
-        components.volume.add_on_connect_callback(activate_from_pulse)
+        components.volume.pulse_monitor.on_connect_callbacks.register(activate_from_pulse)
         button_mapping = cfg.getn('bluetooth_audio_buttons', 'mapping', default=None)
         if button_mapping:
             for key, action_request in button_mapping.items():
-                button_callbacks[key] = jukebox.utils.bind_rpc_command(action_request, logger)
+                button_callbacks[key] = jukebox.utils.bind_rpc_command(action_request, dereference=True, logger=logger)
         else:
             # Create default mapping
-            button_callbacks[bt_keycode_play] = jukebox.utils.bind_rpc_command({'alias': 'toggle'}, logger)
-            button_callbacks[bt_keycode_pause] = jukebox.utils.bind_rpc_command({'alias': 'toggle'}, logger)
-            button_callbacks[bt_keycode_next] = jukebox.utils.bind_rpc_command({'alias': 'next_song'}, logger)
-            button_callbacks[bt_keycode_prev] = jukebox.utils.bind_rpc_command({'alias': 'prev_song'}, logger)
+            button_callbacks[bt_keycode_play] = jukebox.utils.bind_rpc_command({'alias': 'toggle'},
+                                                                               dereference=True, logger=logger)
+            button_callbacks[bt_keycode_pause] = jukebox.utils.bind_rpc_command({'alias': 'toggle'},
+                                                                                dereference=True, logger=logger)
+            button_callbacks[bt_keycode_next] = jukebox.utils.bind_rpc_command({'alias': 'next_song'},
+                                                                               dereference=True, logger=logger)
+            button_callbacks[bt_keycode_prev] = jukebox.utils.bind_rpc_command({'alias': 'prev_song'},
+                                                                               dereference=True, logger=logger)
 
         # The is a potential start-up race condition:
         # The activation callback from the PulseAudio plugin only gets executed when a new sound card connects

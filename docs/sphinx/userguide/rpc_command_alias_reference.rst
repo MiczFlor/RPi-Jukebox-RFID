@@ -35,6 +35,30 @@ RPC Command Alias Reference
 
     .. note:: This function plays the content of a given album
 
+.. py:function:: play_single(...) -> player.ctrl.play_single(song_url)
+    :noindex:
+
+    **Play a single song triggered by card swipe**
+
+    
+
+    .. note:: This function plays the content of a given song URL
+
+.. py:function:: play_folder(...) -> player.ctrl.play_folder(folder: str, recursive: bool = False) -> None
+    :noindex:
+
+    **Play a folder URL triggered by card swipe**
+
+    Playback a music folder.
+    
+    Folder content is added to the playlist as described by :mod:`jukebox.playlistgenerator`.
+    The playlist is cleared first.
+    
+    :param folder: Folder path relative to music library path
+    :param recursive: Add folder recursively
+
+    .. note:: This function plays the content of a given folder URL
+
 .. py:function:: pause(...) -> player.ctrl.pause(state: int = 1)
     :noindex:
 
