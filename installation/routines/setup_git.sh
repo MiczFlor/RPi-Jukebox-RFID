@@ -140,7 +140,7 @@ _git_convert_tardir_git_repo() {
 init_git_repo_from_tardir() {
   echo "Install Git & init repository" | tee /dev/fd/3
 
-  cd ${INSTALLATION_PATH}
+  cd "${INSTALLATION_PATH}" || exit_on_error
   _git_install_os_dependencies
   _git_convert_tardir_git_repo
 

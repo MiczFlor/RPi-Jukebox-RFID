@@ -41,10 +41,9 @@ download_jukebox_source() {
   unset GIT_REPO_DOWNLOAD
 }
 
-
 ### RUN INSTALLATION
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
-exec 3>&1 1>>${INSTALLATION_LOGFILE} 2>&1
+exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "Cannot create log file. Panic."; exit 1; }
 echo "Log start: ${INSTALL_ID}"
 
 clear 1>&3
@@ -52,15 +51,15 @@ echo "Downloading Phoniebox software from Github ..." 1>&3
 echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
 download_jukebox_source
-cd ${INSTALLATION_PATH}
+cd "${INSTALLATION_PATH}" || { echo "ERROR in changing to install dir. Panic."; exit 1; }
 
 # Load / Source dependencies
-for i in $INSTALLATION_PATH/installation/includes/*;
-  do source $i
+for i in "${INSTALLATION_PATH}"/installation/includes/*; do
+  source "$i"
 done
 
-for j in $INSTALLATION_PATH/installation/routines/*;
-  do source $j
+for j in "${INSTALLATION_PATH}"/installation/routines/*; do
+  source "$j"
 done
 
 welcome
