@@ -266,6 +266,8 @@ def generate_cmd_alias_reference(stream):
 
 def get_git_state():
     """Return git state information for the current branch"""
+
+    gitlog = "No git log info"
     try:
         sub = subprocess.run("git log --pretty='%h [%cs] %s %d' -n 1 --no-color",
                              shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -273,15 +275,15 @@ def get_git_state():
         gitlog = sub.stdout.decode('utf-8').strip()
     except Exception as e:
         log.error(f"{e.__class__.__name__}: {e}")
-        gitlog = "Unable to get git log"
 
+    describe = "No git describe info"
     try:
         sub = subprocess.run("git describe --tag --dirty='-dirty'",
                              shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=True)
-        describe = sub.stdout.decode('utf-8').strip()
+        if sub.returncode == 0:
+            describe = sub.stdout.decode('utf-8').strip()
     except Exception as e:
         log.error(f"{e.__class__.__name__}: {e}")
-        describe = "Unable to get git describe"
 
     return f"{gitlog} [{describe}]"
