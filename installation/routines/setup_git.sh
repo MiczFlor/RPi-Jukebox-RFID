@@ -33,7 +33,7 @@ _git_convert_tardir_git_repo() {
     echo "*** Git fetch (SSH) *******************************"
     # Prevent: The authenticity of host 'github.com (140.82.121.4)' can't be established.
     # Do only for this one command, so we do not disable the checks forever
-    if ! git -c core.sshCommand='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' fetch origin "${GIT_BRANCH}" --set-upstream --shallow-since=2021-04-21;
+    if ! git -c core.sshCommand='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' fetch origin "${GIT_BRANCH}" --set-upstream --shallow-since=2021-04-21 --tags;
     then
       echo ""
       echo "*** NOTICE *****************************************"
@@ -59,7 +59,7 @@ _git_convert_tardir_git_repo() {
       git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
     fi
       echo "*** Git fetch (HTTPS) *****************************"
-    if ! git fetch origin --set-upstream --shallow-since=2021-04-21 "${GIT_BRANCH}"; then
+    if ! git fetch origin --set-upstream --shallow-since=2021-04-21 --tags "${GIT_BRANCH}"; then
       echo "Error: Could not fetch repository!"
       echo -e "$GIT_ABORT_MSG"
       return
@@ -80,6 +80,13 @@ _git_convert_tardir_git_repo() {
   echo "*** Git initialize branch"
   git checkout -b "$GIT_BRANCH"
 
+  if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
+    echo "*** Get upstream release tags"
+    # Always get the upstream release branch to get all release tags
+    # in case they have not been copied to user repository
+    git fetch upstream --shallow-since=2021-04-21 --tags "${GIT_BRANCH_RELEASE}"
+  fi
+
   # Done! Directory is all set up as git repository now!
 
   # In case we get a non-develop or non-main branch, we speculatively
@@ -88,7 +95,7 @@ _git_convert_tardir_git_repo() {
   # without the need to set up the remote tracking information
   # However, in a user repository, these may not be present, so we suppress output in these cases
   if [[ $GIT_BRANCH != "${GIT_BRANCH_RELEASE}" ]]; then
-    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 "${GIT_BRANCH_RELEASE}" 2>&1)
+    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 --tags "${GIT_BRANCH_RELEASE}" 2>&1)
     if [[ $? -ne 128 ]]; then
       echo "*** Preparing ${GIT_BRANCH_RELEASE} in background"
       echo -e "$OUTPUT"
@@ -96,7 +103,7 @@ _git_convert_tardir_git_repo() {
     unset OUTPUT
   fi
   if [[ $GIT_BRANCH != "${GIT_BRANCH_DEVELOP}" ]]; then
-    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 "${GIT_BRANCH_DEVELOP}" 2>&1)
+    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 --tags "${GIT_BRANCH_DEVELOP}" 2>&1)
     if [[ $? -ne 128 ]]; then
       echo "*** Preparing ${GIT_BRANCH_DEVELOP} in background"
       echo -e "$OUTPUT"
@@ -120,32 +127,14 @@ _git_convert_tardir_git_repo() {
   git status -sb
   echo "*** Git log ****************************************"
   git log --oneline "HEAD^..origin/$GIT_BRANCH"
+  echo "*** Git describe ***********************************"
+  git describe --tag --dirty='-dirty'
   echo "****************************************************"
 
   cp -f .githooks/* .git/hooks
 
   unset HASH_HEAD
   unset HASH_BRANCH
-}
-
-update_git_repo() {
-  echo "Update Git repository: Branch='${GIT_BRANCH}'"
-  cd ${INSTALLATION_PATH}
-  TIMESTAMP=$(date +%s)
-
-  # Git Repo has local changes
-  if [[ $(git status --porcelain) ]]; then
-    echo "  Found local changes in git repository.
-  Moving them to backup branch 'local-backup-${TIMESTAMP}' and git stash"
-    git fetch origin --depth 1
-    git checkout -b local-backup-${TIMESTAMP}
-    git stash
-    git checkout ${GIT_BRANCH}
-    git reset --hard origin/${GIT_BRANCH}
-  else
-    echo "  Updating version"
-    git pull origin $(git rev-parse --abbrev-ref HEAD)
-  fi
 }
 
 init_git_repo_from_tardir() {
