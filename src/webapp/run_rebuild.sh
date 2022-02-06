@@ -34,30 +34,40 @@ cd "$SCRIPT_DIR" || exit 1
 
 # Need to check free space and limit Node memory usage
 # for PIs with little memory
-MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-FREEMEM=$(free -mt | sed -rn 's/Total:\s+[0-9]+\s+[0-9]+\s+([0-9])/\1/p')
+MemTotal=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+MemFree=$(grep MemFree /proc/meminfo | awk '{print $2}')
+SwapFree=$(grep SwapFree /proc/meminfo | awk '{print $2}')
+TotalFree=$((SwapFree + MemFree))
 
-echo "Max memory: ${MEMORY}"
-echo "Free memory: ${FREEMEM}"
+MemTotal=$((MemTotal / 1024))
+MemFree=$((MemFree / 1024))
+SwapFree=$((SwapFree / 1024))
+TotalFree=$((TotalFree / 1024))
+
+echo "Total phys memory: ${MemTotal} MB"
+echo "Free phys memory : ${MemFree} MB"
+echo "Free swap memory : ${SwapFree} MB"
+echo "Free total memory: ${TotalFree} MB"
+
 
 if [[ -z $NODEMEM ]]; then
   # Keep a buffer of minimum 20 MB
-  if [[ $FREEMEM -gt 1044 ]]; then
+  if [[ $TotalFree -gt 1044 ]]; then
     NODEMEM=1024
-  elif [[ $FREEMEM -gt 532 ]]; then
+  elif [[ $TotalFree -gt 532 ]]; then
     NODEMEM=512
-  elif [[ $FREEMEM -gt 276 ]]; then
+  elif [[ $TotalFree -gt 276 ]]; then
     NODEMEM=256
   else
     echo "ERROR: Not enough memory available on system. Please increase swap size to give at least 276 MByte free memory."
-    echo "Current free memory = $FREEMEM"
+    echo "Current free memory = $TotalFree MB"
     echo "Hint: if only a little memory is missing, stopping spocon, mpd, and jukebox-daemon might give you enough space"
     exit 1
   fi
 fi
 
-if [[ $NODEMEM -gt $FREEMEM ]]; then
-  echo "ERROR: Requested node memory setting is larger than available free memory: $NODEMEM MB > $FREEMEM MB"
+if [[ $NODEMEM -gt $TotalFree ]]; then
+  echo "ERROR: Requested node memory setting is larger than available free memory: $NODEMEM MB > $TotalFree MB"
   exit 1
 fi
 
@@ -66,7 +76,7 @@ export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
 echo "Setting Node Options:"
 env | grep NODE
 
-if [ `uname -m` = "armv6l" ]; then
+if [[ $(uname -m) == armv6l ]]; then
   echo "  You are running on a hardware with less resources. Building
   the webapp might fail. If so, try to install the stable
   release installation instead."
