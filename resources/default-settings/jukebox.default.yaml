@@ -12,7 +12,7 @@ modules:
     jingle: jingle
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
-    player: playermpd
+    player: playern.plugin
     spotify: playerspot
     cards: rfid.cards
     rfid: rfid.reader
