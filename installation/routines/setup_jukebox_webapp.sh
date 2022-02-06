@@ -25,7 +25,7 @@ _jukebox_webapp_install_node() {
 
     # Zero and older versions of Pi with ARMv6 only
     # support experimental NodeJS
-    if [ `uname -m` = "armv6l" ]; then
+    if [[ $(uname -m) == "armv6l" ]]; then
       NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
     fi
 
@@ -39,7 +39,7 @@ _jukebox_webapp_install_node() {
 # Instead implement a Github Action that prebuilds on commititung a git tag
 _jukebox_webapp_build() {
   echo "  Building web application"
-  cd ${INSTALLATION_PATH}/src/webapp
+  cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   npm ci --prefer-offline --no-audit --production
   rm -rf build
   # The build wrapper script checks available memory on system and sets Node options accordingly
@@ -49,11 +49,11 @@ _jukebox_webapp_build() {
 _jukebox_webapp_download() {
   echo "  Downloading web application" | tee /dev/fd/3
   local TAR_FILENAME="webapp-build.tar.gz"
-  cd ${INSTALLATION_PATH}/src/webapp
+  cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
   tar -xzf ${TAR_FILENAME}
   rm -f ${TAR_FILENAME}
-  cd ${INSTALLATION_PATH}
+  cd "${INSTALLATION_PATH}" || exit_on_error
 }
 
 _jukebox_webapp_register_as_system_service_with_nginx() {
@@ -65,7 +65,7 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo service nginx start
 
   sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
-  sudo cp -f ${INSTALLATION_PATH}/resources/default-settings/nginx.default /etc/nginx/sites-available/default
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
 
   sudo service nginx restart
 }
@@ -79,16 +79,16 @@ _jukebox_build_local_docs() {
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
-  if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" = release-only ]] ; then
+  if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
     _jukebox_webapp_download
   fi
-  if [ "$ENABLE_INSTALL_NODE" = true ] ; then
+  if [[ $ENABLE_INSTALL_NODE == true ]] ; then
     _jukebox_webapp_install_node
     # Local Web App build during installation does not work at the moment
     # Needs to be done after reboot! There will be a message at the end of the installation process
     # _jukebox_webapp_build
   fi
-  if [ "$ENABLE_LOCAL_DOCS" = true ]; then
+  if [[ $ENABLE_LOCAL_DOCS == true ]]; then
     _jukebox_build_local_docs
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
