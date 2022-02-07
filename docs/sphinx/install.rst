@@ -12,7 +12,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Connect a Micro SD card to your computer (preferable an SC card with high read throughput)
 2. `Download <https://www.raspberrypi.org/software/>`_
    the `Raspberry Pi Imager <https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/>`_ and open it
-3. Select **Raspberry Pi OS Lite** (without desktop environment) as the operating system
+3. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system (only the 32 bit version is supported)
 4. Select your Micro SD card (your card will be formatted)
 5. Click *Write*
 6. Wait for the imaging process to be finished (it'll take a few minutes)
