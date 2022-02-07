@@ -36,3 +36,22 @@ get_onboard_audio() {
     echo 0
   fi
 }
+
+check_os_type() {
+  # Check if current distro is a 32 bit version
+  # Support for 64 bit Distros has not been checked (or precisely: is known not to work)
+  # All RaspianOS versions report as machine "armv6l" or "armv7l", if 32 bit (even the ARMv8 cores!)
+
+  local os_type
+  os_type=$(uname -m)
+
+  echo "Checking OS type ... $os_type" | tee /dev/fd/3
+
+  if [[ $os_type == "armv7l" ||  $os_type == "armv6l" ]]; then
+    echo -e "  ... OK!\n" | tee /dev/fd/3
+  else
+    echo "ERROR: Only 32 bit operating systems supported. Please use a 32bit version of RaspianOS!" | tee /dev/fd/3
+    exit 1
+  fi
+
+}
