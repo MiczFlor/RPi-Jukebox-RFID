@@ -23,28 +23,29 @@ If you dare to go where only few have gone before, **become an alpha-tester, bug
 
 ## 🔥 Version 3 is coming ...
 
-#### Newest release: V3.0.0 Alpha 2 -> 28. October 2021
+#### Newest release: V3.2.0 Beta -> 7. Feb 2022
 
-* Better Installation Script
-* More stable backend
-* Prepared playlist support
-* Refactored Card commands
-* Album & Folder view in web application
+* New GPIO backend based on GPIOZero including more sophisticated controls for inputs and outputs
+* Bluetooth Headset support with device buttons
+* Equalizer + Mono down mixer
+* Localization support for Webapp, current languages supported are English and German (help us translate!)
+* Timer support in Webapp and via RFID cards
+* Additional system information in Webapp like Battery status, CPU temperature or IP address
+* Preperation for Text-to-Speech + Read My IP as a first example
+* Bugfixes for Install Script
 
 Over the last few months, a few Phoniebox fans started to think about a potential future of the Jukebox code. Version 2 is mature
 and works well but doesn't scale enough for future development. It's the mix of Shell, Python and PHP. The goal was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://rpi-jukebox-rfid.readthedocs.io/en/latest/).
 
-### ☝️ Looking for early adopters, testers and contributors
+### 👋 Looking for adopters, testers and contributors
 
-👩‍💻 For Bravehearts only! If you want to test or help develop this new version called `future3`, let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
+If you want to test or help develop this new version called `future3`, let us know what you think about the new architecture, the new web application and help us find bugs (or fix them proactively).
 
-But please be aware, Version 3 is still under heavy development and cannot be considered stable! Just a handful of features from version 2.x have been ported to version 3 so far. Specifically GPIO support is currently missing but it's in active development and soon to arrive. To install and run this version you will need some understanding of programming.
-
-⚠️ If you build a Jukebox and depend on a stable environment, please choose Version 2.x.
+While Version 3 is still under development, it is becoming a lot more stable! Although only some of the features from version 2.x have been ported to version 3 so far.
 
 If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
-* 🚀 **[Install Jukebox Version 3 Alpha](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
+* 🚀 **[Install Jukebox Version 3 Beta](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
 * ☑️ [Feature Status](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html)
 * 📖 [Documentation](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
@@ -57,7 +58,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 * **Discussions forums** we use Github's Discussions feature for a more forum style. Please ask general questions in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions), bugs and enhancements should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
-* **Phoniebox [future3 Alpha 1](https://rpi-jukebox-rfid.readthedocs.io/en/latest/) released (2021-10)**
+* **Phoniebox [future3 Beta](https://rpi-jukebox-rfid.readthedocs.io/en/latest/) released (2022-02)**
 * **Gitter Community** we got ourselves a gitter community; chat us up at https://gitter.im/phoniebox
 
 * **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-12)**
