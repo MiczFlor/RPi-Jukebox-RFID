@@ -100,7 +100,7 @@ rfid:
   card_database: ../../shared/settings/cards.yaml
 gpioz:
   enable: false
-  config_file: ../../shared/settings/gpioz.yaml
+  config_file: ../../shared/settings/gpio.yaml
 timers:
   # These timers are always disabled after start
   # The following values only give the default values.

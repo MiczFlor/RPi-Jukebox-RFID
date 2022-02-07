@@ -2,7 +2,7 @@
 # Check out the documentation for many more configuration recipes
 # https://rpi-jukebox-rfid.readthedocs.io/en/latest/index.html
 pin_factory:
-  type: mock.MockFactory
+  type: rpigpio.RPiGPIOFactory
 output_devices:
   RfidBuzzer:
     # Sound an active Piezo Buzzer once when a card swipe has been detected. For unknown cards, sound it three times.
@@ -14,7 +14,7 @@ output_devices:
       - gpio.gpioz.plugin.connectivity.register_status_buzzer_callback
       - gpio.gpioz.plugin.connectivity.register_volume_buzzer_callback
     kwargs:
-      pin: 12
+      pin: 27
   VolumeLED:
     # Have an LED change its brightness to reflect the current volume level.
     type: PWMLED
