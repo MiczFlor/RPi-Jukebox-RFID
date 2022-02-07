@@ -46,7 +46,7 @@ The GPIOZ configuration file has the following structure:
 
 There is no need to touch the header, but some `Developer options`_ can be found there.
 
-A file with examples can be found in ``resources/default-settings/gpioz.yaml``.
+A file with examples can be found in ``resources/default-settings/gpio.yaml``.
 Below you will find easy to adapt recipes for various configuration snippets.
 
 
