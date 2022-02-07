@@ -4,7 +4,6 @@
 # Jukebox Core
 # For USB inputs (reader, buttons) and bluetooth buttons
 evdev
-nanotime
 pyalsaaudio
 pulsectl
 python_mpd2
