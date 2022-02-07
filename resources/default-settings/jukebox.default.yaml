@@ -17,7 +17,7 @@ modules:
     timers: timers
     host: hostif.linux
     bluetooth_audio_buttons: controls.bluetooth_audio_buttons
-    gpioz: gpio.gpioz.plugin
+    gpio: gpio.gpioz.plugin
   others:
   - music_cover_art
   - misc
