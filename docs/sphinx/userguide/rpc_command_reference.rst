@@ -44,6 +44,12 @@ PulseAudio Volume Control Plugin Package
     Return mute status for the currently active output
 
 
+.. py:function:: volume.ctrl.get_outputs()
+    :noindex:
+
+    Get current output and list of outputs
+
+
 .. py:function:: volume.ctrl.get_soft_max_volume()
     :noindex:
 
@@ -489,6 +495,12 @@ Module: timers
     Cancel the timer
 
 
+.. py:function:: timers.timer_shutdown.get_state()
+    :noindex:
+
+    Get the current state and config as dictionary
+
+
 .. py:function:: timers.timer_shutdown.get_timeout()
     :noindex:
 
@@ -537,6 +549,12 @@ Module: timers
     :noindex:
 
     Cancel the timer
+
+
+.. py:function:: timers.timer_stop_player.get_state()
+    :noindex:
+
+    Get the current state and config as dictionary
 
 
 .. py:function:: timers.timer_stop_player.get_timeout()
@@ -701,6 +719,12 @@ Module: host
     Source: https://stackoverflow.com/a/28950776/1062438
 
 
+.. py:function:: host.say_my_ip(option='full')
+    :noindex:
+
+    
+
+
 .. py:function:: host.wlan_disable_power_down(card=None)
     :noindex:
 
@@ -798,7 +822,7 @@ when a bluetooth sound device (headphone, speakers) connects
     
 
 
-Module: gpioz
+Module: gpio
 -------------------------------------------
 
 
@@ -810,7 +834,7 @@ That API is mainly used for testing. All the relevant output state changes are u
 using the output device's API.
 
 
-.. py:function:: gpioz.on(name: str)
+.. py:function:: gpio.on(name: str)
     :noindex:
 
     Turn an output device on
@@ -818,7 +842,7 @@ using the output device's API.
     :param name: The alias name output device instance
 
 
-.. py:function:: gpioz.off(name: str)
+.. py:function:: gpio.off(name: str)
     :noindex:
 
     Turn an output device off
@@ -826,7 +850,7 @@ using the output device's API.
     :param name: The alias name output device instance
 
 
-.. py:function:: gpioz.set_value(name: str, value: Any)
+.. py:function:: gpio.set_value(name: str, value: Any)
     :noindex:
 
     Set the output device to :attr:`value`
@@ -836,7 +860,7 @@ using the output device's API.
     :param value: Value to set the device to
 
 
-.. py:function:: gpioz.flash(name, on_time=1, off_time=1, n=1, *, fade_in_time=0, fade_out_time=0, tone=None, color=(1, 1, 1))
+.. py:function:: gpio.flash(name, on_time=1, off_time=1, n=1, *, fade_in_time=0, fade_out_time=0, tone=None, color=(1, 1, 1))
     :noindex:
 
     Flash (blink or beep) an output device
@@ -966,6 +990,6 @@ This is an automatically generated file from the loaded plugins:
 * *timers*: components.timers
 * *host*: components.hostif.linux
 * *bluetooth_audio_buttons*: components.controls.bluetooth_audio_buttons
-* *gpioz*: components.gpio.gpioz.plugin
+* *gpio*: components.gpio.gpioz.plugin
 * *music_cover_art*: components.music_cover_art
 * *misc*: components.misc
