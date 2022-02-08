@@ -94,18 +94,11 @@ class MPDBackend:
     # -----------------------------------------------------
     # Stuff that controls current playback (i.e. moves around in the current playlist, termed "the queue")
 
-    async def _next(self):
-        return await self.client.next()
-
     def next(self):
-        logger.debug('Next')
-        return asyncio.run_coroutine_threadsafe(self._next(), self.loop).result()
-
-    async def _prev(self):
-        return await self.client.next()
+        return self._run_cmd(self.client.next)
 
     def prev(self):
-        return asyncio.run_coroutine_threadsafe(self._prev(), self.loop).result()
+        return self._run_cmd(self.client.prev)
 
     @plugin.tag
     def play(self, idx=None):
@@ -211,15 +204,6 @@ class MPDBackend:
             raise KeyError(f"URI flavor '{list_type}' unknown. Must be one of: {self._flavors.keys()}.")
         return func(path, **kwargs)
 
-    async def _get_single_file(self, path):
-        return await self.client.find('file', path)
-
-    async def _get_folder_recursive(self, path):
-        return await self.client.find('base', path)
-
-    async def _get_folder(self, path):
-        return await self.client.lsinfo(path)
-
     @plugin.tag
     def get_files(self, path, recursive=False):
         """
@@ -229,16 +213,16 @@ class MPDBackend:
         """
         path = sanitize(path)
         if os.path.isfile(path):
-            files = asyncio.run_coroutine_threadsafe(self._get_single_file(path), self.loop).result()
+            files = self._run_cmd(self.client.find, 'file', path)
         elif not recursive:
-            files = asyncio.run_coroutine_threadsafe(self._get_folder(path), self.loop).result()
+            files = self._run_cmd(self.client.lsinfo, path)
         else:
-            files = asyncio.run_coroutine_threadsafe(self._get_folder_recursive(path), self.loop).result()
+            files = self._run_cmd(self.client.find, 'base', path)
         return files
 
     @plugin.tag
     def get_track(self, path):
-        playlist = asyncio.run_coroutine_threadsafe(self._get_single_file(path), self.loop).result()
+        playlist = self._run_cmd(self.client.find, 'file', path)
         if len(playlist) != 1:
             raise ValueError(f"Path decodes to more than one file: '{path}'")
         file = playlist[0].get('file')
@@ -249,21 +233,16 @@ class MPDBackend:
     # ----------------------------------
     # Get albums / album tracks
 
-    async def _get_albums(self):
-        return await self.client.list('album', 'group', 'albumartist')
-
     @plugin.tag
     def get_albums(self):
         """Returns all albums in database"""
-        return asyncio.run_coroutine_threadsafe(self._get_albums(), self.loop).result()
-
-    async def _get_album_tracks(self, album_artist, album):
-        return await self.client.find('albumartist', album_artist, 'album', album)
+        # return asyncio.run_coroutine_threadsafe(self._get_albums(), self.loop).result()
+        return self._run_cmd(self.client.list, 'album', 'group', 'albumartist')
 
     @plugin.tag
     def get_album_tracks(self, album_artist, album):
-        """Returns all song of an album"""
-        return asyncio.run_coroutine_threadsafe(self._get_album_tracks(album_artist, album), self.loop).result()
+        """Returns all songs of an album"""
+        return self._run_cmd(self.client.find, 'albumartist', album_artist, 'album', album)
 
     def get_album_from_uri(self, uri: str):
         """Accepts full or partial uri (partial means without leading 'mpd:')"""
@@ -317,59 +296,3 @@ class MPDBackend:
         Restore the configuration state and last played status for current active URI
         """
         pass
-
-    # ----------------------
-
-    @plugin.tag
-    def play_folder(self, path, recursive=False):
-        logger.debug(f"Play folder: {path}")
-        self.queue_and_play(self.get_files(path, recursive))
-
-    def play_file(self, path):
-        playlist = self.get_files(path, recursive=False)
-        if len(playlist) != 1:
-            raise ValueError('Path must point to single file!')
-        file = playlist[0].get('file')
-        if file is None:
-            raise ValueError('Path does not point to actual file!')
-        self.queue_and_play(playlist)
-
-    def play_album(self, album_artist: str, album: str):
-        self.queue_and_play(self.get_album_tracks(album_artist, album))
-
-    def play_album_uri(self, uri: str):
-        p = re.match(r"album:(.*):albumartist:(.*)", uri)
-        if p:
-            album = p.group(1)
-            album_artist = p.group(2)
-            self.play_album(album_artist=album_artist, album=album)
-        else:
-            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
-
-    def play_album_artist_uri(self, uri: str):
-        p = re.match(r"albumartist:(.*):album:(.*)", uri)
-        if p:
-            album = p.group(2)
-            album_artist = p.group(1)
-            self.play_album(album_artist=album_artist, album=album)
-        else:
-            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
-
-    def play_podcast(self, path):
-        # If uri == file, decode and play all entries
-        # If uri == folder, decode and play all files?
-        pass
-
-    def play_livestream(self, path):
-        pass
-
-    async def _queue_and_play(self, playlist):
-        await self.client.clear()
-        for entry in playlist:
-            path = entry.get('file')
-            if path is not None:
-                await self.client.add(path)
-        await self.client.play()
-
-    def queue_and_play(self, playlist):
-        return asyncio.run_coroutine_threadsafe(self._queue_and_play(playlist), self.loop).result()
