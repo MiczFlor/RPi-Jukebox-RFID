@@ -16,12 +16,12 @@ this entry and modify it accordingly:
 
         gpioz:
           enable: true
-          config_file: ../../shared/settings/gpioz.yaml
+          config_file: ../../shared/settings/gpio.yaml
 
-The GPIO configuration itself is stored in a separate file, in this case ``../../shared/settings/gpioz.yaml``.
+The GPIO configuration itself is stored in a separate file, in this case ``../../shared/settings/gpio.yaml``.
 
 The GPIO module uses `GPIOZero <https://gpiozero.readthedocs.io/>`_ as a backend to access the RPi's GPIO pins.
-It's a thin wrapper to integrate it into the Jukebox's API, allowing a YAML based configuration and providing
+It's a wrapper to integrate GPIOZero into the Jukebox's API, allowing a YAML based configuration and providing
 helpful error messages on misconfiguration.
 
 Pin Numbering
@@ -46,7 +46,7 @@ The GPIOZ configuration file has the following structure:
 
 There is no need to touch the header, but some `Developer options`_ can be found there.
 
-A file with examples can be found in ``resources/default-settings/gpioz.yaml``.
+A file with examples can be found in ``resources/default-settings/gpio.yaml``.
 Below you will find easy to adapt recipes for various configuration snippets.
 
 
