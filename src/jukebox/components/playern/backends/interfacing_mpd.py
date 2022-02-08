@@ -16,7 +16,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 def sanitize(path: str):
-    return path.lstrip('./')
+    return os.path.normpath(path).lstrip('./')
 
 
 class MPDBackend:
@@ -26,16 +26,37 @@ class MPDBackend:
         self.loop = event_loop
         self.host = 'localhost'
         self.port = '6600'
-        self._flavors = {'folder': self.play_folder,
-                         'album': self.play_album_uri,
-                         'albumartist': self.play_album_artist_uri,
-                         'file': self.play_file,
-                         'podcast': self.play_podcast,
-                         'livestream': self.play_livestream}
+        self._flavors = {'folder': self.get_files,
+                         'file': self.get_track,
+                         'album': self.get_album_from_uri,
+                         'podcast': self.get_podcast,
+                         'livestream': self.get_livestream}
+        self._active_uri = ''
         # TODO: If connect fails on first try this is non recoverable
         self.connect()
         # Start the status listener in an endless loop in the event loop
         asyncio.run_coroutine_threadsafe(self._status_listener(), self.loop)
+
+    # ------------------------------------------------------------------------------------------------------
+    # Bring calls to client functions from the synchronous part into the async domain
+    # Async function of the MPD client return a asyncio.future as a result
+    # That means we must
+    #  - first await the function execution in the event loop
+    #     _run_cmd_async: an async function
+    #  - second then wait for the future result to be available in the sync domain
+    #     _run_cmd: a sync function that schedules the async function in the event loop for execution
+    #               and wait for the future result by calling ..., self.loop).result()
+    # Since this must be done for every command crossing the async/sync domain, we keep it generic and
+    # pass method and arguments to these two wrapper functions that do the scheduling and waiting
+
+    async def _run_cmd_async(self, afunc, *args, **kwargs):
+        return await afunc(*args, **kwargs)
+
+    def _run_cmd(self, afunc, *args, **kwargs):
+        return asyncio.run_coroutine_threadsafe(self._run_cmd_async(afunc, *args, **kwargs), self.loop).result()
+
+    # -----------------------------------------------------
+    # Check and update statues
 
     async def _connect(self):
         return await self.client.connect(self.host, self.port)
@@ -86,11 +107,37 @@ class MPDBackend:
     def prev(self):
         return asyncio.run_coroutine_threadsafe(self._prev(), self.loop).result()
 
-    async def _stop(self):
-        return await self.client.stop()
+    @plugin.tag
+    def play(self, idx=None):
+        """
+        If idx /= None, start playing song idx from queue
+        If stopped, start with first song in queue
+        If paused, resume playback at current position
+        """
+        # self.client.play() continues playing at current position
+        if idx is None:
+            return self._run_cmd(self.client.play)
+        else:
+            return self._run_cmd(self.client.play, idx)
+
+    def toggle(self):
+        """Toggle between playback / pause"""
+        return self._run_cmd(self.client.pause)
+
+    def pause(self):
+        """Pause playback if playing
+
+        This is what you want as card removal action: pause the playback, so it can be resumed when card is placed
+        on the reader again. What happens on re-placement depends on configured second swipe option
+        """
+        return self._run_cmd(self.client.pause, 1)
 
     def stop(self):
-        return asyncio.run_coroutine_threadsafe(self._stop(), self.loop).result()
+        return self._run_cmd(self.client.stop)
+
+    @plugin.tag
+    def get_queue(self):
+        return self._run_cmd(self.client.playlistinfo)
 
     # -----------------------------------------------------
     # Volume control (for developing only)
@@ -118,6 +165,7 @@ class MPDBackend:
         mpd:album:Feuerwehr:albumartist:Benjamin
           -> Searches MPD database for album Feuerwehr from artist Benjamin
 
+        Conceptual at the moment (i.e. means it will likely change):
         mpd:podcast:path/to/file.yaml
           --> Reads local file: $PODCAST_FOLDER/path/to/file.yaml
           --> which contains: https://cool-stuff.de/podcast.xml
@@ -129,6 +177,32 @@ class MPDBackend:
         to the user so he can select "play this one"
 
         """
+        self.clear()
+        # Clear the active uri before retrieving the track list, to avoid stale active uri in case something goes wrong
+        self._active_uri = ''
+        tracklist = self.get_from_uri(uri, **kwargs)
+        self._active_uri = uri
+        self.enqueue(tracklist)
+        self._restore_state()
+        self.play()
+
+    def clear(self):
+        return self._run_cmd(self.client.clear)
+
+    async def _enqueue(self, tracklist):
+        for entry in tracklist:
+            path = entry.get('file')
+            if path is not None:
+                await self.client.add(path)
+
+    def enqueue(self, tracklist):
+        return asyncio.run_coroutine_threadsafe(self._enqueue(tracklist), self.loop).result()
+
+    # ----------------------------------
+    # Get track lists
+
+    @plugin.tag
+    def get_from_uri(self, uri: str, **kwargs):
         player_type, list_type, path = uri.split(':', 2)
         if player_type != 'mpd':
             raise KeyError(f"URI prefix must be 'mpd' not '{player_type}")
@@ -136,48 +210,6 @@ class MPDBackend:
         if func is None:
             raise KeyError(f"URI flavor '{list_type}' unknown. Must be one of: {self._flavors.keys()}.")
         return func(path, **kwargs)
-
-    def play_folder(self, path, recursive=False):
-        logger.debug(f"Play folder: {path}")
-        # MPD command to get files in folder non-recursive: client.lsinfo('Conni')
-        # MPD command to get files in folder recursive: client.find('base', 'Conni')
-        pass
-
-    def play_file(self, path):
-        pass
-
-    def play_album(self, album_artist: str, album: str):
-        # MPD command client.findadd('albumartist', albumartist, 'album', album)
-        pass
-
-    def play_album_uri(self, uri: str):
-        p = re.match(r"album:(.*):albumartist:(.*)", uri)
-        if p:
-            album = p.group(1)
-            album_artist = p.group(2)
-            self.play_album(album_artist=album_artist, album=album)
-        else:
-            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
-
-    def play_album_artist_uri(self, uri: str):
-        p = re.match(r"albumartist:(.*):album:(.*)", uri)
-        if p:
-            album = p.group(2)
-            album_artist = p.group(1)
-            self.play_album(album_artist=album_artist, album=album)
-        else:
-            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
-
-    def play_podcast(self, path):
-        # If uri == file, decode and play all entries
-        # If uri == folder, decode and play all files?
-        pass
-
-    def play_livestream(self, path):
-        pass
-
-    # ----------------------------------
-    # Get track lists
 
     async def _get_single_file(self, path):
         return await self.client.find('file', path)
@@ -204,6 +236,16 @@ class MPDBackend:
             files = asyncio.run_coroutine_threadsafe(self._get_folder_recursive(path), self.loop).result()
         return files
 
+    @plugin.tag
+    def get_track(self, path):
+        playlist = asyncio.run_coroutine_threadsafe(self._get_single_file(path), self.loop).result()
+        if len(playlist) != 1:
+            raise ValueError(f"Path decodes to more than one file: '{path}'")
+        file = playlist[0].get('file')
+        if file is None:
+            raise ValueError(f"Not a music file: '{path}'")
+        return playlist
+
     # ----------------------------------
     # Get albums / album tracks
 
@@ -222,6 +264,13 @@ class MPDBackend:
     def get_album_tracks(self, album_artist, album):
         """Returns all song of an album"""
         return asyncio.run_coroutine_threadsafe(self._get_album_tracks(album_artist, album), self.loop).result()
+
+    def get_album_from_uri(self, uri: str):
+        """Accepts full or partial uri (partial means without leading 'mpd:')"""
+        p = re.match(r"(mpd:)?album:(.*):albumartist:(.*)", uri)
+        if not p:
+            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
+        return self.get_album_tracks(album_artist=p.group(3), album=p.group(2))
 
     # ----------------------------------
     # Get podcasts / livestreams
@@ -256,16 +305,71 @@ class MPDBackend:
         """
         pass
 
-    # ----------------------------------
-    # Conceptual
-
-    def get_uri(self, uri, **kwargs):
-        """Maps to get_* depending on URI prefix?"""
-        pass
-
     # -----------------------------------------------------
     # Queue / URI state  (save + restore e.g. random, resume, ...)
 
-    def save_uri_state(self):
+    def save_state(self):
         """Save the configuration and state of the current URI playback to the URIs state file"""
         pass
+
+    def _restore_state(self):
+        """
+        Restore the configuration state and last played status for current active URI
+        """
+        pass
+
+    # ----------------------
+
+    @plugin.tag
+    def play_folder(self, path, recursive=False):
+        logger.debug(f"Play folder: {path}")
+        self.queue_and_play(self.get_files(path, recursive))
+
+    def play_file(self, path):
+        playlist = self.get_files(path, recursive=False)
+        if len(playlist) != 1:
+            raise ValueError('Path must point to single file!')
+        file = playlist[0].get('file')
+        if file is None:
+            raise ValueError('Path does not point to actual file!')
+        self.queue_and_play(playlist)
+
+    def play_album(self, album_artist: str, album: str):
+        self.queue_and_play(self.get_album_tracks(album_artist, album))
+
+    def play_album_uri(self, uri: str):
+        p = re.match(r"album:(.*):albumartist:(.*)", uri)
+        if p:
+            album = p.group(1)
+            album_artist = p.group(2)
+            self.play_album(album_artist=album_artist, album=album)
+        else:
+            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
+
+    def play_album_artist_uri(self, uri: str):
+        p = re.match(r"albumartist:(.*):album:(.*)", uri)
+        if p:
+            album = p.group(2)
+            album_artist = p.group(1)
+            self.play_album(album_artist=album_artist, album=album)
+        else:
+            raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
+
+    def play_podcast(self, path):
+        # If uri == file, decode and play all entries
+        # If uri == folder, decode and play all files?
+        pass
+
+    def play_livestream(self, path):
+        pass
+
+    async def _queue_and_play(self, playlist):
+        await self.client.clear()
+        for entry in playlist:
+            path = entry.get('file')
+            if path is not None:
+                await self.client.add(path)
+        await self.client.play()
+
+    def queue_and_play(self, playlist):
+        return asyncio.run_coroutine_threadsafe(self._queue_and_play(playlist), self.loop).result()
