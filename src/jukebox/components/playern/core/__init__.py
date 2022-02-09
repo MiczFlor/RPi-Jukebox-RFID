@@ -39,7 +39,12 @@ class PlayerCtrl:
 
     @plugin.tag
     def get_active(self):
-        return self._active.flavor
+        name = 'None'
+        for n, b in self._backends.items():
+            if self._active == b:
+                name = n
+                break
+        return name
 
     @plugin.tag
     def list_backends(self):
@@ -47,11 +52,14 @@ class PlayerCtrl:
 
     @plugin.tag
     def play_uri(self, uri, check_second_swipe=False, **kwargs):
-        # Save the current state (if something is playing)
-        # Stop the current playback
-        # Decode card second swipe
+        # Save the current state and stop the current playback
+        self.stop()
+        # Decode card second swipe (TBD)
         # And finally play
-        player_type, _ = uri.split(':', 1)
+        try:
+            player_type, _ = uri.split(':', 1)
+        except ValueError:
+            raise ValueError(f"Malformed URI: {uri}")
         inst = self._backends.get(player_type)
         if inst is None:
             raise KeyError(f"URI player type unknown: '{player_type}'. Available backends are: {self._backends.keys()}.")
@@ -71,11 +79,11 @@ class PlayerCtrl:
             * if playlist has stopped playing
                 * playlist has run out
                 * playlist was stopped by trigger
-            * if place-not-swipe: Card remains on reader until playlist expires and player enters state stop.
+            * if in a place-not-swipe setup, the card remains on reader until playlist expires and player enters state stop.
               Card is the removed and triggers 'card removal action' on stopped playlist. Card is placed on reader
               again and must be treated as first swipe
-            * after reboot when last state is restored (first swipe is play which starts from the beginning or resumes, depending
-              on playlist configuration)
+            * after reboot when last state is restored (first swipe is play which starts from the beginning or resumes,
+              depending on playlist configuration)
 
         Second swipe actions can be
 
@@ -88,12 +96,6 @@ class PlayerCtrl:
         pass
 
     @plugin.tag
-    def stop(self):
-        # Save current state for resume functionality
-        self._save_state()
-        self._active.stop()
-
-    @plugin.tag
     def next(self):
         self._active.next()
 
@@ -102,12 +104,29 @@ class PlayerCtrl:
         self._active.prev()
 
     @plugin.tag
+    def play(self):
+        self._active.play()
+
+    @plugin.tag
+    def toggle(self):
+        self._active.toggle()
+
+    @plugin.tag
+    def pause(self):
+        self._active.pause()
+
+    @plugin.tag
+    def stop(self):
+        # Save current state for resume functionality
+        self._save_state()
+        self._active.stop()
+
+    @plugin.tag
     def get_queue(self):
         self._active.get_queue()
 
     def _save_state(self):
         # Get the backend to save the state of the current playlist to the URI's config file
-        self._active.save_uri_state()
+        self._active.save_state()
         # Also need to save which backend and URI was currently playing to be able to restore it after reboot
         pass
-
