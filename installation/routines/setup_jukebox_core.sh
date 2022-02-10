@@ -23,9 +23,10 @@ _jukebox_core_install_os_dependencies() {
   sudo apt-get -y update; sudo apt-get -y install \
     at \
     alsa-utils \
-    python3 python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero \
-    ffmpeg mpg123 \
-    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils \
+    python3 python3-dev python3-pip python3-setuptools python3-mutagen \
+    python3-rpi.gpio python3-gpiozero \
+    espeak ffmpeg mpg123 \
+    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
@@ -34,31 +35,37 @@ _jukebox_core_install_os_dependencies() {
   sudo pip3 install --upgrade pip
 }
 
+_jukebox_core_configure_pulseaudio() {
+  echo "Copy PulseAudio configuration"
+  mkdir -p ~/.config/pulse
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" ~/.config/pulse/default.pa
+}
+
 _jukebox_core_build_libzmq_with_drafts() {
   LIBSODIUM_VERSION="1.0.18"
   ZMQ_VERSION="4.3.4"
 
-  cd ${HOME_PATH} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
-      wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz; \
-      tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz; \
-      cd libsodium-${LIBSODIUM_VERSION}/; \
-      ./configure; \
-      make && make install
+  { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
+  wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz
+  tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz
+  cd libsodium-${LIBSODIUM_VERSION} || exit_on_error
+  ./configure
+  make && make install
 
-  cd ${HOME}/${ZMQ_TMP_DIR}; \
-      wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
-      tar -xzf libzmq.tar.gz; \
-      zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
-      make && make install;
+  cd "${HOME}/${ZMQ_TMP_DIR}" || exit_on_error
+  wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
+  tar -xzf libzmq.tar.gz
+  zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
+  make && make install
 }
 
 _jukebox_core_download_prebuild_libzmq_with_drafts() {
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
 
-  _download_file_from_google_drive ${LIBZMQ_GD_DOWNLOAD_ID} ${ZMQ_TAR_FILENAME}
+  _download_file_from_google_drive "${LIBZMQ_GD_DOWNLOAD_ID}" "${ZMQ_TAR_FILENAME}"
   tar -xzf ${ZMQ_TAR_FILENAME}
   rm -f ${ZMQ_TAR_FILENAME}
-  sudo rsync -a * ${ZMQ_PREFIX}/
+  sudo rsync -a ./* ${ZMQ_PREFIX}/
 }
 
 _jukebox_core_build_and_install_pyzmq() {
@@ -75,11 +82,11 @@ _jukebox_core_build_and_install_pyzmq() {
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
     echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
 
-    cd ${HOME_PATH} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}
+    { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
 
     # ARMv7 as default
     LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV7}
-    if [ `uname -m` = "armv6l" ]; then
+    if [[ $(uname -m) == "armv6l" ]]; then
       # ARMv6 as fallback
       LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV6}
       _show_slow_hardware_message
@@ -103,30 +110,30 @@ _jukebox_core_download_prebuilt_pyzmq() {
   echo "  Download prebuilt pyzmq with WebSockets Support"
   local PYZMQ_TAR_FILENAME="pyzmq-build-armv6.tar.gz"
 
-  cd ${HOME_PATH}
+  cd "${HOME_PATH}" || exit_on_error
 
   # ARMv7 as default
   PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV7}
-  if [ `uname -m` = "armv6l" ]; then
+  if [[ $(uname -m) == "armv6l" ]]; then
     # ARMv6 as fallback
     PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV6}
   fi
 
-  _download_file_from_google_drive ${PYZMQ_GD_DOWNLOAD_ID} ${PYZMQ_TAR_FILENAME}
-  tar -xvf ${PYZMQ_TAR_FILENAME} -C /
-  rm -f ${PYZMQ_TAR_FILENAME}
+  _download_file_from_google_drive "${PYZMQ_GD_DOWNLOAD_ID}" "${PYZMQ_TAR_FILENAME}"
+  tar -xvf "${PYZMQ_TAR_FILENAME}" -C /
+  rm -f "${PYZMQ_TAR_FILENAME}"
 }
 
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
-  cd ${INSTALLATION_PATH}
-  sudo pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+  cd "${INSTALLATION_PATH}"  || exit_on_error
+  sudo pip3 install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_install_settings() {
   echo "  Register Jukebox settings"
-  cp -f ${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml ${SETTINGS_PATH}/jukebox.yaml
-  cp -f ${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml ${SETTINGS_PATH}/logger.yaml
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml" "${SETTINGS_PATH}/jukebox.yaml"
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml" "${SETTINGS_PATH}/logger.yaml"
 }
 
 _jukebox_core_register_as_service() {
@@ -142,6 +149,7 @@ setup_jukebox_core() {
   echo "Install Jukebox Core" | tee /dev/fd/3
 
   _jukebox_core_install_os_dependencies
+  _jukebox_core_configure_pulseaudio
   _jukebox_core_install_python_requirements
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings

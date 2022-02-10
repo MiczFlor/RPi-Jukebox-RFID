@@ -68,7 +68,13 @@ The is a set of reasons:
     * The current Pi OS based on Bullseye does not allow another way to control Bluetooth based speakers,
       as Bluealsa is currently not working with Bluez 5
 
+The PulseAudio configuration file is located at
 
+.. code-block:: text
+
+    ~/.config/pulse/default.pa
+
+Service control and service configuration file location is identical to MPD.
 
 Jukebox Core Service
 ---------------------

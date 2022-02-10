@@ -32,6 +32,7 @@ import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
 import jukebox.publishing as publishing
+from time import time
 
 
 logger = logging.getLogger('jb.multitimers')
@@ -123,6 +124,7 @@ class GenericTimerClass:
         self.args = args if args is not None else []
         self.kwargs = kwargs if kwargs is not None else {}
         self._wait_seconds = wait_seconds
+        self._start_time = 0
         # Hide away the argument 'iteration' that is passed from MultiTimer to function
         # for a single event Timer (and also endless timers, as the inherit from here)
         self._function = lambda iteration, *largs, **lkwargs: function(*largs, **lkwargs)
@@ -143,6 +145,7 @@ class GenericTimerClass:
         self.timer_thread.publish_callback = self._publish_core
         if self._name is not None:
             self.timer_thread.name = self._name
+        self._start_time = int(time())
         self.timer_thread.start()
 
     @plugin.tag
@@ -150,6 +153,14 @@ class GenericTimerClass:
         """Cancel the timer"""
         if self.is_alive():
             self.timer_thread.cancel()
+
+    @plugin.tag
+    def toggle(self):
+        """Toggle the activation of the timer"""
+        if self.is_alive():
+            self.timer_thread.cancel()
+        else:
+            self.start()
 
     @plugin.tag
     def trigger(self):
@@ -187,9 +198,16 @@ class GenericTimerClass:
         """Publish the current state and config"""
         self._publish_core()
 
+    @plugin.tag
     def get_state(self):
         """Get the current state and config as dictionary"""
+        remaining_seconds = max(
+            0,
+            self.get_timeout() - (int(time()) - self._start_time)
+        )
+
         return {'enabled': self.is_alive(),
+                'remaining_seconds': remaining_seconds,
                 'wait_seconds': self.get_timeout(),
                 'type': 'GenericTimerClass'}
 

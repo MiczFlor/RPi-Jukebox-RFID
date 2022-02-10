@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Card,
@@ -12,11 +13,13 @@ import {
 } from '@mui/material';
 
 const SettingsSecondSwipe = () => {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <CardHeader
-        title="Second Swipe"
-        subheader="🚧 This feature is not yet enabled."
+        title={t('settings.secondswipe.title')}
+        subheader={t('settings.feature-not-enabled')}
       />
       <Divider />
       <CardContent>
@@ -26,25 +29,25 @@ const SettingsSecondSwipe = () => {
               <FormControlLabel
                 value="restart"
                 control={<Radio />}
-                label="Re-start playlist"
+                label={t('settings.secondswipe.restart')}
                 disabled={true}
               />
               <FormControlLabel
                 value="pause"
                 control={<Radio />}
-                label="Toggle pause / play"
+                label={t('settings.secondswipe.toggle')}
                 disabled={true}
               />
               <FormControlLabel
                 value="skipnext"
                 control={<Radio />}
-                label="Skip to next track"
+                label={t('settings.secondswipe.skip')}
                 disabled={true}
               />
               <FormControlLabel
                 value="noaudioplay"
                 control={<Radio />}
-                label="Ignore audio playout triggers, only system commands"
+                label={t('settings.secondswipe.ignore')}
                 disabled={true}
               />
             </RadioGroup>

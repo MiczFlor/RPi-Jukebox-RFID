@@ -30,7 +30,9 @@ import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
+import jukebox.speaking_text
 from jukebox.multitimer import GenericEndlessTimerClass
+import socket
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -197,6 +199,40 @@ def publish_cpu_temperature():
     else:
         # May be called from different threads: get thread-correct publisher instance
         jukebox.publishing.get_publisher().send('host.temperature.cpu', str(temperature))
+
+
+# ---------------------------------------------------------------------------
+# Network
+# ---------------------------------------------------------------------------
+
+@plugin.register
+def get_ip_address():
+    """
+    Get the IP address
+    Source: https://stackoverflow.com/a/28950776/1062438
+    """
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        sock.connect(('10.255.255.255', 1))
+        ip_address = sock.getsockname()[0]
+    except Exception:
+        ip_address = '127.0.0.1'
+    finally:
+        sock.close()
+    return ip_address
+
+
+@plugin.register
+def say_my_ip(option='full'):
+    ip_address = get_ip_address()
+
+    if option == 'short':
+        ip_address = ip_address.split('.')[3]
+
+    ip_address = ip_address.replace('.', '. ')
+
+    jukebox.speaking_text.say(ip_address)
 
 
 # ---------------------------------------------------------------------------

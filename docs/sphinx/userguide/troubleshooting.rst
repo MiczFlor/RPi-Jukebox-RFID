@@ -23,6 +23,16 @@ The short answer
     ../shared/logs/app.log   : Complete Debug Messages
     ../shared/logs/errors.log: Only Errors and Warnings
 
+These files always contain the messages of the current run only.
+The logs of previous runs are post-fixed with ``.1``, e.g. ``app.log.1``. This is useful for debugging issues during
+shutdown of the service.
+
+The logs are also available via the Web Server:
+
+.. code-block::
+
+    http://ip.of.your.box/logs
+
 .. important:: Always check the time modification date or the beginning of the log
     file to ensure you are not looking at an old log file!
 

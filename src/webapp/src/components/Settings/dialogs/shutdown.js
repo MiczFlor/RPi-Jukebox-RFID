@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,6 +12,8 @@ import Snackbar from '@mui/material/Snackbar';
 import request from '../../../utils/request';
 
 export default function ShutDownDialog() {
+  const { t } = useTranslation();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [shuttingDown, setShuttingDown] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -42,8 +46,10 @@ export default function ShutDownDialog() {
     <>
       <Button
         variant="outlined"
-        onClick={handleClickOpen}>Shut Down</Button>
-
+        onClick={handleClickOpen}
+      >
+        {t('settings.dialogs.shutdown.button-title')}
+      </Button>
       <Dialog
         open={dialogOpen}
         onClose={handleCancelShutdown}
@@ -51,21 +57,21 @@ export default function ShutDownDialog() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {!shuttingDown && "Shut Down"}
-          {shuttingDown && "👋 Good bye"}
+          {!shuttingDown && t('settings.dialogs.shutdown.title')}
+          {shuttingDown && t('settings.dialogs.reboot.bye')}
         </DialogTitle>
         <DialogContent>
           {
             !shuttingDown &&
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to shut down your Phoniebox now?
+              {t('settings.dialogs.shutdown.description-confirm')}
             </DialogContentText>
           }
 
           {
             shuttingDown &&
             <DialogContentText id="alert-dialog-description">
-              The Phoniebox is being shut down!
+              {t('settings.dialogs.shutdown.description-success')}
             </DialogContentText>
           }
         </DialogContent>
@@ -75,7 +81,7 @@ export default function ShutDownDialog() {
             disabled={shuttingDown}
             onClick={handleCancelShutdown}
           >
-            Cancel
+            {t('general.buttons.cancel')}
           </Button>
           <Button
             autoFocus
@@ -83,7 +89,7 @@ export default function ShutDownDialog() {
             disabled={shuttingDown}
             onClick={doShutdown}
           >
-            Shut Down
+            {t('settings.dialogs.shutdown.button-title')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -93,7 +99,7 @@ export default function ShutDownDialog() {
         open={showError}
         autoHideDuration={5000}
         onClose={handleCloseError}
-        message="Shut Down failed"
+        message={t('settings.dialogs.shutdown.failed')}
       />
     </>
   );

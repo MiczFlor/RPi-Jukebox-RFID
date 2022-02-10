@@ -32,7 +32,7 @@ version = release
 
 try:
     gitstate = jukebox.utils.get_git_state()
-except Exception as e:
+except Exception:
     gitstate = 'Unknown'
 
 # -- General configuration ---------------------------------------------------

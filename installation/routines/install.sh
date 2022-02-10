@@ -1,4 +1,5 @@
 install() {
+  check_os_type
   customize_options
   clear 1>&3
   set_raspi_config

@@ -1,0 +1,244 @@
+{
+  "general": {
+    "buttons": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "save": "Save"
+    },
+    "loading": "Loading"
+  },
+  "cards": {
+    "controls": {
+      "command-selector": {
+        "title": "Commands",
+        "label": "{{title}} commands",
+        "placeholder": "Select a command",
+        "commands": {
+          "change_volume": "Change volume by",
+          "shutdown": "Shut Down",
+          "reboot": "Reboot",
+          "say_my_ip": "Say IP address",
+          "timer_shutdown": "Shut Down",
+          "timer_stop_player": "Stop player",
+          "timer_fade_volume": "Fade volume",
+          "toggle_output": "Toggle audio output"
+        }
+      },
+      "controls-selector": {
+        "label": "Jukebox action"
+      },
+      "select-command-aliases": {
+        "label": "Actions",
+        "placeholder": "Select an action",
+        "actions": {
+          "play_music": "Play music",
+          "audio": "Audio & Volume",
+          "host": "System",
+          "timers": "Timers"
+        }
+      },
+      "actions": {
+        "host": {
+          "description": "Do you want to hear the full IP address or just the last quadrant?",
+          "label-full": "Full address (e.g. 192.168.1.53)",
+          "label-short": "Last quadrant (e.g. 53)"
+        },
+        "play-music": {
+          "commands": {
+            "play_album": "Selected album",
+            "play_folder": "Selected folder",
+            "play_single": "Selected song"
+          },
+          "button-label": "Select music",
+          "no-music-selected": "No music selected",
+          "loading-song-error": "An error occurred while loading song."
+        },
+        "volume": {
+          "title": "Volume steps"
+        },
+        "timers": {
+          "description": "Choose the amount of minutes you want the action to be performed."
+        }
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Delete Card '{{cardId}}'",
+        "description": "Are you sure you want to delete this card?"
+      }
+    },
+    "edit": {
+      "edit-card": "Edit card"
+    },
+    "form": {
+      "no-card-swiped": "Please swipe a card to receive an ID which will be used to register a new action.",
+      "no-card-id": "No card ID"
+    },
+    "list": {
+      "no-cards-registered": "No cards registered!"
+    },
+    "overview": {
+      "cards": "Cards",
+      "loading-error": "An error occurred while loading cards list.",
+      "register-card": "Register a card"
+    },
+    "register": {
+      "register-card": "Register a card"
+    }
+  },
+  "header": {
+    "back": "Back"
+  },
+  "library": {
+    "loading-error": "An error occurred while loading the library.",
+    "header": {
+      "search-hide": "Hide search",
+      "search-show": "Show search",
+      "search-label": "Search",
+      "toggle-label": "Toggle Album/Folder view",
+      "albums": "Albums",
+      "folders": "Folders"
+    },
+    "selector-header": {
+      "title": "Select an album, folder or song"
+    },
+    "folders": {
+      "no-music": "No music found!",
+      "empty-folder": "This folder is empty!",
+      "show-folder-content": "Show folder content",
+      "back-button-label": "Back"
+    },
+    "albums": {
+      "unknown-album": "Unknown album",
+      "unknown-artist": "Unknown artist",
+      "unknown-title": "Unknown title",
+      "no-music": "No music found!",
+      "empty-library": "Your library is empty!",
+      "no-songs-in-album": "Strange, no songs in this album.",
+      "assign-to-card": "Assign album to card"
+    }
+  },
+  "navigation": {
+    "start": "Start",
+    "library": "Library",
+    "cards": "Cards",
+    "settings": "Settings"
+  },
+  "player": {
+    "controls": {
+      "shuffle": {
+        "activate": "Activate shuffle",
+        "deactivate": "Deactivate shuffle"
+      },
+      "skip": "Skip previous track",
+      "play": "Play",
+      "pause": "Pause",
+      "next": "Skip next track",
+      "repeat": {
+        "activate": "Activate repeat",
+        "activate-single": "Activate single repeat",
+        "deactivate": "Deactivate repeat"
+      }
+    },
+    "cover": {
+      "title": "Cover Art",
+      "unavailable": "Cover Art not available"
+    },
+    "display": {
+      "unknown-title": "Unknown title",
+      "unknown-artist": "Unknown artists",
+      "no-song-in-queue": "No song in queue"
+    },
+    "seekbar": {
+      "song-position": "Current position"
+    },
+    "volume": {
+      "slider": "Volume Slider",
+      "mute": "Mute volume",
+      "unmute": "Unmute volume"
+    }
+  },
+  "settings": {
+    "feature-not-enabled": "🚧 This feature is not yet enabled.",
+    "dialogs": {
+      "reboot": {
+        "title": "Reboot",
+        "rebooting": "Rebooting",
+        "button-title": "Reboot",
+        "description-confirm": "Are you sure you want to reboot now?",
+        "failed": "Reboot failed"
+      },
+      "shutdown": {
+        "title": "Shut Down",
+        "bye": "👋 Good bye",
+        "button-title": "Shut Down",
+        "description-confirm": "Are you sure you want to shut down now?",
+        "description-success": "Successfully shut down",
+        "failed": "Shut Down failed"
+      }
+    },
+    "autohotspot": {
+      "title": "Auto Hotspot",
+      "not-installed": "This feature is not installed.",
+      "why": "Why?",
+      "control-label": "Auto Hotspot"
+    },
+    "timers": {
+      "option-label-timeslot": "{{value}} min",
+      "option-label-off": "Off",
+      "title": "Timers",
+      "stop-player": "Stop player",
+      "shutdown": "Shut Down",
+      "fade-volume": "Fade volume",
+      "idle-shutdown": "Idle Shut Down",
+      "ended": "Done"
+    },
+    "secondswipe": {
+      "title": "Second Swipe",
+      "restart": "Restart playlist",
+      "toggle": "Toggle pause / play",
+      "skip": "Skip to next track",
+      "ignore": "Ignore audio playout triggers, only system commands"
+    },
+    "status": {
+      "title": "System",
+      "battery": {
+        "title": "Battery",
+        "charging": "Battery is charging",
+        "not-charging": "Battery is not charging"
+      },
+      "cpu-temp": {
+        "label": "CPU Temperature",
+        "unavailable": "Unavailable",
+        "not-enabled": "Not enabled or not supported"
+      },
+      "disk-usage": {
+        "label": "Disk usage",
+        "loading-error": "Disk usage could not be loaded.",
+        "result": "{{used}} GB of {{total}} GB used ({{result}}%)"
+      },
+      "ip-address": {
+        "label": "IP address",
+        "button-title": "Say my IP address",
+        "loading-error": "IP address could not be loaded."
+      },
+      "version": {
+        "label": "Jukebox Core Version"
+      }
+    },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Outputs",
+        "settings.audio.outputs.radio-primary": "Speaker (Primary)",
+        "settings.audio.outputs.radio-secondary": "Bluetooth (Secondary)"
+      },
+      "volume": {
+        "max-volume": "Maximum Volume"
+      }
+    },
+    "systemcontrols": {
+      "title": "System Controls"
+    }
+  }
+}

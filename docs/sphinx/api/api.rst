@@ -15,3 +15,6 @@ Developers API Introduction
    playlist
    utils
    volume
+   controls
+   callingback
+   gpioz/gpioz

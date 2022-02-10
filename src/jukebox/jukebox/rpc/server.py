@@ -48,7 +48,7 @@ Three sockets are opened
 """
 
 
-import nanotime
+import time
 import zmq
 import json
 import logging
@@ -107,7 +107,7 @@ class RpcServer:
         while self._keep_running:
             # Wait for next request from client
             message = self.socket.recv()
-            nt = nanotime.now().nanoseconds()
+            nt = time.time_ns()
 
             client_request = json.loads(message)
 

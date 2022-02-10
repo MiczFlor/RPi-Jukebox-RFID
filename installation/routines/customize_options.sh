@@ -251,7 +251,7 @@ customize_options() {
   _option_samba
   _option_webapp
   _option_build_local_docs
-  if [ "$ENABLE_WEBAPP" = true ] ; then
+  if [[ $ENABLE_WEBAPP == true ]] ; then
     _option_kiosk_mode
     _option_webapp_devel_build
   fi
