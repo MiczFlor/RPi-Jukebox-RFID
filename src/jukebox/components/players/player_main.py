@@ -27,9 +27,9 @@ Queue:
 
 How it works:
 
-The backends register the flavor(s) with the top-level player control. The WebApp goes through player.play(flavor, uri) to
-trigger a playback. Function like next, prev also go through the player control - here the currently active flavor is automatically
-selected by the player control.
+The backends register the flavor(s) with the top-level player control. The WebApp goes through player.play(flavor, uri)
+to trigger a playback. Function like next, prev also go through the player control - here the currently active flavor is
+automatically selected by the player control.
 
 To get all playlists and/or playlist entries, the WebApp also goes through the player control - it is the same function
 but takes different arguments depending on player control. And returns different results (possibly in different formats?)
@@ -56,7 +56,8 @@ Examples:
     player.get_content(flavor=folder, uri='connie_backt')
     > [01-song.mp3, 02-intro, ...]
 
-    NOTE: list and get_content return not only names of files, but list of tuples which also contain path and filetype (dir, file)
+    NOTE: list and get_content return not only names of files, but list of tuples which also contain path and
+    filetype (dir, file)
 
     ...
 
@@ -105,7 +106,8 @@ class PlayerCtrl:
                  play_callable: Callable,
                  get_list_callable: Callable,
                  get_content_callable: Callable):
-        self._flavors[flavor] = PlayerFlavorEntry(flavor, backend, play_callable, get_list_callable, get_content_callable)
+        self._flavors[flavor] = PlayerFlavorEntry(flavor, backend, play_callable, get_list_callable,
+                                                  get_content_callable)
 
     def play(self, flavor, check_second_swipe=False, **kwargs):
         # Save the current state (if something is playing)
@@ -241,12 +243,13 @@ def initialize():
     mpd = BackendMPD()
     player.register('album',
                     mpd,
-                    lambda album_artist, album, **ignored_kwargs: mpd.play_album(album_artist=album_artist, album=album),
+                    lambda album_artist, album, **ignored_kwargs: mpd.play_album(album_artist=album_artist,
+                                                                                 album=album),
                     lambda **ignored_kwargs: mpd.get_album_list(),
-                    lambda album_artist, album, **ignored_kwargs: mpd.get_album_content(album_artist=album_artist, album=album))
+                    lambda album_artist, album, **ignored_kwargs: mpd.get_album_content(album_artist=album_artist,
+                                                                                        album=album))
     player.register('folder',
                     mpd,
                     lambda uri, recursive=False, **ignore_kwargs: mpd.play_folder(uri=uri, recursive=recursive),
                     lambda uri, **ignore_kwargs: mpd.get_folder_list(uri=uri),
                     lambda uri, **ignore_kwargs: mpd.get_folder_content(uri=uri))
-
