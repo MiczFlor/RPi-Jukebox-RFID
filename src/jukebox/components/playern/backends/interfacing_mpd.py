@@ -24,7 +24,7 @@ class MPDBackend:
     def __init__(self, event_loop):
         self.client = MPDClient()
         self.loop = event_loop
-        self.host = 'localhost'
+        self.host = cfg.getn('players', 'mpd', 'host', default='localhost')
         self.port = '6600'
         self._flavors = {'folder': self.get_files,
                          'file': self.get_track,
