@@ -98,7 +98,7 @@ class MPDBackend:
         return self._run_cmd(self.client.next)
 
     def prev(self):
-        return self._run_cmd(self.client.prev)
+        return self._run_cmd(self.client.previous)
 
     @plugin.tag
     def play(self, idx=None):

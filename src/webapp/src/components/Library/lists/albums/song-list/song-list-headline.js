@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 
 const SongListHeadline = ({ artist, album }) => (
-  <Grid container sx={{ padding: '16px 8px 0' }}>
+  <Grid container sx={{ paddingTop: '16px' }}>
     <Grid item>
       <Typography variant="h6" sx={{ fontWeight: 'bold' }} component="h1">
         {album}

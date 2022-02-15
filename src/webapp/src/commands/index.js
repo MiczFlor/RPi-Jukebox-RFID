@@ -9,15 +9,16 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_all_dirs',
   },
-  albumList: {
+  'mpd.get_albums': {
     _package: 'player',
-    plugin: 'ctrl',
-    method: 'list_albums',
+    plugin: 'mpd',
+    method: 'get_albums',
   },
-  songList: {
+  'mpd.get_album_tracks': {
     _package: 'player',
-    plugin: 'ctrl',
-    method: 'list_song_by_artist_and_album',
+    plugin: 'mpd',
+    method: 'get_album_tracks',
+    argKeys: ['album_artist', 'album']
   },
   getSongByUrl: {
     _package: 'player',
@@ -25,10 +26,11 @@ const commands = {
     method: 'get_song_by_url',
     argKeys: ['song_url']
   },
-  folderList: {
+  'mpd.get_files': {
     _package: 'player',
-    plugin: 'ctrl',
-    method: 'get_folder_content',
+    plugin: 'mpd',
+    method: 'get_files',
+    argKeys: ['path']
   },
   cardsList: {
     _package: 'cards',
@@ -50,50 +52,44 @@ const commands = {
 
   // Player Actions
   play: {
-    _package: 'players',
-    plugin: 'play',
-  },
-  play_single: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'play_single',
-    argKeys: ['song_url']
-  },
-  play_folder: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'play_folder',
-    argKeys: ['folder']
-  },
-  play_album: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'play_album',
-    argKeys: ['albumartist', 'album']
+    method: 'play',
   },
   pause: {
-    _package: 'players',
-    plugin: 'pause',
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'pause',
   },
   previous: {
-    _package: 'players',
-    plugin: 'prev',
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'prev',
   },
   next: {
-    _package: 'players',
-    plugin: 'next',
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'next',
   },
   shuffle: {
-    _package: 'players',
-    plugin: 'shuffle',
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'shuffle',
   },
   repeat: {
-    _package: 'players',
-    plugin: 'repeat',
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'repeat',
   },
   seek: {
     _package: 'players',
     plugin: 'seek',
+  },
+  'mpd.play_uri': {
+    _package: 'player',
+    plugin: 'mpd',
+    method: 'play_uri',
+    argKeys: ['uri']
   },
 
   // Volume

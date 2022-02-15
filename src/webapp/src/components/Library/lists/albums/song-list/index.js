@@ -30,10 +30,10 @@ const SongList = ({
     const getSongList = async () => {
       setIsLoading(true);
       const { result, error } = await request(
-        'songList',
+        'mpd.get_album_tracks',
         {
+          album_artist: decodeURIComponent(artist),
           album: decodeURIComponent(album),
-          albumartist: decodeURIComponent(artist),
         }
       );
       setIsLoading(false);
@@ -70,21 +70,23 @@ const SongList = ({
           marginTop: '0'
         }}
       >
-        {isLoading
-          ? <CircularProgress />
-          : <List sx={{ width: '100%' }}>
-              {songs.map(song =>
-                <SongListItem
-                  key={song.track}
-                  song={song}
-                  isSelecting={isSelecting}
-                  registerMusicToCard={registerMusicToCard}
-                />
-              )}
-            </List>
+        {isLoading && <CircularProgress />}
+        {!isLoading && !error &&
+          <List sx={{ width: '100%' }}>
+            {songs.map(song =>
+              <SongListItem
+                key={song.track}
+                song={song}
+                isSelecting={isSelecting}
+                registerMusicToCard={registerMusicToCard}
+              />
+            )}
+          </List>
         }
         {error &&
-          <Typography>{`${t('library.albums.no-songs-in-album')} 🤔`}</Typography>
+          <Grid item>
+            <Typography>{`${t('library.albums.no-songs-in-album')} 🤔`}</Typography>
+          </Grid>
         }
       </Grid>
     </Grid>

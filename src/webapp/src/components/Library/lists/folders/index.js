@@ -16,7 +16,7 @@ const Folders = ({
   registerMusicToCard,
 }) => {
   const { t } = useTranslation();
-  const { dir = './' } = useParams();
+  const { path = './' } = useParams();
   const [folders, setFolders] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,8 +33,8 @@ const Folders = ({
     const fetchFolderList = async () => {
       setIsLoading(true);
       const { result, error } = await request(
-        'folderList',
-        { folder: decodeURIComponent(dir) }
+        'mpd.get_files',
+        { path: decodeURIComponent(path) }
       );
       setIsLoading(false);
 
@@ -43,7 +43,7 @@ const Folders = ({
     }
 
     fetchFolderList();
-  }, [dir]);
+  }, [path]);
 
   const filteredFolders = folders.filter(search);
 
@@ -56,7 +56,7 @@ const Folders = ({
 
   return (
     <FolderList
-      dir={dir}
+      path={path}
       folders={filteredFolders}
       isSelecting={isSelecting}
       registerMusicToCard={registerMusicToCard}
