@@ -19,7 +19,7 @@ $subfolders = dir_list_recursively($audiofolder);
 usort($subfolders, 'strnatcasecmp');
 //print "<pre>"; print_r($subfolders); print "</pre>"; //???
 
-$contentTree = array(); // this will be the tree we need for display
+$contentTree = array(); // this will be the tree we need fhttps://open.spotify.com/oembed/or display
 
 /*
 * now we need to collect some extra info such as: subfolders? files in folder?
@@ -115,19 +115,26 @@ foreach($subfolders as $key => $subfolder) {
 			
 			// this is a new and easier way for loading spotify informations!
 			$uri = file_get_contents($subfolder."/spotify.txt");
-			$url = "https://open.spotify.com/oembed/?url=".trim($uri)."&format=json";
-			
+			$url = "https://open.spotify.com/oembed?url=".trim($uri)."&format=json";
+
+            $options = array('http'=>array(
+                                'method'=>"GET",
+                                'header'=> "User-Agent: Phoniebox\r\n" 
+                )
+            );
+            $context = stream_context_create($options);
+
 			if (!file_exists($coverfile)) {
-				$str = file_get_contents($url);
+				$str = file_get_contents($url, false, $context);
 				$json  = json_decode($str, true);
 
 				$cover = $json['thumbnail_url'];
-				$coverdl = file_get_contents($cover);
+				$coverdl = file_get_contents($cover, false, $context);
 				file_put_contents($coverfile, $coverdl);
 			}
 			
 			if (!file_exists($titlefile)) {
-				$str = file_get_contents($url);
+				$str = file_get_contents($url, false, $context);
 				$json  = json_decode($str, true);
 
 				$title = $json['title'];
