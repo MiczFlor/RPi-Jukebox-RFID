@@ -19,7 +19,7 @@ $subfolders = dir_list_recursively($audiofolder);
 usort($subfolders, 'strnatcasecmp');
 //print "<pre>"; print_r($subfolders); print "</pre>"; //???
 
-$contentTree = array(); // this will be the tree we need fhttps://open.spotify.com/oembed/or display
+$contentTree = array(); // this will be the tree we need for display
 
 /*
 * now we need to collect some extra info such as: subfolders? files in folder?
