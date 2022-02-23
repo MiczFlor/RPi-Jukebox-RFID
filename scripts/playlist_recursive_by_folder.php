@@ -117,7 +117,13 @@ foreach($folders as $folder) {
             $podcast = trim(file_get_contents($folder."/podcast.txt"));
             //wget -q -O - "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
             //wget -q -O - "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
-            $exec = 'wget -q -O - \''.$podcast.'\' | sed -n \'s/.*enclosure.*url="\([^"]*\)".*/\1/p\'';
+            // includes fix if enclosure tags are divided in multiple lines
+            // 1. "wget" the URL
+            // 2. remove all the line breaks
+            // 3. add breaks at the end of every tag that,
+            // 4. sed (which works line by line) has the proper environment
+            $exec = 'wget -q -O - \''.$podcast.'\' | tr \'\n\' \' \' | sed -e \'s/\/>/\/>\n&/g\' | sed -n \'s/.*enclosure.*url="\([^"]*\)".*/\1/p\'';
+
             /*
             * get all the playlist enclosure URLs in a multiline string
             */
