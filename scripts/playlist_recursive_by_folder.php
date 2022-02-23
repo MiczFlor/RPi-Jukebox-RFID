@@ -115,8 +115,9 @@ foreach($folders as $folder) {
             * Read podcast URL and extract audio links from enclosure tag
             */
             $podcast = trim(file_get_contents($folder."/podcast.txt"));
-            //wget -q -O - "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
-            //wget -q -O - "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
+            //wget -q -O - "http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml" | tr '\n' ' ' | sed -e 's/\/>/\/>\n&/g' | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
+            //wget -q -O - "https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast" | tr '\n' ' ' | sed -e 's/\/>/\/>\n&/g' | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
+            //wget -q -O - "https://www.swr.de/~podcast/swr2/leben-und-gesellschaft/podcast-sprechen-wir-ueber-mord-100.xml" | tr '\n' ' ' | sed -e 's/\/>/\/>\n&/g' | sed -n 's/.*enclosure.*url="\([^"]*\)".*/\1/p'
             // includes fix if enclosure tags are divided in multiple lines
             // 1. "wget" the URL
             // 2. remove all the line breaks
