@@ -1,5 +1,7 @@
 import json
 import logging
+import time
+
 import websocket
 import threading
 
@@ -57,8 +59,11 @@ class SpotifyWsClient:
 
         callback(data)
 
-    def _on_close(self, socket):
-        logger.debug('Connection with websocket server closed')
+    def _on_close(self, socket, close_status_code, close_message):
+        logger.debug(f'Connection with websocket server closed with {close_status_code}:{close_message}')
+        time.sleep(15)
+        logger.debug("Retrying to connect")
+        self.connect()
 
     def _on_error(self, socket, error):
         logger.error(f'Websocket error: {error}')
