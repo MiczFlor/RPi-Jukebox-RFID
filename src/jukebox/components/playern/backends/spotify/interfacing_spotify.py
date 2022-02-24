@@ -71,11 +71,11 @@ class SPOTBackend:
         spotify:playlist:0
             --> search in the yaml-file for the type "playlist" and play the first uri
         """
-        player_type, list_type, index = uri.split(':', 2)
+        player_type, index = uri.split(':', 1)
         if player_type != 'spotify':
             raise KeyError(f"URI prefix must be 'spotify' not '{player_type}")
 
-        self.http_client.play_uri(self.spotify_collection_data.get(list_type)[int(index)].get("uri"))
+        self.http_client.play_uri(self.spotify_collection_data[int(index)].get("uri"))
 
     # -----------------------------------------------------
     # Queue / URI state  (save + restore e.g. random, resume, ...)

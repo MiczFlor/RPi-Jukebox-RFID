@@ -1,9 +1,7 @@
-playlist:
-    - name: Gute Nacht!
-      uri: spotify:playlist:37i9dQZF1DWSVYS2LMyMFg
-album:
-    - name: 001/Die Ritterburg (und 5 weitere Geschichten)
-      uri: spotify:album:0IakudBXfN2aYXChl5sEK7
-track:
-    - name: Die Ritterburg - Teil 1
-      uri: spotify:track:6Ac7ZQZZF57jeQnW6AVqY8
+# You can add your spotify uri's in this yaml file
+# please stick to the syntax:
+#  - name: <Name to display in the Webapp
+#    uri: <Spotify URI>
+# Example:
+# - name: Gute Nacht!
+#   uri: spotify:playlist:37i9dQZF1DWSVYS2LMyMFg
