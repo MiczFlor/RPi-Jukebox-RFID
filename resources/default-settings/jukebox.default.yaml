@@ -78,6 +78,9 @@ jinglemp3:
 alsawave:
   # Config of the Wave through ALSA Jingle Service
   device: default
+players:
+  mpd:
+    host: localhost
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json

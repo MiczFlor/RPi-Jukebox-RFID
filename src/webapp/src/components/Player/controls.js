@@ -79,7 +79,7 @@ const Controls = () => {
       {/* Skip previous track */}
       <IconButton
         aria-label={t('player.controls.skip')}
-        disabled={!trackid}
+        // disabled={!trackid}
         onClick={() => request('previous')}
         size="large"
         sx={iconStyles}
@@ -89,20 +89,20 @@ const Controls = () => {
       </IconButton>
 
       {/* Play */}
-      {!playing &&
+      {/* {!playing && */}
         <IconButton
           aria-label={t('player.controls.play')}
           onClick={() => request('play')}
-          disabled={!trackid}
+          // disabled={!trackid}
           size="large"
           sx={iconStyles}
           title={t('player.controls.play')}
         >
           <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
-      }
+      {/* } */}
       {/* Pause */}
-      {playing &&
+      {/* {playing && */}
         <IconButton
           aria-label={t('player.controls.pause')}
           onClick={() => request('pause')}
@@ -112,12 +112,12 @@ const Controls = () => {
         >
           <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
         </IconButton>
-      }
+      {/* } */}
 
       {/* Skip next track */}
       <IconButton
         aria-label={t('player.controls.next')}
-        disabled={!trackid}
+        // disabled={!trackid}
         onClick={() => request('next')}
         size="large"
         sx={iconStyles}

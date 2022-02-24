@@ -24,8 +24,8 @@ class MPDBackend:
     def __init__(self, event_loop):
         self.client = MPDClient()
         self.loop = event_loop
-        self.host = 'localhost'
-        self.port = '6600'
+        self.host = cfg.setndefault('players', 'mpd', 'host', value='localhost')
+        self.port = cfg.setndefault('players', 'mpd', 'port', value='6600')
         self._flavors = {'folder': self.get_files,
                          'file': self.get_track,
                          'album': self.get_album_from_uri,
@@ -98,9 +98,8 @@ class MPDBackend:
         return self._run_cmd(self.client.next)
 
     def prev(self):
-        return self._run_cmd(self.client.prev)
+        return self._run_cmd(self.client.previous)
 
-    @plugin.tag
     def play(self, idx=None):
         """
         If idx /= None, start playing song idx from queue
@@ -145,7 +144,6 @@ class MPDBackend:
     # ----------------------------------
     # Stuff that replaces the current playlist and starts a new playback for URI
 
-    @plugin.tag
     def play_uri(self, uri: str, **kwargs):
         """Decode URI and forward play call
 
@@ -245,11 +243,11 @@ class MPDBackend:
         return self._run_cmd(self.client.find, 'albumartist', album_artist, 'album', album)
 
     def get_album_from_uri(self, uri: str):
-        """Accepts full or partial uri (partial means without leading 'mpd:')"""
-        p = re.match(r"(mpd:)?album:(.*):albumartist:(.*)", uri)
+        """Accepts full or partial uri (partial means without leading 'mpd:album:')"""
+        p = re.match(r"((mpd:)?album:)?(.*):albumartist:(.*)", uri)
         if not p:
             raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
-        return self.get_album_tracks(album_artist=p.group(3), album=p.group(2))
+        return self.get_album_tracks(album_artist=p.group(4), album=p.group(3))
 
     # ----------------------------------
     # Get podcasts / livestreams
