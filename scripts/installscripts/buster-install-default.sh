@@ -4,7 +4,7 @@
 #
 # NOTE: Running automated install (without interaction):
 # Each install creates a file called PhonieboxInstall.conf
-# in the folder /home/pi/
+# in you $HOME directory
 # You can install the Phoniebox using such a config file
 # which means you don't need to run the interactive install:
 #
@@ -12,7 +12,7 @@
 #    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
-# 3. place the PhonieboxInstall.conf in the folder /home/pi/
+# 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
 #    buster-install-default.sh -a
 
@@ -28,7 +28,7 @@ DATETIME=$(date +"%Y%m%d_%H%M%S")
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-HOME_DIR="/home/pi"
+HOME_DIR=$(echo $HOME)
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
@@ -104,9 +104,9 @@ will guide you through the configuration.
 If you want to run the AUTOMATED INSTALL (non-interactive) from
 an existing configuration file, do the following:
 1. exit this install script (press n)
-2. place your PhonieboxInstall.conf in the folder /home/pi/
+2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   ./home/pi/buster-install-default.sh -a
+   .${HOME_DIR}/buster-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -545,7 +545,7 @@ config_audio_folder() {
 
     #####################################################
     # Folder path for audio files
-    # default: /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+    # default: $HOME/RPi-Jukebox-RFID/shared/audiofolders
 
     clear
 
@@ -683,7 +683,10 @@ samba_config() {
     sudo chmod 644 "${smb_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${smb_conf}"
     # Samba: create user 'pi' with password 'raspberry'
+    # ToDo: use current user with a default password
     (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
 }
 
@@ -699,6 +702,8 @@ web_server_config() {
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
     sudo chown root:root "${lighthttpd_conf}"
     sudo chmod 644 "${lighthttpd_conf}"
+    # double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${lighthttpd_conf}"
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
@@ -870,6 +875,8 @@ install_main() {
 
     # create config file for web app from sample
     sudo cp "${jukebox_dir}"/htdocs/config.php.sample "${jukebox_dir}"/htdocs/config.php
+    # double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${jukebox_dir}"/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
@@ -901,12 +908,30 @@ install_main() {
     sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
+    RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
+
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
+    STARTUP_SCRIPT_SERVICE="${systemd_dir}/phoniebox-startup-scripts.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${STARTUP_SCRIPT_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
+
+    IDLE_WATCHDOG_SERVICE="${systemd_dir}/phoniebox-idle-watchdog.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${IDLE_WATCHDOG_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${IDLE_WATCHDOG_SERVICE}"
+
+    if [[ "${GPIOconfig}" == "YES" ]]; then
+        GPIO_CONTROL_SERVICE="${systemd_dir}/phoniebox-gpio-control.service"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${GPIO_CONTROL_SERVICE}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${GPIO_CONTROL_SERVICE}"
+    fi
+
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -940,12 +965,17 @@ install_main() {
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${etc_mopidy_conf}"
+
         sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
         sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mopidy_conf}"
     fi
 
     # GPIO-Control
@@ -968,6 +998,8 @@ install_main() {
         sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
     fi
@@ -1087,7 +1119,10 @@ existing_assets() {
             # make buttons_usb_encoder.py ready to be use from phoniebox-buttons-usb-encoder service
             sudo chmod +x "${jukebox_dir}"/components/controls/buttons_usb_encoder/buttons_usb_encoder.py
             # make sure service is still enabled by registering again
-            sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample /etc/systemd/system/phoniebox-buttons-usb-encoder.service
+            USB_BUTTONS_SERVICE="/etc/systemd/system/phoniebox-buttons-usb-encoder.service"
+            sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample "${USB_BUTTONS_SERVICE}"
+            # Replace homedir; double quotes for variable expansion
+            sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${USB_BUTTONS_SERVICE}"
             sudo systemctl start phoniebox-buttons-usb-encoder.service
             sudo systemctl enable phoniebox-buttons-usb-encoder.service
         fi
@@ -1274,7 +1309,7 @@ main() {
     else
         echo "Skipping USB device setup..."
         echo "For manual registration of a USB card reader type:"
-        echo "python3 /home/pi/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo "python3 ${HOME_DIR}/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
         echo " "
         echo "Reboot is required to activate all settings!"
     fi

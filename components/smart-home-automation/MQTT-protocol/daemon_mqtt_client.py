@@ -43,8 +43,8 @@ refreshInterval = config.get("refreshIntervalPlaying")
 
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
-arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle', 'throttling', 'temperature']
+arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'shutdownvolumereduction', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_shutdownvolumereduction', 'remaining_idle', 'throttling', 'temperature']
 
 
 def watchForNewCard():
@@ -64,6 +64,29 @@ def watchForNewCard():
 
                 # publish event "card_swiped"
                 client.publish(config.get("mqttBaseTopic") + "/event/card_swiped", payload=cardid)
+                print(" --> Publishing event card_swiped = " + cardid)
+
+                # process all attributes
+                processGet("all")
+
+
+def watchForNewCard():
+    i = inotify.adapters.Inotify()
+    i.add_watch(path + "/../settings/Latest_RFID")
+
+    # wait for inotify events
+    for event in i.event_gen(yield_nones=False):
+        if event is not None:
+            # fetch event attributes
+            (e_header, e_type_names, e_path, e_filename) = event
+
+            # file was closed and written => a new card was swiped
+            if "IN_CLOSE_WRITE" in e_type_names:
+                # fetch card ID
+                cardid = readfile(path + "/../settings/Latest_RFID")
+
+                # publish event "card_swiped"
+                client.publish(mqttBaseTopic + "/event/card_swiped", payload=cardid)
                 print(" --> Publishing event card_swiped = " + cardid)
 
                 # process all attributes
@@ -363,6 +386,7 @@ def fetchData():
     # fetch linux jobs
     result["remaining_stopafter"] = str(linux_job_remaining("s"))
     result["remaining_shutdownafter"] = str(linux_job_remaining("t"))
+    result["remaining_shutdownvolumereduction"] = str(linux_job_remaining("q"))
     result["remaining_idle"] = str(linux_job_remaining("i"))
 
     # fetch OS information
@@ -412,6 +436,11 @@ print("Subscribing to " + config.get("mqttBaseTopic") + "/cmd/#")
 client.subscribe(config.get("mqttBaseTopic") + "/cmd/#")
 print("Subscribing to " + config.get("mqttBaseTopic") + "/get/#")
 client.subscribe(config.get("mqttBaseTopic") + "/get/#")
+
+# register thread for watchForNewCard
+tWatchForNewCard = Thread(target=watchForNewCard)
+tWatchForNewCard.setDaemon(True)
+tWatchForNewCard.start()
 
 # register thread for watchForNewCard
 tWatchForNewCard = Thread(target=watchForNewCard)
