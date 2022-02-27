@@ -71,7 +71,7 @@ Run the following command in your SSH terminal and follow the instructions
 
 .. code-block:: bash
 
-    cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+    cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
 
 This will get the latest stable release from the branch future3/main.
 To install directly from a specific branch and/or a different repository
