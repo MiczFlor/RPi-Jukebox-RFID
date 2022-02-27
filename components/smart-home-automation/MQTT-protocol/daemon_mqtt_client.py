@@ -2,30 +2,34 @@
 
 import paho.mqtt.client as mqtt
 import os, subprocess, re, ssl, time, datetime
-
+import inotify.adapters
+from threading import *
 
 # ----------------------------------------------------------
 #  Prerequisites
 # ----------------------------------------------------------
-# pip3 install paho-mqtt
+# pip3 install paho-mqtt inotify
 
 
 # ----------------------------------------------------------
 #  SETTINGS
 # ----------------------------------------------------------
-DEBUG = False
-mqttBaseTopic = "phoniebox"             # MQTT base topic
-mqttClientId = "phoniebox"              # MQTT client ID
-mqttHostname = "openHAB"                # MQTT server hostname
-mqttPort = 8883                         # MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
-mqttUsername = ""                       # username for user/pass based authentication
-mqttPassword = ""                       # password for user/pass based authentication
-mqttCA = "/home/pi/MQTT/mqtt-ca.crt"    # path to server certificate for certificate-based authentication
-mqttCert = "/home/pi/MQTT/mqtt-client-phoniebox.crt"    # path to client certificate for certificate-based authentication
-mqttKey = "/home/pi/MQTT/mqtt-client-phoniebox.key"     # path to client keyfile for certificate-based authentication
-mqttConnectionTimeout = 60              # in seconds; timeout for MQTT connection
-refreshIntervalPlaying = 5              # in seconds; how often should the status be sent to MQTT (while playing)
-refreshIntervalIdle = 30                # in seconds; how often should the status be sent to MQTT (when NOT playing)
+config = {
+    "DEBUG": False,
+    "mqttBaseTopic": "phoniebox",           # MQTT base topic
+    "mqttClientId": "phoniebox",            # MQTT client ID
+    "mqttHostname": "openHAB",              # MQTT server hostname
+    "mqttPort": 8883,                       # MQTT server port (typically 1883 for unencrypted, 8883 for encrypted)
+    "mqttUsername": "",                     # username for user/pass based authentication
+    "mqttPassword": "",                     # password for user/pass based authentication
+    "mqttCA": "/home/pi/MQTT/mqtt-ca.crt",                      # path to server certificate for certificate-based authentication
+    "mqttCert": "/home/pi/MQTT/mqtt-client-phoniebox.crt",      # path to client certificate for certificate-based authentication
+    "mqttKey": "/home/pi/MQTT/mqtt-client-phoniebox.key",       # path to client keyfile for certificate-based authentication
+    "mqttConnectionTimeout": 60,            # in seconds; timeout for MQTT connection
+    "refreshIntervalPlaying": 5,            # in seconds; how often should the status be sent to MQTT (while playing)
+    "refreshIntervalIdle": 30,              # in seconds; how often should the status be sent to MQTT (when NOT playing)
+}
+
 
 # ----------------------------------------------------------
 #  DO NOT CHANGE BELOW
@@ -35,12 +39,58 @@ refreshIntervalIdle = 30                # in seconds; how often should the statu
 path = os.path.dirname(os.path.realpath(__file__))
 
 # internal refresh interval
-refreshInterval = refreshIntervalPlaying
+refreshInterval = config.get("refreshIntervalPlaying")
 
 # list of available commands and attributes
 arAvailableCommands = ['volumeup', 'volumedown', 'mute', 'playerplay', 'playerpause', 'playernext', 'playerprev', 'playerstop', 'playerrewind', 'playershuffle', 'playerreplay', 'scan', 'shutdown', 'shutdownsilent', 'reboot', 'disablewifi']
-arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
-arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_idle', 'throttling', 'temperature']
+arAvailableCommandsWithParam = ['setvolume', 'setvolstep', 'setmaxvolume', 'setidletime', 'playerseek', 'shutdownafter', 'shutdownvolumereduction', 'playerstopafter', 'playerrepeat', 'rfid', 'gpio', 'swipecard', 'playfolder', 'playfolderrecursive']
+arAvailableAttributes = ['volume', 'mute', 'repeat', 'random', 'state', 'file', 'artist', 'albumartist', 'title', 'album', 'track', 'elapsed', 'duration', 'trackdate', 'last_card', 'maxvolume', 'volstep', 'idletime', 'rfid', 'gpio', 'remaining_stopafter', 'remaining_shutdownafter', 'remaining_shutdownvolumereduction', 'remaining_idle', 'throttling', 'temperature']
+
+
+def watchForNewCard():
+    i = inotify.adapters.Inotify()
+    i.add_watch(path + "/../settings/Latest_RFID")
+
+    # wait for inotify events
+    for event in i.event_gen(yield_nones=False):
+        if event is not None:
+            # fetch event attributes
+            (e_header, e_type_names, e_path, e_filename) = event
+
+            # file was closed and written => a new card was swiped
+            if "IN_CLOSE_WRITE" in e_type_names:
+                # fetch card ID
+                cardid = readfile(path + "/../settings/Latest_RFID")
+
+                # publish event "card_swiped"
+                client.publish(config.get("mqttBaseTopic") + "/event/card_swiped", payload=cardid)
+                print(" --> Publishing event card_swiped = " + cardid)
+
+                # process all attributes
+                processGet("all")
+
+
+def watchForNewCard():
+    i = inotify.adapters.Inotify()
+    i.add_watch(path + "/../settings/Latest_RFID")
+
+    # wait for inotify events
+    for event in i.event_gen(yield_nones=False):
+        if event is not None:
+            # fetch event attributes
+            (e_header, e_type_names, e_path, e_filename) = event
+
+            # file was closed and written => a new card was swiped
+            if "IN_CLOSE_WRITE" in e_type_names:
+                # fetch card ID
+                cardid = readfile(path + "/../settings/Latest_RFID")
+
+                # publish event "card_swiped"
+                client.publish(mqttBaseTopic + "/event/card_swiped", payload=cardid)
+                print(" --> Publishing event card_swiped = " + cardid)
+
+                # process all attributes
+                processGet("all")
 
 
 def on_connect(client, userdata, flags, rc):
@@ -55,11 +105,11 @@ def on_connect(client, userdata, flags, rc):
         disk_total, disk_avail = disk_stats()
 
         # publish general server info
-        client.publish(mqttBaseTopic + "/state", payload="online", qos=1, retain=True)
-        client.publish(mqttBaseTopic + "/version", payload=version, qos=1, retain=True)
-        client.publish(mqttBaseTopic + "/edition", payload=edition, qos=1, retain=True)
-        client.publish(mqttBaseTopic + "/disk_total", payload=disk_total, qos=1, retain=True)
-        client.publish(mqttBaseTopic + "/disk_avail", payload=disk_avail, qos=1, retain=True)
+        client.publish(config.get("mqttBaseTopic") + "/state", payload="online", qos=1, retain=True)
+        client.publish(config.get("mqttBaseTopic") + "/version", payload=version, qos=1, retain=True)
+        client.publish(config.get("mqttBaseTopic") + "/edition", payload=edition, qos=1, retain=True)
+        client.publish(config.get("mqttBaseTopic") + "/disk_total", payload=disk_total, qos=1, retain=True)
+        client.publish(config.get("mqttBaseTopic") + "/disk_avail", payload=disk_avail, qos=1, retain=True)
 
     else:
         print("Connection could NOT be established. Return-Code:", rc)
@@ -80,7 +130,7 @@ def on_message(client, userdata, message):
     print(" - topic =", message.topic)
     print(" - value =", message.payload.decode("utf-8"))
 
-    regex_extract = re.search(mqttBaseTopic + '\/(.*)\/(.*)', message.topic)
+    regex_extract = re.search(config.get("mqttBaseTopic") + '\/(.*)\/(.*)', message.topic)
     message_topic = regex_extract.group(1).lower()
     message_subtopic = regex_extract.group(2).lower()
     message_payload = message.payload.decode("utf-8")
@@ -97,8 +147,8 @@ def processCmd(command, parameter):
     if command == "help":
         availableCommands = ", ".join(arAvailableCommands)
         availableCommandsWithParam = ", ".join(arAvailableCommandsWithParam)
-        client.publish(mqttBaseTopic + "/available_commands", payload=availableCommands)
-        client.publish(mqttBaseTopic + "/available_commands_with_params", payload=availableCommandsWithParam)
+        client.publish(config.get("mqttBaseTopic") + "/available_commands", payload=availableCommands)
+        client.publish(config.get("mqttBaseTopic") + "/available_commands_with_params", payload=availableCommandsWithParam)
         print(" --> Publishing response available_commands =", availableCommands)
         print(" --> Publishing response available_commands_with_params =", availableCommandsWithParam)
 
@@ -149,7 +199,7 @@ def processCmd(command, parameter):
         return
 
     # this was a known command => refresh all attributes as they might have changed
-    client.publish(mqttBaseTopic + "/get/all", payload="")
+    client.publish(config.get("mqttBaseTopic") + "/get/all", payload="")
 
 
 def processGet(attribute):
@@ -158,18 +208,18 @@ def processGet(attribute):
     # respond with all attributes
     if attribute == "all":
         for attribute in mpd_status:
-            client.publish(mqttBaseTopic + "/attribute/" + attribute, payload=mpd_status[attribute])
+            client.publish(config.get("mqttBaseTopic") + "/attribute/" + attribute, payload=mpd_status[attribute])
             print(" --> Publishing response " + attribute + " = " + mpd_status[attribute])
 
     # list all possible attributes
     elif attribute == "help":
         availableAttributes = ", ".join(arAvailableAttributes)
-        client.publish(mqttBaseTopic + "/available_attributes", payload=availableAttributes)
+        client.publish(config.get("mqttBaseTopic") + "/available_attributes", payload=availableAttributes)
         print(" --> Publishing response", availableAttributes)
 
     # all the other known attributes
     elif attribute in mpd_status:
-        client.publish(mqttBaseTopic + "/attribute/" + attribute, payload=mpd_status[attribute])
+        client.publish(config.get("mqttBaseTopic") + "/attribute/" + attribute, payload=mpd_status[attribute])
         print(" --> Publishing response " + attribute + " = " + mpd_status[attribute])
 
     # we don't know this attribute
@@ -336,6 +386,7 @@ def fetchData():
     # fetch linux jobs
     result["remaining_stopafter"] = str(linux_job_remaining("s"))
     result["remaining_shutdownafter"] = str(linux_job_remaining("t"))
+    result["remaining_shutdownvolumereduction"] = str(linux_job_remaining("q"))
     result["remaining_idle"] = str(linux_job_remaining("i"))
 
     # fetch OS information
@@ -344,47 +395,57 @@ def fetchData():
 
     # modify refresh rate depending on play state
     if result["state"] == "play":
-        refreshInterval = refreshIntervalPlaying
+        refreshInterval = config.get("refreshIntervalPlaying")
     else:
-        refreshInterval = refreshIntervalIdle
+        refreshInterval = config.get("refreshIntervalIdle")
 
     return result
 
 
 # create client instance
-client = mqtt.Client(mqttClientId)
+client = mqtt.Client(config.get("mqttClientId"))
 
 # configure authentication
-if mqttUsername != "" and mqttPassword != "":
-    client.username_pw_set(username=mqttUsername, password=mqttPassword)
+if config.get("mqttUsername") and config.get("mqttPassword"):
+    client.username_pw_set(username=config.get("mqttUsername"), password=config.get("mqttPassword"))
 
-if mqttCert != "" and mqttKey != "":
-    if mqttCA != "":
-        client.tls_set(ca_certs=mqttCA, certfile=mqttCert, keyfile=mqttKey)
+if config.get("mqttCert") and config.get("mqttKey"):
+    if config.get("mqttCA"):
+        client.tls_set(ca_certs=config.get("mqttCA"), certfile=config.get("mqttCert"), keyfile=config.get("mqttKey"))
     else:
-        client.tls_set(certfile=mqttCert, keyfile=mqttKey)
-elif mqttCA != "":
-    client.tls_set(ca_certs=mqttCA)
+        client.tls_set(certfile=config.get("mqttCert"), keyfile=config.get("mqttKey"))
+elif config.get("mqttCA"):
+    client.tls_set(ca_certs=config.get("mqttCA"))
 
 # attach event handlers
 client.on_connect = on_connect
 client.on_disconnect = on_disconnect
 client.on_message = on_message
-if DEBUG is True:
+if config.get("DEBUG") is True:
     client.on_log = on_log
 
 # define last will
-client.will_set(mqttBaseTopic + "/state", payload="offline", qos=1, retain=True)
+client.will_set(config.get("mqttBaseTopic") + "/state", payload="offline", qos=1, retain=True)
 
 # connect to MQTT server
-print("Connecting to " + mqttHostname + " on port " + str(mqttPort))
-client.connect(mqttHostname, mqttPort, mqttConnectionTimeout)
+print("Connecting to " + config.get("mqttHostname") + " on port " + str(config.get("mqttPort")))
+client.connect(config.get("mqttHostname"), config.get("mqttPort"), config.get("mqttConnectionTimeout"))
 
 # subscribe to topics
-print("Subscribing to " + mqttBaseTopic + "/cmd/#")
-client.subscribe(mqttBaseTopic + "/cmd/#")
-print("Subscribing to " + mqttBaseTopic + "/get/#")
-client.subscribe(mqttBaseTopic + "/get/#")
+print("Subscribing to " + config.get("mqttBaseTopic") + "/cmd/#")
+client.subscribe(config.get("mqttBaseTopic") + "/cmd/#")
+print("Subscribing to " + config.get("mqttBaseTopic") + "/get/#")
+client.subscribe(config.get("mqttBaseTopic") + "/get/#")
+
+# register thread for watchForNewCard
+tWatchForNewCard = Thread(target=watchForNewCard)
+tWatchForNewCard.setDaemon(True)
+tWatchForNewCard.start()
+
+# register thread for watchForNewCard
+tWatchForNewCard = Thread(target=watchForNewCard)
+tWatchForNewCard.setDaemon(True)
+tWatchForNewCard.start()
 
 # start endless loop
 client.loop_start()

@@ -19,3 +19,9 @@ jobs:
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests.sh
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests2.sh
         docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests3.sh
+    - name: Build Docker image and run tests for alternate user hans
+      run: |
+        docker build . --file ./ci/Dockerfile.buster.test_install_altuser.amd64 --tag rpi-jukebox-rfid-buster-altuser:latest
+        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
+        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
+        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
