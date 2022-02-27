@@ -9,7 +9,7 @@ This module will integrate Phoniebox into a Smart Home environment and make it r
    * disable wifi in the evening when Phoniebox is used as a sleeping device
    * shutdown at night when it's finally bedtime
    * lower the volume in the mornings (to keep you asleep)
-* control Phoniebox via Voice Assistants like [Snips](https://snips.ai) (which also uses MQTT!), Google Home, Amazon Echo,...
+* control Phoniebox via Voice Assistants like [Rhasspy](https://github.com/rhasspy/rhasspy) (which also uses MQTT!), Google Home, Amazon Echo,...
 * let Phoniebox play an informational note to your kids that the weather outside is great and they should consider going outside (if your Smart Home has weather-based sensors)
 * run statistics on when and how your kid uses Phoniebox
    * arrange terms with your kid how long the Phoniebox can be used (e.g. max. 2h per day)
@@ -145,16 +145,18 @@ sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol
 sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/phoniebox-mqtt-client.service.stretch-default.sample /etc/systemd/system/phoniebox-mqtt-client.service
 ~~~
 
-Now edit the file `/home/pi/RPi-Jukebox-RFID/scripts/daemon_mqtt_client.py` to match your requirements.
-Now continue and activate the service.
+Now edit the `SETTINGS` section in `/home/pi/RPi-Jukebox-RFID/scripts/daemon_mqtt_client.py` to match your environment (MQTT connection details etc.). Now continue and activate the service.
 
 ~~~
 # Now systemd has to be notified that there's a new service file:
 sudo systemctl daemon-reload
+
 # Now enable the service file, to start it on reboot:
 sudo systemctl enable phoniebox-mqtt-client
+
 # And now you can reboot to have your daemon running or start it manually:
 sudo systemctl start phoniebox-mqtt-client
+
 # To see if the reader process is running use the following command:
 sudo systemctl status phoniebox-mqtt-client
 ~~~
