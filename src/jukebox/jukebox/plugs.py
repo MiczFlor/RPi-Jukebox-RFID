@@ -680,16 +680,8 @@ def close_down(**kwargs) -> Any:
     return results
 
 
-def _call(package: str, plugin: str, method: Optional[str] = None, *,
-          args=None, kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
-    """
-    The internals of the call functionality. See :func:`call` for documentation!
-
-    This low-level core is not thread safe! Surrounding function must lock the module properly.
-    """
-    if logger_call.isEnabledFor(logging.DEBUG):
-        m = f".{method}" if method is not None else ''
-        logger_call.debug(f"Calling: {package}.{plugin}{m}(args={args}, kwargs={kwargs})")
+def dereference(package: str, plugin: str, method: Optional[str] = None, *,
+                args=None, kwargs=None):
     func = get(package, plugin, method)
     if args is None:
         args = ()
@@ -715,7 +707,21 @@ def _call(package: str, plugin: str, method: Optional[str] = None, *,
     if method is not None:
         if not getattr(func, 'plugs_callable', False):
             raise TypeError(f"Attribute '{package}.{plugin}.{method}' not tagged as plugin callable")
+    return func, args, kwargs
 
+
+def _call(package: str, plugin: str, method: Optional[str] = None, *,
+          args=None, kwargs=None, as_thread: bool = False, thread_name: Optional[str] = None) -> Any:
+    """
+    The internals of the call functionality. See :func:`call` for documentation!
+
+    This low-level core is not thread safe! Surrounding function must lock the module properly.
+    """
+    if logger_call.isEnabledFor(logging.DEBUG):
+        m = f".{method}" if method is not None else ''
+        logger_call.debug(f"Calling: {package}.{plugin}{m}(args={args}, kwargs={kwargs})")
+
+    func, args, kwargs = dereference(package, plugin, method, args=args, kwargs=kwargs)
     if as_thread is True:
         l_thread = threading.Thread(target=func, args=args, kwargs=kwargs, daemon=True, name=thread_name)
         l_thread.start()

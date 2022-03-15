@@ -35,6 +35,30 @@ RPC Command Alias Reference
 
     .. note:: This function plays the content of a given album
 
+.. py:function:: play_single(...) -> player.ctrl.play_single(song_url)
+    :noindex:
+
+    **Play a single song triggered by card swipe**
+
+    
+
+    .. note:: This function plays the content of a given song URL
+
+.. py:function:: play_folder(...) -> player.ctrl.play_folder(folder: str, recursive: bool = False) -> None
+    :noindex:
+
+    **Play a folder URL triggered by card swipe**
+
+    Playback a music folder.
+    
+    Folder content is added to the playlist as described by :mod:`jukebox.playlistgenerator`.
+    The playlist is cleared first.
+    
+    :param folder: Folder path relative to music library path
+    :param recursive: Add folder recursively
+
+    .. note:: This function plays the content of a given folder URL
+
 .. py:function:: pause(...) -> player.ctrl.pause(state: int = 1)
     :noindex:
 
@@ -124,7 +148,15 @@ RPC Command Alias Reference
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-.. py:function:: shutdown_after(...) -> timers.timer_shutdown.start(wait_seconds=None)
+.. py:function:: say_my_ip(...) -> host.say_my_ip(option='full')
+    :noindex:
+
+    
+
+    Default actions modifiers
+         **ignore_card_removal_action** |--| True
+
+.. py:function:: timer_shutdown(...) -> timers.timer_shutdown.start(wait_seconds=None)
     :noindex:
 
     **Start the shutdown timer**
@@ -134,7 +166,7 @@ RPC Command Alias Reference
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-.. py:function:: fade_volume(...) -> timers.timer_fade_volume.start(iterations=None, wait_seconds_per_iteration=None)
+.. py:function:: timer_fade_volume(...) -> timers.timer_fade_volume.start(iterations=None, wait_seconds_per_iteration=None)
     :noindex:
 
     **Start the volume fade out timer and shutdown**
@@ -144,7 +176,7 @@ RPC Command Alias Reference
     Default actions modifiers
          **ignore_card_removal_action** |--| True
 
-.. py:function:: stop_after(...) -> timers.timer_stop_player.start(wait_seconds=None)
+.. py:function:: timer_stop_player(...) -> timers.timer_stop_player.start(wait_seconds=None)
     :noindex:
 
     **Start the stop music timer**

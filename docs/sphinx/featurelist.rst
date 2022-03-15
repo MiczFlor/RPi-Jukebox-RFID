@@ -35,8 +35,8 @@ Base
 
 * |[X]| RPi is_throttled getter
 
-    * |[ ]| Decode hex value to readable string (check version 2.x mqtt as reference?)
-    * |[ ]| Timer + Publisher
+    * |[X]| Decode hex value to readable string (check version 2.x mqtt as reference?)
+    * |[X]| Timer + Publisher
 
 * |[X]| Git hash log information
 
@@ -46,10 +46,10 @@ Base
 
     * |[X]| Log and publish  this
 
-* |[ ]| Exit via RPC
-* |[ ]| Service restart via RPC
+* |[X]| Exit via RPC
+* |[X]| Service restart via RPC
 
-  * |[ ]| Check if really running as a service
+  * |[X]| Check if really running as a service
 
 * |[X]| Storage space getter / publisher (shutil.disk_usage)
 * |[X]| Getter for error logs to show in WebUI
@@ -172,7 +172,7 @@ RFID
 
 * |[X]| Card reference IF via RPC
 
-* |[X]| Second Swipe Options -> must be part of player control
+* |[X]| Second Swipe Options -> must be part of player control (partially broken at the moment)
 
     * Freely configurable with an RPC call
     * Ignore (nothing)
@@ -230,36 +230,14 @@ Volume
 GPIO
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| General (In Progress)
-    * |[X]| Function call routines need replacing to do RPC Calls
-    * |[X]| Configuration format probably best changed to YAML
-    * |[ ]| Configuration Error Checking (no exception in case of YAML typos, but clear error messages)
-    * |[ ]| Documentation
-
-* |[X]| GPIO Button
-    * |[ ]| needs testing
-* |[X]| GPIO Rotary Encoder
-    * Rotary Encoder implementation has been changed to support a higher resolution
-    * |[ ]| needs testing
-* |[ ]| Rocker Button (former Two Button Control)
-    * |[ ]| needs testing
-* |[X]| Port Out
-    * The former Status LED will turn into a PortOut Function supporting multiple Pins and Sequences
-    * |[X]| Port States
-    * |[X]| Sequences
-    * |[ ]| needs testing
-
-* |[X]| GPIO Simulator
-    * The GPIO Simulator is a quick & dirty implementation of a TK GUI to test the basic functionality
-
-* |[ ]| USB Buttons: It's a different category as it works similar to the RFID cards
-* |[ ]| Port rfid pin action to GPIO as a general pin service for all plugins
+* |[X]| All done! Read the docs at :ref:`userguide/gpioz:GPIO Recipes`!
+* |[ ]| USB Buttons: It's a different category as it works similar to the RFID cards (in progress)
 
 WLAN
 ^^^^^^^^^^^^^^^^^
 
-* |[ ]| Ad-hoc WLAN Hot spot
-* |[ ]| IP address read-out
+* |[X]| Ad-hoc WLAN Hot spot
+* |[X]| IP address read-out
 
 Spotify
 ^^^^^^^^^^^^^^^^^
@@ -307,9 +285,9 @@ WebUI
     * |[ ]| Configure (one or multiple) WLANs
     * |[X]| Enable/Disable Auto-Hotspot
 
-* |[ ]| ``run_npm_build`` script
+* |[X]| ``run_npm_build`` script
 
-    * |[ ]| Must consider ``export NODE_OPTIONS=--max-old-space-size=512``
+    * |[X]| Must consider ``export NODE_OPTIONS=--max-old-space-size=512``
 
 
 Installation Procedure

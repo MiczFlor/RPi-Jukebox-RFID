@@ -44,6 +44,12 @@ PulseAudio Volume Control Plugin Package
     Return mute status for the currently active output
 
 
+.. py:function:: volume.ctrl.get_outputs()
+    :noindex:
+
+    Get current output and list of outputs
+
+
 .. py:function:: volume.ctrl.get_soft_max_volume()
     :noindex:
 
@@ -199,6 +205,12 @@ Package for interfacing with the MPD Music Player Daemon
 
 
 .. py:function:: player.ctrl.get_player_type_and_version()
+    :noindex:
+
+    
+
+
+.. py:function:: player.ctrl.get_song_by_url(song_url)
     :noindex:
 
     
@@ -483,6 +495,12 @@ Module: timers
     Cancel the timer
 
 
+.. py:function:: timers.timer_shutdown.get_state()
+    :noindex:
+
+    Get the current state and config as dictionary
+
+
 .. py:function:: timers.timer_shutdown.get_timeout()
     :noindex:
 
@@ -515,6 +533,12 @@ Module: timers
     Start the timer (with default or new parameters)
 
 
+.. py:function:: timers.timer_shutdown.toggle()
+    :noindex:
+
+    Toggle the activation of the timer
+
+
 .. py:function:: timers.timer_shutdown.trigger()
     :noindex:
 
@@ -525,6 +549,12 @@ Module: timers
     :noindex:
 
     Cancel the timer
+
+
+.. py:function:: timers.timer_stop_player.get_state()
+    :noindex:
+
+    Get the current state and config as dictionary
 
 
 .. py:function:: timers.timer_stop_player.get_timeout()
@@ -557,6 +587,12 @@ Module: timers
     :noindex:
 
     Start the timer (with default or new parameters)
+
+
+.. py:function:: timers.timer_stop_player.toggle()
+    :noindex:
+
+    Toggle the activation of the timer
 
 
 .. py:function:: timers.timer_stop_player.trigger()
@@ -601,6 +637,12 @@ Module: timers
     :noindex:
 
     Start the timer (with default or new parameters)
+
+
+.. py:function:: timers.timer_fade_volume.toggle()
+    :noindex:
+
+    Toggle the activation of the timer
 
 
 .. py:function:: timers.timer_fade_volume.trigger()
@@ -665,6 +707,19 @@ Module: host
 
 
 .. py:function:: host.publish_cpu_temperature()
+    :noindex:
+
+    
+
+
+.. py:function:: host.get_ip_address()
+    :noindex:
+
+    Get the IP address
+    Source: https://stackoverflow.com/a/28950776/1062438
+
+
+.. py:function:: host.say_my_ip(option='full')
     :noindex:
 
     
@@ -739,10 +794,95 @@ Module: host
     Start the timer (with default or new parameters)
 
 
+.. py:function:: host.timer_temperature.toggle()
+    :noindex:
+
+    Toggle the activation of the timer
+
+
 .. py:function:: host.timer_temperature.trigger()
     :noindex:
 
     Trigger the next target execution before the time is up
+
+
+Module: bluetooth_audio_buttons
+-------------------------------------------
+
+
+**loaded_from**:    components.controls.bluetooth_audio_buttons
+
+Plugin to attempt to automatically listen to it's buttons (play, next, ...)
+when a bluetooth sound device (headphone, speakers) connects
+
+
+.. py:function:: bluetooth_audio_buttons.activate(device_name: str, exact: bool = True, open_initial_delay: float = 0.25)
+    :noindex:
+
+    
+
+
+Module: gpio
+-------------------------------------------
+
+
+**loaded_from**:    components.gpio.gpioz.plugin
+
+The GPIOZ plugin interface build all input and output devices from the configuration file and connects
+the actions and callbacks. It also provides a very restricted, but common API for the output devices to the RPC.
+That API is mainly used for testing. All the relevant output state changes are usually made through callbacks directly
+using the output device's API.
+
+
+.. py:function:: gpio.on(name: str)
+    :noindex:
+
+    Turn an output device on
+    
+    :param name: The alias name output device instance
+
+
+.. py:function:: gpio.off(name: str)
+    :noindex:
+
+    Turn an output device off
+    
+    :param name: The alias name output device instance
+
+
+.. py:function:: gpio.set_value(name: str, value: Any)
+    :noindex:
+
+    Set the output device to :attr:`value`
+    
+    :param name: The alias name output device instance
+    
+    :param value: Value to set the device to
+
+
+.. py:function:: gpio.flash(name, on_time=1, off_time=1, n=1, *, fade_in_time=0, fade_out_time=0, tone=None, color=(1, 1, 1))
+    :noindex:
+
+    Flash (blink or beep) an output device
+    
+    This is a generic function for all types of output devices. Parameters not applicable to an
+    specific output device are silently ignored
+    
+    :param name: The alias name output device instance
+    
+    :param on_time: Time in seconds in state ``ON``
+    
+    :param off_time: Time in seconds in state ``OFF``
+    
+    :param n: Number of flash cycles
+    
+    :param tone: The tone in to play, e.g. 'A4'. *Only for TonalBuzzer*.
+    
+    :param color: The RGB color *only for PWMLED*.
+    
+    :param fade_in_time: Time in seconds for transitioning to on. *Only for PWMLED and RGBLED*
+    
+    :param fade_out_time: Time in seconds for transitioning to off. *Only for PWMLED and RGBLED*
 
 
 Module: music_cover_art
@@ -849,5 +989,7 @@ This is an automatically generated file from the loaded plugins:
 * *rfid*: components.rfid.reader
 * *timers*: components.timers
 * *host*: components.hostif.linux
+* *bluetooth_audio_buttons*: components.controls.bluetooth_audio_buttons
+* *gpio*: components.gpio.gpioz.plugin
 * *music_cover_art*: components.music_cover_art
 * *misc*: components.misc
