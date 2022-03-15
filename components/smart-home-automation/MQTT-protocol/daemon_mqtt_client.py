@@ -523,7 +523,7 @@ def fetchData():
             int(hours), int(minutes), int(seconds)
         )
 
-        duration = int(float(regex("\nduration: (.*)\n", status, "0")))
+        duration = int(float(regex("\time: .*:(.*)\n", status, "0")))
         hours, remainder = divmod(duration, 3600)
         minutes, seconds = divmod(remainder, 60)
         result["duration"] = "{:02}:{:02}:{:02}".format(
