@@ -68,7 +68,7 @@ The following pin-out is for the default SPI Bus 0 on Raspberry Pins
     Pin Board Name    Function  RPI GPIO   RPI Pin
     ===============   ========  =========  =========
     SDA               CE        GPIO8      24
-    SCK               SCLK      GPIO11     21
+    SCK               SCLK      GPIO11     23
     MOSI              MOSI      GPIO10     19
     MISO              MISO      GPIO9      21
     IRQ               IRQ       GPIO24     18
