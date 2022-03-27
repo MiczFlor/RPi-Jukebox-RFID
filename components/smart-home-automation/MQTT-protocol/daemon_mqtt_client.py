@@ -476,6 +476,19 @@ def regex(needle, hay, exception="-"):
     else:
         return exception
 
+def getDuration(status):
+    """ Find the duration of the track in the output from mpd status"""
+
+    # try to get the duration value
+    duration = regex("\nduration: (.*)\n", status)
+
+    if duration == "-":
+        # if the duration attribute is missing try to get the time
+        # this attribute value is split into two parts by ":"
+        # first is the elapsed time and the second part is the duration
+        duration = regex("\ntime: .*:(.*)\n", status, "0")
+    
+    return int(float(duration))
 
 def fetchData():
     # use global refreshInterval as this function is run as a thread through the paho-mqtt loop
@@ -523,7 +536,7 @@ def fetchData():
             int(hours), int(minutes), int(seconds)
         )
 
-        duration = int(float(regex("\time: .*:(.*)\n", status, "0")))
+        duration = getDuration(status)
         hours, remainder = divmod(duration, 3600)
         minutes, seconds = divmod(remainder, 60)
         result["duration"] = "{:02}:{:02}:{:02}".format(
