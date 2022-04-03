@@ -266,8 +266,8 @@ def configure_pa_system_default(pulse_cfg_file_content: str, pulse_config: PaCon
                                           pulse_cfg_file_content, flags=re.MULTILINE)
     if cnt == 0:
         # Add the setting, if there was no default sink
-        pulse_cfg_file_content += '# The default sink. Note that is may still be changed at run time by various PulseAudio rules '
-        pulse_cfg_file_content += 'e.g. when connecting a USB Sound Card\n'
+        pulse_cfg_file_content += '# The default sink. Note that is may still be changed at run time by various PulseAudio '
+        pulse_cfg_file_content += 'rules e.g. when connecting a USB Sound Card\n'
         pulse_cfg_file_content += f'set-default-sink {pulse_config.primary}\n'
         # # Check if primary already set as default
         # if re.search(r'^\s*(set-default-sink\s+' + pulse_config.primary + r')',
