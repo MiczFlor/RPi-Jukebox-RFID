@@ -41,17 +41,17 @@ Run the following steps in a console:
     $ alsamixer
 
     # Play a sound
-    $ paplay /usr/share/sounds/alsa/Front_Center.way
+    $ paplay /usr/share/sounds/alsa/Front_Center.wav
 
     # This must also work when using an ALSA device
-    $ aplay /usr/share/sounds/alsa/Front_Center.way
+    $ aplay /usr/share/sounds/alsa/Front_Center.wav
 
 You can also try different PulseAudio sinks without setting the default sink. In this case the volume is the last used
 volume level for this sink:
 
 .. code-block:: bash
 
-    $ paplay -d sink_name /usr/share/sounds/alsa/Front_Center.way
+    $ paplay -d sink_name /usr/share/sounds/alsa/Front_Center.wav
 
 
 Bluetooth
