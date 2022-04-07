@@ -86,6 +86,7 @@ arAvailableAttributes = [
     "volume",
     "mute",
     "repeat",
+    "repeat_mode",
     "random",
     "state",
     "file",
@@ -495,6 +496,15 @@ def fetchData():
     result["volume"] = regex("\nvolume: (.*)\n", status)
     result["repeat"] = normalizeTrueFalse(regex("\nrepeat: (.*)\n", status))
     result["random"] = normalizeTrueFalse(regex("\nrandom: (.*)\n", status))
+
+    if result["repeat"] == "true":
+        single = normalizeTrueFalse(regex("\nsingle: (.*)\n", status))
+        if single == "true":
+            result["repeat_mode"] = "single"
+        else:
+            result["repeat_mode"] = "playlist"
+    else:
+        result["repeat_mode"] = "off"
 
     # interpret mute state based on volume
     if result["volume"] == "0":
