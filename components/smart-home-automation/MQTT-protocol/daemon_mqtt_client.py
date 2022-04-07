@@ -138,31 +138,6 @@ def watchForNewCard():
                 processGet("all")
 
 
-def watchForNewCard():
-    i = inotify.adapters.Inotify()
-    i.add_watch(path + "/../settings/Latest_RFID")
-
-    # wait for inotify events
-    for event in i.event_gen(yield_nones=False):
-        if event is not None:
-            # fetch event attributes
-            (e_header, e_type_names, e_path, e_filename) = event
-
-            # file was closed and written => a new card was swiped
-            if "IN_CLOSE_WRITE" in e_type_names:
-                # fetch card ID
-                cardid = readfile(path + "/../settings/Latest_RFID")
-
-                # publish event "card_swiped"
-                client.publish(
-                    config.get("mqttBaseTopic") + "/event/card_swiped", payload=cardid
-                )
-                print(" --> Publishing event card_swiped = " + cardid)
-
-                # process all attributes
-                processGet("all")
-
-
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connection established.")
