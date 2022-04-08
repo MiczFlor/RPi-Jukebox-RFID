@@ -453,6 +453,24 @@ def regex(needle, hay, exception="-"):
         return exception
 
 
+REPEAT_MODE_OFF = "off"
+REPEAT_MODE_SINGLE = "single"
+REPEAT_MODE_PLAYLIST = "playlist"
+
+
+def get_repeat_mode(repeat, status):
+    """ Returns the repeat mode that is selected in mpd """
+
+    if repeat == "false":
+        return REPEAT_MODE_OFF
+
+    single = regex("\nsingle: (.*)\n", status)
+    if single == "0":
+        return REPEAT_MODE_PLAYLIST
+
+    return REPEAT_MODE_SINGLE
+
+
 def fetchData():
     # use global refreshInterval as this function is run as a thread through the paho-mqtt loop
     global refreshInterval
@@ -470,16 +488,8 @@ def fetchData():
     result["state"] = regex("\nstate: (.*)\n", status).lower()
     result["volume"] = regex("\nvolume: (.*)\n", status)
     result["repeat"] = normalizeTrueFalse(regex("\nrepeat: (.*)\n", status))
+    result["repeat_mode"] = get_repeat_mode(result["repeat"], status)
     result["random"] = normalizeTrueFalse(regex("\nrandom: (.*)\n", status))
-
-    if result["repeat"] == "true":
-        single = normalizeTrueFalse(regex("\nsingle: (.*)\n", status))
-        if single == "true":
-            result["repeat_mode"] = "single"
-        else:
-            result["repeat_mode"] = "playlist"
-    else:
-        result["repeat_mode"] = "off"
 
     # interpret mute state based on volume
     if result["volume"] == "0":
