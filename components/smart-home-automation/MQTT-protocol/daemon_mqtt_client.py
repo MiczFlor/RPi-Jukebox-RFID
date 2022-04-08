@@ -631,11 +631,6 @@ tWatchForNewCard = Thread(target=watchForNewCard)
 tWatchForNewCard.setDaemon(True)
 tWatchForNewCard.start()
 
-# register thread for watchForNewCard
-tWatchForNewCard = Thread(target=watchForNewCard)
-tWatchForNewCard.setDaemon(True)
-tWatchForNewCard.start()
-
 # start endless loop
 client.loop_start()
 while True:
