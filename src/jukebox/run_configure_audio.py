@@ -232,12 +232,12 @@ def configure_pa_equalizer(pulse_cfg_file_content, pulse_config: PaConfigClass):
     print(f"\n*** Add equalizer for {pulse_config.primary}\n"
           f"    with name {equalizer_name}")
     pulse_cfg_file_content += f'\n# Jukebox option: Equalizer for sink {pulse_config.primary}\n'
-    pulse_cfg_file_content += 'This is a 10 band equalizer, with center frequencies:'
-    pulse_cfg_file_content += '31 Hz, 63 Hz, 125 Hz, 250 Hz, 500 Hz, 1 kHz, 2 kHz 4 kHz, 8 kHz, 16 kHz'
-    pulse_cfg_file_content += 'For each frequency band the factor must be in range -48.0 ... + 24.0 (db)'
+    pulse_cfg_file_content += '# This is a 10 band equalizer, with center frequencies: '
+    pulse_cfg_file_content += '31 Hz, 63 Hz, 125 Hz, 250 Hz, 500 Hz, 1 kHz, 2 kHz 4 kHz, 8 kHz, 16 kHz\n'
+    pulse_cfg_file_content += '# For each frequency band the factor must be in range -48.0 ... + 24.0 (db)\n'
     pulse_cfg_file_content += f'load-module module-ladspa-sink sink_name={equalizer_name} ' \
                               f'sink_master={pulse_config.primary} ' \
-                              f'plugin=caps label=Eq10X2 control=15.12,9.36,4.32,0,0,0,0,0,2.88,4.32,\n'
+                              f'plugin=caps label=Eq10X2 control=15.12,9.36,4.32,0,0,0,0,0,2.88,4.32\n'
     pulse_config.primary = equalizer_name
 
     return pulse_cfg_file_content, pulse_config
@@ -266,8 +266,8 @@ def configure_pa_system_default(pulse_cfg_file_content: str, pulse_config: PaCon
                                           pulse_cfg_file_content, flags=re.MULTILINE)
     if cnt == 0:
         # Add the setting, if there was no default sink
-        pulse_cfg_file_content += 'The default sink. Note that is may still be changed at run time by various PulseAudio rules'
-        pulse_cfg_file_content += 'e.g. when connecting a USB Sound Card'
+        pulse_cfg_file_content += '# The default sink. Note that is may still be changed at run time by various PulseAudio '
+        pulse_cfg_file_content += 'rules e.g. when connecting a USB Sound Card\n'
         pulse_cfg_file_content += f'set-default-sink {pulse_config.primary}\n'
         # # Check if primary already set as default
         # if re.search(r'^\s*(set-default-sink\s+' + pulse_config.primary + r')',
