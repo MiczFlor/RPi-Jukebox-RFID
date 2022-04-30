@@ -9,7 +9,7 @@ import {
 import SelectCommandAliases from './select-command-aliases';
 import SelectPlayMusic from './actions/play-music';
 import SelectTimers from './actions/timers';
-import SelectVolume from './actions/volume';
+import SelectAudio from './actions/audio';
 import { buildActionData } from '../utils';
 import SelectHost from './actions/host';
 
@@ -74,8 +74,8 @@ const ControlsSelector = ({
           />
         }
 
-        {actionData.action === 'volume' &&
-          <SelectVolume
+        {actionData.action === 'audio' &&
+          <SelectAudio
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />

@@ -102,18 +102,43 @@ def decode_and_call_rpc_command(rpc_cmd: Dict, logger: logging.Logger = log):
     return res
 
 
-def bind_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log):
+def bind_rpc_command(cfg_rpc_cmd: Dict, dereference=False, logger: logging.Logger = log):
     """Decode an RPC command configuration entry and bind it to a function
+
+    :param dereference: Dereference even the call to plugs.call(...)
+
+            #. If false, the returned function is ``plugs.call(package, plugin, method, *args, **kwargs)`` with
+                all checks applied at bind time
+            #. If true, the returned function is ``package.plugin.method(*args, **kwargs)`` with
+                all checks applied at bind time.
+
+        Setting deference to True, circumvents the dynamic nature of the plugins: the function to call
+            must exist at bind time and cannot change. If False, the function to call must only exist at call time.
+            This can be important during the initialization where package ordering and initialization means that not all
+            classes have been instantiated yet. With dereference=True also the plugs thread lock for serialization of calls
+            is circumvented. Use with care!
 
     :return: Callable function w/o parameters which directly runs the RPC command
         using plugs.call_ignore_errors"""
     action = decode_rpc_command(cfg_rpc_cmd, logger)
-    return functools.partial(plugs.call_ignore_errors,
-                             action['package'],
-                             action['plugin'],
-                             action['method'],
-                             args=action['args'],
-                             kwargs=action['kwargs'])
+    if action is None:
+        raise KeyError(f"RPC command config is empty: '{cfg_rpc_cmd}'")
+
+    if dereference:
+        func, args, kwargs = plugs.dereference(action['package'],
+                                               action['plugin'],
+                                               action['method'],
+                                               args=action['args'],
+                                               kwargs=action['kwargs'])
+
+        return functools.partial(func, *args, **kwargs)
+    else:
+        return functools.partial(plugs.call_ignore_errors,
+                                 action['package'],
+                                 action['plugin'],
+                                 action['method'],
+                                 args=action['args'],
+                                 kwargs=action['kwargs'])
 
 
 def rpc_call_to_str(cfg_rpc_call: Dict, with_args=True) -> str:
@@ -241,6 +266,8 @@ def generate_cmd_alias_reference(stream):
 
 def get_git_state():
     """Return git state information for the current branch"""
+
+    gitlog = "No git log info"
     try:
         sub = subprocess.run("git log --pretty='%h [%cs] %s %d' -n 1 --no-color",
                              shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -248,15 +275,15 @@ def get_git_state():
         gitlog = sub.stdout.decode('utf-8').strip()
     except Exception as e:
         log.error(f"{e.__class__.__name__}: {e}")
-        gitlog = "Unable to get git log"
 
+    describe = "No git describe info"
     try:
         sub = subprocess.run("git describe --tag --dirty='-dirty'",
                              shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=True)
-        describe = sub.stdout.decode('utf-8').strip()
+        if sub.returncode == 0:
+            describe = sub.stdout.decode('utf-8').strip()
     except Exception as e:
         log.error(f"{e.__class__.__name__}: {e}")
-        describe = "Unable to get git describe"
 
     return f"{gitlog} [{describe}]"

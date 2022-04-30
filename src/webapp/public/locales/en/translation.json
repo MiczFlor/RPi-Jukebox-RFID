@@ -20,7 +20,8 @@
           "say_my_ip": "Say IP address",
           "timer_shutdown": "Shut Down",
           "timer_stop_player": "Stop player",
-          "timer_fade_volume": "Fade volume"
+          "timer_fade_volume": "Fade volume",
+          "toggle_output": "Toggle audio output"
         }
       },
       "controls-selector": {
@@ -31,7 +32,7 @@
         "placeholder": "Select an action",
         "actions": {
           "play_music": "Play music",
-          "volume": "Volume",
+          "audio": "Audio & Volume",
           "host": "System",
           "timers": "Timers"
         }
@@ -225,12 +226,19 @@
         "label": "Jukebox Core Version"
       }
     },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Outputs",
+        "settings.audio.outputs.radio-primary": "Speaker (Primary)",
+        "settings.audio.outputs.radio-secondary": "Bluetooth (Secondary)"
+      },
+      "volume": {
+        "max-volume": "Maximum Volume"
+      }
+    },
     "systemcontrols": {
       "title": "System Controls"
-    },
-    "volume": {
-      "title": "Volume",
-      "max-volume": "Maximum Volume"
     }
   }
 }

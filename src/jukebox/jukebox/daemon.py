@@ -5,6 +5,7 @@ import sys
 import signal
 import logging
 import time
+import atexit
 from typing import (Optional)
 
 from misc import flatten
@@ -19,6 +20,15 @@ import jukebox.cfghandler
 
 logger = logging.getLogger('jb.daemon')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+
+@atexit.register
+def log_active_threads():
+    """This functions is registered with atexit very early, meaning it will be run very late. It is the best guess to
+    evaluate which Threads are still running (and probably shouldn't be)
+
+    This function is registered before all the plugins and their dependencies are loaded"""
+    logger.debug(f"Active Threads = {threading.enumerate()}")
 
 
 class JukeBox:
@@ -79,7 +89,6 @@ class JukeBox:
                 # Let's see which threads did not exit properly in time
                 logger.error(f"Active Threads = {threading.enumerate()}")
                 sys.exit(1)
-            logger.debug(f"Active Threads = {threading.enumerate()}")
             logger.info(f"Shutdown time: {((time.time_ns() - time_start) / 1000000.0):.3f} ms")
             sys.exit(0)
         elif self._signal_cnt == 2:
@@ -106,12 +115,13 @@ class JukeBox:
         self.nvm.save_all()
         cfg.save(only_if_changed=True)
         # (5) Wait for open threads to close
-        # Note: Not waiting for ALL open threads, but only for those threads that are returned by the @atexit-registered
-        # functions of the plugin modules
-        logger.debug(f"Waiting {timeout}s for @atexit-threads to complete: {thread_list}")
+        # Note: Not waiting for ALL open threads, but only for those threads that are returned by the
+        # @plugin.atexit-registered functions of the plugin modules
+        logger.debug(f"Waiting {timeout}s for @plugin.atexit-threads to complete: {thread_list}")
         for t in thread_list:
             t.join()
-        logger.debug("All @atexit threads closed")
+
+        logger.debug("All @plugin.atexit threads closed")
         # (6) Say goodbye
         msg = "All done. Hear you soon!"
         print(msg)

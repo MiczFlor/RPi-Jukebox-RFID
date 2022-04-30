@@ -38,7 +38,7 @@ const SayMyIpOptions = ({
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="gender"
-            name="controlled-radio-buttons-group"
+            name="say-my-name"
             value={option || 'full'}
             onChange={onChange}
           >

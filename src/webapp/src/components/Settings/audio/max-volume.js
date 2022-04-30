@@ -2,23 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
   Grid,
   Slider,
   Typography,
 } from '@mui/material';
+
 import { useTheme } from '@mui/material/styles';
 
-import request from '../../utils/request';
+import request from '../../../utils/request';
 
 const marks = [5, 25, 50, 75, 100].map(
   (value) => ({ value, label: `${value}%` })
 );
 
-const SettingsVolume = () => {
+const MaxVolume = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -44,28 +41,22 @@ const SettingsVolume = () => {
   }, []);
 
   return (
-    <Card>
-      <CardHeader title={t('settings.volume.title')} />
-      <Divider />
-      <CardContent>
-        <Grid container direction="column">
-          <Typography>{t('settings.volume.max-volume')}</Typography>
-          <Grid item sx={{ padding: theme.spacing(1) }}>
-            <Slider
-              value={typeof maxVolume === 'number' ? maxVolume : 0}
-              onChange={handleMaxVolumeChange}
-              onChangeCommitted={updateMaxVolume}
-              marks={marks}
-              max={100}
-              min={0}
-              step={5}
-              valueLabelDisplay="auto"
-            />
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+    <Grid container direction="column">
+      <Typography>{t('settings.audio.volume.max-volume')}</Typography>
+      <Grid item sx={{ padding: theme.spacing(1) }}>
+        <Slider
+          value={typeof maxVolume === 'number' ? maxVolume : 0}
+          onChange={handleMaxVolumeChange}
+          onChangeCommitted={updateMaxVolume}
+          marks={marks}
+          max={100}
+          min={0}
+          step={5}
+          valueLabelDisplay="auto"
+        />
+      </Grid>
+    </Grid>
   );
 };
 
-export default SettingsVolume;
+export default MaxVolume;

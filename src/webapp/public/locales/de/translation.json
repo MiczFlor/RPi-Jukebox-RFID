@@ -20,7 +20,8 @@
           "say_my_ip": "IP Addresse vorlesen",
           "timer_shutdown": "Shut Down",
           "timer_stop_player": "Stop player",
-          "timer_fade_volume": "Fade volume"
+          "timer_fade_volume": "Fade volume",
+          "toggle_output": "Audio-Ausgang umschalten"
         }
       },
       "controls-selector": {
@@ -31,7 +32,7 @@
         "placeholder": "Wähle eine Aktion aus",
         "actions": {
           "play_music": "Musik abspielen",
-          "volume": "Lautstärke",
+          "audio": "Audio & Lautstärke",
           "host": "System",
           "timers": "Timer"
         }
@@ -226,12 +227,17 @@
         "label": "Jukebox Core Version"
       }
     },
+    "audio": {
+      "title": "Audio",
+      "outputs": {
+        "title": "Audio-Ausgänge"
+      },
+      "volume": {
+        "max-volume": "Maximale Lautstärke"
+      }
+    },
     "systemcontrols": {
       "title": "Systemsteuerung"
-    },
-    "volume": {
-      "title": "Lautstärke",
-      "max-volume": "Maximale Lautstärke"
     }
   }
 }

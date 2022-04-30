@@ -4,7 +4,6 @@
 # Jukebox Core
 # For USB inputs (reader, buttons) and bluetooth buttons
 evdev
-nanotime
 pyalsaaudio
 pulsectl
 python_mpd2
@@ -18,6 +17,11 @@ tornado
 # For spotify
 websocket-client
 urllib3
+
+# RPi's GPIO packages: these are installed via APT on the PI
+# On regular machines, install them manually if needed for development
+# RPi.GPIO
+# gpiozero
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support

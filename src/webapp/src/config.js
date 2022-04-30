@@ -41,10 +41,11 @@ const JUKEBOX_ACTIONS_MAP = {
     }
   },
 
-  // Volume
-  volume: {
+  // Audio & Volume
+  audio: {
     commands: {
-      change_volume: {}
+      change_volume: {},
+      toggle_output: {}
     },
   },
 
