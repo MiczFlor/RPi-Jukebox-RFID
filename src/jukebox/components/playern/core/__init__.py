@@ -48,7 +48,8 @@ class PlayerCtrl:
 
     @plugin.tag
     def list_backends(self):
-        return [b for b in self._backends.items()]
+        logger.debug(f"Backend list: {self._backends.items()}")
+        return [b for b in self._backends.keys()]
 
     @plugin.tag
     def play_uri(self, uri, check_second_swipe=False, **kwargs):
