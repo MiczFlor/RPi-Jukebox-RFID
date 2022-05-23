@@ -79,8 +79,8 @@ def init():
     player_status.publish()
 
     # Create and register the players (this is explicit for the moment)
-    register_mpd()
     register_spotify()
+    register_mpd()
 
     plugin.register(player_arbiter, package='player', name='ctrl')
 

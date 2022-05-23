@@ -52,6 +52,15 @@ class SPOTBackend:
     def pause(self):
         self.http_client.pause()
 
+    def stop(self):
+        try:
+            is_playing = self.http_client.get_status()['current']
+            logger.debug(f"Current player playing status: {is_playing}")
+            if is_playing:
+                self.http_client.pause()
+        except Exception as err:
+            logger.debug("No status information if Spotify is playing something.")
+
     def prev(self):
         self.http_client.prev()
 
@@ -75,7 +84,11 @@ class SPOTBackend:
         if player_type != 'spotify':
             raise KeyError(f"URI prefix must be 'spotify' not '{player_type}")
 
-        self.http_client.play_uri(self.spotify_collection_data[int(index)].get("uri"))
+        self.http_client.play_uri(uri)
+
+    @plugin.tag
+    def get_status(self):
+        self.http_client.get_status()
 
     # -----------------------------------------------------
     # Queue / URI state  (save + restore e.g. random, resume, ...)

@@ -49,7 +49,14 @@ class SpotifyHttpClient:
             response = {}
             logger.error(f'Error {error}')
 
-        return json.loads(response.content)
+        if response.content:
+            logger.debug(f"Request response.content: {response.content}")
+            return json.loads(response.content)
+        else:
+            logger.debug("Request response.content empty")
+            return {}
+
+    # no JSON returned
 
     def _get_request(self, path: str):
         response = self._request(self.session.get, path)

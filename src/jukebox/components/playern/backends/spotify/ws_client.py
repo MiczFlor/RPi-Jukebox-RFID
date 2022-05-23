@@ -24,9 +24,11 @@ class SpotifyWsClient:
             'playbackPaused': self.playback_paused,
             'playbackResumed': self.playback_resumed,
             'playbackHaltStateChanged': self.playback_halted,
+            'trackChanged': self.track_changed,
             'trackSeeked': self.track_seeked,
             'metadataAvailable': self.metadata_available,
             'inactiveSession': self.inactive_session,
+            'contextChanged': self.context_changed,
         }
 
         logger.debug('Spotify WS Client initialized')
@@ -104,10 +106,16 @@ class SpotifyWsClient:
             elapsed=self._round_time_to_seconds(data['trackTime'])
         )
 
+    def track_changed(self, data: dict):
+        pass
+
     def track_seeked(self, data: dict):
         self.player_status.update(
             elapsed=self._round_time_to_seconds(data['trackTime'])
         )
+
+    def context_changed(self, data: dict):
+        pass
 
     # When Spotify session is routed to another device,
     # the local session goes inactive
