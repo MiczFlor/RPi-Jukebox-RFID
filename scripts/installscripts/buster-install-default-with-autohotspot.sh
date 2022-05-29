@@ -793,7 +793,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-tools lsof
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -828,7 +828,7 @@ install_main() {
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
-        wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+        sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
         ${apt_get} update
         ${apt_get} upgrade

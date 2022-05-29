@@ -31,6 +31,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setstartupvolume
 # getstartupvolume
 # setvolumetostartup
+# setbootvolume
+# getbootvolume
+# setvolumetobootvolume
 # volumeup
 # volumedown
 # getchapters
@@ -164,7 +167,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -n1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
@@ -595,6 +598,39 @@ case $COMMAND in
 
         fi
         ;;
+    setbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # if value is greater than wanted maxvolume, set value to maxvolume
+        if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
+        then
+            VALUE=$AUDIOVOLMAXLIMIT;
+        fi
+        # write new value to file
+        echo "$VALUE" > ${PATHDATA}/../settings/Volume_Boot
+        # create global config file because individual setting got changed
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
+        ;;
+    getbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        echo ${AUDIOVOLBOOT}
+        ;;
+    setvolumetobootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # check if startup-volume is disabled
+        if [ "${AUDIOVOLBOOT}" == 0 ]; then
+            exit 1
+        else
+            # set volume level in percent
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLBOOT}%
+            else
+                # manage volume with mpd
+                echo -e setvol ${AUDIOVOLBOOT}\\nclose | nc -w 1 localhost 6600
+            fi
+
+        fi
+        ;;
     playerstop)
         # stop the player
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -708,7 +744,13 @@ case $COMMAND in
         then
 	       /bin/sleep $VALUE
         fi
-        mpc pause
+        PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+        # Only pause when currently playing
+        # Otherwise mpc might go from "stopped" back to "pause", causing inconsitency as there is nothing to "resume"
+        if [ "$PLAYSTATE" == "play" ]
+        then
+            mpc pause
+        fi
         ;;
     playerplay)
         # play / resume current track
@@ -912,7 +954,7 @@ case $COMMAND in
         ;;
     playlistappend)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         # Unmute if muted
         if [ -f $VOLFILE ]; then
             # $VOLFILE DOES exist == audio off
@@ -933,7 +975,7 @@ case $COMMAND in
     playsinglefile)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc clear
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         mpc repeat off
         mpc single on
         # Unmute if muted
@@ -1050,7 +1092,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
+        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -n1`
         ;;
     readwifiipoverspeaker)
         # will read out the IP address over the Pi's speaker.
