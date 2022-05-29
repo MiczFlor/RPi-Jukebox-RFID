@@ -33,7 +33,7 @@ Inside the root folder or the repo, these folders are important:
 * `components`
     * contains sub- und subsubfolders for additional features, services, hardware
     * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one
-    * **subsubfolders** are specific hardware, services, features, protocols, etc. 
+    * **subsubfolders** are specific hardware, services, features, protocols, etc.
 
 # How to contribute
 
@@ -61,7 +61,6 @@ git pull
 ~~~
 
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on the `develop` branch of your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-
 
 ## Making Changes
 
@@ -91,9 +90,10 @@ The preferred way of code contributions are [pull requests (follow this link for
       Update: This time without the need to create an extra random.txt file.and uptodate with the 
       master branch.
 ~~~
+
 ## Making Trivial Changes
 
-For changes of a trivial nature, it is not always necessary to create a new issue. 
+For changes of a trivial nature, it is not always necessary to create a new issue.
 In this case, it is appropriate to start the first line of a
 commit with one of  `(docs)`, `(maint)`, or `(packaging)` instead of a ticket
 number.
@@ -121,15 +121,16 @@ to detect in advance.
 If the code change results in a test failure, we will make our best effort to
 correct the error. If a fix cannot be determined and committed within 24 hours
 of its discovery, the commit(s) responsible _may_ be reverted, at the
-discretion of the committer and Phonie maintainers. 
-The original contributor will be notified of the revert. 
+discretion of the committer and Phonie maintainers.
+The original contributor will be notified of the revert.
 
 ### Summary
 
 * Changes resulting in test failures will be reverted if they cannot
   be resolved within one business day.
 
-## Guidelines ##
+## Guidelines
+
 * Currently Phoniebox runs on Raspian **Buster** . Therefore all Python code should work with **Python 3.7**.
 * For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
