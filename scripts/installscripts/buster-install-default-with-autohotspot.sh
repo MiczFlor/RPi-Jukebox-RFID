@@ -454,6 +454,26 @@ config_spotify() {
 #
 # OPTIONAL: INCLUDE SPOTIFY
 #
+# Note: Because Spotify has disabled access to the libspotify API
+# on May 16, 2022, Phoniebox (like many other services) can not 
+# currently connect with Spotify. 
+# The problem is not our code but the cut off by Spotify.
+# See our README file for details on how you can help. 
+
+"
+read -rp "Hit ENTER to proceed to the next step." INPUT
+SPOTinstall=NO
+
+config_spotify_onHoldBcNoApi() {
+    #####################################################
+    # Configure spotify
+
+    clear
+
+    echo "#####################################################
+#
+# OPTIONAL: INCLUDE SPOTIFY
+#
 # Note: if this is your first time installing a phoniebox
 # it might be best to do a test install without Spotify
 # to make sure all your hardware works.
