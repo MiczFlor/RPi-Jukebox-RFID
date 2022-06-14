@@ -693,7 +693,7 @@ samba_config() {
 web_server_config() {
     local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
     local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
-    local php_ini="/etc/php/7.3/cgi/php.ini"
+    local php_ini="/etc/php/$(ls -1 /etc/php)/cgi/php.ini"
     local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
