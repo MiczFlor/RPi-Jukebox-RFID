@@ -147,7 +147,7 @@ int check_and_map_parameters_to_json(char * arg, t_request * tr)
     {
         name = strtok(arg, ":");
         value = strtok(NULL, ":");
-        fmt = (isdigit(*value)) ? "\"%s\":%s"  : "\"%s\":\"%s\"";
+        fmt = (isdigit(*value)||*value=='-') ? "\"%s\":%s"  : "\"%s\":\"%s\"";
         snprintf (tr->params[tr->num_params++],MAX_STRLEN, fmt,name,value);
         ret = 1;
     }
