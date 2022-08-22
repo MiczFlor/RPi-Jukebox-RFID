@@ -9,6 +9,7 @@ from evdev import categorize, ecodes, KeyEvent
 from io_buttons_usb_encoder import button_map, current_device
 from components.gpio_control.function_calls import phoniebox_function_calls
 
+sys.path.append(".")
 
 logger = logging.getLogger(__name__)
 
