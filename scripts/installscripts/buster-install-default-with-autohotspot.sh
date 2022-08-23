@@ -454,60 +454,19 @@ config_spotify() {
 #
 # OPTIONAL: INCLUDE SPOTIFY
 #
-# Note: if this is your first time installing a phoniebox
-# it might be best to do a test install without Spotify
-# to make sure all your hardware works.
+# IMPORTANT: Spotify disabled access to libspotify.
+#            Therefore no spotify integration possible.
+#####################################################
+#####################################################
 #
-# If you want to include Spotify, MUST have your
-# credentials ready:
 #
-# * username
-# * password
-# * client_id
-# * client_secret
+# skipping this part
+#
+#
+#####################################################
 
 "
-    read -rp "Do you want to enable Spotify? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            SPOTinstall=NO
-            echo "You don't want spotify support."
-            ;;
-        *)
-            SPOTinstall=YES
-            clear
-            echo "#####################################################
-#
-# CREDENTIALS for Spotify
-#
-# Requires Spotify username, password, client_id and client_secret
-# to get connection to Spotify.
-#
-# (Note: You need a device with browser to generate ID and SECRET)
-#
-# Please go to this website:
-# https://www.mopidy.com/authenticate/
-# and follow the instructions.
-#
-# Your credential will appear on the site below the login button.
-# Please note your client_id and client_secret!
-#
-"
-            read -rp "Type your Spotify username: " SPOTIuser
-            read -rp "Type your Spotify password: " SPOTIpass
-            read -rp "Type your client_id: " SPOTIclientid
-            read -rp "Type your client_secret: " SPOTIclientsecret
-            ;;
-    esac
-    # append variables to config file
-    {
-        echo "SPOTinstall=\"$SPOTinstall\"";
-        echo "SPOTIuser=\"$SPOTIuser\"";
-        echo "SPOTIpass=\"$SPOTIpass\"";
-        echo "SPOTIclientid=\"$SPOTIclientid\"";
-        echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
-    } >> "${HOME_DIR}/PhonieboxInstall.conf"
-    read -rp "Hit ENTER to proceed to the next step." INPUT
+read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
 config_mpd() {
@@ -786,7 +745,6 @@ install_main() {
 
     ${apt_get} update
     ${apt_get} upgrade
-    ${apt_get} install libspotify-dev
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
@@ -821,23 +779,6 @@ install_main() {
 
     echo "${VERSION_NO} - ${COMMIT_NO} - ${USED_BRANCH}" > ${jukebox_dir}/settings/version
     chmod 777 ${jukebox_dir}/settings/version
-
-    # Install required spotify packages
-    if [ "${SPOTinstall}" == "YES" ]; then
-        echo "Installing dependencies for Spotify support..."
-        # keep major verson 3 of mopidy
-        echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
-
-        sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
-        sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
-        ${apt_get} update
-        ${apt_get} upgrade
-        ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
-        ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
-
-        # Install necessary Python packages
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
-    fi
 
     local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
     # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
@@ -935,35 +876,6 @@ install_main() {
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
-    # Spotify config
-    if [ "${SPOTinstall}" == "YES" ]; then
-        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
-        echo "Configuring Spotify support..."
-        sudo systemctl disable mpd
-        sudo systemctl enable mopidy
-        # Install Config Files
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
-        sudo locale-gen
-        mkdir -p "${HOME_DIR}"/.config/mopidy
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample "${etc_mopidy_conf}"
-        cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample "${mopidy_conf}"
-        # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
-        sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
-    fi
-
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
@@ -990,11 +902,7 @@ install_main() {
     fi
 
     # set which version has been installed
-    if [ "${SPOTinstall}" == "YES" ]; then
-        echo "plusSpotify" > "${jukebox_dir}"/settings/edition
-    else
-        echo "classic" > "${jukebox_dir}"/settings/edition
-    fi
+    echo "classic" > "${jukebox_dir}"/settings/edition
 
     # update mpc / mpd DB
     mpc update

@@ -296,70 +296,20 @@ clear
 
 echo "#####################################################
 #
-# OPTIONAL: INCLUDE SPOTIFY SUPPORT
+# OPTIONAL: INCLUDE SPOTIFY
 #
-# Spotify uses Mopidy for audio output and must
-# be configured. Do it now, or never.
-# (Note: To add this later, you must re-install phoniebox)
+# IMPORTANT: Spotify disabled access to libspotify.
+#            Therefore no spotify integration possible.
+#####################################################
+#####################################################
+#
+#
+# skipping this part
+#
+#
+#####################################################
 "
-read -r -p "Do you want to install Mopidy? [Y/n] " response
-case "$response" in
-    [nN][oO]|[nN])
-        SPOTinstall=NO
-        echo "You don't want spotify support."
-        echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
-        ;;
-    *)
-        SPOTinstall=YES
-        clear
-        echo "This was a great decision! Mopidy will be set up."
-        echo "#####################################################
-#
-# CONFIGURE MOPIDY
-#
-# Requires spotify username, password, client_id and client_secret
-# to get connection to Spotify.
-#
-# (Note: You need a device with browser to generate ID and SECRET)
-#
-# Please go to this website:
-# https://www.mopidy.com/authenticate/
-# and follow the instructions.
-#
-# Your credential will appear on the site below the login button.
-# Please note your client_id and client_secret!
-#
-"
-        echo ""
-        echo "Type your Spotify username:"
-        read -r INPUT
-        SPOTIuser="$INPUT"
-        echo ""
-        echo "Type your Spotify password:"
-        read -r INPUT
-        SPOTIpass="$INPUT"
-        echo ""
-        echo "Type your client_id:"
-        read -r INPUT
-        SPOTIclientid="$INPUT"
-        echo ""
-        echo "Type your client_secret:"
-        read -r INPUT
-        SPOTIclientsecret="$INPUT"
-        echo ""
-        echo "Hit ENTER to proceed to the next step."
-        read -r INPUT
-        ;;
-esac
-# append variables to config file
-{
-    echo "SPOTinstall=\"$SPOTinstall\"";
-    echo "SPOTIuser=\"$SPOTIuser\"";
-    echo "SPOTIpass=\"$SPOTIpass\"";
-    echo "SPOTIclientid=\"$SPOTIclientid\"";
-    echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
-} >> "${PATHDATA}/PhonieboxInstall.conf"
+SPOTinstall=NO
 
 if [ $SPOTinstall == "NO" ]; then
 #####################################################
