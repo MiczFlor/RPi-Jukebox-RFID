@@ -716,7 +716,6 @@ Module: host
     :noindex:
 
     Get the IP address
-    Source: https://stackoverflow.com/a/28950776/1062438
 
 
 .. py:function:: host.say_my_ip(option='full')

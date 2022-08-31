@@ -131,8 +131,8 @@ Three sockets are opened:
 
 # Developer's notes:
 #
-# The first .bind() "takes ownership" of the port and this is an exclusive role. [...]
-# You need just 1 .bind(), that may since that moment handle 0+ future .connect()-requests,
+# For an explanation why you only need a single bind() for all future connect() requests,
+# see the following two links:
 # [https://zeromq.org/socket-api/#bind-vs-connect]
 # [https://stackoverflow.com/questions/50753588/zeromq-with-norm-address-already-in-use-error-was-thrown-on-2nd-bind-why]
 #
@@ -160,19 +160,7 @@ logger = logging.getLogger('jb.pub.server')
 # If tornado does not find a root logger or a logger 'tornado' WITH handler when calling IOLoop.start()
 # it will just call logging.basicConfig and overwrite the current configuration!
 # anaconda3/envs/rpi/lib/python3.7/site-packages/tornado/ioloop.py: _setup_logging
-# So we will check first and add a NullHandler if there is None so far
-# The following will not only add a Handler, but dump everything into /dev/null
-# If you do not want such drastic measures, setup tornado in logger.yaml
-# https://stackoverflow.com/questions/21234772/python-tornado-disable-logging-to-stderr
-if not any([logging.getLogger().handlers,
-            logging.getLogger("tornado").handlers,
-            logging.getLogger("tornado.application").handlers
-            ]):
-    logger.info("Setting up tornado log handler to go to NullHandler!")
-    hn = logging.NullHandler()
-    hn.setLevel(logging.DEBUG)
-    logging.getLogger("tornado").addHandler(hn)
-    logging.getLogger("tornado").propagate = False
+# So we must ensure that a logger for tornado is defined in logger.yaml -> Done!
 
 
 class LastValueCache:

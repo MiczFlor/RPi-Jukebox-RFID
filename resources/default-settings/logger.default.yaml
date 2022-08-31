@@ -48,7 +48,7 @@ filters:
 loggers:
   jb:
     level: DEBUG
-    handlers: [console, debug_file_handler, error_file_handler]
+    handlers: [console, publisher, debug_file_handler, error_file_handler]
     # handlers: [console, publisher]
     # handlers: [console]
     propagate: false
@@ -64,7 +64,7 @@ loggers:
     # propagate: false
     # handlers: [console]
   tornado:
-    level: DEBUG
+    level: WARNING
     handlers: [console]
     propagate: false
   mpd:

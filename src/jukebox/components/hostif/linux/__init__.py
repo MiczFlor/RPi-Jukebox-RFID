@@ -209,17 +209,12 @@ def publish_cpu_temperature():
 def get_ip_address():
     """
     Get the IP address
-    Source: https://stackoverflow.com/a/28950776/1062438
     """
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        sock.connect(('10.255.255.255', 1))
-        ip_address = sock.getsockname()[0]
-    except Exception:
+    p = subprocess.run(['hostname', '-I'], capture_output=True)
+    if p.returncode == 0:
+        ip_address = p.stdout.strip().decode()
+    else:
         ip_address = '127.0.0.1'
-    finally:
-        sock.close()
     return ip_address
 
 
