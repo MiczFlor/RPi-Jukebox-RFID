@@ -1,7 +1,5 @@
-# Copyright (c) 2022 Chris Banz
-#
-# SPDX-License-Identifier: MIT License
-#
+# RPi-Jukebox-RFID Version 3
+# Copyright (c) See file LICENSE in project root folder
 """
 Provides all supported input devices for the GPIOZ plugin.
 

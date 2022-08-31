@@ -1,7 +1,5 @@
-# Copyright (c) 2022 Chris Banz
-#
-# SPDX-License-Identifier: MIT License
-#
+# RPi-Jukebox-RFID Version 3
+# Copyright (c) See file LICENSE in project root folder
 import sys
 import os
 import time
