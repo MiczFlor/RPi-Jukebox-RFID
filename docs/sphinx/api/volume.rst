@@ -1,7 +1,6 @@
 .. RPI Jukebox RFID
-.. Copyright (c) 2022 Chris Banz
-..
-.. SPDX-License-Identifier: MIT License
+.. RPI Jukebox RFID
+.. Copyright (c) See file LICENSE in project root folder
 
 -------------------------------
 Volume and Audio Sink Control

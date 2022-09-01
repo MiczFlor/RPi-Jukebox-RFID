@@ -1,7 +1,4 @@
-# Copyright (c) 2022 Chris Banz
-#
-# SPDX-License-Identifier: MIT License
-#
+# Copyright (c) See file LICENSE in project root folder
 """
 Provides all supported output devices for the GPIOZ plugin.
 

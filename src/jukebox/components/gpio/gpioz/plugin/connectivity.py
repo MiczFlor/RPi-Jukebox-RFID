@@ -1,7 +1,5 @@
-# Copyright (c) 2022 Chris Banz
-#
-# SPDX-License-Identifier: MIT License
-#
+# RPi-Jukebox-RFID Version 3
+# Copyright (c) See file LICENSE in project root folder
 """
 Provide connector functions to hook up to some kind of Jukebox functionality and change the output device's state
 accordingly.
