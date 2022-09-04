@@ -10,8 +10,6 @@ python_mpd2
 ruamel.yaml
 # For playlistgenerator
 requests
-# For music_cover_art
-eyed3
 # For the publisher event reactor loop:
 tornado
 
@@ -33,12 +31,4 @@ sphinx_rtd_theme
 flake8
 pytest
 mock
-
-# What on earth for?
-# HD44780-i2c/i2c_lcd.py
-# numpy
-# HD44780-i2c/i2c_lcd_driver.py
-# smbus
-# ??
-# components
 
