@@ -1,8 +1,9 @@
 import logging
 import sys
-from subprocess import Popen as function_call
+from subprocess import Popen as function_call, call
 import os
 import pathlib
+
 
 
 class phoniebox_function_calls:
@@ -11,7 +12,9 @@ class phoniebox_function_calls:
 
         playout_control_relative_path = "../../scripts/playout_controls.sh"
         function_calls_absolute_path = str(pathlib.Path(__file__).parent.absolute())
+        rfid_trigger_relative_path = "../../scripts/rfid_trigger_play.sh"
         self.playout_control = os.path.abspath(os.path.join(function_calls_absolute_path, playout_control_relative_path))
+        self.rfid_control = os.path.abspath(os.path.join(function_calls_absolute_path, rfid_trigger_relative_path))
 
     def functionCallShutdown(self, *args):
         function_call("{command} -c=shutdown".format(command=self.playout_control), shell=True)
@@ -86,8 +89,40 @@ class phoniebox_function_calls:
 
     def functionCallBluetoothToggle(self, *args):
         function_call("{command} -c=bluetoothtoggle -v=toggle".format(command=self.playout_control), shell=True)
+    
+    def functionCall_1(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 1 ), shell=True)
+        
+    def functionCall_2(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 2 ), shell=True)
+
+    def functionCall_3(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 3 ), shell=True)
+
+    def functionCall_4(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 4 ), shell=True)
+
+    def functionCall_5(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 5 ), shell=True)
+
+    def functionCall_6(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 6 ), shell=True)
+        
+    def functionCall_7(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 7 ), shell=True)
+
+    def functionCall_8(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 8 ), shell=True)
+
+    def functionCall_9(self, *args):
+        function_call("{command} --cardid={value}".format(command=self.rfid_control, value = 9 ), shell=True)
 
     def getFunctionCall(self, functionName):
         self.logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))
         getattr(sys.modules[__name__], str)
         return locals().get(functionName, None)
+
+if __name__ == "__main__":
+   call = phoniebox_function_calls()
+   call.functionCall_1()
+
