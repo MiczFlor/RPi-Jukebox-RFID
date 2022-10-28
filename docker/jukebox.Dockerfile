@@ -31,6 +31,11 @@ RUN apt-get update && apt-get install -qq -y \
 COPY . ${INSTALLATION_PATH}
 
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+
+RUN pip3 install websocket
+
+RUN pip3 install websocket-client
+
 RUN pip3 install pyzmq
 
 EXPOSE 5555 5556

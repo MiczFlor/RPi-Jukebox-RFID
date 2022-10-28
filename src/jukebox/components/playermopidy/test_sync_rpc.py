@@ -30,20 +30,45 @@ class PlayerMopidy:
         #todo
         self.mopidy_url = "ws://192.168.178.42:6680/mopidy/ws" #cfg.getn('playermopidy', 'mopidy_url')
         self.mopidy_ws_client = None
+        self.mopidy_status = {}
+        self.music_player_status = {} #self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
+        
+        #logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
+
+        self.current_folder_status = {}
+        if not self.music_player_status:
+            self.music_player_status['player_status'] = {}
+            self.music_player_status['audio_folder_status'] = {}
+            #self.music_player_status.save_to_json()
+            self.current_folder_status = {}
+            self.music_player_status['player_status']['last_played_folder'] = ''
+        else:
+            pass
+            #last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
+            #if last_played_folder:
+                # current_folder_status is a dict, but last_played_folder a str
+            #   self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
+                # Restore the playlist status in mpd
+                # But what about playback position?
+            #    self.mpd_client.clear()
+                #  This could fail and cause load fail of entire package:
+                # self.mpd_client.add(last_played_folder)
+            #    logger.info(f"Last Played Folder: {last_played_folder}")
+
+
 
         
 
     def exit(self):
         logger.debug("Exit routine of playermopidy started")
         self.status_is_closing = True
-        self.status_thread.cancel()
-        self.mopidy_ws_client.disconnect()
+        #self.status_thread.cancel()
+        self.mopidy_ws_client.close()
         #self.nvm.save_all()
         #return self.status_thread.timer_thread
 
     def connect(self):
-        self.mopidy_ws_client = create_connection(self.mopidy_url)
-
+        pass
     """def decode_2nd_swipe_option(self):
         #cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
         if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
@@ -60,66 +85,105 @@ class PlayerMopidy:
                                                          custom_action['args'],
                                                          custom_action['kwargs'])
 """
-    def _send_get_json(self, method, parameters = None, data = None):
-        """Schortcut for a fast message to mopidy through websocket"""
-        req_json = self._build_rpc_message(method, parameters, data)
+    def _send_get_json(self, method, parameters = None):
+        """Schortcut for a back and forth message to mopidy through websocket"""
+        logger.debug("rpc call to mopidy")
+        self.mopidy_ws_client = create_connection(self.mopidy_url)
+        logger.debug(self.mopidy_ws_client)
+        logger.debug(method)
+        req_json = self._build_rpc_message(method, parameters)
+        logger.debug(req_json)
         self.mopidy_ws_client.send(req_json)
         response_json =  self.mopidy_ws_client.recv()
         return self._read_json_response(response_json)
 
-    def _build_rpc_message(self, method, parameters = None, data = None):
+    def _build_rpc_message(self, method, parameters = None):
         """Helper function to easily build the rpc json"""
         req_json = request_json(method,parameters)
-        print("Request is:")
-        print(req_json)
+        logger.debug("Request is:")
+        #print(req_json)
         return req_json
     
     def _read_json_response(self, response):
-        print("Raw response is:")
-        print(response) 
+        """Helper function to decode either return rpc json or event"""
+        #print("Raw response is:")
+        #print(response) 
 
         try:
-            response = parse_json(response) 
+            response = parse_json(response).result 
         except:
             response = json.loads(response) #events cannot be parsed by parse_json
 
-        print("Json response is:")
-        print(response)
+        #print("Json response is:")
+        #print(response)
         
         return response
 
-    def _mpd_status_poll(self):
-        """
-        this method polls the status from mpd and stores the important inforamtion in the music_player_status,
-        it will repeat itself in the intervall specified by self.mpd_status_poll_interval
-        """
-        """
-        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
-        self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
+    def _is_current_tracklist_same_as_uri_tracklist(self, uri):
+        tracklist_current = self.mopidy_get_tracklist()
+        tracklist_to_compare = self.mopidy_lookup(uri)
+        if tracklist_current.result == tracklist_to_compare.result[uri]: #the result from lookup includes uri
+            True
+        else:
+            False
 
-        if self.mpd_status.get('elapsed') is not None:
-            self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
-            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mpd_status['file']
+    def _mopidy_status_poll(self):
+        """
+        this method polls the status from mopidy and stores the important inforamtion in the music_player_status,
+        it will repeat itself in the intervall specified by self.mopidy_status_poll_interval
+        """
+        #TODO thread handling
+        self.mopidy_status['state'] = self._send_get_json("core.playback.get_state")
+        self.mopidy_status['elapsed'] = self._send_get_json("core.playback.get_time_position")
+        self.mopidy_status['tracklist'] = self._send_get_json("core.tracklist.get_tl_tracks")
+        self.mopidy_status['tracklist_length'] = self._send_get_json("core.tracklist.get_length")
+        self.mopidy_status['tracklist_current_position'] = self._send_get_json("core.tracklist.index")
+        self.mopidy_status['song'] = self._send_get_json("core.playback.get_current_track")
+        self.mopidy_status['time'] = self.mopidy_status['elapsed']
+        self.mopidy_status['random'] = self._send_get_json("core.tracklist.get_random")
+        self.mopidy_status['repeat'] = self._send_get_json("core.tracklist.get_repeat")
+        self.mopidy_status['single'] = self._send_get_json("core.tracklist.get_single")
+        self.mopidy_status['consume'] = self._send_get_json("core.tracklist.get_consume")
+        self.mopidy_status['volume'] = self._send_get_json("core.mixer.get_volume")
+        
+        if self.mopidy_status['song'] is not None:
+            self.mopidy_status['song_name'] = self.mopidy_status['song']['name']
+            self.mopidy_status['song_uri'] = self.mopidy_status['song']['uri']
+            self.mopidy_status['playlist'] = self._send_get_json("core.playlists.as_list")
+            self.mopidy_status['playlist_uri'] = self.mopidy_status['playlist']
+            self.mopidy_status['album'] =  self.mopidy_status['song']['album']
+            self.mopidy_status['album_name'] =  self.mopidy_status['song']['album']['name']
+            self.mopidy_status['album_uri'] = self.mopidy_status['song']['album']['uri']
+            self.mopidy_status['artists'] = self.mopidy_status['song']['artists'] #TODO get all artists
+            self.mopidy_status['artists_name'] = self.mopidy_status['song']['artists'][0]['name']
+            self.mopidy_status['artists_uri'] = self.mopidy_status['song']['artists'][0]['uri']
+            self.mopidy_status['duration'] = self.mopidy_status['song']['length']
+            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mopidy_status['tracklist_current_position'] 
+            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mopidy_status['song']
+            self.current_folder_status["CURRENTFILENAME"] = self.mopidy_status['song']
+            self.current_folder_status["CURRENTSONGPOS"] = self.mopidy_status['elapsed']
+            self.current_folder_status["ELAPSED"] = self.mopidy_status['elapsed']
+            self.current_folder_status["PLAYSTATUS"] = self.mopidy_status['state']
+            #self.current_folder_status["RESUME"] = "OFF"
+            self.current_folder_status["SHUFFLE"] = self.mopidy_status['random']
+            self.current_folder_status["LOOP"] = self.mopidy_status['repeat']
+            self.current_folder_status["SINGLE"] = self.mopidy_status['single']
 
-        if self.mpd_status.get('file') is not None:
-            self.current_folder_status["CURRENTFILENAME"] = self.mpd_status['file']
-            self.current_folder_status["CURRENTSONGPOS"] = self.mpd_status['song']
-            self.current_folder_status["ELAPSED"] = self.mpd_status.get('elapsed', '0.0')
-            self.current_folder_status["PLAYSTATUS"] = self.mpd_status['state']
-            self.current_folder_status["RESUME"] = "OFF"
-            self.current_folder_status["SHUFFLE"] = "OFF"
-            self.current_folder_status["LOOP"] = "OFF"
-            self.current_folder_status["SINGLE"] = "OFF"
+        #self.mopidy_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
+        #self.mopidy_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
+        
+        if self.mopidy_status['elapsed'] > 0:
+            self.current_folder_status["ELAPSED"] = self.mopidy_status['elapsed']
+            self.music_player_status['player_status']["CURRENTSONGPOS"] = self.mopidy_status['elapsed']
+            self.music_player_status['player_status']["CURRENTFILENAME"] = self.mopidy_status['song']
 
         # Delete the volume key to avoid confusion
         # Volume is published via the 'volume' component!
         try:
-            del self.mpd_status['volume']
+            del self.mopidy_status['volume']
         except KeyError:
             pass
-        publishing.get_publisher().send('playerstatus', self.mpd_status)
-        """
+        #publishing.get_publisher().send('playerstatus', self.mopidy_status)
 
     #@plugs.tag
     def get_player_type_and_version(self):
@@ -136,18 +200,20 @@ class PlayerMopidy:
         pass
 
     #@plugs.tag
-    def play(self):
+    def mopidy_play(self, position_in_tracklist = -1):
         #with self.mpd_lock:
+        if position_in_tracklist >= 0:
+            self._send_get_json("core.tracklist.index", {"tlid": position_in_tracklist})
         return self._send_get_json("core.playback.play")
 
     #@plugs.tag
-    def stop(self):
+    def mopidy_stop(self):
         #with self.mpd_lock:
             
         return self._send_get_json("core.playback.stop")
 
     #@plugs.tag
-    def pause(self, state: int = 1):
+    def mopidy_pause(self, state: int = 1):
         #TODO check card removal and re placement stuff
         """Enforce pause to state (1: pause, 0: resume)
 
@@ -164,27 +230,27 @@ class PlayerMopidy:
     
     
     #@plugs.tag
-    def prev(self):
+    def mopidy_prev(self):
         logger.debug("Prev")
         #with self.mpd_lock:
         return self._send_get_json("core.playback.previous")
         
 
     #@plugs.tag
-    def next(self):
+    def mopidy_next(self):
         """Play next track in current playlist"""
         logger.debug("Next")
         #with self.mpd_lock:
         return self._send_get_json("core.playback.next")
 
     #@plugs.tag
-    def seek(self, new_time):
+    def mopidy_seek(self, new_time):
         with self.mpd_lock:
             self.mpd_client.seekcur(new_time)
 
 
     #@plugs.tag
-    def shuffle(self):
+    def mopidy_shuffle(self):
         # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
         shuffle_state = self._send_get_json("core.tracklist.get_random")    
         if(shuffle_state.result == True):
@@ -193,28 +259,29 @@ class PlayerMopidy:
         return self._send_get_json("core.tracklist.set_random",{"value":True})
 
     #@plugs.tag
-    def get_shuffle_state(self):
+    def mopidy_get_shuffle_state(self):
         # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
         return self._send_get_json("core.tracklist.get_random") 
     
     #@plugs.tag
-    def toggle(self):
+    def mopidy_toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         logger.debug("Toggle")
         with self.mpd_lock:
             self.pause()
     
-    """
+    
     #@plugs.tag
     def rewind(self):
-        ""
+        """
         Re-start current playlist from first track
-
-        Note: Will not re-read folder config, but leave settings untouched""
+        """
+        #Note: Will not re-read folder config, but leave settings untouched""
         logger.debug("Rewind")
-        with self.mpd_lock:
-            self.mpd_client.play(1)
+        #with self.mpd_lock:
+        self.mpd_client.play(0)
 
+    """
     #@plugs.tag
     def replay(self):
         ""
@@ -235,11 +302,12 @@ class PlayerMopidy:
         .. note:: To me this seems much like the behaviour of play,
             but we keep it as it is specifically implemented in box 2.X""
         with self.mpd_lock:
-            if self.mpd_status['state'] == 'stop':
+            if self.mopidy_status['state'] == 'stop':
                 self.play_folder(self.music_player_status['player_status']['last_played_folder'])
-"""
+    """
+    
     #@plugs.tag
-    def repeatmode(self, mode):
+    def mopidy_repeatmode(self, mode):
         if mode == 'repeat':
             repeat = True
             single = False
@@ -257,6 +325,7 @@ class PlayerMopidy:
     #@plugs.tag
     def get_current_song(self, param):
         return self._send_get_json("core.playback.get_current_track")
+    
     """
     #@plugs.tag
     def map_filename_to_playlist_pos(self, filename):
@@ -275,8 +344,9 @@ class PlayerMopidy:
         # MPDClient.swapid(song1, song2)
         raise NotImplementedError
     """
+
     #@plugs.tag
-    def play_single(self, song_url):
+    def mopidy_play_single(self, song_url):
         #with self.mpd_lock:
         #    self.mpd_client.clear()
         #    self.mpd_client.addid(song_url)
@@ -284,6 +354,29 @@ class PlayerMopidy:
         self._send_get_json("core.tracklist.clear")
         self._send_get_json("core.tracklist.add",{'uris':{song_url}})
         self.play()
+
+    def mopidy_play_url(self, url):
+        #with self.mpd_lock:
+        #    self.mpd_client.clear()
+        #    self.mpd_client.addid(song_url)
+        #    self.mpd_client.play()
+        self._send_get_json("core.tracklist.clear")
+        self._send_get_json("core.tracklist.add",{'uris':[url]})
+        self.mopidy_play()
+    
+    def mopidy_get_tracklist(self):
+        #with self.mpd_lock:
+        #    self.mpd_client.clear()
+        #    self.mpd_client.addid(song_url)
+        #    self.mpd_client.play()
+        return self._send_get_json("core.tracklist.get_tracks")
+
+    def mopidy_lookup(self, uri):
+        #with self.mpd_lock:
+        #    self.mpd_client.clear()
+        #    self.mpd_client.addid(song_url)
+        #    self.mpd_client.play()
+        return self._send_get_json("core.library.lookup",{'uris':[uri]})
 
     """
     #@plugs.tag
@@ -293,10 +386,11 @@ class PlayerMopidy:
             elapsed = self.current_folder_status["ELAPSED"]
             self.mpd_client.seek(songpos, elapsed)
             self.mpd_client.play()
+    """
 
     #@plugs.tag
-    def play_card(self, folder: str, recursive: bool = False):
-        ""
+    def play_card(self, uri): #folder: str, recursive: bool = False):
+        """
         Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
 
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
@@ -304,7 +398,7 @@ class PlayerMopidy:
 
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
-        ""
+        """
         # Developers notes:
         #
         #     * 2nd swipe trigger may also happen, if playlist has already stopped playing
@@ -316,16 +410,18 @@ class PlayerMopidy:
         #     * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
         #       second swipe
         #
-        logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
-        with self.mpd_lock:
-            is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
+        #logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
+        #with self.mpd_lock:
+    
+        is_second_swipe = self._is_current_tracklist_same_as_uri_tracklist(uri)
         if self.second_swipe_action is not None and is_second_swipe:
             logger.debug('Calling second swipe action')
             self.second_swipe_action()
         else:
             logger.debug('Calling first swipe action')
-            self.play_folder(folder, recursive)
-
+            self.mopidy_play_url(uri)
+    
+    """
     #@plugs.tag
     def get_folder_content(self, folder: str):
         ""
@@ -375,16 +471,15 @@ class PlayerMopidy:
             self.mpd_client.play()
     """
     #@plugs.tag
-    def play_album(self, album_url):
+    def mopidy_play_album(self, album_url):
         """
         Playback a album from url
         TODO check whether url has album in it
         """
         #with self.mpd_lock:
         logger.info(f"Play album_url: '{album_url}")
-        self._send_get_json("core.tracklist.clear")
-        self._send_get_json("core.tracklist.add",{'uris':[album_url]})
-        self.play()
+        self.mopidy_play_url(album_url)
+
     """
     #@plugs.tag
     def queue_load(self, folder):
@@ -397,15 +492,16 @@ class PlayerMopidy:
         # Load the playlist
         # Get folder config and apply settings
         pass
+    """
 
     #@plugs.tag
     def playerstatus(self):
-        return self.mpd_status
+        return self.mopidy_status
 
     #@plugs.tag
     def playlistinfo(self):
         with self.mpd_lock:
-            value = self.mpd_client.playlistinfo()
+            value = self.mopidy_status.playlist
         return value
 
     # Attention: MPD.listal will consume a lot of memory with large libs.. should be refactored at some point
@@ -437,6 +533,7 @@ class PlayerMopidy:
 
         return song
 
+    """
     def get_volume(self):
         ""
         Get the current volume
@@ -475,8 +572,15 @@ if __name__ == "__main__":
     ws.close()
     """
     mopidy = PlayerMopidy();
-    mopidy.connect()
     #mopidy.get_shuffle_state()
     #mopidy.shuffle()
-    mopidy.play_album("tidal:album:121255042")
+    #mopidy.mopidy_play_album("tidal:album:121255042")
+    #mopidy.mopidy_play_url("tidal:playlist:df11598a-b75f-4fbd-a140-00bf88016e37")
+    #mopidy.mopidy_play_url("tidal:playlist:d666c955-9b41-4149-a475-33c25f867e5f")
+    #tracklist1 = mopidy.mopidy_get_tracklist()
+    #tracklist2 = mopidy.mopidy_lookup("tidal:playlist:d666c955-9b41-4149-a475-33c25f867e5f")
+    mopidy._mopidy_status_poll()
+    #print(mopidy.mopidy_status['song'])
+    print(mopidy.mopidy_status['elapsed'])
+    #mopidy.mopidy_stop()
     mopidy.exit()

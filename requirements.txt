@@ -15,8 +15,6 @@ eyed3
 # For the publisher event reactor loop:
 tornado
 # For the mopidy player
-websockets
-asyncio
 jsonrpcclient
 
 # RPi's GPIO packages: these are installed via APT on the PI
