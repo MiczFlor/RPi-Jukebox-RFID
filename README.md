@@ -2,7 +2,7 @@
 
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MiczFlor/RPi-Jukebox-RFID/develop)
 
-![Python Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/workflows/Python%20package/badge.svg) ![Install Script Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/workflows/Docker%20Test%20Installation/badge.svg)
+[![Python Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage.yml) [![Test Install Scripts on Docker](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/dockerimage.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/dockerimage.yml) [![CodeQL](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml)
 
 [![Gitter chat](https://badges.gitter.im/phoniebox/gitter.png)](https://gitter.im/phoniebox)
 
