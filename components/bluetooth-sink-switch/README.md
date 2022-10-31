@@ -1,4 +1,4 @@
-## Neatly switch between soundcard and bluetooth audio output
+# Neatly switch between soundcard and bluetooth audio output
 
 **Wouldn't it be nice to have regular speakers and Bluetooth headphones on your Phoniebox and choose the desired output on a spur of the moment?**
 
@@ -24,14 +24,15 @@ This looks lengthy, but I the major deal is setting up your audio output devices
 
 #### Step 1) Setting up asound.conf
 
-You need to set up both audio sinks and make sure they work. This is pretty much a prerequisite for everything that follows. 
+You need to set up both audio sinks and make sure they work. This is pretty much a prerequisite for everything that follows.
 
 Follow the instructions for your soundcard. Configure `/etc/asound.conf`correctly. And make sure it works!
 
 Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
 
 The new entry should end up looking like this:
-~~~
+
+~~~bash
 pcm.btheadphone {
     type plug
     slave.pcm {
@@ -51,7 +52,8 @@ pcm.btheadphone {
 In case of doubt, reboot.
 
 Test the new audio device (mine is called `pcm.btheadphone`). Also test the soundcard (here `pcm.hifiberry` for the regular speakers).
-~~~sh
+
+~~~bash
 $ aplay -D btheadphone /usr/share/sounds/alsa/Front_Center.wav 
 $ aplay -D hifiberry /usr/share/sounds/alsa/Front_Center.wav
 ~~~
@@ -60,7 +62,7 @@ $ aplay -D hifiberry /usr/share/sounds/alsa/Front_Center.wav
 
 You need to set up two audio_output sections. **The order is important**: the first entry must relate to the soundcard setup, the second entry must relate to the bluetooth setup. Give meaningful names, as they will show up in the Web Interface.
 
-~~~
+~~~bash
 # The first entry should match your soundcard. If you have a working setup, there is most likly no need to change it!
 # As an exanple, here is my configuration for my HifiBerry MiniAmp.
 audio_output {
@@ -84,7 +86,7 @@ audio_output {
 }
 ~~~
 
-Restarting the mpd.service or else reboot. 
+Restarting the mpd.service or else reboot.
 
 Check the setup:
 
@@ -105,7 +107,6 @@ $ cd components/bluetooth-sink-switch
 $ ./install-bt-sink-switch.sh
 ~~~
 
-
 #### Step 4) Fine-tuning
 
 **Status LED**
@@ -114,7 +115,7 @@ An optional status LED will be turned on if the audio sink is set to bluetooth. 
 
 **Important note**: Correct capitalization of [BluetoothToggleLed] is important!
 
-~~~
+~~~bash
 [BluetoothToggleLed]
 enabled: True
 led_pin: 13
@@ -124,7 +125,7 @@ led_pin: 13
 
 If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`. Create it, if it does not exist.
 
-~~~
+~~~bash
 [BluetoothToggle]
 enabled: True
 Type: Button
@@ -138,7 +139,7 @@ functionCall: functionCallBluetoothToggle
 
 If you want to toggle by RFID card swipe, set the card id in `rfid_trigger_play.conf`, e.g.:
 
-~~~
+~~~bash
 ### Toggle between speakers and bluetooth headphones
 CMDBLUETOOTHTOGGLE="1364237231134"
 ~~~
@@ -149,9 +150,9 @@ Speakers and Headphones can have very different maximum volume levels. This some
 
 The solution is adding a `softvol` component to the /etc/asound.conf. You may already have one set up, if your soundcard does not have a hardware volume control. Then it is easy! The `softvol` copmonent adds a systemwide ALSA-based volume control for a hardware soundcard. You will need to give it a name, that does **not** exist! Check with `$ amixer scontrols` first, which names are already taken. Here, I have choosen *Master*. This will work even if your soundcard has a hardware volume control.
 
-The `softvol` component has a feature called *max_db*  to limit the maximum volume, which we are going to utilize here. With that we are limiting the maximum volume of the speakers systemwide and independent of MPD or other Phoniebox settings. 
+The `softvol` component has a feature called *max_db*  to limit the maximum volume, which we are going to utilize here. With that we are limiting the maximum volume of the speakers systemwide and independent of MPD or other Phoniebox settings.
 
-~~~
+~~~bash
 # Add the sofvol section
 pcm.hifiberry {
     type softvol
@@ -184,26 +185,31 @@ ctl.!default {
 - Change the mixer control to the new iFace name: `mixer_control    "Master"`
 - Ensure that it is there is no entry mixer_type or that it is `mixer_type  "hardware"`
 
-See example [mpd.conf](#step-2-setting-up-mpdconf) above! 
+See example [mpd.conf](#step-2-setting-up-mpdconf) above!
 
-Also change the Phoniebox setting with 
+Also change the Phoniebox setting with
+
 ~~~sh
 $ echo "Master" >  RPi-Jukebox-RFID/settings/Audio_iFace_Name 
 ~~~
+
 and reboot!
 
 Test the setup with running speaker test in one console
-~~~
+
+~~~bash
 $ speaker-test -D hifiberry
 ~~~
+
 and changing the default volume control in another console
-~~~
+
+~~~bash
 $ alsamixer 
 ~~~
 
 If you are experimenting with a softvol and want to get rid of it again - that is not an easy task. Most promising approach is to insert the SD-Card into a different Linux machine delete the file `/var/lib/alsa/asound.state`. This must be done from a different computer, as this file gets written during shutdown. More infos about the softvol may be found [here](https://alsa.opensrc.org/Softvol)
 
-## Troubleshooting 
+## Troubleshooting
 
 Troubleshooting comes in three major sub-tasks:
 
@@ -213,24 +219,24 @@ Troubleshooting comes in three major sub-tasks:
 
 ## Some background
 
-https://alsa.opensrc.org/Softvol
+<https://alsa.opensrc.org/Softvol>
 
-https://alsa.opensrc.org/How_to_use_softvol_to_control_the_master_volume
+<https://alsa.opensrc.org/How_to_use_softvol_to_control_the_master_volume>
 
-https://www.alsa-project.org/alsa-doc/alsa-lib/pcm_plugins.html
+<https://www.alsa-project.org/alsa-doc/alsa-lib/pcm_plugins.html>
 
 ## Example config
 
 For reference, this is my /etc/asound.conf in full (it also sets up an equalizer). The corresponding [mpd.conf](#step-2-setting-up-mpdconf) excerpt is the one given above.
 
-~~~
+~~~bash
 pcm.btheadphone {
     type plug
     slave.pcm {
       type bluealsa
    service "org.bluealsa"
-  	device "00:1B:66:A1:56:8D"
-  	profile "a2dp"
+    device "00:1B:66:A1:56:8D"
+    profile "a2dp"
         delay -20000
     }
     hint {
