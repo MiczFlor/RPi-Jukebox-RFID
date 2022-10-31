@@ -106,7 +106,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class MopidyLock:
-    def __init__(self, client: WebSocket, connection_url: str):
+    def __init__(self, connection_url: str):
         self._lock = threading.RLock()
         self.client = client
         self.connection_url = connection_url
