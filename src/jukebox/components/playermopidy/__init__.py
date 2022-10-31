@@ -108,7 +108,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 class MopidyLock:
     def __init__(self, connection_url: str):
         self._lock = threading.RLock()
-        self.client = client
+        self.client = {}
         self.connection_url = connection_url
 
     def _try_connect(self):
