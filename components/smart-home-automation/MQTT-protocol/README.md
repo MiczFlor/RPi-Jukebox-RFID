@@ -52,6 +52,7 @@ MQTT clients can (additionally to the periodic updates) request an attribute of 
 - volume
 - mute
 - repeat
+- repeat_mode [off / single / playlist]
 - random
 - state
 - file
