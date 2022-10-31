@@ -23,7 +23,7 @@ RPi.GPIO
 pytest
 
 # Makes it so that pytest can handle the code structure we use, with src/main/python, and src/test.
-pytest-pythonpath
+# pytest-pythonpath (obsolete since pytest 7)
 
 # Allows generation of coverage reports with pytest.
 pytest-cov
