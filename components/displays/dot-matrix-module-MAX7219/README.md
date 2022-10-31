@@ -14,8 +14,8 @@ In the [display.ino](display.ino#L48-L50) there is following configuration part:
     const char* password = "foo";
     const char* host = "192.168.42.42";
 
-`ssid` is your local WiFi network. 
-`password` is the password for your WiFi network. 
+`ssid` is your local WiFi network.
+`password` is the password for your WiFi network.
 `host` is the **static** IP of your Phoniebox.
 
 For flashing the ESP, you can use the [Arduino IDE](https://en.wikipedia.org/wiki/Arduino_IDE). But there are a few more other possibilities to do this.

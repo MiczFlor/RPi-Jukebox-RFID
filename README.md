@@ -20,8 +20,7 @@ Third party projects like [librespot-java](https://github.com/librespot-org/libr
 
 This leaves us in a pickle and we are happy to hear from developer talent in the Phoniebox community on how to move forward regarding Phoniebox.
 We are also curious to learn about alternative services we can connect with and which you would like to see supported -- or have developed support for already:
-https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835
-
+<https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
 
 ## The Phoniebox Calendar 2022 is here!!!
 

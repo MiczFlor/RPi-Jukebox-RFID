@@ -17,10 +17,9 @@ The required files are:
 - components/displays/HD44780-i2c/i2c-lcd.service.default.sample
 - components/displays/HD44780-i2c/README.md
 
-
 The first file is the main LCD script that makes use of I2C_LCD_driver.py.
 
-The second file is the library needed to drive the LCD via i2c, originates from DenisFromHR (Denis Pleic) see http://www.circuitbasics.com/raspberry-pi-i2c-lcd-set-up-and-programming
+The second file is the library needed to drive the LCD via i2c, originates from DenisFromHR (Denis Pleic) see <http://www.circuitbasics.com/raspberry-pi-i2c-lcd-set-up-and-programming>
 
 The third is used as sample service file that runs the i2c_lcd.py main script at boot-up if the service is properly installed (install description can be found below.).
 
@@ -39,6 +38,7 @@ The fourth file is this file which describes the features, usage and installatio
 `ls /dev/i2c-*`
 
 It'll output "/dev/i2c-x", where x is your bus number. Note this bus number as you will need it in step 6.
+
 * Now detect the adapter by using the i2cdetect command, inserting your bus number:
 
 `sudo i2cdetect -y bus_number`
@@ -58,13 +58,14 @@ The I2C address of my LCD is 27. Take note of this number, it will be need in st
 * Modify "i2c_lcd_driver.py" line 19 which reads "I2CBUS = 1" and adapt it to your bus number (see step 2.) Furthermore modify line 22 which reads "ADDRESS = 0x27" and adapt it to your I2C address (see step 3.)
 * Modify "i2c_lcd.py" to adapt it yo your specific display e.g. 2x16 or 4x20 (default). The lines 15-19 look like the following:
 
-```
+```bash
 ################# CHANGE YOUR SETTINGS HERE!!! ###########################################
 ## Display settings                                                                     ##
 n_cols = 20                 # EDIT!!!  <-- number of cols your display has              ##
 n_rows = 4                  # EDIT!!!  <-- number of rows your display has              ##
 val_delay = 0.4             # EDIT!!!  <-- speed of the scolling text                   ##
 ```
+
 Check if "n_cols" and "n_rows" need to be changed and modify them if necessary. The "val_delay" constant leave for the time being. Lower values will speed up things but will make the text less visible/readable.
 
 * next install and start "i2c-lcd.service"
