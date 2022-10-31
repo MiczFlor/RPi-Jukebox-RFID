@@ -353,7 +353,7 @@ class PlayerMopidy:
         #    self.mpd_client.play()
         self._send_get_json("core.tracklist.clear")
         self._send_get_json("core.tracklist.add",{'uris':{song_url}})
-        self.play()
+        self.mopidy_play()
 
     def mopidy_play_url(self, url):
         #with self.mpd_lock:
@@ -579,8 +579,8 @@ if __name__ == "__main__":
     #mopidy.mopidy_play_url("tidal:playlist:d666c955-9b41-4149-a475-33c25f867e5f")
     #tracklist1 = mopidy.mopidy_get_tracklist()
     #tracklist2 = mopidy.mopidy_lookup("tidal:playlist:d666c955-9b41-4149-a475-33c25f867e5f")
-    mopidy._mopidy_status_poll()
+    #mopidy._mopidy_status_poll()
     #print(mopidy.mopidy_status['song'])
-    print(mopidy.mopidy_status['elapsed'])
-    #mopidy.mopidy_stop()
+    #print(mopidy.mopidy_status['elapsed'])
+    mopidy.mopidy_stop()
     mopidy.exit()
