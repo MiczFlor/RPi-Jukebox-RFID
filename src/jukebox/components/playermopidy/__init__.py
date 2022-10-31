@@ -199,13 +199,13 @@ class PlayerMopidy:
 
         self.old_song = None
         self.mopidy_status = {}
-        self.mopidy_status_poll_interval = 2
+        self.mopidy_status_poll_interval = 10
         self.mopidy_lock = MopidyLock(self.mopidy_url)
         self.status_is_closing = False
-        #self.status_thread = threading.Timer(self.mopidy_status_poll_interval, self._mopidy_status_poll).start()
-        #self.status_thread = multitimer.GenericEndlessTimerClass('mopidy.timer_status',
-        #    self.mopidy_status_poll_interval, self._mopidy_status_poll)
-        #self.status_thread.start()
+        self.status_thread = threading.Timer(self.mopidy_status_poll_interval, self._mopidy_status_poll).start()
+        self.status_thread = multitimer.GenericEndlessTimerClass('mopidy.timer_status',
+            self.mopidy_status_poll_interval, self._mopidy_status_poll)
+        self.status_thread.start()
 
         
 
@@ -251,8 +251,8 @@ class PlayerMopidy:
     def _build_rpc_message(self, method, parameters = None):
         """Helper function to easily build the rpc json"""
         req_json = request_json(method,parameters)
-        logger.debug("Request is:")
-        logger.debug(req_json)
+        #logger.debug("Request is:")
+        #logger.debug(req_json)
         return req_json
     
     def _read_json_response(self, response):
@@ -262,8 +262,8 @@ class PlayerMopidy:
         except:
             response = json.loads(response) #events cannot be parsed by parse_json
 
-        logger.debug("Response is:")
-        logger.debug(response)
+        #logger.debug("Response is:")
+        #logger.debug(response)
         return response
 
     def _is_current_tracklist_same_as_uri_tracklist(self, uri) -> bool:
@@ -285,6 +285,7 @@ class PlayerMopidy:
         this method polls the status from mopidy and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mopidy_status_poll_interval
         """
+        logger.debug("Updating states")
         self.mopidy_status['state'] = self._run_mopidy_action("core.playback.get_state")
         self.mopidy_status['elapsed'] = self._run_mopidy_action("core.playback.get_time_position")
         self.mopidy_status['tracklist'] = self._run_mopidy_action("core.tracklist.get_tl_tracks")
