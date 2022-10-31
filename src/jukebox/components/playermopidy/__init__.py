@@ -186,9 +186,9 @@ class PlayerMopidy:
         #        self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
         #        # Restore the playlist status in mpd
         #        # But what about playback position?
-        #        self.mpd_client.clear()
+        #        self.mopidy_client.clear()
         #        #  This could fail and cause load fail of entire package:
-        #        # self.mpd_client.add(last_played_folder)
+        #        # self.mopidy_client.add(last_played_folder)
         #        logger.info(f"Last Played Folder: {last_played_folder}")
 
         # Clear last folder played, as we actually did not play any folder yet
@@ -198,11 +198,11 @@ class PlayerMopidy:
         #self.music_player_status['player_status']['last_played_folder'] = ''
 
         self.old_song = None
-        self.mpd_status = {}
-        self.mpd_status_poll_interval = 0.25
-        self.mpd_lock = MopidyLock(self.mopidy_url)
+        self.mopidy_status = {}
+        self.mopidy_status_poll_interval = 0.25
+        self.mopidy_lock = MopidyLock(self.mopidy_url)
         self.status_is_closing = False
-        self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
+        self.status_thread = threading.Timer(self.mopidy_status_poll_interval, self._mopidy_status_poll).start()
         self.status_thread = multitimer.GenericEndlessTimerClass('mopidy.timer_status',
             self.mopidy_status_poll_interval, self._mopidy_status_poll)
         self.status_thread.start()
@@ -240,7 +240,7 @@ class PlayerMopidy:
     
     def _run_mopidy_action(self, method, parameters = None):
         """Shortcut for a back and forth message to mopidy through websocket"""
-        with self.mpd_lock:
+        with self.mopidy_lock:
             self.mopidy_ws_client = create_connection(self.mopidy_url)
             req_json = self._build_rpc_message(method, parameters)
             self.mopidy_ws_client.send(req_json)
@@ -335,28 +335,28 @@ class PlayerMopidy:
 
     @plugs.tag
     def get_mopidy_type_and_version(self):
-        #with self.mpd_lock:
-        #value = self.mopidy_ws_client.mpd_version()
+        #with self.mopidy_lock:
+        #value = self.mopidy_ws_client.mopidy_version()
         #return value
         pass
 
     @plugs.tag
     def mopidy_update(self):
-        #with self.mpd_lock:
-            #state = self.mpd_client.update()
+        #with self.mopidy_lock:
+            #state = self.mopidy_client.update()
         #return state
         pass
 
     @plugs.tag
     def mopidy_play(self, position_in_tracklist = -1):
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         if position_in_tracklist >= 0:
             self._run_mopidy_action("core.tracklist.index", {"tlid": position_in_tracklist})
         return self._run_mopidy_action("core.playback.play")
 
     @plugs.tag
     def mopidy_stop(self):
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
             
         return self._run_mopidy_action("core.playback.stop")
 
@@ -377,7 +377,7 @@ class PlayerMopidy:
     @plugs.tag
     def mopidy_prev(self):
         logger.debug("Prev")
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         self._run_mopidy_action("core.playback.previous")
         
 
@@ -385,12 +385,12 @@ class PlayerMopidy:
     def mopidy_next(self):
         """Play next track in current playlist"""
         logger.debug("Next")
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         self._run_mopidy_action("core.playback.next")
 
     @plugs.tag
     def mopidy_seek(self, new_time):
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         self._run_mopidy_action("core.playback.seek",{"time_positino":new_time})
 
 
@@ -412,7 +412,7 @@ class PlayerMopidy:
     def mopidy_toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         logger.debug("Toggle")
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         self.mopidy_pause()
     
     @plugs.tag
@@ -422,8 +422,8 @@ class PlayerMopidy:
         """
         #Note: Will not re-read folder config, but leave settings untouched""
         logger.debug("Rewind")
-        #with self.mpd_lock:
-        self.mpd_client.play(0)
+        #with self.mopidy_lock:
+        self.mopidy_client.play(0)
 
     """
     @plugs.tag
@@ -433,7 +433,7 @@ class PlayerMopidy:
 
         Will reset settings to folder config""
         logger.debug("Replay")
-        with self.mpd_lock:
+        with self.mopidy_lock:
             self.play_folder(self.music_player_status['player_status']['last_played_folder'])
 
 
@@ -445,7 +445,7 @@ class PlayerMopidy:
 
         .. note:: To me this seems much like the behaviour of play,
             but we keep it as it is specifically implemented in box 2.X""
-        with self.mpd_lock:
+        with self.mopidy_lock:
             if self.mopidy_status['state'] == 'stop':
                 self.play_folder(self.music_player_status['player_status']['last_played_folder'])
     """
@@ -462,7 +462,7 @@ class PlayerMopidy:
             repeat = False
             single = False
 
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         self._run_mopidy_action("core.tracklist.set_repeat",{"value":repeat})
         self._run_mopidy_action("core.tracklist.set_single",{"value":single})
 
@@ -473,7 +473,7 @@ class PlayerMopidy:
     """
     @plugs.tag
     def map_filename_to_playlist_pos(self, filename):
-        # self.mpd_client.playlistfind()
+        # self.mopidy_client.playlistfind()
         raise NotImplementedError
 
     @plugs.tag
@@ -491,48 +491,48 @@ class PlayerMopidy:
 
     @plugs.tag
     def mopidy_play_single(self, song_url):
-        #with self.mpd_lock:
-        #    self.mpd_client.clear()
-        #    self.mpd_client.addid(song_url)
-        #    self.mpd_client.play()
+        #with self.mopidy_lock:
+        #    self.mopidy_client.clear()
+        #    self.mopidy_client.addid(song_url)
+        #    self.mopidy_client.play()
         self._run_mopidy_action("core.tracklist.clear")
         self._run_mopidy_action("core.tracklist.add",{'uris':{song_url}})
         self.play()
 
     @plugs.tag
     def mopidy_play_url(self, url):
-        #with self.mpd_lock:
-        #    self.mpd_client.clear()
-        #    self.mpd_client.addid(song_url)
-        #    self.mpd_client.play()
+        #with self.mopidy_lock:
+        #    self.mopidy_client.clear()
+        #    self.mopidy_client.addid(song_url)
+        #    self.mopidy_client.play()
         self._run_mopidy_action("core.tracklist.clear")
         self._run_mopidy_action("core.tracklist.add",{'uris':[url]})
         self.mopidy_play()
     
     @plugs.tag
     def mopidy_get_tracklist(self):
-        #with self.mpd_lock:
-        #    self.mpd_client.clear()
-        #    self.mpd_client.addid(song_url)
-        #    self.mpd_client.play()
+        #with self.mopidy_lock:
+        #    self.mopidy_client.clear()
+        #    self.mopidy_client.addid(song_url)
+        #    self.mopidy_client.play()
         return self._run_mopidy_action("core.tracklist.get_tracks")
 
     @plugs.tag
     def mopidy_lookup(self, uri):
-        #with self.mpd_lock:
-        #    self.mpd_client.clear()
-        #    self.mpd_client.addid(song_url)
-        #    self.mpd_client.play()
+        #with self.mopidy_lock:
+        #    self.mopidy_client.clear()
+        #    self.mopidy_client.addid(song_url)
+        #    self.mopidy_client.play()
         return self._run_mopidy_action("core.library.lookup",{'uris':[uri]})
 
     """
     @plugs.tag
     def resume(self):
-        with self.mpd_lock:
+        with self.mopidy_lock:
             songpos = self.current_folder_status["CURRENTSONGPOS"]
             elapsed = self.current_folder_status["ELAPSED"]
-            self.mpd_client.seek(songpos, elapsed)
-            self.mpd_client.play()
+            self.mopidy_client.seek(songpos, elapsed)
+            self.mopidy_client.play()
     """
 
     @plugs.tag
@@ -558,7 +558,7 @@ class PlayerMopidy:
         #       second swipe
         #
         #logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
     
         logger.debug(f"Evaluating second swipe by comparing old tracklist with new one created by uri")
         is_second_swipe = self._is_current_tracklist_same_as_uri_tracklist(uri)
@@ -595,16 +595,16 @@ class PlayerMopidy:
         :param recursive: Add folder recursively
         ""
         # TODO: This changes the current state -> Need to save last state
-        with self.mpd_lock:
+        with self.mopidy_lock:
             logger.info(f"Play folder: '{folder}'")
-            self.mpd_client.clear()
+            self.mopidy_client.clear()
 
             plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
             plc.parse(folder, recursive)
             uri = '--unset--'
             try:
                 for uri in plc:
-                    self.mpd_client.addid(uri)
+                    self.mopidy_client.addid(uri)
             except mpd.base.CommandError as e:
                 logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
             except Exception as e:
@@ -616,7 +616,7 @@ class PlayerMopidy:
             if self.current_folder_status is None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
 
-            self.mpd_client.play()
+            self.mopidy_client.play()
     """
     @plugs.tag
     def mopidy_play_album(self, album_url):
@@ -624,7 +624,7 @@ class PlayerMopidy:
         Playback a album from url
         TODO check whether url has album in it
         """
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         logger.info(f"Play album_url: '{album_url}")
         self.mopidy_play_url(album_url)
 
@@ -648,7 +648,7 @@ class PlayerMopidy:
 
     @plugs.tag
     def mopidy_playlist_info(self):
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
         #    value = self.mopidy_status.playlist
         return self.mopidy_status['playlist']
 
@@ -656,29 +656,29 @@ class PlayerMopidy:
     # Attention: MPD.listal will consume a lot of memory with large libs.. should be refactored at some point
     @plugs.tag
     def list_all_dirs(self):
-        with self.mpd_lock:
-            result = self.mpd_client.listall()
+        with self.mopidy_lock:
+            result = self.mopidy_client.listall()
             # list = [entry for entry in list if 'directory' in entry]
         return result
     
     @plugs.tag
     def list_albums(self):
-        with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
+        with self.mopidy_lock:
+            albums = self.mopidy_retry_with_mutex(self.mopidy_client.list, 'album', 'group', 'albumartist')
 
         return albums
 
     @plugs.tag
     def list_song_by_artist_and_album(self, albumartist, album):
-        with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
+        with self.mopidy_lock:
+            albums = self.mopidy_retry_with_mutex(self.mopidy_client.find, 'albumartist', albumartist, 'album', album)
 
         return albums
 
     @plugs.tag
     def get_song_by_url(self, song_url):
-        with self.mpd_lock:
-            song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
+        with self.mopidy_lock:
+            song = self.mopidy_retry_with_mutex(self.mopidy_client.find, 'file', song_url)
 
         return song
 
@@ -689,8 +689,8 @@ class PlayerMopidy:
 
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD""
-        #with self.mpd_lock:
-        #   volume = self.mpd_client.status().get('volume')
+        #with self.mopidy_lock:
+        #   volume = self.mopidy_client.status().get('volume')
         #return int(volume)
 
     def set_volume(self, volume):
@@ -699,8 +699,8 @@ class PlayerMopidy:
 
         For volume control do not use directly, but use through the plugin 'volume',
         as the user may have configured a volume control manager other than MPD""
-        #with self.mpd_lock:
-            #self.mpd_client.setvol(volume)
+        #with self.mopidy_lock:
+            #self.mopidy_client.setvol(volume)
         #return self.get_volume()
     """
 
