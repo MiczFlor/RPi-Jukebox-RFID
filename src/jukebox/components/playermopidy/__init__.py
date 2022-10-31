@@ -159,7 +159,7 @@ class PlayerMopidy:
             'replay': self.mopidy_play,
             'replay_if_stopped': self.mopidy_play}
         self.second_swipe_action = None
-        #self.decode_2nd_swipe_option()
+        self.decode_2nd_swipe_option()
 
         # The timeout refer to the low-level socket time-out
         # If these are too short and the response is not fast enough (due to the PI being busy),
@@ -199,13 +199,13 @@ class PlayerMopidy:
 
         self.old_song = None
         self.mopidy_status = {}
-        self.mopidy_status_poll_interval = 0.25
+        self.mopidy_status_poll_interval = 2
         self.mopidy_lock = MopidyLock(self.mopidy_url)
         self.status_is_closing = False
-        self.status_thread = threading.Timer(self.mopidy_status_poll_interval, self._mopidy_status_poll).start()
-        self.status_thread = multitimer.GenericEndlessTimerClass('mopidy.timer_status',
-            self.mopidy_status_poll_interval, self._mopidy_status_poll)
-        self.status_thread.start()
+        #self.status_thread = threading.Timer(self.mopidy_status_poll_interval, self._mopidy_status_poll).start()
+        #self.status_thread = multitimer.GenericEndlessTimerClass('mopidy.timer_status',
+        #    self.mopidy_status_poll_interval, self._mopidy_status_poll)
+        #self.status_thread.start()
 
         
 
@@ -270,10 +270,15 @@ class PlayerMopidy:
         """Helper function to compare tracklist from new uri to current loaded tracklist"""
         tracklist_current = self.mopidy_get_tracklist()
         tracklist_to_compare = self.mopidy_lookup(uri)
-        if tracklist_current.result == tracklist_to_compare.result[uri]: #the result from lookup includes uri
-            True
-        else:
-            False
+        try:
+            if tracklist_current == tracklist_to_compare[uri]: #the result from lookup includes uri
+                logger.debug("tracklist compare: same")
+                return True
+            else:
+                logger.debug("tracklist compare: different")
+                return False
+        except:
+            return False
 
     def _mopidy_status_poll(self):
         """
@@ -357,7 +362,6 @@ class PlayerMopidy:
     @plugs.tag
     def mopidy_stop(self):
         #with self.mopidy_lock:
-            
         return self._run_mopidy_action("core.playback.stop")
 
     @plugs.tag
@@ -370,6 +374,7 @@ class PlayerMopidy:
         """    
         if(self._run_mopidy_action("core.playback.get_state")  == "paused"):
             self._run_mopidy_action("core.playback.resume")
+            return
         
         self._run_mopidy_action("core.playback.pause")
     
@@ -423,7 +428,7 @@ class PlayerMopidy:
         #Note: Will not re-read folder config, but leave settings untouched""
         logger.debug("Rewind")
         #with self.mopidy_lock:
-        self.mopidy_client.play(0)
+        self.mopidy_play(0)
 
     """
     @plugs.tag

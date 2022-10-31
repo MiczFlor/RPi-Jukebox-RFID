@@ -28,12 +28,18 @@ class PlayerMopidy:
 
     def __init__(self):
         #todo
-        self.mopidy_url = "ws://192.168.178.42:6680/mopidy/ws" #cfg.getn('playermopidy', 'mopidy_url')
+        self.mopidy_url = "ws://192.168.178.112:6680/mopidy/ws" #cfg.getn('playermopidy', 'mopidy_url')
         self.mopidy_ws_client = None
         self.mopidy_status = {}
         self.music_player_status = {} #self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
         
-        #logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
+        self.second_swipe_action_dict = {'toggle': self.mopidy_toggle,
+            'play': self.mopidy_play,
+            'skip': self.mopidy_next,
+            'rewind': self.mopidy_rewind,
+            'replay': self.mopidy_play,
+            'replay_if_stopped': self.mopidy_play}
+        self.second_swipe_action = None
 
         self.current_folder_status = {}
         if not self.music_player_status:
@@ -121,8 +127,17 @@ class PlayerMopidy:
 
     def _is_current_tracklist_same_as_uri_tracklist(self, uri):
         tracklist_current = self.mopidy_get_tracklist()
+        print("tracklist current")
+        print(tracklist_current)
+
+        print()
+        print()
+        print()
         tracklist_to_compare = self.mopidy_lookup(uri)
-        if tracklist_current.result == tracklist_to_compare.result[uri]: #the result from lookup includes uri
+        print()
+        print("tracklist to compare")
+        print(tracklist_to_compare)
+        if tracklist_current == tracklist_to_compare[uri]: #the result from lookup includes uri
             True
         else:
             False
@@ -272,14 +287,14 @@ class PlayerMopidy:
     
     
     #@plugs.tag
-    def rewind(self):
+    def mopidy_rewind(self):
         """
         Re-start current playlist from first track
         """
         #Note: Will not re-read folder config, but leave settings untouched""
         logger.debug("Rewind")
         #with self.mpd_lock:
-        self.mpd_client.play(0)
+        self.mopidy_play(0)
 
     """
     #@plugs.tag
@@ -389,7 +404,7 @@ class PlayerMopidy:
     """
 
     #@plugs.tag
-    def play_card(self, uri): #folder: str, recursive: bool = False):
+    def mopidy_play_card(self, uri: str): #folder: str, recursive: bool = False):
         """
         Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
 
@@ -411,8 +426,9 @@ class PlayerMopidy:
         #       second swipe
         #
         #logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
-        #with self.mpd_lock:
+        #with self.mopidy_lock:
     
+        logger.debug(f"Evaluating second swipe by comparing old tracklist with new one created by uri")
         is_second_swipe = self._is_current_tracklist_same_as_uri_tracklist(uri)
         if self.second_swipe_action is not None and is_second_swipe:
             logger.debug('Calling second swipe action')
@@ -583,4 +599,5 @@ if __name__ == "__main__":
     #print(mopidy.mopidy_status['song'])
     #print(mopidy.mopidy_status['elapsed'])
     mopidy.mopidy_stop()
+    #mopidy.mopidy_play_card('tidal:album:62491519')
     mopidy.exit()
