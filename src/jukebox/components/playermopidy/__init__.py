@@ -536,7 +536,7 @@ class PlayerMopidy:
     """
 
     @plugs.tag
-    def mopidy_play_card(self, uri: str, recursive: bool): #folder: str, recursive: bool = False):
+    def mopidy_play_card(self, uri: str): #folder: str, recursive: bool = False):
         """
         Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
 
