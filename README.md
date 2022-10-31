@@ -14,11 +14,11 @@ A contactless jukebox for the Raspberry Pi, playing audio files, playlists, podc
 This means Phoniebox can not communicate with Spotify via libspotify (and mopidy-spotify) anymore.
 The problem is not our code but the cut off by Spotify.
 
-We want Phoniebox users to be able to connect their box to their Spotify accounts and play their content.
+>We want Phoniebox users to be able to connect their box to their Spotify accounts and play their content.
 The possibilities Spotify offers are -- at first glance -- not supporting an integration with Phoniebox.
 Third party projects like [librespot-java](https://github.com/librespot-org/librespot-java) enter a grey zone regarding violation of Spotify's *Terms of Services* (ToS). For a potential Spotify re-integration, we are committed to a Spotify ToS compliant way of doing so (both in Version 2 and Version 3). This means looking into the (relatively new) Spotify Playback API, which is going to take an unknown amount of time.
 
-This leaves us in a pickle and we are happy to hear from developer talent in the Phoniebox community on how to move forward regarding Phoniebox.
+>This leaves us in a pickle and we are happy to hear from developer talent in the Phoniebox community on how to move forward regarding Phoniebox.
 We are also curious to learn about alternative services we can connect with and which you would like to see supported -- or have developed support for already:
 <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
 
@@ -27,6 +27,8 @@ We are also curious to learn about alternative services we can connect with and 
 Another bunch of wonderful designs! 2022 is the fourth Phoniebox calendar. If you are interested, you can see the [2019, 2020 and 2021 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2022 here](https://mi.cz/static/2022-Phoniebox-Calendar.pdf).
 
 ![The 2022 Phoniebox Calendar](docs/2022-Phoniebox-Calendar.jpg "The 2022 Phoniebox Calendar")
+
+If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
 
 ---
 
@@ -75,31 +77,25 @@ If you seek the adventure, your support will be more then welcome. Before contri
 * **Phoniebox [future3 Beta](https://rpi-jukebox-rfid.readthedocs.io/en/latest/) released (2022-02)**
 * **Gitter Community** we got ourselves a gitter community; chat us up at <https://gitter.im/phoniebox>
 
-* **Phoniebox [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) released (2021-08-12)**
+* **Phoniebox [2.4](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1) released (2022-11-xx)**
 
-The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
+The [2.4](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
-## What's new in version 2.3?
+## What's new in version 2.4?
 
-* Improved [installation guide](docs/INSTALL-COMPLETE-GUIDE.md)
-* Holding buttons feature fixed #1406
-* Bluetooth buttons and headphones toggle #1262
-* fixed stop on removal for RC522 #1122
-* USB Encoder buttons support for anyone who dors not want to solder...
-* Improved robustness and better documentation for [GPIO control](components/gpio_control/README.md)
-* Auto convert wrong Spotify URLs to a format Mopidy understands
-* Support for PC/SC-readers
-* Removed support for Raspian Stretch
+* 🔥 Finally fixed the annoying `evdev` bug during installation (fixes e.g. #1721, #1653, #1618, #1501 and MANY more)
+* Flexible PHP version in install script (makes sure Raspian Bullseye can be used) #1849
+* Publish "card swiped" event via MQTT #1496
+* Right now Spotify integration **still doesn't work** - please follow the discussion at <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
+
 * Lots of fixed bugs and minor improvements...
 
 **What's still hot?**
 
-* :fire: **Fixed location of gpio_settings.ini** for [GPIO control](components/gpio_control/README.md)
+* [GPIO control](components/gpio_control/README.md)
 * Added support for files with embedded chapters metada (like m4a) enhancement
 * Added customizable poweroff command bash enhancement
-* Finally fixed resume function...
-* Lots of fixed bugs and minor improvements...
-  * Status LED, Rotary Button, Volume Up/Down, custom music directory for +Spotify, Startup sound volume
+* Support for PC/SC-readers
 * The constantly improved **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command)
   * integrated improved [GPIO control](components/gpio_control/README.md)
   * integrated selection of RFID readers and uses [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
@@ -108,7 +104,7 @@ The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) rel
   * RFID cards to **toggle Wifi** (or switch it on/off)
   * Read out the Wifi IP address (if you are connecting to a new network and don't know where to point your browser)
     * **Hotspot** Phoniebox: [ad-hoc hotspot](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/967) if no known network found (IP: 10.0.0.5 SSID: phoniebox Password: PlayItLoud)
-* **Touchscreen** LCD display Player (file: `index-lcd.php`in web app)
+* **Touchscreen** LCD display Player (file: `index-lcd.php` in web app)
 * Integrate your [Phoniebox in your Smart Home](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Smart-Home-remote-control-with-MQTT).
 * Smoother [Web App running on ajax](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/623).
 * New [search form for local files](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/710)
@@ -132,16 +128,6 @@ The [2.3](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/6?closed=1) rel
 * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
 
 Documentation can be found in the [GitHub wiki for Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki). Please try to add content in the wiki regarding special hardware, software tweaks and the like.
-
-## The 2020 Phoniebox Calendar is out!
-
-Celebrating all the great designs of 2019, I put together a calendar for 2020, see picture above. If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
-
-The PDF is about 6MB and will print well on A2 paper size, but it should also look good on larger poster sizes. Thanks to all the contributors, designers and makers. Have a good start into 2020 and keep up the good work!
-![The 2020 Phoniebox Calendar](docs/2020-Phoniebox-Calendar.jpg "The 2020 Phoniebox Calendar")
-
-* [Download the 2020 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1krb8G8Td1Vrf3sYWl44nZyuoJ0DIC5vX/view?usp=sharing)
-* In case you missed it, [download the 2019 Phoniebox Calendar PDF here](https://drive.google.com/file/d/1NKlertLP0nIKOsHrcqu5pxe6NZU3SfS9/view?usp=sharing)
 
 ---
 
