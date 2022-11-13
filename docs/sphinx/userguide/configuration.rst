@@ -21,13 +21,13 @@ Best practice procedure
 .. code-block:: bash
 
     # Make sure the Jukebox service is stopped
-    $ systemctl --user stop jukebox
+    $ systemctl --user stop jukebox-daemon
 
     # Edit the file(s)
-    $ nano ../shared/jukebox.yaml
+    $ nano ./shared/settings/jukebox.yaml
 
     # Start Jukebox in console and check the log output (optional)
-    $ ./run_jukebox.py
+    $ ./src/jukebox/run_jukebox.py
     # and if OK, press Ctrl-C and restart the service
 
     # Restart the service
