@@ -81,18 +81,7 @@ sudo apt-get install python3-gpiozero python-gpiozero
 
 **Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
-Make a copy of the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 
-~~~bash
-sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
-~~~
+As of October 2020 the GPIO script has been revised a couple of times, current installation is best described here:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1093#issuecomment-714737463
 
-And change the copy to be executable
-
-~~~bash
-sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
-~~~
-
-**Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.
-
-To have this started automatically at boot. Please read the section on [autostarting the scripts](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart) in the [configuration documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#systemdautostart).
