@@ -130,12 +130,11 @@ A button to shutdown the Jukebox if it is presse for more than 3 seconds. Note t
       IncreaseVolume:
         type: LongPressButton
         kwargs:
-          pin: 13
+          pin: 3
           hold_time: 3
         actions:
           on_press:
-            alias: change_volume
-            args: +5
+            alias: shutdown
 
 Button: Dual Action
 ^^^^^^^^^^^^^^^^^^^^^^^^
