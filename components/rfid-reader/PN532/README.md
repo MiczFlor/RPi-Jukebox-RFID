@@ -8,7 +8,6 @@ Similar shields/breakout boards, based on the same chip might work, but have not
 
 It has been tested with the I2C interface. Using SPI might work as well, but it has not been tested.
 
-
 1. Connect the PN532 RFID reader to the GPIO pins
 
     | PN532 | Raspberry Pi | Raspi Pins |
@@ -32,7 +31,6 @@ It has been tested with the I2C interface. Using SPI might work as well, but it 
 5. Check that the reader is found trough I2C
     - check `sudo i2cdetect -y 1`
     - output should look like this:
-
 
                  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
             00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 

@@ -24,7 +24,8 @@ NOTE: changes to the installation should find their way into the script `setup_p
    `gpio=25=op,dh`
    `dtoverlay=hifiberry-dac`
 5. Add settings to /etc/asound.conf (create it, if it does not exist yet)
-   ```
+
+   ```bash
    pcm.hifiberry {
         type            softvol
         slave.pcm       "plughw:CARD=sndrpihifiberry,DEV=0"
@@ -40,8 +41,10 @@ NOTE: changes to the installation should find their way into the script `setup_p
         card            1
     }
     ```
+
 6. Add the following section to /etc/mpd.conf
-   ```
+
+   ```bash
    audio_output {
             enabled         "yes"
             type            "alsa"
@@ -53,6 +56,7 @@ NOTE: changes to the installation should find their way into the script `setup_p
             dop             "no"
     }
     ```
+
 7. Set mixer_control name in /etc/mpd.conf
     `mixer_control      "Master"`
 8. Enable SPI
@@ -62,7 +66,8 @@ NOTE: changes to the installation should find their way into the script `setup_p
 10. Install Mopidy plugins
     `sudo pip3 install Mopidy-PiDi pidi-display-pil pidi-display-st7789 mopidy-raspberry-gpio`
 11. Add the following sections to /etc/mopidy/mopidy.conf:
-    ```
+  
+    ```bash
     [raspberry-gpio]
     enabled = true
     bcm5 = play_pause,active_low,150
@@ -74,6 +79,7 @@ NOTE: changes to the installation should find their way into the script `setup_p
     enabled = true
     display = st7789
     ```
+
 12. Enable access for modipy user
     `sudo usermod -a -G spi,i2c,gpio,video mopidy`
 13. Reboot Raspberry Pi

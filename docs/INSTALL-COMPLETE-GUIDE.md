@@ -1,14 +1,15 @@
 # How to set up a Phoniebox from scratch
 
-1. [What you need](#1-what-you-need)
-1. [Install Raspberry Pi OS](#2-install-raspberry-pi-os)
-1. [Initial Boot](#3-initial-boot)
-1. [Prepare hardware](#4-prepare-hardware)
-1. [Audio](#5-audio)
-    * [a) On-board headphone](#5a-on-board-headphone)
-    * [b) USB sound card](#5b-usb-sound-card)
-1. [Install Phoniebox software](#6-install-phoniebox-software)
-1. [Verify Phoniebox setup](#7-verify-phoniebox-setup)
+- [How to set up a Phoniebox from scratch](#how-to-set-up-a-phoniebox-from-scratch)
+  - [1. What you need](#1-what-you-need)
+  - [2. Install Raspberry Pi OS](#2-install-raspberry-pi-os)
+  - [3. Initial Boot](#3-initial-boot)
+  - [4. Prepare hardware](#4-prepare-hardware)
+  - [5. Audio](#5-audio)
+    - [5a. On-board headphone](#5a-on-board-headphone)
+    - [5b. USB sound card](#5b-usb-sound-card)
+  - [6. Install Phoniebox software](#6-install-phoniebox-software)
+  - [7. Verify Phoniebox setup](#7-verify-phoniebox-setup)
 
 ---
 
@@ -18,26 +19,26 @@ All parts marked with a star (*) are optional but improve the overall experience
 
 1. [Micro SD Card](https://amzn.to/3do7KJr) (e.g. 32 GB)
 1. Raspberry Pi
-    * [Model 3 B+](https://amzn.to/2NGL7Fa) - recommended
-    * [Model 4 B](https://amzn.to/2M0xtfJ) - could be a little overhead
-    * (Model 1, 2, 3 and Zero are possible, but they are slower...)
+    - [Model 3 B+](https://amzn.to/2NGL7Fa) - recommended
+    - [Model 4 B](https://amzn.to/2M0xtfJ) - could be a little overhead
+    - (Model 1, 2, 3 and Zero are possible, but they are slower...)
 1. [USB RFID Reader](https://amzn.to/3s47Iun)
 1. [RFID Chips](https://amzn.to/3k78F2j) or [RFID Cards](https://amzn.to/3dplljG)
 1. [Speakers with 3.5mm jack](https://amzn.to/3dnhmnV)
 
 To improve the sound, we recommend:
 
-* [Ground Loop Isolator](https://amzn.to/37nyZjK) *
+- [Ground Loop Isolator](https://amzn.to/37nyZjK) *
 
 Alternatively you can use an external sound card, but sometimes that doesn't seem to improve much:
 
-* [USB Sound Card](https://amzn.to/3djaKqC) * - [Alternative](https://amzn.to/3u8guth)
+- [USB Sound Card](https://amzn.to/3djaKqC) * - [Alternative](https://amzn.to/3u8guth)
 
 ---
 
 ## 2. Install Raspberry Pi OS
 
-Before you can install the Phoniebox software, you need to prepare your Raspberry Pi and install 
+Before you can install the Phoniebox software, you need to prepare your Raspberry Pi and install
 
 1. Connect your Micro SD card (through a card reader) to your computer
 1. [Download](https://www.raspberrypi.org/software/) the [Raspberry Pi Imager](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/) and open it
@@ -56,20 +57,27 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 1. Insert your card again if it has been ejected automatically
 1. Navigate to your SC card e.g., `cd /Volumes/boot` for Mac or `D:` for Windows
 1. Enable SSH by adding a simple file
-    ```
+
+    ```bash
     $ touch ssh
     ```
+
 1. Set up your Wifi connection
-    * Mac
-        ```
+    - Mac
+
+        ```bash
         $ nano wpa_supplicant.conf
         ```
-    * Windows
-        ```
+
+    - Windows
+
+        ```bash
         D:\> notepad wpa_supplicant.conf
         ```
+
 1. Insert the following content, update your country, Wifi credentials and save the file.
-    ```
+
+    ```bash
     country=DE
     ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
     update_config=1
@@ -79,27 +87,36 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
         psk="network-password"
     }
     ```
+
 1. Eject your SD card and insert it into your Raspberry Pi
 1. Start your Raspberry Pi by attaching a power supply
 1. Login into your Raspberry Pi, username is `pi` and password is `raspberry`. If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
-    ```
+
+    ```bash
     $ ssh pi@raspberrypi.local
     ```
+
 1. Update the Pi's software. This may take a bit
-    ```
+
+    ```bash
     $ sudo apt update && sudo apt full-upgrade
     ```
+
 1. Reboot with `sudo reboot`
 1. Login again with SSH and open the Raspberry Pi config
-    ```
+
+    ```bash
     $ sudo raspi-config
     ```
+
 1. Update the following settings
-    ```
+
+    ```bash
     1 System Options
         S5 Boot / Auto Login -> B2 Console Autologin
         S6 Network at Boot -> Yes
     ```
+
 1. Close the settings panel with `<Finish>`
 1. Shutdown your Raspberry Pi with `sudo shutdown`
 
@@ -112,7 +129,8 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 1. Plug in the 3.5" speakers with the Ground Loop Isolator in between. If you have chosen the example speakers from above, you can power them either through the Raspberry Pi or through an external power source.
 1. Boot your Raspberry Pi
 1. Open a terminal in your second computer and login via SSH using the `pi` user and default password `raspberry`. If you see a question about authentication and fingerprint, type `yes` and hit `enter`
-    ```
+
+    ```bash
     ssh pi@raspberrypi.local
     ```
 
@@ -128,22 +146,28 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
 ### 5b. USB sound card
 
 1. Open the Raspberry Pi config
-    ```
+
+    ```bash
     $ sudo raspi-config
     ```
 
 1. Update the following settings
-    ```
+
+    ```bash
     1 System Options
         S2 Audio -> 1 USB Audio
     ```
+
 1. Close the settings panel with `<Finish>`
 1. Make your soundcard the primary sound device. To update the sound card priority order, edit the following file:
-    ```
+
+    ```bash
     $ sudo nano /usr/share/alsa/alsa.conf
     ```
+
 1. Find the following variables and change their value from `0` to `1`
-    ```
+
+    ```bash
     defaults.ctl.card 0
     defaults.pcm.card 0
 
@@ -152,9 +176,11 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
     defaults.ctl.card 1
     defaults.pcm.card 1
     ```
+
 1. Reboot
 1. Test your audio! Check if you hear white noise in stereo when running the following command from your connected speakers. If not, refer to this [resource](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/instructions) to troubleshoot.
-    ```
+
+    ```bash
     speaker-test -c2
     ```
 
@@ -166,7 +192,7 @@ If you want to install the **Spotify+ version**, [read this first](https://githu
 
 Run the following command in your SSH terminal and follow the instructions
 
-```
+```bash
 cd; rm buster-install-*; wget https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/master/scripts/installscripts/buster-install-default.sh; chmod +x buster-install-default.sh; ./buster-install-default.sh
 ```
 

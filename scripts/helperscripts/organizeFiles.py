@@ -76,6 +76,7 @@ def fixBrokenShortcuts(shortcutsDir, shortcuts, audioFolders):
             if d not in audioFolders and d != cardid:
                 _deleteBrokenSymlink(shortcutsDir=shortcutsDir, cardid=cardid, d=d)
 
+
 def _writeFolderConf(audioDir, d, content):
     with open(os.path.join(audioDir, d, "folder.conf"), "w") as f:
         f.write(content)
@@ -221,4 +222,3 @@ if __name__ == "__main__":
     if args.fixFoldersWithoutFolderConf:
         audioFolders2 = readFolders(audioDir=audioDir)
         fixFoldersWithoutFolderConf(audioDir=audioDir, audioFolders=audioFolders2)
-

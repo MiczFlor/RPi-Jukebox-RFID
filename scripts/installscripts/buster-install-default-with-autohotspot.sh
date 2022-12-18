@@ -4,7 +4,7 @@
 #
 # NOTE: Running automated install (without interaction):
 # Each install creates a file called PhonieboxInstall.conf
-# in the folder /home/pi/
+# in you $HOME directory
 # You can install the Phoniebox using such a config file
 # which means you don't need to run the interactive install:
 #
@@ -12,7 +12,7 @@
 #    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
-# 3. place the PhonieboxInstall.conf in the folder /home/pi/
+# 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
 #    buster-install-default.sh -a
 
@@ -28,7 +28,7 @@ DATETIME=$(date +"%Y%m%d_%H%M%S")
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-HOME_DIR="/home/pi"
+HOME_DIR=$(echo $HOME)
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
@@ -104,9 +104,9 @@ will guide you through the configuration.
 If you want to run the AUTOMATED INSTALL (non-interactive) from
 an existing configuration file, do the following:
 1. exit this install script (press n)
-2. place your PhonieboxInstall.conf in the folder /home/pi/
+2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   ./home/pi/buster-install-default.sh -a
+   .${HOME_DIR}/buster-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -241,7 +241,7 @@ check_existing() {
         echo "Everything else will remain in a folder called 'BACKUP'.
         "
 
-                ###
+        ###
         # See if we find the PhonieboxInstall.conf file
         # We need to do this first, because if we re-use the .conf file, we need to append
         # the variables regarding the found content to the also found configuration file.
@@ -545,7 +545,7 @@ config_audio_folder() {
 
     #####################################################
     # Folder path for audio files
-    # default: /home/pi/RPi-Jukebox-RFID/shared/audiofolders
+    # default: $HOME/RPi-Jukebox-RFID/shared/audiofolders
 
     clear
 
@@ -683,14 +683,17 @@ samba_config() {
     sudo chmod 644 "${smb_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${smb_conf}"
     # Samba: create user 'pi' with password 'raspberry'
+    # ToDo: use current user with a default password
     (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
 }
 
 web_server_config() {
     local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
     local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
-    local php_ini="/etc/php/7.3/cgi/php.ini"
+    local php_ini="/etc/php/$(ls -1 /etc/php)/cgi/php.ini"
     local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
@@ -699,6 +702,8 @@ web_server_config() {
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
     sudo chown root:root "${lighthttpd_conf}"
     sudo chmod 644 "${lighthttpd_conf}"
+    # double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${lighthttpd_conf}"
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
@@ -793,7 +798,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-tools lsof
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-utils lsof procps
 
     # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
     sudo cp /etc/resolv.conf.orig /etc/resolv.conf
@@ -828,7 +833,7 @@ install_main() {
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
-        wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+        sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
         ${apt_get} update
         ${apt_get} upgrade
@@ -838,14 +843,6 @@ install_main() {
         # Install necessary Python packages
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
-
-    local raw_github="https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID"
-    # I comment the following lines out for now. I think they come from splitti when he applied a hotfix in Feb 2020?
-    # Back then the master install script needed develop branch files. I think this is from that time...?
-    #sudo rm "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #wget -P "${jukebox_dir}"/misc/sampleconfigs/ "${raw_github}"/develop/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample
-    #sudo rm "${jukebox_dir}"/scripts/RegisterDevice.py
-    #wget -P "${jukebox_dir}"/scripts/ "${raw_github}"/develop/scripts/RegisterDevice.py
 
     # Install more required packages
     echo "Installing additional Python packages..."
@@ -878,15 +875,13 @@ install_main() {
 
     # create config file for web app from sample
     sudo cp "${jukebox_dir}"/htdocs/config.php.sample "${jukebox_dir}"/htdocs/config.php
+    # double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${jukebox_dir}"/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
     sudo lighttpd-enable-mod fastcgi-php
     sudo service lighttpd force-reload
-
-    # create copy of GPIO script
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/gpio-buttons.py.sample "${jukebox_dir}"/scripts/gpio-buttons.py
-    sudo chmod +x "${jukebox_dir}"/scripts/gpio-buttons.py
 
     # make sure bash scripts have the right settings
     sudo chown pi:www-data "${jukebox_dir}"/scripts/*.sh
@@ -913,13 +908,30 @@ install_main() {
     sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
     # 2. install new ones - this is version > 1.1.8-beta
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${systemd_dir}"/phoniebox-rfid-reader.service
+    RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
+
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-scripts.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-buttons.service.stretch-default.sample "${systemd_dir}"/phoniebox-gpio-buttons.service
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${systemd_dir}"/phoniebox-idle-watchdog.service
-    [[ "${GPIOconfig}" == "YES" ]] && sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${systemd_dir}"/phoniebox-gpio-control.service
+    STARTUP_SCRIPT_SERVICE="${systemd_dir}/phoniebox-startup-scripts.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${STARTUP_SCRIPT_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
+
+    IDLE_WATCHDOG_SERVICE="${systemd_dir}/phoniebox-idle-watchdog.service"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${IDLE_WATCHDOG_SERVICE}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${IDLE_WATCHDOG_SERVICE}"
+
+    if [[ "${GPIOconfig}" == "YES" ]]; then
+        GPIO_CONTROL_SERVICE="${systemd_dir}/phoniebox-gpio-control.service"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${GPIO_CONTROL_SERVICE}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${GPIO_CONTROL_SERVICE}"
+    fi
+
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
     sudo chmod 644 "${systemd_dir}"/phoniebox-*.service
     # enable the services needed
@@ -928,9 +940,6 @@ install_main() {
     #startup sound is part of phoniebox-startup-scripts now
     #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
-    sudo systemctl enable phoniebox-gpio-buttons
-    sudo systemctl enable phoniebox-rotary-encoder.service
-
     # copy mp3s for startup and shutdown sound to the right folder
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
@@ -956,21 +965,25 @@ install_main() {
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${etc_mopidy_conf}"
+
         sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
         sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
         sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mopidy_conf}"
     fi
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
-        if [[ ! -f ~/.config/phoniebox/gpio_settings.ini ]]; then
-            mkdir -p ~/.config/phoniebox
-            cp "${jukebox_dir}"/components/gpio_control/example_configs/gpio_settings.ini ~/.config/phoniebox/gpio_settings.ini
+        if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
+            cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
         fi
     fi
 
@@ -985,6 +998,8 @@ install_main() {
         sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
     fi
@@ -1104,7 +1119,10 @@ existing_assets() {
             # make buttons_usb_encoder.py ready to be use from phoniebox-buttons-usb-encoder service
             sudo chmod +x "${jukebox_dir}"/components/controls/buttons_usb_encoder/buttons_usb_encoder.py
             # make sure service is still enabled by registering again
-            sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample /etc/systemd/system/phoniebox-buttons-usb-encoder.service
+            USB_BUTTONS_SERVICE="/etc/systemd/system/phoniebox-buttons-usb-encoder.service"
+            sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample "${USB_BUTTONS_SERVICE}"
+            # Replace homedir; double quotes for variable expansion
+            sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${USB_BUTTONS_SERVICE}"
             sudo systemctl start phoniebox-buttons-usb-encoder.service
             sudo systemctl enable phoniebox-buttons-usb-encoder.service
         fi
@@ -1402,7 +1420,7 @@ main() {
     else
         echo "Skipping USB device setup..."
         echo "For manual registration of a USB card reader type:"
-        echo "python3 /home/pi/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo "python3 ${HOME_DIR}/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
         echo " "
         echo "Reboot is required to activate all settings!"
     fi

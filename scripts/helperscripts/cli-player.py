@@ -40,4 +40,3 @@ if __name__ == "__main__":
         subprocess.check_output([scriptsDir + '/rfid_trigger_play.sh', '--dir=' + selectedFolder], shell=False)
 
     print("bye.")
-
