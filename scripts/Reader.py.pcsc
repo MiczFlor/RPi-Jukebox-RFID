@@ -9,6 +9,7 @@ from smartcard.scard import *
 from smartcard.util import toHexString
 from smartcard.util import *
 
+
 class Reader:
 
     reader = None
@@ -53,8 +54,7 @@ class Reader:
                                 SCARD_SHARE_SHARED,
                                 SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1)
 
-                hresult, response = SCardTransmit(hcard,dwActiveProtocol,[0xFF,0xCA,0x00,0x00,0x00])
-
+                hresult, response = SCardTransmit(hcard, dwActiveProtocol, [0xFF, 0xCA, 0x00, 0x00, 0x00])
 
             finally:
                 hresult = SCardReleaseContext(hcontext)
@@ -67,4 +67,3 @@ class Reader:
 
         except error as e:
             print(e)
-
