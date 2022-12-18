@@ -77,7 +77,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 * **Phoniebox [future3 Beta](https://rpi-jukebox-rfid.readthedocs.io/en/latest/) released (2022-02)**
 * **Gitter Community** we got ourselves a gitter community; chat us up at <https://gitter.im/phoniebox>
 
-* **Phoniebox [2.4](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1) released (2022-11-xx)**
+* **Phoniebox [2.4](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1) released (2022-12-18)**
 
 The [2.4](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1) release was pushed through the doors with many contributors: [List of all contributors](https://github.com/MiczFlor/RPi-Jukebox-RFID/graphs/contributors)
 
