@@ -31,6 +31,9 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # setstartupvolume
 # getstartupvolume
 # setvolumetostartup
+# setbootvolume
+# getbootvolume
+# setvolumetobootvolume
 # volumeup
 # volumedown
 # getchapters
@@ -68,6 +71,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # recordstop
 # recordplaylatest
 # readwifiipoverspeaker
+# bluetoothtoggle
+# switchaudioiface
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -94,6 +99,9 @@ fi
 # this file does not need to exist
 # it will be created or deleted by this script
 VOLFILE=${PATHDATA}/../settings/Audio_Volume_Level
+
+# path to file storing the current audio iFace name
+IFACEFILE=${PATHDATA}/../settings/Audio_iFace_Name
 
 #############################################################
 
@@ -159,7 +167,7 @@ then
     dbg "chapters for extension enabled: $CHAPTER_SUPPORT_FOR_EXTENSION"
 
 
-    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -1)" == "${CHAPTERMINDURATION}" ]; then
+    if [ "$(printf "${CURRENT_SONG_DURATION}\n${CHAPTERMINDURATION}\n" | sort -g | head -n1)" == "${CHAPTERMINDURATION}" ]; then
         CHAPTER_SUPPORT_FOR_DURATION="1"
     else
         CHAPTER_SUPPORT_FOR_DURATION="0"
@@ -590,6 +598,39 @@ case $COMMAND in
 
         fi
         ;;
+    setbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # if value is greater than wanted maxvolume, set value to maxvolume
+        if [ ${VALUE} -gt $AUDIOVOLMAXLIMIT ];
+        then
+            VALUE=$AUDIOVOLMAXLIMIT;
+        fi
+        # write new value to file
+        echo "$VALUE" > ${PATHDATA}/../settings/Volume_Boot
+        # create global config file because individual setting got changed
+        . ${PATHDATA}/inc.writeGlobalConfig.sh
+        ;;
+    getbootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        echo ${AUDIOVOLBOOT}
+        ;;
+    setvolumetobootvolume)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        # check if startup-volume is disabled
+        if [ "${AUDIOVOLBOOT}" == 0 ]; then
+            exit 1
+        else
+            # set volume level in percent
+            if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+                # volume handling alternative with amixer not mpd (2020-06-12 related to ticket #973)
+                amixer sset \'$AUDIOIFACENAME\' ${AUDIOVOLBOOT}%
+            else
+                # manage volume with mpd
+                echo -e setvol ${AUDIOVOLBOOT}\\nclose | nc -w 1 localhost 6600
+            fi
+
+        fi
+        ;;
     playerstop)
         # stop the player
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -703,7 +744,13 @@ case $COMMAND in
         then
 	       /bin/sleep $VALUE
         fi
-        mpc pause
+        PLAYSTATE=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=state: ).*')
+        # Only pause when currently playing
+        # Otherwise mpc might go from "stopped" back to "pause", causing inconsitency as there is nothing to "resume"
+        if [ "$PLAYSTATE" == "play" ]
+        then
+            mpc pause
+        fi
         ;;
     playerplay)
         # play / resume current track
@@ -907,7 +954,7 @@ case $COMMAND in
         ;;
     playlistappend)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         # Unmute if muted
         if [ -f $VOLFILE ]; then
             # $VOLFILE DOES exist == audio off
@@ -928,7 +975,7 @@ case $COMMAND in
     playsinglefile)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND} value:${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
         mpc clear
-        mpc add "${VALUE}"
+        mpc add file://"${VALUE}"
         mpc repeat off
         mpc single on
         # Unmute if muted
@@ -983,6 +1030,39 @@ case $COMMAND in
             rfkill unblock wifi
         fi
         ;;
+    randomcard)
+        #activate a random card
+        NUM_CARDS=$(find $AUDIO_FOLDERS_PATH/../shortcuts/ -maxdepth 1 -name '[0-9]*' | wc -l)
+        dbg "NUM_CARDS: $NUM_CARDS"
+        if (($NUM_CARDS>0))
+        then
+            RANDOMCARDID=$(ls -d $AUDIO_FOLDERS_PATH/../shortcuts/[0-9]* | shuf -n 1 | xargs basename)
+            dbg "playing random card $RANDOMCARDID"
+            ${PATHDATA}/rfid_trigger_play.sh --cardid=$RANDOMCARDID
+        fi
+        ;;
+    randomfolder)
+        #play a random folder
+        NUM_FOLDERS=$(find $AUDIO_FOLDERS_PATH -mindepth 1 -maxdepth 1 -type d -printf '1' | wc -c)
+        dbg "NUM_FOLDERS: $NUM_FOLDERS"
+        if (($NUM_FOLDERS>0))
+        then
+            RANDOMFOLDER=$(ls -d $AUDIO_FOLDERS_PATH/*/ | shuf -n 1 | xargs -d '\n' basename)
+            dbg "playing random folder \"$RANDOMFOLDER\""
+            ${PATHDATA}/rfid_trigger_play.sh --dir="$RANDOMFOLDER"
+        fi
+        ;;
+    randomtrack)
+        #jump to a random track from the current playlist (without activating shuffle, i.e. maintaining track order)
+        NUM_TRACKS=$(echo -e "status\nclose" | nc -w 1 localhost 6600 | grep -o -P '(?<=playlistlength: ).*')
+        dbg "NUM_TRACKS: $NUM_TRACKS"
+        if(($NUM_TRACKS > 0))
+        then
+            RANDOMTRACK=$(((RANDOM%${NUM_TRACKS})+1))
+            dbg "playing random track $RANDOMTRACK"
+            mpc play ${RANDOMTRACK}
+        fi
+        ;;
     recordstart)
         #mkdir $AUDIOFOLDERSPATH/Recordings
         #kill the potential current playback
@@ -1012,7 +1092,7 @@ case $COMMAND in
             # delete $VOLFILE
             rm -f $VOLFILE
         fi
-        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -1`
+        aplay `ls $AUDIOFOLDERSPATH/Recordings/*.wav -1t|head -n1`
         ;;
     readwifiipoverspeaker)
         # will read out the IP address over the Pi's speaker.
@@ -1021,6 +1101,40 @@ case $COMMAND in
         # delete older mp3 (in case process was interrupted)
         sudo rm WifiIp.mp3
         /usr/bin/php /home/pi/RPi-Jukebox-RFID/scripts/helperscripts/cli_ReadWifiIp.php
+        ;;
+    bluetoothtoggle)
+        if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
+        $PATHDATA/../components/bluetooth-sink-switch/bt-sink-switch.py $VALUE
+        ;;
+    switchaudioiface)
+        # will switch between primary/secondary audio iFace (e.g. speaker/headphones), if exist
+        dbg "   ${COMMAND}"
+        if [ "${VOLUMEMANAGER}" == "amixer" ]; then
+            NEXTAUDIOIFACE=$(((${AUDIOIFACEACTIVE}+1) % 2))
+            if [ -f ${IFACEFILE}_${NEXTAUDIOIFACE} ]; then
+                NEXTAUDIOIFACENAME=`<${IFACEFILE}_${NEXTAUDIOIFACE}`
+                if [ -f ${VOLFILE}_${NEXTAUDIOIFACE} ]; then
+                    NEXTAUDIOIFACEVOL=`<${VOLFILE}_${NEXTAUDIOIFACE}`
+                else
+                    NEXTAUDIOIFACEVOL=${AUDIOVOLMAXLIMIT}
+                fi
+                # store current volume
+                amixer sget \'${AUDIOIFACENAME}\' | grep -Po -m 1 '(?<=\[)[^]]*(?=%])' > ${VOLFILE}_${AUDIOIFACEACTIVE}
+                # unmute next audio iFace
+                amixer sset \'${NEXTAUDIOIFACENAME}\' ${NEXTAUDIOIFACEVOL}%
+                # mute current audio iFace
+                amixer sset \'${AUDIOIFACENAME}\' 0%
+                # store new active audio iFace
+                cp ${IFACEFILE}_${NEXTAUDIOIFACE} ${IFACEFILE}
+                echo "${NEXTAUDIOIFACE}" > ${PATHDATA}/../settings/Audio_iFace_Active
+                # create global config file because individual setting got changed (time consuming)
+                . ${PATHDATA}/inc.writeGlobalConfig.sh
+            else
+                dbg "Cannot switch audio iFace. ${IFACEFILE}_${NEXTAUDIOIFACE} does not exist."
+            fi
+        else
+            dbg "Command requires \"amixer\" as volume manager."
+        fi
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE

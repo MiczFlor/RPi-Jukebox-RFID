@@ -135,12 +135,24 @@ include("inc.setVolume.php");
 include("inc.setMaxVolume.php");
 include("inc.setVolumeStep.php");
 include("inc.setStartupVolume.php");
+include("inc.setBootVolume.php");
 ?>
       </div><!-- / .row -->
     </div><!-- /.panel-body -->
 
   </div><!-- /.panel -->
 </div><!-- /.panel-group -->
+
+
+<?php
+$filename = $conf['settings_abs'].'/bluetooth-sink-switch';
+if (file_exists($filename)) {
+   if (strcmp(strtolower(trim(file_get_contents($filename))), "enabled") === 0) {
+      include('inc.bluetooth.php');
+   }
+}
+?>
+
 
 <div class="panel-group">
   <div class="panel panel-default">

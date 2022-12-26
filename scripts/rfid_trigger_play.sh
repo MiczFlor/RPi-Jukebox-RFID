@@ -160,6 +160,10 @@ if [ "$CARDID" ]; then
             # decrease volume by x% set in Audio_Volume_Change_Step
             $PATHDATA/playout_controls.sh -c=volumedown
             ;;
+        $CMDSWITCHAUDIOIFACE)
+            # switch between primary/secondary audio iFaces
+            $PATHDATA/playout_controls.sh -c=switchaudioiface
+	    ;;
         $CMDSTOP)
             # kill all running audio players
             $PATHDATA/playout_controls.sh -c=playerstop
@@ -183,6 +187,18 @@ if [ "$CARDID" ]; then
             # echo "prev" | nc.openbsd -w 1 localhost 4212
             sudo $PATHDATA/playout_controls.sh -c=playerprev
             #/usr/bin/sudo /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=playerprev
+            ;;
+        $CMDRANDCARD)
+            # activate a random card
+            $PATHDATA/playout_controls.sh -c=randomcard
+            ;;
+        $CMDRANDFOLD)
+            # play a random folder
+            $PATHDATA/playout_controls.sh -c=randomfolder
+            ;;
+        $CMDRANDTRACK)
+            # jump to a random track in playlist (no shuffle mode required)
+            $PATHDATA/playout_controls.sh -c=randomtrack
             ;;
         $CMDREWIND)
             # play the first track in playlist
@@ -286,6 +302,9 @@ if [ "$CARDID" ]; then
             ;;
         $CMDREADWIFIIP)
             $PATHDATA/playout_controls.sh -c=readwifiipoverspeaker
+            ;;
+        $CMDBLUETOOTHTOGGLE)
+            $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
             ;;
         *)
 

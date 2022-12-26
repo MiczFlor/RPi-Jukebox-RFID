@@ -8,32 +8,32 @@
 # Naming conventions
 
 * **Files & folder names**
-    * all **lower case**
-    * separate words with **dashes** `-` (less keystrokes, better autocomplete recognition, in HTML links dashes can not be confused) not camel/PascalCaps or underscores
-    * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
-    * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
-    * unique and clear product IDs (e.g. MAX7219)
-        * the product ID should be written as is (no lowercase)
-        * the product ID should come last in a descriptive name (e.g. dot-matrix-module-MAX7219)
-    * be consistent and look at existing examples before you invent something new
+  * all **lower case**
+  * separate words with **dashes** `-` (less keystrokes, better autocomplete recognition, in HTML links dashes can not be confused) not camel/PascalCaps or underscores
+  * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
+  * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
+  * unique and clear product IDs (e.g. MAX7219)
+    * the product ID should be written as is (no lowercase)
+    * the product ID should come last in a descriptive name (e.g. dot-matrix-module-MAX7219)
+  * be consistent and look at existing examples before you invent something new
 
 * **`README.md`**
-    * written in capital letters, so it's easier to spot
-    * every new folder of a component deserves a `README.md` file
+  * written in capital letters, so it's easier to spot
+  * every new folder of a component deserves a `README.md` file
 
 # Structure of files and folders
 
 Inside the root folder or the repo, these folders are important:
 
 * `scripts`
-    * this folder should contain **only actively used scripts** (controlling playout, rfid tiggers, etc.)
-    * some possible services and features might live in the *components* directory (see below)
-    * if one or more scripts are needed for the activation of a component (like daemons), they should be copied to the `scripts` directory during installation / activation
-    * WHY? By copying, changes will NOT affect the github repo and make it easier for users to modify their components
+  * this folder should contain **only actively used scripts** (controlling playout, rfid tiggers, etc.)
+  * some possible services and features might live in the *components* directory (see below)
+  * if one or more scripts are needed for the activation of a component (like daemons), they should be copied to the `scripts` directory during installation / activation
+  * WHY? By copying, changes will NOT affect the github repo and make it easier for users to modify their components
 * `components`
-    * contains sub- und subsubfolders for additional features, services, hardware
-    * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one
-    * **subsubfolders** are specific hardware, services, features, protocols, etc. 
+  * contains sub- und subsubfolders for additional features, services, hardware
+  * **subfolders** are for categories (e.g. displays, soundcards) and are plural, even if there is only one
+  * **subsubfolders** are specific hardware, services, features, protocols, etc.
 
 # How to contribute
 
@@ -52,7 +52,7 @@ Development is done on the git branch `develop`. How to move to that branch, see
 * Use the online line install script to get the box installed.
 * By default this will get you to the `master` branch. You will move to the `develop` branch, do this:
 
-~~~
+~~~bash
 cd /home/pi/RPi-Jukebox-RFID
 git checkout develop
 git fetch origin
@@ -61,7 +61,6 @@ git pull
 ~~~
 
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on the `develop` branch of your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-
 
 ## Making Changes
 
@@ -91,9 +90,10 @@ The preferred way of code contributions are [pull requests (follow this link for
       Update: This time without the need to create an extra random.txt file.and uptodate with the 
       master branch.
 ~~~
+
 ## Making Trivial Changes
 
-For changes of a trivial nature, it is not always necessary to create a new issue. 
+For changes of a trivial nature, it is not always necessary to create a new issue.
 In this case, it is appropriate to start the first line of a
 commit with one of  `(docs)`, `(maint)`, or `(packaging)` instead of a ticket
 number.
@@ -120,17 +120,18 @@ to detect in advance.
 
 If the code change results in a test failure, we will make our best effort to
 correct the error. If a fix cannot be determined and committed within 24 hours
-of its discovery, the commit(s) responsible _may_ be reverted, at the
-discretion of the committer and Phonie maintainers. 
-The original contributor will be notified of the revert. 
+of its discovery, the commit(s) responsible *may* be reverted, at the
+discretion of the committer and Phonie maintainers.
+The original contributor will be notified of the revert.
 
 ### Summary
 
 * Changes resulting in test failures will be reverted if they cannot
   be resolved within one business day.
 
-## Guidelines ##
-* Currently Phoniebox runs on Raspian **Buster** and **Stretch**. Therefore all Python code should work with **Python 3.5**.
+## Guidelines
+
+* Currently Phoniebox runs on Raspian **Buster** . Therefore all Python code should work with **Python 3.7**.
 * For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
 ## Additional Resources

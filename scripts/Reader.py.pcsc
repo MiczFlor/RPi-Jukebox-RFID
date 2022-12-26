@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+# Reader.py supporting PC/SC-readers
+# Uses the first available reader
+# Requirements
+# apt install pcscd python3-pyscard
+
+from smartcard.scard import *
+from smartcard.util import toHexString
+from smartcard.util import *
+
+
+class Reader:
+
+    reader = None
+
+    def __init__(self):
+        self.reader = self
+
+    def readCard(self):
+
+        response = []
+
+        try:
+            hresult, hcontext = SCardEstablishContext(SCARD_SCOPE_USER)
+            if hresult != SCARD_S_SUCCESS:
+                raise error(
+                    'Failed to establish context: ' + \
+                    SCardGetErrorMessage(hresult))
+
+            try:
+                hresult, readers = SCardListReaders(hcontext, [])
+                if hresult != SCARD_S_SUCCESS:
+                    raise error(
+                        'Failed to list readers: ' + \
+                        SCardGetErrorMessage(hresult))
+
+                readerstates = []
+                for i in range(len(readers)):
+                    readerstates += [(readers[i], SCARD_STATE_UNAWARE)]
+
+                hresult, newstates = SCardGetStatusChange(hcontext, 0, readerstates)
+
+                hresult, newstates = SCardGetStatusChange(
+                                hcontext,
+                                INFINITE,
+                                newstates)
+
+                reader = readers[0]
+
+                hresult, hcard, dwActiveProtocol = SCardConnect(
+                                hcontext,
+                                reader,
+                                SCARD_SHARE_SHARED,
+                                SCARD_PROTOCOL_T0 | SCARD_PROTOCOL_T1)
+
+                hresult, response = SCardTransmit(hcard, dwActiveProtocol, [0xFF, 0xCA, 0x00, 0x00, 0x00])
+
+            finally:
+                hresult = SCardReleaseContext(hcontext)
+                if hresult != SCARD_S_SUCCESS:
+                    raise error(
+                        'Failed to release context: ' + \
+                        SCardGetErrorMessage(hresult))
+
+                return(toHexString(response, PACK))
+
+        except error as e:
+            print(e)

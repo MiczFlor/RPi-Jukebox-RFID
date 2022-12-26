@@ -34,12 +34,21 @@ STATUS=0
 while [ "$STATUS" != "ACTIVE" ]; do STATUS=$(echo -e status\\nclose | nc -w 1 localhost 6600 | grep 'OK MPD'| sed 's/^.*$/ACTIVE/'); done
 
 ####################################
-# check if and set volume on startup
+# Set volume levels on boot
+# Both can be set in the Web UI under settings
+# Confusion explained:
+# 1. Set the volume to the global boot level.
+#    Sometimes the Pi sets volume to 0.
+#    The first command makes sure there is *some* level, not 0.
+# 2. Then set the volume to the startup volume.
+#    If the kids crank up the volume at night,
+#    after a reboot, the box will be back to this level.
+/home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetobootvolume
 /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=setvolumetostartup
 
 ####################
 # play startup sound
-mpgvolume=$((32768*${AUDIOVOLSTARTUP}/100))
+mpgvolume=$((32768*${AUDIOVOLBOOT}/100))
 echo "${mpgvolume} is the mpg123 startup volume"
 /usr/bin/mpg123 -f -${mpgvolume} /home/pi/RPi-Jukebox-RFID/shared/startupsound.mp3
 
@@ -52,3 +61,15 @@ mpc rescan
 if [ "${READWLANIPYN}" == "ON" ]; then
     /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh -c=readwifiipoverspeaker
 fi
+
+#######################
+# Default audio output to speakers (instead of bluetooth device) irrespective of setting at shutdown
+if [ -f $PATHDATA/../settings/bluetooth-sink-switch ]; then
+    BTSINKSWITCH=`cat $PATHDATA/../settings/bluetooth-sink-switch`
+    if [ "${BTSINKSWITCH}" == "enabled" ]; then
+	$PATHDATA/../components/bluetooth-sink-switch/bt-sink-switch.py speakers
+    fi
+fi
+
+
+

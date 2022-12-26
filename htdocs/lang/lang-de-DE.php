@@ -69,6 +69,7 @@ $lang['globalLang'] = "Sprache";
 $lang['globalLanguageSettings'] = "Spracheinstellungen";
 $lang['globalPriority'] = "Priorität";
 $lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Ausgabegeräte";
 
 // Player title HTML
 $lang['playerSeekBack'] = "Rückwärts spulen";
@@ -209,6 +210,7 @@ $lang['trackEditDeleteYes'] = "Ja, diesen Track LÖSCHEN";
 $lang['settingsVolChangePercent'] = "Lautst. Änderung";
 $lang['settingsMaxVol'] = "Max. Lautstärke";
 $lang['settingsStartupVol'] = "Start-Lautstärke";
+$lang['settingsBootVol'] = "Lautst. nach Boot";
 $lang['settingsWifiRestart'] = "Die Änderungen an der WiFi-Verbindung erfordern einen Neustart, um wirksam zu werden";
 $lang['settingsWifiSsidPlaceholder'] = "z.B. PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "Der Name, unter dem dein WiFi als 'verfügbares Netzwerk' angezeigt wird";
@@ -239,6 +241,7 @@ $lang['settingsWlanSendEmail'] = "E-Mail Adr.";
 $lang['settingsWlanSendON'] = "Ja, E-Mail senden.";
 $lang['settingsWlanSendOFF'] = "Nein, E-Mail nicht senden.";
 
+$lang['settingsVolumeManager'] = "Auswahl Volume Manager";
 
 $lang['settingsWlanReadNav'] = "Wlan IP vorlesen";
 $lang['settingsWlanReadInfo'] = "Wlan IP bei jedem Systemstart vorlesen? (nützlich wenn du deine Phoniebox in ein neues Wlan-Netzwerk mit dynamischer IP verbindest)";
@@ -259,6 +262,8 @@ $lang['infoMPDStatus'] = "MPD Server Status";
 $lang['infoDebugLogTail'] = "<b>DEBUG Logdatei</b>: Letzte 40 Zeilen";
 $lang['infoDebugLogClear'] = "Lösche Inhalt von debug.log";
 $lang['infoDebugLogSettings'] = "Debug Log Einstellungen";
+$lang['infoAudioActive'] = "Aktive Audioausgänge";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Ordnerverwaltung und Dateien hochladen

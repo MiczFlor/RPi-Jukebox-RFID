@@ -25,7 +25,7 @@ We introduce Phoniebox Editions. To distinguish them, we call them "Phoniebox Cl
 
 **Please use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature.**
 
-~~~
+~~~bash
 cd /home/pi/RPi-Jukebox-RFID
 git checkout master
 git fetch origin
@@ -106,11 +106,11 @@ sudo reboot
 
 # Upgrade from Version 1.1.1 to 1.1.7
 
-Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](docs/SPOTIFY-INTEGRATION.md) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](docs/SPOTIFY-INTEGRATION.md) and create pull requests so I can merge this with the core.
+Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) and create pull requests so I can merge this with the core.
 
 Upgrading is therefore fairly simple. The following will overwrite any local changes to your code but NOT to your configruation files and systemd services, GPIO and the like. Only core code:
 
-~~~
+~~~bash
 cd /home/pi/RPi-Jukebox-RFID
 git checkout master
 git fetch origin
@@ -120,12 +120,12 @@ git pull
 
 # Upgrade from Version 1.1.1 to 1.1.6
 
-A few important bug fixes. And a new design. 
+A few important bug fixes. And a new design.
 And the option to decide what the 'second swipe' of a card does (see settings in the web app).
 The following should get you all you need, without running the install script if you
-only want to upgrade. 
+only want to upgrade.
 
-~~~
+~~~bash
 cd /home/pi/RPi-Jukebox-RFID
 git checkout master
 git fetch origin
@@ -146,7 +146,8 @@ sudo systemctl enable rfid-reader
 # Upgrade from Version 1.0.0 to 1.1.1
 
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
-~~~
+
+~~~bash
 cd
 cd /home/pi/RPi-Jukebox-RFID
 git fetch
@@ -168,6 +169,7 @@ sudo service php7.0-fpm restart
 As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
 
 # Upgrade from 0.9.5 to 0.9.7
+
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
 * Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
 * Adding auto shutdown when idle for longer than x minutes (see [manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#settings) for details)
@@ -175,7 +177,8 @@ As of version 1.0 there is a much simpler install procedure: copy and paste one 
 * Fixing bug: settings volume for stereo audio iFace
 * Fixing bug: bash code compatible with all shells  
 * Web app enhancements (audio level, display 'playing now')
-~~~
+
+~~~bash
 # services to launch after boot using systmed
 sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample /etc/systemd/system/phoniebox-idle-watchdog.service
 sudo chown root:root /etc/systemd/system/phoniebox-idle-watchdog.service
@@ -188,11 +191,12 @@ sudo systemctl start phoniebox-idle-watchdog.service
 ~~~
 
 # Upgrade from 0.9.4 to 0.9.5
+
 * Configuration of RFID card control in extra file `settings/rfid_trigger_play.conf`
 * Playout control config now uses `settings` folder to store iFace value (e.g. PCM) and percentage of relative volume change
 * both bash scripts `scripts/rfid_trigger_play.sh` and `scripts/playout_controls.sh` are not created from `.sample` versions anymore, because the config has been moved to external files.
 
-~~~
+~~~bash
 # make backups of the current scripts
 mv /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup.0.9.4
 mv /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.backup.0.9.4
@@ -210,9 +214,11 @@ sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 ~~~
 
 # Upgrade to 0.9.4
+
 * The following script refers to the OS version 'Stretch' in some places but this should also work for 'Jessie'.
 * OS 'Stretch' and 'Jessie' require different `lighttpd.conf` parameters. Samples can be found in `misc/sampleconfigs`
-~~~
+
+~~~bash
 # make backups of the current scripts
 cp /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh /home/pi/RPi-Jukebox-RFID/scripts/rfid_trigger_play.sh.backup.0.9.3
 cp /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh /home/pi/RPi-Jukebox-RFID/scripts/playout_controls.sh.backup.0.9.3

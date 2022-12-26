@@ -69,6 +69,7 @@ $lang['globalLang'] = "Language";
 $lang['globalLanguageSettings'] = "Language Settings";
 $lang['globalPriority'] = "Priority";
 $lang['globalEmail'] = "Email address";
+$lang['globalAudioSink'] = "Audio Devices";
 
 // Player title HTML
 $lang['playerSeekBack'] = "seek back";
@@ -216,6 +217,7 @@ $lang['settingsPlayoutBehaviourCardHelp'] = "If you chose 'Place card', this aff
 $lang['settingsVolChangePercent'] = "Vol. Change %";
 $lang['settingsMaxVol'] = "Maximum Volume";
 $lang['settingsStartupVol'] = "Startup Volume";
+$lang['settingsBootVol'] = "Volume after reboot";
 $lang['settingsWifiRestart'] = "The changes applied to your WiFi connection require a restart to take effect.";
 $lang['settingsWifiSsidPlaceholder'] = "e.g.: PhonieHomie";
 $lang['settingsWifiSsidHelp'] = "The name under which your WiFi shows up as 'available network'";
@@ -240,7 +242,7 @@ $lang['settingsShowCoverON'] = "Show cover";
 $lang['settingsShowCoverOFF'] = "Don't show cover";
 $lang['settingsMessageLangfileNewItems'] = "There are new language items in the original <em>lang-en-UK.php</em> file. Your language file has been updated and now contains these (in English). You might want to update your language file and commit your changes to the Phoniebox code :)";
 $lang['settingsWlanSendNav'] = "Mail Wlan IP";
-$lang['settingsWlanSendInfo'] = "Send Wlan IP over email on boot? (useful if you hook your Phoniebox into a new Wlan networt with dynamic IP)";
+$lang['settingsWlanSendInfo'] = "Send Wlan IP over email on boot? (useful if you hook your Phoniebox into a new Wlan network with dynamic IP)";
 $lang['settingsWlanSendQuest'] = "Send Wlan IP?";
 $lang['settingsWlanSendEmail'] = "email addr.";
 $lang['settingsWlanSendON'] = "Yes, send email.";
@@ -249,7 +251,7 @@ $lang['settingsWlanSendOFF'] = "No, do not send email.";
 $lang['settingsVolumeManager'] = "Select volume manager";
 
 $lang['settingsWlanReadNav'] = "Read Wlan IP";
-$lang['settingsWlanReadInfo'] = "Read IP address of wlan (wifi) each time after booting? (useful if you hook your Phoniebox into a new wlan networt with dynamic IP)";
+$lang['settingsWlanReadInfo'] = "Read IP address of wlan (wifi) each time after booting? (useful if you hook your Phoniebox into a new wlan network with dynamic IP)";
 $lang['settingsWlanReadQuest'] = "Read wlan IP?";
 $lang['settingsWlanReadON'] = "Yes, read wlan IP.";
 $lang['settingsWlanReadOFF'] = "No, do not read wlan IP.";
@@ -267,6 +269,8 @@ $lang['infoMPDStatus'] = "MPD Server Status";
 $lang['infoDebugLogTail'] = "<b>DEBUG log file</b>: Last 40 lines";
 $lang['infoDebugLogClear'] = "Clear all content from debug.log";
 $lang['infoDebugLogSettings'] = "Debug Log Settings";
+$lang['infoAudioActive'] = "Enabled Audio Devices";
+$lang['infoBluetoothStatus'] = "Bluetooth Status";
 
 /*
 * Folder Management and File Upload
