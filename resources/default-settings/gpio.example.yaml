@@ -65,3 +65,11 @@ input_devices:
         args: 3
       on_long_press_ab:
         alias: toggle_output
+  Shutdown:
+    type: LongPressButton
+    kwargs:
+      pin: 3
+      hold_time: 3
+    actions:
+      on_press:
+        alias: shutdown
