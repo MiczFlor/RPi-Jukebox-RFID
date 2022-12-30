@@ -39,7 +39,11 @@ If you dare to go where only few have gone before, **become an alpha-tester, bug
 
 ## 🔥 Version 3 is coming ...
 
-### Newest release: V3.2.0 Beta -> 7. Feb 2022
+### Newest release: V3.2.1 Beta -> 30. Dec 2022
+
+Just as the year ends, we have put together a small update for Version 3 with bug fixes and documentation fixes. 
+
+And, of course you still have all the goodies that were introduced in Version 3.2.0:
 
 * New GPIO backend based on GPIOZero including more sophisticated controls for inputs and outputs
 * Bluetooth Headset support with device buttons
