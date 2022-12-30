@@ -23,7 +23,7 @@ import jukebox.utils  # noqa: E402
 # -- Project information -----------------------------------------------------
 
 project = 'RPi Jukebox RFID'
-copyright = '2021, The RPi Jukebox RFID Community'
+copyright = '2021-2022, The RPi Jukebox RFID Community'
 author = 'The RPi Jukebox RFID Community'
 
 # The full version, including alpha/beta/rc tags
