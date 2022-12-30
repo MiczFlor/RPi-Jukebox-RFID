@@ -58,7 +58,19 @@ class TrackEditTest extends TestCase {
                 "EDITION" => "FALSE",
                 "AUDIOVOLMAXLIMIT" => "FALSE",
                 "LANG" => "FALSE",
-                "AUDIOFOLDERSPATH" => sys_get_temp_dir()
+                "AUDIOFOLDERSPATH" => sys_get_temp_dir(),
+                "PLAYLISTSFOLDERPATH" => sys_get_temp_dir(),
+                "SECONDSWIPEPAUSE" => "FALSE",
+                "SWIPEORPLACE" => "FALSE",
+                "SECONDSWIPEPAUSECONTROLS" => "FALSE",
+                "VOLUMEMANAGER" => "FALSE",
+                "READWLANIPYN" => "FALSE",
+                "MAILWLANIPYN" => "FALSE",
+                "MAILWLANIPADDR" => "FALSE",
+                "AUDIOVOLSTARTUP" => "FALSE",
+                "AUDIOVOLBOOT" => "FALSE",
+                "AUDIOVOLCHANGESTEP" => "FALSE",
+                "IDLETIMESHUTDOWN" => "FALSE"
             ));
     }
 
