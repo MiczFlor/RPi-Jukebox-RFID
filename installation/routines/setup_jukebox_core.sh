@@ -23,7 +23,7 @@ _jukebox_core_install_os_dependencies() {
   sudo apt-get -y update; sudo apt-get -y install \
     at \
     alsa-utils \
-    python3 python3-dev python3-pip python3-setuptools python3-mutagen \
+    python3 python3-dev python3-pip python3-setuptools \
     python3-rpi.gpio python3-gpiozero \
     espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
