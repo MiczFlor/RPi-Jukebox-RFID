@@ -247,7 +247,7 @@ if($_POST['ACTION'] == "trackDelete") {
 * read metadata
 */
 $fileName = Files::buildPath($post['folder'], $post['filename']);
-$exec = "mid3v2 -l '" .$fileName ."'" ;
+$exec = "mid3v2 -l '" .escapeshellarg($fileName) ."'" ;
 $res = shell_exec($exec);
 $lines = explode(PHP_EOL, $res);
 foreach($lines as $line) {

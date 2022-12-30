@@ -1,5 +1,7 @@
 Deprecated, please see [wiki](/wiki) for the latest version
+
 ---------------------------------------------
+
 # Control Jukebox with buttons / GPIO
 
 (Other docs: [Installation](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) |
@@ -9,7 +11,7 @@ Deprecated, please see [wiki](/wiki) for the latest version
 **Add buttons to your jukebox to control volume, skip tracks and more.**
 
 Before we start:
-One of the plus points about this projects, at least in my mind, 
+One of the plus points about this projects, at least in my mind,
 was the fact that you don't need a soldering iron to build it.
 Everything is USB, plug and play, thank you, boot and go.
 
@@ -22,7 +24,7 @@ confirmation that this works :)
 
 Enough said, here we go.
 
----
+---------------------------------------------
 
 ## Pin numbering on the RPi
 
@@ -73,22 +75,22 @@ There are a number of different ways to connect a button. The easiest one is wel
 
 We need to run [GPIO Zero](https://gpiozero.readthedocs.io/en/stable/), a simple interface to GPIO devices with Raspberry Pi. GPIO Zero is installed by default in Raspbian Jessie. To install see the [installing](https://gpiozero.readthedocs.io/en/stable/installing.html) chapter on their site. Better safe than sorry, so lets install the packages on our machine:
 
-~~~
-$ sudo apt-get install python3-gpiozero python-gpiozero
+~~~bash
+sudo apt-get install python3-gpiozero python-gpiozero
 ~~~
 
 **Note**: No harm done to install both, python3 and python2. This needs trimming later on.
 
 Make a copy of the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) into the scripts folder. This way you are free to make changes to the script without changing your github repo.
 
-~~~
-$ sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+~~~bash
+sudo cp /home/pi/RPi-Jukebox-RFID/misc/sampleconfigs/gpio-buttons.py.sample /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
 And change the copy to be executable
 
-~~~
-$ sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
+~~~bash
+sudo chmod +x /home/pi/RPi-Jukebox-RFID/scripts/gpio-buttons.py
 ~~~
 
 **Note**: work in progress: the [python script for the GPIO buttons](../misc/sampleconfigs/gpio-buttons.py.sample) will be explained when I get to it.

@@ -4,21 +4,24 @@ This service enables the control of different GPIO input & output devices for co
 It uses to a configuration file to configure the active devices.
 
 ## How to create and run the service?
+
 * The service can be activated during installation with the installscript.
 * If the service was not activated during installation, you can alternatively use `sudo install.sh` in this folder (`components/gpio_control`).
 
 ## How to edit configuration files?
-The configuration file is located here: `~/RPi-Jukebox-RFID/settings/gpio_settings.ini` 
+
+The configuration file is located here: `~/RPi-Jukebox-RFID/settings/gpio_settings.ini`
 Editing the configuration file and restarting the service with `sudo systemctl restart phoniebox-gpio-control` will activate the new settings.
 
-In the following the different devices are described. 
+In the following the different devices are described.
 Each device can have actions which correspond to function calls.
 Up to now the following input devices are implemented:
-* **Button**: 
-   A simple button with optional long-press actions like hold and repeat functionality or delayed action. 
+
+* **Button**:
+   A simple button with optional long-press actions like hold and repeat functionality or delayed action.
    Its main parameters are: `Pin` (use GPIO number here) and `functionCall`. For additional options, see [extended documentation below](#doc_button).
 
-* **ShutdownButton**: 
+* **ShutdownButton**:
    A specialized implementation for a shutdown button with integrated (but optional) LED support. It initializes a shutdown if the button is pressed more than `time_pressed` seconds and a (optional) LED on GPIO `led_pin` is flashing until that time is reached. For additional information, see [extended documentation below](#doc_sdbutton).
 
 * **RotaryEncoder**:
@@ -36,28 +39,33 @@ Each section needs to be activated by setting `enabled: True`.
 Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/example_configs/`.
 
 # Extended documentation
+
 This section provides some extended documentation and guideline. Especially some exemplary configurations are introduced showing how these controls can be set up in the configuration file `~/RPi-Jukebox-RFID/settings/gpio_settings.ini`.
 
-## Button<a name="doc_button"></a> 
+## Button<a name="doc_button"></a>
+
 At the most basic level, a button can be created using an `ini` entry like this:
-```
+
+```bash
 [PlayPause]
 enabled: True
 Type: Button
 Pin: 27
 functionCall: functionCallPlayerPause
 ```
+
 * **enabled**: This needs to be `True` for the button to work.
 * **Pin**: GPIO number
 * **functionCall**: The function that you want to be called on a button press. See  [function documentation below](#doc_funcs).
 
 However, a button has more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
+
 * **hold_mode**: Specifies what shall happen if the button is held pressed for longer than `hold_time`:
-  *  `None` (Default): Nothing special will happen.
-  *  `Repeat`: The configured `functionCall` is repeated after each `hold_time` interval.
-  *  `Postpone`: The function will not be called before `hold_time`, i.e. the button needs to be pressed this long to activate the function
-  *  `SecondFunc`: Holding the button for at least `hold_time` will additionally execute the function `functionCall2`.
-  *  `SecondFuncRepeat`: Like SecondFunc, but `functionCall2` is repeated after each `hold_time` interval.
+  * `None` (Default): Nothing special will happen.
+  * `Repeat`: The configured `functionCall` is repeated after each `hold_time` interval.
+  * `Postpone`: The function will not be called before `hold_time`, i.e. the button needs to be pressed this long to activate the function
+  * `SecondFunc`: Holding the button for at least `hold_time` will additionally execute the function `functionCall2`.
+  * `SecondFuncRepeat`: Like SecondFunc, but `functionCall2` is repeated after each `hold_time` interval.
   
   In every `hold_mode` except `Postpone`, the main action `functionCall` gets executed instantly.
   
@@ -78,9 +86,11 @@ However, a button has more parameters than these. In the following comprehensive
 
 Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
-## ShutdownButton<a name="doc_sdbutton"></a> 
+## ShutdownButton<a name="doc_sdbutton"></a>
+
 An extended ShutdownButton can be created using an `ini` entry like these:
-```
+
+```bash
 [Shutdown_without_LED]
 enabled: True
 Type:  ShutdownButton
@@ -92,11 +102,13 @@ Type:  ShutdownButton
 Pin: 3
 led_pin: 17
 ```
+
 * **enabled**: This needs to be `True` for the extended shutdown button to work.
 * **Pin**: GPIO number of the button
 * **led_pin**: GPIO number of the LED (Default is `None`). Note that you should not attach LEDs to GPIO ports without a matching resistor in line.
 
 Again, there are more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
+
 * **hold_time**: This parameter controls how many seconds (default: `3.0`) the button has to be hold until shutdown will be initiated.
 * **iteration_time**: This parameter determines the flashing speed of the LED indicator. Default value is `0.2` seconds.
 * **functionCall**: While the default action is `functionCallShutdown`, you might use this button type even with other functions than system shutdown (again, see [function documentation below](#doc_funcs) for a list of available functions).
@@ -105,7 +117,7 @@ Furthermore, the following settings can be used as described for the [regular bu
 
 Note that using a ShutdownButton without a LED can also be implemented with a normal button like this:
 
-```
+```bash
 [Shutdown]
 enabled: True
 Type: Button
@@ -115,10 +127,11 @@ hold_time: 3.0
 functionCall: functionCallShutdown
 ```
 
-## TwoButtonControl<a name="doc_twobutton"></a> 
+## TwoButtonControl<a name="doc_twobutton"></a>
+
 A  TwoButtonControl can be created using an `ini` entry like this:
 
-```
+```bash
 [PrevNextStop]
 enabled: True
 Type: TwoButtonControl
@@ -128,10 +141,12 @@ functionCall1: functionCallPlayerNext
 functionCall2: functionCallPlayerPrev
 functionCallTwoButtons: functionCallPlayerStop
 ```
+
 In this example, you can navigate to the previous or, respectively next track by pushing the respective button. If you push both buttons simultaneously, the player stops.
 
 It is possible to combine the TwoButtonControl with the Repeat mode, e.g. to increment the volume further while the button keeps getting held:
-```
+
+```bash
 [VolumeControl]
 enabled: True
 Type: TwoButtonControl
@@ -143,14 +158,16 @@ functionCall1: functionCallVolU
 functionCall2: functionCallVolD
 functionCallTwoButtons: functionCallVol0
 ```
+
 In this example, the volume will be in-/decreased step-wise using intervals of 0.3 seconds while the respective button is held. If both buttons are pushed simultaneously, the player is muted (volume 0). In this example, Pin1 is used for increasing the volume, while Pin2 decreases it.
 
 Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**
 
+## RotaryEncoder<a name="doc_rotary"></a>
 
-## RotaryEncoder<a name="doc_rotary"></a> 
 A  RotaryEncoder can be created using an `ini` entry like this:
-```
+
+```bash
 [VolumeControl]
 enabled: True
 Type: RotaryEncoder
@@ -164,25 +181,30 @@ functionCall2: functionCallVolD
 Pin1 and FunctionCall1 correspond to rotary direction "up", while Pin2 and FunctionCall2 correspond to "down".
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
 
-## StatusLED<a name="doc_sled"></a> 
+## StatusLED<a name="doc_sled"></a>
+
 A  StatusLED can be created using an `ini` entry like this:
-```
+
+```bash
 [StatusLED]
 enabled: True
 Type: StatusLED
 Pin: 14
 ```
+
 * **Pin**: GPIO number of the LED (mandatory option). Note that you should not attach LEDs to GPIO ports without a matching resistor in line.
 
 Note: If you prefer, you may also use `Type: MPDStatusLED` instead of `Type: StatusLED` - this makes no difference.
 
 ## Further examples
+
 By tapping the potential of the features presented above, you can create buttons like this:
 
 ### Play random tracks or folders
+
 If you have buttons to navigate to the next/previous track it might be a good idea to define that holding these buttons for a certain time (e.g. 2 seconds) will activate a random (surpise!) track or even folder/card. This might look like this
 
-```
+```bash
 [NextOrRand]
 enabled: True
 Type:  Button
@@ -205,8 +227,10 @@ functionCall2: functionCallPlayerRandomFolder
 ```
 
 ### Short and long jumps
+
 If you are using two buttons to jump backwards or forwards within the current track, you can use the repeated hold action to allow larger jumps:
-```
+
+```bash
 [SkipForward]
 enabled: True
 Type:  Button
@@ -217,12 +241,14 @@ hold_mode: SecondFuncRepeat
 functionCall: functionCallPlayerSeekFwd
 functionCall2: functionCallPlayerSeekFarFwd
 ```
+
 In this example, a short press initiates a short jump forward by 10 seconds (functionCallPlayerSeekFwd) while holding the button will cause further, longer jumps. In this case it will cause a jump of 1 minute forward  (functionCallPlayerSeekFarFwd) every 5 seconds. If you wish, you can adjust these values in `components/gpio_control/function_calls.py`.
 For jumping backwards, this can be done equivalently (see [function list below](#doc_funcs)).
 
+## Functions<a name="doc_funcs"></a>
 
-## Functions<a name="doc_funcs"></a> 
 The available functions are defined/implemented in `components/gpio_control/function_calls.py`:
+
 * **functionCallShutdown**: System shutdown
 * **functionCallVolU**: Volume up
 * **functionCallVolD**: Volume down
@@ -244,10 +270,11 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallPlayerRandomCard**: Activate a random card
 * **functionCallPlayerRandomFolder**: Play a random folder
 
-## Troubleshooting<a name="doc_trouble"></a> 
+## Troubleshooting<a name="doc_trouble"></a>
+
 If you encounter bouncing effects with your buttons like unrequested/double actions after releasing a button, you can try to set `antibouncehack` to True:
 
-```
+```bash
 [NextSong]
 enabled: True
 Type:  Button
@@ -258,8 +285,7 @@ antibouncehack: True
 
 Instead of adding this to each button, you can also define it as default for all elements, by inserting the statement into the `Default` section which can be found at the beginning of the `~/RPi-Jukebox-RFID/settings/gpio_settings.ini` file:
 
-
-```
+```bash
 [DEFAULT]
 enabled: True
 antibouncehack: True

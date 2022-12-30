@@ -86,6 +86,7 @@ arAvailableAttributes = [
     "volume",
     "mute",
     "repeat",
+    "repeat_mode",
     "random",
     "state",
     "file",
@@ -110,31 +111,6 @@ arAvailableAttributes = [
     "throttling",
     "temperature",
 ]
-
-
-def watchForNewCard():
-    i = inotify.adapters.Inotify()
-    i.add_watch(path + "/../settings/Latest_RFID")
-
-    # wait for inotify events
-    for event in i.event_gen(yield_nones=False):
-        if event is not None:
-            # fetch event attributes
-            (e_header, e_type_names, e_path, e_filename) = event
-
-            # file was closed and written => a new card was swiped
-            if "IN_CLOSE_WRITE" in e_type_names:
-                # fetch card ID
-                cardid = readfile(path + "/../settings/Latest_RFID")
-
-                # publish event "card_swiped"
-                client.publish(
-                    config.get("mqttBaseTopic") + "/event/card_swiped", payload=cardid
-                )
-                print(" --> Publishing event card_swiped = " + cardid)
-
-                # process all attributes
-                processGet("all")
 
 
 def watchForNewCard():
@@ -476,6 +452,37 @@ def regex(needle, hay, exception="-"):
     else:
         return exception
 
+def getDuration(status):
+    """ Find the duration of the track in the output from mpd status"""
+
+    # try to get the duration value
+    duration = regex("\nduration: (.*)\n", status)
+
+    if duration == "-":
+        # if the duration attribute is missing try to get the time
+        # this attribute value is split into two parts by ":"
+        # first is the elapsed time and the second part is the duration
+        duration = regex("\ntime: .*:(.*)\n", status, "0")
+    
+    return int(float(duration))
+
+REPEAT_MODE_OFF = "off"
+REPEAT_MODE_SINGLE = "single"
+REPEAT_MODE_PLAYLIST = "playlist"
+
+
+def get_repeat_mode(repeat, status):
+    """ Returns the repeat mode that is selected in mpd """
+
+    if repeat == "false":
+        return REPEAT_MODE_OFF
+
+    single = regex("\nsingle: (.*)\n", status)
+    if single == "0":
+        return REPEAT_MODE_PLAYLIST
+
+    return REPEAT_MODE_SINGLE
+
 
 def fetchData():
     # use global refreshInterval as this function is run as a thread through the paho-mqtt loop
@@ -494,6 +501,7 @@ def fetchData():
     result["state"] = regex("\nstate: (.*)\n", status).lower()
     result["volume"] = regex("\nvolume: (.*)\n", status)
     result["repeat"] = normalizeTrueFalse(regex("\nrepeat: (.*)\n", status))
+    result["repeat_mode"] = get_repeat_mode(result["repeat"], status)
     result["random"] = normalizeTrueFalse(regex("\nrandom: (.*)\n", status))
 
     # interpret mute state based on volume
@@ -523,7 +531,7 @@ def fetchData():
             int(hours), int(minutes), int(seconds)
         )
 
-        duration = int(float(regex("\nduration: (.*)\n", status, "0")))
+        duration = getDuration(status)
         hours, remainder = divmod(duration, 3600)
         minutes, seconds = divmod(remainder, 60)
         result["duration"] = "{:02}:{:02}:{:02}".format(
@@ -630,11 +638,6 @@ print("Subscribing to " + config.get("mqttBaseTopic") + "/cmd/#")
 client.subscribe(config.get("mqttBaseTopic") + "/cmd/#")
 print("Subscribing to " + config.get("mqttBaseTopic") + "/get/#")
 client.subscribe(config.get("mqttBaseTopic") + "/get/#")
-
-# register thread for watchForNewCard
-tWatchForNewCard = Thread(target=watchForNewCard)
-tWatchForNewCard.setDaemon(True)
-tWatchForNewCard.start()
 
 # register thread for watchForNewCard
 tWatchForNewCard = Thread(target=watchForNewCard)

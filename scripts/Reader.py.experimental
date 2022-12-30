@@ -187,7 +187,7 @@ class Reader(object):
             sys.exit('Please run RegisterDevice.py first')
         else:
             with open(path + '/deviceName.txt', 'r') as f:
-                device_name = f.read().rstrip().split(';',1)[0]
+                device_name = f.read().rstrip().split(';', 1)[0]
 
             if device_name == 'MFRC522':
                 self.reader = Mfrc522Reader()

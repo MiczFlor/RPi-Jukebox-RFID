@@ -14,21 +14,26 @@ supports this mode. RPi3 does.
 Install two packages we need later. Later meaning: when we might not have Internet anymore. Because the wlan0
 interface will be set to a static IP
 to create the access point.
-```
+
+```bash
 sudo apt-get update
 sudo apt-get install dnsmasq hostapd
 ```
+
 ## Configure the network
 
 Using jessie, dhcpd is activated by default. This dhcp daemon is assigning
 IP addresses to devices which want to connect to the Phoniebox.
 
 Set the IP address for the wlan card by opening:
-```
+
+```bash
 sudo nano /etc/network/interfaces
 ```
+
 Replace the existing content with the following lines:
-```
+
+```bash
 # Localhost
 auto lo
 iface lo inet loopback
@@ -43,16 +48,21 @@ iface wlan0 inet static
 address 192.168.1.1
 netmask 255.255.255.0
 ```
+
 Now, the wlan is set to the IP address `192.168.1.1`.
 
 We add one line to the dhcpd config file:
-```
+
+```bash
 sudo nano /etc/dhcpcd.conf
 ```
+
 Append the line:
-```
+
+```bash
 denyinterfaces wlan0
 ```
+
 Now we reboot and afterwards you should be connected to your RPi directly, not via ssh.
 Because if your RPi relied on a WiFi connection to the Internet, this will be cut off.
 Remember: we need the wlan0 interface to hook up other devices to a WiFi network the
@@ -62,7 +72,7 @@ Let's check if all interfaces are up and running. We only really need the wlan0
 but if eth0 is also up and is connected to the Internet, your Phoniebox will be online
 and all devices connected to it. Type in the command line:
 
-```
+```bash
 ip a
 ```
 
@@ -73,17 +83,19 @@ monitor.
 
 Reboot.
 
-```
+```bash
 sudo reboot
 ```
 
 ## dhcp server configuration
 
-```
+```bash
 sudo nano /etc/dnsmasq.conf
 ```
+
 The following lines are the minimal configuration required.
-```
+
+```bash
 # interface which is active
 interface=wlan0
 
@@ -99,31 +111,42 @@ dhcp-option=option:dns-server,192.168.1.1
 
 Check the configuration before you start the dhcp server and
 cache.
-```
+
+```bash
 dnsmasq --test -C /etc/dnsmasq.conf
 ```
+
 This should return 'OK'. Now start `dnsmasq`:
-```
+
+```bash
 sudo systemctl restart dnsmasq
 ```
+
 Check if it is up and running:
-```
+
+```bash
 sudo systemctl status dnsmasq
 ```
+
 Now install dnsmasq to start after boot:
-```
+
+```bash
 sudo systemctl enable dnsmasq
 ```
 
 ## configure hostapd
+
 To assign ssid and password, we need to configure
 `hostapd`.
-```
+
+```bash
 sudo nano /etc/hostapd/hostapd.conf
 ```
+
 Replace the content of this file (if it already exists) with
 the following content.
-```
+
+```bash
 # interface and driver
 interface=wlan0
 #driver=nl80211
@@ -144,24 +167,31 @@ wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
 wpa_passphrase=Pl4yM3N0w
 ```
+
 The network will be listed as `Phoniebox` and the password
 to connect to the network is `Pl4yM3N0w` (as in 'play me now' with a number four and a number three and a zero). If you want a different ssid and/or password, edit the lines above.
 
 This file contains a password in raw text, so make
 sure only root can read it.
-```
+
+```bash
 sudo chmod 600 /etc/hostapd/hostapd.conf
 ```
-Check if this setup is correct. Open 
+
+Check if this setup is correct. Open
 the wlan host in debug mode and read through the results.
-```
+
+```bash
 sudo hostapd -dd /etc/hostapd/hostapd.conf
 ```
+
 Scroll up to see if you can find these two lines anywhere:
-```
+
+```bash
 wlan0: interface state COUNTRY_UPDATE->ENABLED
 wlan0: AP-ENABLED 
 ```
+
 If yes, you can also try to hook
 up a device with the network already.
 See if you can find `Phoniebox` as a WiFi network.
@@ -169,26 +199,33 @@ See if you can find `Phoniebox` as a WiFi network.
 If that works, all is well. Stop the `hostapd` daemon with `Ctrl&C`.
 
 Before we can start `hostapd` on boot, we have to add a few lines
-in the config file to specify 
+in the config file to specify
 the location of the config file.
-```
+
+```bash
 sudo nano /etc/default/hostapd
 ```
+
 Add these lines:
-```
+
+```bash
 RUN_DAEMON=yes
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
 ```
+
 And start `hostapd` with the following commands:
-```
+
+```bash
 sudo systemctl start hostapd
 sudo systemctl enable hostapd
 ```
+
 Check if the daemon is up and running:
-```
+
+```bash
 sudo systemctl status hostapd
 ```
+
 This concludes what we need to connect to the Phoniebox directly via WiFi.
 
 If you plan to connect the `eth0` via a cable with the Internet, you need to learn about firewall configurations. Google how to do this (I hope to replace this last paragraph with a nicer explanation and a link later, when I find the time. Apologies.)
-
