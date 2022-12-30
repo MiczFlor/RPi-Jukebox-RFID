@@ -19,6 +19,9 @@ class PlayerTest extends TestCase {
         require_once 'htdocs/api/player.php';
     }
 
+    /**
+     * @group real-env
+     */
     public function testReturnHandleGet() {
         $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
         $exec->expects($this->once())->willReturnCallback(

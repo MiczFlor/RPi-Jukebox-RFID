@@ -14,6 +14,7 @@
     ],
     "minimum-stability": "stable",
     "scripts": {
-        "test": "vendor/bin/phpunit ./tests/htdocs"
+        "test": "vendor/bin/phpunit ./tests/htdocs --exclude real-env",
+        "test-all": "vendor/bin/phpunit ./tests/htdocs"
     }
 }
