@@ -29,6 +29,8 @@ git pull
 
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github). And ideally pull requests using the "running code" on the `develop` branch of your Phoniebox. Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
+Please check also our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ### Making Changes
 
 * Create a topic branch from where you want to base your work.
