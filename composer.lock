@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41269f171e905ed359664d0b99f38cc3",
+    "content-hash": "890e6b393f255fb50b55d3866c724feb",
     "packages": [],
     "packages-dev": [
         {
@@ -76,6 +76,58 @@
                 }
             ],
             "time": "2022-12-30T00:15:36+00:00"
+        },
+        {
+            "name": "mpyw/phpunit-patch-serializable-comparison",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mpyw/phpunit-patch-serializable-comparison.git",
+                "reference": "262180fb1fc529b3735f147f754d5ba1f05e541b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mpyw/phpunit-patch-serializable-comparison/zipball/262180fb1fc529b3735f147f754d5ba1f05e541b",
+                "reference": "262180fb1fc529b3735f147f754d5ba1f05e541b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "sebastian/comparator": "^1.0 || ^2.0 || ^3.0 || ^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "./files/ComparisonFailure.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "mpyw",
+                    "email": "ryosuke_i_628@yahoo.co.jp"
+                }
+            ],
+            "description": "Fixes assertSame/assertEquals serialization errors running in separate processes.",
+            "keywords": [
+                "bug",
+                "fix",
+                "isolation",
+                "patch",
+                "phpunit",
+                "process",
+                "processes",
+                "separate",
+                "serialization"
+            ],
+            "support": {
+                "issues": "https://github.com/mpyw/phpunit-patch-serializable-comparison/issues",
+                "source": "https://github.com/mpyw/phpunit-patch-serializable-comparison/tree/v0.0.2"
+            },
+            "time": "2021-07-04T05:15:38+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -958,19 +1010,6 @@
                 "BSD-3-Clause"
             ],
             "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
-                }
-            ],
-            "description": "Library for parsing CLI options",
-            "homepage": "https://github.com/sebastianbergmann/cli-parser",
-            "support": {
-                "issues": "https://github.com/sebastianbergmann/cli-parser/issues",
-                "source": "https://github.com/sebastianbergmann/cli-parser/tree/1.0.1"
-            },
-            "funding": [
                 {
                     "name": "Sebastian Bergmann",
                     "email": "sebastian@phpunit.de",
