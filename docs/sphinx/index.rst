@@ -29,6 +29,7 @@ Welcome to RPi Jukebox RFID's documentation!
    rfid/rfid
    userguide/gpioz
    userguide/bluetooth_audio_buttons
+   userguide/event_devices
    userguide/rpc_commands
    userguide/rpc_command_reference
    userguide/rpc_command_alias_reference

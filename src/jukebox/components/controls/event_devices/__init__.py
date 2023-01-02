@@ -1,10 +1,11 @@
 """
 Plugin to register event_devices (ie USB controllers, keyboards etc) in a
-generic manner.
+    generic manner.
 
 This effectively does:
-* parse the configured event devices from the jukebox.yaml
-* setup listen threads
+
+    * parse the configured event devices from the jukebox.yaml
+    * setup listen threads
 
 """
 from __future__ import annotations
@@ -86,16 +87,7 @@ def initialize():
     """Initialize event device button listener from config
 
     Initializes event buttons from the main configuration file.
-    The format of the required section is:
-    event_devices:
-      devices: # list of devices to listen for
-        <device nickname>: # config for a specific device
-          device_name: <device_name> # name of the evdev
-          exact: False/True # optional to require exact
-                            # match
-          mapping:
-            <event id>: # evdev event id
-                <RPC spec> # eg `alias: toggle` 
+    Please see :ref:`userguide/event_devices:Event Devices` for a specification of the format.
     """
     for name, config in cfg.getn(
         "event_devices",
