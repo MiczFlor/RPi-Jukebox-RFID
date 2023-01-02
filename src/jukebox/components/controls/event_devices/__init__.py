@@ -95,30 +95,24 @@ def initialize():
         default={},
     ).items():
         logger.debug("activate %s", name)
-        button_mapping = config.get("mapping", default=None)
-        if button_mapping:
-            button_callbacks: dict[int, Callable] = {}
-            for key, action_request in button_mapping.items():
-                button_callbacks[key] = jukebox.utils.bind_rpc_command(
-                    action_request,
-                    dereference=False,
-                    logger=logger,
-                )
-            device_name = config.get("device_name")
-            exact = config.get("exact", default=False)
-            logger.debug(
-                f'Call activate with: "{device_name}" and exact: {exact}',
+        button_mapping = config.get("mapping", default={})
+        button_callbacks: dict[int, Callable] = {}
+        for key, action_request in button_mapping.items():
+            button_callbacks[key] = jukebox.utils.bind_rpc_command(
+                action_request,
+                dereference=False,
+                logger=logger,
             )
-            activate(
-                device_name,
-                button_callbacks=button_callbacks,
-                exact=exact,
-            )
-        else:
-            logger.error(
-                "No button mapping configured for event device: %s",
-                name,
-            )
+        device_name = config.get("device_name")
+        exact = config.get("exact", default=False)
+        logger.debug(
+            f'Call activate with: "{device_name}" and exact: {exact}',
+        )
+        activate(
+            device_name,
+            button_callbacks=button_callbacks,
+            exact=exact,
+        )
 
 
 @plugin.atexit
