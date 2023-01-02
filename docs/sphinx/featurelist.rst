@@ -7,7 +7,7 @@ Feature Status
 **This is where we are in a nutshell:** Playing music from local folders via RFID trigger.
 We also built a new WebUI to control the Jukebox from a browser.
 
-The are a few things that are specifically not integrated yet: GPIOs, playing streams, podcasts or Spotify.
+The are a few things that are specifically not integrated yet: playing streams, podcasts or Spotify.
 
 In the following is the currently implemented feature list in more detail. It also shows some of the holes.
 However the list is *not complete in terms of planned features*,
