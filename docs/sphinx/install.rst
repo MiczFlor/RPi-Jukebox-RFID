@@ -5,27 +5,27 @@ Install Raspberry Pi OS Lite
 -------------------------------------------
 
 .. important:: Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4!
-    1 and Zero's are currently unstable and will require a bit more work!
+   Pi 1 and Zero's are currently unstable and will require a bit more work!
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
-1. Connect a Micro SD card to your computer (preferable an SC card with high read throughput)
+1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 2. `Download <https://www.raspberrypi.org/software/>`_
    the `Raspberry Pi Imager <https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/>`_ and open it
-3. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system (only the 32 bit version is supported)
+3. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system (only the 32 bit version is supported) (you can use the settings menu of the Raspberry Pi Imager to configure SSH and WiFi in a more userfriendly way, or do it manually as described in the next step)
 4. Select your Micro SD card (your card will be formatted)
-5. Click *Write*
+5. Click *Write* 
 6. Wait for the imaging process to be finished (it'll take a few minutes)
 
 
-Initial Boot
+Pre-boot preparation
 -------------------------------------------
 
 You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to proceed with the next steps.
 
 1. Open a terminal of your choice.
 2. Insert your card again if it has been ejected automatically.
-3. Navigate to your SC card e.g., ``cd /Volumes/boot`` for Mac or ``D:`` for Windows.
+3. Navigate to your SD card e.g., ``cd /Volumes/boot`` for Mac or ``D:`` for Windows.
 4. Enable SSH by adding a simple file.
 
     .. code-block:: bash
@@ -81,8 +81,11 @@ specify the variables like this:
 
     cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 
+
 This will switch directly to the specified feature branch during installation.
 
 .. attention:: For all branches *except* the current Release, you will need to build the Web App locally on the Pi.
     This is not part of the installation process due to memory limitation issues.
     See :ref:`developer/development_environment:Steps to install`.
+    
+        
