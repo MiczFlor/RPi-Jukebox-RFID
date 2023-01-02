@@ -89,6 +89,7 @@ This will switch directly to the specified feature branch during installation.
     See :ref:`developer/development_environment:Steps to install`.
     
         
-    If you suspect an error you can monitor the installation-process with
-    .. code-block:: bash
-        tail -f INSTALL-<fullname>.log
+
+If you suspect an error you can monitor the installation-process with
+.. code-block:: bash
+    tail -f INSTALL-<fullname>.log
