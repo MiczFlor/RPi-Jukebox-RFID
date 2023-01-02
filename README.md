@@ -26,7 +26,7 @@ We are also curious to learn about alternative services we can connect with and 
 
 Another bunch of wonderful designs! 2023 is the fifth Phoniebox calendar. If you are interested, you can see the [2019, 2020, 2021 and 2022 calendars in the docs folder](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/docs). Download [the printable PDF of 2023 here](https://mi.cz/static/2023-Phoniebox-Calendar.pdf).
 
-![The 2023 Phoniebox Calendar](docs/2023-Phoniebox-Calendar.jpg "The 2023 Phoniebox Calendar")
+![The 2023 Phoniebox Calendar](https://mi.cz/static/2023-Phoniebox-Calendar.jpg "The 2023 Phoniebox Calendar")
 
 If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
 
