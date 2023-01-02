@@ -91,5 +91,8 @@ This will switch directly to the specified feature branch during installation.
         
 
 If you suspect an error you can monitor the installation-process with
+
 .. code-block:: bash
-    tail -f INSTALL-<fullname>.log
+
+    cd; tail -f INSTALL-<fullname>.log
+
