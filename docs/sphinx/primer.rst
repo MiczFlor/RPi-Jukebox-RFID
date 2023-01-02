@@ -1,13 +1,13 @@
 What is this?
 ================================================
 
-The exiting, new **Version 3** of the RPi Jukebox RFID. A complete rewrite of the Jukebox code base.
+The exciting, new **Version 3** of the RPi Jukebox RFID. A complete rewrite of the Jukebox code base.
 
 .. important:: This documentation applies to the Version 3 which is developed in the branches *future3/main* and *future3/develop*.
     Currently the default Version is 2.X
 
 To find out more about the RPi Jukebox RFID
-project check out the `documentation of Version 2 <https://github.com/MiczFlor/RPi-Jukebox-RFID>`_ or `www.phoniebox.de <https://www.http://phoniebox.de/>`_.
+project check out the `documentation of Version 2 <https://github.com/MiczFlor/RPi-Jukebox-RFID>`_ or `www.phoniebox.de <https://www.phoniebox.de/>`_.
 
 Why?
 -----
