@@ -12,7 +12,7 @@ per-file-ignores =
     # Not necessary, if __all__ is declared in __init__ file
     # https://www.python.org/dev/peps/pep-0008/#id48
     __init__.py:F401
-count
+count = True
 max-complexity = 12
 statistics = True
 filename = *.py,*.py.*
