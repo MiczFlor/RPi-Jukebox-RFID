@@ -1,7 +1,7 @@
-Event devices are generic input devices that are exposed in  /dev/input.
+Event devices are generic input devices that are exposed in ``/dev/input``.
 This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as well as potentially bluetooth devices.
 
-The devices and their button mappins need to be mapped in the configuration file.
+The devices and their button mappings need to be mapped in the configuration file.
 
 Configuration
 ---------------------
@@ -28,7 +28,7 @@ Then add the following section to the configuration:
               {rpc_command_definition} # eg `alias: toggle` 
 
 The ``{device nickname}`` is only for your own orientation and can be choosen freely.
-For each device you need to figure out the ``{device_name}`` and the ``{event_id}`` corresponding to button presses.
+For each device you need to figure out the ``{device_name}`` and the ``{event_id}`` corresponding to key strokes.
 
 ``{device_name}``
 ==================
@@ -61,10 +61,10 @@ The key code for a button press can be determined using the following code snipp
   device = evdev.InputDevice('/dev/input/event0')
   device.capabilities(verbose=True)[('EV_KEY', evdev.ecodes.EV_KEY)]
 
-with the InputDevice corresponding to the path from the output of the section ```{device_name}``` (eg. in the example ``/dev/input/event0``
-would correspond to the ``Dell Dell USB Keyboard``).
+With the ``InputDevice`` corresponding to the path from the output of the section ```{device_name}``` (eg. in the example ``/dev/input/event0``
+would correspond to ``Dell Dell USB Keyboard``).
 
-If the naming is not clear, it is also possible to empirically check for the button code by listening for events:
+If the naming is not clear, it is also possible to empirically check for the key code by listening for events:
 
 .. code-block:: Python
 
@@ -82,9 +82,9 @@ The output could be of the form::
 
 In this example output, the ``{key-code}`` would be ``297``
 
-Alternatively, the device could also be setup without mapping.
-Afterwards, when pressing keys, the Key codes can be found in the log files. Press the various buttons on your device,
-while watching the logs with e.g. ``tail -f shared/logs/app.log``.
+Alternatively, the device could also be setup without a mapping.
+Afterwards, when pressing keys, the key codes can be found in the log files. Press various buttons on your device,
+while watching the logs with ``tail -f shared/logs/app.log``.
 Look for entries like ``No callback registered for button ...``.
 
 ``{rpc_command_defintion}``
@@ -96,7 +96,7 @@ The RPC command follows the regular RPC command rules as defined in :ref:`usergu
 Full example config
 =====================
 
-Here is a complete example configuration for a USB Joystick controller:
+Here is a complete configuration example for a USB Joystick controller:
 
 .. code-block:: yaml
   
