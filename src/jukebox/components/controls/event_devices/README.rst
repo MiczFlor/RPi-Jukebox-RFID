@@ -1,6 +1,8 @@
 Event devices are generic input devices that are exposed in ``/dev/input``.
 This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as well as potentially bluetooth devices.
 
+A specific usecase for this could be, if a Zero Delay Arcade USB Encoder is used to wire arcade buttons instead of using GPIO pins.
+
 The devices and their button mappings need to be mapped in the configuration file.
 
 Configuration
@@ -127,7 +129,3 @@ Here is a complete configuration example for a USB Joystick controller:
           # Button to shutdown
           292:
             alias: shutdown
-
-
-Key codes can be found in the log files. Press the various buttons on your headset, while watching the
-logs with e.g. ``tail -f shared/logs/app.log``.  Look for entries like ``No callback registered for button ...``.
