@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mpd:
+    build:
+      context: ../
+      dockerfile: ./docker/mpd.Dockerfile
+    container_name: mpd
+    ports:
+      - 6600:6600
+      - 8800:8800
+    restart: unless-stopped
+    volumes:
+      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders:rw
+      - ../shared/playlists:/root/.config/mpd/playlists:rw
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
+
+  jukebox:
+    build:
+      context: ../
+      dockerfile: ./docker/jukebox_with_spotify.Dockerfile
+    container_name: jukebox
+    depends_on:
+      - mpd
+    links:
+      - mpd
+    ports:
+      - 5555:5555
+      - 5556:5556
+      - 5557:5557
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
+      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+      - ./config/docker.mpd.conf:/etc/mpd.conf
+
+  webapp:
+    build:
+      context: ../
+      dockerfile: ./docker/webapp.Dockerfile
+    container_name: webapp
+    depends_on:
+      - jukebox
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    links:
+      - jukebox
+    ports:
+      - 3001:3000
+    restart: unless-stopped
+    volumes:
+      - ../src/webapp:/home/node/webapp
+      - /home/node/webapp/node_modules

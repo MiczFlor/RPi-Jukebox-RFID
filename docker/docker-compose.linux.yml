@@ -5,10 +5,6 @@ services:
     devices:
       - /dev/snd
 
-  spotify:
-    devices:
-      - /dev/snd
-
   jukebox:
     devices:
       - /dev/snd
