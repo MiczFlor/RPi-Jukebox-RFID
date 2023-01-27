@@ -8,8 +8,9 @@ from ruamel import yaml
 
 import jukebox.plugs as plugin
 import jukebox.cfghandler
-from components.playern.backends.spotify.http_client import SpotifyHttpClient
-from components.playern.backends.spotify.ws_client import SpotifyWsClient
+
+from spotipy.oauth2 import SpotifyOAuth
+import spotipy
 
 logger = logging.getLogger('jb.spotify')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -23,18 +24,17 @@ class SPOTBackend:
     def __init__(self, player_status):
         host = cfg.getn('playerspot', 'host')
         self.player_status = player_status
+        self.client_id = cfg.setndefault('playerspot', 'client_id', value='Phoniebox')
+        self.client_secret = cfg.setndefault('playerspot', 'client_secret', value='Phoniebox_secret')
+        self.redirect_uri = cfg.setndefault('playerspot', 'callback_url',
+                                                         value='https://localhost:8888/callback')
+        self.auth_manager = SpotifyOAuth(scope="streaming", client_id=self.client_id, client_secret=self.client_id, redirect_uri=self.redirect_uri)
 
-        self.http_client = SpotifyHttpClient(host)
+        self.spot_client = spotipy.Spotify(auth_manager=self.auth_manager)
 
-        self.ws_client = SpotifyWsClient(
-            host=host,
-            player_status=self.player_status
-        )
-        self.ws_client.connect()
-
-        self.collection_file_location = cfg.setndefault('playerspot', 'collection_file',
-                                                   value="../../shared/audio/spotify/spotify_collection.yaml")
-        self.spotify_collection_data = self._read_data_file()
+        #self.collection_file_location = cfg.setndefault('playerspot', 'collection_file',
+        #                                                value="../../shared/audio/spotify/spotify_collection.yaml")
+        #self.spotify_collection_data = self._read_data_file()
 
     def _read_data_file(self) -> dict:
         try:
@@ -47,26 +47,19 @@ class SPOTBackend:
             return {}
 
     def play(self):
-        self.http_client.play()
+        self.spot_client.start_playback(self.client_id)
 
     def pause(self):
-        self.http_client.pause()
+        self.spot_client.pause_playback(self.client_id)
 
     def stop(self):
-        try:
-            is_playing = self.http_client.get_status()['current']
-            logger.debug(f"Current player playing status: {is_playing}")
-            if is_playing:
-                self.http_client.pause()
-        except Exception as err:
-            logger.debug("No status information if Spotify is playing something.")
+        self.spot_client.pause_playback(self.client_id)
 
     def prev(self):
-        self.http_client.prev()
+        self.spot_client.previous_track(self.client_id)
 
     def next(self):
-        self.http_client.next()
-
+        self.spot_client.next_track()
     def toggle(self):
         pass
 
@@ -84,11 +77,12 @@ class SPOTBackend:
         if player_type != 'spotify':
             raise KeyError(f"URI prefix must be 'spotify' not '{player_type}")
 
-        self.http_client.play_uri(uri)
+        self.spot_client.start_playback(self.client_id, uri)
 
     @plugin.tag
     def get_status(self):
-        self.http_client.get_status()
+        logger.debug(self.spot_client.current_playback())
+        self.spot_client.current_playback()
 
     # -----------------------------------------------------
     # Queue / URI state  (save + restore e.g. random, resume, ...)
