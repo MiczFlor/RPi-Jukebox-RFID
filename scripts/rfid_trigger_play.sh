@@ -326,6 +326,8 @@ if [ "$CARDID" ]; then
 						echo "Sync: executed ${RSYNCSHORTCUTS}"
 						if [ $? -eq 0 -a -n "${RSYNCSHORTCUTS}" ]; then
 							echo "Sync: files copied"
+							sudo chown pi:www-data "$PATHDATA/../shared/shortcuts/$CARDID"
+							sudo chmod -R 777 "$PATHDATA/../shared/shortcuts/$CARDID"
 						else
 							echo "Sync: nothing changed"
 						fi
@@ -387,9 +389,10 @@ if [ ! -z "$FOLDER" ]; then
 				echo "Sync: executed ${RSYNCSAUDIOFILES}"
 				if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 					echo "Sync: files copied"
-					echo "Sync: update database and restart mpd"
-					sudo mpc update > /dev/null 2>&1
-					sudo service mpd restart  > /dev/null 2>&1
+					echo "Sync: update database"
+					sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
+					sudo chmod -R 777 "${AUDIOFOLDERSPATH}/${FOLDER}"
+					sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
 				else
 					echo "Sync: nothing changed"
 				fi
