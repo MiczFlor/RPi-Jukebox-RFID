@@ -312,32 +312,8 @@ if [ "$CARDID" ]; then
             # Now we expect it to be a trigger for one or more audio file(s).
             # Let's look at the ID, write a bit of log information and then try to play audio.
 		
-			# Sync shortcut from server if no text file is in folder 'shortcuts'
-			if [ ! -f $PATHDATA/../shared/shortcuts/$CARDID ]
-			then
-				if nc -z "test.schiller-dev.de" -w 1 22322 ; then
-					echo "Sync: Server is reachable"
-					SYNCREMOTEPATH="/home/pi/test/Phoniebox/"
-					SYNCSHORTCUTS="${SYNCREMOTEPATH}shortcuts/"
-					echo "Sync: Checking for shortcut: $CARDID in REMOTE: $SYNCSHORTCUTS"
-					if [ -f "${SYNCSHORTCUTS}${CARDID}" ]; then
-						echo "Sync: found ${SYNCSHORTCUTS}${CARDID}"
-						RSYNCSHORTCUTS=$(rsync -azi --no-o --no-g "${SYNCSHORTCUTS}${CARDID}" "$PATHDATA/../shared/shortcuts/")
-						echo "Sync: executed ${RSYNCSHORTCUTS}"
-						if [ $? -eq 0 -a -n "${RSYNCSHORTCUTS}" ]; then
-							echo "Sync: files copied"
-							sudo chown pi:www-data "$PATHDATA/../shared/shortcuts/$CARDID"
-							sudo chmod -R 777 "$PATHDATA/../shared/shortcuts/$CARDID"
-						else
-							echo "Sync: nothing changed"
-						fi
-					else 
-						echo "Sync: $CARDID not found in REMOTE: $SYNCSHORTCUTS"
-					fi
-				else 
-					echo "Sync: Server is NOT reachable"
-				fi
-			fi
+			# Sync shortcut $CARDID
+			$PATHDATA/sync_shared.sh -c=shortcuts -i=$CARDID
 
 			# Look for human readable shortcut in folder 'shortcuts'
             # check if CARDID has a text file by the same name - which would contain the human readable folder name
@@ -375,34 +351,8 @@ if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VA
 # check if $FOLDER is not empty 
 if [ ! -z "$FOLDER" ]; then
 
-	echo "VAR FOLDER is set to $FOLDER"
-	if [ ! -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
-		if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER not empty, but dir does not exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
-		if nc -z "test.schiller-dev.de" -w 1 22322 ; then
-			echo "Sync: Server is reachable"
-			SYNCREMOTEPATH="/home/pi/test/Phoniebox/"
-			SYNCSAUDIOFILES="${SYNCREMOTEPATH}audiofolders/"
-			echo "Sync: Checking for audiofolders: $FOLDER in REMOTE: $SYNCSAUDIOFILES"
-			if [ -d "${SYNCSAUDIOFILES}${FOLDER}" ]; then
-				echo "Exists: ${SYNCSAUDIOFILES}${FOLDER}"
-				RSYNCSAUDIOFILES=$(rsync -azi --no-o --no-g "${SYNCSAUDIOFILES}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
-				echo "Sync: executed ${RSYNCSAUDIOFILES}"
-				if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
-					echo "Sync: files copied"
-					echo "Sync: update database"
-					sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
-					sudo chmod -R 777 "${AUDIOFOLDERSPATH}/${FOLDER}"
-					sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
-				else
-					echo "Sync: nothing changed"
-				fi
-			else 
-				echo "FOLDER: $FOLDER not found in REMOTE: $SYNCREMOTEPATH"
-			fi
-		else 
-			echo "Sync: Server is NOT reachable"
-		fi
-	fi
+	# Sync audio folder $FOLDER
+	$PATHDATA/sync_shared.sh -c=audiofolders -d=$FOLDER
 
 	# check if $FOLDER points to existing directory 
 	if [ -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
