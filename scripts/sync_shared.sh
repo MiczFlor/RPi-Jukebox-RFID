@@ -86,7 +86,7 @@ else
 				fi
 			
 				if [ -f "${SYNCSHORTCUTSPATH}${CARDID}" ]; then
-					RSYNCSHORTCUTSCMD=$(rsync -azi --no-o --no-g --no-times "${SYNCSHORTCUTSPATH}${CARDID}" "${SHORTCUTSPATH}")
+					RSYNCSHORTCUTSCMD=$(rsync -azui --no-o --no-g --no-times "${SYNCSHORTCUTSPATH}${CARDID}" "${SHORTCUTSPATH}")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSHORTCUTSCMD}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSHORTCUTSCMD}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -116,13 +116,13 @@ else
 				fi
 			
 				if [ -d "${SYNCAUDIOFOLDERSPATH}${FOLDER}" ]; then
-					RSYNCSAUDIOFILES=$(rsync -azi --no-o --no-g --no-times "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
+					RSYNCSAUDIOFILES=$(rsync -azui --no-o --no-g --no-perms --no-times --delete --exclude="folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PATHDATA}/../logs/debug.log; fi
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights and update database" >> ${PATHDATA}/../logs/debug.log; fi
 						
-						sudo chown pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
+						sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
 						sudo chmod -R 775 "${AUDIOFOLDERSPATH}/${FOLDER}"
 						sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
 						
