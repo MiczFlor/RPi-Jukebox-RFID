@@ -312,8 +312,10 @@ if [ "$CARDID" ]; then
             # Now we expect it to be a trigger for one or more audio file(s).
             # Let's look at the ID, write a bit of log information and then try to play audio.
 		
-			# Sync shortcut $CARDID
-			$PATHDATA/sync_shared.sh -c=shortcuts -i=$CARDID
+			# If enabled sync shortcut $CARDID
+            if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
+			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync_shared.sh -c=shortcuts -i=$CARDID
+            fi
 
 			# Look for human readable shortcut in folder 'shortcuts'
             # check if CARDID has a text file by the same name - which would contain the human readable folder name
@@ -351,8 +353,10 @@ if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VA
 # check if $FOLDER is not empty 
 if [ ! -z "$FOLDER" ]; then
 
-	# Sync audio folder $FOLDER
-	$PATHDATA/sync_shared.sh -c=audiofolders -d=$FOLDER
+	# If enabled sync audio folder $FOLDER
+    if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
+	    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync_shared.sh -c=audiofolders -d=$FOLDER
+    fi
 
 	# check if $FOLDER points to existing directory 
 	if [ -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then

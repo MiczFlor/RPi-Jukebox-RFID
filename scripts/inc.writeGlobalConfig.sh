@@ -326,6 +326,17 @@ CMDREWIND=`grep 'CMDREWIND' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1
 CMDSEEKFORW=`grep 'CMDSEEKFORW' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDSEEKFORW=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
 CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tail -1|sed 's/CMDSEEKBACK=//g'|sed 's/"//g'|tr -d "\n"|grep -o '[0-9]*'`
 
+##############################################
+# SYNCSHAREDENABLED
+# Activation status of component sync-shared-from-server
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Sync_Shared_Enabled ]; then
+    echo "FALSE" > $PATHDATA/../settings/Sync_Shared_Enabled
+    chmod 777 $PATHDATA/../settings/Sync_Shared_Enabled
+fi
+# 2. then|or read value from file
+SYNCSHAREDENABLED=`cat $PATHDATA/../settings/Sync_Shared_Enabled`
+
 # AUDIOFOLDERSPATH
 # PLAYLISTSFOLDERPATH
 # SWIPEORPLACE
@@ -359,6 +370,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # CMDREWIND
 # CMDSEEKFORW
 # CMDSEEKBACK
+# SYNCSHAREDENABLED
 
 #########################################################
 # WRITE CONFIG FILE
@@ -394,6 +406,7 @@ echo "CMDPREV=\"${CMDPREV}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDREWIND=\"${CMDREWIND}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDSEEKFORW=\"${CMDSEEKFORW}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "CMDSEEKBACK=\"${CMDSEEKBACK}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "SYNCSHAREDENABLED=\"${SYNCSHAREDENABLED}\"" >> "${PATHDATA}/../settings/global.conf"
 
 # Work in progress:
 #echo "MAILWLANIPYN=\"${MAILWLANIPYN}\"" >> "${PATHDATA}/../settings/global.conf"

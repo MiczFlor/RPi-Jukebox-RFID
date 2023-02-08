@@ -15,6 +15,7 @@ settings/rfid_trigger_play.conf
 settings/Second_Swipe
 settings/ShowCover
 settings/sync_shared.conf
+settings/Sync_Shared_Enabled
 settings/version
 htdocs/config.php
 scripts/deviceName.txt
