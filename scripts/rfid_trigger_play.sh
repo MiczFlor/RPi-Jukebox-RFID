@@ -322,7 +322,7 @@ if [ "$CARDID" ]; then
 		
 			# If enabled sync shortcut $CARDID
             if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
-			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync_shared.sh -c=shortcuts -i="$CARDID"
+			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync-shared.sh -c=shortcuts -i="$CARDID"
             fi
 
 			# Look for human readable shortcut in folder 'shortcuts'
@@ -363,7 +363,7 @@ if [ ! -z "$FOLDER" ]; then
 
 	# If enabled sync audio folder $FOLDER
     if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
-	    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync_shared.sh -c=audiofolders -d="$FOLDER"
+	    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync-shared.sh -c=audiofolders -d="$FOLDER"
     fi
 
 	# check if $FOLDER points to existing directory 
