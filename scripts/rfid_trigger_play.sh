@@ -63,6 +63,14 @@ fi
 # see following file for details:
 . $PATHDATA/inc.readArgsFromCommandLine.sh
 
+#######################
+# Activation status of component sync-shared-from-server
+SYNCSHAREDENABLED="FALSE"
+if [ -f ${PROJROOTPATH}/settings/Sync_Shared_Enabled ]; then
+    SYNCSHAREDENABLED=`cat ${PROJROOTPATH}/settings/Sync_Shared_Enabled`
+fi
+if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Sync: SYNCSHAREDENABLED=$SYNCSHAREDENABLED" >> ${PROJROOTPATH}/logs/debug.log; fi
+
 ##################################################################
 # Check if we got the card ID or the audio folder from the prompt.
 # Sloppy error check, because we assume the best.

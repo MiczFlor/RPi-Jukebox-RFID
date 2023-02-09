@@ -31,19 +31,27 @@ SHORTCUTSPATH="$PROJROOTPATH/shared/shortcuts"
 
 if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ($NOW) ##" >> ${PROJROOTPATH}/logs/debug.log; fi
 
-#############################################################
-# Read global configuration file (and create if not exists)
-# create the global configuration file from single files - if it does not exist
-if [ ! -f ${PROJROOTPATH}/settings/global.conf ]; then
-    . ${PATHDATA}/inc.writeGlobalConfig.sh
+#######################
+# Activation status of component sync-shared-from-server
+SYNCSHAREDENABLED="FALSE"
+if [ -f ${PROJROOTPATH}/settings/Sync_Shared_Enabled ]; then
+    SYNCSHAREDENABLED=`cat ${PROJROOTPATH}/settings/Sync_Shared_Enabled`
 fi
-. ${PROJROOTPATH}/settings/global.conf
+
 
 if [ "${SYNCSHAREDENABLED}" != "TRUE" ]; then
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: disabled" >> ${PROJROOTPATH}/logs/debug.log; fi
 			
 else
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> ${PROJROOTPATH}/logs/debug.log; fi
+
+	#############################################################
+	# Read global configuration file (and create if not exists)
+	# create the global configuration file from single files - if it does not exist
+	if [ ! -f ${PROJROOTPATH}/settings/global.conf ]; then
+		. ${PATHDATA}/inc.writeGlobalConfig.sh
+	fi
+	. ${PROJROOTPATH}/settings/global.conf
 
 	#############################################################
 	# Read configuration file
