@@ -49,7 +49,7 @@ else
 	# Read global configuration file (and create if not exists)
 	# create the global configuration file from single files - if it does not exist
 	if [ ! -f ${PROJROOTPATH}/settings/global.conf ]; then
-		. ${PATHDATA}/inc.writeGlobalConfig.sh
+		. ${PROJROOTPATH}/scripts/inc.writeGlobalConfig.sh
 	fi
 	. ${PROJROOTPATH}/settings/global.conf
 
@@ -76,7 +76,7 @@ else
 	# Get args from command line (see Usage above)
 	# Read the args passed on by the command line
 	# see following file for details:
-	. ${PATHDATA}/inc.readArgsFromCommandLine.sh
+	. ${PROJROOTPATH}/scripts/inc.readArgsFromCommandLine.sh
 
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PROJROOTPATH}/logs/debug.log; fi
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR CARDID: ${CARDID}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -153,3 +153,4 @@ else
 	esac
 
 fi
+if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ##" >> ${PROJROOTPATH}/logs/debug.log; fi
