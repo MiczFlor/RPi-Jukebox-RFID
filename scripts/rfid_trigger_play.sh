@@ -314,6 +314,12 @@ if [ "$CARDID" ]; then
         $CMDBLUETOOTHTOGGLE)
             $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
             ;;
+		$SYNCSHAREDFULL)
+			# If enabled sync full $CARDID
+            if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
+			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync-shared.sh -c=full
+            fi
+			;;
         *)
 
             # We checked if the card was a special command, seems it wasn't.

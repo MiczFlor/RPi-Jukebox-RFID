@@ -12,11 +12,15 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 #
 # syn audiofolders:
 # ./sync_shared.sh -c=audiofolders -d=xxx
+# 
+# syn full:
+# ./sync_shared.sh -c=full
 #
 #
 # VALID COMMANDS:
 # shortcuts (with -i)
 # audiofolders (with -d)
+# full
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -57,7 +61,6 @@ else
 	# Read configuration file
 	# create the configuration file from sample - if it does not exist
 	if [ ! -f ${PROJROOTPATH}/settings/sync_shared.conf ]; then
-		echo "sync_shared.conf not present"
 		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Conf not present. Write from sample" >> ${PROJROOTPATH}/logs/debug.log; fi
 		cp ${PATHDATA}/settings/sync_shared.conf.sample ${PROJROOTPATH}/settings/sync_shared.conf
 		# change the read/write so that later this might also be editable through the web app
@@ -66,7 +69,7 @@ else
 	fi
 
 	. ${PROJROOTPATH}/settings/sync_shared.conf
-
+	
 	
 	# Set local vars
 	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}shortcuts/"
@@ -83,63 +86,131 @@ else
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR FOLDER: ${FOLDER}" >> ${PROJROOTPATH}/logs/debug.log; fi
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PROJROOTPATH}/logs/debug.log; fi
 
-
+	#############################################################
+	# Sync all files for the specific command. 
+	# Some special options are needed as the 'folder.conf' file will be generated on playback.
+	# Explanation for rsync options:
+	# "--itemize-changes" print a summary of copied files. Used for determination if files where changed (empty if no syncing performed). Useful for debug.log
+	# "--safe-links" ignore symlinks that point outside the tree
+	# "--times" preserve modification times from source. Recommended option to efficiently identify unchanged files
+	# "--omit-dir-times" ignore modification time on dirs (see --times). Needed to ignore the creation of 'folder.conf' which alters the modification time of dirs
+	# "--update" ignore newer files on destination. Lower traffic and runtime
+	# "--delete" delete files that no longer exist in source
+	# "--prune-empty-dirs" delete empty dirs (incl. subdirs)
+	# "--filter="-p folder.conf" exclude (option '-') 'folder.conf' file from syncing, especially deletion. Delete anyway if folder will be deleted (option 'p' (perishable)).
+	# "--exclude="placeholder" exclude 'placeholder' file from syncing, especially deletion
 	case $COMMAND in
 		shortcuts)
+			if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
+				if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
+				
+					if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
+						mkdir "${SYNCSHORTCUTSPATH}"
+						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+					
+					elif [ -f "${SYNCSHORTCUTSPATH}${CARDID}" ]; then
+						RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times "${SYNCSHORTCUTSPATH}${CARDID}" "${SHORTCUTSPATH}/")
+						
+						if [ $? -eq 0 -a -n "${RSYNCSHORTCUTSCMD}" ]; then
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSHORTCUTSCMD}" >> ${PROJROOTPATH}/logs/debug.log; fi
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights" >> ${PROJROOTPATH}/logs/debug.log; fi
+							
+							sudo chown pi:www-data "${SHORTCUTSPATH}/${CARDID}"
+							sudo chmod 775 "${SHORTCUTSPATH}/${CARDID}"
+							
+						else
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
+						fi
+						
+					else 
+						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Shortcut for $CARDID not found in REMOTE $SYNCSHORTCUTSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
+					fi
+					
+				else 
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+				fi
+				
+			else 
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> ${PROJROOTPATH}/logs/debug.log; fi
+			fi
+			;;
+		audiofolders)
+			if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
+				if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
+				
+					if [ ! -d "${SYNCAUDIOFOLDERSPATH}" ]; then
+						mkdir "${SYNCAUDIOFOLDERSPATH}"
+						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+					
+					elif [ -d "${SYNCAUDIOFOLDERSPATH}${FOLDER}" ]; then
+						RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-p folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
+						
+						if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights and update database" >> ${PROJROOTPATH}/logs/debug.log; fi
+							
+							sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
+							sudo chmod -R 775 "${AUDIOFOLDERSPATH}/${FOLDER}"
+							sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
+							
+						else
+							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
+						fi
+						
+					else 
+						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder $FOLDER not found in REMOTE $SYNCAUDIOFOLDERSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
+					fi
+					
+				else 
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+				fi
+							
+			else 
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> ${PROJROOTPATH}/logs/debug.log; fi
+			fi
+			;;
+		full)
 			if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
 			
 				if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
 					mkdir "${SYNCSHORTCUTSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
-				fi
-			
-				if [ -f "${SYNCSHORTCUTSPATH}${CARDID}" ]; then
-					RSYNCSHORTCUTSCMD=$(rsync -azui --no-o --no-g --no-times "${SYNCSHORTCUTSPATH}${CARDID}" "${SHORTCUTSPATH}")
+				else
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
+					RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --exclude="placeholder" "${SYNCSHORTCUTSPATH}" "${SHORTCUTSPATH}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSHORTCUTSCMD}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSHORTCUTSCMD}" >> ${PROJROOTPATH}/logs/debug.log; fi
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights" >> ${PROJROOTPATH}/logs/debug.log; fi
 						
-						sudo chown pi:www-data "${SHORTCUTSPATH}/${CARDID}"
-						sudo chmod -R 775 "${SHORTCUTSPATH}/${CARDID}"
+						sudo chown -R pi:www-data "${SHORTCUTSPATH}"
+						sudo chmod -R 775 "${SHORTCUTSPATH}"
 						
 					else
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
 					fi
-					
-				else 
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Shortcut for $CARDID not found in REMOTE $SYNCSHORTCUTSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
+
 				fi
-				
-			else 
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
-			fi
-			;;
-		audiofolders)
-			if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
-			
+					
 				if [ ! -d "${SYNCAUDIOFOLDERSPATH}" ]; then
 					mkdir "${SYNCAUDIOFOLDERSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
-				fi
-			
-				if [ -d "${SYNCAUDIOFOLDERSPATH}${FOLDER}" ]; then
-					RSYNCSAUDIOFILES=$(rsync -azui --no-o --no-g --no-perms --no-times --delete --exclude="folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
+				else
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
+					RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-p folder.conf" --exclude="placeholder" "${SYNCAUDIOFOLDERSPATH}" "${AUDIOFOLDERSPATH}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights and update database" >> ${PROJROOTPATH}/logs/debug.log; fi
 						
-						sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
-						sudo chmod -R 775 "${AUDIOFOLDERSPATH}/${FOLDER}"
-						sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
+						sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}"
+						sudo chmod -R 775 "${AUDIOFOLDERSPATH}"
+						sudo mpc update --wait "${AUDIOFOLDERSPATH}" > /dev/null 2>&1
 						
 					else
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
 					fi
 					
-				else 
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder $FOLDER not found in REMOTE $SYNCAUDIOFOLDERSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
 				fi
 				
 			else 
