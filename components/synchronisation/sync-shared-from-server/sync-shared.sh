@@ -118,7 +118,7 @@ else
 	case $COMMAND in
 		shortcuts)
 			if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
-				if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
+				if nc -z $SYNCSHAREDREMOTESERVER -w $SYNCSHAREDREMOTETIMOUT $SYNCSHAREDREMOTEPORT ; then
 				
 					if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
 						mkdir "${SYNCSHORTCUTSPATH}"
@@ -152,7 +152,7 @@ else
 			;;
 		audiofolders)
 			if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
-				if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
+				if nc -z $SYNCSHAREDREMOTESERVER -w $SYNCSHAREDREMOTETIMOUT $SYNCSHAREDREMOTEPORT ; then
 				
 					if [ ! -d "${SYNCAUDIOFOLDERSPATH}" ]; then
 						mkdir "${SYNCAUDIOFOLDERSPATH}"
@@ -186,7 +186,7 @@ else
 			fi
 			;;
 		full)
-			if nc -z $SYNCSHAREDREMOTESERVER -w 1 $SYNCSHAREDREMOTEPORT ; then
+			if nc -z $SYNCSHAREDREMOTESERVER -w $SYNCSHAREDREMOTETIMOUT $SYNCSHAREDREMOTEPORT ; then
 			
 				if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
 					mkdir "${SYNCSHORTCUTSPATH}"
