@@ -320,6 +320,12 @@ if [ "$CARDID" ]; then
 			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync-shared.sh -c=full
             fi
 			;;
+        $SYNCSHAREDONRFIDSCANTOGGLE)
+			# If enabled sync full $CARDID
+            if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
+			    $PATHDATA/../components/synchronisation/sync-shared-from-server/sync-shared.sh -c=onRfidScan -v=toggle
+            fi
+			;;
         *)
 
             # We checked if the card was a special command, seems it wasn't.

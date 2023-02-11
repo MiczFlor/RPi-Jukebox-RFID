@@ -7,20 +7,25 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # USAGE EXAMPLES:
 #
-# syn shortcuts:
+# sync shortcuts:
 # ./sync_shared.sh -c=shortcuts -i=xxx
 #
-# syn audiofolders:
+# sync audiofolders:
 # ./sync_shared.sh -c=audiofolders -d=xxx
 # 
-# syn full:
+# sync full:
 # ./sync_shared.sh -c=full
+# 
+# sync toggle SyncOnRfidScan:
+# ./sync_shared.sh -c=onRfidScan -v=toggle
+
 #
 #
 # VALID COMMANDS:
 # shortcuts (with -i)
 # audiofolders (with -d)
 # full
+# onRfidScan (with -v=on | off | toogle)
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -48,6 +53,17 @@ if [ "${SYNCSHAREDENABLED}" != "TRUE" ]; then
 			
 else
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> ${PROJROOTPATH}/logs/debug.log; fi
+
+	#############################################################
+	# Functions
+	function set_setting_syncsharedonrfidscan {
+		local OLD="$1"
+		local NEW="$2"
+
+		sed -i "s/SYNCSHAREDONRFIDSCAN=\"$OLD\"/SYNCSHAREDONRFIDSCAN=\"$NEW\"/g" ${PROJROOTPATH}/settings/sync_shared.conf
+	}
+	#############################################################
+
 
 	#############################################################
 	# Read global configuration file (and create if not exists)
@@ -215,6 +231,32 @@ else
 				
 			else 
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+			fi
+			;;
+		onRfidScan)
+			case $VALUE in
+				on)
+					SYNCSHAREDONRFIDSCAN_NEW="TRUE"
+					;;
+				off)
+					SYNCSHAREDONRFIDSCAN_NEW="FALSE"
+					;;
+				toggle)
+					if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
+						SYNCSHAREDONRFIDSCAN_NEW="FALSE"
+					else 
+						SYNCSHAREDONRFIDSCAN_NEW="TRUE"
+					fi
+					;;
+				*)	
+					echo "Unknown VALUE $VALUE for COMMAND $COMMAND"
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown VALUE $VALUE for COMMAND $COMMAND" >> ${PROJROOTPATH}/logs/debug.log; fi
+					;;
+			esac
+
+			if [ ! -z "${SYNCSHAREDONRFIDSCAN_NEW}" ]; then 
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $VALUE" >> ${PROJROOTPATH}/logs/debug.log; fi
+				set_setting_syncsharedonrfidscan $SYNCSHAREDONRFIDSCAN $SYNCSHAREDONRFIDSCAN_NEW
 			fi
 			;;
 		*)
