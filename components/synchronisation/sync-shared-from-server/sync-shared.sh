@@ -113,7 +113,7 @@ else
 	# "--update" ignore newer files on destination. Lower traffic and runtime
 	# "--delete" delete files that no longer exist in source
 	# "--prune-empty-dirs" delete empty dirs (incl. subdirs)
-	# "--filter="-p folder.conf" exclude (option '-') 'folder.conf' file from syncing, especially deletion. Delete anyway if folder will be deleted (option 'p' (perishable)).
+	# "--filter="-rp folder.conf" exclude (option '-') 'folder.conf' file from deletion on receiving side (option 'r'). Delete anyway if folder will be deleted (option 'p' (perishable)).
 	# "--exclude="placeholder" exclude 'placeholder' file from syncing, especially deletion
 	case $COMMAND in
 		shortcuts)
@@ -159,7 +159,7 @@ else
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 					
 					elif [ -d "${SYNCAUDIOFOLDERSPATH}${FOLDER}" ]; then
-						RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-p folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
+						RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
 						
 						if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -213,7 +213,7 @@ else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
-					RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-p folder.conf" --exclude="placeholder" "${SYNCAUDIOFOLDERSPATH}" "${AUDIOFOLDERSPATH}/")
+					RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" --exclude="placeholder" "${SYNCAUDIOFOLDERSPATH}" "${AUDIOFOLDERSPATH}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
