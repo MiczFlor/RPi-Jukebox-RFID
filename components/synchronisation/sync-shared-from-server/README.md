@@ -16,6 +16,7 @@ If the feature "RFID scan sync" is activated, there will be a check on every RFI
 If the server is not reachable the check will be aborted after the timeout. So an unreachable server will cause a delay (see command "SYNCSHAREDONRFIDSCANTOGGLE" to toggle activation state). 
 Further will the playback be delayed for the time the data are transfered (see "SYNCSHAREDFULL" to use a full-sync if a lot of new files have been added).
 
+Currently only synchronisation via a mounted share ist supported.
 
 ## Installation
 
@@ -37,17 +38,12 @@ Hold the activation state of this feature. Values are "TRUE" or "FALSE"
 
 **INSTALLATION_ROOT/settings/sync_shared.conf**
 
-SYNCSHAREDONRFIDSCAN
-If the optional feature "RFID scan sync" is activated. Values are "TRUE" or "FALSE"
+SYNCSHAREDONRFIDSCAN: If the optional feature "RFID scan sync" is activated. Values are "TRUE" or "FALSE"
 
-SYNCSHAREDREMOTESERVER
-The IP or hostname of the server (used to check connectivity). e.g. "192.168.0.2" or "myhomeserver.local"
+SYNCSHAREDREMOTESERVER: The IP or hostname of the server (used to check connectivity). e.g. "192.168.0.2" or "myhomeserver.local"
 
-SYNCSHAREDREMOTEPORT="22322"
-The port of the server (used to check connectivity). e.g. "22" or "80"
+SYNCSHAREDREMOTEPORT: The port of the server (used to check connectivity). e.g. "80" or "22"
 
-SYNCSHAREDREMOTEPATH="/mnt/station-phoniebox/"
-The path on the server to sync. 
+SYNCSHAREDREMOTEPATH: The path to the shared files to sync. e.g. "/mnt/Phoniebox"
 
-SYNCSHAREDREMOTETIMOUT="1"
-The timeout to reach the server (in seconds) (used to check connectivity). e.g. 1
+SYNCSHAREDREMOTETIMOUT: The timeout to reach the server (in seconds) (used to check connectivity). e.g. 1

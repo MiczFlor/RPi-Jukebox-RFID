@@ -66,7 +66,7 @@ function read_all_settings {
 	read_setting "$SYNCSHAREDREMOTEPORT" "Please enter your servers port."
 	set_setting "SYNCSHAREDREMOTEPORT" "$response"
 
-	read_setting "$SYNCSHAREDREMOTEPATH" "Please enter your servers path."
+	read_setting "$SYNCSHAREDREMOTEPATH" "Please enter the path to the shared files to sync."
 	set_setting "SYNCSHAREDREMOTEPATH" "$response"
 
 	read_setting "$SYNCSHAREDREMOTETIMOUT" "Please enter the timeout to try to reach the server (in seconds)."
