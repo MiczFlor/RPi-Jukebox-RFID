@@ -26,9 +26,9 @@ Please configure all settings according to your setup.
 ## Configuration
 
 If your configuration has changed, run the script 'change_configuration.sh' to update the settings. This lets you also deactivate this feature.
-You may also change the settings in "INSTALLATION_ROOT/settings/sync_shared.conf" direclty.
+You may also change the settings in the according files directly.
 
-###Settings:
+### Settings:
 
 **INSTALLATION_ROOT/settings/Sync_Shared_Enabled**
 
