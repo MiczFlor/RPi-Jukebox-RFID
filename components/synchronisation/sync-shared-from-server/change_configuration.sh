@@ -21,7 +21,8 @@ function set_activation {
 	echo -e "\nLet global controls know this feature is $SETTINGSTATE. (Sync_Shared_Enabled -> $SETTINGVALUE)"
 	
 	echo "$SETTINGVALUE" > ${CONFFILE}
-	chmod ugo+rw ${CONFFILE}
+	sudo chgrp www-data ${CONFFILE}
+	sudo chmod 775 ${CONFFILE}
 }
 
 function init_settings {
@@ -29,8 +30,8 @@ function init_settings {
 	if [ ! -f ${PROJROOTPATH}/settings/sync_shared.conf ]; then
 		cp ${PATHDATA}/settings/sync_shared.conf.sample ${PROJROOTPATH}/settings/sync_shared.conf
 		# change the read/write so that later this might also be editable through the web app
-		sudo chown -R pi:www-data ${PROJROOTPATH}/settings/sync_shared.conf
-		sudo chmod -R ugo+rw ${PROJROOTPATH}/settings/sync_shared.conf
+		sudo chgrp www-data ${PROJROOTPATH}/settings/sync_shared.conf
+		sudo chmod 775 ${PROJROOTPATH}/settings/sync_shared.conf
 	fi
 	. ${PROJROOTPATH}/settings/sync_shared.conf
 }
@@ -40,7 +41,7 @@ function set_setting {
 	local SETTINGVALUE="$2"
 
 	if [ ! -z "$SETTINGVALUE" -a "${!SETTINGNAME}" != "$SETTINGVALUE" ]; then
-		sed -i "s;^$SETTINGNAME=.*;$SETTINGNAME=\"$SETTINGVALUE\";" ${PROJROOTPATH}/settings/sync_shared.conf
+		sed -i "s|^$SETTINGNAME=.*|$SETTINGNAME=\"$SETTINGVALUE\"|g" ${PROJROOTPATH}/settings/sync_shared.conf
 		echo "New value: \"$SETTINGVALUE\""
 	fi
 }
