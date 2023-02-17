@@ -83,8 +83,8 @@ else
 	
 	#############################################################
 	# Set local vars after sync_shared.conf is read
-	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}shortcuts/"
-	SYNCAUDIOFOLDERSPATH="${SYNCSHAREDREMOTEPATH}audiofolders/"
+	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}/shortcuts"
+	SYNCAUDIOFOLDERSPATH="${SYNCSHAREDREMOTEPATH}/audiofolders"
 	
 
 	#############################################################
@@ -115,7 +115,15 @@ else
 			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $VALUE" >> ${PROJROOTPATH}/logs/debug.log; fi
 			sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"$SYNCSHAREDONRFIDSCAN_NEW\"|g" ${PROJROOTPATH}/settings/sync_shared.conf
 		fi
+	}
+	
+	function change_access {
+		local file_or_dir="$1"
+		local group="$2"
+		local mod="$3"
 		
+		sudo chgrp -R "${group}" "${file_or_dir}"
+		sudo chmod -R "${mod}" "${file_or_dir}"
 	}
 	
 	#############################################################
@@ -143,15 +151,14 @@ else
 						mkdir "${SYNCSHORTCUTSPATH}"
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 					
-					elif [ -f "${SYNCSHORTCUTSPATH}${CARDID}" ]; then
-						RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times "${SYNCSHORTCUTSPATH}${CARDID}" "${SHORTCUTSPATH}/")
+					elif [ -f "${SYNCSHORTCUTSPATH}/${CARDID}" ]; then
+						RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times "${SYNCSHORTCUTSPATH}/${CARDID}" "${SHORTCUTSPATH}/")
 						
 						if [ $? -eq 0 -a -n "${RSYNCSHORTCUTSCMD}" ]; then
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSHORTCUTSCMD}" >> ${PROJROOTPATH}/logs/debug.log; fi
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights" >> ${PROJROOTPATH}/logs/debug.log; fi
 							
-							sudo chown pi:www-data "${SHORTCUTSPATH}/${CARDID}"
-							sudo chmod 775 "${SHORTCUTSPATH}/${CARDID}"
+							change_access "${SHORTCUTSPATH}/${CARDID}" "www-data" "775"
 							
 						else
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -177,15 +184,14 @@ else
 						mkdir "${SYNCAUDIOFOLDERSPATH}"
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 					
-					elif [ -d "${SYNCAUDIOFOLDERSPATH}${FOLDER}" ]; then
-						RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" "${SYNCAUDIOFOLDERSPATH}${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
+					elif [ -d "${SYNCAUDIOFOLDERSPATH}/${FOLDER}" ]; then
+						RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${AUDIOFOLDERSPATH}/${FOLDER}/")
 						
 						if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
 							if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights and update database" >> ${PROJROOTPATH}/logs/debug.log; fi
 							
-							sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}/${FOLDER}"
-							sudo chmod -R 775 "${AUDIOFOLDERSPATH}/${FOLDER}"
+							change_access "${AUDIOFOLDERSPATH}/${FOLDER}" "www-data" "775"
 							sudo mpc update --wait "${AUDIOFOLDERSPATH}/${FOLDER}" > /dev/null 2>&1
 							
 						else
@@ -212,14 +218,13 @@ else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
-					RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --exclude="placeholder" "${SYNCSHORTCUTSPATH}" "${SHORTCUTSPATH}/")
+					RSYNCSHORTCUTSCMD=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --exclude="placeholder" "${SYNCSHORTCUTSPATH}/" "${SHORTCUTSPATH}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSHORTCUTSCMD}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSHORTCUTSCMD}" >> ${PROJROOTPATH}/logs/debug.log; fi
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights" >> ${PROJROOTPATH}/logs/debug.log; fi
 						
-						sudo chown -R pi:www-data "${SHORTCUTSPATH}"
-						sudo chmod -R 775 "${SHORTCUTSPATH}"
+						change_access "${SHORTCUTSPATH}" "www-data" "775"
 						
 					else
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -232,14 +237,13 @@ else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				else
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
-					RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" --exclude="placeholder" "${SYNCAUDIOFOLDERSPATH}" "${AUDIOFOLDERSPATH}/")
+					RSYNCSAUDIOFILES=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --update --delete --prune-empty-dirs --filter="-rp folder.conf" --exclude="placeholder" "${SYNCAUDIOFOLDERSPATH}/" "${AUDIOFOLDERSPATH}/")
 					
 					if [ $? -eq 0 -a -n "${RSYNCSAUDIOFILES}" ]; then
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: executed rsync ${RSYNCSAUDIOFILES}" >> ${PROJROOTPATH}/logs/debug.log; fi
 						if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. setting rights and update database" >> ${PROJROOTPATH}/logs/debug.log; fi
 						
-						sudo chown -R pi:www-data "${AUDIOFOLDERSPATH}"
-						sudo chmod -R 775 "${AUDIOFOLDERSPATH}"
+						change_access "${AUDIOFOLDERSPATH}" "www-data" "775"
 						sudo mpc update --wait "${AUDIOFOLDERSPATH}" > /dev/null 2>&1
 						
 					else
