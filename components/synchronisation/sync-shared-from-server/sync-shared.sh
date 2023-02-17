@@ -17,7 +17,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # ./sync_shared.sh -c=full
 # 
 # sync toggle SyncOnRfidScan:
-# ./sync_shared.sh -c=onRfidScan -v=toggle
+# ./sync_shared.sh -c=changeOnRfidScan -v=toggle
 
 #
 #
@@ -25,7 +25,7 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # shortcuts (with -i)
 # audiofolders (with -d)
 # full
-# onRfidScan (with -v=on | off | toogle)
+# changeOnRfidScan(with -v=on | off | toogle)
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -53,55 +53,74 @@ if [ "${SYNCSHAREDENABLED}" != "TRUE" ]; then
 			
 else
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> ${PROJROOTPATH}/logs/debug.log; fi
-
-	#############################################################
-	# Functions
-	function set_setting_syncsharedonrfidscan {
-		local OLD="$1"
-		local NEW="$2"
-
-		sed -i "s/SYNCSHAREDONRFIDSCAN=\"$OLD\"/SYNCSHAREDONRFIDSCAN=\"$NEW\"/g" ${PROJROOTPATH}/settings/sync_shared.conf
-	}
-	#############################################################
-
-
+	
 	#############################################################
 	# Read global configuration file (and create if not exists)
-	# create the global configuration file from single files - if it does not exist
 	if [ ! -f ${PROJROOTPATH}/settings/global.conf ]; then
-		. ${PROJROOTPATH}/scripts/inc.writeGlobalConfig.sh
+		echo "Global settingsfile does not exist. Please call the script from an defined entrypoint"
+		exit
 	fi
 	. ${PROJROOTPATH}/settings/global.conf
 
 	#############################################################
 	# Read configuration file
-	# create the configuration file from sample - if it does not exist
 	if [ ! -f ${PROJROOTPATH}/settings/sync_shared.conf ]; then
-		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Conf not present. Write from sample" >> ${PROJROOTPATH}/logs/debug.log; fi
-		cp ${PATHDATA}/settings/sync_shared.conf.sample ${PROJROOTPATH}/settings/sync_shared.conf
-		# change the read/write so that later this might also be editable through the web app
-		sudo chown -R pi:www-data ${PROJROOTPATH}/settings/sync_shared.conf
-		sudo chmod -R 775 ${PROJROOTPATH}/settings/sync_shared.conf
+		echo "Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration"
+		exit
 	fi
-
 	. ${PROJROOTPATH}/settings/sync_shared.conf
 	
-	
-	# Set local vars
-	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}shortcuts/"
-	SYNCAUDIOFOLDERSPATH="${SYNCSHAREDREMOTEPATH}audiofolders/"
-
 	#############################################################
 	# Get args from command line (see Usage above)
 	# Read the args passed on by the command line
 	# see following file for details:
 	. ${PROJROOTPATH}/scripts/inc.readArgsFromCommandLine.sh
-
+	
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PROJROOTPATH}/logs/debug.log; fi
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR CARDID: ${CARDID}" >> ${PROJROOTPATH}/logs/debug.log; fi
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR FOLDER: ${FOLDER}" >> ${PROJROOTPATH}/logs/debug.log; fi
 	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PROJROOTPATH}/logs/debug.log; fi
+	
+	#############################################################
+	# Set local vars after sync_shared.conf is read
+	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}shortcuts/"
+	SYNCAUDIOFOLDERSPATH="${SYNCSHAREDREMOTEPATH}audiofolders/"
+	
 
+	#############################################################
+	#############################################################
+	# Functions
+	function handle_changeOnRfidScan {
+		case $VALUE in
+			on)
+				SYNCSHAREDONRFIDSCAN_NEW="TRUE"
+				;;
+			off)
+				SYNCSHAREDONRFIDSCAN_NEW="FALSE"
+				;;
+			toggle)
+				if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
+					SYNCSHAREDONRFIDSCAN_NEW="FALSE"
+				else 
+					SYNCSHAREDONRFIDSCAN_NEW="TRUE"
+				fi
+				;;
+			*)	
+				echo "Unknown VALUE $VALUE for COMMAND $COMMAND"
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown VALUE $VALUE for COMMAND $COMMAND" >> ${PROJROOTPATH}/logs/debug.log; fi
+				;;
+		esac
+
+		if [ ! -z "${SYNCSHAREDONRFIDSCAN_NEW}" ]; then 
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $VALUE" >> ${PROJROOTPATH}/logs/debug.log; fi
+			sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"$SYNCSHAREDONRFIDSCAN_NEW\"|g" ${PROJROOTPATH}/settings/sync_shared.conf
+		fi
+		
+	}
+	
+	#############################################################
+	#############################################################
+	
 	#############################################################
 	# Sync all files for the specific command. 
 	# Some special options are needed as the 'folder.conf' file will be generated on playback.
@@ -233,31 +252,8 @@ else
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
 			fi
 			;;
-		onRfidScan)
-			case $VALUE in
-				on)
-					SYNCSHAREDONRFIDSCAN_NEW="TRUE"
-					;;
-				off)
-					SYNCSHAREDONRFIDSCAN_NEW="FALSE"
-					;;
-				toggle)
-					if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
-						SYNCSHAREDONRFIDSCAN_NEW="FALSE"
-					else 
-						SYNCSHAREDONRFIDSCAN_NEW="TRUE"
-					fi
-					;;
-				*)	
-					echo "Unknown VALUE $VALUE for COMMAND $COMMAND"
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown VALUE $VALUE for COMMAND $COMMAND" >> ${PROJROOTPATH}/logs/debug.log; fi
-					;;
-			esac
-
-			if [ ! -z "${SYNCSHAREDONRFIDSCAN_NEW}" ]; then 
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $VALUE" >> ${PROJROOTPATH}/logs/debug.log; fi
-				set_setting_syncsharedonrfidscan $SYNCSHAREDONRFIDSCAN $SYNCSHAREDONRFIDSCAN_NEW
-			fi
+		changeOnRfidScan)
+			handle_changeOnRfidScan
 			;;
 		*)
 			echo Unknown COMMAND $COMMAND
