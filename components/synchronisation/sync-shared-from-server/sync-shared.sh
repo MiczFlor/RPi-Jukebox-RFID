@@ -117,7 +117,7 @@ else
 		local dst_path="$2"
 		local update_mpc="$3"
 		
-		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' $rsync_add_options "${src_path}" "${dst_path}")
+		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' "${src_path}" "${dst_path}")
 
 		if [ $? -eq 0 -a -n "${rsync_changes}" ]; then
 			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo -e "Sync: executed rsync \n${rsync_changes}" >> ${PROJROOTPATH}/logs/debug.log; fi
