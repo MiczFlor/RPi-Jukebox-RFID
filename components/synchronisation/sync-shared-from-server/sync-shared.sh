@@ -96,9 +96,25 @@ else
 	#############################################################
 	# Functions
 	
+	# Check if the sync mode is SSH
+	function is_mode_ssh {
+		[ "$SYNCSHAREDMODE" == "SSH" ]
+	}
+	
+	# Executes the command check for the current mode
+	function exec_for_mode {
+		if is_mode_ssh ; then
+			# Executes remote via SSH
+			ssh ${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER} -p ${SYNCSHAREDREMOTEPORT} $1
+		else
+			# Executes local on mount
+			$1 # must not be escaped, otherwise string value will be tested
+		fi
+	}
+	
 	# Check if server is reachable on port
 	function is_server_reachable {
-		return `nc -z $SYNCSHAREDREMOTESERVER -w $SYNCSHAREDREMOTETIMOUT $SYNCSHAREDREMOTEPORT`
+		return `nc -z "$SYNCSHAREDREMOTESERVER" -w "$SYNCSHAREDREMOTETIMOUT" "$SYNCSHAREDREMOTEPORT"`
 	}
 	
 	# Sync all files from source to destination
@@ -117,7 +133,12 @@ else
 		local dst_path="$2"
 		local update_mpc="$3"
 		
-		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' "${src_path}" "${dst_path}")
+		if is_mode_ssh ; then
+			local ssh_port=(-e "ssh -p ${SYNCSHAREDREMOTEPORT}")
+			local ssh_conn="${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER}:"
+		fi
+
+		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
 		if [ $? -eq 0 -a -n "${rsync_changes}" ]; then
 			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo -e "Sync: executed rsync \n${rsync_changes}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -139,12 +160,12 @@ else
 	function handle_shortcuts {
 		if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
 			if is_server_reachable ; then
-			
-				if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
-					mkdir "${SYNCSHORTCUTSPATH}"
+						
+				if exec_for_mode "[ ! -d "${SYNCSHORTCUTSPATH}" ]" ; then
+					exec_for_mode "mkdir ${SYNCSHORTCUTSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				
-				elif [ -f "${SYNCSHORTCUTSPATH}/${CARDID}" ]; then
+				elif exec_for_mode "[ -f ${SYNCSHORTCUTSPATH}/${CARDID} ]" ; then
 					sync_from_server "${SYNCSHORTCUTSPATH}/${CARDID}" "${LOCAL_SHORTCUTSPATH}/${CARDID}"
 					
 				else 
@@ -165,11 +186,11 @@ else
 		if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
 			if is_server_reachable ; then
 			
-				if [ ! -d "${SYNCAUDIOFOLDERSPATH}" ]; then
-					mkdir "${SYNCAUDIOFOLDERSPATH}"
+				if exec_for_mode "[ ! -d ${SYNCAUDIOFOLDERSPATH} ]" ; then
+					exec_for_mode "mkdir ${SYNCAUDIOFOLDERSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				
-				elif [ -d "${SYNCAUDIOFOLDERSPATH}/${FOLDER}" ]; then
+				elif exec_for_mode "[ -d ${SYNCAUDIOFOLDERSPATH}/${FOLDER} ]" ; then
 					sync_from_server "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${LOCAL_AUDIOFOLDERSPATH}/${FOLDER}/" "true"
 					
 				else 
@@ -189,8 +210,8 @@ else
 	function handle_full {
 		if is_server_reachable ; then
 		
-			if [ ! -d "${SYNCSHORTCUTSPATH}" ]; then
-				mkdir "${SYNCSHORTCUTSPATH}"
+			if exec_for_mode "[ ! -d ${SYNCSHORTCUTSPATH} ]" ; then
+				exec_for_mode "mkdir ${SYNCSHORTCUTSPATH}"
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 			else
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -198,8 +219,8 @@ else
 
 			fi
 				
-			if [ ! -d "${SYNCAUDIOFOLDERSPATH}" ]; then
-				mkdir "${SYNCAUDIOFOLDERSPATH}"
+			if exec_for_mode "[ ! -d ${SYNCAUDIOFOLDERSPATH} ]" ; then
+				exec_for_mode "mkdir ${SYNCAUDIOFOLDERSPATH}"
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 			else
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -214,7 +235,7 @@ else
 	
 	# Change setting for Sync on RFID scan
 	function handle_changeOnRfidScan {
-		case $VALUE in
+		case "$VALUE" in
 			on)
 				SYNCSHAREDONRFIDSCAN_NEW="TRUE"
 				;;
@@ -254,7 +275,8 @@ else
 	#############################################################
 	
 	#############################################################
-	case $COMMAND in
+	
+	case "$COMMAND" in
 		shortcuts)
 			handle_shortcuts
 			;;
@@ -268,7 +290,7 @@ else
 			handle_changeOnRfidScan
 			;;
 		*)
-			echo Unknown COMMAND $COMMAND
+			echo Unknown COMMAND "$COMMAND"
 			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} CARDID ${CARDID} FOLDER ${FOLDER} VALUE ${VALUE}" >> ${PROJROOTPATH}/logs/debug.log; fi
 			;;
 	esac

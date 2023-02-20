@@ -61,20 +61,8 @@ function read_setting {
 }
 
 function read_all_settings {
-	read_setting "$SYNCSHAREDREMOTESERVER" "Please enter your servers adresse (IP/Hostname)."
-	set_setting "SYNCSHAREDREMOTESERVER" "$response"
 
-	read_setting "$SYNCSHAREDREMOTEPORT" "Please enter your servers port."
-	set_setting "SYNCSHAREDREMOTEPORT" "$response"
-
-	read_setting "$SYNCSHAREDREMOTEPATH" "Please enter the path to the shared files to sync (without trailing slash)."
-	# Make sure paths dont have a trailing slash ({VAR%/})
-	set_setting "SYNCSHAREDREMOTEPATH" "${response%/}"
-
-	read_setting "$SYNCSHAREDREMOTETIMOUT" "Please enter the timeout to try to reach the server (in seconds)."
-	set_setting "SYNCSHAREDREMOTETIMOUT" "$response"
-
-	read_setting "$SYNCSHAREDONRFIDSCAN" "Do you want to activate the syncronisation on RFID scan (y/N)."
+	read_setting "$SYNCSHAREDONRFIDSCAN" "Do you want to activate the syncronisation on RFID scan (y[es]/n[o])."
 	case "$response" in
 		[yY][eE][sS]|[yY])
 			response="TRUE"
@@ -86,6 +74,38 @@ function read_all_settings {
 			;;
 	esac
 	set_setting "SYNCSHAREDONRFIDSCAN" "$response"
+
+	read_setting "$SYNCSHAREDREMOTESERVER" "Please enter your servers adresse (IP/Hostname)."
+	set_setting "SYNCSHAREDREMOTESERVER" "$response"
+
+	read_setting "$SYNCSHAREDREMOTEPORT" "Please enter your servers port (also used for SSH)."
+	set_setting "SYNCSHAREDREMOTEPORT" "$response"
+
+	read_setting "$SYNCSHAREDREMOTEPATH" "Please enter the path to the shared files to sync (without trailing slash)."
+	# Make sure paths dont have a trailing slash ({VAR%/})
+	set_setting "SYNCSHAREDREMOTEPATH" "${response%/}"
+
+	read_setting "$SYNCSHAREDREMOTETIMOUT" "Please enter the timeout to try to reach the server (in seconds)."
+	set_setting "SYNCSHAREDREMOTETIMOUT" "$response"
+	
+	read_setting "$SYNCSHAREDMODE" "Choose synchronisation mode to access the server (m[ount]/s[sh])."
+	case "$response" in
+		[mM][oO][uU][nN][tT]|[mM][nN][tT]|[mM])
+			response="MOUNT"
+			;;
+		[sS][sS][hH]|[sS])
+			response="SSH"
+			;;
+		*)
+			;;
+	esac
+	set_setting "SYNCSHAREDMODE" "$response"
+	
+	if [ "$response" == "SSH" ]; then
+		read_setting "$SYNCSHAREDREMOTESSHUSER" "Please enter SSH user."
+		set_setting "SYNCSHAREDREMOTESSHUSER" "$response"
+	fi
+
 }
 
 #############################################################
