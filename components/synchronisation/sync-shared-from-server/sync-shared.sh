@@ -126,8 +126,10 @@ else
 	# "--omit-dir-times" ignore modification time on dirs (see --times). Needed to ignore the creation of 'folder.conf' which alters the modification time of dirs
 	# "--delete" delete files that no longer exist in source
 	# "--prune-empty-dirs" delete empty dirs (incl. subdirs)
-	# "--filter="-rp folder.conf" exclude (option '-') 'folder.conf' file from deletion on receiving side (option 'r'). Delete anyway if folder will be deleted (option 'p' (perishable)).
-	# "--exclude="placeholder" exclude 'placeholder' file from syncing, especially deletion
+	# "--filter='-rp folder.conf' exclude (option '-') 'folder.conf' file from deletion on receiving side (option 'r'). Delete anyway if folder will be deleted (option 'p' (perishable)).
+	# "--exclude='placeholder' exclude 'placeholder' file from syncing, especially deletion
+	# "--exclude='.*/' exclude special 'hidden' folders from syncing
+	# "--exclude='@*/' exclude special folders from syncing
 	function sync_from_server {
 		local src_path="$1"
 		local dst_path="$2"
@@ -138,7 +140,7 @@ else
 			local ssh_conn="${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER}:"
 		fi
 
-		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
+		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
 		if [ $? -eq 0 -a -n "${rsync_changes}" ]; then
 			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo -e "Sync: executed rsync \n${rsync_changes}" >> ${PROJROOTPATH}/logs/debug.log; fi
