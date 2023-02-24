@@ -315,16 +315,10 @@ if [ "$CARDID" ]; then
             $PATHDATA/playout_controls.sh -c=bluetoothtoggle -v=toggle
             ;;
 		$SYNCSHAREDFULL)
-			# If enabled sync full
-            if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
-			    $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=full
-            fi
+			$PATHDATA/playout_controls.sh -c=sharedsyncfull
 			;;
         $SYNCSHAREDONRFIDSCANTOGGLE)
-			# If enabled change sync setting
-            if [ "${SYNCSHAREDENABLED}" == "TRUE" ]; then
-			    $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=changeOnRfidScan -v=toggle
-            fi
+			$PATHDATA/playout_controls.sh -c=sharedsyncchangeonrfidscan -v=toggle
 			;;
         *)
 

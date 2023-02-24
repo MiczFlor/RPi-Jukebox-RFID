@@ -73,6 +73,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # readwifiipoverspeaker
 # bluetoothtoggle
 # switchaudioiface
+# sharedsyncfull
+# sharedsyncchangeonrfidscan
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -1136,6 +1138,12 @@ case $COMMAND in
             dbg "Command requires \"amixer\" as volume manager."
         fi
         ;;
+	sharedsyncfull)
+		$PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=full
+		;;
+	sharedsyncchangeonrfidscan)
+		$PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=changeOnRfidScan -v="$VALUE"
+		;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
