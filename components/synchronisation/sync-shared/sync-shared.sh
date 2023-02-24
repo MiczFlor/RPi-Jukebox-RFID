@@ -101,14 +101,21 @@ else
 		[ "$SYNCSHAREDMODE" == "SSH" ]
 	}
 	
-	# Executes the command check for the current mode
+	# Executes the command for the current mode
 	function exec_for_mode {
 		if is_mode_ssh ; then
-			# Executes remote via SSH
-			ssh ${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER} -p ${SYNCSHAREDREMOTEPORT} $1
+			# Quote every param to deal with whitespaces in paths
+			local quotedparams
+			for var in "$@"
+			do
+				quotedparams="$quotedparams \"$var\""
+			done
+			
+			# Execute remote via SSH
+			ssh "$SYNCSHAREDREMOTESSHUSER"@"$SYNCSHAREDREMOTESERVER" -p "$SYNCSHAREDREMOTEPORT" "$quotedparams"
 		else
-			# Executes local on mount
-			$1 # must not be escaped, otherwise string value will be tested
+			# Execute local on mount
+			"$@"
 		fi
 	}
 	
@@ -163,11 +170,11 @@ else
 		if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
 			if is_server_reachable ; then
 						
-				if exec_for_mode "[ ! -d "${SYNCSHORTCUTSPATH}" ]" ; then
-					exec_for_mode "mkdir ${SYNCSHORTCUTSPATH}"
+				if exec_for_mode [ ! -d "${SYNCSHORTCUTSPATH}" ] ; then
+					exec_for_mode mkdir "${SYNCSHORTCUTSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				
-				elif exec_for_mode "[ -f ${SYNCSHORTCUTSPATH}/${CARDID} ]" ; then
+				elif exec_for_mode [ -f "${SYNCSHORTCUTSPATH}/${CARDID}" ] ; then
 					sync_from_server "${SYNCSHORTCUTSPATH}/${CARDID}" "${LOCAL_SHORTCUTSPATH}/${CARDID}"
 					
 				else 
@@ -188,11 +195,11 @@ else
 		if [ "${SYNCSHAREDONRFIDSCAN}" == "TRUE" ]; then 
 			if is_server_reachable ; then
 			
-				if exec_for_mode "[ ! -d ${SYNCAUDIOFOLDERSPATH} ]" ; then
-					exec_for_mode "mkdir ${SYNCAUDIOFOLDERSPATH}"
+				if exec_for_mode [ ! -d "${SYNCAUDIOFOLDERSPATH}" ] ; then
+					exec_for_mode mkdir "${SYNCAUDIOFOLDERSPATH}"
 					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 				
-				elif exec_for_mode "[ -d ${SYNCAUDIOFOLDERSPATH}/${FOLDER} ]" ; then
+				elif exec_for_mode [ -d "${SYNCAUDIOFOLDERSPATH}/${FOLDER}" ] ; then
 					sync_from_server "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${LOCAL_AUDIOFOLDERSPATH}/${FOLDER}/" "true"
 					
 				else 
@@ -212,8 +219,8 @@ else
 	function handle_full {
 		if is_server_reachable ; then
 		
-			if exec_for_mode "[ ! -d ${SYNCSHORTCUTSPATH} ]" ; then
-				exec_for_mode "mkdir ${SYNCSHORTCUTSPATH}"
+			if exec_for_mode [ ! -d "${SYNCSHORTCUTSPATH}" ] ; then
+				exec_for_mode mkdir "${SYNCSHORTCUTSPATH}"
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 			else
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
@@ -221,8 +228,8 @@ else
 
 			fi
 				
-			if exec_for_mode "[ ! -d ${SYNCAUDIOFOLDERSPATH} ]" ; then
-				exec_for_mode "mkdir ${SYNCAUDIOFOLDERSPATH}"
+			if exec_for_mode [ ! -d "${SYNCAUDIOFOLDERSPATH}" ] ; then
+				exec_for_mode mkdir "${SYNCAUDIOFOLDERSPATH}"
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
 			else
 				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
