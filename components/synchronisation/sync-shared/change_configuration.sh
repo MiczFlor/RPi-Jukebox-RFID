@@ -50,12 +50,8 @@ function set_setting {
 function read_setting {
 	local SETTINGNAME="$1"
 	local TEXT="$2"
-	local SKIP_LEAVE_BLANK="$3"
 	
-	local READ_PROMPT=$'\n'"${TEXT}"
-	if [ -z "$SKIP_LEAVE_BLANK" ]; then
-		READ_PROMPT="${READ_PROMPT} Leave blank for no change."
-	fi
+	local READ_PROMPT=$'\n'"${TEXT} Leave blank for no change."
 	READ_PROMPT="${READ_PROMPT}"$'\n'"Current value = \"${SETTINGNAME}\""$'\n'
 
 	read -rp "$READ_PROMPT" response
