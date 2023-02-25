@@ -31,23 +31,23 @@ You may also change the settings in the according files directly.
 
 ### Settings:
 
-**INSTALLATION_ROOT/settings/Sync_Shared_Enabled**
+**{INSTALLATION_ROOT}/settings/Sync_Shared_Enabled**
 
-Hold the activation state of this feature. Values are "TRUE" or "FALSE"
+Holds the activation state of this feature. Values are "TRUE" or "FALSE"
 
 
-**INSTALLATION_ROOT/settings/sync_shared.conf**
-
-SYNCSHAREDONRFIDSCAN: If the optional feature "RFID scan sync" is activated. Values are "TRUE" or "FALSE"
-
-SYNCSHAREDREMOTESERVER: The IP or hostname of the server (used to check connectivity). e.g. "192.168.0.2" or "myhomeserver.local"
-
-SYNCSHAREDREMOTEPORT: The port of the server (used to check connectivity). e.g. "80" or "22"
-
-SYNCSHAREDREMOTEPATH: The path to the shared files to sync. e.g. "/mnt/Phoniebox"
-
-SYNCSHAREDREMOTETIMOUT: The timeout to reach the server (in seconds) (used to check connectivity). e.g. 1
+**{INSTALLATION_ROOT}/settings/sync_shared.conf**
 
 SYNCSHAREDMODE: The mode to access the server files. SSH or MOUNT
 
 SYNCSHAREDREMOTESSHUSER: The username if SSH mode is used.
+
+SYNCSHAREDREMOTESERVER: The IP or hostname of the server (used to check connectivity and SSH mode). e.g. "192.168.0.2" or "myhomeserver.local"
+
+SYNCSHAREDREMOTEPORT: The port of the server (used to check connectivity and SSH mode). e.g. "80" or "22"
+
+SYNCSHAREDREMOTETIMOUT: The timeout to reach the server (in seconds) (used to check connectivity). e.g. 1
+
+SYNCSHAREDREMOTEPATH: The path to the shared files to sync (without trailing slash) (remote path for SSH mode or local path for MOUNT mode). e.g. "/mnt/Phoniebox"
+
+SYNCSHAREDONRFIDSCAN: Holds the activation state of the optional feature "RFID scan sync". Values are "TRUE" or "FALSE"

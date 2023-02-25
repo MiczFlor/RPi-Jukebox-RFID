@@ -1,14 +1,14 @@
-# activationstate for syncronisation on RFID scan
-SYNCSHAREDONRFIDSCAN="FALSE"
-# server adresse (IP/Hostname)
-SYNCSHAREDREMOTESERVER=""
-# server port (also used for SSH)
-SYNCSHAREDREMOTEPORT=""
-# path to the shared files to sync (without trailing slash)
-SYNCSHAREDREMOTEPATH=""
-# timeout to try to reach the server (in seconds)
-SYNCSHAREDREMOTETIMOUT="1"
-# synchronisation mode to access the server (SSH or MOUNT)
+# The mode to access the server files. SSH or MOUNT
 SYNCSHAREDMODE="MOUNT"
-# SSH user
+# The username if SSH mode is used
 SYNCSHAREDREMOTESSHUSER=""
+# The IP or hostname of the server (used to check connectivity and SSH mode)
+SYNCSHAREDREMOTESERVER=""
+# The port of the server (used to check connectivity and SSH mode)
+SYNCSHAREDREMOTEPORT=""
+# The timeout to reach the server (in seconds) (used to check connectivity)
+SYNCSHAREDREMOTETIMOUT="1"
+# The path to the shared files to sync (without trailing slash) (remote path for SSH mode or local path for MOUNT mode)
+SYNCSHAREDREMOTEPATH=""
+# Holds the activation state of the optional feature "RFID scan sync"
+SYNCSHAREDONRFIDSCAN="FALSE"
