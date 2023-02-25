@@ -35,52 +35,52 @@ PROJROOTPATH="$PATHDATA/../../.."
 #############################################################
 # $DEBUG TRUE|FALSE
 # Read debug logging configuration file
-. ${PROJROOTPATH}/settings/debugLogging.conf
+. "${PROJROOTPATH}"/settings/debugLogging.conf
 
-if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ($NOW) ##" >> ${PROJROOTPATH}/logs/debug.log; fi
+if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ($NOW) ##" >> "${PROJROOTPATH}"/logs/debug.log; fi
 
 #######################
 # Activation status of component sync-shared-from-server
 SYNCSHAREDENABLED="FALSE"
-if [ -f ${PROJROOTPATH}/settings/Sync_Shared_Enabled ]; then
-    SYNCSHAREDENABLED=`cat ${PROJROOTPATH}/settings/Sync_Shared_Enabled`
+if [ -f "${PROJROOTPATH}/settings/Sync_Shared_Enabled" ]; then
+    SYNCSHAREDENABLED=`cat "${PROJROOTPATH}/settings/Sync_Shared_Enabled"`
 fi
 
 
 if [ "${SYNCSHAREDENABLED}" != "TRUE" ]; then
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: disabled" >> ${PROJROOTPATH}/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: disabled" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			
 else
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> ${PROJROOTPATH}/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> "${PROJROOTPATH}"/logs/debug.log; fi
 	
 	#############################################################
 	# Read global configuration file (and create if not exists)
-	if [ ! -f ${PROJROOTPATH}/settings/global.conf ]; then
+	if [ ! -f "${PROJROOTPATH}/settings/global.conf" ]; then
 		echo "Global settingsfile does not exist. Please call the script from a defined entrypoint"
-		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Global settingsfile does not exist. Please call the script from a defined entrypoint" >> ${PROJROOTPATH}/logs/debug.log; fi
+		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Global settingsfile does not exist. Please call the script from a defined entrypoint" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		exit
 	fi
-	. ${PROJROOTPATH}/settings/global.conf
+	. "${PROJROOTPATH}"/settings/global.conf
 
 	#############################################################
 	# Read configuration file
-	if [ ! -f ${PROJROOTPATH}/settings/sync_shared.conf ]; then
+	if [ ! -f "${PROJROOTPATH}/settings/sync_shared.conf" ]; then
 		echo "Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration"
-		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration" >> ${PROJROOTPATH}/logs/debug.log; fi
+		if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		exit
 	fi
-	. ${PROJROOTPATH}/settings/sync_shared.conf
+	. "${PROJROOTPATH}"/settings/sync_shared.conf
 	
 	#############################################################
 	# Get args from command line (see Usage above)
 	# Read the args passed on by the command line
 	# see following file for details:
-	. ${PROJROOTPATH}/scripts/inc.readArgsFromCommandLine.sh
+	. "${PROJROOTPATH}"/scripts/inc.readArgsFromCommandLine.sh
 	
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> ${PROJROOTPATH}/logs/debug.log; fi
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR CARDID: ${CARDID}" >> ${PROJROOTPATH}/logs/debug.log; fi
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR FOLDER: ${FOLDER}" >> ${PROJROOTPATH}/logs/debug.log; fi
-	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> ${PROJROOTPATH}/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR COMMAND: ${COMMAND}" >> "${PROJROOTPATH}"/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR CARDID: ${CARDID}" >> "${PROJROOTPATH}"/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR FOLDER: ${FOLDER}" >> "${PROJROOTPATH}"/logs/debug.log; fi
+	if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}" >> "${PROJROOTPATH}"/logs/debug.log; fi
 	
 	#############################################################
 	# Set local vars after confs are read
@@ -89,7 +89,7 @@ else
 	SYNCSHORTCUTSPATH="${SYNCSHAREDREMOTEPATH}/shortcuts"
 	SYNCAUDIOFOLDERSPATH="${SYNCSHAREDREMOTEPATH}/audiofolders"
 	
-	LOCAL_SHORTCUTSPATH="$PROJROOTPATH/shared/shortcuts"
+	LOCAL_SHORTCUTSPATH="${PROJROOTPATH}/shared/shortcuts"
 	LOCAL_AUDIOFOLDERSPATH="${AUDIOFOLDERSPATH%/}"
 
 	#############################################################
@@ -150,18 +150,18 @@ else
 		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
 		if [ $? -eq 0 -a -n "${rsync_changes}" ]; then
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo -e "Sync: executed rsync \n${rsync_changes}" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo -e "Sync: executed rsync \n${rsync_changes}" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. change access of files" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. change access of files" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			change_access "${dst_path}" "www-data" "775"
 			
 			if [ ! -z "${update_mpc}" ]; then
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: update database" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: update database" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				sudo mpc update --wait "${dst_path}" > /dev/null 2>&1
 			fi
 			
 		else
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: nothing changed" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		fi
 	}
 	
@@ -172,21 +172,21 @@ else
 						
 				if exec_for_mode [ ! -d "${SYNCSHORTCUTSPATH}" ] ; then
 					exec_for_mode mkdir "${SYNCSHORTCUTSPATH}"
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				
 				elif exec_for_mode [ -f "${SYNCSHORTCUTSPATH}/${CARDID}" ] ; then
 					sync_from_server "${SYNCSHORTCUTSPATH}/${CARDID}" "${LOCAL_SHORTCUTSPATH}/${CARDID}"
 					
 				else 
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Shortcut for $CARDID not found in REMOTE $SYNCSHORTCUTSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Shortcut for $CARDID not found in REMOTE $SYNCSHORTCUTSPATH" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				fi
 				
 			else 
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			fi
 			
 		else 
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		fi
 	}
 	
@@ -197,21 +197,21 @@ else
 			
 				if exec_for_mode [ ! -d "${SYNCAUDIOFOLDERSPATH}" ] ; then
 					exec_for_mode mkdir "${SYNCAUDIOFOLDERSPATH}"
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				
 				elif exec_for_mode [ -d "${SYNCAUDIOFOLDERSPATH}/${FOLDER}" ] ; then
 					sync_from_server "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${LOCAL_AUDIOFOLDERSPATH}/${FOLDER}/" "true"
 					
 				else 
-					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder $FOLDER not found in REMOTE $SYNCAUDIOFOLDERSPATH" >> ${PROJROOTPATH}/logs/debug.log; fi
+					if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder $FOLDER not found in REMOTE $SYNCAUDIOFOLDERSPATH" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				fi
 				
 			else 
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			fi
 						
 		else 
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Sync on RFID scan deactivated" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		fi
 	}
 	
@@ -221,24 +221,24 @@ else
 		
 			if exec_for_mode [ ! -d "${SYNCSHORTCUTSPATH}" ] ; then
 				exec_for_mode mkdir "${SYNCSHORTCUTSPATH}"
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			else
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCSHORTCUTSPATH}" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				sync_from_server "${SYNCSHORTCUTSPATH}/" "${LOCAL_SHORTCUTSPATH}/"
 
 			fi
 				
 			if exec_for_mode [ ! -d "${SYNCAUDIOFOLDERSPATH}" ] ; then
 				exec_for_mode mkdir "${SYNCAUDIOFOLDERSPATH}"
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			else
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				sync_from_server "${SYNCAUDIOFOLDERSPATH}/" "${LOCAL_AUDIOFOLDERSPATH}/" "true"
 				
 			fi
 			
 		else 
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Server is NOT reachable" >> "${PROJROOTPATH}"/logs/debug.log; fi
 		fi
 	}
 	
@@ -260,13 +260,13 @@ else
 				;;
 			*)	
 				echo "Unknown VALUE $VALUE for COMMAND $COMMAND"
-				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown VALUE $VALUE for COMMAND $COMMAND" >> ${PROJROOTPATH}/logs/debug.log; fi
+				if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown VALUE $VALUE for COMMAND $COMMAND" >> "${PROJROOTPATH}"/logs/debug.log; fi
 				;;
 		esac
 
 		if [ ! -z "${SYNCSHAREDONRFIDSCAN_NEW}" ]; then 
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $SYNCSHAREDONRFIDSCAN_NEW" >> ${PROJROOTPATH}/logs/debug.log; fi
-			sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"$SYNCSHAREDONRFIDSCAN_NEW\"|g" ${PROJROOTPATH}/settings/sync_shared.conf
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to $SYNCSHAREDONRFIDSCAN_NEW" >> "${PROJROOTPATH}"/logs/debug.log; fi
+			sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"$SYNCSHAREDONRFIDSCAN_NEW\"|g" "${PROJROOTPATH}"/settings/sync_shared.conf
 		fi
 	}
 	
@@ -300,9 +300,9 @@ else
 			;;
 		*)
 			echo Unknown COMMAND "$COMMAND"
-			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} CARDID ${CARDID} FOLDER ${FOLDER} VALUE ${VALUE}" >> ${PROJROOTPATH}/logs/debug.log; fi
+			if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} CARDID ${CARDID} FOLDER ${FOLDER} VALUE ${VALUE}" >> "${PROJROOTPATH}"/logs/debug.log; fi
 			;;
 	esac
 
 fi
-if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ##" >> ${PROJROOTPATH}/logs/debug.log; fi
+if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh ##" >> "${PROJROOTPATH}"/logs/debug.log; fi
