@@ -9,7 +9,7 @@ SKIP_INITIAL_CHECK="$1"
 #############################################################
 # Functions
 
-function set_activation {
+set_activation() {
 	local SETTINGVALUE="$1"
 	
 	local SETTINGSTATE="activated"
@@ -25,7 +25,7 @@ function set_activation {
 	sudo chmod 775 "$CONFFILE"
 }
 
-function init_settings {
+init_settings() {
 	# Init config from sample if not present
 	if [ ! -f "${PROJROOTPATH}/settings/sync_shared.conf" ]; then
 		cp "${PATHDATA}/settings/sync_shared.conf.sample" "${PROJROOTPATH}/settings/sync_shared.conf"
@@ -36,7 +36,7 @@ function init_settings {
 	. "${PROJROOTPATH}"/settings/sync_shared.conf
 }
 
-function set_setting {
+set_setting() {
 	local SETTINGNAME="$1"
 	local SETTINGVALUE="$2"
 
@@ -47,7 +47,7 @@ function set_setting {
 	fi
 }
 
-function read_setting {
+read_setting() {
 	local SETTINGNAME="$1"
 	local TEXT="$2"
 	
@@ -57,7 +57,7 @@ function read_setting {
 	read -rp "$READ_PROMPT" response
 }
 
-function read_all_settings {
+read_all_settings() {
 
 	read_setting "$SYNCSHAREDMODE" "Choose synchronisation mode to access the server (m[ount]/s[sh])."
 	case "$response" in

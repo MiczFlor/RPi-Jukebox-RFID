@@ -97,12 +97,12 @@ else
 	# Functions
 	
 	# Check if the sync mode is SSH
-	function is_mode_ssh {
+	is_mode_ssh() {
 		[ "$SYNCSHAREDMODE" == "SSH" ]
 	}
 	
 	# Executes the command for the current mode
-	function exec_for_mode {
+	exec_for_mode() {
 		if is_mode_ssh ; then
 			# Quote every param to deal with whitespaces in paths
 			local quotedparams
@@ -120,7 +120,7 @@ else
 	}
 	
 	# Check if server is reachable on port
-	function is_server_reachable {
+	is_server_reachable() {
 		return `nc -z "$SYNCSHAREDREMOTESERVER" -w "$SYNCSHAREDREMOTETIMOUT" "$SYNCSHAREDREMOTEPORT"`
 	}
 	
@@ -137,7 +137,7 @@ else
 	# "--exclude='placeholder' exclude 'placeholder' file from syncing, especially deletion
 	# "--exclude='.*/' exclude special 'hidden' folders from syncing
 	# "--exclude='@*/' exclude special folders from syncing
-	function sync_from_server {
+	sync_from_server() {
 		local src_path="$1"
 		local dst_path="$2"
 		local update_mpc="$3"
@@ -166,7 +166,7 @@ else
 	}
 	
 	# Sync shortcut CARDID
-	function handle_shortcuts {
+	handle_shortcuts() {
 		if [ "$SYNCSHAREDONRFIDSCAN" == "TRUE" ]; then 
 			if is_server_reachable ; then
 						
@@ -191,7 +191,7 @@ else
 	}
 	
 	# Sync audiofolder FOLDER
-	function handle_audiofolders {
+	handle_audiofolders() {
 		if [ "$SYNCSHAREDONRFIDSCAN" == "TRUE" ]; then 
 			if is_server_reachable ; then
 			
@@ -216,7 +216,7 @@ else
 	}
 	
 	# Sync full (shortcuts and audiofolders)
-	function handle_full {
+	handle_full() {
 		if is_server_reachable ; then
 		
 			if exec_for_mode [ ! -d "$SYNCSHORTCUTSPATH" ] ; then
@@ -243,7 +243,7 @@ else
 	}
 	
 	# Change setting for Sync on RFID scan
-	function handle_changeOnRfidScan {
+	handle_changeOnRfidScan() {
 		case "$VALUE" in
 			on)
 				SYNCSHAREDONRFIDSCAN_NEW="TRUE"
@@ -271,7 +271,7 @@ else
 	}
 	
 	# Change access of file or dir
-	function change_access {
+	change_access() {
 		local file_or_dir="$1"
 		local group="$2"
 		local mod="$3"
