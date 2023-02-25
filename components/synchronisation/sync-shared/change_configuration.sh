@@ -18,11 +18,11 @@ function set_activation {
 	fi
 	
 	# Let global controls know this feature is enabled
-	echo -e "\nLet global controls know this feature is $SETTINGSTATE. (Sync_Shared_Enabled -> $SETTINGVALUE)"
+	echo -e "\nLet global controls know this feature is ${SETTINGSTATE}. (Sync_Shared_Enabled -> ${SETTINGVALUE})"
 	
-	echo "$SETTINGVALUE" > "${CONFFILE}"
-	sudo chgrp www-data "${CONFFILE}"
-	sudo chmod 775 "${CONFFILE}"
+	echo "$SETTINGVALUE" > "$CONFFILE"
+	sudo chgrp www-data "$CONFFILE"
+	sudo chmod 775 "$CONFFILE"
 }
 
 function init_settings {
@@ -40,9 +40,10 @@ function set_setting {
 	local SETTINGNAME="$1"
 	local SETTINGVALUE="$2"
 
+	# check if value is set and not equal to the current settings value
 	if [ ! -z "$SETTINGVALUE" -a "${!SETTINGNAME}" != "$SETTINGVALUE" ]; then
-		sed -i "s|^$SETTINGNAME=.*|$SETTINGNAME=\"$SETTINGVALUE\"|g" "${PROJROOTPATH}/settings/sync_shared.conf"
-		echo "New value: \"$SETTINGVALUE\""
+		sed -i "s|^${SETTINGNAME}=.*|${SETTINGNAME}=\"${SETTINGVALUE}\"|g" "${PROJROOTPATH}/settings/sync_shared.conf"
+		echo "New value: \"${SETTINGVALUE}\""
 	fi
 }
 
@@ -51,11 +52,11 @@ function read_setting {
 	local TEXT="$2"
 	local SKIP_LEAVE_BLANK="$3"
 	
-	local READ_PROMPT=$'\n'"$TEXT"
+	local READ_PROMPT=$'\n'"${TEXT}"
 	if [ -z "$SKIP_LEAVE_BLANK" ]; then
-		READ_PROMPT="$READ_PROMPT Leave blank for no change."
+		READ_PROMPT="${READ_PROMPT} Leave blank for no change."
 	fi
-	READ_PROMPT="$READ_PROMPT"$'\n'"Current value = \"$SETTINGNAME\""$'\n'
+	READ_PROMPT="${READ_PROMPT}"$'\n'"Current value = \"${SETTINGNAME}\""$'\n'
 
 	read -rp "$READ_PROMPT" response
 }
