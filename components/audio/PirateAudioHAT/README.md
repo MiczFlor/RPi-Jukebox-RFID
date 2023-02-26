@@ -73,7 +73,7 @@ NOTE: changes to the installation should find their way into the script `setup_p
     bcm5 = play_pause,active_low,150
     bcm6 = volume_down,active_low,150
     bcm16 = next,active_low,150
-    bcm20 = volume_up,active_low,150
+    bcm24 = volume_up,active_low,150
     
     [pidi]
     enabled = true
