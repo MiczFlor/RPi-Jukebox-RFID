@@ -2,7 +2,8 @@
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJROOTPATH="${PATHDATA}/../../.."
-CONFFILE="${PROJROOTPATH}/settings/sync-shared-enabled"
+STATEFILE="${PROJROOTPATH}/settings/sync-shared-enabled"
+CONFFILE="${PROJROOTPATH}/settings/sync-shared.conf"
 SKIP_INITIAL_CHECK="$1"
 
 
@@ -20,20 +21,20 @@ set_activation() {
     # Let global controls know this feature is enabled
     echo -e "\nLet global controls know this feature is ${SETTINGSTATE}. (sync-shared-enabled -> ${SETTINGVALUE})"
 
-    echo "$SETTINGVALUE" > "$CONFFILE"
-    sudo chgrp www-data "$CONFFILE"
-    sudo chmod 775 "$CONFFILE"
+    echo "$SETTINGVALUE" > "$STATEFILE"
+    sudo chgrp www-data "$STATEFILE"
+    sudo chmod 775 "$STATEFILE"
 }
 
 init_settings() {
     # Init config from sample if not present
-    if [ ! -f "${PROJROOTPATH}/settings/sync-shared.conf" ]; then
-        cp "${PATHDATA}/settings/sync-shared.conf.sample" "${PROJROOTPATH}/settings/sync-shared.conf"
+    if [ ! -f "$CONFFILE" ]; then
+        cp "${PATHDATA}/settings/sync-shared.conf.sample" "$CONFFILE"
         # change the read/write so that later this might also be editable through the web app
-        sudo chgrp www-data "${PROJROOTPATH}/settings/sync-shared.conf"
-        sudo chmod 775 "${PROJROOTPATH}/settings/sync-shared.conf"
+        sudo chgrp www-data "$CONFFILE"
+        sudo chmod 775 "$CONFFILE"
     fi
-    . "${PROJROOTPATH}"/settings/sync-shared.conf
+    . "$CONFFILE"
 }
 
 set_setting() {
@@ -42,7 +43,7 @@ set_setting() {
 
     # check if value is set and not equal to the current settings value
     if [ ! -z "$SETTINGVALUE" -a "${!SETTINGNAME}" != "$SETTINGVALUE" ]; then
-        sed -i "s|^${SETTINGNAME}=.*|${SETTINGNAME}=\"${SETTINGVALUE}\"|g" "${PROJROOTPATH}/settings/sync-shared.conf"
+        sed -i "s|^${SETTINGNAME}=.*|${SETTINGNAME}=\"${SETTINGVALUE}\"|g" "$CONFFILE"
         echo "New value: \"${SETTINGVALUE}\""
     fi
 }

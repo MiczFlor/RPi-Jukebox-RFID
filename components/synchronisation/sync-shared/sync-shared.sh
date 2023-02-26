@@ -64,12 +64,13 @@ else
 
     #############################################################
     # Read configuration file
-    if [ ! -f "${PROJROOTPATH}/settings/sync-shared.conf" ]; then
+    CONFFILE="${PROJROOTPATH}/settings/sync-shared.conf"
+    if [ ! -f "$CONFFILE" ]; then
         echo "Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration"
         if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Settingsfile does not exist. Please read ${PATHDATA}/README.md to set configuration" >> "${PROJROOTPATH}"/logs/debug.log; fi
         exit
     fi
-    . "${PROJROOTPATH}"/settings/sync-shared.conf
+    . "$CONFFILE"
 
     #############################################################
     # Get args from command line (see Usage above)
@@ -269,7 +270,7 @@ else
 
         if [ ! -z "${SYNCSHAREDONRFIDSCAN_NEW}" ]; then
             if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Set SYNCSHAREDONRFIDSCAN to ${SYNCSHAREDONRFIDSCAN_NEW}" >> "${PROJROOTPATH}"/logs/debug.log; fi
-            sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"${SYNCSHAREDONRFIDSCAN_NEW}\"|g" "${PROJROOTPATH}"/settings/sync-shared.conf
+            sed -i "s|^SYNCSHAREDONRFIDSCAN=.*|SYNCSHAREDONRFIDSCAN=\"${SYNCSHAREDONRFIDSCAN_NEW}\"|g" "$CONFFILE"
         fi
     }
 
