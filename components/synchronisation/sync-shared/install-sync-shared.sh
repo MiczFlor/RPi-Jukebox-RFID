@@ -21,6 +21,6 @@ sudo chmod ugo+rx "${PATHDATA}/sync-shared.sh"
 echo -e "\nChecking rsync package"
 sudo apt install rsync -y
 
-"${PATHDATA}"/change_configuration.sh "SkipInitialCheck"
+"${PATHDATA}"/change-configuration.sh "SkipInitialCheck"
 
 echo -e "\n\nFINAL NOTE:\nPlease check README.md for further configuration"

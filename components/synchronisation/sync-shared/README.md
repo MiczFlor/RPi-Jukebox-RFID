@@ -33,12 +33,12 @@ You may also change the settings in the according files directly.
 
 ### Settings:
 
-**{INSTALLATION_ROOT}/settings/Sync_Shared_Enabled**
+**{INSTALLATION_ROOT}/settings/sync-shared-enabled**
 
 Holds the activation state of this feature. Values are "TRUE" or "FALSE"
 
 
-**{INSTALLATION_ROOT}/settings/sync_shared.conf**
+**{INSTALLATION_ROOT}/settings/sync-shared.conf**
 
 SYNCSHAREDMODE: The mode to access the server files. SSH or MOUNT
 

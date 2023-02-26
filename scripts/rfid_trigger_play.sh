@@ -66,8 +66,8 @@ fi
 #######################
 # Activation status of component sync-shared-from-server
 SYNCSHAREDENABLED="FALSE"
-if [ -f $PATHDATA/../settings/Sync_Shared_Enabled ]; then
-    SYNCSHAREDENABLED=`cat $PATHDATA/../settings/Sync_Shared_Enabled`
+if [ -f $PATHDATA/../settings/sync-shared-enabled ]; then
+    SYNCSHAREDENABLED=`cat $PATHDATA/../settings/sync-shared-enabled`
 fi
 if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "Sync: SYNCSHAREDENABLED=$SYNCSHAREDENABLED" >> $PATHDATA/../logs/debug.log; fi
 
