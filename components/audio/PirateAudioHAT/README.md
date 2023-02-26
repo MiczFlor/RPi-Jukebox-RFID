@@ -80,6 +80,8 @@ NOTE: changes to the installation should find their way into the script `setup_p
     enabled = true
     display = st7789
     ```
+    **Attention:** Early revisions of PirateAudio HAT used bcm20 for Volume up, later revisions use bcm24. see also https://github.com/pimoroni/pirate-audio/issues/63#issuecomment-916860634
+    
 
 12. Enable access for modipy user
     `sudo usermod -a -G spi,i2c,gpio,video mopidy`
