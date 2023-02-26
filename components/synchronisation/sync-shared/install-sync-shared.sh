@@ -3,12 +3,12 @@
 # Ensure start was intended
 read -rp "Start installation? [Y/n] " response
 case "$response" in
-	[nN][oO]|[nN])
-		echo "Installation aborted..."
-		exit
-		;;
-	*)
-		;;
+    [nN][oO]|[nN])
+        echo "Installation aborted..."
+        exit
+        ;;
+    *)
+        ;;
 esac
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

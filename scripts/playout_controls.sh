@@ -287,7 +287,7 @@ case $COMMAND in
 			# schedule shutdown after VALUE minutes
 			echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q q now + ${VALUE} minute
 		fi
-		;;			
+		;;
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
@@ -1138,12 +1138,12 @@ case $COMMAND in
             dbg "Command requires \"amixer\" as volume manager."
         fi
         ;;
-	sharedsyncfull)
-		$PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=full
-		;;
-	sharedsyncchangeonrfidscan)
-		$PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=changeOnRfidScan -v="$VALUE"
-		;;
+    sharedsyncfull)
+        $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=full
+        ;;
+    sharedsyncchangeonrfidscan)
+        $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=changeOnRfidScan -v="$VALUE"
+        ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "Unknown COMMAND ${COMMAND} VALUE ${VALUE}" >> ${PATHDATA}/../logs/debug.log; fi
