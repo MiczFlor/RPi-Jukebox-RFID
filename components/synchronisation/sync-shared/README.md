@@ -53,3 +53,7 @@ SYNCSHAREDREMOTETIMOUT: The timeout to reach the server (in seconds) (used to ch
 SYNCSHAREDREMOTEPATH: The path to the shared files to sync (without trailing slash) (remote path for SSH mode or local path for MOUNT mode). e.g. "/mnt/Phoniebox"
 
 SYNCSHAREDONRFIDSCAN: Holds the activation state of the optional feature "RFID scan sync". Values are "TRUE" or "FALSE"
+
+
+## Special Thanks
+inspired by [splitti - phoniebox_rsync](https://github.com/splitti/phoniebox_rsync)
