@@ -108,7 +108,7 @@ else
 			local quotedparams
 			for var in "$@"
 			do
-				quotedparams="${quotedparams} \"${var}\""
+				quotedparams="${quotedparams} '${var}'"
 			done
 			
 			# Execute remote via SSH
@@ -143,10 +143,13 @@ else
 		local update_mpc="$3"
 		
 		if is_mode_ssh ; then
+			# Quote source path to deal with whitespaces in paths
+			src_path="'${src_path}'"
+		
 			local ssh_port=(-e "ssh -p ${SYNCSHAREDREMOTEPORT}")
 			local ssh_conn="${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER}:"
 		fi
-
+		
 		rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
 		if [ $? -eq 0 -a -n "$rsync_changes" ]; then
