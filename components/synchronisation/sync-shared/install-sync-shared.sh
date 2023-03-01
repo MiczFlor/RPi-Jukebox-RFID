@@ -20,6 +20,8 @@ sudo chmod ugo+rx "${PATHDATA}/sync-shared.sh"
 # Make sure required packages are installed
 echo -e "\nChecking rsync package"
 sudo apt install rsync -y
+echo -e "\nChecking ssh package"
+sudo apt install openssh-client -y
 
 "${PATHDATA}"/change-configuration.sh "SkipInitialCheck"
 
