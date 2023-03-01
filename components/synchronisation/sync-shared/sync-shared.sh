@@ -141,7 +141,7 @@ else
     sync_from_server() {
         local src_path="$1"
         local dst_path="$2"
-        local update_mpc="$3"
+        local update_db="$3"
 
         if is_mode_ssh ; then
             # Quote source path to deal with whitespaces in paths
@@ -159,9 +159,16 @@ else
             if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: files copied. change access of files" >> "${PROJROOTPATH}"/logs/debug.log; fi
             change_access "$dst_path" "www-data" "775"
 
-            if [ ! -z "$update_mpc" ]; then
+            if [ ! -z "$update_db" ]; then
                 if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: update database" >> "${PROJROOTPATH}"/logs/debug.log; fi
-                sudo mpc update --wait "$dst_path" > /dev/null 2>&1
+                # if spotify edition is installed, update via mopidy as mpc update doesnt work
+                if [ "$EDITION" == "plusSpotify" ]; then
+                    # don't stop / start service (like in payout_controls scan) as all mpd calls after will fail
+                    # (or an artifical sleep time would be needed to make sure mpd is started)
+                    sudo mopidyctl local scan > /dev/null 2>&1
+                else
+                    mpc --wait update "$dst_path" > /dev/null 2>&1
+                fi
             fi
 
         else
@@ -204,7 +211,7 @@ else
                     if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
 
                 elif exec_for_mode [ -d "${SYNCAUDIOFOLDERSPATH}/${FOLDER}" ] ; then
-                    sync_from_server "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${LOCAL_AUDIOFOLDERSPATH}/${FOLDER}/" "UpdateMPC"
+                    sync_from_server "${SYNCAUDIOFOLDERSPATH}/${FOLDER}/" "${LOCAL_AUDIOFOLDERSPATH}/${FOLDER}/" "UpdateDB"
 
                 else
                     if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder $FOLDER not found in REMOTE $SYNCAUDIOFOLDERSPATH" >> "${PROJROOTPATH}"/logs/debug.log; fi
@@ -237,7 +244,7 @@ else
                 if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH} does not exist. created" >> "${PROJROOTPATH}"/logs/debug.log; fi
             else
                 if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Folder ${SYNCAUDIOFOLDERSPATH}" >> "${PROJROOTPATH}"/logs/debug.log; fi
-                sync_from_server "${SYNCAUDIOFOLDERSPATH}/" "${LOCAL_AUDIOFOLDERSPATH}/" "UpdateMPC"
+                sync_from_server "${SYNCAUDIOFOLDERSPATH}/" "${LOCAL_AUDIOFOLDERSPATH}/" "UpdateDB"
 
             fi
 
