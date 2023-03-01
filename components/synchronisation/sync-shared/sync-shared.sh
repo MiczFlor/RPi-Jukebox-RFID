@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# Description
+# This script synchronises shortcuts and/or audiofolders from a server to the local storage.
 
-# Set the date and time of now
-NOW=`date +%Y-%m-%d.%H:%M:%S`
+# VALID COMMANDS:
+# shortcuts (with -i)
+# audiofolders (with -d)
+# full
+# changeOnRfidScan(with -v=on | off | toogle)
 
 # USAGE EXAMPLES:
 #
@@ -16,16 +19,11 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # sync full:
 # ./sync_shared.sh -c=full
 #
-# sync toggle SyncOnRfidScan:
+# toggle sync OnRfidScan:
 # ./sync_shared.sh -c=changeOnRfidScan -v=toggle
 
-#
-#
-# VALID COMMANDS:
-# shortcuts (with -i)
-# audiofolders (with -d)
-# full
-# changeOnRfidScan(with -v=on | off | toogle)
+# Set the date and time of now
+NOW=`date +%Y-%m-%d.%H:%M:%S`
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -40,7 +38,7 @@ PROJROOTPATH="${PATHDATA}/../../.."
 if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "########### SCRIPT sync_shared.sh (${NOW}) ##" >> "${PROJROOTPATH}"/logs/debug.log; fi
 
 #######################
-# Activation status of component sync-shared-from-server
+# Activation status of component sync-shared
 SYNCSHAREDENABLED="FALSE"
 if [ -f "${PROJROOTPATH}/settings/sync-shared-enabled" ]; then
     SYNCSHAREDENABLED=`cat "${PROJROOTPATH}/settings/sync-shared-enabled"`
@@ -54,7 +52,7 @@ else
     if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: enabled" >> "${PROJROOTPATH}"/logs/debug.log; fi
 
     #############################################################
-    # Read global configuration file (and create if not exists)
+    # Read global configuration file
     if [ ! -f "${PROJROOTPATH}/settings/global.conf" ]; then
         echo "Global settingsfile does not exist. Please call the script from a defined entrypoint"
         if [ "${DEBUG_sync_shared_sh}" == "TRUE" ]; then echo "Sync: Global settingsfile does not exist. Please call the script from a defined entrypoint" >> "${PROJROOTPATH}"/logs/debug.log; fi
@@ -93,7 +91,6 @@ else
     LOCAL_SHORTCUTSPATH="${PROJROOTPATH}/shared/shortcuts"
     LOCAL_AUDIOFOLDERSPATH="${AUDIOFOLDERSPATH%/}"
 
-    #############################################################
     #############################################################
     # Functions
 
@@ -176,7 +173,7 @@ else
         fi
     }
 
-    # Sync shortcut CARDID
+    # Sync shortcut for CARDID
     handle_shortcuts() {
         if [ "$SYNCSHAREDONRFIDSCAN" == "TRUE" ]; then
             if is_server_reachable ; then
@@ -282,6 +279,7 @@ else
     }
 
     # Change access of file or dir
+    # only changes group as the user should be correctly taken from caller context (logged in user or service)
     change_access() {
         local file_or_dir="$1"
         local group="$2"
@@ -292,10 +290,9 @@ else
     }
 
     #############################################################
-    #############################################################
 
     #############################################################
-
+    # Main switch
     case "$COMMAND" in
         shortcuts)
             handle_shortcuts
