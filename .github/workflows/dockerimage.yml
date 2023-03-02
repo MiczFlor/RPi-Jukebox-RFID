@@ -28,6 +28,8 @@ jobs:
         push: false
         file: ./ci/Dockerfile.buster.test_install.amd64
         tags: rpi-jukebox-rfid-buster:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
       
     - name: Run run_installation_tests.sh
       uses: tj-actions/docker-run@v2
@@ -61,6 +63,8 @@ jobs:
         push: false
         file: ./ci/Dockerfile.buster.test_install_altuser.amd64
         tags: rpi-jukebox-rfid-buster-altuser:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
       
     - name: Run run_installation_tests_altuser.sh
       uses: tj-actions/docker-run@v2
