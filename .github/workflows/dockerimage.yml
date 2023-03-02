@@ -70,6 +70,25 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
 
+    - name: Run run_installation_tests2_altuser.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster:latest
+        name: run_installation_tests2_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
+
+    - name: Run run_installation_tests3_altuser.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster:latest
+        name: run_installation_tests3_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
+
+
+
+
 
 
 
