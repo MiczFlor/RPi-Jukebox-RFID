@@ -121,6 +121,11 @@ else
     is_server_reachable() {
         return `nc -z "$SYNCSHAREDREMOTESERVER" -w "$SYNCSHAREDREMOTETIMOUT" "$SYNCSHAREDREMOTEPORT"`
     }
+    
+    # Check if first parameter ends with the character second parameter
+    endswith() { 
+        case "$1" in *"$2") true;; *) false;; esac; 
+    }
 
     # Sync all files from source to destination
     # Some special options are needed as the 'folder.conf' file will be generated on playback.
@@ -148,6 +153,9 @@ else
             local ssh_conn="${SYNCSHAREDREMOTESSHUSER}@${SYNCSHAREDREMOTESERVER}:"
         fi
 
+        if endswith "$dst_path" "/" ; then
+            mkdir -p "$dst_path" 
+        fi
         rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/' "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
         if [ $? -eq 0 -a -n "$rsync_changes" ]; then
@@ -164,7 +172,7 @@ else
                     # (or an artifical sleep time would be needed to make sure mpd is started)
                     sudo mopidyctl local scan > /dev/null 2>&1
                 else
-                    mpc --wait update "$dst_path" > /dev/null 2>&1
+                    mpc update --wait > /dev/null 2>&1
                 fi
             fi
 
