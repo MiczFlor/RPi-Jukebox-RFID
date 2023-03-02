@@ -1,8 +1,9 @@
 # Synchronize shared files from a server
 
 This component activates a synchronisation from a server to the Phoniebox for the shared folders 'shortcuts' and 'audiofolders'.
-This can be initiated as a "full-sync" command and optionally on every RFID scan for the particular CardID (and corresponding audiofolder).
+It allows to manage the shortcuts and audiofiles of one to many Phonieboxes in a central place (e.g. NAS, one main Phoniebox, ...) in the network, but keeps the possibility to play audio offline once the data where synced.
 
+The synchronisation can be initiated as a "full-sync" command and optionally on every RFID scan for the particular CardID (and corresponding audiofolder).
 For the "full-sync" bind a CardId to the command "SYNCSHAREDFULL".
 For the "RFID scan sync" feature, activate the option in the configuration. There is also a command to toggle the activation of the "RFID scan sync" feature via CardId (bind to command "SYNCSHAREDONRFIDSCANTOGGLE").
 
