@@ -61,7 +61,6 @@ jobs:
         push: false
         file: ./ci/Dockerfile.buster.test_install_altuser.amd64
         tags: rpi-jukebox-rfid-buster-altuser:latest
-
       
     - name: Run run_installation_tests_altuser.sh
       uses: tj-actions/docker-run@v2
@@ -71,4 +70,8 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
 
-    - 
+
+
+
+
+
