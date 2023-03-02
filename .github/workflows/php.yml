@@ -16,6 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Setup PHP with XDebug
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 7.3
+        coverage: xdebug
+        tools: composer
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
