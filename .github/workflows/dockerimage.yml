@@ -16,15 +16,85 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build Docker image and run tests
-      run: |
-        docker build . --file ./ci/Dockerfile.buster.test_install.amd64 --tag rpi-jukebox-rfid-buster:latest
-        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests.sh
-        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests2.sh
-        docker run --rm -i rpi-jukebox-rfid-buster:latest /code/scripts/installscripts/tests/run_installation_tests3.sh
-    - name: Build Docker image and run tests for alternate user hans
-      run: |
-        docker build . --file ./ci/Dockerfile.buster.test_install_altuser.amd64 --tag rpi-jukebox-rfid-buster-altuser:latest
-        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
-        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
-        docker run --rm -i rpi-jukebox-rfid-buster-altuser:latest /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2.2.1
+
+    - name: Build
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.buster.test_install.amd64
+        tags: rpi-jukebox-rfid-buster:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+      
+    - name: Run run_installation_tests.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster:latest
+        name: run_installation_tests.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests.sh
+          
+    - name: Run run_installation_tests2.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster:latest
+        name: run_installation_tests2.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          
+    - name: Run run_installation_tests3.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster:latest
+        name: run_installation_tests3.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3.sh
+          
+    - name: Build altuser hans
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.buster.test_install_altuser.amd64
+        tags: rpi-jukebox-rfid-buster-altuser:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+      
+    - name: Run run_installation_tests_altuser.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster-altuser:latest
+        name: run_installation_tests_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
+
+    - name: Run run_installation_tests2_altuser.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster-altuser:latest
+        name: run_installation_tests2_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
+
+    - name: Run run_installation_tests3_altuser.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-buster-altuser:latest
+        name: run_installation_tests3_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
+
+
+
+
+
+
+
+
+
