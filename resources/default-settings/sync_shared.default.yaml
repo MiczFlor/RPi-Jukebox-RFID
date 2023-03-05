@@ -1,0 +1,6 @@
+sync_shared:
+    on_rfid_scan_enabled: true
+    mode: 'mount'
+    ssh:
+        username: ''
+    mount:
