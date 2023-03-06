@@ -41,14 +41,15 @@ def sync_folder(folder: str):
     _sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
     _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
 
-    _src_path = _clean_trailing_slash(f"{_sync_remote_path}/audiofolders/{folder}") + "/"
-    _dst_path = _clean_trailing_slash(components.player.get_music_library_path()) + "/"
+    _cleaned_folder=_remove_leading_slash(_remove_trailing_slash(folder))
+    _src_path = _remove_trailing_slash(_sync_remote_path) + "/audiofolders/" + _cleaned_folder + "/"
+    _dst_path = _remove_trailing_slash(components.player.get_music_library_path()) + "/" + _cleaned_folder + "/"
     # rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs -
     #                   -filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/'
     #                   "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
     logger.debug(f"Src: {_src_path} -> Dst: {_dst_path}")
-    res = subprocess.run(f"rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/' {_src_path} {_dst_path}",
+    res = subprocess.run(f"rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='.gitkeep' --exclude='.*/' --exclude='@*/' {_src_path} {_dst_path}",
                 shell=True, check=False, capture_output=True, text=True)
     if res.stderr != b'':
         logger.error(f"Sync Error: {res.stderr}")
@@ -57,9 +58,15 @@ def sync_folder(folder: str):
 
 
 
-def _clean_trailing_slash(path: str):
+def _remove_trailing_slash(path: str):
     cleaned_path = path
     if path.endswith('/'):
         cleaned_path = path[:-1]
+    return cleaned_path
+
+def _remove_leading_slash(path: str):
+    cleaned_path = path
+    if path.startswith('/'):
+        cleaned_path = path[1:]
     return cleaned_path
 
