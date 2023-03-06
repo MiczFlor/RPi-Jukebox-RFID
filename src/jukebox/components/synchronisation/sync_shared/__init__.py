@@ -41,7 +41,7 @@ def sync_folder(folder: str):
     _sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
     _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
 
-    _src_path = _clean_trailing_slash(f"{_sync_remote_path}/{folder}") + "/"
+    _src_path = _clean_trailing_slash(f"{_sync_remote_path}/audiofolders/{folder}") + "/"
     _dst_path = _clean_trailing_slash(components.player.get_music_library_path()) + "/"
     # rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs -
     #                   -filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/'
