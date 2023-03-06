@@ -51,7 +51,7 @@ def sync_folder(folder: str):
     logger.debug(f"Src: {_src_path} -> Dst: {_dst_path}")
     res = subprocess.run(f"rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs --filter='-rp folder.conf' --exclude='.gitkeep' --exclude='.*/' --exclude='@*/' {_src_path} {_dst_path}",
                 shell=True, check=False, capture_output=True, text=True)
-    if res.stderr != b'':
+    if res.stderr != '':
         logger.error(f"Sync Error: {res.stderr}")
     if res.returncode == 0 and res.stdout != '':
         logger.debug(f"synced: {res.stdout}")
