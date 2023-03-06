@@ -1,16 +1,24 @@
 import logging
 import jukebox.cfghandler
-import jukebox.plugs as plugin
-import components.rfid.reader
+import jukebox.plugs as plugs
 
 logger = logging.getLogger('jb.sync_shared')
 
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_sync_shared = jukebox.cfghandler.get_handler('sync_shared')
 
+#TODO create class and init settings
+#class SyncShared:
+#    """Interface to MPD Music Player Daemon"""
 
-@plugin.initialize
+
+#sync_shared_ctrl: SyncShared
+
+@plugs.initialize
 def initialize():
+    #global sync_shared_ctrl
+    #sync_shared_ctrl = SyncShared()
+    #plugs.register(sync_shared_ctrl, name='ctrl')
     if cfg_main.setndefault('sync_shared', 'enable', value=False):
         config_file = cfg_main.setndefault('sync_shared', 'config_file', value='../../shared/settings/sync_shared.yaml')
         try:
@@ -19,16 +27,12 @@ def initialize():
             logger.error(f"Error loading sync_shared config file. {e.__class__.__name__}: {e}")
             return
 
-        components.rfid.reader.rfid_card_detect_callbacks.register(rfid_card_detect_callback)
+@plugs.register
+def sync_card_database(path: str):
+    logger.debug(f"Sync Database {path}.")
 
-def syncCardDatabase():
-    logger.debug("Sync Database.")
 
-
-def rfid_card_detect_callback(card_id: str, state: int):
-    logger.debug("RFID Scan Callback.")
-    if (state != 0):
-        logger.debug("Unkown CardId. No syncing")
-    else:
-        logger.debug(f"CardId {card_id}. syncing")
+@plugs.register
+def sync_folder(folder: str):
+    logger.debug(f"Folder {folder}. syncing")
 

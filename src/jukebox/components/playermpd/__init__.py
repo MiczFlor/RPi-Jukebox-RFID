@@ -447,6 +447,10 @@ class PlayerMPD:
             self.second_swipe_action()
         else:
             logger.debug('Calling first swipe action')
+
+            # sync audiofolder
+            plugs.call_ignore_errors('sync_shared', 'sync_folder', args=[folder])
+
             self.play_folder(folder, recursive)
 
     @plugs.tag
