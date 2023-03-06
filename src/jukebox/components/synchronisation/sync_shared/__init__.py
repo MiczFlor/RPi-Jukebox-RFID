@@ -49,7 +49,7 @@ def sync_folder(folder: str):
     #                   "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
 
     logger.debug(f"Src: {_src_path} -> Dst: {_dst_path}")
-    res = subprocess.run(['rsync', '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs', "--filter='-rp folder.conf'", "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'", "{_src_path}", "{_dst_path}"],
+    res = subprocess.run(['rsync', '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs', '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'", _src_path, _dst_path],
                 shell=False, check=False, capture_output=True, text=True)
     if res.stderr != '':
         logger.error(f"Sync Error: {res.stderr}")
