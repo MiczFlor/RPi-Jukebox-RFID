@@ -3,7 +3,7 @@ import jukebox.cfghandler
 import jukebox.plugs as plugin
 import components.rfid.reader
 
-logger = logging.getLogger('jb.synchronisation.sync_shared')
+logger = logging.getLogger('jb.sync_shared')
 
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_sync_shared = jukebox.cfghandler.get_handler('sync_shared')
