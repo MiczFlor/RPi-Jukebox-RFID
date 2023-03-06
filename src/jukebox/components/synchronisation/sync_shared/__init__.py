@@ -22,13 +22,13 @@ def initialize():
         components.rfid.reader.rfid_card_detect_callbacks.register(rfid_card_detect_callback)
 
 def syncCardDatabase():
-    logger("Sync Database.")
+    logger.debug("Sync Database.")
 
 
 def rfid_card_detect_callback(card_id: str, state: int):
-    logger("RFID Scan Callback.")
+    logger.debug("RFID Scan Callback.")
     if (state != 0):
-        logger("Unkown CardId. No syncing")
+        logger.debug("Unkown CardId. No syncing")
     else:
-        logger(f"CardId {card_id}. syncing")
+        logger.debug(f"CardId {card_id}. syncing")
 
