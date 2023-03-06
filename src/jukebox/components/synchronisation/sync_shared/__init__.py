@@ -55,6 +55,7 @@ def sync_folder(folder: str):
         logger.error(f"Sync Error: {res.stderr}")
     if res.returncode == 0 and res.stdout != '':
         logger.debug(f"synced: {res.stdout}")
+        plugs.call_ignore_errors('player', 'ctrl', 'update')
 
 
 
