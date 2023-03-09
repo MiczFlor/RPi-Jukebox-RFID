@@ -36,7 +36,13 @@ def sync_card_database(path: str):
 
 @plugs.register
 def sync_folder(folder: str):
+    """
+    Sync the folder from the remote server, if existing
+
+    :param folder: Folder path relative to music library path
+    """
     logger.debug(f"Folder {folder}. syncing")
+    _files_synced = False
 
     _sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
     _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
@@ -51,11 +57,13 @@ def sync_folder(folder: str):
     logger.debug(f"Src: {_src_path} -> Dst: {_dst_path}")
     res = subprocess.run(['rsync', '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs', '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'", _src_path, _dst_path],
                 shell=False, check=False, capture_output=True, text=True)
-    if res.stderr != '':
-        logger.error(f"Sync Error: {res.stderr}")
     if res.returncode == 0 and res.stdout != '':
         logger.debug(f"synced: {res.stdout}")
-        plugs.call_ignore_errors('player', 'ctrl', 'update')
+        _files_synced = True
+    if res.stderr != '':
+        logger.error(f"Sync Error: {res.stderr}")
+
+    return _files_synced
 
 
 

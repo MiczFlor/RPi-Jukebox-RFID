@@ -449,7 +449,10 @@ class PlayerMPD:
             logger.debug('Calling first swipe action')
 
             # sync audiofolder
-            plugs.call_ignore_errors('sync_shared', 'sync_folder', args=[folder])
+            _files_synced = plugs.call_ignore_errors('sync_shared', 'sync_folder', args=[folder])
+            if _files_synced:
+                logger.debug('Files synced: update database')
+                self.mpd_client.update(folder)
 
             self.play_folder(folder, recursive)
 
