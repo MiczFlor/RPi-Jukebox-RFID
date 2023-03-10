@@ -3,6 +3,8 @@ import subprocess
 import components.player
 import jukebox.cfghandler
 import jukebox.plugs as plugs
+import socket
+import os
 
 logger = logging.getLogger('jb.sync_shared')
 
@@ -41,30 +43,68 @@ def sync_folder(folder: str):
 
     :param folder: Folder path relative to music library path
     """
-    logger.debug(f"Folder {folder}. syncing")
+    logger.info(f"Syncing Folder '{folder}'")
     _files_synced = False
 
     _sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
-    _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
+    _sync_remote_server = cfg_sync_shared.getn('sync_shared', _sync_mode, 'server')
+    _sync_remote_port = int(cfg_sync_shared.getn('sync_shared', _sync_mode, 'port'))
+    _sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', _sync_mode, 'timeout'))
 
-    _cleaned_folder=_remove_leading_slash(_remove_trailing_slash(folder))
-    _src_path = _remove_trailing_slash(_sync_remote_path) + "/audiofolders/" + _cleaned_folder + "/"
-    _dst_path = _remove_trailing_slash(components.player.get_music_library_path()) + "/" + _cleaned_folder + "/"
-    # rsync_changes=$(rsync --compress --recursive --itemize-changes --safe-links --times --omit-dir-times --delete --prune-empty-dirs -
-    #                   -filter='-rp folder.conf' --exclude='placeholder' --exclude='.*/' --exclude='@*/'
-    #                   "${ssh_port[@]}" "${ssh_conn}""${src_path}" "${dst_path}")
+    if _is_server_reachable(_sync_remote_server, _sync_remote_port, _sync_remote_timeout):
+        _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
+        _sync_remote_path_audio =_remove_trailing_slash(_sync_remote_path) + "/audiofolders/"
 
-    logger.debug(f"Src: {_src_path} -> Dst: {_dst_path}")
-    res = subprocess.run(['rsync', '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs', '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'", _src_path, _dst_path],
-                shell=False, check=False, capture_output=True, text=True)
+        if os.path.isdir(_sync_remote_path_audio):
+            _cleaned_folder=_remove_leading_slash(_remove_trailing_slash(folder))
+            _src_path = _sync_remote_path_audio + _cleaned_folder + "/"
+
+            if os.path.isdir(_src_path):
+                _dst_path = _remove_trailing_slash(components.player.get_music_library_path()) + "/" + _cleaned_folder + "/"
+
+                _files_synced = _sync_paths(_src_path, _dst_path)
+
+            else:
+                logger.warn(f"Folder does not exist: {_src_path}")
+
+        else:
+            logger.error(f"Folder does not exist: {_sync_remote_path_audio}")
+
+    return _files_synced
+
+def _sync_paths(src_path:str, dst_path:str):
+    _files_synced = False
+    logger.debug(f"Src: '{src_path}' -> Dst: '{dst_path}'")
+    res = subprocess.run(['rsync',
+                            '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs',
+                            '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'",
+                            src_path, dst_path],
+                        shell=False, check=False, capture_output=True, text=True)
+
     if res.returncode == 0 and res.stdout != '':
-        logger.debug(f"synced: {res.stdout}")
+        logger.debug(f"Synced:\n{res.stdout}")
         _files_synced = True
     if res.stderr != '':
         logger.error(f"Sync Error: {res.stderr}")
 
     return _files_synced
 
+def _is_server_reachable(host: str, port: int, timeout: int):
+    _port = int(port)
+    _timeout = int(timeout)
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(_timeout)
+        result = sock.connect_ex((host, _port))
+    except Exception as e:
+        logger.error(f"Server check failed with {host}:{port}. {e.__class__.__name__}: {e}")
+        return False
+
+    _server_reachable = result == 0
+    if(not _server_reachable):
+        logger.error(f"Server check failed with {host}:{port}. errorcode: {_server_reachable}")
+
+    return _server_reachable
 
 
 def _remove_trailing_slash(path: str):
@@ -78,4 +118,3 @@ def _remove_leading_slash(path: str):
     if path.startswith('/'):
         cleaned_path = path[1:]
     return cleaned_path
-
