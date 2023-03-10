@@ -34,27 +34,28 @@ class ShutdownButton(SimpleButton):
             logger.debug('cannot set LED to {}: no LED pin defined'.format(status))
 
     def callbackFunctionHandler(self, *args):
-        logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s'.format(
-            self.hold_time, self.iteration_time
-        ))
-        t_passed = 0
-        led_state = True
-        while t_passed < self.hold_time:
-            self.set_led(led_state)
-            time.sleep(self.iteration_time)
-            t_passed += self.iteration_time
-            led_state = not led_state
-            if not self.is_pressed:
-                break
-        if t_passed >= self.hold_time:
-            # trippel off period to indicate command accepted
-            self.set_led(GPIO.HIGH)
-            time.sleep(.6)
-            # leave it on for the moment, it will be off when the system is down
-            self.when_pressed(*args)
-        else:
-            # switch off LED if pressing was cancelled early (during flashing)
-            self.set_led(GPIO.LOW)
+        if self.is_pressed: # Should not be necessary, but handler gets called on rising edge too
+           logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s'.format(
+               self.hold_time, self.iteration_time
+           ))
+           t_passed = 0
+           led_state = True
+           while t_passed < self.hold_time:
+               self.set_led(led_state)
+               time.sleep(self.iteration_time)
+               t_passed += self.iteration_time
+               led_state = not led_state
+               if not self.is_pressed:
+                   break
+           if t_passed >= self.hold_time:
+               # trippel off period to indicate command accepted
+               self.set_led(GPIO.HIGH)
+               time.sleep(.6)
+               # leave it on for the moment, it will be off when the system is down
+               self.when_pressed(*args)
+           else:
+               # switch off LED if pressing was cancelled early (during flashing)
+               self.set_led(GPIO.LOW)
 
     def __repr__(self):
         return '<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
