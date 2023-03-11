@@ -406,7 +406,55 @@ function index_folders_print($item, $key)
     * settings buttons
     */
     // we show the buttons only if there are actual audio files in the folder
-    if($contentTree[$key]['count_audioFiles'] == 0) {
+    if($contentTree[$key]['count_subdirs'] > 0) {
+        print "\n                <div><!-- folder settings buttons -->";
+        // FOLDER SHUFFLE BUTTON
+        $foundFolderShuffle = "OFF";
+        if(
+            file_exists($contentTree[$key]['path_abs']."/folder.conf")
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'FOLDERSHUFFLE="ON"') !== false
+        ) {
+            $foundFolderShuffle = "ON";
+        }
+        if( $foundFolderShuffle == "OFF" ) {
+            // do stuff
+            print "<a playlist=\"$playlist\" foldershuffle='false' onclick='toggleFoldershuffle(this);' class='btn btn-warning '>".$lang['globalFoldershuffle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundFolderShuffle == "ON") {
+            print "<a playlist=\"$playlist\" foldershuffle='true' onclick='toggleFoldershuffle(this);'  class='btn btn-success '>".$lang['globalFoldershuffle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
+
+        // FOLDER SINGLE BUTTON
+        $foundFolderSingle = "OFF";
+        if(
+            file_exists($contentTree[$key]['path_abs']."/folder.conf")
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'FOLDERSINGLE="ON"') !== false
+        ) {
+            $foundFolderSingle = "ON";
+        }
+        if( $foundFolderSingle == "OFF" ) {
+            // do stuff
+            print "<a playlist=\"$playlist\" foldersingle='false' onclick='toggleFoldersingle(this);' class='btn btn-warning '>".$lang['globalFoldersingle'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundFolderSingle == "ON") {
+            print "<a playlist=\"$playlist\" foldersingle='true' onclick='toggleFoldersingle(this);'  class='btn btn-success '>".$lang['globalFoldersingle'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
+
+        // FOLDER SKIP BUTTON
+        $foundFolderSkip = "OFF";
+        if(
+            file_exists($contentTree[$key]['path_abs']."/folder.conf")
+            && strpos(file_get_contents($contentTree[$key]['path_abs']."/folder.conf"),'FOLDERSKIP="ON"') !== false
+        ) {
+            $foundFolderSkip = "ON";
+        }
+        if( $foundFolderSkip == "OFF" ) {
+            // do stuff
+            print "<a playlist=\"$playlist\" folderskip='false' onclick='toggleFolderskip(this);' class='btn btn-warning '>".$lang['globalFolderskip'].": ".$lang['globalOff']." <i class='mdi mdi-toggle-switch-off-outline' aria-hidden='true'></i></a> ";
+        } elseif($foundFolderSkip == "ON") {
+            print "<a playlist=\"$playlist\" folderskip='true' onclick='toggleFolderskip(this);'  class='btn btn-success '>".$lang['globalFolderskip'].": ".$lang['globalOn']." <i class='mdi mdi-toggle-switch' aria-hidden='true'></i></a> ";
+        }
+
+        print "
+                </div><!-- / folder settings buttons -->";
     } else {
         print "\n                <div><!-- settings buttons -->";
         // RESUME BUTTON

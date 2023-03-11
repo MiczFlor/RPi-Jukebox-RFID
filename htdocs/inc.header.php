@@ -75,6 +75,7 @@ $debugAvail = array(
 "DEBUG_rfid_trigger_play_sh",
 "DEBUG_shuffle_play_sh",
 "DEBUG_single_play_sh",
+"DEBUG_shuffle_folder_sh",
 );
 $debugOptions = array("TRUE", "FALSE");
 
