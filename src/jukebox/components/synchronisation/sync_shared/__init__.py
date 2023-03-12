@@ -16,7 +16,9 @@ class SyncShared:
     """Control class for sync shared functionality"""
 
     def __init__(self):
-        if cfg_main.setndefault('sync_shared', 'enable', value=False):
+        self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False)
+        if self._sync_enabled:
+            logger.info("Sync shared activated")
             config_file = cfg_main.setndefault('sync_shared', 'config_file', value='../../shared/settings/sync_shared.yaml')
             try:
                 jukebox.cfghandler.load_yaml(cfg_sync_shared, config_file)
@@ -26,14 +28,20 @@ class SyncShared:
 
 
             self._sync_on_rfid_scan_enabled = bool(cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled'))
+            logger.info("Sync on RFID scan deactivated")
             self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
             self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
             self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
             self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'timeout'))
             self._sync_remote_path = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'path')
 
+        else:
+            logger.info("Sync shared deactivated")
+
+
     def __exit__(self):
         pass
+
 
     @plugs.tag
     def sync_full(self):
@@ -41,14 +49,20 @@ class SyncShared:
         Sync full from the remote server
         """
 
-        logger.info(f"Syncing full")
-        _files_synced = self._sync_folder('')
+        if self._sync_enabled:
+            logger.info(f"Syncing full")
+            _files_synced = self._sync_folder('')
+
+        else:
+            logger.debug("Sync shared deactivated")
 
         return _files_synced
+
 
     @plugs.tag
     def sync_card_database(self, path: str):
         logger.debug(f"Sync Database {path}.")
+
 
     @plugs.tag
     def sync_folder(self, folder: str):
@@ -59,14 +73,19 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._sync_on_rfid_scan_enabled:
-            logger.info(f"Syncing Folder '{folder}'")
-            _files_synced = self._sync_folder(folder)
+        if self._sync_enabled:
+            if self._sync_on_rfid_scan_enabled:
+                logger.info(f"Syncing Folder '{folder}'")
+                _files_synced = self._sync_folder(folder)
+
+            else:
+                logger.debug("Sync on RFID scan deactivated")
 
         else:
-            logger.debug("Sync on RFID scan deactivated")
+            logger.debug("Sync shared deactivated")
 
         return _files_synced
+
 
     def _sync_folder(self, folder: str):
         _files_synced = False
@@ -94,6 +113,7 @@ class SyncShared:
 
         return _files_synced
 
+
     def _sync_paths(self, src_path:str, dst_path:str):
         _files_synced = False
         logger.debug(f"Src: '{src_path}' -> Dst: '{dst_path}'")
@@ -115,6 +135,7 @@ class SyncShared:
 
         return _files_synced
 
+
     def _is_server_reachable(self, host: str, port: int, timeout: int):
         _port = int(port)
         _timeout = int(timeout)
@@ -132,10 +153,12 @@ class SyncShared:
 
         return _server_reachable
 
+
     def _clean_foldername(self, lib_path: str, folder: str):
         _folder = folder.removeprefix(lib_path)
         _folder = self._remove_leading_slash(self._remove_trailing_slash(_folder))
         return _folder
+
 
     def _ensure_trailing_slash(self, path: str):
         _path = path
@@ -143,9 +166,11 @@ class SyncShared:
             _path = _path + '/'
         return _path
 
+
     def _remove_trailing_slash(self, path: str):
         _path = path.removesuffix('/')
         return _path
+
 
     def _remove_leading_slash(self, path: str):
         _path = path.removeprefix('/')
