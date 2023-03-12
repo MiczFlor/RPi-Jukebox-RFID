@@ -13,7 +13,7 @@ cfg_sync_shared = jukebox.cfghandler.get_handler('sync_shared')
 
 
 class SyncShared:
-    """Control class for sync shared"""
+    """Control class for sync shared functionality"""
 
     def __init__(self):
         if cfg_main.setndefault('sync_shared', 'enable', value=False):
@@ -24,6 +24,8 @@ class SyncShared:
                 logger.error(f"Error loading sync_shared config file. {e.__class__.__name__}: {e}")
                 return
 
+
+            self._sync_on_rfid_scan_enabled = bool(cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled'))
             self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
             self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
             self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
@@ -44,26 +46,31 @@ class SyncShared:
 
         :param folder: Folder path relative to music library path
         """
-        logger.info(f"Syncing Folder '{folder}'")
         _files_synced = False
 
-        if self._is_server_reachable(self._sync_remote_server, self._sync_remote_port, self._sync_remote_timeout):
-            _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
+        if self._sync_on_rfid_scan_enabled:
+            logger.info(f"Syncing Folder '{folder}'")
 
-            if os.path.isdir(_sync_remote_path_audio):
-                _music_library_path = components.player.get_music_library_path()
-                _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
-                _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
-                _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
+            if self._is_server_reachable(self._sync_remote_server, self._sync_remote_port, self._sync_remote_timeout):
+                _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
 
-                if os.path.isdir(_src_path):
-                    _files_synced = self._sync_paths(_src_path, _dst_path)
+                if os.path.isdir(_sync_remote_path_audio):
+                    _music_library_path = components.player.get_music_library_path()
+                    _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
+                    _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+                    _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
+
+                    if os.path.isdir(_src_path):
+                        _files_synced = self._sync_paths(_src_path, _dst_path)
+
+                    else:
+                        logger.warn(f"Folder does not exist remote: {_src_path}")
 
                 else:
-                    logger.warn(f"Folder does not exist remote: {_src_path}")
+                    logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
 
-            else:
-                logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
+        else:
+            logger.debug("Sync on RFID scan deactivated")
 
         return _files_synced
 
