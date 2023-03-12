@@ -75,6 +75,10 @@ def sync_folder(folder: str):
 def _sync_paths(src_path:str, dst_path:str):
     _files_synced = False
     logger.debug(f"Src: '{src_path}' -> Dst: '{dst_path}'")
+
+    if dst_path.endswith('/'):
+        os.makedirs(dst_path, exist_ok = True)
+
     res = subprocess.run(['rsync',
                             '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs',
                             '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'",
