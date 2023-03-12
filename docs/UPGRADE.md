@@ -1,5 +1,12 @@
-
 # How to upgrade the Phoniebox code
+
+> 📝**NOTE:** This describes upgrading for **Version 2.x** (and even 1.x versions). For **Version 3** please see <https://rpi-jukebox-rfid.readthedocs.io/en/latest/migration.html>
+
+## Which version am I on?
+
+There is a file `settings/version` containing the version number.
+
+## Upgrade for 2.x Versions
 
 Assuming that you use `git pull` to update the code base of your Phoniebox,
 every now and then you need to run some update scripts, like patches.
@@ -7,13 +14,9 @@ To make this somewhat consistent, I started this page to document things that ne
 
 If you still encounter problems after running the below upgrade snippets, check inside the folder `scripts/installscripts/` for scripts which contain the entire install process.
 
-## Which version am I on?
+## Upgrade for 0.x and 1.x Versions
 
-There is a file `settings/version` containing the version number.
-
-**Note:*** This is work in progress, please share experience, improvements and insights in the [issue section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-
-# Upgrade from Version 1.1.7 to 1.1.8
+### Upgrade from Version 1.1.7 to 1.1.8
 
 **NOTE**: version `1.1.8` is the `master` branch. If you run into issues, please ask them on the "issues" board on GitHub. [2018-12-10].
 
@@ -104,7 +107,7 @@ sudo rm /var/log/mopidy/mopidy.log
 sudo reboot
 ~~~
 
-# Upgrade from Version 1.1.1 to 1.1.7
+### Upgrade from Version 1.1.1 to 1.1.7
 
 Not much has changed in the core of this version. There is the new feature: Integrating **Spotify** to your Phoniebox. Currently this is *only* a [HOWTO document](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) which needs improvement and your input. I invite everybody to use our [spotify thread](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/18) to post improvements regarding this feature. You might also want to [improve the documentation on *Spotify integration*](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ) and create pull requests so I can merge this with the core.
 
@@ -118,7 +121,7 @@ git reset --hard origin/master
 git pull
 ~~~
 
-# Upgrade from Version 1.1.1 to 1.1.6
+### Upgrade from Version 1.1.1 to 1.1.6
 
 A few important bug fixes. And a new design.
 And the option to decide what the 'second swipe' of a card does (see settings in the web app).
@@ -143,7 +146,7 @@ sudo chmod 644 /etc/systemd/system/phoniebox-rfid-reader.service
 sudo systemctl enable rfid-reader
 ~~~
 
-# Upgrade from Version 1.0.0 to 1.1.1
+### Upgrade from Version 1.0.0 to 1.1.1
 
 This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 
@@ -164,11 +167,11 @@ sudo service lighttpd force-reload
 sudo service php7.0-fpm restart
 ~~~
 
-# Upgrade to Version 1.0
+### Upgrade to Version 1.0
 
 As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
 
-# Upgrade from 0.9.5 to 0.9.7
+### Upgrade from 0.9.5 to 0.9.7
 
 * Adding a *Settings* page in the web app to control features like 'idle shutdown' and 'max volume' and toggle systemd services
 * Documentation / troubleshooting / tricks: how to install via ssh, improve on board audio quality and the like
@@ -190,7 +193,7 @@ sudo systemctl enable phoniebox-idle-watchdog.service
 sudo systemctl start phoniebox-idle-watchdog.service
 ~~~
 
-# Upgrade from 0.9.4 to 0.9.5
+### Upgrade from 0.9.4 to 0.9.5
 
 * Configuration of RFID card control in extra file `settings/rfid_trigger_play.conf`
 * Playout control config now uses `settings` folder to store iFace value (e.g. PCM) and percentage of relative volume change
@@ -213,7 +216,7 @@ sudo chown pi:pi /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 sudo chmod 775 /home/pi/RPi-Jukebox-RFID/settings/rfid_trigger_play.conf
 ~~~
 
-# Upgrade to 0.9.4
+### Upgrade to 0.9.4
 
 * The following script refers to the OS version 'Stretch' in some places but this should also work for 'Jessie'.
 * OS 'Stretch' and 'Jessie' require different `lighttpd.conf` parameters. Samples can be found in `misc/sampleconfigs`

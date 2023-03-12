@@ -59,14 +59,14 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 1. Enable SSH by adding a simple file
 
     ```bash
-    $ touch ssh
+    touch ssh
     ```
 
 1. Set up your Wifi connection
     - Mac
 
         ```bash
-        $ nano wpa_supplicant.conf
+        nano wpa_supplicant.conf
         ```
 
     - Windows
@@ -93,20 +93,20 @@ You will need a terminal, like PuTTY for Windows or the Terminal for Mac to proc
 1. Login into your Raspberry Pi, username is `pi` and password is `raspberry`. If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
 
     ```bash
-    $ ssh pi@raspberrypi.local
+    ssh pi@raspberrypi.local
     ```
 
 1. Update the Pi's software. This may take a bit
 
     ```bash
-    $ sudo apt update && sudo apt full-upgrade
+    sudo apt update && sudo apt full-upgrade
     ```
 
 1. Reboot with `sudo reboot`
 1. Login again with SSH and open the Raspberry Pi config
 
     ```bash
-    $ sudo raspi-config
+    sudo raspi-config
     ```
 
 1. Update the following settings
@@ -148,7 +148,7 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
 1. Open the Raspberry Pi config
 
     ```bash
-    $ sudo raspi-config
+    sudo raspi-config
     ```
 
 1. Update the following settings
@@ -162,7 +162,7 @@ Also see [Troubleshooting: headphone audio unavailable after unplugging HDMI](ht
 1. Make your soundcard the primary sound device. To update the sound card priority order, edit the following file:
 
     ```bash
-    $ sudo nano /usr/share/alsa/alsa.conf
+    sudo nano /usr/share/alsa/alsa.conf
     ```
 
 1. Find the following variables and change their value from `0` to `1`
