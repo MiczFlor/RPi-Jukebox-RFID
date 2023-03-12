@@ -81,7 +81,7 @@ def _sync_paths(src_path:str, dst_path:str):
 
     res = subprocess.run(['rsync',
                             '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs',
-                            '--filter=-rp folder.conf', "--exclude='.gitkeep'", "--exclude='.*/'", "--exclude='@*/'",
+                             '--filter=-rp folder.conf', '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
                             src_path, dst_path],
                         shell=False, check=False, capture_output=True, text=True)
 
