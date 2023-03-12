@@ -36,6 +36,17 @@ class SyncShared:
         pass
 
     @plugs.tag
+    def sync_full(self):
+        """
+        Sync full from the remote server
+        """
+
+        logger.info(f"Syncing full")
+        _files_synced = self._sync_folder('')
+
+        return _files_synced
+
+    @plugs.tag
     def sync_card_database(self, path: str):
         logger.debug(f"Sync Database {path}.")
 
@@ -50,27 +61,36 @@ class SyncShared:
 
         if self._sync_on_rfid_scan_enabled:
             logger.info(f"Syncing Folder '{folder}'")
-
-            if self._is_server_reachable(self._sync_remote_server, self._sync_remote_port, self._sync_remote_timeout):
-                _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
-
-                if os.path.isdir(_sync_remote_path_audio):
-                    _music_library_path = components.player.get_music_library_path()
-                    _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
-                    _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
-                    _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
-
-                    if os.path.isdir(_src_path):
-                        _files_synced = self._sync_paths(_src_path, _dst_path)
-
-                    else:
-                        logger.warn(f"Folder does not exist remote: {_src_path}")
-
-                else:
-                    logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
+            _files_synced = self._sync_folder(folder)
 
         else:
             logger.debug("Sync on RFID scan deactivated")
+
+        return _files_synced
+
+    def _sync_folder(self, folder: str):
+        _files_synced = False
+
+        if self._is_server_reachable(self._sync_remote_server, self._sync_remote_port, self._sync_remote_timeout):
+            _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
+
+            if os.path.isdir(_sync_remote_path_audio):
+                _music_library_path = components.player.get_music_library_path()
+                _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
+                _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+                _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
+
+                if os.path.isdir(_src_path):
+                    _files_synced = self._sync_paths(_src_path, _dst_path)
+
+                else:
+                    logger.warn(f"Folder does not exist remote: {_src_path}")
+
+            else:
+                logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
+
+        else:
+            logger.error(f"Server not reachable at: {self._sync_remote_server}:{self._sync_remote_port} in {self._sync_remote_timeout}s")
 
         return _files_synced
 
