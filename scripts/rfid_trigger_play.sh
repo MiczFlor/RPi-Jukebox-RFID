@@ -348,10 +348,8 @@ if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "# Type of play \$VA
 # check if
 # - $FOLDER is not empty (! -z "$FOLDER")
 # - AND (-a)
-# - $FOLDER is set (! -z ${FOLDER+x})
-# - AND (-a)
 # - and points to existing directory (-d "${AUDIOFOLDERSPATH}/${FOLDER}")
-if [ ! -z "$FOLDER" -a ! -z ${FOLDER+x} -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
+if [ ! -z "$FOLDER" -a -d "${AUDIOFOLDERSPATH}/${FOLDER}" ]; then
 
     if [ "${DEBUG_rfid_trigger_play_sh}" == "TRUE" ]; then echo "\$FOLDER set, not empty and dir exists: ${AUDIOFOLDERSPATH}/${FOLDER}" >> $PATHDATA/../logs/debug.log; fi
 
