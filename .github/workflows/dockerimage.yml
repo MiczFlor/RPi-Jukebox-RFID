@@ -90,6 +90,48 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
 
+    - name: Build bullseye
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install.amd64
+        tags: rpi-jukebox-rfid-bullseye:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+      
+    - name: Run bullseye run_installation_tests.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests.sh
+          
+    - name: Run bullseye run_installation_tests2.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests2.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          
+    - name: Run bullseye run_installation_tests3.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests3.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3.sh
+          
+          
+          
+          
+          
+          
+
+
 
 
 

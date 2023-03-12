@@ -152,8 +152,9 @@ verify_wifi_settings() {
 }
 
 verify_apt_packages(){
+    local phpver="$(ls -1 /etc/php)"
     local packages="libspotify-dev samba
-samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
+samba-common-bin gcc lighttpd php${phpver}-common php${phpver}-cgi php${phpver} at mpd mpc mpg123 git ffmpeg
 resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 python3-spidev netcat alsa-utils"
     # TODO apt-transport-https checking only on RPi is currently a workaround
@@ -233,10 +234,11 @@ verify_samba_config() {
 }
 
 verify_webserver_config() {
+    local phpver="$(ls -1 /etc/php)"
     printf "\nTESTING webserver config...\n\n"
     check_chmod_chown 644 root root "/etc/lighttpd" "lighttpd.conf"
     check_chmod_chown 644 root root "/etc/lighttpd/conf-available" "15-fastcgi-php.conf"
-    check_chmod_chown 644 root root "/etc/php/7.3/cgi" "php.ini"
+    check_chmod_chown 644 root root "/etc/php/${phpver}/cgi" "php.ini"
     check_chmod_chown 440 root root "/etc" "sudoers"
 
     # Bonus TODO: check that fastcgi and fastcgi-php mods are enabled
