@@ -27,13 +27,11 @@ This is a work in progress so expect things to fail or being flaky.
 * build the docker image:
     * **on normal PCs:**
       ```bash
-      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.amd64 .
       docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.amd64 .
       ```
 
     * **on a raspberry pi:**
       ```bash
-      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.armv7 .
       docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.armv7 .
       ```
 * get something to drink or eat
