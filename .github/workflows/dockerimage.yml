@@ -108,6 +108,28 @@ jobs:
         name: bullseye_run_installation_tests.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests.sh
+          
+    - name: Run bullseye run_installation_tests2.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests2.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          
+    - name: Run bullseye run_installation_tests3.sh
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests3.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3.sh
+          
+          
+          
+          
+          
+          
 
 
 
