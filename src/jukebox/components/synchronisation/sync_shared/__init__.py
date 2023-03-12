@@ -53,22 +53,22 @@ def sync_folder(folder: str):
 
     if _is_server_reachable(_sync_remote_server, _sync_remote_port, _sync_remote_timeout):
         _sync_remote_path = cfg_sync_shared.getn('sync_shared', _sync_mode, 'path')
-        _sync_remote_path_audio =_remove_trailing_slash(_sync_remote_path) + "/audiofolders/"
+        _sync_remote_path_audio = os.path.join(_sync_remote_path, "audiofolders")
 
         if os.path.isdir(_sync_remote_path_audio):
-            _cleaned_folder=_remove_leading_slash(_remove_trailing_slash(folder))
-            _src_path = _sync_remote_path_audio + _cleaned_folder + "/"
+            _music_library_path = components.player.get_music_library_path()
+            _cleaned_foldername =_clean_foldername(_music_library_path, folder)
+            _src_path = _ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+            _dst_path = _ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
 
             if os.path.isdir(_src_path):
-                _dst_path = _remove_trailing_slash(components.player.get_music_library_path()) + "/" + _cleaned_folder + "/"
-
                 _files_synced = _sync_paths(_src_path, _dst_path)
 
             else:
-                logger.warn(f"Folder does not exist: {_src_path}")
+                logger.warn(f"Folder does not exist remote: {_src_path}")
 
         else:
-            logger.error(f"Folder does not exist: {_sync_remote_path_audio}")
+            logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
 
     return _files_synced
 
@@ -110,15 +110,21 @@ def _is_server_reachable(host: str, port: int, timeout: int):
 
     return _server_reachable
 
+def _clean_foldername(lib_path: str, folder: str):
+    _folder = folder.removeprefix(lib_path)
+    _folder = _remove_leading_slash(_remove_trailing_slash(_folder))
+    return _folder
+
+def _ensure_trailing_slash(path: str):
+    _path = path
+    if not _path.endswith('/'):
+        _path = _path + '/'
+    return _path
 
 def _remove_trailing_slash(path: str):
-    cleaned_path = path
-    if path.endswith('/'):
-        cleaned_path = path[:-1]
-    return cleaned_path
+    _path = path.removesuffix('/')
+    return _path
 
 def _remove_leading_slash(path: str):
-    cleaned_path = path
-    if path.startswith('/'):
-        cleaned_path = path[1:]
-    return cleaned_path
+    _path = path.removeprefix('/')
+    return _path

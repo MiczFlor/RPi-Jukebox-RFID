@@ -453,7 +453,7 @@ class PlayerMPD:
             if _files_synced:
                 logger.debug('Files synced: update database')
                 with self.mpd_lock:
-                    _update_id = self.mpd_client.update(folder)
+                    _update_id = self.mpd_client.update() #update(folder) #TODO fix general absolut/relativ folder path handling
                     self._wait_database_update_finished(_update_id)
 
             self.play_folder(folder, recursive)
