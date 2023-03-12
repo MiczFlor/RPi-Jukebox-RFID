@@ -14,6 +14,8 @@ settings/Playlists_Folders_Path
 settings/rfid_trigger_play.conf
 settings/Second_Swipe
 settings/ShowCover
+settings/sync-shared.conf
+settings/sync-shared-enabled
 settings/version
 htdocs/config.php
 scripts/deviceName.txt

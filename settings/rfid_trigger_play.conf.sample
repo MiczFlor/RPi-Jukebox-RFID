@@ -16,7 +16,7 @@
 # A section starts with ##
 # Example: ## Audio player
 # A command's description is *above* the command and starts with ###
-# Example: 
+# Example:
 # ### Stop player
 # CMDSTOP="%CMDSTOP%"
 # This structuring was introduced to have a human readable display in the Web UI
@@ -146,7 +146,7 @@ TOGGLEWIFI="%TOGGLEWIFI%"
 ### Read out the Wifi IP over the Phoniebox speakers
 CMDREADWIFIIP="%CMDREADWIFIIP%"
 
-## Recording audio commands 
+## Recording audio commands
 ### Start recording for 10 sec. duration
 RECORDSTART10="%RECORDSTART10%"
 ### Start recording for 60 sec. duration
@@ -157,3 +157,9 @@ RECORDSTART600="%RECORDSTART600%"
 RECORDSTOP="%RECORDSTOP%"
 ### Replay latest recording
 RECORDPLAYBACKLATEST="%RECORDPLAYBACKLATEST%"
+
+## Synchronisation
+### Synchronise all shared files
+SYNCSHAREDFULL="%SYNCSHAREDFULL%"
+### Toggle activation of 'sync on RFID scan'
+SYNCSHAREDONRFIDSCANTOGGLE="%SYNCSHAREDONRFIDSCANTOGGLE%"
