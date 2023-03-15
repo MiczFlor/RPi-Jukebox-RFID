@@ -27,7 +27,7 @@ jobs:
         load: true
         push: false
         file: ./ci/Dockerfile.buster.armv7
-        platform: linux/arm/v7
+        platforms: linux/arm/v7
         tags: rpi-jukebox-rfid-buster:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
