@@ -116,7 +116,7 @@ class BattmonBase():
 
     @plugs.tag
     def get_batt_status(self):
-        return(self.batt_status)
+        return (self.batt_status)
 
     def publish_status(self):
         batt_voltage_mV_raw = self.get_batt_voltage()
