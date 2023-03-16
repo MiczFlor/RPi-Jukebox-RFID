@@ -119,8 +119,8 @@ jobs:
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests.sh
-        platforms: linux/arm/v7
         args: |
+          --platform linux/arm/v7
           /code/scripts/installscripts/tests/run_installation_tests.sh
           
     - name: Run bullseye armv7 run_installation_tests2.sh
@@ -128,8 +128,8 @@ jobs:
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests2.sh
-        platforms: linux/arm/v7
         args: |
+         --platform linux/arm/v7
           /code/scripts/installscripts/tests/run_installation_tests2.sh
           
     - name: Run bullseye armv7 run_installation_tests3.sh
@@ -137,8 +137,8 @@ jobs:
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests3.sh
-        platforms: linux/arm/v7
         args: |
+         --platform linux/arm/v7
           /code/scripts/installscripts/tests/run_installation_tests3.sh
           
           
