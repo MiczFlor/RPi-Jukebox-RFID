@@ -102,7 +102,7 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
 
-    - name: Build bullseye
+    - name: Build bullseye armv7
       uses: docker/build-push-action@v3
       with:
         context: .
@@ -114,27 +114,30 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
       
-    - name: Run bullseye run_installation_tests.sh
+    - name: Run bullseye armv7 run_installation_tests.sh
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests.sh
+        platforms: linux/arm/v7
         args: |
           /code/scripts/installscripts/tests/run_installation_tests.sh
           
-    - name: Run bullseye run_installation_tests2.sh
+    - name: Run bullseye armv7 run_installation_tests2.sh
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests2.sh
+        platforms: linux/arm/v7
         args: |
           /code/scripts/installscripts/tests/run_installation_tests2.sh
           
-    - name: Run bullseye run_installation_tests3.sh
+    - name: Run bullseye armv7 run_installation_tests3.sh
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
         name: bullseye_run_installation_tests3.sh
+        platforms: linux/arm/v7
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3.sh
           
