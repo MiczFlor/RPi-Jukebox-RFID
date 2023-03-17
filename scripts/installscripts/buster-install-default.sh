@@ -785,7 +785,6 @@ install_main() {
     sudo locale-gen "${LANG}"
 
     # Install required packages
-    ${apt_get} ${allow_downgrades} install apt-transport-https
     sudo mkdir -p /usr/local/share/keyrings
     sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
