@@ -76,15 +76,17 @@ jobs:
         context: .
         load: true
         push: false
-        file: ./ci/Dockerfile.buster.test_install_altuser.amd64
-        tags: rpi-jukebox-rfid-buster-altuser:latest
+        file: ./ci/Dockerfile.bullseye.test_install_altuser.armv7
+        platforms: linux/arm/v7
+        tags: rpi-jukebox-rfid-bullseye-altuser:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
       
     - name: Run run_installation_tests_altuser.sh
       uses: tj-actions/docker-run@v2
       with:
-        image: rpi-jukebox-rfid-buster-altuser:latest
+        image: rpi-jukebox-rfid-bullseye-altuser:latest
+        options: --platform linux/arm/v7
         name: run_installation_tests_altuser.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
@@ -92,7 +94,8 @@ jobs:
     - name: Run run_installation_tests2_altuser.sh
       uses: tj-actions/docker-run@v2
       with:
-        image: rpi-jukebox-rfid-buster-altuser:latest
+        image: rpi-jukebox-rfid-bullseye-altuser:latest
+        options: --platform linux/arm/v7
         name: run_installation_tests2_altuser.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
@@ -100,7 +103,8 @@ jobs:
     - name: Run run_installation_tests3_altuser.sh
       uses: tj-actions/docker-run@v2
       with:
-        image: rpi-jukebox-rfid-buster-altuser:latest
+        image: rpi-jukebox-rfid-bullseye-altuser:latest
+        options: --platform linux/arm/v7
         name: run_installation_tests3_altuser.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
