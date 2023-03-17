@@ -157,8 +157,7 @@ verify_apt_packages(){
 samba-common-bin gcc lighttpd php${phpver}-common php${phpver}-cgi php${phpver} at mpd mpc mpg123 git ffmpeg
 resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 python3-spidev netcat alsa-utils"
-    # TODO apt-transport-https checking only on RPi is currently a workaround
-    local packages_raspberrypi="apt-transport-https raspberrypi-kernel-headers"
+    local packages_raspberrypi="spberrypi-kernel-headers"
     local packages_spotify="mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
 python3-cffi python3-ply python3-pycparser python3-spotify"
 
