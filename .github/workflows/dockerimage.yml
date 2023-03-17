@@ -22,6 +22,45 @@ jobs:
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2.2.1
+      
+    - name: Build Bullseye ARMv7
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install.armv7
+        platforms: linux/arm/v7
+        tags: rpi-jukebox-rfid-bullseye:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+      
+    - name: Run run_installation_tests.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests.sh
+        options: --platform linux/arm/v7
+        args: | 
+          /code/scripts/installscripts/tests/run_installation_tests.sh
+          
+    - name: Run run_installation_tests2.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests2.sh
+        options: --platform linux/arm/v7
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          
+    - name: Run run_installation_tests3.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests3.sh
+        options: --platform linux/arm/v7
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3.sh
 
     - name: Build Buster ARMv7
       uses: docker/build-push-action@v3
@@ -62,7 +101,7 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3.sh
           
-    - name: Build altuser hans Buster ARMv7
+    - name: Build altuser hans Bullseye ARMv7
       uses: docker/build-push-action@v3
       with:
         context: .
@@ -74,7 +113,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
       
-    - name: Run run_installation_tests_altuser.sh Buster ARMv7
+    - name: Run run_installation_tests_altuser.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye-altuser:latest
@@ -83,7 +122,7 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
 
-    - name: Run run_installation_tests2_altuser.sh Buster ARMv7
+    - name: Run run_installation_tests2_altuser.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye-altuser:latest
@@ -92,7 +131,7 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
 
-    - name: Run run_installation_tests3_altuser.sh Buster ARMv7
+    - name: Run run_installation_tests3_altuser.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye-altuser:latest
@@ -101,44 +140,7 @@ jobs:
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
 
-    - name: Build Bullseye ARMv7
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        load: true
-        push: false
-        file: ./ci/Dockerfile.bullseye.test_install.armv7
-        platforms: linux/arm/v7
-        tags: rpi-jukebox-rfid-bullseye:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-      
-    - name: Run run_installation_tests.sh Bullseye ARMv7
-      uses: tj-actions/docker-run@v2
-      with:
-        image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests.sh
-        options: --platform linux/arm/v7
-        args: | 
-          /code/scripts/installscripts/tests/run_installation_tests.sh
-          
-    - name: Run run_installation_tests2.sh Bullseye ARMv7
-      uses: tj-actions/docker-run@v2
-      with:
-        image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests2.sh
-        options: --platform linux/arm/v7
-        args: |
-          /code/scripts/installscripts/tests/run_installation_tests2.sh
-          
-    - name: Run run_installation_tests3.sh Bullseye ARMv7
-      uses: tj-actions/docker-run@v2
-      with:
-        image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests3.sh
-        options: --platform linux/arm/v7
-        args: |
-          /code/scripts/installscripts/tests/run_installation_tests3.sh
+
           
           
           
