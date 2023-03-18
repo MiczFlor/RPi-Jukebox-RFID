@@ -24,10 +24,10 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
+  # install here to speed up GitHub Action
+  apt-get -y install raspberrypi-kernel raspberrypi-kernel-headers;\
   apt-get -y dist-upgrade --auto-remove --purge ;\
   apt-get -y install wget build-essential git iw locales wpasupplicant;\
-# install here to speed up GitHub Action
-  apt-get -y install raspberrypi-kernel-headers;\
   apt-get clean ;\
   touch /boot/cmdlinetxt ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
