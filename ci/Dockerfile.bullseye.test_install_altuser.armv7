@@ -14,6 +14,8 @@ RUN groupadd --gid 1000 wurst ;\
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
   apt-get -y install curl gnupg sudo nano systemd apt-utils;\
+  # install here to speed up GitHub Action
+  apt-get -y install raspberrypi-kernel-headers;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
