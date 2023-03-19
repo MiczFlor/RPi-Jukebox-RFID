@@ -16,7 +16,7 @@ class SyncShared:
     """Control class for sync shared functionality"""
 
     def __init__(self):
-        self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False)
+        self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False) is True
         if self._sync_enabled:
             logger.info("Sync shared activated")
             config_file = cfg_main.setndefault('sync_shared', 'config_file', value='../../shared/settings/sync_shared.yaml')
@@ -27,8 +27,9 @@ class SyncShared:
                 return
 
 
-            self._sync_on_rfid_scan_enabled = bool(cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled'))
-            logger.info("Sync on RFID scan deactivated")
+            self._sync_on_rfid_scan_enabled = cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default = False) is True
+            if not self._sync_on_rfid_scan_enabled:
+                logger.info("Sync on RFID scan deactivated")
             self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
             self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
             self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
