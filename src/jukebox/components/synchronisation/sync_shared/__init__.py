@@ -26,8 +26,8 @@ class SyncShared:
                 logger.error(f"Error loading sync_shared config file. {e.__class__.__name__}: {e}")
                 return
 
-
-            self._sync_on_rfid_scan_enabled = cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default = False) is True
+            self._sync_on_rfid_scan_enabled = (cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default=False)
+                                               is True)
             if not self._sync_on_rfid_scan_enabled:
                 logger.info("Sync on RFID scan deactivated")
             self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
@@ -39,10 +39,8 @@ class SyncShared:
         else:
             logger.info("Sync shared deactivated")
 
-
     def __exit__(self):
         pass
-
 
     @plugs.tag
     def sync_full(self):
@@ -51,7 +49,7 @@ class SyncShared:
         """
 
         if self._sync_enabled:
-            logger.info(f"Syncing full")
+            logger.info("Syncing full")
             _files_synced = self._sync_folder('')
 
         else:
@@ -59,11 +57,9 @@ class SyncShared:
 
         return _files_synced
 
-
     @plugs.tag
     def sync_card_database(self, path: str):
         logger.debug(f"Sync Database {path}.")
-
 
     @plugs.tag
     def sync_folder(self, folder: str):
@@ -87,7 +83,6 @@ class SyncShared:
 
         return _files_synced
 
-
     def _sync_folder(self, folder: str):
         _files_synced = False
 
@@ -98,7 +93,8 @@ class SyncShared:
                 _music_library_path = components.player.get_music_library_path()
                 _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
                 _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
-                _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder)) #TODO fix general absolut/relativ folder path handling
+                # TODO fix general absolut/relativ folder path handling
+                _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
                 if os.path.isdir(_src_path):
                     _files_synced = self._sync_paths(_src_path, _dst_path)
@@ -109,22 +105,21 @@ class SyncShared:
             else:
                 logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
 
-        else:
-            logger.error(f"Server not reachable at: {self._sync_remote_server}:{self._sync_remote_port} in {self._sync_remote_timeout}s")
-
         return _files_synced
 
-
-    def _sync_paths(self, src_path:str, dst_path:str):
+    def _sync_paths(self, src_path: str, dst_path: str):
         _files_synced = False
         logger.debug(f"Src: '{src_path}' -> Dst: '{dst_path}'")
 
         if dst_path.endswith('/'):
-            os.makedirs(dst_path, exist_ok = True)
+            os.makedirs(dst_path, exist_ok=True)
 
         res = subprocess.run(['rsync',
-                                '--compress', '--recursive', '--itemize-changes', '--safe-links', '--times', '--omit-dir-times', '--delete', '--prune-empty-dirs',
-                                '--filter=-rp folder.conf', '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
+                                '--compress', '--recursive', '--itemize-changes',
+                                '--safe-links', '--times', '--omit-dir-times',
+                                '--delete', '--prune-empty-dirs',
+                                '--filter=-rp folder.conf',
+                                '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
                                 src_path, dst_path],
                             shell=False, check=False, capture_output=True, text=True)
 
@@ -135,7 +130,6 @@ class SyncShared:
             logger.error(f"Sync Error: {res.stderr}")
 
         return _files_synced
-
 
     def _is_server_reachable(self, host: str, port: int, timeout: int):
         _port = int(port)
@@ -149,17 +143,15 @@ class SyncShared:
             return False
 
         _server_reachable = result == 0
-        if(not _server_reachable):
+        if not _server_reachable:
             logger.error(f"Server check failed with {host}:{port}. errorcode: {_server_reachable}")
 
         return _server_reachable
-
 
     def _clean_foldername(self, lib_path: str, folder: str):
         _folder = folder.removeprefix(lib_path)
         _folder = self._remove_leading_slash(self._remove_trailing_slash(_folder))
         return _folder
-
 
     def _ensure_trailing_slash(self, path: str):
         _path = path
@@ -167,28 +159,28 @@ class SyncShared:
             _path = _path + '/'
         return _path
 
-
     def _remove_trailing_slash(self, path: str):
         _path = path.removesuffix('/')
         return _path
-
 
     def _remove_leading_slash(self, path: str):
         _path = path.removeprefix('/')
         return _path
 
-
 # ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
 # ---------------------------------------------------------------------------
 
+
 sync_shared_ctrl: SyncShared
+
 
 @plugs.initialize
 def initialize():
     global sync_shared_ctrl
     sync_shared_ctrl = SyncShared()
     plugs.register(sync_shared_ctrl, name='ctrl')
+
 
 @plugs.atexit
 def atexit(**ignored_kwargs):
