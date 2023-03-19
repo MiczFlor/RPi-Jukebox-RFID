@@ -1,6 +1,6 @@
 sync_shared:
     on_rfid_scan_enabled: true # bool
-    mode: 'mount'
+    mode: 'mount' # 'mount' or 'ssh'
     ssh:
         server: ''
         port:  # int

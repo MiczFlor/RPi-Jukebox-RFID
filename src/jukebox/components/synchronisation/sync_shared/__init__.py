@@ -36,6 +36,10 @@ class SyncShared:
             self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'timeout'))
             self._sync_remote_path = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'path')
 
+            self._sync_is_mode_ssh = self._sync_mode == "ssh"
+            if self._sync_is_mode_ssh:
+                self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'username')
+
         else:
             logger.info("Sync shared deactivated")
 
@@ -86,17 +90,17 @@ class SyncShared:
     def _sync_folder(self, folder: str):
         _files_synced = False
 
-        if self._is_server_reachable(self._sync_remote_server, self._sync_remote_port, self._sync_remote_timeout):
+        if self._is_server_reachable():
             _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
 
-            if os.path.isdir(_sync_remote_path_audio):
+            if self._is_dir(_sync_remote_path_audio):
                 _music_library_path = components.player.get_music_library_path()
                 _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
                 _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
                 # TODO fix general absolut/relativ folder path handling
                 _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
-                if os.path.isdir(_src_path):
+                if self._is_dir(_src_path):
                     _files_synced = self._sync_paths(_src_path, _dst_path)
 
                 else:
@@ -114,39 +118,71 @@ class SyncShared:
         if dst_path.endswith('/'):
             os.makedirs(dst_path, exist_ok=True)
 
-        res = subprocess.run(['rsync',
-                                '--compress', '--recursive', '--itemize-changes',
-                                '--safe-links', '--times', '--omit-dir-times',
-                                '--delete', '--prune-empty-dirs',
-                                '--filter=-rp folder.conf',
-                                '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
-                                src_path, dst_path],
-                            shell=False, check=False, capture_output=True, text=True)
+        if self._sync_is_mode_ssh:
+            _user = self._sync_remote_ssh_user
+            _host = self._sync_remote_server
+            _port = self._sync_remote_port
 
-        if res.returncode == 0 and res.stdout != '':
-            logger.debug(f"Synced:\n{res.stdout}")
+            _src_path = ['-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'"]
+
+        else:
+            _src_path = [src_path]
+
+        _run_params = ['rsync',
+                        '--compress', '--recursive', '--itemize-changes',
+                        '--safe-links', '--times', '--omit-dir-times',
+                        '--delete', '--prune-empty-dirs',
+                        '--filter=-rp folder.conf',
+                        '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
+                        ] + _src_path + [dst_path]
+        _runresult = subprocess.run(_run_params, shell=False, check=False, capture_output=True, text=True)
+
+        if _runresult.returncode == 0 and _runresult.stdout != '':
+            logger.debug(f"Synced:\n{_runresult.stdout}")
             _files_synced = True
-        if res.stderr != '':
-            logger.error(f"Sync Error: {res.stderr}")
+        if _runresult.stderr != '':
+            logger.error(f"Sync Error: {_runresult.stderr}")
 
         return _files_synced
 
-    def _is_server_reachable(self, host: str, port: int, timeout: int):
-        _port = int(port)
-        _timeout = int(timeout)
+    def _is_server_reachable(self):
+        _host = self._sync_remote_server
+        _port = self._sync_remote_port
+        _timeout = self._sync_remote_timeout
+
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(_timeout)
-            result = sock.connect_ex((host, _port))
+            result = sock.connect_ex((_host, _port))
         except Exception as e:
-            logger.error(f"Server not reachable: {host}:{port}. {e.__class__.__name__}: {e}")
+            logger.error(f"Server not reachable: {_host}:{_port}. {e.__class__.__name__}: {e}")
             return False
 
         _server_reachable = result == 0
         if not _server_reachable:
-            logger.error(f"Server not reachable: {host}:{port}. errorcode: {result}")
+            logger.error(f"Server not reachable: {_host}:{_port}. errorcode: {result}")
 
         return _server_reachable
+
+    def _is_dir(self, path: str):
+        if self._sync_is_mode_ssh:
+            logger.debug("SSH mode on")
+            _user = self._sync_remote_ssh_user
+            _host = self._sync_remote_server
+            _port = self._sync_remote_port
+
+            _runresult = subprocess.run(['ssh',
+                                    f"{_user}@{_host}", f"-p {_port}",
+                                    '[', '-d', f"'{path}'", ']'],
+                                shell=False, check=False, capture_output=True, text=True)
+
+            _result = _runresult.returncode == 0
+
+        else:
+            logger.debug("SSH mode off")
+            _result = os.path.isdir(path)
+
+        return _result
 
     def _clean_foldername(self, lib_path: str, folder: str):
         _folder = folder.removeprefix(lib_path)
