@@ -92,22 +92,17 @@ class SyncShared:
 
         if self._is_server_reachable():
             _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
+            _music_library_path = components.player.get_music_library_path()
+            _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
+            _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+            # TODO fix general absolut/relativ folder path handling
+            _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
-            if self._is_dir(_sync_remote_path_audio):
-                _music_library_path = components.player.get_music_library_path()
-                _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
-                _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
-                # TODO fix general absolut/relativ folder path handling
-                _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
-
-                if self._is_dir(_src_path):
-                    _files_synced = self._sync_paths(_src_path, _dst_path)
-
-                else:
-                    logger.warn(f"Folder does not exist remote: {_src_path}")
+            if self._is_dir(_src_path):
+                _files_synced = self._sync_paths(_src_path, _dst_path)
 
             else:
-                logger.error(f"Folder does not exist remote: {_sync_remote_path_audio}")
+                logger.warn(f"Folder does not exist remote: {_src_path}")
 
         return _files_synced
 
@@ -167,7 +162,6 @@ class SyncShared:
 
     def _is_dir(self, path: str):
         if self._sync_is_mode_ssh:
-            logger.debug("SSH mode on")
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
             _port = self._sync_remote_port
@@ -180,7 +174,6 @@ class SyncShared:
             _result = _runresult.returncode == 0
 
         else:
-            logger.debug("SSH mode off")
             _result = os.path.isdir(path)
 
         return _result
