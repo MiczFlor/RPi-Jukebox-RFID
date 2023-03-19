@@ -123,18 +123,19 @@ class SyncShared:
             _host = self._sync_remote_server
             _port = self._sync_remote_port
 
-            _src_path = ['-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'"]
+            _paths = ['-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'", dst_path]
 
         else:
-            _src_path = [src_path]
+            _paths = [src_path, dst_path]
 
-        _run_params = ['rsync',
+        _run_params = (['rsync',
                         '--compress', '--recursive', '--itemize-changes',
                         '--safe-links', '--times', '--omit-dir-times',
                         '--delete', '--prune-empty-dirs',
                         '--filter=-rp folder.conf',
-                        '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
-                        ] + _src_path + [dst_path]
+                        '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude'
+                        ] + _paths)
+
         _runresult = subprocess.run(_run_params, shell=False, check=False, capture_output=True, text=True)
 
         if _runresult.returncode == 0 and _runresult.stdout != '':
