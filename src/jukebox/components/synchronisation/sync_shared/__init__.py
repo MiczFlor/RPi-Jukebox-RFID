@@ -139,12 +139,12 @@ class SyncShared:
             sock.settimeout(_timeout)
             result = sock.connect_ex((host, _port))
         except Exception as e:
-            logger.error(f"Server check failed with {host}:{port}. {e.__class__.__name__}: {e}")
+            logger.error(f"Server not reachable: {host}:{port}. {e.__class__.__name__}: {e}")
             return False
 
         _server_reachable = result == 0
         if not _server_reachable:
-            logger.error(f"Server check failed with {host}:{port}. errorcode: {_server_reachable}")
+            logger.error(f"Server not reachable: {host}:{port}. errorcode: {result}")
 
         return _server_reachable
 
