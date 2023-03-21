@@ -1,14 +1,14 @@
 sync_shared:
-    on_rfid_scan_enabled: true # bool
-    mode: 'mount' # 'mount' or 'ssh'
-    ssh:
-        server: ''
-        port:  # int
-        timeout: 1 # int
-        path: ''
-        username: ''
-    mount:
-        server: ''
-        port:  # int
-        timeout: 1 # int
-        path: ''
+  on_rfid_scan_enabled: true # bool
+  mode: mount # 'mount' or 'ssh'
+  ssh:
+      server: ''
+      port:  # int
+      timeout: 1 # int
+      path: ''
+      username: ''
+  mount:
+      server: ''
+      port:  # int
+      timeout: 1 # int
+      path: ''
