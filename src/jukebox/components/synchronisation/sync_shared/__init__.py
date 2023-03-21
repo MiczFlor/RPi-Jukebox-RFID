@@ -62,22 +62,22 @@ class SyncShared:
         return _files_synced
 
     @plugs.tag
-    def sync_change_on_rfid_scan(self, state: str) -> None:
+    def sync_change_on_rfid_scan(self, option: str='toggle') -> None:
         """
         Change activation of 'on_rfid_scan_enabled'
 
-        :param state: Must be one of 'True', 'False', 'Toggle'
+        :param option: Must be one of 'true', 'false', 'toggle'
         """
         if self._sync_enabled:
 
-            if state == 'True':
+            if option == 'true':
                 _new_state = True
-            elif state == 'False':
+            elif option == 'false':
                 _new_state = False
-            elif state == 'Toggle':
+            elif option == 'toggle':
                 _new_state = not self._sync_on_rfid_scan_enabled
             else:
-                logger.error("Invalid value for 'state'")
+                logger.error("Invalid value for 'option'")
                 _new_state = False
 
             cfg_sync_shared.setn('sync_shared', 'on_rfid_scan_enabled', value=_new_state)

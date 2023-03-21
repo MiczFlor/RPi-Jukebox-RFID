@@ -39,23 +39,23 @@ const ChangeOnRfidScan = ({
           <RadioGroup
             aria-label="gender"
             name="sync_shared_change_on_rfid_scan"
-            value={option || 'Toggle'}
+            value={option || 'toggle'}
             onChange={onChange}
           >
             <FormControlLabel
               control={<Radio />}
               label={t('cards.controls.actions.synchronisation.label-toggle')}
-              value="Toggle"
+              value="toggle"
             />
             <FormControlLabel
               control={<Radio />}
               label={t('cards.controls.actions.synchronisation.label-true')}
-              value="True"
+              value="true"
             />
             <FormControlLabel
               control={<Radio />}
               label={t('cards.controls.actions.synchronisation.label-false')}
-              value="False"
+              value="false"
             />
           </RadioGroup>
         </FormControl>

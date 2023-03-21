@@ -242,12 +242,13 @@ const commands = {
   'sync_shared_full': {
     _package: 'sync_shared',
     plugin: 'ctrl',
-    method: 'sync_full',
+    method: 'sync_full'
   },
   'sync_shared_change_on_rfid_scan': {
     _package: 'sync_shared',
     plugin: 'ctrl',
     method: 'sync_change_on_rfid_scan',
+    argKeys: ['option']
   },
 };
 
