@@ -44,10 +44,10 @@ class SyncShared:
             logger.info("Sync shared deactivated")
 
     def __exit__(self):
-        pass
+        cfg_sync_shared.save(only_if_changed=True)
 
     @plugs.tag
-    def sync_full(self):
+    def sync_full(self) -> bool:
         """
         Sync full from the remote server
         """
@@ -62,11 +62,38 @@ class SyncShared:
         return _files_synced
 
     @plugs.tag
+    def sync_change_on_rfid_scan(self, state: str) -> None:
+        """
+        Change activation of 'on_rfid_scan_enabled'
+
+        :param state: Must be one of 'True', 'False', 'Toggle'
+        """
+        if self._sync_enabled:
+
+            if state == 'True':
+                _new_state = True
+            elif state == 'False':
+                _new_state = False
+            elif state == 'Toggle':
+                _new_state = not self._sync_on_rfid_scan_enabled
+            else:
+                logger.error("Invalid value for 'state'")
+                _new_state = False
+
+            cfg_sync_shared.setn('sync_shared', 'on_rfid_scan_enabled', value=_new_state)
+            self._sync_on_rfid_scan_enabled = _new_state
+
+            logger.info(f"Changed 'on_rfid_scan_enabled' to '{_new_state}'")
+
+        else:
+            logger.debug("Sync shared deactivated")
+
+    @plugs.tag
     def sync_card_database(self, path: str):
         logger.debug(f"Sync Database {path}.")
 
     @plugs.tag
-    def sync_folder(self, folder: str):
+    def sync_folder(self, folder: str) -> bool:
         """
         Sync the folder from the remote server, if existing
 
@@ -87,7 +114,7 @@ class SyncShared:
 
         return _files_synced
 
-    def _sync_folder(self, folder: str):
+    def _sync_folder(self, folder: str) -> bool:
         _files_synced = False
 
         if self._is_server_reachable():
@@ -106,7 +133,7 @@ class SyncShared:
 
         return _files_synced
 
-    def _sync_paths(self, src_path: str, dst_path: str):
+    def _sync_paths(self, src_path: str, dst_path: str) -> bool:
         _files_synced = False
         logger.debug(f"Src: '{src_path}' -> Dst: '{dst_path}'")
 
@@ -141,7 +168,7 @@ class SyncShared:
 
         return _files_synced
 
-    def _is_server_reachable(self):
+    def _is_server_reachable(self) -> bool:
         _host = self._sync_remote_server
         _port = self._sync_remote_port
         _timeout = self._sync_remote_timeout
@@ -160,7 +187,7 @@ class SyncShared:
 
         return _server_reachable
 
-    def _is_dir(self, path: str):
+    def _is_dir(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
@@ -178,22 +205,22 @@ class SyncShared:
 
         return _result
 
-    def _clean_foldername(self, lib_path: str, folder: str):
+    def _clean_foldername(self, lib_path: str, folder: str) -> str:
         _folder = folder.removeprefix(lib_path)
         _folder = self._remove_leading_slash(self._remove_trailing_slash(_folder))
         return _folder
 
-    def _ensure_trailing_slash(self, path: str):
+    def _ensure_trailing_slash(self, path: str) -> str:
         _path = path
         if not _path.endswith('/'):
             _path = _path + '/'
         return _path
 
-    def _remove_trailing_slash(self, path: str):
+    def _remove_trailing_slash(self, path: str) -> str:
         _path = path.removesuffix('/')
         return _path
 
-    def _remove_leading_slash(self, path: str):
+    def _remove_leading_slash(self, path: str) -> str:
         _path = path.removeprefix('/')
         return _path
 
