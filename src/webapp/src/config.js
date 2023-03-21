@@ -30,41 +30,49 @@ const ROOT_DIRS = ['./', DEFAULT_AUDIO_DIR];
 // was not done yet to maintain functionality. It's ok to change the command
 // object keys to arrays, but some downstream methods need to change as well
 const JUKEBOX_ACTIONS_MAP = {
-  // Command Aliases
-  // Player
-  play_music: {
-    commands: {
-      play_album: {},
-      play_folder: {},
-      play_single: {},
-    }
-  },
-
-  // Audio & Volume
-  audio: {
-    commands: {
-      change_volume: {},
-      toggle_output: {}
+    // Command Aliases
+    // Player
+    play_music: {
+        commands: {
+            play_album: {},
+            play_folder: {},
+            play_single: {},
+        }
     },
-  },
 
-  // Host
-  host: {
-    commands: {
-      shutdown: {},
-      reboot: {},
-      say_my_ip: {},
-    }
-  },
+    // Audio & Volume
+    audio: {
+        commands: {
+            change_volume: {},
+            toggle_output: {}
+        },
+    },
 
-  // Timers
-  timers: {
-    commands: {
-      timer_shutdown: {},
-      timer_stop_player: {},
-      timer_fade_volume: {},
-    }
-  },
+    // Host
+    host: {
+        commands: {
+            shutdown: {},
+            reboot: {},
+            say_my_ip: {},
+        }
+    },
+
+    // Timers
+    timers: {
+        commands: {
+            timer_shutdown: {},
+            timer_stop_player: {},
+            timer_fade_volume: {},
+        }
+    },
+
+    // Synchronisation
+    synchronisation: {
+        commands: {
+            sync_shared_full: {},
+            sync_shared_change_on_rfid_scan: {},
+        }
+      },
 }
 
 const TIMER_STEPS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];

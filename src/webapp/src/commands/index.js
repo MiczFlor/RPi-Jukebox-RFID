@@ -237,6 +237,18 @@ const commands = {
     plugin: 'say_my_ip',
     argKeys: ['option'],
   },
+
+  // Synchronisation
+  'sync_shared_full': {
+    _package: 'sync_shared',
+    plugin: 'ctrl',
+    method: 'sync_full',
+  },
+  'sync_shared_change_on_rfid_scan': {
+    _package: 'sync_shared',
+    plugin: 'ctrl',
+    method: 'sync_change_on_rfid_scan',
+  },
 };
 
 export default commands;
