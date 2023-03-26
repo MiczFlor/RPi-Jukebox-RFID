@@ -9,7 +9,8 @@ As this is only a single file for all cards (unlike v2.x), it has some specialit
 On synchronisation the remote file will not synced with the original cards database, but rather a local copy.
 If a full sync is performed the state is then written back to the original file.
 If a single card sync is performed only the state of the specific card id is updated in the original file.
-This is done to keep the possibility to play audio offline. Otherwise we would also update other card ids where the audiofolders have not been synced yet.
+This is done to keep the possibility to play audio offline.
+Otherwise we would also update other card ids where the audiofolders have not been synced yet.
 The local copy is kept to reduce unnecessary syncing.
 
 """
@@ -34,53 +35,39 @@ class SyncShared:
     """Control class for sync shared functionality"""
 
     def __init__(self):
-        self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False) is True
+        with cfg_main:
+            self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False) is True
         if self._sync_enabled:
             logger.info("Sync shared activated")
-            config_file = cfg_main.setndefault('sync_shared', 'config_file', value='../../shared/settings/sync_shared.yaml')
+            with cfg_main:
+                config_file = cfg_main.setndefault('sync_shared', 'config_file',
+                                                    value='../../shared/settings/sync_shared.yaml')
             try:
-                jukebox.cfghandler.load_yaml(cfg_sync_shared, config_file)
+                cfg_sync_shared.load(config_file)
             except Exception as e:
                 logger.error(f"Error loading sync_shared config file. {e.__class__.__name__}: {e}")
                 return
 
-            self._sync_on_rfid_scan_enabled = (cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default=False)
-                                               is True)
-            if not self._sync_on_rfid_scan_enabled:
-                logger.info("Sync on RFID scan deactivated")
-            self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
-            self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
-            self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
-            self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'timeout'))
-            self._sync_remote_path = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'path')
+            with cfg_sync_shared:
+                self._sync_on_rfid_scan_enabled = (cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default=False)
+                                                is True)
+                if not self._sync_on_rfid_scan_enabled:
+                    logger.info("Sync on RFID scan deactivated")
+                self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
+                self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
+                self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
+                self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'timeout'))
+                self._sync_remote_path = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'path')
 
-            self._sync_is_mode_ssh = self._sync_mode == "ssh"
-            if self._sync_is_mode_ssh:
-                self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'username')
+                self._sync_is_mode_ssh = self._sync_mode == "ssh"
+                if self._sync_is_mode_ssh:
+                    self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'username')
 
         else:
             logger.info("Sync shared deactivated")
 
     def __exit__(self):
         cfg_sync_shared.save(only_if_changed=True)
-
-    @plugs.tag
-    def sync_full(self) -> bool:
-        """
-        Sync full from the remote server
-        """
-        _files_synced = False
-
-        if self._sync_enabled:
-            logger.info("Syncing full")
-            _database_synced = self._sync_card_database()
-            _folder_synced = self._sync_folder('')
-            _files_synced = _database_synced or _folder_synced
-
-        else:
-            logger.debug("Sync shared deactivated")
-
-        return _files_synced
 
     @plugs.tag
     def sync_change_on_rfid_scan(self, option: str = 'toggle') -> None:
@@ -109,6 +96,24 @@ class SyncShared:
 
         else:
             logger.debug("Sync shared deactivated")
+
+    @plugs.tag
+    def sync_full(self) -> bool:
+        """
+        Sync full from the remote server
+        """
+        _files_synced = False
+
+        if self._sync_enabled:
+            logger.info("Syncing full")
+            _database_synced = self._sync_card_database()
+            _folder_synced = self._sync_folder('')
+            _files_synced = _database_synced or _folder_synced
+
+        else:
+            logger.debug("Sync shared deactivated")
+
+        return _files_synced
 
     @plugs.tag
     def sync_card_database(self, card_id: str) -> bool:
@@ -140,7 +145,6 @@ class SyncShared:
 
         if self._sync_enabled:
             if self._sync_on_rfid_scan_enabled:
-                logger.info(f"Syncing Folder '{folder}'")
                 _files_synced = self._sync_folder(folder)
 
             else:
@@ -165,11 +169,12 @@ class SyncShared:
             # This file is kept to reduce unnecessary syncing!
             _dst_path = os.path.join(_card_database_dir, "sync_temp_" + _card_database_file)
 
-            if self._is_file(_src_path):
+            if self._remote_is_file(_src_path):
                 _files_synced = self._sync_paths(_src_path, _dst_path)
 
                 if os.path.isfile(_dst_path):
-                    # Check even if nothing has been synced, as the original card database could have been changed locally (e.g. WebUi)
+                    # Check even if nothing has been synced,
+                    # as the original card database could have been changed locally (e.g. WebUi)
                     if card_id is not None:
                         # This ConfigHandler is explicitly instantiated and only used to read the synced temp database file
                         _cfg_cards_temp = jukebox.cfghandler.ConfigHandler("sync_temp_cards")
@@ -196,6 +201,7 @@ class SyncShared:
         return _files_synced
 
     def _sync_folder(self, folder: str) -> bool:
+        logger.info(f"Syncing Folder '{folder}'")
         _files_synced = False
 
         if self._is_server_reachable():
@@ -206,7 +212,7 @@ class SyncShared:
             # TODO fix general absolut/relativ folder path handling
             _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
-            if self._is_dir(_src_path):
+            if self._remote_is_dir(_src_path):
                 _files_synced = self._sync_paths(_src_path, _dst_path)
 
             else:
@@ -268,7 +274,7 @@ class SyncShared:
 
         return _server_reachable
 
-    def _is_file(self, path: str) -> bool:
+    def _remote_is_file(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
@@ -286,7 +292,7 @@ class SyncShared:
 
         return _result
 
-    def _is_dir(self, path: str) -> bool:
+    def _remote_is_dir(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
