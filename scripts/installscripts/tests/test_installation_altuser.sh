@@ -154,7 +154,7 @@ verify_wifi_settings() {
 verify_apt_packages(){
     local packages="libspotify-dev samba
 samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
-resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
+resolvconf spi-tools python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero
 python3-spidev netcat alsa-utils"
     # TODO apt-transport-https checking only on RPi is currently a workaround
     local packages_raspberrypi="apt-transport-https raspberrypi-kernel-headers"
