@@ -24,6 +24,7 @@ class ServiceIsRunningCallbacks(CallbackHandler):
     """
     Callbacks are executed when
 
+        * receiving rfid card id (before processing card entries)
         * valid rfid card detect
         * unknown card detect
     """
@@ -38,7 +39,10 @@ class ServiceIsRunningCallbacks(CallbackHandler):
             :noindex:
 
             :param card_id: Card ID
-            :param state: 0 if card id is registered, 1 if card id is unknown
+            :param state:
+                -1  on receiving card id (before processing card entries),
+                0   if card id is registered,
+                1   if card id is unknown
         """
         super().register(func)
 
@@ -176,8 +180,8 @@ class ReaderRunner(threading.Thread):
                         # (3) Check if this card is in the card database
                         # TODO: This card config read is not thread safe
 
-                        # sync card database
-                        plugs.call_ignore_errors('sync_shared', 'ctrl', 'sync_card_database', args=[card_id])
+                        # run callbacks on successfull read before card_entry is processed
+                        rfid_card_detect_callbacks.run_callbacks(card_id, -1)
 
                         card_entry = cfg_cards.get(card_id, default=None)
                         if card_entry is not None:

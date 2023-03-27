@@ -63,11 +63,16 @@ class SyncShared:
                 if self._sync_is_mode_ssh:
                     self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'username')
 
+            components.rfid.reader.rfid_card_detect_callbacks.register(self.rfid_callback)
         else:
             logger.info("Sync shared deactivated")
 
     def __exit__(self):
         cfg_sync_shared.save(only_if_changed=True)
+
+    def rfid_callback(self, card_id: str, state: int):
+        if state == -1:
+            self.sync_card_database(card_id)
 
     @plugs.tag
     def sync_change_on_rfid_scan(self, option: str = 'toggle') -> None:
