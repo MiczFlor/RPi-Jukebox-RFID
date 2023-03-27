@@ -175,6 +175,10 @@ class ReaderRunner(threading.Thread):
 
                         # (3) Check if this card is in the card database
                         # TODO: This card config read is not thread safe
+
+                        # sync card database
+                        plugs.call_ignore_errors('sync_shared', 'ctrl', 'sync_card_database', args=[card_id])
+
                         card_entry = cfg_cards.get(card_id, default=None)
                         if card_entry is not None:
 

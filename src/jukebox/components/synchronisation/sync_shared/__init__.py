@@ -1,3 +1,19 @@
+"""
+Handles the synchronisation of shared audiofolder and the card database
+
+audiofolder:
+
+
+card database:
+As this is only a single file for all cards (unlike v2.x), it has some specialities.
+On synchronisation the remote file will not synced with the original cards database, but rather a local copy.
+If a full sync is performed the state is then written back to the original file.
+If a single card sync is performed only the state of the specific card id is updated in the original file.
+This is done to keep the possibility to play audio offline. Otherwise we would also update other card ids where the audiofolders have not been synced yet.
+The local copy is kept to reduce unnecessary syncing.
+
+"""
+
 import logging
 import subprocess
 import components.player
@@ -5,11 +21,13 @@ import jukebox.cfghandler
 import jukebox.plugs as plugs
 import socket
 import os
+import shutil
 
 logger = logging.getLogger('jb.sync_shared')
 
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_sync_shared = jukebox.cfghandler.get_handler('sync_shared')
+cfg_cards = jukebox.cfghandler.get_handler('cards')
 
 
 class SyncShared:
@@ -51,10 +69,13 @@ class SyncShared:
         """
         Sync full from the remote server
         """
+        _files_synced = False
 
         if self._sync_enabled:
             logger.info("Syncing full")
-            _files_synced = self._sync_folder('')
+            _database_synced = self._sync_card_database()
+            _folder_synced = self._sync_folder('')
+            _files_synced = _database_synced or _folder_synced
 
         else:
             logger.debug("Sync shared deactivated")
@@ -90,8 +111,23 @@ class SyncShared:
             logger.debug("Sync shared deactivated")
 
     @plugs.tag
-    def sync_card_database(self, path: str):
-        logger.debug(f"Sync Database {path}.")
+    def sync_card_database(self, card_id: str) -> bool:
+        """
+        Sync the card database from the remote server, if existing
+        """
+        _files_synced = False
+
+        if self._sync_enabled:
+            if self._sync_on_rfid_scan_enabled:
+                _files_synced = self._sync_card_database(card_id)
+
+            else:
+                logger.debug("Sync on RFID scan deactivated")
+
+        else:
+            logger.debug("Sync shared deactivated")
+
+        return _files_synced
 
     @plugs.tag
     def sync_folder(self, folder: str) -> bool:
@@ -112,6 +148,50 @@ class SyncShared:
 
         else:
             logger.debug("Sync shared deactivated")
+
+        return _files_synced
+
+    def _sync_card_database(self, card_id: str = None) -> bool:
+        _card_database_path = cfg_cards.loaded_from
+        logger.info(f"Syncing card database: {_card_database_path}")
+        _files_synced = False
+
+        if self._is_server_reachable():
+            _sync_remote_path_settings = os.path.join(self._sync_remote_path, "settings")
+            _card_database_file = os.path.basename(_card_database_path)
+            _card_database_dir = os.path.dirname(_card_database_path)
+            _src_path = os.path.join(_sync_remote_path_settings, _card_database_file)
+            # Sync the card database to a temp file to handle changes of single card ids correctly.
+            # This file is kept to reduce unnecessary syncing!
+            _dst_path = os.path.join(_card_database_dir, "sync_temp_" + _card_database_file)
+
+            if self._is_file(_src_path):
+                _files_synced = self._sync_paths(_src_path, _dst_path)
+
+                if os.path.isfile(_dst_path):
+                    # Check even if nothing has been synced, as the original card database could have been changed locally (e.g. WebUi)
+                    if card_id is not None:
+                        # This ConfigHandler is explicitly instantiated and only used to read the synced temp database file
+                        _cfg_cards_temp = jukebox.cfghandler.ConfigHandler("sync_temp_cards")
+                        with _cfg_cards_temp:
+                            _cfg_cards_temp.load(_dst_path)
+                            _card_entry = _cfg_cards_temp.get(card_id, default=None)
+                        if _card_entry is not None:
+                            with cfg_cards:
+                                cfg_cards[card_id] = _card_entry
+                                if cfg_cards.is_modified():
+                                    cfg_cards.save(only_if_changed=True)
+                                    _files_synced = True
+                                    logger.info(f"Updated entry '{card_id}' in '{_card_database_path}'")
+                    else:
+                        # overwrite original file with synced state
+                        with cfg_cards:
+                            shutil.copy2(_dst_path, _card_database_path)
+                            cfg_cards.load(_card_database_path)
+                        logger.info(f"Updated '{_card_database_path}'")
+
+            else:
+                logger.warn(f"Card database does not exist remote: {_src_path}")
 
         return _files_synced
 
@@ -187,6 +267,24 @@ class SyncShared:
             logger.error(f"Server not reachable: {_host}:{_port}. errorcode: {result}")
 
         return _server_reachable
+
+    def _is_file(self, path: str) -> bool:
+        if self._sync_is_mode_ssh:
+            _user = self._sync_remote_ssh_user
+            _host = self._sync_remote_server
+            _port = self._sync_remote_port
+
+            _runresult = subprocess.run(['ssh',
+                                    f"{_user}@{_host}", f"-p {_port}",
+                                    '[', '-f', f"'{path}'", ']'],
+                                shell=False, check=False, capture_output=True, text=True)
+
+            _result = _runresult.returncode == 0
+
+        else:
+            _result = os.path.isfile(path)
+
+        return _result
 
     def _is_dir(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
