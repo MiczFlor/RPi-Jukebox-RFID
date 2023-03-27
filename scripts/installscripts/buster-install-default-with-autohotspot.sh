@@ -786,7 +786,8 @@ install_main() {
 
     # Install required packages
     ${apt_get} ${allow_downgrades} install apt-transport-https
-    wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+    sudo mkdir -p /etc/apt/keyrings
+    sudo wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
     sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
 
     ${apt_get} update
@@ -833,9 +834,7 @@ install_main() {
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
-        sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
-        sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
-        ${apt_get} update
+         ${apt_get} update
         ${apt_get} upgrade
         ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
