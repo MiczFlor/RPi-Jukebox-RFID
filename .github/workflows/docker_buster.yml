@@ -32,8 +32,8 @@ jobs:
           file: ./ci/Dockerfile.buster.test_install.armv7
           platforms: linux/arm/v7
           tags: rpi-jukebox-rfid-buster:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=$GITHUB_REF_NAME-buster
+          cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-buster
             
       - name: Run run_installation_tests.sh Buster ARMv7
         uses: tj-actions/docker-run@v2
