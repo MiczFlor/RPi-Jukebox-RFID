@@ -241,7 +241,7 @@ class SyncShared:
                         '--compress', '--recursive', '--itemize-changes',
                         '--safe-links', '--times', '--omit-dir-times',
                         '--delete', '--prune-empty-dirs',
-                        '--filter=-rp folder.conf',
+                        '--exclude=folder.conf',  # exclude if existing from v2.x
                         '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude'
                         ] + _paths)
 
