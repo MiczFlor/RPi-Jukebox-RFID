@@ -155,7 +155,7 @@ verify_apt_packages(){
     local phpver="$(ls -1 /etc/php)"
     local packages="samba
 samba-common-bin gcc lighttpd php${phpver}-common php${phpver}-cgi php${phpver} at mpd mpc mpg123 git ffmpeg
-resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
+resolvconf spi-tools python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero
 python3-spidev netcat alsa-utils"
     local packages_raspberrypi="raspberrypi-kernel-headers"
     local packages_spotify="libspotify-dev mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
