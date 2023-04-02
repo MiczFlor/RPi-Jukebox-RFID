@@ -1,4 +1,5 @@
 FROM debian:buster
+ENV DOCKER_RUNNING=true
 
 COPY . /code
 WORKDIR /code

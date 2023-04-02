@@ -1,4 +1,5 @@
 FROM --platform=linux/arm/v7 arm32v7/debian:bullseye-slim
+ENV DOCKER_RUNNING=true
 
 COPY . /code
 WORKDIR /code
