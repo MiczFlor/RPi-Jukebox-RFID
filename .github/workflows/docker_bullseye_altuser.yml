@@ -1,0 +1,68 @@
+name: Test Install Scripts for Bullseye (alternative user) on Docker
+
+on:
+  push:
+    branches-ignore:
+        - 'future3/**'
+  #schedule:
+    # run at 5 every sunday
+    #   - cron: '* 5 * * 0'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2.1.0
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2.2.1
+      
+    - name: Build altuser hans Bullseye ARMv7
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install_altuser.armv7
+        platforms: linux/arm/v7
+        tags: rpi-jukebox-rfid-bullseye-altuser:latest
+        cache-from: type=gha,scope=$GITHUB_REF_NAME-bullseye-hans
+        cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-bullseye-hans
+      
+    - name: Run run_installation_tests_altuser.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye-altuser:latest
+        options: --platform linux/arm/v7
+        name: run_installation_tests_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests_altuser.sh
+
+#    - name: Run run_installation_tests2_altuser.sh Bullseye ARMv7
+#      uses: tj-actions/docker-run@v2
+#      with:
+#        image: rpi-jukebox-rfid-bullseye-altuser:latest
+#        options: --platform linux/arm/v7
+#        name: run_installation_tests2_altuser.sh
+#        args: |
+#          /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh
+
+    - name: Run run_installation_tests3_altuser.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye-altuser:latest
+        options: --platform linux/arm/v7
+        name: run_installation_tests3_altuser.sh
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
+
+
+          
+          
+          
