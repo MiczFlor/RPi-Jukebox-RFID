@@ -148,7 +148,7 @@ sudo systemctl enable rfid-reader
 
 ### Upgrade from Version 1.0.0 to 1.1.1
 
-This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
+This upgrade brings the web app UI for file management, recursive folder management, wifi switch off and more. The latest [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) contains all the necessary steps, but will treat your upgrade like a new install. Manual upgrade:
 
 ~~~bash
 cd
@@ -169,7 +169,7 @@ sudo service php7.0-fpm restart
 
 ### Upgrade to Version 1.0
 
-As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/CONFIGURE-stretch#oneLineInstall).
+As of version 1.0 there is a much simpler install procedure: copy and paste one line into your terminal and hit *enter*. Find out more about the [one-line Phoniebox install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command).
 
 ### Upgrade from 0.9.5 to 0.9.7
 
