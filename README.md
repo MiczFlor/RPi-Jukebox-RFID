@@ -34,7 +34,7 @@ If you want to be featured on next years calendar, please make sure to add your 
 
 ## Install Phoniebox
 
-If you are looking for the latest **stable version 2.x**, use the [install script for Raspberry Pi](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch).
+If you are looking for the latest **stable version 2.x**, use the [install script for Raspberry Pi](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL).
 
 ### 🔥 Version 3 is coming
 
@@ -84,7 +84,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 #### Features Version 2
 
-* The **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command)
+* The **one-line install script** handles both **Classic** and **+Spotify** when [setting up your Phoniebox](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command)
   * integrated selection of RFID readers
   * features *non-interactive* installs based on a config file
 * [**RFID** control](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#phoniebox-controls-using-rfid-cards) for playout and controlling your Phoniebox (e.g. set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards).
@@ -115,11 +115,11 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 #### Quick install Version 2
 
-* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch#one-line-install-command) for Raspberry Pi OS Buster and Bullseye.
+* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) for Raspberry Pi OS Buster and Bullseye.
 * Two editions:
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * **MUST READ** for users of *[Phoniebox +Spotify Edition](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)*
-* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-stretch) oder [Complete Install Guide](docs/INSTALL-COMPLETE-GUIDE.md)
+* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL) oder [Complete Install Guide](docs/INSTALL-COMPLETE-GUIDE.md)
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 * Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO Control Readme](components/gpio_control/README.md).
 
