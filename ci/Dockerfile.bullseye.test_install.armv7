@@ -1,4 +1,5 @@
-FROM debian:buster
+FROM --platform=linux/arm/v7 arm32v7/debian:bullseye-slim
+ENV DOCKER_RUNNING=true
 
 COPY . /code
 WORKDIR /code
@@ -14,8 +15,8 @@ RUN groupadd --gid 1000 pi ;\
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
   apt-get -y install curl gnupg sudo nano systemd apt-utils;\
-  echo 'deb http://raspbian.raspberrypi.org/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
-  echo 'deb http://archive.raspberrypi.org/debian/ buster main' >> /etc/apt/sources.list.d/raspi.list ;\
+  echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
+  echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
   curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - ;\
   echo 'pi ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/pi ;\
@@ -24,6 +25,8 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
+  # install here to speed up GitHub Action
+  apt-get -y install raspberrypi-kernel raspberrypi-kernel-headers;\
   apt-get -y dist-upgrade --auto-remove --purge ;\
   apt-get -y install wget build-essential git iw locales wpasupplicant;\
   apt-get clean ;\
@@ -31,3 +34,6 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
 USER pi
+
+
+

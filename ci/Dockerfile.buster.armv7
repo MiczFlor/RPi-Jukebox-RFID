@@ -1,4 +1,5 @@
 FROM arm32v7/debian:buster-slim
+ENV DOCKER_RUNNING=true
 
 COPY . /code
 WORKDIR /code

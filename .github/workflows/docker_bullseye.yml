@@ -1,0 +1,77 @@
+name: Test Install Scripts for Bullseye on Docker
+
+on:
+  push:
+    branches-ignore:
+        - 'future3/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2.1.0
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2.5.0
+      
+    - name: Build Bullseye ARMv7
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        load: true
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install.armv7
+        platforms: linux/arm/v7
+        tags: rpi-jukebox-rfid-bullseye:latest
+        cache-from: type=gha,scope=$GITHUB_REF_NAME-bullseye
+        cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-bullseye
+      
+    - name: Run run_installation_tests.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests.sh
+        options: --platform linux/arm/v7
+        args: | 
+          /code/scripts/installscripts/tests/run_installation_tests.sh
+          
+    - name: Run run_installation_tests2.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests2.sh
+        options: --platform linux/arm/v7
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          
+    - name: Run run_installation_tests3.sh Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: rpi-jukebox-rfid-bullseye:latest
+        name: bullseye_run_installation_tests3.sh
+        options: --platform linux/arm/v7
+        args: |
+          /code/scripts/installscripts/tests/run_installation_tests3.sh
+   
+          
+          
+          
+
+
+
+
+
+
+
+
+
+

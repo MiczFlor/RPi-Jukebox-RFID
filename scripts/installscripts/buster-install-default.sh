@@ -34,6 +34,10 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
+# Get the RaspberryPi OS code name (e.g. buster or bullseye)
+OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
+printf "Used RaspberryPi OS: ${OS_CODENAME}\n"
+
 INTERACTIVE=true
 
 usage() {
@@ -778,21 +782,20 @@ install_main() {
     # power management of wifi: switch off to avoid disconnecting
     sudo iwconfig wlan0 power off
 
-    # create backup of /etc/resolv.conf
-    sudo cp /etc/resolv.conf /etc/resolv.conf.orig
+    # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
+    if [ "$DOCKER_RUNNING" != "true" ]; then
+        # create backup of /etc/resolv.conf
+        sudo cp /etc/resolv.conf /etc/resolv.conf.orig
+    fi
 
     # Generate locales
     sudo locale-gen "${LANG}"
 
     # Install required packages
-    ${apt_get} ${allow_downgrades} install apt-transport-https
-    sudo mkdir -p /usr/local/share/keyrings
-    sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
-    sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
+    sudo mkdir -p /etc/apt/keyrings
 
     ${apt_get} update
     ${apt_get} upgrade
-    ${apt_get} install libspotify-dev
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
@@ -801,8 +804,11 @@ install_main() {
 
     ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-utils lsof procps
 
-    # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
-    sudo cp /etc/resolv.conf.orig /etc/resolv.conf
+    # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
+    if [ "$DOCKER_RUNNING" != "true" ]; then
+        # restore backup of /etc/resolv.conf in case installation of resolvconf cleared it
+        sudo cp /etc/resolv.conf.orig /etc/resolv.conf
+    fi
 
     # prepare python3
     ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
@@ -834,10 +840,12 @@ install_main() {
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
-        sudo wget -q -O /usr/local/share/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
-        sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/buster.list
+        sudo wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
+        sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/${OS_CODENAME}.list
+        
         ${apt_get} update
         ${apt_get} upgrade
+        ${apt_get} install libspotify-dev
         ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
