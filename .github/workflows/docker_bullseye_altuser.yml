@@ -1,12 +1,9 @@
 name: Test Install Scripts for Bullseye (alternative user) on Docker
 
 on:
-  push:
-    branches-ignore:
-        - 'future3/**'
-  #schedule:
+  schedule:
     # run at 5 every sunday
-    #   - cron: '* 5 * * 0'
+    - cron: '* 5 * * 0'
 
 jobs:
 
