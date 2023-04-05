@@ -14,9 +14,6 @@ requests
 eyed3
 # For the publisher event reactor loop:
 tornado
-# For spotify
-websocket-client
-urllib3
 
 # RPi's GPIO packages: these are installed via APT on the PI
 # On regular machines, install them manually if needed for development

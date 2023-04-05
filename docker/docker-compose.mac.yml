@@ -9,13 +9,6 @@ services:
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse:/etc/pulse
 
-  spotify:
-    environment:
-      - PULSE_SERVER=tcp:host.docker.internal:4713
-    volumes:
-      - ~/.config/pulse:/root/.config/pulse
-      - /usr/local/Cellar/pulseaudio/14.2/etc/pulse:/etc/pulse
-
   jukebox:
     environment:
       - PULSE_SERVER=tcp:host.docker.internal:4713
