@@ -7,9 +7,9 @@ Feature Status
 **This is where we are in a nutshell:** Playing music from local folders via RFID trigger.
 We also built a new WebUI to control the Jukebox from a browser.
 
-The are a few things that are specifically not integrated yet: GPIOs, playing streams, podcasts or Spotify.
+The are a few things that are specifically not integrated yet: playing streams, podcasts or Spotify.
 
-In the following is the currently implemented feature list in more detail. It also shows some of the holes.
+In the following is the currently implemented feature list in more detail. It also shows some of the shortcomings.
 However the list is *not complete in terms of planned features*,
 but probably **reflects more of where work is currently being put into**.
 
@@ -103,10 +103,10 @@ ZMQ Publisher
 
 * |[X]| Last Value Cache
 * |[X]| Subscriber detection and initial status update
-* |[X]| Port configuration option (WS und/oder TCP)
+* |[X]| Port configuration option (WS and/or TCP)
 * |[ ]| Callback registration option for plugin on topic send
 
-    * How to interact with threading?
+    * How to interact with threads?
 
 Playback
 ^^^^^^^^^^^^^^^^^
@@ -206,11 +206,11 @@ Timer
     * Needs to be cancelable
 
 * |[X]| Publish mechanism of timer status
-* |[X]| Change multitimer function call interface such that Endless timer etc do not pass the `iteration` kwarg
+* |[X]| Change multitimer function call interface such that endless timer etc wont pass the `iteration` kwarg
 * |[ ]| Make timer settings persistent
 * |[ ]| Idle timer
 
-    * This needs clearer specification: Idle is when no music is playing and no user interaction si taking place
+    * This needs clearer specification: Idle is when no music is playing and no user interaction is taking place
     * i.e. needs information from RPC AND from player status. Let's do this when we see a little clearer about Spotify
 
 
@@ -254,7 +254,7 @@ Others
 Start-up stuff
 ^^^^^^^^^^^^^^^^^
 
-* |[X]| check music folder rights
+* |[X]| check music folder permissions
 * |[X]| mpc update / (mpc rescan)
 * |[X]| sudo iwconfig wlan0 power off (need to be done after every restart)
 * |[X]| Optional power down HDMI circuits: /usr/bin/tvservice -o
@@ -277,7 +277,7 @@ WebUI
 
 * |[X]| Playback Control
 * |[X]| Cover Art
-* |[X]| Register cards / Delete Card
+* |[X]| Register cards / Delete cards
 * |[X]| Shutdown button
 * |[ ]| Settings configuration page
 * |[ ]| System information page

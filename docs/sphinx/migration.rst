@@ -17,7 +17,7 @@ There are a number of significant changes to the overall system setup, which req
 Updating your Jukebox Version 3
 -------------------------------------
 
-Things on Version 3 are moving fast and you may want to get stay on the edge. Since we are in Alpha Release stage,
+Things on Version 3 are moving fast and you may want to keep up with recent changes. Since we are in Alpha Release stage,
 a fair number of fixes are expected to be committed in the near future.
 
 You will need to do three things to update your version from develop (or the next release candidate version)

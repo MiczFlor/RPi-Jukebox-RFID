@@ -9,7 +9,7 @@ browser for now.
 
 Configuration
 --------------
-In ``jukebox.yaml`` (and all other config files): do not use paths with ``~/some/dir``.
+In ``jukebox.yaml`` (and all other config files): do not use relative paths with ``~/some/dir``.
 Always use entire explicit path, e.g. ``/home/pi/some/dir``.
 
 **Sole** exception is in playermpd.mpd_conf.
