@@ -103,9 +103,10 @@ class SyncShared:
             logger.debug("Sync shared deactivated")
 
     @plugs.tag
-    def sync_full(self) -> bool:
+    def sync_all(self) -> bool:
         """
-        Sync full from the remote server
+        Sync all audiofolder and cardids from the remote server.
+        Removes local entries not existing at the remote server.
         """
         _files_synced = False
 
@@ -120,7 +121,10 @@ class SyncShared:
     @plugs.tag
     def sync_card_database(self, card_id: str) -> bool:
         """
-        Sync the card database from the remote server, if existing
+        Sync the card database from the remote server, if existing.
+        If card_id is provided only this entry is updated.
+
+        :param card_id: The cardid to update
         """
         _files_synced = False
 

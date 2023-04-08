@@ -239,10 +239,10 @@ const commands = {
   },
 
   // Synchronisation
-  'sync_shared_full': {
+  'sync_shared_all': {
     _package: 'sync_shared',
     plugin: 'ctrl',
-    method: 'sync_full'
+    method: 'sync_all'
   },
   'sync_shared_change_on_rfid_scan': {
     _package: 'sync_shared',

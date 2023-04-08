@@ -22,7 +22,7 @@
           "timer_stop_player": "Stop player",
           "timer_fade_volume": "Fade volume",
           "toggle_output": "Toggle audio output",
-          "sync_shared_full": "Sync all audiofiles",
+          "sync_shared_all": "Sync all audiofiles",
           "sync_shared_change_on_rfid_scan": "Change activation of 'on RFID scan'"
         }
       },

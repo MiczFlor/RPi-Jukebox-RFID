@@ -114,10 +114,10 @@ cmd_alias_definitions = {
         'title': 'Start the stop music timer',
         'ignore_card_removal_action': True},
     # SYNCHRONISATION
-    'sync_shared_full': {
+    'sync_shared_all': {
         'package': 'sync_shared',
         'plugin': 'ctrl',
-        'method': 'sync_full',
+        'method': 'sync_all',
         'title': 'Sync all audiofiles',
         'ignore_card_removal_action': True},
     'sync_shared_change_on_rfid_scan': {

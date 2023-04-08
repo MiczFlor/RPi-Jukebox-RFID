@@ -69,7 +69,7 @@ const JUKEBOX_ACTIONS_MAP = {
   // Synchronisation
   synchronisation: {
     commands: {
-      sync_shared_full: {},
+      sync_shared_all: {},
       sync_shared_change_on_rfid_scan: {},
     }
   },
