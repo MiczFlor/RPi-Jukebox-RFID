@@ -79,13 +79,13 @@ class SyncShared:
         """
         Change activation of 'on_rfid_scan_enabled'
 
-        :param option: Must be one of 'true', 'false', 'toggle'
+        :param option: Must be one of 'enable', 'disable', 'toggle'
         """
         if self._sync_enabled:
 
-            if option == 'true':
+            if option == 'enable':
                 _new_state = True
-            elif option == 'false':
+            elif option == 'disable':
                 _new_state = False
             elif option == 'toggle':
                 _new_state = not self._sync_on_rfid_scan_enabled

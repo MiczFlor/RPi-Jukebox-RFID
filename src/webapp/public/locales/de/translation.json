@@ -65,8 +65,8 @@
         "synchronisation": {
             "description": "Wähle den zu setzenden Status.",
             "label-toggle": "Umschalten",
-            "label-true": "Aktivieren",
-            "label-false": "Deaktivieren"
+            "label-enable": "Aktivieren",
+            "label-disable": "Deaktivieren"
         }
       }
     },

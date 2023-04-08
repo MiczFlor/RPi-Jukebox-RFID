@@ -65,8 +65,8 @@
         "synchronisation": {
             "description": "Choose the state to set?",
             "label-toggle": "Toggle",
-            "label-true": "Enable",
-            "label-false": "Disable"
+            "label-enable": "Enable",
+            "label-disable": "Disable"
         }
       }
     },

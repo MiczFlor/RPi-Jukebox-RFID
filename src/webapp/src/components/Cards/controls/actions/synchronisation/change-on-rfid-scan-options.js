@@ -49,13 +49,13 @@ const ChangeOnRfidScan = ({
             />
             <FormControlLabel
               control={<Radio />}
-              label={t('cards.controls.actions.synchronisation.label-true')}
-              value="true"
+              label={t('cards.controls.actions.synchronisation.label-enable')}
+              value="enable"
             />
             <FormControlLabel
               control={<Radio />}
-              label={t('cards.controls.actions.synchronisation.label-false')}
-              value="false"
+              label={t('cards.controls.actions.synchronisation.label-disable')}
+              value="disable"
             />
           </RadioGroup>
         </FormControl>
