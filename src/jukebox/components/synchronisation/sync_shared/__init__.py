@@ -110,7 +110,7 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync:
+        if self._precheck_enablement_sync():
             logger.info("Syncing full")
             _database_synced = self._sync_card_database()
             _folder_synced = self._sync_folder('')
@@ -128,7 +128,7 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync_on_rfid_scan:
+        if self._precheck_enablement_sync_on_rfid_scan():
             _files_synced = self._sync_card_database(card_id)
 
         return _files_synced
@@ -142,7 +142,7 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync_on_rfid_scan:
+        if self._precheck_enablement_sync_on_rfid_scan():
             _files_synced = self._sync_folder(folder)
 
         return _files_synced
@@ -156,7 +156,7 @@ class SyncShared:
         return False
 
     def _precheck_enablement_sync_on_rfid_scan(self) -> bool:
-        if self._precheck_enablement_sync:
+        if self._precheck_enablement_sync():
             if self._sync_on_rfid_scan_enabled:
                 return True
             else:
