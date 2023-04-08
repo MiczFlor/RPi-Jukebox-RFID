@@ -109,14 +109,11 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._sync_enabled:
+        if self._precheck_enablement_sync:
             logger.info("Syncing full")
             _database_synced = self._sync_card_database()
             _folder_synced = self._sync_folder('')
             _files_synced = _database_synced or _folder_synced
-
-        else:
-            logger.debug("Sync shared deactivated")
 
         return _files_synced
 
@@ -127,15 +124,8 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._sync_enabled:
-            if self._sync_on_rfid_scan_enabled:
-                _files_synced = self._sync_card_database(card_id)
-
-            else:
-                logger.debug("Sync on RFID scan deactivated")
-
-        else:
-            logger.debug("Sync shared deactivated")
+        if self._precheck_enablement_sync_on_rfid_scan:
+            _files_synced = self._sync_card_database(card_id)
 
         return _files_synced
 
@@ -148,17 +138,27 @@ class SyncShared:
         """
         _files_synced = False
 
+        if self._precheck_enablement_sync_on_rfid_scan:
+            _files_synced = self._sync_folder(folder)
+
+        return _files_synced
+
+    def _precheck_enablement_sync(self) -> bool:
         if self._sync_enabled:
-            if self._sync_on_rfid_scan_enabled:
-                _files_synced = self._sync_folder(folder)
-
-            else:
-                logger.debug("Sync on RFID scan deactivated")
-
+            return True
         else:
             logger.debug("Sync shared deactivated")
 
-        return _files_synced
+        return False
+
+    def _precheck_enablement_sync_on_rfid_scan(self) -> bool:
+        if self._precheck_enablement_sync:
+            if self._sync_on_rfid_scan_enabled:
+                return True
+            else:
+                logger.debug("Sync on RFID scan deactivated")
+
+        return False
 
     def _sync_card_database(self, card_id: str = None) -> bool:
         _card_database_path = cfg_cards.loaded_from
