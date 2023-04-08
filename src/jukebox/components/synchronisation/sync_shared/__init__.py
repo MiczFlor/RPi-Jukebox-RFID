@@ -111,7 +111,7 @@ class SyncShared:
         _files_synced = False
 
         if self._precheck_enablement_sync():
-            logger.info("Syncing full")
+            logger.info("Syncing all")
             _database_synced = self._sync_card_database()
             _folder_synced = self._sync_folder('')
             _files_synced = _database_synced or _folder_synced
