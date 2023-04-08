@@ -455,7 +455,7 @@ class PlayerMPD:
                 with self.mpd_lock:
                     # TODO fix general absolut/relativ folder path handling
                     _update_id = self.mpd_client.update()  # update(folder)
-                    self._wait_database_update_finished(_update_id)
+                    self._db_wait_for_update(_update_id)
 
             self.play_folder(folder, recursive)
 
@@ -595,14 +595,14 @@ class PlayerMPD:
             self.mpd_client.setvol(volume)
         return self.get_volume()
 
-    def _wait_database_update_finished(self, update_id: int):
+    def _db_wait_for_update(self, update_id: int):
         logger.debug("Waiting for update to finish")
         with self.mpd_lock:
-            while self._is_database_updating(update_id):
+            while self._db_is_updating(update_id):
                 # a little throttling
                 time.sleep(0.1)
 
-    def _is_database_updating(self, update_id: int):
+    def _db_is_updating(self, update_id: int):
         with self.mpd_lock:
             _status = self.mpd_client.status()
             _cur_update_id = _status.get('updating_db')
