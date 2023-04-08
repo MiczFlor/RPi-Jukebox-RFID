@@ -54,14 +54,14 @@ class SyncShared:
                 if not self._sync_on_rfid_scan_enabled:
                     logger.info("Sync on RFID scan deactivated")
                 self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
-                self._sync_remote_server = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'server')
-                self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'port'))
-                self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', self._sync_mode, 'timeout'))
-                self._sync_remote_path = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'path')
+                self._sync_remote_server = cfg_sync_shared.getn('sync_shared', 'credentials', 'server')
+                self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', 'credentials', 'port'))
+                self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', 'credentials', 'timeout'))
+                self._sync_remote_path = cfg_sync_shared.getn('sync_shared', 'credentials', 'path')
 
                 self._sync_is_mode_ssh = self._sync_mode == "ssh"
                 if self._sync_is_mode_ssh:
-                    self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', self._sync_mode, 'username')
+                    self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', 'credentials', 'username')
 
             components.rfid.reader.rfid_card_detect_callbacks.register(self.rfid_callback)
         else:
