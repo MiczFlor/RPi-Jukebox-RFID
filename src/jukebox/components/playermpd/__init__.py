@@ -285,6 +285,12 @@ class PlayerMPD:
         return state
 
     @plugs.tag
+    def update_wait(self):
+        state = self.update()
+        self._db_wait_for_update(state)
+        return state
+
+    @plugs.tag
     def play(self):
         with self.mpd_lock:
             self.mpd_client.play()
@@ -452,10 +458,7 @@ class PlayerMPD:
             _files_synced = plugs.call_ignore_errors('sync_shared', 'ctrl', 'sync_folder', args=[folder])
             if _files_synced:
                 logger.debug('Files synced: update database')
-                with self.mpd_lock:
-                    # TODO fix general absolut/relativ folder path handling
-                    _update_id = self.mpd_client.update()  # update(folder)
-                    self._db_wait_for_update(_update_id)
+                self.update_wait()
 
             self.play_folder(folder, recursive)
 
@@ -597,10 +600,9 @@ class PlayerMPD:
 
     def _db_wait_for_update(self, update_id: int):
         logger.debug("Waiting for update to finish")
-        with self.mpd_lock:
-            while self._db_is_updating(update_id):
-                # a little throttling
-                time.sleep(0.1)
+        while self._db_is_updating(update_id):
+            # a little throttling
+            time.sleep(0.1)
 
     def _db_is_updating(self, update_id: int):
         with self.mpd_lock:
