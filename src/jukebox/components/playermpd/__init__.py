@@ -95,6 +95,8 @@ import jukebox.playlistgenerator as playlistgenerator
 import misc
 
 from jukebox.NvManager import nv_manager
+from jukebox.callingback import CallbackHandler
+from typing import Callable
 
 
 logger = logging.getLogger('jb.PlayerMPD')
@@ -133,6 +135,30 @@ class MpdLock:
 
     def locked(self):
         return self._lock.locked()
+
+
+class PlayContentCallbacks(CallbackHandler):
+    """
+    Callbacks are executed in various play functions
+    """
+
+    def register(self, func: Callable[[str, int], None]):
+        """
+        Add a new callback function :attr:`func`.
+
+        Callback signature is
+
+        .. py:function:: func(folder: str, state: int)
+            :noindex:
+
+            :param folder: relativ path to folder to play
+            :param state: indicator of the state inside the calling
+        """
+        super().register(func)
+
+    def run_callbacks(self, folder: str, state: int):
+        """:meta private:"""
+        super().run_callbacks(folder, state)
 
 
 class PlayerMPD:
@@ -450,15 +476,16 @@ class PlayerMPD:
             is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
         if self.second_swipe_action is not None and is_second_swipe:
             logger.debug('Calling second swipe action')
+
+            # run callbacks before second_swipe_action is invoked
+            play_card_callbacks.run_callbacks(folder, 1)
+
             self.second_swipe_action()
         else:
             logger.debug('Calling first swipe action')
 
-            # sync audiofolder
-            _files_synced = plugs.call_ignore_errors('sync_shared', 'ctrl', 'sync_folder', args=[folder])
-            if _files_synced:
-                logger.debug('Files synced: update database')
-                self.update_wait()
+            # run callbacks before play_folder is invoked
+            play_card_callbacks.run_callbacks(folder, 0)
 
             self.play_folder(folder, recursive)
 
@@ -619,6 +646,13 @@ class PlayerMPD:
 # ---------------------------------------------------------------------------
 
 player_ctrl: PlayerMPD
+#: Callback handler instance for play_card events.
+#: - is executed when play_card function is called
+#: States:
+#: - 0: On first swipe before playback
+#: - 1: On second swipe before execution
+#: See also :class:`PlayContentCallbacks`
+play_card_callbacks: PlayContentCallbacks
 
 
 @plugs.initialize
@@ -626,6 +660,9 @@ def initialize():
     global player_ctrl
     player_ctrl = PlayerMPD()
     plugs.register(player_ctrl, name='ctrl')
+
+    global play_card_callbacks
+    play_card_callbacks = PlayContentCallbacks('play_card_callbacks', logger, context=player_ctrl.mpd_lock)
 
     # Update mpc library
     library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)

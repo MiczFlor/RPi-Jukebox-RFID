@@ -63,16 +63,21 @@ class SyncShared:
                 if self._sync_is_mode_ssh:
                     self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', 'credentials', 'username')
 
-            components.rfid.reader.rfid_card_detect_callbacks.register(self.rfid_callback)
+            components.rfid.reader.rfid_card_detect_callbacks.register(self._rfid_callback)
+            components.playermpd.play_card_callbacks.register(self._play_card_callback)
         else:
             logger.info("Sync shared deactivated")
 
     def __exit__(self):
         cfg_sync_shared.save(only_if_changed=True)
 
-    def rfid_callback(self, card_id: str, state: int):
+    def _rfid_callback(self, card_id: str, state: int):
         if state == -1:
             self.sync_card_database(card_id)
+
+    def _play_card_callback(self, folder: str, state: int):
+        if state == 0:
+            self.sync_folder(folder)
 
     @plugs.tag
     def sync_change_on_rfid_scan(self, option: str = 'toggle') -> None:
@@ -223,6 +228,10 @@ class SyncShared:
 
             if self._isdir_remote(_src_path):
                 _files_synced = self._sync_paths(_src_path, _dst_path)
+
+                if _files_synced:
+                    logger.debug('Files synced: update database')
+                    plugs.call_ignore_errors('player', 'ctrl', 'update_wait')
 
             else:
                 logger.warn(f"Folder does not exist remote: {_src_path}")
