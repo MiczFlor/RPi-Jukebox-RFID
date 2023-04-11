@@ -182,7 +182,7 @@ class SyncShared:
             # This file is kept to reduce unnecessary syncing!
             _dst_path = os.path.join(_card_database_dir, "sync_temp_" + _card_database_file)
 
-            if self._isfile_remote(_src_path):
+            if self._is_file_remote(_src_path):
                 _files_synced = self._sync_paths(_src_path, _dst_path)
 
                 if os.path.isfile(_dst_path):
@@ -225,7 +225,7 @@ class SyncShared:
             # TODO fix general absolut/relativ folder path handling
             _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
-            if self._isdir_remote(_src_path):
+            if self._is_dir_remote(_src_path):
                 _files_synced = self._sync_paths(_src_path, _dst_path)
 
                 if _files_synced:
@@ -291,7 +291,7 @@ class SyncShared:
 
         return _server_reachable
 
-    def _isfile_remote(self, path: str) -> bool:
+    def _is_file_remote(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
@@ -309,7 +309,7 @@ class SyncShared:
 
         return _result
 
-    def _isdir_remote(self, path: str) -> bool:
+    def _is_dir_remote(self, path: str) -> bool:
         if self._sync_is_mode_ssh:
             _user = self._sync_remote_ssh_user
             _host = self._sync_remote_server
