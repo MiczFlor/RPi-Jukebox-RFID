@@ -115,7 +115,7 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync():
+        if self._is_sync_enabled():
             logger.info("Syncing all")
             _database_synced = self._sync_card_database()
             _folder_synced = self._sync_folder('')
@@ -133,7 +133,7 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync_on_rfid_scan():
+        if self._is_sync_enabled_on_rfid_scan():
             _files_synced = self._sync_card_database(card_id)
 
         return _files_synced
@@ -147,25 +147,24 @@ class SyncShared:
         """
         _files_synced = False
 
-        if self._precheck_enablement_sync_on_rfid_scan():
+        if self._is_sync_enabled_on_rfid_scan():
             _files_synced = self._sync_folder(folder)
 
         return _files_synced
 
-    def _precheck_enablement_sync(self) -> bool:
+    def _is_sync_enabled(self) -> bool:
         if self._sync_enabled:
             return True
-        else:
-            logger.debug("Sync shared deactivated")
 
+        logger.debug("Sync shared deactivated")
         return False
 
-    def _precheck_enablement_sync_on_rfid_scan(self) -> bool:
-        if self._precheck_enablement_sync():
+    def _is_sync_enabled_on_rfid_scan(self) -> bool:
+        if self._is_sync_enabled():
             if self._sync_on_rfid_scan_enabled:
                 return True
-            else:
-                logger.debug("Sync on RFID scan deactivated")
+
+            logger.debug("Sync on RFID scan deactivated")
 
         return False
 
