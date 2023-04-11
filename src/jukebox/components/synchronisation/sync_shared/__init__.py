@@ -171,69 +171,73 @@ class SyncShared:
     def _sync_card_database(self, card_id: str = None) -> bool:
         _card_database_path = cfg_cards.loaded_from
         logger.info(f"Syncing card database: {_card_database_path}")
+
+        if not self._is_server_reachable():
+            return False
+
+        _sync_remote_path_settings = os.path.join(self._sync_remote_path, "settings")
+        _card_database_file = os.path.basename(_card_database_path)
+        _card_database_dir = os.path.dirname(_card_database_path)
+        _src_path = os.path.join(_sync_remote_path_settings, _card_database_file)
+        # Sync the card database to a temp file to handle changes of single card ids correctly.
+        # This file is kept to reduce unnecessary syncing!
+        _dst_path = os.path.join(_card_database_dir, "sync_temp_" + _card_database_file)
+
         _files_synced = False
+        if self._is_file_remote(_src_path):
+            _files_synced = self._sync_paths(_src_path, _dst_path)
 
-        if self._is_server_reachable():
-            _sync_remote_path_settings = os.path.join(self._sync_remote_path, "settings")
-            _card_database_file = os.path.basename(_card_database_path)
-            _card_database_dir = os.path.dirname(_card_database_path)
-            _src_path = os.path.join(_sync_remote_path_settings, _card_database_file)
-            # Sync the card database to a temp file to handle changes of single card ids correctly.
-            # This file is kept to reduce unnecessary syncing!
-            _dst_path = os.path.join(_card_database_dir, "sync_temp_" + _card_database_file)
-
-            if self._is_file_remote(_src_path):
-                _files_synced = self._sync_paths(_src_path, _dst_path)
-
-                if os.path.isfile(_dst_path):
-                    # Check even if nothing has been synced,
-                    # as the original card database could have been changed locally (e.g. WebUi)
-                    if card_id is not None:
-                        # This ConfigHandler is explicitly instantiated and only used to read the synced temp database file
-                        _cfg_cards_temp = jukebox.cfghandler.ConfigHandler("sync_temp_cards")
-                        with _cfg_cards_temp:
-                            _cfg_cards_temp.load(_dst_path)
-                            _card_entry = _cfg_cards_temp.get(card_id, default=None)
-                        if _card_entry is not None:
-                            with cfg_cards:
-                                cfg_cards[card_id] = _card_entry
-                                if cfg_cards.is_modified():
-                                    cfg_cards.save(only_if_changed=True)
-                                    _files_synced = True
-                                    logger.info(f"Updated entry '{card_id}' in '{_card_database_path}'")
-                    else:
-                        # overwrite original file with synced state
+            if os.path.isfile(_dst_path):
+                # Check even if nothing has been synced,
+                # as the original card database could have been changed locally (e.g. WebUi)
+                if card_id is not None:
+                    # This ConfigHandler is explicitly instantiated and only used to read the synced temp database file
+                    _cfg_cards_temp = jukebox.cfghandler.ConfigHandler("sync_temp_cards")
+                    with _cfg_cards_temp:
+                        _cfg_cards_temp.load(_dst_path)
+                        _card_entry = _cfg_cards_temp.get(card_id, default=None)
+                    if _card_entry is not None:
                         with cfg_cards:
-                            shutil.copy2(_dst_path, _card_database_path)
-                            cfg_cards.load(_card_database_path)
-                        logger.info(f"Updated '{_card_database_path}'")
+                            cfg_cards[card_id] = _card_entry
+                            if cfg_cards.is_modified():
+                                cfg_cards.save(only_if_changed=True)
+                                _files_synced = True
+                                logger.info(f"Updated entry '{card_id}' in '{_card_database_path}'")
+                else:
+                    # overwrite original file with synced state
+                    with cfg_cards:
+                        shutil.copy2(_dst_path, _card_database_path)
+                        cfg_cards.load(_card_database_path)
+                    logger.info(f"Updated '{_card_database_path}'")
 
-            else:
-                logger.warn(f"Card database does not exist remote: {_src_path}")
+        else:
+            logger.warn(f"Card database does not exist remote: {_src_path}")
 
         return _files_synced
 
     def _sync_folder(self, folder: str) -> bool:
         logger.info(f"Syncing Folder '{folder}'")
+
+        if not self._is_server_reachable():
+            return False
+
+        _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
+        _music_library_path = components.player.get_music_library_path()
+        _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
+        _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+        # TODO fix general absolut/relativ folder path handling
+        _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
+
         _files_synced = False
+        if self._is_dir_remote(_src_path):
+            _files_synced = self._sync_paths(_src_path, _dst_path)
 
-        if self._is_server_reachable():
-            _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
-            _music_library_path = components.player.get_music_library_path()
-            _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
-            _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
-            # TODO fix general absolut/relativ folder path handling
-            _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
+            if _files_synced:
+                logger.debug('Files synced: update database')
+                plugs.call_ignore_errors('player', 'ctrl', 'update_wait')
 
-            if self._is_dir_remote(_src_path):
-                _files_synced = self._sync_paths(_src_path, _dst_path)
-
-                if _files_synced:
-                    logger.debug('Files synced: update database')
-                    plugs.call_ignore_errors('player', 'ctrl', 'update_wait')
-
-            else:
-                logger.warn(f"Folder does not exist remote: {_src_path}")
+        else:
+            logger.warn(f"Folder does not exist remote: {_src_path}")
 
         return _files_synced
 
