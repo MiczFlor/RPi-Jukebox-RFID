@@ -20,6 +20,7 @@ import subprocess
 import components.player
 import components.playermpd
 import components.rfid.reader
+import components.synchronisation.sync_shared.syncutils as syncutils
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 import socket
@@ -28,7 +29,7 @@ import shutil
 
 from components.rfid.reader import RfidCardDetectState
 from components.playermpd.playcontentcallback import PlayCardState
-from sync_shared import syncutil
+
 
 logger = logging.getLogger('jb.sync_shared')
 
@@ -226,10 +227,10 @@ class SyncShared:
 
         _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
         _music_library_path = components.player.get_music_library_path()
-        _cleaned_foldername = syncutil.clean_foldername(_music_library_path, folder)
-        _src_path = syncutil.ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+        _cleaned_foldername = syncutils.clean_foldername(_music_library_path, folder)
+        _src_path = syncutils.ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
         # TODO fix general absolut/relativ folder path handling
-        _dst_path = syncutil.ensure_trailing_slash(os.path.join(_music_library_path, folder))
+        _dst_path = syncutils.ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
         _files_synced = False
         if self._is_dir_remote(_src_path):
