@@ -28,6 +28,7 @@ import shutil
 
 from components.rfid.reader import RfidCardDetectState
 from components.playermpd.playcontentcallback import PlayCardState
+from sync_shared import syncutil
 
 logger = logging.getLogger('jb.sync_shared')
 
@@ -225,10 +226,10 @@ class SyncShared:
 
         _sync_remote_path_audio = os.path.join(self._sync_remote_path, "audiofolders")
         _music_library_path = components.player.get_music_library_path()
-        _cleaned_foldername = self._clean_foldername(_music_library_path, folder)
-        _src_path = self._ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
+        _cleaned_foldername = syncutil.clean_foldername(_music_library_path, folder)
+        _src_path = syncutil.ensure_trailing_slash(os.path.join(_sync_remote_path_audio, _cleaned_foldername))
         # TODO fix general absolut/relativ folder path handling
-        _dst_path = self._ensure_trailing_slash(os.path.join(_music_library_path, folder))
+        _dst_path = syncutil.ensure_trailing_slash(os.path.join(_music_library_path, folder))
 
         _files_synced = False
         if self._is_dir_remote(_src_path):
@@ -332,25 +333,6 @@ class SyncShared:
             _result = os.path.isdir(path)
 
         return _result
-
-    def _clean_foldername(self, lib_path: str, folder: str) -> str:
-        _folder = folder.removeprefix(lib_path)
-        _folder = self._remove_leading_slash(self._remove_trailing_slash(_folder))
-        return _folder
-
-    def _ensure_trailing_slash(self, path: str) -> str:
-        _path = path
-        if not _path.endswith('/'):
-            _path = _path + '/'
-        return _path
-
-    def _remove_trailing_slash(self, path: str) -> str:
-        _path = path.removesuffix('/')
-        return _path
-
-    def _remove_leading_slash(self, path: str) -> str:
-        _path = path.removeprefix('/')
-        return _path
 
 # ---------------------------------------------------------------------------
 # Plugin Initializer / Finalizer
