@@ -91,7 +91,7 @@ class SyncShared:
 
         :param option: Must be one of 'enable', 'disable', 'toggle'
         """
-        if self._sync_enabled:
+        if self._is_sync_enabled():
 
             if option == 'enable':
                 _new_state = True
@@ -108,9 +108,6 @@ class SyncShared:
                 self._sync_on_rfid_scan_enabled = _new_state
 
                 logger.info(f"Changed 'on_rfid_scan_enabled' to '{_new_state}'")
-
-        else:
-            logger.debug("Sync shared deactivated")
 
     @plugs.tag
     def sync_all(self) -> bool:
