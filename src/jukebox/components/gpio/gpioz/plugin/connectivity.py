@@ -19,6 +19,7 @@ import components.rfid.reader
 import components.gpio.gpioz.plugin
 from components.gpio.gpioz.core.output_devices import LED, PWMLED, Buzzer, TonalBuzzer, RGBLED
 from components.gpio.gpioz.core.converter import VolumeToRGB
+from components.rfid.reader import RfidCardDetectState
 
 logger = logging.getLogger('gpioz')
 
@@ -61,10 +62,10 @@ def register_rfid_callback(device):
         - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
     """
 
-    def rfid_callback(card_id: str, state: int):
-        if state == 0:
+    def rfid_callback(card_id: str, state: RfidCardDetectState):
+        if state == RfidCardDetectState.isRegistered:
             device.flash(on_time=0.1, n=1, tone=BUZZ_TONE)
-        elif state == 1:
+        elif state == RfidCardDetectState.isUnkown:
             device.flash(on_time=0.1, off_time=0.1, n=3, tone=BUZZ_TONE)
 
     components.rfid.reader.rfid_card_detect_callbacks.register(

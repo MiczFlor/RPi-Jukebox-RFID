@@ -18,11 +18,14 @@ The local copy is kept to reduce unnecessary syncing.
 import logging
 import subprocess
 import components.player
+import components.rfid.reader
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 import socket
 import os
 import shutil
+
+from components.rfid.reader import RfidCardDetectState
 
 logger = logging.getLogger('jb.sync_shared')
 
@@ -71,8 +74,8 @@ class SyncShared:
     def __exit__(self):
         cfg_sync_shared.save(only_if_changed=True)
 
-    def _rfid_callback(self, card_id: str, state: int):
-        if state == -1:
+    def _rfid_callback(self, card_id: str, state: RfidCardDetectState):
+        if state == RfidCardDetectState.received:
             self.sync_card_database(card_id)
 
     def _play_card_callback(self, folder: str, state: int):

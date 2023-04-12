@@ -3,6 +3,7 @@ import threading
 import time
 import importlib
 from typing import Callable
+from enum import Enum
 
 import jukebox.plugs as plugs
 import jukebox.cfghandler
@@ -20,16 +21,18 @@ cfg_main = jukebox.cfghandler.get_handler('jukebox')
 cfg_cards = jukebox.cfghandler.get_handler('cards')
 
 
-class ServiceIsRunningCallbacks(CallbackHandler):
-    """
-    Callbacks are executed when
+class RfidCardDetectState(Enum):
+    received = 0,
+    isRegistered = 1
+    isUnkown = 2
 
-        * receiving rfid card id (before processing card entries)
-        * valid rfid card detect
-        * unknown card detect
+
+class RfidCardDetectCallbacks(CallbackHandler):
+    """
+    Callbacks are executed if rfid card is detected
     """
 
-    def register(self, func: Callable[[str, int], None]):
+    def register(self, func: Callable[[str, RfidCardDetectState], None]):
         """
         Add a new callback function :attr:`func`.
 
@@ -39,21 +42,18 @@ class ServiceIsRunningCallbacks(CallbackHandler):
             :noindex:
 
             :param card_id: Card ID
-            :param state:
-                -1  on receiving card id (before processing card entries),
-                0   if card id is registered,
-                1   if card id is unknown
+            :param state: See :class:`RfidCardDetectState`
         """
         super().register(func)
 
-    def run_callbacks(self, card_id: str, state: int):
+    def run_callbacks(self, card_id: str, state: RfidCardDetectState):
         """:meta private:"""
         super().run_callbacks(card_id, state)
 
 
 #: Callback handler instance for rfid_card_detect_callbacks events.
-#: See :class:`ServiceIsRunningCallbacks`
-rfid_card_detect_callbacks: ServiceIsRunningCallbacks = ServiceIsRunningCallbacks('rfid_card_detect_callbacks', log)
+#: See :class:`RfidCardDetectCallbacks`
+rfid_card_detect_callbacks: RfidCardDetectCallbacks = RfidCardDetectCallbacks('rfid_card_detect_callbacks', log)
 
 
 class CardRemovalTimerClass(threading.Thread):
@@ -181,7 +181,7 @@ class ReaderRunner(threading.Thread):
                         # TODO: This card config read is not thread safe
 
                         # run callbacks on successfull read before card_entry is processed
-                        rfid_card_detect_callbacks.run_callbacks(card_id, -1)
+                        rfid_card_detect_callbacks.run_callbacks(card_id, RfidCardDetectState.received)
 
                         card_entry = cfg_cards.get(card_id, default=None)
                         if card_entry is not None:
@@ -215,12 +215,12 @@ class ReaderRunner(threading.Thread):
                                 # dodgy cards database entry
                                 # TODO: This call happens from the reader thread, which is not necessarily what we want ...
                                 # TODO: Change to RPC call to transfer execution into main thread
-                                rfid_card_detect_callbacks.run_callbacks(card_id, 0)
+                                rfid_card_detect_callbacks.run_callbacks(card_id, RfidCardDetectState.isRegistered)
                                 plugs.call_ignore_errors(card_action['package'], card_action['plugin'], card_action['method'],
                                                          args=card_action['args'], kwargs=card_action['kwargs'])
 
                         else:
-                            rfid_card_detect_callbacks.run_callbacks(card_id, 1)
+                            rfid_card_detect_callbacks.run_callbacks(card_id, RfidCardDetectState.isUnkown)
                             self._logger.info(f"Unknown card: '{card_id}'")
                             self.publisher.send(self.topic, card_id)
                     elif self._cfg_log_ignored_cards is True:
