@@ -10,7 +10,7 @@ class PlayCardState(Enum):
     secondSwipe = 1
 
 
-STATE = TypeVar('STATE', Enum)
+STATE = TypeVar('STATE', bound=Enum)
 
 
 class PlayContentCallbacks(Generic[STATE], CallbackHandler):
