@@ -95,9 +95,7 @@ import jukebox.playlistgenerator as playlistgenerator
 import misc
 
 from jukebox.NvManager import nv_manager
-from jukebox.callingback import CallbackHandler
-from typing import Callable
-
+from playcontentcallback import PlayContentCallbacks, PlayCardState
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -135,30 +133,6 @@ class MpdLock:
 
     def locked(self):
         return self._lock.locked()
-
-
-class PlayContentCallbacks(CallbackHandler):
-    """
-    Callbacks are executed in various play functions
-    """
-
-    def register(self, func: Callable[[str, int], None]):
-        """
-        Add a new callback function :attr:`func`.
-
-        Callback signature is
-
-        .. py:function:: func(folder: str, state: int)
-            :noindex:
-
-            :param folder: relativ path to folder to play
-            :param state: indicator of the state inside the calling
-        """
-        super().register(func)
-
-    def run_callbacks(self, folder: str, state: int):
-        """:meta private:"""
-        super().run_callbacks(folder, state)
 
 
 class PlayerMPD:
@@ -478,14 +452,14 @@ class PlayerMPD:
             logger.debug('Calling second swipe action')
 
             # run callbacks before second_swipe_action is invoked
-            play_card_callbacks.run_callbacks(folder, 1)
+            play_card_callbacks.run_callbacks(folder, PlayCardState.secondSwipe)
 
             self.second_swipe_action()
         else:
             logger.debug('Calling first swipe action')
 
             # run callbacks before play_folder is invoked
-            play_card_callbacks.run_callbacks(folder, 0)
+            play_card_callbacks.run_callbacks(folder, PlayCardState.firstSwipe)
 
             self.play_folder(folder, recursive)
 
@@ -649,10 +623,9 @@ player_ctrl: PlayerMPD
 #: Callback handler instance for play_card events.
 #: - is executed when play_card function is called
 #: States:
-#: - 0: On first swipe before playback
-#: - 1: On second swipe before execution
-#: See also :class:`PlayContentCallbacks`
-play_card_callbacks: PlayContentCallbacks
+#: - See :class:`PlayCardState`
+#: See :class:`PlayContentCallbacks`
+play_card_callbacks: PlayContentCallbacks[PlayCardState]
 
 
 @plugs.initialize
@@ -662,7 +635,7 @@ def initialize():
     plugs.register(player_ctrl, name='ctrl')
 
     global play_card_callbacks
-    play_card_callbacks = PlayContentCallbacks('play_card_callbacks', logger, context=player_ctrl.mpd_lock)
+    play_card_callbacks = PlayContentCallbacks[PlayCardState]('play_card_callbacks', logger, context=player_ctrl.mpd_lock)
 
     # Update mpc library
     library_update = cfg.setndefault('playermpd', 'library', 'update_on_startup', value=True)
