@@ -95,7 +95,7 @@ import jukebox.playlistgenerator as playlistgenerator
 import misc
 
 from jukebox.NvManager import nv_manager
-from playcontentcallback import PlayContentCallbacks, PlayCardState
+from .playcontentcallback import PlayContentCallbacks, PlayCardState
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
