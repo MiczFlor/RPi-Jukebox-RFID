@@ -28,7 +28,7 @@ sphinx
 sphinx_rtd_theme
 
 # Code quality
-flake8
+flake8>=4.0.0
 pytest
 mock
 

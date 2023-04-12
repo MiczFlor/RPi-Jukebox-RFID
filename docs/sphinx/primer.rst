@@ -12,8 +12,8 @@ project check out the `documentation of Version 2 <https://github.com/MiczFlor/R
 Why?
 -----
 
-* Better extensibility, clear architecture allowing easier integration of new feature
-* Higher performance especially on lower end hardware (it's a stetch at the moment)
+* Better extensibility, clear architecture allowing for easier integration of new features
+* Higher performance especially on lower end hardware (it's a stretch at the moment)
 * Better maintainability
 * Better observability for debugging
 
@@ -23,17 +23,17 @@ How?
 * Jukebox core is a holistic Python3-only application
 * Avoid shell script invocation during runtime wherever possible
 * Establish a socket based API (using ZeroMQ) toward the WebUI or other clients
-* Implemented a Remote-Procedure-Call (RPC) server through which all user function call pass
+* Implemented a Remote-Procedure-Call (RPC) server through which all user function calls pass
 * Implemented a plugin concept to dynamically load Python modules configurable through the configuration file
-* In conjunction with the RPC, this is a neat way of allowing additional feature without having to touch the core all the time
+* In conjunction with the RPC, this is a neat way of allowing additional features without having to touch the core all the time
 
 Where are we? Help wanted!
 --------------------------
 
 The initial proof-of-concept phase has been left behind and there is quite some functionality available already.
-This is still heavily in progress but the WebUI and RFID-triggered playback of local files work.
+This is still an ongoing process but the WebUI and RFID-triggered playback of local files work.
 
-Features/files from version 2.X will only be copied/merged when they can be integrated and tested.
+Features/files from version 2.X will only be copied/merged once they can be integrated and tested.
 If you don't find your v2.X contributions, it doesn't mean they are obsolete. Things will be integrated step by step.
 And, of course, you are welcome to adapt your previous contributions to this new exiting structure.
 

@@ -202,7 +202,7 @@ class PlaylistCollector:
         self.special_handlers = {'livestream.txt': decode_livestream,
                                  'podcast.txt': decode_podcast,
                                  # Ignore all other .txt files
-                                 '.txt': lambda f, p, l: None,
+                                 '.txt': lambda _f, _p, _l: None,
                                  '.m3u': decode_m3u}
         self.default_handler = decode_musicfile
 
