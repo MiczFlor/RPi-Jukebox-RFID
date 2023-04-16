@@ -59,7 +59,7 @@ PulseAudio
 
 We use PulseAudio for the audio output configuration. Check out the Audio Configuration page for details.
 
-The is a set of reasons:
+There is a number of reasons for that:
 
     * It is easier to support and setup different audio hardware. Over the years, many builders have
       tried many different ways to set up audio on their Jukebox so this become the most reliable and compatible
