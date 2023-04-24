@@ -20,7 +20,7 @@ import subprocess
 import components.player
 import components.playermpd
 import components.rfid.reader
-import components.synchronisation.sync_shared.syncutils as syncutils
+import components.synchronisation.syncutils as syncutils
 import jukebox.cfghandler
 import jukebox.plugs as plugs
 import socket
