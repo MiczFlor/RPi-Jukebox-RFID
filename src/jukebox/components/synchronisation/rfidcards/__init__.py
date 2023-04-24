@@ -56,8 +56,9 @@ class SyncRfidcards:
                 return
 
             with cfg_sync_rfidcards:
-                self._sync_on_rfid_scan_enabled = (cfg_sync_rfidcards.getn('sync_rfidcards', 'on_rfid_scan_enabled', default=False)
-                                                is True)
+                self._sync_on_rfid_scan_enabled = (
+                    cfg_sync_rfidcards.getn('sync_rfidcards', 'on_rfid_scan_enabled', default=False)
+                    is True)
                 if not self._sync_on_rfid_scan_enabled:
                     logger.info("Sync on RFID scan deactivated")
                 self._sync_mode = cfg_sync_rfidcards.getn('sync_rfidcards', 'mode')
