@@ -22,8 +22,8 @@
           "timer_stop_player": "Stop player",
           "timer_fade_volume": "Fade volume",
           "toggle_output": "Audio-Ausgang umschalten",
-          "sync_shared_all": "Alle Audiodateien synchronisieren",
-          "sync_shared_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan' "
+          "sync_rfidcards_all": "Alle Audiodateien und Karteneinträge synchronisieren",
+          "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan' "
         }
       },
       "controls-selector": {
@@ -63,10 +63,12 @@
           "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
         },
         "synchronisation": {
+          "rfidcards": {
             "description": "Wähle den zu setzenden Status.",
             "label-toggle": "Umschalten",
             "label-enable": "Aktivieren",
             "label-disable": "Deaktivieren"
+          }
         }
       }
     },

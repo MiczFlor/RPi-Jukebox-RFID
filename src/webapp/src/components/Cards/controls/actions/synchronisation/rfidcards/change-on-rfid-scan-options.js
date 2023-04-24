@@ -13,7 +13,7 @@ import {
 import {
   getActionAndCommand,
   getArgsValues,
-} from '../../../utils';
+} from '../../../../utils';
 
 
 const ChangeOnRfidScan = ({
@@ -33,28 +33,28 @@ const ChangeOnRfidScan = ({
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
         <Typography>
-          {t('cards.controls.actions.synchronisation.description')}
+          {t('cards.controls.actions.synchronisation.rfidcards.description')}
         </Typography>
         <FormControl component="fieldset">
           <RadioGroup
             aria-label="gender"
-            name="sync_shared_change_on_rfid_scan"
+            name="sync_rfidcards_change_on_rfid_scan"
             value={option || 'toggle'}
             onChange={onChange}
           >
             <FormControlLabel
               control={<Radio />}
-              label={t('cards.controls.actions.synchronisation.label-toggle')}
+              label={t('cards.controls.actions.synchronisation.rfidcards.label-toggle')}
               value="toggle"
             />
             <FormControlLabel
               control={<Radio />}
-              label={t('cards.controls.actions.synchronisation.label-enable')}
+              label={t('cards.controls.actions.synchronisation.rfidcards.label-enable')}
               value="enable"
             />
             <FormControlLabel
               control={<Radio />}
-              label={t('cards.controls.actions.synchronisation.label-disable')}
+              label={t('cards.controls.actions.synchronisation.rfidcards.label-disable')}
               value="disable"
             />
           </RadioGroup>

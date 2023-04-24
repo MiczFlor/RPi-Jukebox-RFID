@@ -114,14 +114,14 @@ cmd_alias_definitions = {
         'title': 'Start the stop music timer',
         'ignore_card_removal_action': True},
     # SYNCHRONISATION
-    'sync_shared_all': {
-        'package': 'sync_shared',
+    'sync_rfidcards_all': {
+        'package': 'sync_rfidcards',
         'plugin': 'ctrl',
         'method': 'sync_all',
-        'title': 'Sync all audiofiles',
+        'title': 'Sync all audiofiles and card entries',
         'ignore_card_removal_action': True},
-    'sync_shared_change_on_rfid_scan': {
-        'package': 'sync_shared',
+    'sync_rfidcards_change_on_rfid_scan': {
+        'package': 'sync_rfidcards',
         'plugin': 'ctrl',
         'method': 'sync_change_on_rfid_scan',
         'title': "Change activation of 'on RFID scan'",
