@@ -1,8 +1,9 @@
 """
-Handles the synchronisation of RFID cards (audiofolder and card database entries)
+Handles the synchronisation of RFID cards (audiofolder and card database entries).
 
-audiofolder:
-
+sync-all -> all card entries and audiofolders are synced from remote including deletions
+sync-on-scan -> only the entry and audiofolder for the cardId will be synced from remote.
+                Only deletions of subelements will be performed
 
 card database:
 As this is only a single file for all cards (unlike v2.x), it has some specialities.
