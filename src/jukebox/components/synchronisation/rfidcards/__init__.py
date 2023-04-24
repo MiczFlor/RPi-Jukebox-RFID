@@ -1,5 +1,5 @@
 """
-Handles the synchronisation of shared audiofolder and the card database
+Handles the synchronisation of RFID cards (audiofolder and card database entries)
 
 audiofolder:
 
@@ -31,52 +31,52 @@ from components.rfid.reader import RfidCardDetectState
 from components.playermpd.playcontentcallback import PlayCardState
 
 
-logger = logging.getLogger('jb.sync_shared')
+logger = logging.getLogger('jb.sync_rfidcards')
 
 cfg_main = jukebox.cfghandler.get_handler('jukebox')
-cfg_sync_shared = jukebox.cfghandler.get_handler('sync_shared')
+cfg_sync_rfidcards = jukebox.cfghandler.get_handler('sync_rfidcards')
 cfg_cards = jukebox.cfghandler.get_handler('cards')
 
 
-class SyncShared:
-    """Control class for sync shared functionality"""
+class SyncRfidcards:
+    """Control class for sync RFID cards functionality"""
 
     def __init__(self):
         with cfg_main:
-            self._sync_enabled = cfg_main.setndefault('sync_shared', 'enable', value=False) is True
+            self._sync_enabled = cfg_main.setndefault('sync_rfidcards', 'enable', value=False) is True
         if self._sync_enabled:
-            logger.info("Sync shared activated")
+            logger.info("Sync RFID cards activated")
             with cfg_main:
-                config_file = cfg_main.setndefault('sync_shared', 'config_file',
-                                                    value='../../shared/settings/sync_shared.yaml')
+                config_file = cfg_main.setndefault('sync_rfidcards', 'config_file',
+                                                    value='../../shared/settings/sync_rfidcards.yaml')
             try:
-                cfg_sync_shared.load(config_file)
+                cfg_sync_rfidcards.load(config_file)
             except Exception as e:
-                logger.error(f"Error loading sync_shared config file. {e.__class__.__name__}: {e}")
+                logger.error(f"Error loading sync_rfidcards config file. {e.__class__.__name__}: {e}")
                 return
 
-            with cfg_sync_shared:
-                self._sync_on_rfid_scan_enabled = (cfg_sync_shared.getn('sync_shared', 'on_rfid_scan_enabled', default=False)
+            with cfg_sync_rfidcards:
+                self._sync_on_rfid_scan_enabled = (cfg_sync_rfidcards.getn('sync_rfidcards', 'on_rfid_scan_enabled', default=False)
                                                 is True)
                 if not self._sync_on_rfid_scan_enabled:
                     logger.info("Sync on RFID scan deactivated")
-                self._sync_mode = cfg_sync_shared.getn('sync_shared', 'mode')
-                self._sync_remote_server = cfg_sync_shared.getn('sync_shared', 'credentials', 'server')
-                self._sync_remote_port = int(cfg_sync_shared.getn('sync_shared', 'credentials', 'port'))
-                self._sync_remote_timeout = int(cfg_sync_shared.getn('sync_shared', 'credentials', 'timeout'))
-                self._sync_remote_path = cfg_sync_shared.getn('sync_shared', 'credentials', 'path')
+                self._sync_mode = cfg_sync_rfidcards.getn('sync_rfidcards', 'mode')
+                self._sync_remote_server = cfg_sync_rfidcards.getn('sync_rfidcards', 'credentials', 'server')
+                self._sync_remote_port = int(cfg_sync_rfidcards.getn('sync_rfidcards', 'credentials', 'port'))
+                self._sync_remote_timeout = int(cfg_sync_rfidcards.getn('sync_rfidcards', 'credentials', 'timeout'))
+                self._sync_remote_path = cfg_sync_rfidcards.getn('sync_rfidcards', 'credentials', 'path')
 
                 self._sync_is_mode_ssh = self._sync_mode == "ssh"
                 if self._sync_is_mode_ssh:
-                    self._sync_remote_ssh_user = cfg_sync_shared.getn('sync_shared', 'credentials', 'username')
+                    self._sync_remote_ssh_user = cfg_sync_rfidcards.getn('sync_rfidcards', 'credentials', 'username')
 
             components.rfid.reader.rfid_card_detect_callbacks.register(self._rfid_callback)
             components.playermpd.play_card_callbacks.register(self._play_card_callback)
         else:
-            logger.info("Sync shared deactivated")
+            logger.info("Sync RFID cards deactivated")
 
     def __exit__(self):
-        cfg_sync_shared.save(only_if_changed=True)
+        cfg_sync_rfidcards.save(only_if_changed=True)
 
     def _rfid_callback(self, card_id: str, state: RfidCardDetectState):
         if state == RfidCardDetectState.received:
@@ -106,7 +106,7 @@ class SyncShared:
                 _new_state = None
 
             if _new_state is not None:
-                cfg_sync_shared.setn('sync_shared', 'on_rfid_scan_enabled', value=_new_state)
+                cfg_sync_rfidcards.setn('sync_rfidcards', 'on_rfid_scan_enabled', value=_new_state)
                 self._sync_on_rfid_scan_enabled = _new_state
 
                 logger.info(f"Changed 'on_rfid_scan_enabled' to '{_new_state}'")
@@ -160,7 +160,7 @@ class SyncShared:
         if self._sync_enabled:
             return True
 
-        logger.debug("Sync shared deactivated")
+        logger.debug("Sync RFID cards deactivated")
         return False
 
     def _is_sync_enabled_on_rfid_scan(self) -> bool:
@@ -340,17 +340,17 @@ class SyncShared:
 # ---------------------------------------------------------------------------
 
 
-sync_shared_ctrl: SyncShared
+sync_rfidcards_ctrl: SyncRfidcards
 
 
 @plugs.initialize
 def initialize():
-    global sync_shared_ctrl
-    sync_shared_ctrl = SyncShared()
-    plugs.register(sync_shared_ctrl, name='ctrl')
+    global sync_rfidcards_ctrl
+    sync_rfidcards_ctrl = SyncRfidcards()
+    plugs.register(sync_rfidcards_ctrl, name='ctrl')
 
 
 @plugs.atexit
 def atexit(**ignored_kwargs):
-    global sync_shared_ctrl
-    return sync_shared_ctrl.__exit__()
+    global sync_rfidcards_ctrl
+    return sync_rfidcards_ctrl.__exit__()

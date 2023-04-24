@@ -1,4 +1,4 @@
-sync_shared:
+sync_rfidcards:
   on_rfid_scan_enabled: true # bool
   mode: mount # 'mount' or 'ssh'
   credentials:
