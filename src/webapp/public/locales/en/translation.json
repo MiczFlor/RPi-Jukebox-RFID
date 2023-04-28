@@ -64,7 +64,7 @@
         },
         "synchronisation": {
           "rfidcards": {
-            "description": "Choose the state to set?",
+            "description": "Choose the state to set.",
             "label-toggle": "Toggle",
             "label-enable": "Enable",
             "label-disable": "Disable"
