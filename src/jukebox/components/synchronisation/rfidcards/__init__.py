@@ -6,12 +6,11 @@ sync-on-scan -> only the entry and audiofolder for the cardId will be synced fro
                 Only deletions of subelements will be performed
 
 card database:
-As this is only a single file for all cards (unlike v2.x), it has some specialities.
-On synchronisation the remote file will not synced with the original cards database, but rather a local copy.
-If a full sync is performed the state is then written back to the original file.
-If a single card sync is performed only the state of the specific card id is updated in the original file.
-This is done to keep the possibility to play audio offline.
-Otherwise we would also update other card ids where the audiofolders have not been synced yet.
+On synchronisation the remote file will not be synced with the original cards database, but rather a local copy.
+If a full sync is performed, the state is written back to the original file.
+If a single card sync is performed, only the state of the specific cardId is updated in the original file.
+This is done to allow to play audio offline.
+Otherwise we would also update other cardIds where the audiofolders have not been synced yet.
 The local copy is kept to reduce unnecessary syncing.
 
 """
