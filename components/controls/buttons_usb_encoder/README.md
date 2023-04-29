@@ -1,7 +1,5 @@
 # Buttons USB Encoder
 
-Taken from [issue 1156](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1156).
-
 Supports functionality of buttons which are connected via USB Encoder. The USB Encoder is the easy solution for anyone
 who doesn't want to solder, but also wants arcade buttons.
 
@@ -55,6 +53,11 @@ If you make a mistake at the first install you can "remap" the buttons:
 ## Schematics
 
 ![USB Encoder schematics](buttons-usb-encoder.jpg)
+
+## Issues & Discussions
+
+- https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1156
+- https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2013
 
 
 
