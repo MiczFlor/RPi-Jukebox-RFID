@@ -3,7 +3,8 @@ Handles the synchronisation of RFID cards (audiofolder and card database entries
 
 sync-all -> all card entries and audiofolders are synced from remote including deletions
 sync-on-scan -> only the entry and audiofolder for the cardId will be synced from remote.
-                Only deletions of subelements will be performed
+                Deletions are only performed on files and subfolder inside the audiofolder.
+                A deletion of the audiofolder itself on remote side will not be propagated.
 
 card database:
 On synchronisation the remote file will not be synced with the original cards database, but rather a local copy.
