@@ -113,6 +113,19 @@ cmd_alias_definitions = {
         'method': 'start',
         'title': 'Start the stop music timer',
         'ignore_card_removal_action': True},
+    # SYNCHRONISATION
+    'sync_rfidcards_all': {
+        'package': 'sync_rfidcards',
+        'plugin': 'ctrl',
+        'method': 'sync_all',
+        'title': 'Sync all audiofiles and card entries',
+        'ignore_card_removal_action': True},
+    'sync_rfidcards_change_on_rfid_scan': {
+        'package': 'sync_rfidcards',
+        'plugin': 'ctrl',
+        'method': 'sync_change_on_rfid_scan',
+        'title': "Change activation of 'on RFID scan'",
+        'ignore_card_removal_action': True},
 }
 
 # TODO: Transfer RFID command from v2.3...
