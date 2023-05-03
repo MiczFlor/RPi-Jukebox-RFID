@@ -32,7 +32,7 @@ _jukebox_core_install_os_dependencies() {
     --allow-remove-essential \
     --allow-change-held-packages
 
-  sudo pip3 install --upgrade pip
+  sudo pip3 install --upgrade pip==23.0.1
 }
 
 _jukebox_core_configure_pulseaudio() {
