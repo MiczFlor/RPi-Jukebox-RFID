@@ -9,7 +9,7 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
@@ -842,7 +842,7 @@ install_main() {
 
         sudo wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/${OS_CODENAME}.list
-        
+
         ${apt_get} update
         ${apt_get} upgrade
         ${apt_get} install libspotify-dev

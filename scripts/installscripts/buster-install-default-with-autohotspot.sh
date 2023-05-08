@@ -9,7 +9,7 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/scripts/installscripts
 #    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
