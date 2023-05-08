@@ -7,7 +7,7 @@
 [![CodeQL](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml)
 [![PHP Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/php.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/php.yml)
 
-[![Gitter chat](https://badges.gitter.im/join_chat.png)](https://matrix.to/#/#phoniebox_community:gitter.im)
+[![Gitter chat](https://badges.gitter.im/join_chat.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 [![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 
 ## Introduction
