@@ -42,10 +42,11 @@ jobs:
         pip install -r requirements.txt
         pytest --cov --cov-report xml
     - name: Report to Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./components/gpio_control/coverage.xml
+        file: ./components/gpio_control/coverage.xml
+        format: python
 
 
   
