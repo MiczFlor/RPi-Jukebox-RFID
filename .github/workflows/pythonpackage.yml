@@ -45,7 +45,7 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: coverage.xml
+        path-to-lcov: ./components/gpio_control/coverage.xml
 
 
   
