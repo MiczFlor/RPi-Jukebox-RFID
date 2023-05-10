@@ -46,7 +46,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         file: ./components/gpio_control/coverage.xml
-        format: python
+        format: cobertura
 
 
   
