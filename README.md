@@ -4,6 +4,8 @@
 
 [![Python Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage.yml) [![Test Install Scripts for Bullseye on Docker](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/docker_bullseye.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/docker_bullseye.yml) [![CodeQL](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/codeql-analysis.yml) [![PHP Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/php.yml/badge.svg)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/php.yml)
 
+[![Coverage Status](https://coveralls.io/repos/github/MiczFlor/RPi-Jukebox-RFID/badge.svg?branch=develop)](https://coveralls.io/github/MiczFlor/RPi-Jukebox-RFID?branch=develop)
+
 [![Gitter chat](https://badges.gitter.im/phoniebox/gitter.png)](https://gitter.im/phoniebox)
 
 ## Introduction
