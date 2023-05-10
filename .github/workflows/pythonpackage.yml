@@ -40,4 +40,12 @@ jobs:
       working-directory: ./components/gpio_control
       run: |
         pip install -r requirements.txt
-        pytest
+        pytest --cov --cov-report xml
+    - name: Report to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: coverage.xml
+
+
+  
