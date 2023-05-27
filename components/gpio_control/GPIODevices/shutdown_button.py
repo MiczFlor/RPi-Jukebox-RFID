@@ -54,8 +54,12 @@ class ShutdownButton(SimpleButton):
                # leave it on for the moment, it will be off when the system is down
                self.when_pressed(*args)
            else:
-               # switch off LED if pressing was cancelled early (during flashing)
-               self.set_led(GPIO.LOW)
+               # leave LED on if pressing was cancelled early (during flashing) and status led uses the same pin as shutdown led
+               if status_led.GPIO and (status_led.GPIO is self.led_pin):
+                  self.set_led(GPIO.HIGH)
+               else:
+                  self.set_led(GPIO.LOW)
+                  
 
     def __repr__(self):
         return '<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
