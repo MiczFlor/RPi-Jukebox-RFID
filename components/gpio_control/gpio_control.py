@@ -125,5 +125,6 @@ if __name__ == "__main__":
     gpio_controler = gpio_control(phoniebox_function_calls)
 
     devices = gpio_controler.get_all_devices(config)
+    gpio_controler.checkDevicesDependencies()
     gpio_controler.print_all_devices()
     gpio_controler.gpio_loop()
