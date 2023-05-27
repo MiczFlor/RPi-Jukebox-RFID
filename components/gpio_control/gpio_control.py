@@ -125,6 +125,8 @@ if __name__ == "__main__":
     gpio_controler = gpio_control(phoniebox_function_calls)
 
     devices = gpio_controler.get_all_devices(config)
+    # Sets the led value at the shutdown button that should be used in case of the shutdown
+    # sequence is cancelled if StatusLED and ShutdownLED use the same GPIO
     gpio_controler.checkDevicesDependencies()
     gpio_controler.print_all_devices()
     gpio_controler.gpio_loop()
