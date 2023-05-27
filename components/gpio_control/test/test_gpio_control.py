@@ -2,7 +2,8 @@ import configparser
 import logging
 
 from mock import patch, MagicMock
-from gpio_control import gpio_control
+with patch('os.system', return_value=0):
+    from gpio_control import gpio_control
 import function_calls
 
 # def test_functionCallTwoButtonsOnlyBtn2Pressed(btn1Mock, btn2Mock, functionCall1Mock, functionCall2Mock,
