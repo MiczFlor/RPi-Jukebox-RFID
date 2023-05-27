@@ -29,7 +29,7 @@ logging.basicConfig(level='DEBUG')
 
 def testMain():
     config = configparser.ConfigParser()
-    config.read('./gpio_settings_test.ini')
+    config.read('./test/gpio_settings_test.ini')
 
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
     gpio_controler = gpio_control(phoniebox_function_calls)
