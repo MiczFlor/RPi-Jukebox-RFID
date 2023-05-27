@@ -101,6 +101,19 @@ class gpio_control():
                 self.logger.info('Device {} not enabled'.format(section))
         return self.devices
 
+    # Sets the led value at the shutdown button that should be used in case of the shutdown
+    # sequence is cancelled if StatusLED and ShutdownLED use the sampe GPIO
+    def checkDevicesDependencies(self):
+        shutdownButtonFound = statusLedFound = None
+        for dev in self.devices:
+            if isinstance(dev, ShutdownButton):
+                shutdownButtonFound = dev
+            elif isinstance(dev, StatusLED):
+                statusLedFound = dev
+        if statusLedFound and shutdownButtonFound:
+            if statusLedFound.pin == shutdownButtonFound.led_pin:
+                shutdownButtonFound.led_state_shutdown_cancelled = GPIO.HIGH
+
     def print_all_devices(self):
         for dev in self.devices:
             print(dev)
@@ -125,8 +138,6 @@ if __name__ == "__main__":
     gpio_controler = gpio_control(phoniebox_function_calls)
 
     devices = gpio_controler.get_all_devices(config)
-    # Sets the led value at the shutdown button that should be used in case of the shutdown
-    # sequence is cancelled if StatusLED and ShutdownLED use the same GPIO
     gpio_controler.checkDevicesDependencies()
     gpio_controler.print_all_devices()
     gpio_controler.gpio_loop()

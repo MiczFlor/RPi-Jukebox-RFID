@@ -15,6 +15,7 @@ class ShutdownButton(SimpleButton):
                  led_pin=None, hold_time=3.0, pull_up_down='pull_up', iteration_time=.2):
         self.led_pin = led_pin
         self.iteration_time = iteration_time
+        self.led_state_shutdown_cancelled = GPIO.LOW
         if self.led_pin is not None:
             GPIO.setup(self.led_pin, GPIO.OUT)
         super(ShutdownButton, self).__init__(pin=pin, action=action, name=name, bouncetime=bouncetime,
