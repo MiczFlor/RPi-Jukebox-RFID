@@ -357,16 +357,16 @@
         },
         {
             "name": "php-mock/php-mock",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mock/php-mock.git",
-                "reference": "6f71999665d27fbdf684c1639981e96eff540b5f"
+                "reference": "6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mock/php-mock/zipball/6f71999665d27fbdf684c1639981e96eff540b5f",
-                "reference": "6f71999665d27fbdf684c1639981e96eff540b5f",
+                "url": "https://api.github.com/repos/php-mock/php-mock/zipball/6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d",
+                "reference": "6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d",
                 "shasum": ""
             },
             "require": {
@@ -416,11 +416,12 @@
                 "mock",
                 "stub",
                 "test",
-                "test double"
+                "test double",
+                "testing"
             ],
             "support": {
                 "issues": "https://github.com/php-mock/php-mock/issues",
-                "source": "https://github.com/php-mock/php-mock/tree/2.4.0"
+                "source": "https://github.com/php-mock/php-mock/tree/2.4.1"
             },
             "funding": [
                 {
@@ -428,7 +429,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-13T08:51:05+00:00"
+            "time": "2023-06-12T20:48:52+00:00"
         },
         {
             "name": "php-mock/php-mock-integration",
@@ -495,16 +496,16 @@
         },
         {
             "name": "php-mock/php-mock-phpunit",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mock/php-mock-phpunit.git",
-                "reference": "dc4cf8896bf47647080dc5709a2c67ee9d437c21"
+                "reference": "33a99c190d078e77864b8d74cdc91cc4e5342598"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/dc4cf8896bf47647080dc5709a2c67ee9d437c21",
-                "reference": "dc4cf8896bf47647080dc5709a2c67ee9d437c21",
+                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/33a99c190d078e77864b8d74cdc91cc4e5342598",
+                "reference": "33a99c190d078e77864b8d74cdc91cc4e5342598",
                 "shasum": ""
             },
             "require": {
@@ -546,11 +547,12 @@
                 "phpunit",
                 "stub",
                 "test",
-                "test double"
+                "test double",
+                "testing"
             ],
             "support": {
                 "issues": "https://github.com/php-mock/php-mock-phpunit/issues",
-                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.7.1"
+                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.7.2"
             },
             "funding": [
                 {
@@ -558,7 +560,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-21T06:55:31+00:00"
+            "time": "2023-06-13T07:46:04+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
