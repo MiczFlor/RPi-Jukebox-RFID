@@ -12,6 +12,7 @@ import SelectTimers from './actions/timers';
 import SelectAudio from './actions/audio';
 import { buildActionData } from '../utils';
 import SelectHost from './actions/host';
+import SelectSynchronisation from './actions/synchronisation';
 
 const ControlsSelector = ({
   actionData,
@@ -76,6 +77,13 @@ const ControlsSelector = ({
 
         {actionData.action === 'audio' &&
           <SelectAudio
+            actionData={actionData}
+            handleActionDataChange={handleActionDataChange}
+          />
+        }
+
+        {actionData.action === 'synchronisation' &&
+          <SelectSynchronisation
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />

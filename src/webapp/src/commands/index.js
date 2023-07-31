@@ -237,6 +237,19 @@ const commands = {
     plugin: 'say_my_ip',
     argKeys: ['option'],
   },
+
+  // Synchronisation
+  'sync_rfidcards_all': {
+    _package: 'sync_rfidcards',
+    plugin: 'ctrl',
+    method: 'sync_all'
+  },
+  'sync_rfidcards_change_on_rfid_scan': {
+    _package: 'sync_rfidcards',
+    plugin: 'ctrl',
+    method: 'sync_change_on_rfid_scan',
+    argKeys: ['option']
+  },
 };
 
 export default commands;

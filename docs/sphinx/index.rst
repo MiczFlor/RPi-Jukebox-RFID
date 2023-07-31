@@ -34,6 +34,7 @@ Welcome to RPi Jukebox RFID's documentation!
    userguide/rpc_command_alias_reference
    userguide/carddatabase
    userguide/autohotspot
+   userguide/sync_rfidcards
 
 
 .. toctree::
