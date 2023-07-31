@@ -73,10 +73,10 @@ class battmon_ina219(BatteryMonitorBase.BattmonBase):
 
     def init_batt_mon_hw(self, num, denom):
         self.adc = INA219(float(num)/1000, busnum=1)
-        self.adc.configure()
+        self.adc.configure(self.adc.RANGE_16V, self.adc.GAIN_AUTO, self.adc.ADC_32SAMP, self.adc.ADC_32SAMP)
 
     def get_batt_voltage(self):
-        batt_voltage_mV = self.adc.voltage() * 1000.0
+        batt_voltage_mV = self.adc.supply_voltage() * 1000.0
         return int(batt_voltage_mV)
 
 
