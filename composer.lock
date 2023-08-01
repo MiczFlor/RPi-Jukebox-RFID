@@ -190,16 +190,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.15.5",
+            "version": "v4.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e"
+                "reference": "19526a33fb561ef417e822e85f08a00db4059c17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/11e2663a5bc9db5d714eedb4277ee300403b4a9e",
-                "reference": "11e2663a5bc9db5d714eedb4277ee300403b4a9e",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/19526a33fb561ef417e822e85f08a00db4059c17",
+                "reference": "19526a33fb561ef417e822e85f08a00db4059c17",
                 "shasum": ""
             },
             "require": {
@@ -240,9 +240,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.15.5"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.16.0"
             },
-            "time": "2023-05-19T20:20:00+00:00"
+            "time": "2023-06-25T14:52:30+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -357,16 +357,16 @@
         },
         {
             "name": "php-mock/php-mock",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mock/php-mock.git",
-                "reference": "6f71999665d27fbdf684c1639981e96eff540b5f"
+                "reference": "6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mock/php-mock/zipball/6f71999665d27fbdf684c1639981e96eff540b5f",
-                "reference": "6f71999665d27fbdf684c1639981e96eff540b5f",
+                "url": "https://api.github.com/repos/php-mock/php-mock/zipball/6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d",
+                "reference": "6240b6f0a76d7b9d1ee4d70e686a7cc711619a9d",
                 "shasum": ""
             },
             "require": {
@@ -416,11 +416,12 @@
                 "mock",
                 "stub",
                 "test",
-                "test double"
+                "test double",
+                "testing"
             ],
             "support": {
                 "issues": "https://github.com/php-mock/php-mock/issues",
-                "source": "https://github.com/php-mock/php-mock/tree/2.4.0"
+                "source": "https://github.com/php-mock/php-mock/tree/2.4.1"
             },
             "funding": [
                 {
@@ -428,7 +429,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-13T08:51:05+00:00"
+            "time": "2023-06-12T20:48:52+00:00"
         },
         {
             "name": "php-mock/php-mock-integration",
@@ -495,16 +496,16 @@
         },
         {
             "name": "php-mock/php-mock-phpunit",
-            "version": "2.7.1",
+            "version": "2.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mock/php-mock-phpunit.git",
-                "reference": "dc4cf8896bf47647080dc5709a2c67ee9d437c21"
+                "reference": "33a99c190d078e77864b8d74cdc91cc4e5342598"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/dc4cf8896bf47647080dc5709a2c67ee9d437c21",
-                "reference": "dc4cf8896bf47647080dc5709a2c67ee9d437c21",
+                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/33a99c190d078e77864b8d74cdc91cc4e5342598",
+                "reference": "33a99c190d078e77864b8d74cdc91cc4e5342598",
                 "shasum": ""
             },
             "require": {
@@ -546,11 +547,12 @@
                 "phpunit",
                 "stub",
                 "test",
-                "test double"
+                "test double",
+                "testing"
             ],
             "support": {
                 "issues": "https://github.com/php-mock/php-mock-phpunit/issues",
-                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.7.1"
+                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.7.2"
             },
             "funding": [
                 {
@@ -558,7 +560,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-21T06:55:31+00:00"
+            "time": "2023-06-13T07:46:04+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -880,16 +882,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.6.8",
+            "version": "9.6.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "17d621b3aff84d0c8b62539e269e87d8d5baa76e"
+                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/17d621b3aff84d0c8b62539e269e87d8d5baa76e",
-                "reference": "17d621b3aff84d0c8b62539e269e87d8d5baa76e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a9aceaf20a682aeacf28d582654a1670d8826778",
+                "reference": "a9aceaf20a682aeacf28d582654a1670d8826778",
                 "shasum": ""
             },
             "require": {
@@ -963,7 +965,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.8"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.6.9"
             },
             "funding": [
                 {
@@ -979,7 +981,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-11T05:14:45+00:00"
+            "time": "2023-06-11T06:13:56+00:00"
         },
         {
             "name": "sebastian/cli-parser",
