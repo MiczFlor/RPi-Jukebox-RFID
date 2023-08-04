@@ -9,7 +9,6 @@ from typing import Optional
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 from components.playern.backends.mpd.interfacing_mpd import MPDBackend
-from components.playern.backends.spotify.interfacing_spotify import SPOTBackend
 from components.playern.core import PlayerCtrl
 from components.playern.core.player_status import PlayerStatus
 
@@ -27,8 +26,6 @@ player_status: PlayerStatus
 
 # The various backends
 backend_mpd: Optional[MPDBackend] = None
-backend_spot: Optional[SPOTBackend] = None
-
 
 def start_event_loop(loop: asyncio.AbstractEventLoop):
     # https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.shutdown_asyncgens
@@ -51,17 +48,6 @@ def register_mpd():
     player_arbiter.register('mpd', backend_mpd)
 
 
-def register_spotify():
-    global backend_spot
-    global player_arbiter
-    global player_status
-
-    backend_spot = SPOTBackend(player_status)
-    # Register with plugin interface to call directly
-    plugin.register(backend_spot, package='player', name='spotify')
-    player_arbiter.register('spotify', backend_spot)
-
-
 @plugin.initialize
 def init():
     global event_loop
@@ -79,7 +65,6 @@ def init():
     player_status.publish()
 
     # Create and register the players (this is explicit for the moment)
-    register_spotify()
     register_mpd()
 
     plugin.register(player_arbiter, package='player', name='ctrl')
