@@ -51,6 +51,7 @@ check_os_type() {
     echo -e "  ... OK!\n" | tee /dev/fd/3
   else
     echo "ERROR: Only 32 bit operating systems supported. Please use a 32bit version of RaspianOS!" | tee /dev/fd/3
+    echo "You can fix this problem for 64bit kernels: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041" | tee /dev/fd/3
     exit 1
   fi
 
