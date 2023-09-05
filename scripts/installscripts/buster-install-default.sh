@@ -1343,11 +1343,11 @@ EOF
                 *)
                 # Do create swap
                 echo -e "\nCreating 2 GB swapfile at '/swapfile'. This may take several minutes ...\n"
-                dd if=/dev/zero of=/swapfile bs=1024k count=2k
-                chmod 600 /swapfile
-                mkswap /swapfile
+                sudo dd if=/dev/zero of=/swapfile bs=1024k count=2k
+                sudo chmod 600 /swapfile
+                sudo mkswap /swapfile
                 if ! grep -E '^/swapfile' /etc/fstab; then
-                    echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" >> /etc/fstab
+                    sudo echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" >> /etc/fstab
                 fi
                 ;;
                 esac
@@ -1357,7 +1357,7 @@ EOF
         fi
     fi
 
-    swapon -a
+    sudo swapon -a
 }
 
 ########
