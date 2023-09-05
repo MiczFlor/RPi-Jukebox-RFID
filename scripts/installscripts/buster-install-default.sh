@@ -1347,7 +1347,7 @@ EOF
                 sudo chmod 600 /swapfile
                 sudo mkswap /swapfile
                 if ! grep -E '^/swapfile' /etc/fstab; then
-                    sudo echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" >> /etc/fstab
+                    echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" | sudo tee -a /etc/fstab >/dev/null
                 fi
                 ;;
                 esac
