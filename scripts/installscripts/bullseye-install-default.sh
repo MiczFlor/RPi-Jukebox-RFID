@@ -10,11 +10,10 @@
 #
 # 1. download the install file from github
 #    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
-#    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
-#    buster-install-default.sh -a
+#    bullseye-install-default.sh -a
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -110,7 +109,7 @@ an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   .${HOME_DIR}/buster-install-default.sh -a
+   .${HOME_DIR}/bullseye-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -410,7 +409,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
             *)
                 cd "${home_dir}"
                 clear
-                ./buster-install-default.sh -a
+                ./bullseye-install-default.sh -a
                 exit
                 ;;
         esac
@@ -842,7 +841,7 @@ install_main() {
 
         sudo wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/${OS_CODENAME}.list
-        
+
         ${apt_get} update
         ${apt_get} upgrade
         ${apt_get} install libspotify-dev
@@ -1282,6 +1281,85 @@ finish_installation() {
     esac
 }
 
+config_swap() {
+    # If Available memory is less than 2 GB (which is round about what's required during
+    # gst-plugin-spotify compilation later, ask if another 2 GB swap should be created and
+    # activated.
+    local YES_TO_ALL=${1:-false}
+
+    # Install required tools not yet installed
+    local apt_get="sudo apt-get -qq --yes"
+    for app in awk bc; do
+        if ! compgen -A function -abck | grep -Eq '^'"${app}"'$'; then
+            ${apt_get} install ${app}
+        fi
+    done
+
+    # Get Available memory in GB
+    local MEM_AVAILABLE
+    MEM_AVAILABLE=$(awk '/MemAvailable/ { printf "%.3f\n", $2/1024/1024 }' /proc/meminfo)
+    # Get free swap in GB
+    local SWAP_FREE
+    SWAP_FREE=$(awk '/SwapFree/ { printf "%.3f\n", $2/1024/1024 }' /proc/meminfo)
+    # Get available storage space on '/'
+    local ROOT_FREE
+    ROOT_FREE=$(df -BG -P / | tail -n 1 | awk '{print $4}')
+
+    # If available memory + free swap is less than 2 GB
+    if (( $(echo "(${MEM_AVAILABLE} + ${SWAP_FREE}) < 2" | bc -l) )); then
+        clear
+
+        cat <<EOF
+
+The amount of memory available in your system (${MEM_AVAILABLE} GB)
+is less than the recommended minimum of 2 GB. It is recommended to
+have this script create and activate a 2 GB sized swapfile at '/swapfile'
+for you now.
+EOF
+        if [ "${ROOT_FREE//G}" -le 2 ]; then
+            cat <<EOF
+
+It seems that you do not have sufficient storage available at '/'.
+So this script can't create and activate a swapfile for you.
+Continue at your own risk and consider to use a bigger storage
+before trying again.
+EOF
+        else
+            if [ ! -f /swapfile ]; then
+                # If "true" was defined as $1 do not ask the user for non-interactive mode
+                if [ "${YES_TO_ALL,,}" == "true" ]; then
+                    response=${YES_TO_ALL,,}
+                else
+                    echo ""
+                    read -e -r -p "Would you like to have a swapfile created and activated now? [Y/n] " response
+                fi
+
+                case "$response" in
+                [nN])
+                # Do not create swap
+                echo -e "\nNot creating nor activating swapfile."
+                echo -e "Your system still lacks available memory though ...\n"
+                ;;
+                *)
+                # Do create swap
+                echo -e "\nCreating 2 GB swapfile at '/swapfile'. This may take several minutes ...\n"
+                dd if=/dev/zero of=/swapfile bs=1024k count=2k
+                chmod 600 /swapfile
+                mkswap /swapfile
+                if ! grep -E '^/swapfile' /etc/fstab; then
+                    echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" >> /etc/fstab
+                fi
+                ;;
+                esac
+            else
+                echo -e "\nWARNING: '/swapfile' already exists. Not changing it, just activating all swaps.\n"
+            fi
+        fi
+    fi
+
+    swapon -a
+}
+
 ########
 # Main #
 ########
@@ -1299,8 +1377,10 @@ main() {
         config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
         config_gpio
+        config_swap
     else
         echo "Non-interactive installation!"
+        config_swap "true"
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
@@ -1324,16 +1404,16 @@ main() {
     fi
 }
 
-start=$(date +%s)
-
-main
-
-end=$(date +%s)
-runtime=$((end-start))
-((h=${runtime}/3600))
-((m=(${runtime}%3600)/60))
-((s=${runtime}%60))
-echo "Done (in ${h}h ${m}m ${s}s)."
+#start=$(date +%s)
+#
+#main
+#
+#end=$(date +%s)
+#runtime=$((end-start))
+#((h=${runtime}/3600))
+#((m=(${runtime}%3600)/60))
+#((s=${runtime}%60))
+#echo "Done (in ${h}h ${m}m ${s}s)."
 
 #####################################################
 # notes for things to do
