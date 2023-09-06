@@ -10,7 +10,6 @@
 #
 # 1. download the install file from github
 #    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
-#    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
@@ -462,6 +461,12 @@ config_spotify() {
 # it might be best to do a test install without Spotify
 # to make sure all your hardware works.
 #
+# Building the required code for spotify takes up to 3 hours
+# on a 1 GB Raspberry Pi 3 B!
+# So please take care to only start this, after making sure
+# your terminal session won't get interrupted or start this
+# script in a terminal multiplexer like 'screen' or 'tmux'!
+#
 # If you want to include Spotify, MUST have your
 # credentials ready:
 #
@@ -798,7 +803,7 @@ install_main() {
     ${apt_get} upgrade
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
-    if [[ $(uname -m) =~ ^armv.+$ ]]; then
+    if grep -E '^Model\s' /proc/cpuinfo | grep -q "Raspberry Pi"; then
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
@@ -811,19 +816,15 @@ install_main() {
     fi
 
     # prepare python3
-    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
-
-    # use python3 as default
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    ${apt_get} install build-essential python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
 
     # Get github code
     cd "${HOME_DIR}" || exit
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # VERSION of installation
-
     # Get version number
-    VERSION_NO=`cat ${jukebox_dir}/settings/version-number`
+    VERSION_NO=$(cat ${jukebox_dir}/settings/version-number)
 
     # add used git branch and commit hash to version file
     USED_BRANCH="$(git --git-dir=${jukebox_dir}/.git rev-parse --abbrev-ref HEAD)"
@@ -834,23 +835,46 @@ install_main() {
     echo "${VERSION_NO} - ${COMMIT_NO} - ${USED_BRANCH}" > ${jukebox_dir}/settings/version
     chmod 777 ${jukebox_dir}/settings/version
 
+    sudo mkdir -p /etc/apt/keyrings
+
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
         echo "Installing dependencies for Spotify support..."
-        # keep major verson 3 of mopidy
-        echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
 
         sudo wget -q -O /etc/apt/keyrings/mopidy-archive-keyring.gpg https://apt.mopidy.com/mopidy.gpg
         sudo wget -q -O /etc/apt/sources.list.d/mopidy.list https://apt.mopidy.com/${OS_CODENAME}.list
-        
+
         ${apt_get} update
         ${apt_get} upgrade
-        ${apt_get} install libspotify-dev
-        ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
-        ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+        ${apt_get} install libspotify-dev libffi-dev
+        ${apt_get} install mopidy mopidy-mpd mopidy-local
+        ${apt_get} install python3-cffi-backend python3-cffi
+        ${apt_get} install libspotify12 python3-ply python3-pycparser
 
         # Install necessary Python packages
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
+
+        ################### vv See https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983
+        # Install rust
+        echo "Installing rust. This is expected to take some time..."
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        source "$HOME/.cargo/env"
+
+        # Install GStreamer dependencies
+        ${apt_get} install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev gcc pkg-config git
+
+        # Download, build and install gst-plugins-spotify
+        git clone --depth 1 https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs
+        cd gst-plugins-rs || exit 1
+        cargo build --package gst-plugin-spotify --release -j1
+        sudo install -m 644 target/release/libgstspotify.so "$(pkg-config --variable=pluginsdir gstreamer-1.0)"/
+        cd - || exit 1
+        # Test if everything works by executing:
+        # gst-inspect-1.0 spotify
+
+        # Install latest stable version of mopidy-spotify extension
+        sudo python3 -m pip install -q https://github.com/mopidy/mopidy-spotify/archive/master.zip
+        ################### ^^ See https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983
     fi
 
     # Install more required packages
@@ -1272,13 +1296,13 @@ finish_installation() {
     case "$response" in
         [nN][oO]|[nN])
         # Close logging
-        log_close
-            ;;
+            log_close
+        ;;
         *)
         # Close logging
-        log_close
+            log_close
             sudo shutdown -r now
-            ;;
+        ;;
     esac
 }
 
