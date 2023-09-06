@@ -1310,19 +1310,22 @@ config_swap() {
         clear
 
         cat <<EOF
-
-The amount of memory available in your system (${MEM_AVAILABLE} GB)
-is less than the recommended minimum of 2 GB. It is recommended to
-have this script create and activate a 2 GB sized swapfile at '/swapfile'
-for you now.
+#####################################################
+#
+# Creating and activating a swap file
+#
+# The amount of memory available in your system (${MEM_AVAILABLE} GB)
+# is less than the recommended minimum of 2 GB. It is recommended to
+# have this script create and activate a 2 GB sized swapfile at '/swapfile'
+# for you now.
 EOF
         if [ "${ROOT_FREE//G}" -le 2 ]; then
             cat <<EOF
-
-It seems that you do not have sufficient storage available at '/'.
-So this script can't create and activate a swapfile for you.
-Continue at your own risk and consider to use a bigger storage
-before trying again.
+#
+# It seems that you do not have sufficient storage available at '/'.
+# So this script can't create and activate a swapfile for you.
+# Continue at your own risk and consider to use a bigger storage
+# before trying again.
 EOF
         else
             if [ ! -f /swapfile ]; then
