@@ -47,7 +47,6 @@ Prerequisites
       `Override file
       <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml>`_
       in your ``jukebox.yaml``.
-    * **[Currently required]** Update all relative paths (``../..``) in to ``/home/pi/RPi-Jukebox-RFID``.
 
 4. Change directory into the ``./RPi-Jukebox-RFID/shared/audiofolders`` and copy a set of MP3 files into this folder (for more fun when testing).
 
@@ -56,47 +55,29 @@ Run development environment
 
 In contrary to how everything is set up on the Raspberry Pi, it's good practice to isolate different components in
 different Docker images. They can be run individually or in combination.
-To do that, we use ``docker-compose``.
+To do that, we use ``docker compose``.
 
 Linux
 ^^^^^^^
 
-Make sure you don't use ``sudo`` to run your ``docker-compose``. Check out Docker's `post-installation guide <https://docs.docker.com/engine/install/linux-postinstall/>`
+Make sure you don't use ``sudo`` to run your ``docker compose``. Check out Docker's `post-installation guide <https://docs.docker.com/engine/install/linux-postinstall/>`
 for more information.
 
 .. code-block:: bash
 
     // Build Images
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
 
     // Run Docker Environment
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml down
 
 
-Note: if you have ``mpd`` running on your system, you need to stop it using:
-
-.. code-block:: bash
-
-    $ sudo systemctl stop mpd.socket
-    $ sudo mpd --kill
-
-
-Otherwise you might get the error message:
-
-.. code-block:: bash
-
-    $ docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
-    Starting mpd ...
-    Starting mpd ... error
-    (...)
-    Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already in use
-
-Read these threads for details: `thread 1 <https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd>`_
-and `thread 2 <https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755>`_
-
+The docker linux setup tries to mirror the current users pulseaudio socket from ``$XDG_RUNTIME_DIR/pulse/native`` to the containers ``mpd`` and ``jukebox``.
+If your pulseaudio socket is in another place, adjust path in docker/docker-compose.linux.yml. You can find out the socket path with the command ``pactl info``.
+To access the socket, the user inside the docker containers also must have the same UID as the user running docker. You can find out your UID by running ``id -u``. If your UID deviates from the default UID 1000, please run ``export UID=$(id -u)`` prior to any docker commands.
 
 Mac
 ^^^^^
@@ -107,13 +88,13 @@ for Mac hosts.
 .. code-block:: bash
 
     // Build Images
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
 
     // Run Docker Environment
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
 
 Windows
 ^^^^^^^^^^^
@@ -139,30 +120,31 @@ Windows
 .. code-block:: bash
 
     // Build Images
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml build
+    $ docker compose -f docker/docker-compose.yml build
 
     // Run Docker Environment
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml up
+    $ docker compose -f docker/docker-compose.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml down
+    $ docker compose -f docker/docker-compose.yml down
 
 Test & Develop
 ---------------------
 
 The Dockerfile is defined to start all Phoniebox related services.
 
-Open `http://localhost:3001 <http://localhost:3001>`_ in your browser to see the web application.
+Windows: Open `host.docker.internal:3000 <http://host.docker.internal:3000>`_ in your browser to see the web application.
+Linux / Mac: Open `http://localhost:3000 <http://localhost:3000>`_ in your browser to see the web application.
 
 
 While the ``webapp`` container does not require a reload while working on it (hot-reload is enabled),
 you will have to restart your ``jukebox`` container whenever you make a change (in the Python code).
-Instead of stopping and starting the ``docker-compose`` command, you can individually restart your
+Instead of stopping and starting the ``docker compose`` command, you can individually restart your
 ``jukebox`` container. Update the below path with your specific host environment.
 
 .. code-block:: bash
 
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.[ENVIRONMENT].yml restart jukebox
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.[ENVIRONMENT].yml restart jukebox
 
 Known issues
 ----------------
@@ -209,6 +191,8 @@ Typical errors and following exceptions to be ignored in the Docker ``jukebox`` 
 
 .. code-block:: bash
 
+    jukebox    | 277:utils.py           - jb.utils             - MainThread      - ERROR    - CalledProcessError: Command 'git log --pretty='%h [%cs] %s %d' -n 1 --no-color' returned non-zero exit status 128.
+    jukebox    | 287:utils.py           - jb.utils             - MainThread      - ERROR    - CalledProcessError: Command 'git describe --tag --dirty='-dirty'' returned non-zero exit status 128.
     jukebox    | 634:plugs.py           - jb.plugin            - MainThread      - ERROR    - Ignoring failed package load finalizer: 'rfid.finalize()'
     jukebox    | 635:plugs.py           - jb.plugin            - MainThread      - ERROR    - Reason: FileNotFoundError: [Errno 2] No such file or directory: '/home/pi/RPi-Jukebox-RFID/shared/settings/rfid.yaml'
     ...
@@ -230,14 +214,8 @@ The following command can be run on a Mac.
 
 .. code-block:: bash
 
-    $ docker build -f docker/jukebox.Dockerfile -t jukebox .
-    $ docker run -it --rm \
-        -v $(PWD)/src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox \
-        -v $(PWD)/shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders \
-        -v ~/.config/pulse:/root/.config/pulse \
-        -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
-        -e PULSE_SERVER=tcp:host.docker.internal:4713 \
-        --name jukebox jukebox
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build jukebox
+    $ docker compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml run --rm --name jukebox jukebox
 
 Resources
 ^^^^^^^^^^^

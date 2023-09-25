@@ -2,9 +2,6 @@ FROM debian:bullseye-slim
 
 RUN set -eux ; \
     apt-get update && apt-get install -y \
-    alsa-utils \
-    libasound2-dev \
-    libasound2-plugins \
     pulseaudio \
     pulseaudio-utils \
     mpd mpc \
@@ -12,16 +9,16 @@ RUN set -eux ; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV HOME /root
 
-RUN mkdir ${HOME}/.config ${HOME}/.config/mpd ; \
+ARG UID
+ARG USER
+ARG HOME
+
+RUN useradd -m -u ${UID} ${USER} || continue
+RUN usermod -aG pulse ${USER}
+
+USER ${USER}
+RUN mkdir -p ${HOME}/.config/mpd ; \
     touch ${HOME}/.config/mpd/state
-RUN mkdir -p /home/pi/RPi-Jukebox-RFID/shared/audiofolders
 
-RUN usermod -aG audio,pulse,pulse-access root
-
-VOLUME ${HOME}/.config/mpd
-
-EXPOSE 6600
-
-CMD [ ! -s ~/.config/mpd/pid ] && mpd --stdout --no-daemon ${HOME}/.config/mpd/mpd.conf
+CMD mpd --stdout --no-daemon ${HOME}/.config/mpd/mpd.conf

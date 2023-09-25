@@ -5,36 +5,38 @@ FROM debian:bullseye-slim
 # These are only dependencies that are required to get as close to the
 # Raspberry Pi environment as possible.
 RUN apt-get update && apt-get install -y \
-    alsa-utils \
     libasound2-dev \
-    libasound2-plugins \
     pulseaudio \
     pulseaudio-utils \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-RUN usermod -aG audio,pulse,pulse-access root
+ARG UID
+ARG USER
+ARG HOME
+ENV INSTALLATION_PATH ${HOME}/RPi-Jukebox-RFID
 
-ENV HOME /root
-ENV INSTALLATION_PATH /home/pi/RPi-Jukebox-RFID
-
-WORKDIR $INSTALLATION_PATH
+RUN test ${UID} -gt 0 && useradd -m -u ${UID} ${USER} || continue
+RUN usermod -aG pulse ${USER}
 
 # Jukebox
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     gcc at wget \
-    espeak mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
+    espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-dev python3-pip python3-mutagen python3-gpiozero
 
-COPY . ${INSTALLATION_PATH}
+USER ${USER}
+WORKDIR ${HOME}
+COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
 RUN pip3 install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 RUN pip3 install pyzmq
 
 EXPOSE 5555 5556
 
+WORKDIR ${INSTALLATION_PATH}/src/jukebox
+
 # Run Jukebox
-# CMD bash
 CMD python3 ${INSTALLATION_PATH}/src/jukebox/run_jukebox.py
