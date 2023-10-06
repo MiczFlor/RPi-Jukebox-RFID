@@ -215,7 +215,7 @@ check_existing() {
     # set the var now for later use:
     EXISTINGuse=NO
 
-    # The install will be in the home dir of user pi
+    # The install will be in the home dir of user 
     # Move to home directory now to check
     cd ~ || exit
     if [ -d "${jukebox_dir}" ]; then
@@ -263,7 +263,7 @@ check_existing() {
                     EXISTINGusePhonieboxInstall=YES
                     # Copy PhonieboxInstall.conf configuration file to settings folder
                     sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${home_dir}"/PhonieboxInstall.conf
-                    sudo chown pi:www-data "${home_dir}"/PhonieboxInstall.conf
+                    sudo chown $SUDO_USER:www-data "${home_dir}"/PhonieboxInstall.conf
                     sudo chmod 775 "${home_dir}"/PhonieboxInstall.conf
                     echo "The existing configuration will be used."
                     echo "Just a few more questions to answer."
@@ -684,10 +684,10 @@ samba_config() {
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
     # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${smb_conf}"
-    # Samba: create user 'pi' with password 'raspberry'
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${smb_conf}"
+    # Samba: create user equal to your username with password 'raspberry'
     # ToDo: use current user with a default password
-    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
+    (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a $SUDO_USER
 }
 
 web_server_config() {
@@ -703,7 +703,7 @@ web_server_config() {
     sudo chown root:root "${lighthttpd_conf}"
     sudo chmod 644 "${lighthttpd_conf}"
     # double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${lighthttpd_conf}"
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${lighthttpd_conf}"
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
@@ -877,7 +877,7 @@ install_main() {
     # create config file for web app from sample
     sudo cp "${jukebox_dir}"/htdocs/config.php.sample "${jukebox_dir}"/htdocs/config.php
     # double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${jukebox_dir}"/htdocs/config.php
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${jukebox_dir}"/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
@@ -885,9 +885,9 @@ install_main() {
     sudo service lighttpd force-reload
 
     # make sure bash scripts have the right settings
-    sudo chown pi:www-data "${jukebox_dir}"/scripts/*.sh
+    sudo chown $SUDO_USER:www-data "${jukebox_dir}"/scripts/*.sh
     sudo chmod +x "${jukebox_dir}"/scripts/*.sh
-    sudo chown pi:www-data "${jukebox_dir}"/scripts/*.py
+    sudo chown $SUDO_USER:www-data "${jukebox_dir}"/scripts/*.py
     sudo chmod +x "${jukebox_dir}"/scripts/*.py
 
     # services to launch after boot using systemd
@@ -912,25 +912,25 @@ install_main() {
     RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
     # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
 
     #startup sound now part of phoniebox-startup-scripts
     #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     STARTUP_SCRIPT_SERVICE="${systemd_dir}/phoniebox-startup-scripts.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${STARTUP_SCRIPT_SERVICE}"
     # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
 
     IDLE_WATCHDOG_SERVICE="${systemd_dir}/phoniebox-idle-watchdog.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${IDLE_WATCHDOG_SERVICE}"
     # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${IDLE_WATCHDOG_SERVICE}"
+    sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${IDLE_WATCHDOG_SERVICE}"
 
     if [[ "${GPIOconfig}" == "YES" ]]; then
         GPIO_CONTROL_SERVICE="${systemd_dir}/phoniebox-gpio-control.service"
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${GPIO_CONTROL_SERVICE}"
         # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${GPIO_CONTROL_SERVICE}"
+        sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${GPIO_CONTROL_SERVICE}"
     fi
 
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
@@ -967,7 +967,7 @@ install_main() {
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
         # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${etc_mopidy_conf}"
+        sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${etc_mopidy_conf}"
 
         sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
         sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
@@ -976,7 +976,7 @@ install_main() {
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
         # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mopidy_conf}"
+        sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${mopidy_conf}"
     fi
 
     # GPIO-Control
@@ -1000,7 +1000,7 @@ install_main() {
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
         # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+        sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
     fi
@@ -1123,7 +1123,7 @@ existing_assets() {
             USB_BUTTONS_SERVICE="/etc/systemd/system/phoniebox-buttons-usb-encoder.service"
             sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample "${USB_BUTTONS_SERVICE}"
             # Replace homedir; double quotes for variable expansion
-            sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${USB_BUTTONS_SERVICE}"
+            sudo sed -i "s%/home/$SUDO_USER%${HOME_DIR}%g" "${USB_BUTTONS_SERVICE}"
             sudo systemctl start phoniebox-buttons-usb-encoder.service
             sudo systemctl enable phoniebox-buttons-usb-encoder.service
         fi
@@ -1168,7 +1168,7 @@ folder_access() {
     sudo chown -R "${user_group}" "${jukebox_dir}"/settings
     sudo chmod -R "${mod}" "${jukebox_dir}"/settings
 
-    # logs dir accessible by pi and www-data
+    # logs dir accessible by user and www-data
     sudo chown "${user_group}" "${jukebox_dir}"/logs
     sudo chmod "${mod}" "${jukebox_dir}"/logs
 
@@ -1225,7 +1225,7 @@ finish_installation() {
                     "USB-Reader (e.g. Neuftech)")
                         cd "${jukebox_dir}"/scripts/ || exit
                         python3 RegisterDevice.py
-                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                        sudo chown $SUDO_USER:www-data "${jukebox_dir}"/scripts/deviceName.txt
                         sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
                         break
                         ;;
@@ -1298,11 +1298,11 @@ main() {
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
-    folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
+    folder_access "${JUKEBOX_HOME_DIR}" "$SUDO_USER:www-data" 775
 
     # Copy PhonieboxInstall.conf configuration file to settings folder
     sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
-    sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
+    sudo chown $SUDO_USER:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
     sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
 
     if [[ ${INTERACTIVE} == "true" ]]; then
