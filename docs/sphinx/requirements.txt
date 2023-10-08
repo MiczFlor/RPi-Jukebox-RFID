@@ -4,4 +4,4 @@ readthedocs-sphinx-search
 # Install packages for documentation build from package repository
 # that are installed on the PI via APT
 RPi.GPIO
-gpiozero
+gpiozero<2.0.0;python_version<'3.8'
