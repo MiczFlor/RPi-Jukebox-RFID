@@ -5,3 +5,4 @@ readthedocs-sphinx-search
 # that are installed on the PI via APT
 RPi.GPIO
 gpiozero<2.0.0;python_version<'3.8'
+gpiozero;python_version>='3.8'
