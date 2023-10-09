@@ -1,16 +1,17 @@
 FROM --platform=linux/arm/v7 arm32v7/debian:bullseye-slim
 ENV DOCKER_RUNNING=true
+ENV USER=hans
 
 COPY . /code
 WORKDIR /code
 
 RUN groupadd --gid 1000 wurst ;\
-  useradd -u 1000 -g 1000 -G sudo -d /home/hans -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' hans ;\
-  chown -R 1000:1000 /code /home/hans ;\
+  useradd -u 1000 -g 1000 -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER ;\
+  chown -R 1000:1000 /code /home/$USER ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests_altuser.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests2_altuser.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests3_altuser.sh
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests2.sh ;\
+  chmod +x /code/scripts/installscripts/tests/run_installation_tests3.sh
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
@@ -21,7 +22,7 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
   curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - ;\
-  echo 'hans ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/hans ;\
+  echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER ;\
   apt-get clean ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
@@ -33,4 +34,4 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
   touch /boot/cmdlinetxt ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
 
-USER hans
+USER $USER

@@ -5,7 +5,8 @@
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-HOME_DIR="/home/pi"
+USER_NAME="$USER"
+HOME_DIR="$HOME"
 
 tests=0
 failed_tests=0
@@ -300,9 +301,9 @@ verify_folder_access() {
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
-    check_chmod_chown 775 pi www-data "${jukebox_dir}" "playlists shared htdocs settings"
+    check_chmod_chown 775 "$USER_NAME" www-data "${jukebox_dir}" "playlists shared htdocs settings"
     # ${DIRaudioFolders} => "testing" "audiofolders"
-    check_chmod_chown 775 pi www-data "${DIRaudioFolders}/.." "audiofolders"
+    check_chmod_chown 775 "$USER_NAME" www-data "${DIRaudioFolders}/.." "audiofolders"
 
     #find .sh and .py scripts that are NOT executable
     local count=$(find . -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) ! -executable | wc -l)
