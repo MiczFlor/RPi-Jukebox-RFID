@@ -4,6 +4,12 @@ on:
   schedule:
     # run at 5 every sunday
     - cron: '* 5 * * 0'
+  push:
+    branches-ignore:
+      - 'future3/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
 
 jobs:
 
