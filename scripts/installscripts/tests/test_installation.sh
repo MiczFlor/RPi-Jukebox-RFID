@@ -4,6 +4,8 @@
 # This script needs to be adapted, if new packages, etc are added to the install script
 
 # The absolute path to the folder which contains this script
+INSTALLATION_EXITCODE="${1:-0}"
+
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 USER_NAME="$USER"
 HOME_DIR="$HOME"
@@ -75,6 +77,19 @@ check_variable() {
 }
 
 # Verify functions
+verify_installation_exitcode() {
+    if [ "${INSTALLATION_EXITCODE}" -eq 0 ]; then
+        echo "Installation successfull."
+        echo "Performing further checks..."
+    elif [ "${INSTALLATION_EXITCODE}" -eq 2 ]; then
+        echo "ABORT: Installation aborted due to prerequisite."
+        echo "Further checks skipped."
+        exit 0
+    else
+        echo "ERROR: Installation exited with errorcode '${INSTALLATION_EXITCODE}'"
+        exit 1
+    fi
+}
 
 verify_conf_file() {
     local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
@@ -317,6 +332,7 @@ verify_folder_access() {
 
 main() {
     printf "\nTesting installation:\n"
+    verify_installation_exitcode
     verify_conf_file
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings

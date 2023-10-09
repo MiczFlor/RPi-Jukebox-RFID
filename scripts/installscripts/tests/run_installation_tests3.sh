@@ -27,6 +27,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # TODO check, how this behaves on branches other than develop
 GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\ny\nmyuser\nmypassword\nmyclient_id\nmyclient_secret\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+INSTALLATION_EXITCODE=$?
 
 # Test installation
-./scripts/installscripts/tests/test_installation.sh
+./scripts/installscripts/tests/test_installation.sh $INSTALLATION_EXITCODE
