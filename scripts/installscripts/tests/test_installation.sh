@@ -4,8 +4,11 @@
 # This script needs to be adapted, if new packages, etc are added to the install script
 
 # The absolute path to the folder which contains this script
+INSTALLATION_EXITCODE="${1:-0}"
+
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-HOME_DIR="/home/pi"
+USER_NAME="$USER"
+HOME_DIR="$HOME"
 
 tests=0
 failed_tests=0
@@ -74,6 +77,19 @@ check_variable() {
 }
 
 # Verify functions
+verify_installation_exitcode() {
+    if [ "${INSTALLATION_EXITCODE}" -eq 0 ]; then
+        echo "Installation successfull."
+        echo "Performing further checks..."
+    elif [ "${INSTALLATION_EXITCODE}" -eq 2 ]; then
+        echo "ABORT: Installation aborted due to prerequisite."
+        echo "Further checks skipped."
+        exit 0
+    else
+        echo "ERROR: Installation exited with errorcode '${INSTALLATION_EXITCODE}'"
+        exit 1
+    fi
+}
 
 verify_conf_file() {
     local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
@@ -300,9 +316,9 @@ verify_folder_access() {
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
-    check_chmod_chown 775 pi www-data "${jukebox_dir}" "playlists shared htdocs settings"
+    check_chmod_chown 775 "$USER_NAME" www-data "${jukebox_dir}" "playlists shared htdocs settings"
     # ${DIRaudioFolders} => "testing" "audiofolders"
-    check_chmod_chown 775 pi www-data "${DIRaudioFolders}/.." "audiofolders"
+    check_chmod_chown 775 "$USER_NAME" www-data "${DIRaudioFolders}/.." "audiofolders"
 
     #find .sh and .py scripts that are NOT executable
     local count=$(find . -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) ! -executable | wc -l)
@@ -316,6 +332,7 @@ verify_folder_access() {
 
 main() {
     printf "\nTesting installation:\n"
+    verify_installation_exitcode
     verify_conf_file
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings

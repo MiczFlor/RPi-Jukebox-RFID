@@ -1,9 +1,15 @@
 name: Test Install Scripts for Buster on Docker
 
 on:
-    schedule:
-      # run at 5 every sunday
-      - cron: '* 5 * * 0'
+  schedule:
+    # run at 5 every sunday
+    - cron: '0 5 * * 0'
+  push:
+    branches-ignore:
+      - 'future3/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
 
 jobs:
 
@@ -41,14 +47,14 @@ jobs:
           args: |
             /code/scripts/installscripts/tests/run_installation_tests.sh
                 
-#      - name: Run run_installation_tests2.sh Buster ARMv7
-#        uses: tj-actions/docker-run@v2
-#        with:
-#          image: rpi-jukebox-rfid-buster:latest
-#          options: --platform linux/arm/v7
-#          name: run_installation_tests2.sh
-#          args: |
-#            /code/scripts/installscripts/tests/run_installation_tests2.sh
+      - name: Run run_installation_tests2.sh Buster ARMv7
+        uses: tj-actions/docker-run@v2
+        with:
+          image: rpi-jukebox-rfid-buster:latest
+          options: --platform linux/arm/v7
+          name: run_installation_tests2.sh
+          args: |
+            /code/scripts/installscripts/tests/run_installation_tests2.sh
                 
       - name: Run run_installation_tests3.sh Buster ARMv7
         uses: tj-actions/docker-run@v2
@@ -58,7 +64,3 @@ jobs:
           name: run_installation_tests3.sh
           args: |
                 /code/scripts/installscripts/tests/run_installation_tests3.sh
-
-
-
-
