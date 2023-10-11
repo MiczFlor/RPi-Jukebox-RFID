@@ -1,11 +1,14 @@
 FROM --platform=linux/arm/v7 arm32v7/debian:buster-slim
+ARG USER_NAME=pi
+ARG USER_GROUP=$USER_NAME
+
 ENV DOCKER_RUNNING=true
-ENV USER=pi
+ENV USER=$USER_NAME
 
 COPY . /code
 WORKDIR /code
 
-RUN groupadd --gid 1000 pi ;\
+RUN groupadd --gid 1000 $USER_GROUP ;\
   useradd -u 1000 -g 1000 -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER ;\
   chown -R 1000:1000 /code /home/$USER ;\
   chmod +x /code/scripts/installscripts/buster-install-default.sh ;\

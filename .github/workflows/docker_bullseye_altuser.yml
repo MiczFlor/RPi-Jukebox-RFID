@@ -32,11 +32,14 @@ jobs:
         context: .
         load: true
         push: false
-        file: ./ci/Dockerfile.bullseye.test_install_altuser.armv7
+        file: ./ci/Dockerfile.bullseye.test_install.armv7
         platforms: linux/arm/v7
         tags: rpi-jukebox-rfid-bullseye-altuser:latest
         cache-from: type=gha,scope=$GITHUB_REF_NAME-bullseye-altuser
         cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-bullseye-altuser
+        build-args: |
+          USER_NAME=hans
+          USER_GROUP=wurst
       
     - name: Run run_installation_tests.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
