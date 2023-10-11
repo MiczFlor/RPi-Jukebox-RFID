@@ -27,8 +27,7 @@ export DEBIAN_FRONTEND=noninteractive
 # yes, reader is connected
 # n No reboot
 
-# TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
+bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

@@ -37,6 +37,9 @@ jobs:
           tags: rpi-jukebox-rfid-buster:latest
           cache-from: type=gha,scope=$GITHUB_REF_NAME-buster
           cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-buster
+          build-args: |
+            GIT_BRANCH=${{ github.ref_name }}
+            GIT_URL=${{ github.server_url }}/${{ github.repository }}
             
       - name: Run run_installation_tests.sh Buster ARMv7
         uses: tj-actions/docker-run@v2
