@@ -35,8 +35,8 @@ jobs:
         file: ./ci/Dockerfile.bullseye.test_install.armv7
         platforms: linux/arm/v7
         tags: rpi-jukebox-rfid-bullseye-altuser:latest
-        cache-from: type=gha,scope=$GITHUB_REF_NAME-bullseye-altuser
-        cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-bullseye-altuser
+        cache-from: type=gha,scope=${{ github.ref_name }}-bullseye-altuser
+        cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-bullseye-altuser
         build-args: |
           USER_NAME=hans
           USER_GROUP=wurst

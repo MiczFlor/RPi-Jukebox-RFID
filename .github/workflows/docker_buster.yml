@@ -35,8 +35,8 @@ jobs:
           file: ./ci/Dockerfile.buster.test_install.armv7
           platforms: linux/arm/v7
           tags: rpi-jukebox-rfid-buster:latest
-          cache-from: type=gha,scope=$GITHUB_REF_NAME-buster
-          cache-to: type=gha,mode=max,scope=$GITHUB_REF_NAME-buster
+          cache-from: type=gha,scope=${{ github.ref_name }}-buster
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-buster
           build-args: |
             GIT_BRANCH=${{ github.ref_name }}
             GIT_URL=${{ github.server_url }}/${{ github.repository }}
