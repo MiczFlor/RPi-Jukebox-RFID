@@ -14,15 +14,15 @@ on:
 jobs:
 
   build:
-
+  
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v4
     
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3.0.0
-    
+      
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3.0.0
       
@@ -40,22 +40,22 @@ jobs:
         build-args: |
           GIT_BRANCH=${{ github.ref_name }}
           GIT_URL=${{ github.server_url }}/${{ github.repository }}
-      
+          
     - name: Run run_installation_tests.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests.sh
         options: --platform linux/arm/v7
-        args: | 
+        name: run_installation_tests.sh
+        args: |
           /code/scripts/installscripts/tests/run_installation_tests.sh
           
     - name: Run run_installation_tests2.sh Bullseye ARMv7
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests2.sh
         options: --platform linux/arm/v7
+        name: run_installation_tests2.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests2.sh
           
@@ -63,7 +63,7 @@ jobs:
       uses: tj-actions/docker-run@v2
       with:
         image: rpi-jukebox-rfid-bullseye:latest
-        name: bullseye_run_installation_tests3.sh
         options: --platform linux/arm/v7
+        name: run_installation_tests3.sh
         args: |
           /code/scripts/installscripts/tests/run_installation_tests3.sh

@@ -22,7 +22,7 @@ RUN groupadd --gid 1000 $USER_GROUP ;\
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
-  apt-get -y install curl gnupg sudo nano systemd apt-utils;\
+  apt-get -y install curl gnupg sudo nano systemd apt-utils ;\
   echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
@@ -33,8 +33,10 @@ RUN export DEBIAN_FRONTEND=noninteractive ;\
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\
+  # install here to speed up GitHub Action
+  apt-get -y install raspberrypi-kernel-headers ;\
   apt-get -y dist-upgrade --auto-remove --purge ;\
-  apt-get -y install wget build-essential git iw locales wpasupplicant;\
+  apt-get -y install wget build-essential git iw locales wpasupplicant ;\
   apt-get clean ;\
   touch /boot/cmdlinetxt ;\
   rm -rf /var/cache/apt/* /var/lib/apt/lists/*
