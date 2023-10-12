@@ -48,7 +48,7 @@ jobs:
         options: --platform linux/arm/v7
         name: run_installation_tests.sh
         args: |
-          /code/scripts/installscripts/tests/run_installation_tests.sh
+          ./run_installation_tests.sh
           
     - name: Run run_installation_tests2.sh Buster ARMv7
       uses: tj-actions/docker-run@v2
@@ -57,7 +57,7 @@ jobs:
         options: --platform linux/arm/v7
         name: run_installation_tests2.sh
         args: |
-          /code/scripts/installscripts/tests/run_installation_tests2.sh
+          ./run_installation_tests2.sh
           
     - name: Run run_installation_tests3.sh Buster ARMv7
       uses: tj-actions/docker-run@v2
@@ -66,4 +66,4 @@ jobs:
         options: --platform linux/arm/v7
         name: run_installation_tests3.sh
         args: |
-          /code/scripts/installscripts/tests/run_installation_tests3.sh
+          ./run_installation_tests3.sh

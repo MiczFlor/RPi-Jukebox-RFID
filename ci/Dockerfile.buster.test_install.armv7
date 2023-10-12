@@ -9,16 +9,18 @@ ENV USER=$USER_NAME
 ENV GIT_BRANCH=$GIT_BRANCH
 ENV GIT_URL=$GIT_URL
 
-COPY . /code
-WORKDIR /code
+COPY scripts/installscripts/tests/*.sh /tests/ 
+COPY scripts/installscripts/buster-install-default.sh /
 
 RUN groupadd --gid 1000 $USER_GROUP ;\
   useradd -u 1000 -g 1000 -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER ;\
-  chown -R 1000:1000 /code /home/$USER ;\
-  chmod +x /code/scripts/installscripts/buster-install-default.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests2.sh ;\
-  chmod +x /code/scripts/installscripts/tests/run_installation_tests3.sh
+  chown -R 1000:1000 /tests /home/$USER ;\
+  chmod +x /buster-install-default.sh ;\
+  chmod +x /tests/run_installation_tests.sh ;\
+  chmod +x /tests/run_installation_tests2.sh ;\
+  chmod +x /tests/run_installation_tests3.sh
+
+WORKDIR /tests
 
 RUN export DEBIAN_FRONTEND=noninteractive ;\
   apt-get update ;\

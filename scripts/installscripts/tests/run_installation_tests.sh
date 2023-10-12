@@ -25,8 +25,8 @@ export DEBIAN_FRONTEND=noninteractive
 # n no RFID registration
 # n No reboot
 
-bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+./../buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation
-./scripts/installscripts/tests/test_installation.sh $INSTALLATION_EXITCODE
+./test_installation.sh $INSTALLATION_EXITCODE
