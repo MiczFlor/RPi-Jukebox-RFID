@@ -12,6 +12,10 @@ ruamel.yaml
 requests
 # For the publisher event reactor loop:
 tornado
+# For the mopidy player
+jsonrpcclient
+websocket
+websocket-client
 
 # RPi's GPIO packages: these are installed via APT on the PI
 # On regular machines, install them manually if needed for development
