@@ -1,46 +1,53 @@
 FROM --platform=linux/arm/v7 arm32v7/debian:bullseye-slim
-ARG USER_NAME=pi
-ARG USER_GROUP=$USER_NAME
+ 
+# Define constants
+ENV DOCKER_RUNNING=true DEBIAN_FRONTEND=noninteractive
+RUN touch /boot/cmdlinetxt
+
+# Define Git Repo variables. If this changes all should be build again
 ARG GIT_BRANCH
 ARG GIT_URL
 
-ENV DOCKER_RUNNING=true
-ENV USER=$USER_NAME
-ENV GIT_BRANCH=$GIT_BRANCH
-ENV GIT_URL=$GIT_URL
+ENV GIT_BRANCH=$GIT_BRANCH GIT_URL=$GIT_URL
 
-COPY scripts/installscripts/tests/*.sh /tests/ 
-COPY scripts/installscripts/buster-install-default.sh /
+# Install packages
+RUN apt-get update && \
+  apt-get -y install \
+    apt-utils \
+    curl \
+    gnupg
 
-RUN groupadd --gid 1000 $USER_GROUP ;\
-  useradd -u 1000 -g 1000 -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER ;\
-  chown -R 1000:1000 /tests /home/$USER ;\
-  chmod +x /buster-install-default.sh ;\
-  chmod +x /tests/run_installation_tests.sh ;\
-  chmod +x /tests/run_installation_tests2.sh ;\
-  chmod +x /tests/run_installation_tests3.sh
-
-WORKDIR /tests
-
-RUN export DEBIAN_FRONTEND=noninteractive ;\
-  apt-get update ;\
-  apt-get -y install curl gnupg sudo nano systemd apt-utils ;\
-  echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
+RUN echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list ;\
   echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list ;\
   curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - ;\
   curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - ;\
-  echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER ;\
-  apt-get clean ;\
-  rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+  apt-get update && \
+  apt-get -y install \
+    build-essential \
+    git \
+    iw \
+    locales \
+    # install here to speed up GitHub Action
+    raspberrypi-kernel-headers \
+    sudo \
+    systemd \
+    wget \
+    wpasupplicant ;\
+    rm -rf /var/lib/apt/lists/*
 
-RUN export DEBIAN_FRONTEND=noninteractive ;\
-  apt-get update ;\
-  # install here to speed up GitHub Action
-  apt-get -y install raspberrypi-kernel-headers ;\
-  apt-get -y dist-upgrade --auto-remove --purge ;\
-  apt-get -y install wget build-essential git iw locales wpasupplicant ;\
-  apt-get clean ;\
-  touch /boot/cmdlinetxt ;\
-  rm -rf /var/cache/apt/* /var/lib/apt/lists/*
+# Define user info that my change, but are irrelevant for package installation
+ARG USER_NAME=pi
+ARG USER_GROUP=$USER_NAME
+ENV USER=$USER_NAME
+
+RUN groupadd --gid 1000 $USER_GROUP && \
+  useradd -u 1000 -g 1000 -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER && \
+  echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER
 
 USER $USER
+
+# Define needed files for installation test
+COPY --chown=$USER:$USER_GROUP --chmod=750 scripts/installscripts/tests/*.sh /tests/ 
+COPY --chown=$USER:$USER_GROUP --chmod=750 scripts/installscripts/buster-install-default.sh /
+
+WORKDIR /tests
