@@ -7,8 +7,8 @@
 INSTALLATION_EXITCODE="${1:-0}"
 
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-USER_NAME="$USER"
-HOME_DIR="$HOME"
+USER_NAME="$(whoami)"
+HOME_DIR=$(getent passwd "$USER_NAME" | cut -d: -f6)
 
 tests=0
 failed_tests=0
