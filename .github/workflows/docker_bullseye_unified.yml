@@ -1,0 +1,129 @@
+name: Test Install Scripts Target Unified
+
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ github.ref }}-unified
+    cancel-in-progress: true
+
+on:
+  schedule:
+    # run at 5 every sunday
+    - cron: '0 5 * * 0'
+  push:
+    branches-ignore:
+      - 'future3/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
+
+env:
+  DOCKER_IMAGE_NAME: rpi-jukebox-rfid-bullseye
+  _PATH_DOCKER_IMAGE_TAR: ./rpi-jukebox-rfid-bullseye.tar
+  CACHE_SCOPE: ${{ github.ref }}-unified
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    outputs:
+      image_name: ${{ steps.get-image-name.outputs.image_name }}
+      cache_key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+
+    - name: Build Bullseye ARMv7 - Base
+      id: docker-build-base
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install_unified.armv7
+        target: user
+        platforms: linux/arm/v7
+        tags: ${{ env.DOCKER_IMAGE_NAME }}:test-base
+        cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
+        cache-to: type=gha,mode=max,scope=${{ env.CACHE_SCOPE }}
+
+    - name: Set output image_name
+      id: get-image-name
+      run: echo "image_name=${{ env.DOCKER_IMAGE_NAME }}:test-update" >> $GITHUB_OUTPUT
+
+    - name: Build Bullseye ARMv7 - Update
+      id: docker-build-update
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: false
+        file: ./ci/Dockerfile.bullseye.test_install_unified.armv7
+        target: test-update
+        platforms: linux/arm/v7
+        tags: ${{ steps.get-image-name.outputs.image_name }}
+        cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
+        # DON'T use 'cache-to' here as then the layer is cached and this build would be useless
+        outputs: type=docker,dest=${{ env._PATH_DOCKER_IMAGE_TAR }}
+        build-args: |
+          GIT_BRANCH=${{ github.ref_name }}
+          GIT_URL=${{ github.server_url }}/${{ github.repository }}
+
+    - name: Cache Check Docker Image
+      uses: actions/cache/restore@v3
+      id: cache-restore
+      with:
+        lookup-only: true
+        key: ${{ env.DOCKER_IMAGE_NAME }}-${{ steps.docker-build-update.outputs.imageid }}
+        path: ${{ env._PATH_DOCKER_IMAGE_TAR }}
+
+    - name: Cache Save Docker Image
+      uses: actions/cache/save@v3
+      if: ${{ ! steps.cache-restore.outputs.cache-hit }}
+      with:
+        key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+        path: ${{ env._PATH_DOCKER_IMAGE_TAR }}
+
+
+  test:
+    needs: prepare
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test_Script: [run_installation_tests.sh, run_installation_tests2.sh, run_installation_tests3.sh]
+        username: [pi, hans]
+
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+
+    - name: Cache Restore Docker Image
+      uses: actions/cache/restore@v3
+      with:
+        key: ${{ needs.prepare.outputs.cache_key }}
+        path: ${{ env._PATH_DOCKER_IMAGE_TAR }}
+        fail-on-cache-miss: true
+
+    - name: Load Docker Image
+      run: |
+        docker load --input ${{ env._PATH_DOCKER_IMAGE_TAR }}
+
+    - name: Run ${{ matrix.test_Script }} Bullseye ARMv7
+      uses: tj-actions/docker-run@v2
+      with:
+        image: ${{ needs.prepare.outputs.image_name }}
+        options: --platform linux/arm/v7 --user ${{ matrix.username }}
+        name: ${{ matrix.test_Script }}
+        args: |
+          ./${{ matrix.test_Script }}
