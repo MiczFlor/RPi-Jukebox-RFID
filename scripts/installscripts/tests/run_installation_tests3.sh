@@ -13,6 +13,7 @@ echo $PWD
 echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 # No interactive frontend
 export DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 # Run installation (in interactive mode)
 # y confirm interactive
