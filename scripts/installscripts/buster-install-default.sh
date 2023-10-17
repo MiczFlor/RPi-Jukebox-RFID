@@ -824,7 +824,7 @@ install_main() {
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-utils lsof procps
+    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat-traditional alsa-utils lsof procps
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
