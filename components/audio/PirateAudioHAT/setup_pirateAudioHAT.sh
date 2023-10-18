@@ -93,6 +93,9 @@ printf "Installing Python dependencies...\n"
 sudo apt-get -y -qq install python3-pil python3-numpy
 
 printf "Installing mopidy plugins...\n"
+# Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+python3 -m venv .venv
+source .venv/bin/activate
 sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/audio/PirateAudioHAT/requirements.txt
 
 # Only add, if it does not exist already

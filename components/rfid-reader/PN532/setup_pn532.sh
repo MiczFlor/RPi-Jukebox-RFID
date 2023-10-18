@@ -33,6 +33,9 @@ else
 fi
 
 printf "Installing Python requirements for PN532...\n"
+# Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+python3 -m venv .venv
+source .venv/bin/activate
 sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt
 
 printf "Configure RFID reader in Phoniebox...\n"
