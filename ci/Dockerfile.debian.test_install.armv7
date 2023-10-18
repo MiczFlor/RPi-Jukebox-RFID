@@ -1,17 +1,21 @@
 # Target to build and install all needed base configuration and packages
-FROM debian:bullseye-slim as base
+ARG DEBIAN_VERSION_NAME=bullseye
+ARG BASE_TEST_IMAGE=test
+FROM debian:${DEBIAN_VERSION_NAME}-slim as base
+ARG DEBIAN_VERSION_NAME
 
 ENV DOCKER_RUNNING=true
-ENV DEBIAN_FRONTEND=noninteractive
 RUN touch /boot/cmdlinetxt
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
   && apt-get -y install \
     apt-utils \
     curl \
     gnupg \
-  && echo 'deb http://raspbian.raspberrypi.org/raspbian/ bullseye main contrib non-free rpi' > /etc/apt/sources.list.d/raspi.list \
-  && echo 'deb http://archive.raspberrypi.org/debian/ bullseye main' >> /etc/apt/sources.list.d/raspi.list \
+  && echo "deb http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_VERSION_NAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
+  && echo "deb http://archive.raspberrypi.org/debian/ ${DEBIAN_VERSION_NAME} main" >> /etc/apt/sources.list.d/raspi.list \
   && curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - \
   && curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - \
   && apt-get update \
@@ -26,6 +30,7 @@ RUN apt-get update \
     wget \
     wpasupplicant \
     # install internally used packages here to speed up GitHub Action
+    raspberrypi-kernel \
     raspberrypi-kernel-headers \
   && rm -rf /var/lib/apt/lists/*
 # ------
@@ -35,7 +40,6 @@ RUN apt-get update \
 FROM base as user
 ENV TEST_USER_GROUP=test
 
-    # Group used for assigning file permissions
 RUN groupadd --gid 1002 $TEST_USER_GROUP
 
 RUN export USER_PI=pi \
@@ -66,7 +70,7 @@ COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/tests/*.sh
 
 
 # Target for applying latest updates (should not be cached!)
-FROM test as test-update
+FROM $BASE_TEST_IMAGE as test-update
 RUN apt-get update \
   && apt-get -y upgrade \
   && rm -rf /var/lib/apt/lists/*
