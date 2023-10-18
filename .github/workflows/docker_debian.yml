@@ -115,7 +115,7 @@ jobs:
         cache-to: type=gha,mode=max,scope=${{ format( needs.prepare.outputs.cache_scope, matrix.debian_version_name) }}
         build-args: |
           DEBIAN_VERSION_NAME=${{ matrix.debian_version_name }}
-          GIT_BRANCH=${{ github.ref_name }}
+          GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           GIT_URL=${{ github.server_url }}/${{ github.repository }}
 
     # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
