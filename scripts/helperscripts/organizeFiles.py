@@ -52,7 +52,7 @@ def readFolders(audioDir, relpath=None, isFirst=True):
         elif os.path.isdir(absf):
             childResult = readFolders(audioDir=absf, relpath=os.path.join(relpath, f), isFirst=False)
             for k, v in childResult.items():
-                assert(k not in result)
+                assert (k not in result)
                 result[k] = v
     if hasAudioFiles:
         result[relpath] = os.path.exists(os.path.join(audioDir, "folder.conf"))

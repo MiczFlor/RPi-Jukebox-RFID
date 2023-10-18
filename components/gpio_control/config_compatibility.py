@@ -3,6 +3,7 @@ import configparser
 import os
 from shutil import copyfile
 
+
 def Ini_CheckAndUpgrade(config):
     has_changed = False
     for section in config.sections():
@@ -37,8 +38,8 @@ def Ini_CheckAndUpgrade(config):
             has_changed = True
             if not config.has_option(section, 'hold_time'):
                 config.set(section, 'hold_time', str(v))
-        #PinUp: <int> --> Pin1 <int>
-        #PinDown: <int> --> Pin2 <int>
+        # PinUp: <int> --> Pin1 <int>
+        # PinDown: <int> --> Pin2 <int>
         if config.has_option(section, 'PinUp'):
             v = config.getint(section, 'PinUp')
             config.remove_option(section, 'PinUp')
@@ -67,17 +68,17 @@ def Ini_CheckAndUpgrade(config):
                 config.set(section, 'functionCall2', v)
 
     return has_changed
-    
-    
+
+
 def ConfigCompatibilityChecks(config, config_path):
     # Check for deprecated settings in gpio_settings.ini
     if not Ini_CheckAndUpgrade(config):
         return
-    
+
     # If we reach here, gpio_settings.ini needed some patching...
 
     # Try creating a backup of the previous ini file
-    backup_path = config_path+'.bak'
+    backup_path = config_path + '.bak'
     if os.path.isfile(backup_path):
         return
     copyfile(config_path, backup_path)

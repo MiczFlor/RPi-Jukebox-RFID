@@ -118,7 +118,7 @@ if __name__ == "__main__":
     config = configparser.ConfigParser(inline_comment_prefixes=";", delimiters=(':', '='))
     config_path = os.path.expanduser('/home/pi/RPi-Jukebox-RFID/settings/gpio_settings.ini')
     config.read(config_path)
-    
+
     ConfigCompatibilityChecks(config, config_path)
 
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
