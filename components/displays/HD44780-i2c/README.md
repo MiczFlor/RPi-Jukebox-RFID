@@ -5,17 +5,17 @@
 
 The following files allow using LCD displays based on HD44780 connected via i2c bus for this project. The following displays have been used for testing:
 
-- 2x16 display
-- 4x20 display (recommended as more information can be displayed)
+* 2x16 display
+* 4x20 display (recommended as more information can be displayed)
 
 Various informations such as artist, album, track_number, track_title, track_time and many more can be displayed see main script for more display options.
 
 The required files are:
 
-- components/displays/HD44780-i2c/i2c_lcd.py
-- components/displays/HD44780-i2c/i2c_lcd_driver.py
-- components/displays/HD44780-i2c/i2c-lcd.service.default.sample
-- components/displays/HD44780-i2c/README.md
+* components/displays/HD44780-i2c/i2c_lcd.py
+* components/displays/HD44780-i2c/i2c_lcd_driver.py
+* components/displays/HD44780-i2c/i2c-lcd.service.default.sample
+* components/displays/HD44780-i2c/README.md
 
 The first file is the main LCD script that makes use of I2C_LCD_driver.py.
 
@@ -25,7 +25,7 @@ The third is used as sample service file that runs the i2c_lcd.py main script at
 
 The fourth file is this file which describes the features, usage and installation of the code.
 
-### Installation
+## Installation
 
 * You need to install additional python libraries. Run the following two command in the command line:
 

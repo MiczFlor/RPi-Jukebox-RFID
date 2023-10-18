@@ -38,11 +38,11 @@ Each section needs to be activated by setting `enabled: True`.
 
 Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/example_configs/`.
 
-# Extended documentation
+## Extended documentation
 
 This section provides some extended documentation and guideline. Especially some exemplary configurations are introduced showing how these controls can be set up in the configuration file `~/RPi-Jukebox-RFID/settings/gpio_settings.ini`.
 
-## Button<a name="doc_button"></a>
+### Button<a name="doc_button"></a>
 
 At the most basic level, a button can be created using an `ini` entry like this:
 
@@ -86,7 +86,7 @@ However, a button has more parameters than these. In the following comprehensive
 
 Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
-## ShutdownButton<a name="doc_sdbutton"></a>
+### ShutdownButton<a name="doc_sdbutton"></a>
 
 An extended ShutdownButton can be created using an `ini` entry like these:
 
@@ -127,9 +127,9 @@ hold_time: 3.0
 functionCall: functionCallShutdown
 ```
 
-## TwoButtonControl<a name="doc_twobutton"></a>
+### TwoButtonControl<a name="doc_twobutton"></a>
 
-A  TwoButtonControl can be created using an `ini` entry like this:
+A TwoButtonControl can be created using an `ini` entry like this:
 
 ```bash
 [PrevNextStop]
@@ -163,9 +163,9 @@ In this example, the volume will be in-/decreased step-wise using intervals of 0
 
 Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**
 
-## RotaryEncoder<a name="doc_rotary"></a>
+### RotaryEncoder<a name="doc_rotary"></a>
 
-A  RotaryEncoder can be created using an `ini` entry like this:
+A RotaryEncoder can be created using an `ini` entry like this:
 
 ```bash
 [VolumeControl]
@@ -181,9 +181,9 @@ functionCall2: functionCallVolD
 Pin1 and FunctionCall1 correspond to rotary direction "up", while Pin2 and FunctionCall2 correspond to "down".
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
 
-## StatusLED<a name="doc_sled"></a>
+### StatusLED<a name="doc_sled"></a>
 
-A  StatusLED can be created using an `ini` entry like this:
+A StatusLED can be created using an `ini` entry like this:
 
 ```bash
 [StatusLED]
@@ -196,11 +196,11 @@ Pin: 14
 
 Note: If you prefer, you may also use `Type: MPDStatusLED` instead of `Type: StatusLED` - this makes no difference.
 
-## Further examples
+### Further examples
 
 By tapping the potential of the features presented above, you can create buttons like this:
 
-### Play random tracks or folders
+#### Play random tracks or folders
 
 If you have buttons to navigate to the next/previous track it might be a good idea to define that holding these buttons for a certain time (e.g. 2 seconds) will activate a random (surpise!) track or even folder/card. This might look like this
 
@@ -226,7 +226,7 @@ functionCall: functionCallPlayerPrev
 functionCall2: functionCallPlayerRandomFolder
 ```
 
-### Short and long jumps
+#### Short and long jumps
 
 If you are using two buttons to jump backwards or forwards within the current track, you can use the repeated hold action to allow larger jumps:
 
@@ -245,7 +245,7 @@ functionCall2: functionCallPlayerSeekFarFwd
 In this example, a short press initiates a short jump forward by 10 seconds (functionCallPlayerSeekFwd) while holding the button will cause further, longer jumps. In this case it will cause a jump of 1 minute forward  (functionCallPlayerSeekFarFwd) every 5 seconds. If you wish, you can adjust these values in `components/gpio_control/function_calls.py`.
 For jumping backwards, this can be done equivalently (see [function list below](#doc_funcs)).
 
-## Functions<a name="doc_funcs"></a>
+### Functions<a name="doc_funcs"></a>
 
 The available functions are defined/implemented in `components/gpio_control/function_calls.py`:
 
@@ -270,7 +270,7 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallPlayerRandomCard**: Activate a random card
 * **functionCallPlayerRandomFolder**: Play a random folder
 
-## Troubleshooting<a name="doc_trouble"></a>
+### Troubleshooting<a name="doc_trouble"></a>
 
 If you encounter bouncing effects with your buttons like unrequested/double actions after releasing a button, you can try to set `antibouncehack` to True:
 
