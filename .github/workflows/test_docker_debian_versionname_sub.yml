@@ -95,8 +95,8 @@ jobs:
         context: .
         load: false
         push: true
-        file: ./ci/Dockerfile.debian.test_install.armv7
-        target: test
+        file: ./ci/Dockerfile.debian
+        target: test-code
         platforms: ${{ inputs.platform }}
         tags: ${{ steps.vars.outputs.image_tag_name_local_base }}
         cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
@@ -113,7 +113,7 @@ jobs:
         context: .
         load: false
         push: false
-        file: ./ci/Dockerfile.debian.test_install.armv7
+        file: ./ci/Dockerfile.debian
         target: test-update
         platforms: ${{ inputs.platform }}
         tags: ${{ steps.vars.outputs.image_tag_name }}

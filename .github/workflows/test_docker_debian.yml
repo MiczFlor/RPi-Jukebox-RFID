@@ -14,7 +14,7 @@ on:
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
-    group: ${{ github.ref }}-debian
+    group: ${{ github.ref }}-test-debian
     cancel-in-progress: true
 
 jobs:
@@ -26,12 +26,12 @@ jobs:
       fail-fast: false
       matrix:
         debian_version_name: ['bullseye', 'buster']
-    uses: ./.github/workflows/docker_debian_versionname_sub.yml
+    uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
     with:
       runs_on: ubuntu-latest
       platform: linux/arm/v7
       docker_image_name: rpi-jukebox-rfid
-      cache_scope: ${{ github.ref }}-debian
+      cache_scope: ${{ github.ref }}-test-debian
       matrix_usernames: "['pi', 'hans']"
       matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
       debian_version_name: ${{ matrix.debian_version_name }}

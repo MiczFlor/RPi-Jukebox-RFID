@@ -1,15 +1,14 @@
-# Target to build and install all needed base configuration and packages
+# Base Target to build and install all needed base configuration and packages. Specifie the needed platform with the docker '--platform XXX' option
 ARG DEBIAN_VERSION_NAME=bullseye
-ARG BASE_TEST_IMAGE=test
+ARG BASE_TEST_IMAGE=test-code
 FROM debian:${DEBIAN_VERSION_NAME}-slim as base
 ARG DEBIAN_VERSION_NAME
 
 ENV DOCKER_RUNNING=true
 RUN touch /boot/cmdlinetxt
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update \
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update \
   && apt-get -y install \
     apt-utils \
     curl \
@@ -35,18 +34,42 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 # ------
 
-
-# Target for setting up user for test. user can be selected with the docker '--user $USERNAME' option
+# Base Target for setting up the default user. user can be selected with the docker '--user YYY' option
 FROM base as user
+ARG USER=pi
+ARG USER_GROUP=$USER
+
+ENV USER=$USER USER_GROUP=$USER_GROUP
+
+RUN groupadd --gid 1000 $USER_GROUP \
+  && useradd -u 1000 -g $USER_GROUP -G sudo -d /home/$USER -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER \
+  && echo "$USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER
+# ------
+
+
+
+####### Code Targets #######
+
+# Target for adding code from the repo. Set Default User
+FROM user as code
+
+COPY --chown=$USER:$USER_GROUP --chmod=770 . /code
+WORKDIR /code
+
+USER $USER
+# ------
+
+
+
+####### Test Targets #######
+
+# Target for setting up an alternativ user 'hans:wurst'. user can be selected with the docker '--user YYY' option
+FROM user as test-user
+
 ENV TEST_USER_GROUP=test
 
-RUN groupadd --gid 1002 $TEST_USER_GROUP
-
-RUN export USER_PI=pi \
-  && export USER_PI_GROUP=$USER_PI \
-  && groupadd --gid 1000 $USER_PI_GROUP \
-  && useradd -u 1000 -g $USER_PI_GROUP -G sudo,$TEST_USER_GROUP -d /home/$USER_PI -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER_PI \
-  && echo "$USER_PI ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER_PI
+RUN groupadd --gid 1002 $TEST_USER_GROUP \
+  && usermod -a -G $TEST_USER_GROUP $USER
 
 RUN export USER_ALT=hans \
   && export USER_ALT_GROUP=wurst \
@@ -57,7 +80,7 @@ RUN export USER_ALT=hans \
 
 
 # Target for adding envs and scripts from the repo to test installation
-FROM user as test
+FROM test-user as test-code
 ARG GIT_BRANCH
 ARG GIT_URL
 
@@ -71,7 +94,8 @@ COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/tests/*.sh
 
 # Target for applying latest updates (should not be cached!)
 FROM $BASE_TEST_IMAGE as test-update
-RUN apt-get update \
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update \
   && apt-get -y upgrade \
   && rm -rf /var/lib/apt/lists/*
 # ------
