@@ -25,6 +25,7 @@ ADDRESS = 0x27
 import smbus
 from time import sleep
 
+
 class i2c_device:
    def __init__(self, addr, port=I2CBUS):
       self.addr = addr
@@ -100,12 +101,13 @@ LCD_5x8DOTS = 0x00
 LCD_BACKLIGHT = 0x08
 LCD_NOBACKLIGHT = 0x00
 
-En = 0b00000100 # Enable bit
-Rw = 0b00000010 # Read/Write bit
-Rs = 0b00000001 # Register select bit
+En = 0b00000100  # Enable bit
+Rw = 0b00000010  # Read/Write bit
+Rs = 0b00000001  # Register select bit
+
 
 class lcd:
-   #initializes objects and lcd
+   # initializes objects and lcd
    def __init__(self):
       self.lcd_device = i2c_device(ADDRESS)
 
@@ -119,7 +121,6 @@ class lcd:
       self.lcd_write(LCD_CLEARDISPLAY)
       self.lcd_write(LCD_ENTRYMODESET | LCD_ENTRYLEFT)
       sleep(0.2)
-
 
    # clocks EN to latch command
    def lcd_strobe(self, data):
@@ -165,7 +166,7 @@ class lcd:
       self.lcd_write(LCD_RETURNHOME)
 
    # define backlight on/off (lcd.backlight(1); off= lcd.backlight(0)
-   def backlight(self, state): # for state, 1 = on, 0 = off
+   def backlight(self, state):  # for state, 1 = on, 0 = off
       if state == 1:
          self.lcd_device.write_cmd(LCD_BACKLIGHT)
       elif state == 0:
@@ -173,8 +174,7 @@ class lcd:
 
    # add custom characters (0 - 7)
    def lcd_load_custom_chars(self, fontdata):
-      self.lcd_write(0x40);
+      self.lcd_write(0x40)
       for char in fontdata:
          for line in char:
             self.lcd_write_char(line)
-
