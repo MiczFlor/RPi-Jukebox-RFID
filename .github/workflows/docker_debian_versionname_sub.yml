@@ -1,0 +1,172 @@
+name: Subworkflow Test Install Scripts Debian
+
+on:
+    workflow_call:
+      inputs:
+        runs_on:
+          required: true
+          type: string
+        platform:
+          required: true
+          type: string
+        debian_version_name:
+          required: true
+          type: string
+        cache_scope:
+          required: true
+          type: string
+        docker_image_name:
+          required: true
+          type: string
+        matrix_usernames:
+          required: true
+          type: string
+        matrix_test_scripts:
+          required: true
+          type: string
+        local_registry_port:
+          required: false
+          type: number
+          default: 5000
+
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_version_name }}
+    cancel-in-progress: true
+
+jobs:
+
+  # Build container for test execution
+  build:
+    runs-on: ${{ inputs.runs_on }}
+
+    outputs:
+        cache_key: ${{ steps.vars.outputs.cache_key }}
+        image_file_path: ${{ steps.vars.outputs.image_file_path }}
+        image_tag_name: ${{ steps.vars.outputs.image_tag_name }}
+
+    # create local docker registry to use locally build images
+    services:
+        registry:
+          image: registry:2
+          ports:
+            - ${{ inputs.local_registry_port }}:5000
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+      with:
+        # network=host driver-opt needed to push to local registry
+        driver-opts: network=host
+
+    - name: Set Output pre-vars
+      id: pre-vars
+      env:
+        DEBIAN_VERSION_NAME: ${{ inputs.debian_version_name }}
+        DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
+        CACHE_SCOPE: ${{ inputs.cache_scope }}
+      run: |
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_VERSION_NAME }}-test" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_VERSION_NAME }}" >> $GITHUB_OUTPUT
+
+    - name: Set Output vars
+      id: vars
+      env:
+        DEBIAN_VERSION_NAME: ${{ inputs.debian_version_name }}
+        DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
+        LOCAL_REGISTRY_PORT: ${{ inputs.local_registry_port }}
+      run: |
+        echo "image_tag_name=${{ steps.pre-vars.outputs.image_tag_name }}" >> $GITHUB_OUTPUT
+        echo "image_tag_name_local_base=localhost:${{ env.LOCAL_REGISTRY_PORT }}/${{ steps.pre-vars.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
+        echo "image_file_path=./${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_VERSION_NAME }}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ steps.pre-vars.outputs.cache_scope }}" >> $GITHUB_OUTPUT
+        echo "cache_key=${{ steps.pre-vars.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+    # Build base image for debian version name. Layers will be cached and image pushes to local registry
+    - name: Build Image - Base
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: true
+        file: ./ci/Dockerfile.debian.test_install.armv7
+        target: test
+        platforms: ${{ inputs.platform }}
+        tags: ${{ steps.vars.outputs.image_tag_name_local_base }}
+        cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
+        cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.cache_scope }}
+        build-args: |
+          DEBIAN_VERSION_NAME=${{ inputs.debian_version_name }}
+          GIT_BRANCH=${{ github.head_ref || github.ref_name }}
+          GIT_URL=${{ github.server_url }}/${{ github.repository }}
+
+    # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
+    - name: Build Image - Update
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: false
+        file: ./ci/Dockerfile.debian.test_install.armv7
+        target: test-update
+        platforms: ${{ inputs.platform }}
+        tags: ${{ steps.vars.outputs.image_tag_name }}
+        cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
+        # DON'T use 'cache-to' here as the layer is then cached and this build would be useless
+        outputs: type=docker,dest=${{ steps.vars.outputs.image_file_path }}
+        build-args: |
+          BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
+
+    # Cache image file for next jobs
+    - name: Cache Save Docker Image
+      uses: actions/cache/save@v3
+      with:
+        key: ${{ steps.vars.outputs.cache_key }}
+        path: ${{ steps.vars.outputs.image_file_path }}
+
+
+  # Run tests with build image
+  test:
+    needs: [build]
+    runs-on: ${{ inputs.runs_on }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        username: ${{ fromJSON(inputs.matrix_usernames) }}
+        test_script: ${{ fromJSON(inputs.matrix_test_scripts) }}
+
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+
+    # Load cached image file
+    - name: Cache Restore Docker Image
+      uses: actions/cache/restore@v3
+      with:
+        key: ${{  needs.build.outputs.cache_key }}
+        path: ${{ needs.build.outputs.image_file_path }}
+        fail-on-cache-miss: true
+
+    - name: Load Docker Image
+      run: |
+        docker load --input ${{ needs.build.outputs.image_file_path }}
+
+    # Run test
+    - name: Run Test ${{ inputs.debian_version_name }}-${{ matrix.username }}-${{ matrix.test_script }}
+      uses: tj-actions/docker-run@v2
+      with:
+        image: ${{ needs.build.outputs.image_tag_name }}
+        options: --platform ${{inputs.platform }} --user ${{ matrix.username }}
+        name: ${{ matrix.test_script }}
+        args: |
+          ./${{ matrix.test_script }}

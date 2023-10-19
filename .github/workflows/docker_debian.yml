@@ -1,11 +1,5 @@
 name: Test Install Scripts Debian
 
-# let only one instance run the test so cache is not corrupted.
-# cancel already running instances as only the last run will be relevant
-concurrency:
-    group: ${{ github.ref }}-debian
-    cancel-in-progress: true
-
 on:
   schedule:
     # run at 5:00 every sunday
@@ -17,169 +11,27 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ develop ]
 
-env:
-  DOCKER_IMAGE_NAME: rpi-jukebox-rfid
-  CACHE_SCOPE: ${{ github.ref }}-debian
-  MATRIX_DEBIAN_VERSION_NAME: "['bullseye', 'buster']"
-  MATRIX_USERNAME: "['pi', 'hans']"
-  MATRIX_TEST_SCRIPT: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ github.ref }}-debian
+    cancel-in-progress: true
 
 jobs:
 
-  # Prepare variables for the next jobs
-  prepare:
-    runs-on: ubuntu-latest
-
-    outputs:
-      runs_on: ubuntu-latest
-      platform: linux/arm/v7
-
-      matrix_debian_version_name: ${{ env.MATRIX_DEBIAN_VERSION_NAME }}
-      matrix_username: ${{ env.MATRIX_USERNAME }}
-      matrix_test_script: ${{ env.MATRIX_TEST_SCRIPT }}
-
-      image_tag_name: ${{ steps.set-image_tag_name.outputs.image_tag_name }}
-      image_tag_name_local_base: ${{ steps.set-image_tag_name_local_base.outputs.image_tag_name_local_base }}
-      image_file_path: ${{ steps.set-image_file_path.outputs.image_file_path }}
-      cache_scope: ${{ steps.set-cache_scope.outputs.cache_scope }}
-      cache_key: ${{ steps.set-cache_key.outputs.cache_key }}
-      local_registry_port: ${{ steps.set-local_registry_port.outputs.local_registry_port }}
-
-    steps:
-      - name: Set Output cache_scope
-        id: set-cache_scope
-        run: echo "cache_scope=${{ env.CACHE_SCOPE }}-{0}" >> $GITHUB_OUTPUT
-
-      - name: Set Output image_tag_name
-        id: set-image_tag_name
-        run: echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:{0}-test" >> $GITHUB_OUTPUT
-
-      - name: Set Output image_file_path
-        id: set-image_file_path
-        run: echo "image_file_path=./${{ env.DOCKER_IMAGE_NAME }}-{0}.tar" >> $GITHUB_OUTPUT
-
-      - name: Set Output cache_key
-        id: set-cache_key
-        run: echo "cache_key=${{ steps.set-cache_scope.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
-
-      - name: Set Output local_registry_port
-        id: set-local_registry_port
-        run: echo "local_registry_port=5000" >> $GITHUB_OUTPUT
-
-      - name: Set Output image_tag_name_local_base
-        id: set-image_tag_name_local_base
-        run: echo "image_tag_name_local_base=localhost:${{ steps.set-local_registry_port.outputs.local_registry_port }}/${{ steps.set-image_tag_name.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
-
-
-  # Build container for test execution
-  build:
-    needs: [prepare]
-    runs-on: ${{ needs.prepare.outputs.runs_on }}
-
-    # create local docker registry to use locally build images
-    services:
-        registry:
-          image: registry:2
-          ports:
-            - ${{ needs.prepare.outputs.local_registry_port }}:5000
-
-    strategy:
-        fail-fast: false
-        matrix:
-          debian_version_name: ${{ fromJSON(needs.prepare.outputs.matrix_debian_version_name) }}
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3.0.0
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.0.0
-      with:
-        # network=host driver-opt needed to push to local registry
-        driver-opts: network=host
-
-    # Build base image for debian version name. Layers will be cached and image pushes to local registry
-    - name: Build Image - Base
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        load: false
-        push: true
-        file: ./ci/Dockerfile.debian.test_install.armv7
-        target: test
-        platforms: ${{ needs.prepare.outputs.platform }}
-        tags: ${{ format( needs.prepare.outputs.image_tag_name_local_base, matrix.debian_version_name) }}
-        cache-from: type=gha,scope=${{ format( needs.prepare.outputs.cache_scope, matrix.debian_version_name) }}
-        cache-to: type=gha,mode=max,scope=${{ format( needs.prepare.outputs.cache_scope, matrix.debian_version_name) }}
-        build-args: |
-          DEBIAN_VERSION_NAME=${{ matrix.debian_version_name }}
-          GIT_BRANCH=${{ github.head_ref || github.ref_name }}
-          GIT_URL=${{ github.server_url }}/${{ github.repository }}
-
-    # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
-    - name: Build Image - Update
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        load: false
-        push: false
-        file: ./ci/Dockerfile.debian.test_install.armv7
-        target: test-update
-        platforms: ${{ needs.prepare.outputs.platform }}
-        tags: ${{ format( needs.prepare.outputs.image_tag_name, matrix.debian_version_name) }}
-        cache-from: type=gha,scope=${{ format( needs.prepare.outputs.cache_scope, matrix.debian_version_name) }}
-        # DON'T use 'cache-to' here as the layer is then cached and this build would be useless
-        outputs: type=docker,dest=${{ format( needs.prepare.outputs.image_file_path, matrix.debian_version_name) }}
-        build-args: |
-          BASE_TEST_IMAGE=${{ format( needs.prepare.outputs.image_tag_name_local_base, matrix.debian_version_name) }}
-
-    # Cache image file for next jobs
-    - name: Cache Save Docker Image
-      uses: actions/cache/save@v3
-      with:
-        key: ${{ format( needs.prepare.outputs.cache_key, matrix.debian_version_name) }}
-        path: ${{ format( needs.prepare.outputs.image_file_path, matrix.debian_version_name) }}
-
-
-  # Run tests with build image
-  test:
-    needs: [prepare, build]
-    runs-on: ${{ needs.prepare.outputs.runs_on }}
-
+  # Build container and run tests
+  run:
+    name: ${{ matrix.debian_version_name }}
     strategy:
       fail-fast: false
       matrix:
-        debian_version_name: ${{ fromJSON(needs.prepare.outputs.matrix_debian_version_name) }}
-        username: ${{ fromJSON(needs.prepare.outputs.matrix_username) }}
-        test_script: ${{ fromJSON(needs.prepare.outputs.matrix_test_script) }}
-
-    steps:
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3.0.0
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.0.0
-
-    # Load cached image file
-    - name: Cache Restore Docker Image
-      uses: actions/cache/restore@v3
-      with:
-        key: ${{ format( needs.prepare.outputs.cache_key, matrix.debian_version_name) }}
-        path: ${{ format( needs.prepare.outputs.image_file_path, matrix.debian_version_name) }}
-        fail-on-cache-miss: true
-
-    - name: Load Docker Image
-      run: |
-        docker load --input ${{ format( needs.prepare.outputs.image_file_path, matrix.debian_version_name) }}
-
-    # Run test
-    - name: Run Test ${{ matrix.debian_version_name }}-${{ matrix.username }}-${{ matrix.test_script }}
-      uses: tj-actions/docker-run@v2
-      with:
-        image: ${{ format( needs.prepare.outputs.image_tag_name, matrix.debian_version_name) }}
-        options: --platform ${{ needs.prepare.outputs.platform }} --user ${{ matrix.username }}
-        name: ${{ matrix.test_script }}
-        args: |
-          ./${{ matrix.test_script }}
+        debian_version_name: ['bullseye', 'buster']
+    uses: ./.github/workflows/docker_debian_versionname_sub.yml
+    with:
+      runs_on: ubuntu-latest
+      platform: linux/arm/v7
+      docker_image_name: rpi-jukebox-rfid
+      cache_scope: ${{ github.ref }}-debian
+      matrix_usernames: "['pi', 'hans']"
+      matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
+      debian_version_name: ${{ matrix.debian_version_name }}
