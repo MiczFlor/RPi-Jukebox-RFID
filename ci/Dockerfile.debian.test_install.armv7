@@ -14,10 +14,10 @@ RUN apt-get update \
     apt-utils \
     curl \
     gnupg \
-  && echo "deb http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_VERSION_NAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
-  && echo "deb http://archive.raspberrypi.org/debian/ ${DEBIAN_VERSION_NAME} main" >> /etc/apt/sources.list.d/raspi.list \
-  && curl http://raspbian.raspberrypi.org/raspbian.public.key | apt-key add - \
-  && curl http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | apt-key add - \
+  && curl -fsSL http://raspbian.raspberrypi.org/raspbian.public.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-raspbian-keyring.gpg \
+  && curl -fsSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-raspbian-keyring.gpg] http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_VERSION_NAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
+  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg] http://archive.raspberrypi.org/debian/ ${DEBIAN_VERSION_NAME} main" >> /etc/apt/sources.list.d/raspi.list \
   && apt-get update \
   && apt-get -y upgrade \
   && apt-get -y install \
