@@ -13,6 +13,7 @@ echo $PWD
 echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 # No interactive frontend
 export DEBIAN_FRONTEND=noninteractive
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 # Run installation (in interactive mode)
 # y confirm interactive
@@ -21,13 +22,12 @@ export DEBIAN_FRONTEND=noninteractive
 # n no spotify
 # y configure mpd
 # y audio default location
-# y config gpio 
+# y config gpio
 # n no RFID registration
 # n No reboot
 
-# TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+./../buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation
-./scripts/installscripts/tests/test_installation.sh $INSTALLATION_EXITCODE
+./test_installation.sh $INSTALLATION_EXITCODE
