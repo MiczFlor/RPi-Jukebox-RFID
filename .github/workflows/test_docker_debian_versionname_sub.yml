@@ -104,7 +104,7 @@ jobs:
         build-args: |
           DEBIAN_VERSION_NAME=${{ inputs.debian_version_name }}
           GIT_BRANCH=${{ github.head_ref || github.ref_name }}
-          GIT_URL=${{ github.server_url }}/${{ github.repository }}
+          GIT_URL=${{ github.server_url }}/${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
     # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
     - name: Build Image - Update
