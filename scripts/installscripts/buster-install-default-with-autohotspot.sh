@@ -28,7 +28,7 @@ DATETIME=$(date +"%Y%m%d_%H%M%S")
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-CURRENT_USER="${SUDO_USER:-$USER}"
+CURRENT_USER="${SUDO_USER:-$(whoami)}"
 HOME_DIR=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
 echo "Current User: $CURRENT_USER"
 echo "User home dir: $HOME_DIR"
@@ -97,7 +97,7 @@ checkPrerequisite() {
     #currently the user 'pi' is mandatory
     #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
     if [ "${CURRENT_USER}" != "pi" ]; then
-        echo 
+        echo
         echo "ERROR: User must be 'pi'!"
         echo "       Other usernames are currently not supported."
         echo "       Please check the wiki for further information"
@@ -105,7 +105,7 @@ checkPrerequisite() {
     fi
 
     if [ "${HOME_DIR}" != "/home/pi" ]; then
-        echo 
+        echo
         echo "ERROR: HomeDir must be '/home/pi'!"
         echo "       Other usernames are currently not supported."
         echo "       Please check the wiki for further information"
