@@ -500,6 +500,22 @@ config_spotify() {
             read -rp "Type your Spotify password: " SPOTIpass
             read -rp "Type your client_id: " SPOTIclientid
             read -rp "Type your client_secret: " SPOTIclientsecret
+            clear
+            echo "#####################################################
+#
+# Swapfile creation
+#
+# With the current way Spotify support is build, a lot of RAM needs
+# to be available in order for the required components to build
+# correctly. This includes even recent Raspberry Pi versions.
+# In general: If less than 2 GB RAM is available in your system, the
+# build of gst-plugin-spotify will most certainly fail.
+#
+# This script can detect if a swapfile is required and have one
+# created for you if needed.
+#
+"
+            read -rp "Would you like to have a swapfile created and activated now? [Y/n] " SPOTIcreateswap
             ;;
     esac
     # append variables to config file
@@ -509,6 +525,7 @@ config_spotify() {
         echo "SPOTIpass=\"$SPOTIpass\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
         echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+        echo "SPOTIcreateswap=\"$SPOTIcreateswap\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -663,6 +680,7 @@ check_config_file() {
             check_variable "SPOTIpass"
             check_variable "SPOTIclientid"
             check_variable "SPOTIclientsecret"
+            check_variable "SPOTIcreateswap"
         fi
     fi
     check_variable "MPDconfig"
@@ -835,6 +853,9 @@ install_main() {
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Creating and activating SWAP file if requested..."
+        create_swap "${SPOTIcreateswap}"
+
         echo "Installing dependencies for Spotify support..."
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
@@ -1281,7 +1302,7 @@ finish_installation() {
     esac
 }
 
-config_swap() {
+create_swap() {
     # If Available memory is less than 2 GB (which is round about what's required during
     # gst-plugin-spotify compilation later, ask if another 2 GB swap should be created and
     # activated.
@@ -1329,15 +1350,7 @@ EOF
 EOF
         else
             if [ ! -f /swapfile ]; then
-                # If "true" was defined as $1 do not ask the user for non-interactive mode
-                if [ "${YES_TO_ALL,,}" == "true" ]; then
-                    response=${YES_TO_ALL,,}
-                else
-                    echo ""
-                    read -e -r -p "Would you like to have a swapfile created and activated now? [Y/n] " response
-                fi
-
-                case "$response" in
+                case "$YES_TO_ALL" in
                 [nN])
                 # Do not create swap
                 echo -e "\nNot creating nor activating swapfile."
@@ -1380,10 +1393,8 @@ main() {
         config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
         config_gpio
-        config_swap
     else
         echo "Non-interactive installation!"
-        config_swap "true"
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
