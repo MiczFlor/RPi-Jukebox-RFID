@@ -873,7 +873,7 @@ install_main() {
         # Install necessary Python packages
         # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
         sudo python3 -m venv .venv
-        sudo source .venv/bin/activate
+        source .venv/bin/activate
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
@@ -881,7 +881,7 @@ install_main() {
     echo "Installing additional Python packages..."
     # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
     sudo python3 -m venv .venv
-    sudo source .venv/bin/activate
+    source .venv/bin/activate
     sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
 
     samba_config
@@ -1018,7 +1018,7 @@ install_main() {
     if [[ "${GPIOconfig}" == "YES" ]]; then
         # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
         sudo python3 -m venv .venv
-        sudo source .venv/bin/activate
+        source .venv/bin/activate
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then

@@ -34,7 +34,7 @@ def setupPN532():
     print("Installing Python requirements for PN532...\n")
     # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
     runCmd("sudo python3 -m venv .venv")
-    runCmd("sudo source .venv/bin/activate")
+    runCmd("source .venv/bin/activate")
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
            "-q -r {}/components/rfid-reader/PN532/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
@@ -49,7 +49,7 @@ def setupMFRC522():
     print("Installing Python requirements for RC522...\n")
     # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
     runCmd("sudo python3 -m venv .venv")
-    runCmd("sudo source .venv/bin/activate")
+    runCmd("source .venv/bin/activate")
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
            "-q -r {}/components/rfid-reader/RC522/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
