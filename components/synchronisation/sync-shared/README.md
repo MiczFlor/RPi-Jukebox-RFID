@@ -17,9 +17,10 @@ To access the files on the server two modes are supported: SSH or MOUNT.
 Please make sure you have the correct access rights for the source and use key-based authentication for SSH.
 
 ### RFID scan sync
+
 If the feature "RFID scan sync" is activated, there will be a check on every RFID scan against the server if a matching shortcut and audiofolder is found and the changes will be transfered.
 The playback will be delayed for the time the data are transfered (see "SYNCSHAREDFULL" to use a full-sync if a lot of new files have been added).
-If the server is not reachable the check will be aborted after the timeout. So an unreachable server will cause a delay (see command "SYNCSHAREDONRFIDSCANTOGGLE" to toggle activation state). 
+If the server is not reachable the check will be aborted after the timeout. So an unreachable server will cause a delay (see command "SYNCSHAREDONRFIDSCANTOGGLE" to toggle activation state).
 Deleted shortcuts / audiofolders (not the contained items) will not be purged locally if deleted on remote. This is also true for changed shortcuts (the old audiofolder / -files will remain). To also delete not existing items us a "full-sync".
 
 ## Installation
@@ -27,18 +28,16 @@ Deleted shortcuts / audiofolders (not the contained items) will not be purged lo
 Run the 'install-sync-shared.sh' script. This will install all required packages and rights.
 Please configure all settings according to your setup.
 
-
 ## Configuration
 
 If your configuration has changed, run the script 'change_configuration.sh' to update the settings. This lets you also deactivate this feature.
 You may also change the settings in the according files directly.
 
-### Settings:
+### Settings
 
 **{INSTALLATION_ROOT}/settings/sync-shared-enabled**
 
 Holds the activation state of this feature. Values are "TRUE" or "FALSE"
-
 
 **{INSTALLATION_ROOT}/settings/sync-shared.conf**
 
@@ -56,6 +55,6 @@ SYNCSHAREDREMOTEPATH: The path to the shared files to sync (without trailing sla
 
 SYNCSHAREDONRFIDSCAN: Holds the activation state of the optional feature "RFID scan sync". Values are "TRUE" or "FALSE"
 
-
 ## Special Thanks
-inspired by [splitti - phoniebox_rsync](https://github.com/splitti/phoniebox_rsync)
+
+Inspired by [splitti - phoniebox_rsync](https://github.com/splitti/phoniebox_rsync)

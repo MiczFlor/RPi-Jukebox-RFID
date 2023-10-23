@@ -1,0 +1,37 @@
+name: Test Install Scripts Debian
+
+on:
+  schedule:
+    # run at 5:00 every sunday
+    - cron: '0 5 * * 0'
+  push:
+    branches-ignore:
+      - 'future3/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ develop ]
+
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ github.ref }}-test-debian
+    cancel-in-progress: true
+
+jobs:
+
+  # Build container and run tests
+  run:
+    name: ${{ matrix.debian_version_name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        debian_version_name: ['bullseye', 'buster']
+    uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
+    with:
+      runs_on: ubuntu-latest
+      platform: linux/arm/v7
+      docker_image_name: rpi-jukebox-rfid
+      cache_scope: ${{ github.ref }}-test-debian
+      matrix_usernames: "['pi', 'hans']"
+      matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
+      debian_version_name: ${{ matrix.debian_version_name }}

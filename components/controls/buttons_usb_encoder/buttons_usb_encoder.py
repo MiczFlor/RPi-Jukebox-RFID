@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.append(".") # This command should be before imports of components
+sys.path.append(".")  # This command should be before imports of components
 
 import logging
 from evdev import categorize, ecodes, KeyEvent
