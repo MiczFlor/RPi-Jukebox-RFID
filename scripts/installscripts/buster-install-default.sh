@@ -515,16 +515,30 @@ config_spotify() {
 # created for you if needed.
 #
 "
-            read -rp "Would you like to have a swapfile created and activated now? [Y/n] " SPOTIcreateswap
+            read -rp "Would you like to have a swapfile created and activated now? [Y/n] " response
+            case "${response,,}" in
+              yes|y)
+                SPOTIcreateswap=YES
+              ;;
+              *)
+                SPOTIcreateswap=NO
+              ;;
+            esac
+            if [ "${SPOTIcreateswap}" == "NO" ]; then
+              echo "You don't want a swapfile to be created."
+            else
+              echo "A swapfile will be created and activated for you."
+            fi
             ;;
     esac
+
     # append variables to config file
     {
         echo "SPOTinstall=\"$SPOTinstall\"";
         echo "SPOTIuser=\"$SPOTIuser\"";
         echo "SPOTIpass=\"$SPOTIpass\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
-        echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+        echo "SPOTIclientsecret=\"$SPOTIclientsecret\"";
         echo "SPOTIcreateswap=\"$SPOTIcreateswap\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -1306,7 +1320,7 @@ create_swap() {
     # If Available memory is less than 2 GB (which is round about what's required during
     # gst-plugin-spotify compilation later, ask if another 2 GB swap should be created and
     # activated.
-    local YES_TO_ALL=${1:-false}
+    local CREATE_SWAPFILE=${1:-NO}
 
     # Install required tools not yet installed
     local apt_get="sudo apt-get -qq --yes"
@@ -1350,21 +1364,21 @@ EOF
 EOF
         else
             if [ ! -f /swapfile ]; then
-                case "$YES_TO_ALL" in
-                [nN])
-                # Do not create swap
-                echo -e "\nNot creating nor activating swapfile."
-                echo -e "Your system still lacks available memory though ...\n"
+                case "${CREATE_SWAPFILE^^}" in
+                NO)
+                  # Do not create swap
+                  echo -e "\nNot creating nor activating swapfile."
+                  echo -e "Your system still lacks available memory though ...\n"
                 ;;
-                *)
-                # Do create swap
-                echo -e "\nCreating 2 GB swapfile at '/swapfile'. This may take several minutes ...\n"
-                sudo dd if=/dev/zero of=/swapfile bs=1024k count=2k
-                sudo chmod 600 /swapfile
-                sudo mkswap /swapfile
-                if ! grep -E '^/swapfile' /etc/fstab; then
+                YES)
+                  # Do create swap
+                  echo -e "\nCreating 2 GB swapfile at '/swapfile'. This may take several minutes ...\n"
+                  sudo dd if=/dev/zero of=/swapfile bs=1024k count=2k
+                  sudo chmod 600 /swapfile
+                  sudo mkswap /swapfile
+                  if ! grep -E '^/swapfile' /etc/fstab; then
                     echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" | sudo tee -a /etc/fstab >/dev/null
-                fi
+                  fi
                 ;;
                 esac
             else

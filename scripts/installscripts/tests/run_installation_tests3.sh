@@ -15,18 +15,37 @@ echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selection
 export DEBIAN_FRONTEND=noninteractive
 
 # Run installation (in interactive mode)
-# y confirm interactive
-# n dont configure wifi
-# y Headphone as iface
+# y confirm interactive mode
+# n dont configure wifi (extra ENTER)
+# y Headphone as iface (extra ENTER)
 # y spotify with myuser, mypassword, myclient_id, myclient_secret
-# y configure mpd
-# y audio default location
-# y config gpio
-# n no RFID registration
-# n No reboot
+# y swapfile creation (extra ENTER)
+# y configure mpd (extra ENTER)
+# y audio default location (extra ENTER)
+# y config gpio (extra ENTER)
+# n start installation
 
 # TODO check, how this behaves on branches other than develop
-GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< $'y\nn\n\ny\n\ny\nmyuser\nmypassword\nmyclient_id\nmyclient_secret\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+GIT_BRANCH=develop bash ./scripts/installscripts/buster-install-default.sh <<< "y
+n
+
+y
+
+y
+myuser
+mypassword
+myclient_id
+myclient_secret
+y
+
+y
+
+y
+
+y
+n
+n
+"
 
 # Test installation
 ./scripts/installscripts/tests/test_installation.sh
