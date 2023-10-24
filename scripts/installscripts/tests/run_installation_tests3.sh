@@ -13,7 +13,6 @@ echo $PWD
 echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 # No interactive frontend
 export DEBIAN_FRONTEND=noninteractive
-echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 
 # Run installation (in interactive mode)
 # y confirm interactive mode
@@ -37,6 +36,7 @@ myuser
 mypassword
 myclient_id
 myclient_secret
+
 y
 
 y
@@ -47,7 +47,6 @@ y
 n
 n
 "
-INSTALLATION_EXITCODE=$?
 
 # Test installation
-./test_installation.sh $INSTALLATION_EXITCODE
+./scripts/installscripts/tests/test_installation.sh
