@@ -10,7 +10,6 @@
 #
 # 1. download the install file from github
 #    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
-#    (note: currently only works for buster and newer OS)
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
@@ -523,15 +522,46 @@ config_spotify() {
             read -rp "Type your Spotify password: " SPOTIpass
             read -rp "Type your client_id: " SPOTIclientid
             read -rp "Type your client_secret: " SPOTIclientsecret
+            clear
+            echo "#####################################################
+#
+# Swapfile creation
+#
+# With the current way Spotify support is build, a lot of RAM needs
+# to be available in order for the required components to build
+# correctly. This includes even recent Raspberry Pi versions.
+# In general: If less than 2 GB RAM is available in your system, the
+# build of gst-plugin-spotify will most certainly fail.
+#
+# This script can detect if a swapfile is required and have one
+# created for you if needed.
+#
+"
+            read -rp "Would you like to have a swapfile created and activated now? [Y/n] " response
+            case "${response,,}" in
+              yes|y)
+                SPOTIcreateswap=YES
+              ;;
+              *)
+                SPOTIcreateswap=NO
+              ;;
+            esac
+            if [ "${SPOTIcreateswap}" == "NO" ]; then
+              echo "You don't want a swapfile to be created."
+            else
+              echo "A swapfile will be created and activated for you."
+            fi
             ;;
     esac
+
     # append variables to config file
     {
         echo "SPOTinstall=\"$SPOTinstall\"";
         echo "SPOTIuser=\"$SPOTIuser\"";
         echo "SPOTIpass=\"$SPOTIpass\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
-        echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+        echo "SPOTIclientsecret=\"$SPOTIclientsecret\"";
+        echo "SPOTIcreateswap=\"$SPOTIcreateswap\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -686,6 +716,7 @@ check_config_file() {
             check_variable "SPOTIpass"
             check_variable "SPOTIclientid"
             check_variable "SPOTIclientsecret"
+            check_variable "SPOTIcreateswap"
         fi
     fi
     check_variable "MPDconfig"
@@ -858,6 +889,9 @@ install_main() {
 
     # Install required spotify packages
     if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Creating and activating SWAP file if requested..."
+        create_swap "${SPOTIcreateswap}"
+
         echo "Installing dependencies for Spotify support..."
         # keep major verson 3 of mopidy
         echo -e "Package: mopidy\nPin: version 3.*\nPin-Priority: 1001" | sudo tee /etc/apt/preferences.d/mopidy
@@ -1302,6 +1336,80 @@ finish_installation() {
             sudo shutdown -r now
             ;;
     esac
+}
+
+create_swap() {
+    # If Available memory is less than 2 GB (which is round about what's required during
+    # gst-plugin-spotify compilation later, ask if another 2 GB swap should be created and
+    # activated.
+    local CREATE_SWAPFILE=${1:-NO}
+
+    # Install required tools not yet installed
+    local apt_get="sudo apt-get -qq --yes"
+    for app in awk bc; do
+        if ! compgen -A function -abck | grep -Eq '^'"${app}"'$'; then
+            ${apt_get} install ${app}
+        fi
+    done
+
+    # Get Available memory in GB
+    local MEM_AVAILABLE
+    MEM_AVAILABLE=$(awk '/MemAvailable/ { printf "%.3f\n", $2/1024/1024 }' /proc/meminfo)
+    # Get free swap in GB
+    local SWAP_FREE
+    SWAP_FREE=$(awk '/SwapFree/ { printf "%.3f\n", $2/1024/1024 }' /proc/meminfo)
+    # Get available storage space on '/'
+    local ROOT_FREE
+    ROOT_FREE=$(df -BG -P / | tail -n 1 | awk '{print $4}')
+
+    # If available memory + free swap is less than 2 GB
+    if (( $(echo "(${MEM_AVAILABLE} + ${SWAP_FREE}) < 2" | bc -l) )); then
+        clear
+
+        cat <<EOF
+#####################################################
+#
+# Creating and activating a swap file
+#
+# The amount of memory available in your system (${MEM_AVAILABLE} GB)
+# is less than the recommended minimum of 2 GB. It is recommended to
+# have this script create and activate a 2 GB sized swapfile at '/swapfile'
+# for you now.
+EOF
+        if [ "${ROOT_FREE//G}" -le 2 ]; then
+            cat <<EOF
+#
+# It seems that you do not have sufficient storage available at '/'.
+# So this script can't create and activate a swapfile for you.
+# Continue at your own risk and consider to use a bigger storage
+# before trying again.
+EOF
+        else
+            if [ ! -f /swapfile ]; then
+                case "${CREATE_SWAPFILE^^}" in
+                NO)
+                  # Do not create swap
+                  echo -e "\nNot creating nor activating swapfile."
+                  echo -e "Your system still lacks available memory though ...\n"
+                ;;
+                YES)
+                  # Do create swap
+                  echo -e "\nCreating 2 GB swapfile at '/swapfile'. This may take several minutes ...\n"
+                  sudo dd if=/dev/zero of=/swapfile bs=1024k count=2k
+                  sudo chmod 600 /swapfile
+                  sudo mkswap /swapfile
+                  if ! grep -E '^/swapfile' /etc/fstab; then
+                    echo -e "\n/swapfile\tnone\tswap\tdefaults\t0\t0" | sudo tee -a /etc/fstab >/dev/null
+                  fi
+                ;;
+                esac
+            else
+                echo -e "\nWARNING: '/swapfile' already exists. Not changing it, just activating all swaps.\n"
+            fi
+        fi
+    fi
+
+    sudo swapon -a
 }
 
 ########
