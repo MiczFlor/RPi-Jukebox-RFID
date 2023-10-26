@@ -84,7 +84,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 #### What's new in Version 2.4.0?
 
 * 🔥 Fixed `evdev` bug (fixes e.g. #1721, #1653, #1618, #1501 etc.)
-* 🔥 New support for Raspian Bullseye (and still for Buster) #1849
+* 🔥 New support for Raspberry Pi OS Bullseye (and still for Buster) #1849
 * Publish "card swiped" event via MQTT #1496
 * Spotify integration **still doesn't work** - please follow the discussion at <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
 * More fixed bugs and minor improvements...
@@ -126,7 +126,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 * Two editions:
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * **MUST READ** for users of *[Phoniebox +Spotify Edition](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)*
-* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL) oder [Complete Install Guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-COMPLETE-GUIDE)
+* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL) or [Complete Install Guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-COMPLETE-GUIDE)
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 * Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO Control Readme](components/gpio_control/README.md).
 
