@@ -21,11 +21,11 @@ jobs:
 
   # Build container and run tests
   run:
-    name: ${{ matrix.debian_version_name }}
+    name: ${{ matrix.debian_codename }}
     strategy:
       fail-fast: false
       matrix:
-        debian_version_name: ['bullseye', 'buster']
+        debian_codename: ['bullseye', 'buster']
     uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
     with:
       runs_on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
       cache_scope: ${{ github.ref }}-test-debian
       matrix_usernames: "['pi', 'hans']"
       matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
-      debian_version_name: ${{ matrix.debian_version_name }}
+      debian_codename: ${{ matrix.debian_codename }}

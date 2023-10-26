@@ -36,7 +36,7 @@ This is a work in progress so expect things to fail or being flaky.
         * for builds
           - on normal PCs use `--platform=linux/amd64`
           - on a raspberry pi use `--platform=linux/arm/v7`
-        * to use a different debian version as base add parameter `--build-arg="DEBIAN_VERSION_NAME=<code_name>"` (<code_name> = e.g. buster, bullseye, ...).
+        * to use a different debian version as base add parameter `--build-arg="DEBIAN_CODENAME=<code_name>"` (<code_name> = e.g. buster, bullseye, ...).
 
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
