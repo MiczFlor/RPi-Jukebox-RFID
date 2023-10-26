@@ -10,7 +10,7 @@ labels: bug, needs triage
 ### What I did
 
 <!--
-i.e. `I installed the raspberry pi with above mentioned buster image and ran the installer script`
+i.e. `I installed the raspberry pi with below mentioned image and ran the installer script`
 -->
 
 ### What happened
