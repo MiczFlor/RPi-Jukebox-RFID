@@ -122,7 +122,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 #### Quick install Version 2
 
-* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) for Raspberry Pi OS Buster and Bullseye.
+* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) for Raspberry Pi OS.
 * Two editions:
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * **MUST READ** for users of *[Phoniebox +Spotify Edition](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)*
