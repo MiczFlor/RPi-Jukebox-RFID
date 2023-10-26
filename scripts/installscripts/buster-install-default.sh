@@ -28,7 +28,10 @@ DATETIME=$(date +"%Y%m%d_%H%M%S")
 SCRIPTNAME="$(basename $0)"
 JOB="${SCRIPTNAME}"
 
-HOME_DIR=$(echo $HOME)
+CURRENT_USER="${SUDO_USER:-$(whoami)}"
+HOME_DIR=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
+echo "Current User: $CURRENT_USER"
+echo "User home dir: $HOME_DIR"
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
@@ -90,6 +93,25 @@ log_close() {
     fi
 }
 
+checkPrerequisite() {
+    #currently the user 'pi' is mandatory
+    #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
+    if [ "${CURRENT_USER}" != "pi" ]; then
+        echo
+        echo "ERROR: User must be 'pi'!"
+        echo "       Other usernames are currently not supported."
+        echo "       Please check the wiki for further information"
+        exit 2
+    fi
+
+    if [ "${HOME_DIR}" != "/home/pi" ]; then
+        echo
+        echo "ERROR: HomeDir must be '/home/pi'!"
+        echo "       Other usernames are currently not supported."
+        echo "       Please check the wiki for further information"
+        exit 2
+    fi
+}
 
 welcome() {
     clear
@@ -1286,6 +1308,8 @@ finish_installation() {
 # Main #
 ########
 main() {
+    checkPrerequisite
+
     # Skip interactive Samba WINS config dialog
     echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 

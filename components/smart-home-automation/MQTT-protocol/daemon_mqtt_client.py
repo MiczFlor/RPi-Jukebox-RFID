@@ -452,6 +452,7 @@ def regex(needle, hay, exception="-"):
     else:
         return exception
 
+
 def getDuration(status):
     """ Find the duration of the track in the output from mpd status"""
 
@@ -463,8 +464,9 @@ def getDuration(status):
         # this attribute value is split into two parts by ":"
         # first is the elapsed time and the second part is the duration
         duration = regex("\ntime: .*:(.*)\n", status, "0")
-    
+
     return int(float(duration))
+
 
 REPEAT_MODE_OFF = "off"
 REPEAT_MODE_SINGLE = "single"
