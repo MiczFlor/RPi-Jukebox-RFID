@@ -1318,25 +1318,25 @@ autohotspot() {
 
     if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
 
-    # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
+        # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-    # required packages
-    ${apt_get} install dnsmasq hostapd
-    sudo systemctl unmask hostapd
-    sudo systemctl disable hostapd
-    sudo systemctl disable dnsmasq
+        # required packages
+        ${apt_get} install dnsmasq hostapd
+        sudo systemctl unmask hostapd
+        sudo systemctl disable hostapd
+        sudo systemctl disable dnsmasq
 
-    # configure DNS
-    if [ -f /etc/dnsmasq.conf ]; then
-        sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-        sudo touch /etc/dnsmasq.conf
-    else
-        sudo touch /etc/dnsmasq.conf
-    fi
+        # configure DNS
+        if [ -f /etc/dnsmasq.conf ]; then
+            sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
+            sudo touch /etc/dnsmasq.conf
+        else
+            sudo touch /etc/dnsmasq.conf
+        fi
 
-    local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+        local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
 
-    sudo bash -c "cat << EOF > /etc/dnsmasq.conf
+        sudo bash -c "cat << EOF > /etc/dnsmasq.conf
 #AutoHotspot Config
 #stop DNSmasq from using resolv.conf
 no-resolv
@@ -1346,14 +1346,14 @@ bind-interfaces
 dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h
 EOF"
 
-    # configure hotspot
-    if [ -f /etc/hostapd/hostapd.conf ]; then
-        sudo mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.orig
-        sudo touch /etc/hostapd/hostapd.conf
-    else
-        sudo touch /etc/hostapd/hostapd.conf
-    fi
-    sudo bash -c "cat << EOF > /etc/hostapd/hostapd.conf
+        # configure hotspot
+        if [ -f /etc/hostapd/hostapd.conf ]; then
+            sudo mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.orig
+            sudo touch /etc/hostapd/hostapd.conf
+        else
+            sudo touch /etc/hostapd/hostapd.conf
+        fi
+        sudo bash -c "cat << EOF > /etc/hostapd/hostapd.conf
 #2.4GHz setup wifi 80211 b,g,n
 interface=wlan0
 driver=nl80211
@@ -1376,34 +1376,34 @@ ieee80211n=1
 ieee80211d=1
 EOF"
 
-    # configure Hotspot daemon
-    if [ -f /etc/default/hostapd ]; then
-        sudo mv /etc/default/hostapd /etc/default/hostapd.orig
-        sudo touch /etc/default/hostapd
-    else
-        sudo touch /etc/default/hostapd
-    fi
-    sudo bash -c 'cat << EOF > /etc/default/hostapd
+        # configure Hotspot daemon
+        if [ -f /etc/default/hostapd ]; then
+            sudo mv /etc/default/hostapd /etc/default/hostapd.orig
+            sudo touch /etc/default/hostapd
+        else
+            sudo touch /etc/default/hostapd
+        fi
+        sudo bash -c 'cat << EOF > /etc/default/hostapd
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
 EOF'
 
-    if [ $(grep -v '^$' /etc/network/interfaces |wc -l) -gt 5 ]; then
-        sudo cp /etc/network/interfaces /etc/network/interfaces-backup
-    fi
+        if [ $(grep -v '^$' /etc/network/interfaces |wc -l) -gt 5 ]; then
+            sudo cp /etc/network/interfaces /etc/network/interfaces-backup
+        fi
 
-    # disable powermanagement of wlan0 device
-    sudo iwconfig wlan0 power off
+        # disable powermanagement of wlan0 device
+        sudo iwconfig wlan0 power off
 
-    if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
-        sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
-    fi
+        if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
+            sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
+        fi
 
-    # create service to trigger hotspot
-    local autohotspot_script=/usr/bin/autohotspot
-    sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot $autohotspot_script
-    sudo chmod +x $autohotspot_script
+        # create service to trigger hotspot
+        local autohotspot_script=/usr/bin/autohotspot
+        sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot $autohotspot_script
+        sudo chmod +x $autohotspot_script
 
-    sudo bash -c "cat << EOF > /etc/systemd/system/autohotspot.service
+        sudo bash -c "cat << EOF > /etc/systemd/system/autohotspot.service
 [Unit]
 Description=Automatically generates an internet Hotspot when a valid ssid is not in range
 After=multi-user.target
@@ -1415,17 +1415,17 @@ ExecStart=${autohotspot_script}
 WantedBy=multi-user.target
 EOF"
 
-    sudo systemctl enable autohotspot.service
+        sudo systemctl enable autohotspot.service
 
-    # create crontab entry
-    if [[ ! $(grep "autohotspot" /var/spool/cron/crontabs/pi) ]]; then
-        sudo bash -c "cat << EOF >> /var/spool/cron/crontabs/pi
+        # create crontab entry
+        if [[ ! $(grep "autohotspot" /var/spool/cron/crontabs/pi) ]]; then
+            sudo bash -c "cat << EOF >> /var/spool/cron/crontabs/pi
 */5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1
 EOF"
-    fi
-    sudo chown pi:crontab /var/spool/cron/crontabs/pi
-    sudo chmod 600 /var/spool/cron/crontabs/pi
-    sudo /usr/bin/crontab /var/spool/cron/crontabs/pi
+        fi
+        sudo chown pi:crontab /var/spool/cron/crontabs/pi
+        sudo chmod 600 /var/spool/cron/crontabs/pi
+        sudo /usr/bin/crontab /var/spool/cron/crontabs/pi
     fi
 }
 
