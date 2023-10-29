@@ -229,6 +229,90 @@ esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
+config_autohotspot() {
+    #####################################################
+    # Ask if an autohotspot should be created if no known network is found.
+
+    clear
+
+    echo "#####################################################
+#
+# CONFIGURE AUTOHOTSPOT
+#
+# Automatically sets up a hotspot if no known network is found.
+# This enables you to directly connect to your phoniebox
+# and change configuration (e.g. while you travel).
+# (Note: can be done manually later, if you are unsure.)
+"
+read -rp "Do you want to configure autohotspot? [y/N] " response
+echo ""
+case "$response" in
+    [yY][eE][sS]|[yY])
+        AUTOHOTSPOTconfig=YES
+        AUTOHOTSPOTssid="phoniebox"
+        AUTOHOTSPOTcountryCode="DE"
+        AUTOHOTSPOTpass="PlayItLoud"
+        AUTOHOTSPOTip="10.0.0.5"
+        echo ""
+        echo "The autohotspot configuration uses this default values:"
+        echo "SSID              : $AUTOHOTSPOTssid"
+        echo "WiFi Country Code : $AUTOHOTSPOTcountryCode"
+        echo "Password          : $AUTOHOTSPOTpass"
+        echo "Static IP         : $AUTOHOTSPOTip"
+        read -rp "Do you want to use this default values? [Y/n] " response
+        echo ""
+        case "$response" in
+            [nN][oO]|[nN])
+                #Ask for SSID
+                read -rp "* Type SSID name: " AUTOHOTSPOTssid
+                #Ask for wifi country code
+                read -rp "* WiFi Country Code (e.g. DE, GB, CZ or US): " AUTOHOTSPOTcountryCode
+                #Ask for password
+                read -rp "* Type password: " AUTOHOTSPOTpass
+                #Ask for IP
+                read -rp "* Static IP (e.g. 192.168.1.199): " AUTOHOTSPOTip
+                echo ""
+                echo "Your Autohotspot config:"
+                echo "SSID              : $AUTOHOTSPOTssid"
+                echo "WiFi Country Code : $AUTOHOTSPOTcountryCode"
+                echo "Password          : $AUTOHOTSPOTpass"
+                echo "Static IP         : $AUTOHOTSPOTip"
+                read -rp "Are these values correct? [Y/n] " response
+                echo ""
+                case "$response" in
+                    [nN][oO]|[nN])
+                        echo "The values are incorrect."
+                        read -rp "Hit ENTER to exit and start over." INPUT; exit
+                        ;;
+                    *)
+                        # step out and continue
+                        ;;
+                esac
+                ;;
+            *)
+                # step out and continue
+                ;;
+        esac
+        # append variables to config file
+        {
+            echo "AUTOHOTSPOTconfig=\"$AUTOHOTSPOTconfig\"";
+            echo "AUTOHOTSPOTssid=\"$AUTOHOTSPOTssid\"";
+            echo "AUTOHOTSPOTcountryCode=\"$AUTOHOTSPOTcountryCode\"";
+            echo "AUTOHOTSPOTpass=\"$AUTOHOTSPOTpass\"";
+            echo "AUTOHOTSPOTip=\"$AUTOHOTSPOTip\"";
+        } >> "${HOME_DIR}/PhonieboxInstall.conf"
+        ;;
+    *)
+        AUTOHOTSPOTconfig=NO
+        echo "You don't want to configure Autohotspot."
+        # append variables to config file
+        echo "AUTOHOTSPOTconfig=$AUTOHOTSPOTconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        ;;
+
+esac
+read -rp "Hit ENTER to proceed to the next step." INPUT
+}
+
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
@@ -1232,6 +1316,8 @@ autohotspot() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
 
+    if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
+
     # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
     # required packages
@@ -1247,15 +1333,18 @@ autohotspot() {
     else
         sudo touch /etc/dnsmasq.conf
     fi
-    sudo bash -c 'cat << EOF > /etc/dnsmasq.conf
+
+    local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+
+    sudo bash -c "cat << EOF > /etc/dnsmasq.conf
 #AutoHotspot Config
 #stop DNSmasq from using resolv.conf
 no-resolv
 #Interface to use
 interface=wlan0
 bind-interfaces
-dhcp-range=10.0.0.50,10.0.0.150,12h
-EOF'
+dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h
+EOF"
 
     # configure hotspot
     if [ -f /etc/hostapd/hostapd.conf ]; then
@@ -1264,11 +1353,11 @@ EOF'
     else
         sudo touch /etc/hostapd/hostapd.conf
     fi
-    sudo bash -c 'cat << EOF > /etc/hostapd/hostapd.conf
+    sudo bash -c "cat << EOF > /etc/hostapd/hostapd.conf
 #2.4GHz setup wifi 80211 b,g,n
 interface=wlan0
 driver=nl80211
-ssid=phoniebox
+ssid=${AUTOHOTSPOTssid}
 hw_mode=g
 channel=8
 wmm_enabled=0
@@ -1276,16 +1365,16 @@ macaddr_acl=0
 auth_algs=1
 ignore_broadcast_ssid=0
 wpa=2
-wpa_passphrase=PlayItLoud
+wpa_passphrase=${AUTOHOTSPOTpass}
 wpa_key_mgmt=WPA-PSK
 wpa_pairwise=CCMP TKIP
 rsn_pairwise=CCMP
 
 #80211n - Change DE to your WiFi country code
-country_code=DE
+country_code=${AUTOHOTSPOTcountryCode}
 ieee80211n=1
 ieee80211d=1
-EOF'
+EOF"
 
     # configure Hotspot daemon
     if [ -f /etc/default/hostapd ]; then
@@ -1303,40 +1392,41 @@ EOF'
     fi
 
     # disable powermanagement of wlan0 device
-    sudo iw wlan0 set power_save off
+    sudo iwconfig wlan0 power off
 
     if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
         sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
     fi
 
     # create service to trigger hotspot
-    sudo bash -c 'cat << EOF > /etc/systemd/system/autohotspot.service
+    local autohotspot_script=/usr/bin/autohotspot
+    sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot $autohotspot_script
+    sudo chmod +x $autohotspot_script
+
+    sudo bash -c "cat << EOF > /etc/systemd/system/autohotspot.service
 [Unit]
 Description=Automatically generates an internet Hotspot when a valid ssid is not in range
 After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/autohotspot
+ExecStart=${autohotspot_script}
 [Install]
 WantedBy=multi-user.target
-EOF'
+EOF"
 
     sudo systemctl enable autohotspot.service
 
-    sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot /usr/bin/autohotspot
-    sudo chmod +x /usr/bin/autohotspot
-
     # create crontab entry
     if [[ ! $(grep "autohotspot" /var/spool/cron/crontabs/pi) ]]; then
-        sudo bash -c 'cat << EOF >> /var/spool/cron/crontabs/pi
-*/5 * * * * sudo /usr/bin/autohotspot >/dev/null 2>&1
-EOF'
+        sudo bash -c "cat << EOF >> /var/spool/cron/crontabs/pi
+*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1
+EOF"
     fi
     sudo chown pi:crontab /var/spool/cron/crontabs/pi
     sudo chmod 600 /var/spool/cron/crontabs/pi
     sudo /usr/bin/crontab /var/spool/cron/crontabs/pi
-
+    fi
 }
 
 finish_installation() {
@@ -1429,6 +1519,7 @@ main() {
         #reset_install_config_file
         config_wifi
         check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}" "${HOME_DIR}"
+        config_autohotspot
         config_audio_interface
         config_spotify
         config_mpd
@@ -1440,9 +1531,9 @@ main() {
     fi
     install_main "${JUKEBOX_HOME_DIR}"
     wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
+    autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
-    autohotspot "${JUKEBOX_HOME_DIR}"
 
     # Copy PhonieboxInstall.conf configuration file to settings folder
     sudo cp "${HOME_DIR}/PhonieboxInstall.conf" "${JUKEBOX_HOME_DIR}/settings/"
