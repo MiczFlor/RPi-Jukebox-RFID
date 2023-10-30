@@ -8,8 +8,8 @@ There are various options to get access to debug information.
 
 Debugging your setup runs in several steps
 
-1. Check that [audio output works](audio#checking-system-sound-output)
-2. Check that [MPD works](system#music-player-daemon-mpd)
+1. Check that [audio output works](audio.md#checking-system-sound-output)
+2. Check that [MPD works](system.md#music-player-daemon-mpd)
 3. Checking log messages from the Jukebox Core App as described below
 
 ## The short answer
