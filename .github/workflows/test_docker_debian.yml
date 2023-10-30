@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
       matrix:
         debian_codename: ['bullseye', 'buster']
-    uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
+    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
     with:
       runs_on: ubuntu-latest
       platform: linux/arm/v7
