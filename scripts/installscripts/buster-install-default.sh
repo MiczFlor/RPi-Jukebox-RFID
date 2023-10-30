@@ -1316,6 +1316,8 @@ autohotspot() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
 
+    local autohotspot_service="/etc/systemd/system/autohotspot.service"
+
     if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
 
         # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
@@ -1327,105 +1329,85 @@ autohotspot() {
         sudo systemctl disable dnsmasq
 
         # configure DNS
-        if [ -f /etc/dnsmasq.conf ]; then
-            sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-            sudo touch /etc/dnsmasq.conf
-        else
-            sudo touch /etc/dnsmasq.conf
+        local dnsmasq_conf=/etc/dnsmasq.conf
+        if [ -f $dnsmasq_conf ]; then
+            sudo mv $dnsmasq_conf "$dnsmasq_conf".orig
         fi
 
         local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
-
-        sudo bash -c "cat << EOF > /etc/dnsmasq.conf
-#AutoHotspot Config
-#stop DNSmasq from using resolv.conf
-no-resolv
-#Interface to use
-interface=wlan0
-bind-interfaces
-dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h
-EOF"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/dnsmasq.conf.stretch-default2-Hotspot.sample "${dnsmasq_conf}"
+        sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${dnsmasq_conf}"
+        sudo chown root:root "${dnsmasq_conf}"
+        sudo chmod 644 "${dnsmasq_conf}"
 
         # configure hotspot
-        if [ -f /etc/hostapd/hostapd.conf ]; then
-            sudo mv /etc/hostapd/hostapd.conf /etc/hostapd/hostapd.conf.orig
-            sudo touch /etc/hostapd/hostapd.conf
-        else
-            sudo touch /etc/hostapd/hostapd.conf
-        fi
-        sudo bash -c "cat << EOF > /etc/hostapd/hostapd.conf
-#2.4GHz setup wifi 80211 b,g,n
-interface=wlan0
-driver=nl80211
-ssid=${AUTOHOTSPOTssid}
-hw_mode=g
-channel=8
-wmm_enabled=0
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_passphrase=${AUTOHOTSPOTpass}
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=CCMP TKIP
-rsn_pairwise=CCMP
-
-#80211n - Change DE to your WiFi country code
-country_code=${AUTOHOTSPOTcountryCode}
-ieee80211n=1
-ieee80211d=1
-EOF"
-
-        # configure Hotspot daemon
-        if [ -f /etc/default/hostapd ]; then
-            sudo mv /etc/default/hostapd /etc/default/hostapd.orig
-            sudo touch /etc/default/hostapd
-        else
-            sudo touch /etc/default/hostapd
-        fi
-        sudo bash -c 'cat << EOF > /etc/default/hostapd
-DAEMON_CONF="/etc/hostapd/hostapd.conf"
-EOF'
-
-        if [ $(grep -v '^$' /etc/network/interfaces |wc -l) -gt 5 ]; then
-            sudo cp /etc/network/interfaces /etc/network/interfaces-backup
+        local hostapd_conf=/etc/hostapd/hostapd.conf
+        if [ -f $hostapd_conf ]; then
+            sudo mv "$hostapd_conf" "$hostapd_conf".orig
         fi
 
-        # disable powermanagement of wlan0 device
-        sudo iwconfig wlan0 power off
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/hostapd.conf.stretch-default2-Hotspot.sample "${hostapd_conf}"
+        sudo sed -i "s|%AUTOHOTSPOTssid%|${AUTOHOTSPOTssid}|g" "${hostapd_conf}"
+        sudo sed -i "s|%AUTOHOTSPOTpass%|${AUTOHOTSPOTpass}|g" "${hostapd_conf}"
+        sudo sed -i "s|%AUTOHOTSPOTcountryCode%|${AUTOHOTSPOTcountryCode}|g" "${hostapd_conf}"
+        sudo chown root:root "${hostapd_conf}"
+        sudo chmod 644 "${hostapd_conf}"
 
-        if [[ ! $(grep "nohook wpa_supplicant" /etc/dhcpcd.conf) ]]; then
-            sudo echo -e "nohook wpa_supplicant" >> /etc/dhcpcd.conf
+        # configure hotspot daemon
+        local hostapd_deamon=/etc/default/hostapd
+        if [ -f $hostapd_deamon ]; then
+            sudo mv $hostapd_deamon "$hostapd_deamon".orig
+        fi
+
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/hostapd.stretch-default2-Hotspot.sample "${hostapd_deamon}"
+        sudo sed -i "s|%HOSTAPD_CONF%|${hostapd_conf}|g" "${hostapd_deamon}"
+        sudo chown root:root "${hostapd_deamon}"
+        sudo chmod 644 "${hostapd_deamon}"
+
+        local network_interfaces=/etc/network/interfaces
+        if [  $(grep -v '^$' $network_interfaces | wc -l) -gt 5 ]; then
+            sudo cp $network_interfaces "$network_interfaces"-backup
+        fi
+
+        local dhcpcd_conf=/etc/dhcpcd.conf
+        if [[ ! $(grep -w "nohook wpa_supplicant" $dhcpcd_conf) ]]; then
+            sudo echo "nohook wpa_supplicant" >> $dhcpcd_conf
         fi
 
         # create service to trigger hotspot
         local autohotspot_script=/usr/bin/autohotspot
-        sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot $autohotspot_script
-        sudo chmod +x $autohotspot_script
+        sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot.sh "${autohotspot_script}"
+        sudo sed -i "s|10.0.0.5|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
+        sudo chmod +x "${autohotspot_script}"
 
-        sudo bash -c "cat << EOF > /etc/systemd/system/autohotspot.service
-[Unit]
-Description=Automatically generates an internet Hotspot when a valid ssid is not in range
-After=multi-user.target
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=${autohotspot_script}
-[Install]
-WantedBy=multi-user.target
-EOF"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/autohotspot.service.stretch-default2-Hotspot.sample "${autohotspot_service}"
+        sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service}"
+        sudo chown root:root "${autohotspot_service}"
+        sudo chmod 644 "${autohotspot_service}"
 
-        sudo systemctl enable autohotspot.service
+        sudo systemctl enable "${autohotspot_service}"
 
         # create crontab entry
-        if [[ ! $(grep "autohotspot" /var/spool/cron/crontabs/pi) ]]; then
-            sudo bash -c "cat << EOF >> /var/spool/cron/crontabs/pi
-*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1
-EOF"
+        local crontab_user=/var/spool/cron/crontabs/pi
+        if [ ! -f $crontab_user ]; then
+            sudo touch $crontab_user
         fi
-        sudo chown pi:crontab /var/spool/cron/crontabs/pi
-        sudo chmod 600 /var/spool/cron/crontabs/pi
-        sudo /usr/bin/crontab /var/spool/cron/crontabs/pi
+
+        if [[ ! $(sudo grep -w "${autohotspot_script}" $crontab_user) ]]; then
+            sudo echo "*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1" >> $crontab_user
+        fi
+        sudo chown pi:crontab $crontab_user
+        sudo chmod 600 $crontab_user
+        sudo /usr/bin/crontab $crontab_user
+
+    else
+        # disable services if autohotspot option was not selected
+        sudo systemctl stop hostapd
+        sudo systemctl disable hostapd
+        sudo systemctl stop dnsmasq
+        sudo systemctl disable dnsmasq
+        sudo systemctl stop "${autohotspot_service}"
+        sudo systemctl disable "${autohotspot_service}"
     fi
 }
 
