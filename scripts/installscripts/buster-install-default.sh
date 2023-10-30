@@ -1131,9 +1131,7 @@ install_main() {
 }
 
 wifi_settings() {
-    local sample_configs_dir="$1"
-    local dhcpcd_conf="$2"
-    local wpa_supplicant_conf="$3"
+    local jukebox_dir="$1"
 
     ###############################
     # WiFi settings (SSID password)
@@ -1145,10 +1143,12 @@ wifi_settings() {
     # $WIFIip
     # $WIFIipRouter
     if [ "${WIFIconfig}" == "YES" ]; then
+
         # DHCP configuration settings
+        local dhcpcd_conf="/etc/dhcpcd.conf"
         echo "Setting ${dhcpcd_conf}..."
         #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-        sudo cp "${sample_configs_dir}"/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
         # Change IP for router and Phoniebox
         sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
         sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
@@ -1158,9 +1158,10 @@ wifi_settings() {
         sudo chmod 664 "${dhcpcd_conf}"
 
         # WiFi SSID & Password
+        local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
         echo "Setting ${wpa_supplicant_conf}..."
         # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-        sudo cp "${sample_configs_dir}"/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
@@ -1505,7 +1506,7 @@ main() {
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
-    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
+    wifi_settings "${JUKEBOX_HOME_DIR}"
     autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
