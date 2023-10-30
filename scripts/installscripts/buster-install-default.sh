@@ -1331,8 +1331,8 @@ autohotspot() {
 
         # configure DNS
         local dnsmasq_conf=/etc/dnsmasq.conf
-        if [ -f $dnsmasq_conf ]; then
-            sudo mv $dnsmasq_conf "$dnsmasq_conf".orig
+        if [[ -f $dnsmasq_conf && ! -f "$dnsmasq_conf".orig ]]; then
+            sudo cp $dnsmasq_conf "$dnsmasq_conf".orig
         fi
 
         local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
@@ -1343,8 +1343,8 @@ autohotspot() {
 
         # configure hostapd conf
         local hostapd_conf=/etc/hostapd/hostapd.conf
-        if [ -f $hostapd_conf ]; then
-            sudo mv "$hostapd_conf" "$hostapd_conf".orig
+        if [[ -f $hostapd_conf && ! -f "$hostapd_conf".orig ]]; then
+            sudo cp $hostapd_conf "$hostapd_conf".orig
         fi
 
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/hostapd.conf.stretch-default2-Hotspot.sample "${hostapd_conf}"
@@ -1356,8 +1356,8 @@ autohotspot() {
 
         # configure hostapd daemon
         local hostapd_deamon=/etc/default/hostapd
-        if [ -f $hostapd_deamon ]; then
-            sudo mv $hostapd_deamon "$hostapd_deamon".orig
+        if [[ -f $hostapd_deamon && ! -f "$hostapd_deamon".orig ]]; then
+            sudo cp $hostapd_deamon "$hostapd_deamon".orig
         fi
 
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/hostapd.stretch-default2-Hotspot.sample "${hostapd_deamon}"
