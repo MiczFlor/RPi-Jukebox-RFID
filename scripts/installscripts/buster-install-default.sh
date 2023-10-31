@@ -239,7 +239,7 @@ config_autohotspot() {
 #
 # CONFIGURE AUTOHOTSPOT
 #
-# Automatically sets up a hotspot if no known network is found.
+# Automatically sets up a wifi hotspot if no known network is found.
 # This enables you to directly connect to your phoniebox
 # and change configuration (e.g. while you travel).
 # (Note: can be done manually later, if you are unsure.)
@@ -266,11 +266,11 @@ case "$response" in
                 #Ask for SSID
                 read -rp "* Type SSID name: " AUTOHOTSPOTssid
                 #Ask for wifi country code
-                read -rp "* WiFi Country Code (e.g. DE, GB, CZ or US): " AUTOHOTSPOTcountryCode
+                read -rp "* Type WiFi Country Code (e.g. DE, GB, CZ or US): " AUTOHOTSPOTcountryCode
                 #Ask for password
-                read -rp "* Type password: " AUTOHOTSPOTpass
+                read -rp "* Type password (8 characters at least. max 63 characters): " AUTOHOTSPOTpass
                 #Ask for IP
-                read -rp "* Static IP (e.g. 192.168.1.199): " AUTOHOTSPOTip
+                read -rp "* Type Static IP (e.g. 10.0.0.5, 192.168.1.199): " AUTOHOTSPOTip
                 echo ""
                 echo "Your Autohotspot config:"
                 echo "SSID              : $AUTOHOTSPOTssid"
@@ -880,9 +880,6 @@ install_main() {
     # INSTALLATION
 
     # Read install config as written so far
-    # (this might look stupid so far, but makes sense once
-    # the option to install from config file is introduced.)
-    # shellcheck source=scripts/installscripts/tests/ShellCheck/PhonieboxInstall.conf
     . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
@@ -1322,6 +1319,9 @@ autohotspot() {
 
         # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
+        # power management of wifi: switch off to avoid disconnecting
+        sudo iwconfig wlan0 power off
+
         # required packages
         ${apt_get} install dnsmasq hostapd iw
         sudo systemctl unmask hostapd
@@ -1340,7 +1340,7 @@ autohotspot() {
         sudo chown root:root "${dnsmasq_conf}"
         sudo chmod 644 "${dnsmasq_conf}"
 
-        # configure hotspot
+        # configure hostapd conf
         local hostapd_conf=/etc/hostapd/hostapd.conf
         if [ -f $hostapd_conf ]; then
             sudo mv "$hostapd_conf" "$hostapd_conf".orig
@@ -1353,7 +1353,7 @@ autohotspot() {
         sudo chown root:root "${hostapd_conf}"
         sudo chmod 644 "${hostapd_conf}"
 
-        # configure hotspot daemon
+        # configure hostapd daemon
         local hostapd_deamon=/etc/default/hostapd
         if [ -f $hostapd_deamon ]; then
             sudo mv $hostapd_deamon "$hostapd_deamon".orig
@@ -1364,14 +1364,14 @@ autohotspot() {
         sudo chown root:root "${hostapd_deamon}"
         sudo chmod 644 "${hostapd_deamon}"
 
-        local network_interfaces=/etc/network/interfaces
-        if [  $(grep -v '^$' $network_interfaces | wc -l) -gt 5 ]; then
-            sudo cp $network_interfaces "$network_interfaces"-backup
+        # configure dhcpcd conf
+        local dhcpcd_conf=/etc/dhcpcd.conf
+        if [ ! -f $dhcpcd_conf ]; then
+            sudo touch $dhcpcd_conf
         fi
 
-        local dhcpcd_conf=/etc/dhcpcd.conf
         if [[ ! $(grep -w "nohook wpa_supplicant" $dhcpcd_conf) ]]; then
-            sudo echo "nohook wpa_supplicant" >> $dhcpcd_conf
+            sudo bash -c "echo 'nohook wpa_supplicant' >> $dhcpcd_conf"
         fi
 
         # create service to trigger hotspot
@@ -1388,17 +1388,10 @@ autohotspot() {
         sudo systemctl enable "${autohotspot_service}"
 
         # create crontab entry
-        local crontab_user=/var/spool/cron/crontabs/pi
-        if [ ! -f $crontab_user ]; then
-            sudo touch $crontab_user
+        local crontab_user=$(crontab -l 2>/dev/null)
+        if [[ -z "$crontab_user" || ! $(echo "$crontab_user" | grep -w "${autohotspot_script}") ]]; then
+            ($crontab_user; echo "*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1") | crontab -
         fi
-
-        if [[ ! $(sudo grep -w "${autohotspot_script}" $crontab_user) ]]; then
-            sudo echo "*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1" >> $crontab_user
-        fi
-        sudo chown pi:crontab $crontab_user
-        sudo chmod 600 $crontab_user
-        sudo /usr/bin/crontab $crontab_user
 
     else
         # disable services if autohotspot option was not selected
