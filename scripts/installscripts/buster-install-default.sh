@@ -1399,15 +1399,15 @@ autohotspot() {
 
     else
         # disable services if autohotspot option was not selected
-        if systemctl list-unit-files hostapd.service ; then
+        if systemctl list-unit-files hostapd.service >/dev/null 2>&1 ; then
             sudo systemctl stop hostapd
             sudo systemctl disable hostapd
         fi
-        if systemctl list-unit-files dnsmasq.service ; then
+        if systemctl list-unit-files dnsmasq.service >/dev/null 2>&1 ; then
             sudo systemctl stop dnsmasq
             sudo systemctl disable dnsmasq
         fi
-        if systemctl list-unit-files ${autohotspot_service} ; then
+        if systemctl list-unit-files ${autohotspot_service} >/dev/null 2>&1 ; then
             sudo systemctl stop "${autohotspot_service}"
             sudo systemctl disable "${autohotspot_service}"
             sudo rm ${autohotspot_service_path}
