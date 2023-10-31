@@ -1314,7 +1314,14 @@ autohotspot() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
 
-    local autohotspot_service="/etc/systemd/system/autohotspot.service"
+    local autohotspot_service="autohotspot.service"
+    local autohotspot_script="/usr/bin/autohotspot"
+
+    local dnsmasq_conf=/etc/dnsmasq.conf
+    local hostapd_conf=/etc/hostapd/hostapd.conf
+    local hostapd_deamon=/etc/default/hostapd
+    local dhcpcd_conf=/etc/dhcpcd.conf
+    local dhcpcd_conf_nohook_wpa_supplicant="nohook wpa_supplicant"
 
     if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
 
@@ -1330,7 +1337,6 @@ autohotspot() {
         sudo systemctl disable dnsmasq
 
         # configure DNS
-        local dnsmasq_conf=/etc/dnsmasq.conf
         if [[ -f $dnsmasq_conf && ! -f "$dnsmasq_conf".orig ]]; then
             sudo cp $dnsmasq_conf "$dnsmasq_conf".orig
         fi
@@ -1342,7 +1348,6 @@ autohotspot() {
         sudo chmod 644 "${dnsmasq_conf}"
 
         # configure hostapd conf
-        local hostapd_conf=/etc/hostapd/hostapd.conf
         if [[ -f $hostapd_conf && ! -f "$hostapd_conf".orig ]]; then
             sudo cp $hostapd_conf "$hostapd_conf".orig
         fi
@@ -1355,7 +1360,6 @@ autohotspot() {
         sudo chmod 644 "${hostapd_conf}"
 
         # configure hostapd daemon
-        local hostapd_deamon=/etc/default/hostapd
         if [[ -f $hostapd_deamon && ! -f "$hostapd_deamon".orig ]]; then
             sudo cp $hostapd_deamon "$hostapd_deamon".orig
         fi
@@ -1366,42 +1370,75 @@ autohotspot() {
         sudo chmod 644 "${hostapd_deamon}"
 
         # configure dhcpcd conf
-        local dhcpcd_conf=/etc/dhcpcd.conf
         if [ ! -f $dhcpcd_conf ]; then
             sudo touch $dhcpcd_conf
         fi
 
-        if [[ ! $(grep -w "nohook wpa_supplicant" $dhcpcd_conf) ]]; then
-            sudo bash -c "echo 'nohook wpa_supplicant' >> $dhcpcd_conf"
+        if [[ ! $(grep -w "${dhcpcd_conf_nohook_wpa_supplicant}" $dhcpcd_conf) ]]; then
+            sudo bash -c "echo ${dhcpcd_conf_nohook_wpa_supplicant} >> $dhcpcd_conf"
         fi
 
         # create service to trigger hotspot
-        local autohotspot_script=/usr/bin/autohotspot
         sudo cp "${jukebox_dir}"/scripts/helperscripts/autohotspot.sh "${autohotspot_script}"
         sudo sed -i "s|10.0.0.5|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
         sudo chmod +x "${autohotspot_script}"
 
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/autohotspot.service.stretch-default2-Hotspot.sample "${autohotspot_service}"
-        sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service}"
-        sudo chown root:root "${autohotspot_service}"
-        sudo chmod 644 "${autohotspot_service}"
+        local autohotspot_service_path="/etc/systemd/system/${autohotspot_service}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/autohotspot.service.stretch-default2-Hotspot.sample "${autohotspot_service_path}"
+        sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service_path}"
+        sudo chown root:root "${autohotspot_service_path}"
+        sudo chmod 644 "${autohotspot_service_path}"
 
         sudo systemctl enable "${autohotspot_service}"
 
         # create crontab entry
         local crontab_user=$(crontab -l 2>/dev/null)
         if [[ -z "$crontab_user" || ! $(echo "$crontab_user" | grep -w "${autohotspot_script}") ]]; then
-            ($crontab_user; echo "*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1") | crontab -
+            (echo "$crontab_user"; echo "*/5 * * * * sudo ${autohotspot_script} >/dev/null 2>&1") | crontab -
         fi
 
     else
         # disable services if autohotspot option was not selected
-        sudo systemctl stop hostapd
-        sudo systemctl disable hostapd
-        sudo systemctl stop dnsmasq
-        sudo systemctl disable dnsmasq
-        sudo systemctl stop "${autohotspot_service}"
-        sudo systemctl disable "${autohotspot_service}"
+        if systemctl list-unit-files hostapd.service ; then
+            sudo systemctl stop hostapd
+            sudo systemctl disable hostapd
+        fi
+        if systemctl list-unit-files dnsmasq.service ; then
+            sudo systemctl stop dnsmasq
+            sudo systemctl disable dnsmasq
+        fi
+        if systemctl list-unit-files ${autohotspot_service} ; then
+            sudo systemctl stop "${autohotspot_service}"
+            sudo systemctl disable "${autohotspot_service}"
+            sudo rm ${autohotspot_service_path}
+        fi
+
+        local crontab_user=$(crontab -l 2>/dev/null)
+        if [[ ! -z "$crontab_user" && ! $(echo "$crontab_user" | grep -w "${autohotspot_script}") ]]; then
+            echo "$crontab_user" | sed "s|^.*\s${autohotspot_script}\s.*$||g" | crontab -
+        fi
+        if [ -f $autohotspot_script ]; then
+            sudo rm $autohotspot_script
+        fi
+
+        if [[ -f "$dnsmasq_conf".orig ]]; then
+            sudo cp "$dnsmasq_conf".orig "$dnsmasq_conf"
+        else
+            sudo rm "$dnsmasq_conf"
+        fi
+        if [[ -f "$hostapd_conf".orig ]]; then
+            sudo cp "$hostapd_conf".orig "$hostapd_conf"
+        else
+            sudo rm "$hostapd_conf"
+        fi
+        if [[ -f "$hostapd_deamon".orig ]]; then
+            sudo cp "$hostapd_deamon".orig "$hostapd_deamon"
+        else
+            sudo rm "$hostapd_deamon"
+        fi
+        if [[ -f $dhcpcd_conf && $(grep -w "${dhcpcd_conf_nohook_wpa_supplicant}" $dhcpcd_conf) ]]; then
+            sudo sed -i "s|${dhcpcd_conf_nohook_wpa_supplicant}||g" "${dhcpcd_conf}"
+        fi
     fi
 }
 
