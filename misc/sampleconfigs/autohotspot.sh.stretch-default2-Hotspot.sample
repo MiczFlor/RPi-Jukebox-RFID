@@ -37,7 +37,7 @@ createAdHocNetwork()
 {
     echo "Creating Hotspot"
     ip link set dev "$wifidev" down
-    ip a add 10.0.0.5/24 brd + dev "$wifidev"
+    ip a add %AUTOHOTSPOT_IP%/24 brd + dev "$wifidev"
     ip link set dev "$wifidev" up
     dhcpcd -k "$wifidev" >/dev/null 2>&1
     systemctl start dnsmasq
