@@ -168,6 +168,9 @@ CheckSSID()
     fi
 }
 
-
-FindSSID
-CheckSSID
+if rfkill list wifi | grep -i "Soft blocked: no" > /dev/null 2>&1 ; then
+    FindSSID
+    CheckSSID
+else
+    echo "skipped - wifi is deactivated."
+fi
