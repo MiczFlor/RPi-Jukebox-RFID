@@ -42,10 +42,6 @@ including mpd.conf and the like.
 Deletes sample folders with files and streams 
 inside the $AUDIOFOLDERSPATH directory
 
-## autohotspot
-
-Changed to autohotspot service
-
 ## cli-player.py
 
 Command line player to play folders on the Phoniebox.
@@ -66,5 +62,22 @@ not bound to any RFID card, and fixing broken links.
 A command line replacement some functionality of the phoniebox-web-ui, which challenges the raspberry pi zero. 
 Using this small script significantly reduces resource usage on the system.
 
+## setup_autohotspot.sh
 
+Script to setup the autohotspot feature. It automatically sets up a wifi hotspot if no known network is found.
+This is already included in the main install script, but can also be manually run.
 
+usage: 
+setup_autohotspot.sh <jukeboxDir> <activation=YES|NO> <ssid> <countryCode (e.g. DE, GB, CZ, ...)> <password (8..63 characters)> <ipAdress>"
+
+### activate
+```
+chmod +x ./scripts/helperscripts/setup_autohotspot.sh
+./scripts/helperscripts/setup_autohotspot.sh . YES phoniebox DE PlayItLoud 10.0.0.5
+```
+
+### deactivate
+```
+chmod +x ./scripts/helperscripts/setup_autohotspot.sh
+./scripts/helperscripts/setup_autohotspot.sh . NO
+```
