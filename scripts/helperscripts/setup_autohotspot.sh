@@ -135,7 +135,7 @@ else
 
     # remove crontab entry and script
     crontab_user=$(crontab -l 2>/dev/null)
-    if [[ ! -z "${crontab_user}" && ! $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
+    if [[ ! -z "${crontab_user}" && $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
         echo "${crontab_user}" | sed "s|^.*\s${autohotspot_script}\s.*$||g" | crontab -
     fi
 
