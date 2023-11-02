@@ -3,7 +3,7 @@
 ## Bluetooth Audio Buttons
 
 When a bluetooth sound device (headphone, speakers) connects attempt to
-automatically listen to it\'s buttons (play, next, etc.)
+automatically listen to it's buttons (play, next, etc.)
 
 The bluetooth input device name is matched automatically from the
 bluetooth sound card device name. During boot up, it is uncertain if the
@@ -30,12 +30,12 @@ bluetooth_audio_buttons:
 ### Custom key bindings
 
 You may change or extend the actions assigned to a button in the
-configuration. If the configuration contains a block \'mapping\', the
+configuration. If the configuration contains a block 'mapping', the
 default button-action mapping is *completely* replaced with the new
 mapping. The definitions for each key looks like
 `key-code: {rpc_command_definition}`. The RPC command follows the
 regular RPC command rules as defined in
-[RPC Commands](userguide/rpc_commands.md).
+[RPC Commands](rpc-commands.md).
 
 ``` yaml
 bluetooth_audio_buttons:
