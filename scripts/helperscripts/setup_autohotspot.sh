@@ -47,7 +47,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     # to correctly handling future deactivation of autohotspot
     if [ ! -f "${dnsmasq_conf}" ]; then
         sudo touch "${dnsmasq_conf}.remove"
-    elif [ ! -f "${dnsmasq_conf}.orig" ]; then
+    elif [ ! -f "${dnsmasq_conf}.orig" ] && [ ! -f "${dnsmasq_conf}.remove" ]; then
         sudo cp "${dnsmasq_conf}" "${dnsmasq_conf}.orig"
     fi
 
@@ -62,7 +62,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     # to correctly handling future deactivation of autohotspot
     if [ ! -f "${hostapd_conf}" ]; then
         sudo touch "${hostapd_conf}.remove"
-    elif [ ! -f "${hostapd_conf}.orig" ]; then
+    elif [ ! -f "${hostapd_conf}.orig" ] && [ ! -f "${hostapd_conf}.remove" ]; then
         sudo cp "${hostapd_conf}" "${hostapd_conf}.orig"
     fi
 
@@ -78,7 +78,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     # to correctly handling future deactivation of autohotspot
     if [ ! -f "${hostapd_deamon}" ]; then
         sudo touch "${hostapd_deamon}.remove"
-    elif [ ! -f "${hostapd_deamon}.orig" ]; then
+    elif [ ! -f "${hostapd_deamon}.orig" ] && [ ! -f "${hostapd_deamon}.remove" ]; then
         sudo cp "${hostapd_deamon}" "${hostapd_deamon}.orig"
     fi
 
@@ -95,7 +95,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
         sudo touch "${dhcpcd_conf}"
         sudo chown root:netdev "${dhcpcd_conf}"
         sudo chmod 664 "${dhcpcd_conf}"
-    elif [ ! -f "${dhcpcd_conf}.orig" ]; then
+    elif [ ! -f "${dhcpcd_conf}.orig" ] && [ ! -f "${dhcpcd_conf}.remove" ]; then
         sudo cp "${dhcpcd_conf}" "${dhcpcd_conf}.orig"
     fi
 
