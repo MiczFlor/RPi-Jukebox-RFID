@@ -57,9 +57,9 @@ KillHotspot()
 
 ChkWifiUp()
 {
-	echo "Checking WiFi connection ok"
+    echo "Checking WiFi connection ok"
     sleep 20 #give time for connection to be completed to router
-	if ! wpa_cli -i "$wifidev" status | grep 'ip_address' >/dev/null 2>&1
+    if ! wpa_cli -i "$wifidev" status | grep 'ip_address' >/dev/null 2>&1
     then #Failed to connect to wifi (check your wifi settings, password etc)
         echo 'Wifi failed to connect, falling back to Hotspot.'
         wpa_cli terminate "$wifidev" >/dev/null 2>&1
@@ -67,51 +67,49 @@ ChkWifiUp()
 	fi
 }
 
-NoDevice()
+CheckDevice()
 {
-	#if no wifi device,ie usb wifi removed, activate wifi so when it is
-	#reconnected wifi to a router will be available
-	echo "No wifi device connected"
-	wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
-	exit 1
+    local j=0
+    while [ true ] #wait for wifi if busy, usb wifi is slower.
+    do
+        echo "Device availability check: try $j"
+        if [ $j -ge 5 ]; then
+            #if no wifi device,ie usb wifi removed, activate wifi so when it is
+            #reconnected wifi to a router will be available
+            echo "No wifi device connected"
+            wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+            exit 1
+        elif (iw dev "$wifidev" info 2>&1 >/dev/null) ; then
+            echo "wifi device available"
+            return
+        else
+            j=$((j + 1))
+            sleep 2
+        fi
+    done
 }
 
 FindSSID()
 {
     #Check to see what SSID's and MAC addresses are in range
     ssidChk=('NoSSid')
-    i=0; j=0
-    until [ $i -eq 1 ] #wait for wifi if busy, usb wifi is slower.
+    local i=0; j=0
+    while [ $i -eq 0 ]
     do
-        ssidreply=$((iw dev "$wifidev" scan ap-force | egrep "^BSS|SSID:") 2>&1) >/dev/null 2>&1
-        echo "SSid's in range: " $ssidreply
-        echo "Device Available Check try " $j
-        if (($j >= 10)); then #if busy 10 times goto hotspot
-            echo "Device busy or unavailable 10 times, going to Hotspot"
+        scanreply=$(iw dev "$wifidev" scan ap-force 2>&1)
+        ssidreply=$(echo "$scanreply" | egrep "^BSS|SSID:")
+        echo "SSID availability check: try $j"
+        if [ $j -ge 5 ]; then
             ssidreply=""
             i=1
-        elif echo "$ssidreply" | grep "No such device (-19)" >/dev/null 2>&1; then
-            echo "No Device Reported, try " $j
-            NoDevice
-        elif echo "$ssidreply" | grep "Network is down (-100)" >/dev/null 2>&1 ; then
-            echo "Network Not available, trying again" $j
+        elif [ -z "$ssidreply" ] ; then
+            echo "Error scan SSID's: $scanreply"
             j=$((j + 1))
             sleep 2
-        elif echo "$ssidreply" | grep "Read-only file system (-30)" >/dev/null 2>&1 ; then
-            echo "Temporary Read only file system, trying again"
-            j=$((j + 1))
-            sleep 2
-        elif echo "$ssidreply" | grep "Invalid exchange (-52)" >/dev/null 2>&1 ; then
-            echo "Temporary unavailable, trying again"
-            j=$((j + 1))
-            sleep 2
-        elif ! echo "$ssidreply" | grep "resource busy (-16)"  >/dev/null 2>&1 ; then
-            echo "Device Available, checking SSid Results"
+        else
+            echo "SSID's in range:"
+            echo "$ssidreply"
             i=1
-        else #see if device not busy in 2 seconds
-            echo "Device unavailable checking again, try " $j
-            j=$((j + 1))
-            sleep 2
         fi
     done
 
@@ -168,6 +166,7 @@ CheckSSID()
     fi
 }
 
+CheckDevice
 if rfkill list wifi | grep -i "Soft blocked: no" > /dev/null 2>&1 ; then
     FindSSID
     CheckSSID
