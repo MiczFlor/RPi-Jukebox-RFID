@@ -1313,9 +1313,12 @@ folder_access() {
 autohotspot() {
     local jukebox_dir="$1"
 
-    local setup_script="${jukebox_dir}/scripts/helperscripts/setup_autohotspot.sh"
-    sudo chmod +x "${setup_script}"
-    "${setup_script}" "${jukebox_dir}" "${AUTOHOTSPOTconfig}" "${AUTOHOTSPOTssid}" "${AUTOHOTSPOTcountryCode}" "${AUTOHOTSPOTpass}" "${AUTOHOTSPOTip}"
+    # Behave the same as other steps and only add configuration if selected and dont remove
+    if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
+        local setup_script="${jukebox_dir}/scripts/helperscripts/setup_autohotspot.sh"
+        sudo chmod +x "${setup_script}"
+        "${setup_script}" "${jukebox_dir}" "${AUTOHOTSPOTconfig}" "${AUTOHOTSPOTssid}" "${AUTOHOTSPOTcountryCode}" "${AUTOHOTSPOTpass}" "${AUTOHOTSPOTip}"
+    fi
 }
 
 finish_installation() {
