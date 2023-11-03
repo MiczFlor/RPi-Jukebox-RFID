@@ -120,6 +120,8 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}"
 # speed of these commands.
 shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
 
+autohotspot_script="/usr/bin/autohotspot"
+
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
 then
@@ -1005,6 +1007,7 @@ case $COMMAND in
     enablewifi)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         rfkill unblock wifi
+        if [ -f $"autohotspot_script" ]; then sudo $"autohotspot_script"; fi
         ;;
     disablewifi)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -1030,6 +1033,7 @@ case $COMMAND in
             if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be activated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be activated"
             rfkill unblock wifi
+            if [ -f $"autohotspot_script" ]; then sudo $"autohotspot_script"; fi
         fi
         ;;
     randomcard)

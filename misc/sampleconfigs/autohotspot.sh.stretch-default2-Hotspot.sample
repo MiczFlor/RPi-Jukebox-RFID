@@ -88,7 +88,17 @@ CheckDevice()
             exit 1
         elif (iw dev "$wifidev" info 2>&1 >/dev/null) ; then
             echo "wifi device available"
-            return
+            if (rfkill list wifi -rno HARD,SOFT | grep -i "unblocked.*unblocked") >/dev/null 2>&1 ; then
+                local wifidev_up=$(ip link show "$wifidev" up)
+                if [ -z $"wifidev_up" ]; then
+                    ip link set dev "$wifidev" up
+                    sleep 2
+                fi
+                return
+            else
+                echo "wifi is deactivated"
+                exit 0
+            fi
         else
             j=$((j + 1))
             sleep 2
@@ -172,10 +182,7 @@ CheckSSID()
     fi
 }
 
+
 CheckDevice
-if rfkill list wifi | grep -i "Soft blocked: no" > /dev/null 2>&1 ; then
-    FindSSID
-    CheckSSID
-else
-    echo "skipped - wifi is deactivated."
-fi
+FindSSID
+CheckSSID
