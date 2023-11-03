@@ -1,7 +1,7 @@
 #!/bin/bash
-#version 0.95-41-N/HS
+#version 0.962-N/HS
 
-#You may share this script on the condition a reference to RaspberryConnect.com
+#You may share this script on the condition all references to RaspberryConnect.com
 #must be included in copies or derivatives of this script.
 
 #A script to switch between a wifi network and a non internet routed Hotspot
@@ -26,8 +26,7 @@ wifidev="wlan0" #device name to use. Default is wlan0.
 IFSdef=$IFS
 cnt=0
 #These four lines capture the wifi networks the RPi is setup to use
-wpassid=$(awk '/ssid="/{ print $0 }' /etc/wpa_supplicant/wpa_supplicant.conf | awk -F'ssid=' '{ print $2 }' ORS=',' | sed 's/\"/''/g' | sed 's/,$//')
-wpassid=$(echo "${wpassid//[$'\r\n']}")
+wpassid=$(awk '/ssid="/{ print $0 }' /etc/wpa_supplicant/wpa_supplicant.conf | awk -F'ssid=' '{ print $2 }' | sed 's/\r//g'| awk 'BEGIN{ORS=","} {print}' | sed 's/\"/''/g' | sed 's/,$//')
 IFS=","
 ssids=($wpassid)
 IFS=$IFSdef #reset back to defaults
@@ -80,6 +79,28 @@ ChkWifiUp()
 
 InitWPA() {
     wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+}
+
+chksys()
+{
+    #After some system updates hostapd gets masked using Raspbian Buster, and above. This checks and fixes
+    #the issue and also checks dnsmasq is ok so the hotspot can be generated.
+    #Check Hostapd is unmasked and disabled
+    if (systemctl -all list-unit-files hostapd.service | grep "hostapd.service masked") >/dev/null 2>&1 ;then
+        systemctl unmask hostapd.service >/dev/null 2>&1
+    fi
+    if (systemctl -all list-unit-files hostapd.service | grep "hostapd.service enabled") >/dev/null 2>&1 ;then
+        systemctl disable hostapd.service >/dev/null 2>&1
+        systemctl stop hostapd >/dev/null 2>&1
+    fi
+    #Check dnsmasq is disabled
+    if (systemctl -all list-unit-files dnsmasq.service | grep "dnsmasq.service masked") >/dev/null 2>&1 ;then
+        systemctl unmask dnsmasq >/dev/null 2>&1
+    fi
+    if (systemctl -all list-unit-files dnsmasq.service | grep "dnsmasq.service enabled") >/dev/null 2>&1 ;then
+        systemctl disable dnsmasq >/dev/null 2>&1
+        systemctl stop dnsmasq >/dev/null 2>&1
+    fi
 }
 
 CheckDevice()
@@ -192,7 +213,7 @@ CheckSSID()
     fi
 }
 
-
+chksys
 CheckDevice
 FindSSID
 CheckSSID
