@@ -9,6 +9,14 @@
 #Other setup required find out more at
 #http://www.raspberryconnect.com
 
+if [ $# -gt 0 ] ; then
+    if [ $# -eq 1 ] && [ "$1" == "--force-hotspot" ]; then
+        FORCE_HOTSPOT=1
+    else
+        echo "ignoring unrecognized parameter: $*"
+    fi
+fi
+
 NO_SSID='NoSSid'
 ssidChk="$NO_SSID"
 
@@ -108,6 +116,8 @@ CheckDevice()
 
 FindSSID()
 {
+    if [ -n "$FORCE_HOTSPOT" ]; then return; fi
+
     #Check to see what SSID's and MAC addresses are in range
     local i=0; j=0
     while [ $i -eq 0 ]
