@@ -9,6 +9,9 @@
 #Other setup required find out more at
 #http://www.raspberryconnect.com
 
+#Additions where made for the Phoniebox project
+#https://github.com/MiczFlor/RPi-Jukebox-RFID
+
 if [ $# -gt 0 ] ; then
     if [ $# -eq 1 ] && [ "$1" == "--force-hotspot" ]; then
         FORCE_HOTSPOT=1
@@ -43,7 +46,7 @@ mac=()
 
 ssidsmac=("${ssids[@]}" "${mac[@]}") #combines ssid and MAC for checking
 
-createAdHocNetwork()
+CreateAdHocNetwork()
 {
     echo "Creating Hotspot"
     ip link set dev "$wifidev" down
@@ -65,7 +68,7 @@ KillHotspot()
     dhcpcd  -n "$wifidev" >/dev/null 2>&1
 }
 
-ChkWifiUp()
+CheckWifiUp()
 {
     echo "Checking WiFi connection ok"
     sleep 20 #give time for connection to be completed to router
@@ -73,7 +76,7 @@ ChkWifiUp()
     then #Failed to connect to wifi (check your wifi settings, password etc)
         echo 'Wifi failed to connect, falling back to Hotspot.'
         wpa_cli terminate "$wifidev" >/dev/null 2>&1
-        createAdHocNetwork
+        CreateAdHocNetwork
     fi
 }
 
@@ -81,7 +84,7 @@ InitWPA() {
     wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
 }
 
-chksys()
+CheckServices()
 {
     #After some system updates hostapd gets masked using Raspbian Buster, and above. This checks and fixes
     #the issue and also checks dnsmasq is ok so the hotspot can be generated.
@@ -168,10 +171,6 @@ FindSSID()
             echo "Valid SSID Detected, assesing Wifi status"
             ssidChk=$ssid
             return 0
-        else
-            #No Network found, NoSSid issued"
-            echo "No SSid found, assessing WiFi status"
-            ssidChk="$NO_SSID"
         fi
     done
 }
@@ -186,14 +185,14 @@ CheckSSID()
             KillHotspot
             echo "Hotspot Deactivated, Bringing Wifi Up"
             InitWPA
-            ChkWifiUp
+            CheckWifiUp
         elif { wpa_cli -i "$wifidev" status | grep 'ip_address'; } >/dev/null 2>&1
         then #Already connected
             echo "Wifi already connected to a network"
         else #ssid exists and no hotspot running connect to wifi network
             echo "Connecting to the WiFi Network"
             InitWPA
-            ChkWifiUp
+            CheckWifiUp
         fi
     else #ssid or MAC address not in range
         if systemctl status hostapd | grep "(running)" >/dev/null 2>&1
@@ -206,14 +205,14 @@ CheckSSID()
             ip addr flush "$wifidev"
             ip link set dev "$wifidev" down
             rm -r /var/run/wpa_supplicant >/dev/null 2>&1
-            createAdHocNetwork
+            CreateAdHocNetwork
         else #"No SSID, activating Hotspot"
-            createAdHocNetwork
+            CreateAdHocNetwork
         fi
     fi
 }
 
-chksys
+CheckServices
 CheckDevice
 FindSSID
 CheckSSID
