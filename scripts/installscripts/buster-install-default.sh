@@ -872,18 +872,14 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-        sudo python3 -m venv .venv
-        source .venv/bin/activate
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
+        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt --break-system-packages
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-    sudo python3 -m venv .venv
-    source .venv/bin/activate
-    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
+    # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt --break-system-packages
 
     samba_config
 
@@ -1017,10 +1013,8 @@ install_main() {
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
-        # Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-        sudo python3 -m venv .venv
-        source .venv/bin/activate
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt --break-system-packages
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini

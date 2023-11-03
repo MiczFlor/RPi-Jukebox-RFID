@@ -33,10 +33,8 @@ else
 fi
 
 printf "Installing Python requirements for PN532...\n"
-# Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-sudo python3 -m venv .venv
-source .venv/bin/activate
-sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt
+# Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt --break-system-packages
 
 printf "Configure RFID reader in Phoniebox...\n"
 cp "${JUKEBOX_HOME_DIR}"/scripts/Reader.py.experimental "${JUKEBOX_HOME_DIR}"/scripts/Reader.py

@@ -17,10 +17,8 @@ printf "Please make sure that the RC522 reader is wired up correctly to the GPIO
 question "Continue"
 
 printf "Installing Python requirements for RC522...\n"
-# Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-sudo python3 -m venv .venv
-source .venv/bin/activate
-sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/RC522/requirements.txt
+# Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/RC522/requirements.txt --break-system-packages
 
 printf "Activating SPI...\n"
 sudo raspi-config nonint do_spi 0

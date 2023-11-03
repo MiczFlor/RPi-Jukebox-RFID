@@ -16,10 +16,8 @@ systemctl stop phoniebox-gpio-buttons.service
 systemctl disable phoniebox-gpio-buttons.service
 
 echo 'Install all required python modules'
-# Use a venv as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-python3 -m venv .venv
-source .venv/bin/activate
-python3 -m pip install --upgrade --force-reinstall -r requirements.txt
+# Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
+python3 -m pip install --upgrade --force-reinstall -r requirements.txt --break-system-packages
 
 echo
 echo 'Installing GPIO_Control service'
