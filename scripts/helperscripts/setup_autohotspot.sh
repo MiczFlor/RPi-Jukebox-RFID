@@ -40,7 +40,10 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     ${apt_get} install dnsmasq hostapd iw
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
+    sudo systemctl stop hostapd
+    sudo systemctl unmask dnsmasq
     sudo systemctl disable dnsmasq
+    sudo systemctl stop dnsmasq
 
     # configure DNS
     # create flag file or copy present conf to orig file
