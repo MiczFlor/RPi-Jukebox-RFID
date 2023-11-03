@@ -9,6 +9,9 @@
 #Other setup required find out more at
 #http://www.raspberryconnect.com
 
+NO_SSID='NoSSid'
+ssidChk="$NO_SSID"
+
 wifidev="wlan0" #device name to use. Default is wlan0.
 #use the command: iw dev ,to see wifi interface name
 
@@ -64,7 +67,11 @@ ChkWifiUp()
         echo 'Wifi failed to connect, falling back to Hotspot.'
         wpa_cli terminate "$wifidev" >/dev/null 2>&1
         createAdHocNetwork
-	fi
+    fi
+}
+
+InitWPA() {
+    wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
 }
 
 CheckDevice()
@@ -77,7 +84,7 @@ CheckDevice()
             #if no wifi device,ie usb wifi removed, activate wifi so when it is
             #reconnected wifi to a router will be available
             echo "No wifi device connected"
-            wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+            InitWPA
             exit 1
         elif (iw dev "$wifidev" info 2>&1 >/dev/null) ; then
             echo "wifi device available"
@@ -92,7 +99,6 @@ CheckDevice()
 FindSSID()
 {
     #Check to see what SSID's and MAC addresses are in range
-    ssidChk=('NoSSid')
     local i=0; j=0
     while [ $i -eq 0 ]
     do
@@ -124,7 +130,7 @@ FindSSID()
         else
             #No Network found, NoSSid issued"
             echo "No SSid found, assessing WiFi status"
-            ssidChk='NoSSid'
+            ssidChk="$NO_SSID"
         fi
     done
 }
@@ -132,20 +138,20 @@ FindSSID()
 CheckSSID()
 {
     #Create Hotspot or connect to valid wifi networks
-    if [ "$ssidChk" != "NoSSid" ]
+    if [ "$ssidChk" != "$NO_SSID" ]
     then
         if systemctl status hostapd | grep "(running)" >/dev/null 2>&1
         then #hotspot running and ssid in range
             KillHotspot
             echo "Hotspot Deactivated, Bringing Wifi Up"
-            wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+            InitWPA
             ChkWifiUp
         elif { wpa_cli -i "$wifidev" status | grep 'ip_address'; } >/dev/null 2>&1
         then #Already connected
             echo "Wifi already connected to a network"
         else #ssid exists and no hotspot running connect to wifi network
             echo "Connecting to the WiFi Network"
-            wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+            InitWPA
             ChkWifiUp
         fi
     else #ssid or MAC address not in range
