@@ -755,6 +755,14 @@ install_main() {
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
 
+    local break_system_packages=""
+    if [[ ${OS_CODENAME} == "bookworm" ]]; then
+        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP 668 https://stackoverflow.com/a/75696359
+        # this switch exists only under bookworm
+        echo "Allowing --break-system-packages under bookworm for PEP 668"
+        break_system_packages="--break-system-packages"
+    fi
+
     clear
 
     echo "#####################################################
@@ -833,7 +841,7 @@ install_main() {
     fi
 
     # prepare python3
-    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev python3-venv
+    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
 
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
@@ -872,14 +880,12 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt --break-system-packages
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt ${break-system-packages}
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt --break-system-packages
+    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt ${break-system-packages}
 
     samba_config
 
@@ -1013,8 +1019,7 @@ install_main() {
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
-        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt --break-system-packages
+        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt ${break-system-packages}
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini

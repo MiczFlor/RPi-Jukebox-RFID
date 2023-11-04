@@ -32,11 +32,9 @@ def setupPN532():
         print(str(output))
         return False
     print("Installing Python requirements for PN532...\n")
-    # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-    runCmd("sudo python3 -m venv .venv")
-    runCmd("source .venv/bin/activate")
+    echo "WARNING: When using Bookworm, add --break-system-packages in line 37 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
-           "-q -r {}/components/rfid-reader/PN532/requirements.txt --break-system-packages".format(JUKEBOX_HOME_DIR))
+           "-q -r {}/components/rfid-reader/PN532/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
     return True
 
@@ -47,11 +45,9 @@ def setupMFRC522():
     if not answer or answer[0] != 'Y':
         return False
     print("Installing Python requirements for RC522...\n")
-    # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP668 https://stackoverflow.com/a/75696359
-    runCmd("sudo python3 -m venv .venv")
-    runCmd("source .venv/bin/activate")
+    echo "WARNING: When using Bookworm, add --break-system-packages in line 50 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"    
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
-           "-q -r {}/components/rfid-reader/RC522/requirements.txt --break-system-packages".format(JUKEBOX_HOME_DIR))
+           "-q -r {}/components/rfid-reader/RC522/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
     return True
 
