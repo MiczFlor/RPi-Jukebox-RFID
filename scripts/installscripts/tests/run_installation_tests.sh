@@ -18,6 +18,8 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # Run installation (in interactive mode)
 # y confirm interactive
 # n dont configure wifi
+# y configure autohotspot
+# y use autohotspot default config
 # y Headphone as iface
 # n no spotify
 # y configure mpd
@@ -26,7 +28,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n no RFID registration
 # n No reboot
 
-./../buster-install-default.sh <<< $'y\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+./../buster-install-default.sh <<< $'y\nn\n\ny\ny\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation
