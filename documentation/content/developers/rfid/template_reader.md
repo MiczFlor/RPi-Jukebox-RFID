@@ -26,9 +26,7 @@ components/rfid/hardware/awesome_reader/
   +- README.rst         <-- The Readme
 ```
 
-The module documentation must go into a separate file so we can import
-it into the Sphinx document generation flow without loading the Python
-module.
+Please make sure you update the documentation accordingly.
 
 ## Conventions
 
