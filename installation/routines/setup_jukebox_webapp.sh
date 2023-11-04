@@ -70,12 +70,6 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo service nginx restart
 }
 
-_jukebox_build_local_docs() {
-  echo "  Build docs locally" | tee /dev/fd/3
-  "${INSTALLATION_PATH}/run_sphinx.sh" -c
-}
-
-
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
 
@@ -87,9 +81,6 @@ setup_jukebox_webapp() {
     # Local Web App build during installation does not work at the moment
     # Needs to be done after reboot! There will be a message at the end of the installation process
     # _jukebox_webapp_build
-  fi
-  if [[ $ENABLE_LOCAL_DOCS == true ]]; then
-    _jukebox_build_local_docs
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
 
