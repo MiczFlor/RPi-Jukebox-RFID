@@ -167,6 +167,47 @@ verify_wifi_settings() {
     check_service_enablement dhcpcd enabled
 }
 
+verify_autohotspot_settings() {
+    if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+        printf "\nTESTING autohotspot settings...\n\n"
+
+        local autohotspot_service="autohotspot.service"
+        local autohotspot_script="/usr/bin/autohotspot"
+
+        local dnsmasq_conf=/etc/dnsmasq.conf
+        local hostapd_conf=/etc/hostapd/hostapd.conf
+        local hostapd_deamon=/etc/default/hostapd
+        local dhcpcd_conf=/etc/dhcpcd.conf
+
+        check_file_contains_string "${AUTOHOTSPOTip}" "${autohotspot_script}"
+        local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+        check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
+        check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
+        check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
+        check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
+        check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
+        check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
+        check_file_contains_string "ExecStart=${AUTOHOTSPOT_SCRIPT}" "/etc/systemd/system/${autohotspot_service}"
+
+        local crontab_user=$(crontab -l 2>/dev/null)
+        if [[ ! $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
+            echo "  ERROR: crontab for user not installed"
+            ((failed_tests++))
+        fi
+        ((tests++))
+
+        # check owner and permissions
+        check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
+        check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+        check_chmod_chown 644 root root "/etc/systemd/system" "${autohotspot_service}"
+
+        # check that the services are activ
+        check_service_enablement "${autohotspot_service}" enabled
+        check_service_enablement hostapd disabled
+        check_service_enablement dnsmasq disabled
+    fi
+}
+
 verify_apt_packages(){
     local phpver="$(ls -1 /etc/php)"
     local packages="samba
@@ -176,12 +217,17 @@ python3-spidev netcat-traditional alsa-utils"
     local packages_raspberrypi="raspberrypi-kernel-headers"
     local packages_spotify="libspotify-dev mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
 python3-cffi python3-ply python3-pycparser python3-spotify"
+    local packages_autohotspot="dnsmasq hostapd iw"
 
     printf "\nTESTING installed packages...\n\n"
 
     # also check for spotify packages if it has been installed
     if [[ "${SPOTinstall}" == "YES" ]]; then
         packages="${packages} ${packages_spotify}"
+    fi
+
+    if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+        packages="${packages} ${packages_autohotspot}"
     fi
 
     # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
@@ -346,6 +392,7 @@ main() {
         verify_spotify_config
     fi
     verify_mpd_config
+    verify_autohotspot_settings
     verify_folder_access
 }
 

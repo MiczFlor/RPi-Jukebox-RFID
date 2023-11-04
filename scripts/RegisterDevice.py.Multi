@@ -32,7 +32,7 @@ def setupPN532():
         print(str(output))
         return False
     print("Installing Python requirements for PN532...\n")
-    echo "WARNING: When using Bookworm, add --break-system-packages in line 37 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"
+    print("WARNING: When using Bookworm, add --break-system-packages in line 37 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359")
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
            "-q -r {}/components/rfid-reader/PN532/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
@@ -45,7 +45,7 @@ def setupMFRC522():
     if not answer or answer[0] != 'Y':
         return False
     print("Installing Python requirements for RC522...\n")
-    echo "WARNING: When using Bookworm, add --break-system-packages in line 50 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"    
+    print("WARNING: When using Bookworm, add --break-system-packages in line 50 of RegisterDevice.py.Multi as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359")
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
            "-q -r {}/components/rfid-reader/RC522/requirements.txt".format(JUKEBOX_HOME_DIR))
     print("Done")
