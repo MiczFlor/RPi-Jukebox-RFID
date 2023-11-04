@@ -122,7 +122,8 @@ CheckDevice()
             echo "wifi device available"
             if (rfkill list wifi -rno HARD,SOFT | grep -i "unblocked.*unblocked") >/dev/null 2>&1 ; then
                 local wifidev_up=$(ip link show "$wifidev" up)
-                if [ -z $"wifidev_up" ]; then
+                if [ -z "$wifidev_up" ]; then
+                    echo "wifi is down. setting up"
                     ip link set dev "$wifidev" up
                     sleep 2
                 fi
