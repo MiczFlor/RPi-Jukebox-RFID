@@ -65,10 +65,10 @@ Using this small script significantly reduces resource usage on the system.
 ## setup_autohotspot.sh
 
 Script to setup the autohotspot feature. It automatically sets up a wifi hotspot if no known network is found.
-This is already included in the main install script, but can also be manually run.
+This is already included in the main install script, but can also be run manually.
 
 usage: 
-setup_autohotspot.sh <jukeboxDir> <activation=YES|NO> <ssid> <countryCode (e.g. DE, GB, CZ, ...)> <password (8..63 characters)> <ipAdress>"
+setup_autohotspot.sh \<jukeboxDir\> \<activation=YES|NO\> \<ssid\> \<countryCode (e.g. DE, GB, CZ, ...)\> \<password (8..63 characters)\> \<ipAdress\>
 
 ### activate
 ```
