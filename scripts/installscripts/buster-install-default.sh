@@ -778,11 +778,15 @@ check_config_file() {
     check_variable "GPIOconfig"
 
     # Feature optional. if config not present, defaults to NO
-    if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
-        check_variable "AUTOHOTSPOTssid"
-        check_variable "AUTOHOTSPOTcountryCode"
-        check_variable "AUTOHOTSPOTpass"
-        check_variable "AUTOHOTSPOTip"
+    if [[ -z "${AUTOHOTSPOTconfig}" ]]; then
+        echo "INFO: \$AUTOHOTSPOTconfig is missing or not set"
+    else
+        if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+            check_variable "AUTOHOTSPOTssid"
+            check_variable "AUTOHOTSPOTcountryCode"
+            check_variable "AUTOHOTSPOTpass"
+            check_variable "AUTOHOTSPOTip"
+        fi
     fi
 
     if [ "${fail}" == "true" ]; then
