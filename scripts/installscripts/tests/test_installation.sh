@@ -247,9 +247,10 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
         packages="${packages} ${packages_raspberrypi}"
     fi
 
+    local apt_list_installed=$(apt -qq list --installed 2>/dev/null)
     for package in ${packages}
     do
-        if [[ $(apt -qq list "${package}" 2>/dev/null | grep 'installed') ]]; then
+        if [[ $(echo "${apt_list_installed}" | grep -i "${package}.*installed") ]]; then
             echo "  ${package} is installed"
         else
             echo "  ERROR: ${package} is not installed"
@@ -260,7 +261,7 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
-    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO"
+    local modules="evdev spi-py youtube-dl pyserial RPi.GPIO"
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
     local modules_rc522="pi-rc522"
@@ -287,9 +288,10 @@ verify_pip_packages() {
         fi
     fi
 
+    local pip_list_installed=$(pip3 list)
     for module in ${modules}
     do
-        if [[ $(pip3 show "${module}") ]]; then
+        if [[ $(echo "${pip_list_installed}" | grep -i "${module}") ]]; then
             echo "  ${module} is installed"
         else
             echo "  ERROR: pip module ${module} is not installed"
