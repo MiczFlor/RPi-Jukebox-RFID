@@ -8,15 +8,18 @@ ENV DOCKER_RUNNING=true
 RUN touch /boot/cmdlinetxt
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+  && echo "--- install packages (1) ---" \
   && apt-get update \
   && apt-get -y install \
     apt-utils \
     curl \
     gnupg \
+  && echo "--- add sources ---" \
   && curl -fsSL http://raspbian.raspberrypi.org/raspbian.public.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-raspbian-keyring.gpg \
   && curl -fsSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg \
   && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-raspbian-keyring.gpg] http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_VERSION_NAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
   && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg] http://archive.raspberrypi.org/debian/ ${DEBIAN_VERSION_NAME} main" >> /etc/apt/sources.list.d/raspi.list \
+  && echo "--- install packages (2) ---" \
   && apt-get update \
   && apt-get -y upgrade \
   && apt-get -y install \
@@ -29,9 +32,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     wireless-tools \
     wget \
     wpasupplicant \
-    # install internally used packages here to speed up GitHub Action
-    raspberrypi-kernel \
-    raspberrypi-kernel-headers \
   && rm -rf /var/lib/apt/lists/*
 # ------
 
