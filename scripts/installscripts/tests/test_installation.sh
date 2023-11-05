@@ -222,15 +222,19 @@ verify_autohotspot_settings() {
     fi
 }
 
-verify_apt_packages(){
-    local phpver="$(ls -1 /etc/php)"
-    local packages="samba
-samba-common-bin gcc lighttpd php${phpver}-common php${phpver}-cgi php${phpver} at mpd mpc mpg123 git ffmpeg
-resolvconf spi-tools python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero
-python3-spidev netcat alsa-utils"
+read_apt_packages_from_file() {
+    local package_file="$1"
+    shift
+
+    # read line from the file and remove comments. Pass it over xargs as arguments to the default echo command.
+    sed 's/#.*//' ${package_file} | xargs "$@"
+}
+
+verify_apt_packages() {
+    local jukebox_dir="$1"
+    local packages=$(read_apt_packages_from_file "${jukebox_dir}"/packages.txt echo)
     local packages_raspberrypi="raspberrypi-kernel-headers"
-    local packages_spotify="libspotify-dev mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
-python3-cffi python3-ply python3-pycparser python3-spotify"
+    local packages_spotify=$(read_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt echo)
     local packages_autohotspot="dnsmasq hostapd iw"
 
     printf "\nTESTING installed packages...\n\n"
@@ -400,7 +404,7 @@ main() {
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings
     fi
-    verify_apt_packages
+    verify_apt_packages "${JUKEBOX_HOME_DIR}"
     verify_pip_packages "${JUKEBOX_HOME_DIR}"
     verify_samba_config
     verify_webserver_config

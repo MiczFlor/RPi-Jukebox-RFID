@@ -847,6 +847,14 @@ web_server_config() {
     sudo chmod 440 "${sudoers}"
 }
 
+install_apt_packages_from_file () {
+    local package_file="$1"
+    shift
+
+    # read line from the file and remove comments. Pass it over xargs as arguments to the given command.
+    sed 's/#.*//' ${package_file} | xargs "$@"
+}
+
 install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
@@ -912,13 +920,18 @@ install_main() {
 
     ${apt_get} update
     ${apt_get} upgrade
+    
+    # Get github code
+    ${apt_get} install git
+    cd "${HOME_DIR}" || exit
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
         ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat alsa-utils lsof procps
+    install_apt_packages_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -926,16 +939,9 @@ install_main() {
         sudo cp /etc/resolv.conf.orig /etc/resolv.conf
     fi
 
-    # prepare python3
-    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
-
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-
-    # Get github code
-    cd "${HOME_DIR}" || exit
-    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
-
+    
     # VERSION of installation
 
     # Get version number
@@ -961,9 +967,7 @@ install_main() {
 
         ${apt_get} update
         ${apt_get} upgrade
-        ${apt_get} install libspotify-dev
-        ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
-        ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+        install_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # Install necessary Python packages
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
