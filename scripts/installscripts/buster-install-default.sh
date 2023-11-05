@@ -327,7 +327,7 @@ check_existing() {
 
     # The install will be in the home dir of user pi
     # Move to home directory now to check
-    cd ~ || exit
+    cd "${home_dir}" || exit
     if [ -d "${jukebox_dir}" ]; then
         # Houston, we found something!
         clear
@@ -422,7 +422,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${home_dir}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -434,7 +434,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -446,7 +446,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -458,9 +458,9 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${home_dir}/PhonieboxInstall.conf"
 
-                if [ "$(printf '%s\n' "2.1" "$(cat ~/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
+                if [ "$(printf '%s\n' "2.1" "$(cat ${home_dir}/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
                         case "$response" in
                             [nN][oO]|[nN])
@@ -480,7 +480,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     config_gpio
                 fi
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Button USB Encoder: use existing device and button mapping? [Y/n] " response
                 case "$response" in
@@ -492,7 +492,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${home_dir}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -501,7 +501,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=$EXISTINGuse" >> "${home_dir}/PhonieboxInstall.conf"
 
     # Check if we found a Phoniebox install configuration earlier and ask if to run this now
     if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
@@ -1454,7 +1454,7 @@ main() {
     else
         echo "Skipping USB device setup..."
         echo "For manual registration of a USB card reader type:"
-        echo "python3 ${HOME_DIR}/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
         echo " "
         echo "Reboot is required to activate all settings!"
     fi
