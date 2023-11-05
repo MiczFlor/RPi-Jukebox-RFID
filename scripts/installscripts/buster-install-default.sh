@@ -111,6 +111,13 @@ checkPrerequisite() {
         echo "       Please check the wiki for further information"
         exit 2
     fi
+
+    if [ -d "${HOME_DIR}" ]; then
+        echo
+        echo "Warning: HomeDir ${HOME_DIR} does not exist."
+        echo "         Please create it and start again."
+        exit 2
+    fi
 }
 
 welcome() {
@@ -327,7 +334,7 @@ check_existing() {
 
     # The install will be in the home dir of user pi
     # Move to home directory now to check
-    cd "${home_dir}" || exit
+    cd "${home_dir}"
     if [ -d "${jukebox_dir}" ]; then
         # Houston, we found something!
         clear
@@ -923,7 +930,7 @@ install_main() {
 
     # Get github code. git must be installed before even if defined in packages.txt!
     ${apt_get} install git
-    cd "${HOME_DIR}" || exit
+    cd "${HOME_DIR}"
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
