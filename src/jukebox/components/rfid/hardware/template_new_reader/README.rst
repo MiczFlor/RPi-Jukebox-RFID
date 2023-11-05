@@ -27,7 +27,8 @@ Your new reader is a python subpackage with these three mandatory files
     +- description.py     <-- A description module w/o dependencies. Do not change the filename!
     +- README.rst         <-- The Readme
 
-The module documentation must go into a separate file to generate it.
+The module documentation must go into a separate file so we can import it into the Sphinx document generation flow
+without loading the Python module.
 
 Conventions
 ^^^^^^^^^^^^^^^^^^

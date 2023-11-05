@@ -26,6 +26,8 @@ The Jukebox core app is written entirely in Python. Therefore, we follow the [Py
 
 * **Documentation**
   * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
+  * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
+  
 # Structure of files and folders
 
 Inside the root folder or the repo, these folders are important:
@@ -36,8 +38,8 @@ Inside the root folder or the repo, these folders are important:
   * contains the Python packages that are loaded using the plugin interface
 * `src/webapp`
   * contains the Web Interface
-* `src/documentation`
-  * contains the documentation sources
+* `src/docs/sphinx`  
+  * contains the documentation sources and build flow using Sphinx
 
 All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
 as local, temporary scratch areas.
@@ -132,7 +134,15 @@ Let us know in the pull request - we will look at it.
 
 ### Documentation
 
-TODO: Requires updates after Sphinx has been removed
+When adding or improving documentation, build the documentation and look at it locally.
+If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
+Also run through this step in this case! Fix all warnings!
+
+~~~bash
+$ cd /home/pi/RPi-Jukebox-RFID/
+$ ./run_sphinx.sh
+# open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
+~~~
 
 ### Tests
 
