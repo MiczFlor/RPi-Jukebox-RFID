@@ -10,6 +10,8 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 USER_NAME="$(whoami)"
 HOME_DIR=$(getent passwd "$USER_NAME" | cut -d: -f6)
 
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+
 tests=0
 failed_tests=0
 
@@ -261,11 +263,12 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
+    local jukebox_dir="$1"
     local modules="evdev spi-py youtube-dl pyserial RPi.GPIO"
     local modules_spotify="Mopidy-Iris"
     local modules_pn532="py532lib"
     local modules_rc522="pi-rc522"
-    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
+    local deviceName="${jukebox_dir}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -372,7 +375,7 @@ verify_mpd_config() {
 }
 
 verify_folder_access() {
-    local jukebox_dir="${HOME_DIR}/RPi-Jukebox-RFID"
+    local jukebox_dir="$1"
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
@@ -398,7 +401,7 @@ main() {
         verify_wifi_settings
     fi
     verify_apt_packages
-    verify_pip_packages
+    verify_pip_packages "${JUKEBOX_HOME_DIR}"
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
@@ -407,7 +410,7 @@ main() {
     fi
     verify_mpd_config
     verify_autohotspot_settings
-    verify_folder_access
+    verify_folder_access "${JUKEBOX_HOME_DIR}"
 }
 
 start=$(date +%s)
