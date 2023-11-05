@@ -136,6 +136,18 @@ verify_conf_file() {
     fi
     check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
+    check_variable "GPIOconfig"
+
+    # Feature optional. if config not present, defaults to NO
+    if [[ -n "${AUTOHOTSPOTconfig}" ]]; then
+        echo "\$AUTOHOTSPOTconfig is set to '$AUTOHOTSPOTconfig'"
+        if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+            check_variable "AUTOHOTSPOTssid"
+            check_variable "AUTOHOTSPOTcountryCode"
+            check_variable "AUTOHOTSPOTpass"
+            check_variable "AUTOHOTSPOTip"
+        fi
+    fi
 
     if [ "${fail}" == "true" ]; then
       exit 1
