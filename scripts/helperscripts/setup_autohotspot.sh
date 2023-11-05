@@ -14,6 +14,13 @@ if [[ "$#" -lt 2 || ( "${AUTOHOTSPOTconfig}" != "NO" && "${AUTOHOTSPOTconfig}" !
     exit 1
 fi
 
+call_with_apt_packages_from_file () {
+    local package_file="$1"
+    shift
+
+    # read line from the file and remove comments. Pass it over xargs as arguments to the given command.
+    sed 's/#.*//' ${package_file} | xargs "$@"
+}
 
 apt_get="sudo apt-get -qq --yes"
 
@@ -37,7 +44,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo iwconfig wlan0 power off
 
     # required packages
-    ${apt_get} install dnsmasq hostapd iw
+    call_with_apt_packages_from_file "${jukebox_dir}"/packages-autohotspot.txt ${apt_get} install
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
     sudo systemctl stop hostapd
