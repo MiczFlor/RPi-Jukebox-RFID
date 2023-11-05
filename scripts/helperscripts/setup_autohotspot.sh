@@ -44,7 +44,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo iwconfig wlan0 power off
 
     # required packages
-    call_with_apt_packages_from_file "${jukebox_dir}"/packages-autohotspot.txt ${apt_get} install
+    call_with_apt_packages_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot.txt ${apt_get} install
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
     sudo systemctl stop hostapd

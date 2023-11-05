@@ -283,13 +283,13 @@ verify_pip_packages() {
 
     if [[ -f "${deviceName}" ]]; then
         # RC522 reader is used
-        if grep -Fxq "${deviceName}" MFRC522
+        if grep -Fxq "MFRC522" "${deviceName}"
         then
             modules="${modules} ${modules_rc522}"
         fi
 
         # PN532 reader is used
-        if grep -Fxq "${deviceName}" PN532
+        if grep -Fxq "PN532" "${deviceName}"
         then
             modules="${modules} ${modules_pn532}"
         fi

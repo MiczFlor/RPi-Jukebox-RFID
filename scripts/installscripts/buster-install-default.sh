@@ -112,7 +112,7 @@ checkPrerequisite() {
         exit 2
     fi
 
-    if [ -d "${HOME_DIR}" ]; then
+    if [ ! -d "${HOME_DIR}" ]; then
         echo
         echo "Warning: HomeDir ${HOME_DIR} does not exist."
         echo "         Please create it and start again."
@@ -139,7 +139,7 @@ an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   .${HOME_DIR}/buster-install-default.sh -a
+   ${HOME_DIR}/buster-install-default.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -928,7 +928,7 @@ install_main() {
     ${apt_get} update
     ${apt_get} upgrade
 
-    # Get github code. git must be installed before even if defined in packages.txt!
+    # Get github code. git must be installed before, even if defined in packages.txt!
     ${apt_get} install git
     cd "${HOME_DIR}"
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
