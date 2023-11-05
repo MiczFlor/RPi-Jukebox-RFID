@@ -222,7 +222,7 @@ verify_autohotspot_settings() {
     fi
 }
 
-read_apt_packages_from_file() {
+call_with_apt_packages_from_file() {
     local package_file="$1"
     shift
 
@@ -232,9 +232,9 @@ read_apt_packages_from_file() {
 
 verify_apt_packages() {
     local jukebox_dir="$1"
-    local packages=$(read_apt_packages_from_file "${jukebox_dir}"/packages.txt echo)
-    local packages_raspberrypi="raspberrypi-kernel-headers"
-    local packages_spotify=$(read_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt echo)
+    local packages=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt echo)
+    local packages_raspberrypi=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-arm.txt echo)
+    local packages_spotify=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt echo)
     local packages_autohotspot="dnsmasq hostapd iw"
 
     printf "\nTESTING installed packages...\n\n"

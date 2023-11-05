@@ -1,0 +1,5 @@
+# Define packages for apt-get.  These can be installed with
+# 'sed 's/#.*//' packages.txt | xargs sudo apt-get install'
+
+raspberrypi-kernel-headers
+

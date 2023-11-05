@@ -847,7 +847,7 @@ web_server_config() {
     sudo chmod 440 "${sudoers}"
 }
 
-install_apt_packages_from_file () {
+call_with_apt_packages_from_file () {
     local package_file="$1"
     shift
 
@@ -920,18 +920,18 @@ install_main() {
 
     ${apt_get} update
     ${apt_get} upgrade
-    
-    # Get github code
+
+    # Get github code. git must be installed before even if defined in packages.txt!
     ${apt_get} install git
     cd "${HOME_DIR}" || exit
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
-        ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
+        call_with_apt_packages_from_file "${jukebox_dir}"/packages-arm.txt ${apt_get} ${allow_downgrades} install
     fi
 
-    install_apt_packages_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
+    call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -941,7 +941,7 @@ install_main() {
 
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-    
+
     # VERSION of installation
 
     # Get version number
@@ -967,7 +967,7 @@ install_main() {
 
         ${apt_get} update
         ${apt_get} upgrade
-        install_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
+        call_with_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # Install necessary Python packages
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
