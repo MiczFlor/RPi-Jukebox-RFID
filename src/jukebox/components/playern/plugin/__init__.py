@@ -10,6 +10,7 @@ import jukebox.plugs as plugin
 import jukebox.cfghandler
 from components.playern.backends.mpd.interfacing_mpd import MPDBackend
 from components.playern.core import PlayerCtrl
+from components.playern.core.player_content import PlayerData
 from components.playern.core.player_status import PlayerStatus
 
 logger = logging.getLogger('jb.player')
@@ -63,6 +64,8 @@ def init():
 
     player_status = PlayerStatus()
     player_status.publish()
+
+    player_content = PlayerData()
 
     # Create and register the players (this is explicit for the moment)
     register_mpd()
