@@ -1116,7 +1116,7 @@ install_main() {
         # Replace homedir; double quotes for variable expansion
         sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
-        sudo chmod 644 "${mpd_conf}"
+        sudo chmod 640 "${mpd_conf}"
     fi
 
     # set which version has been installed
