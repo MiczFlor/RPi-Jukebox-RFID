@@ -266,12 +266,20 @@ verify_apt_packages() {
     done
 }
 
+call_with_pip_packages_from_file() {
+    local package_file="$1"
+    shift
+
+    # read line from the file and remove comments. Pass it over xargs as arguments to the default echo command.
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs "$@"
+}
+
 verify_pip_packages() {
     local jukebox_dir="$1"
-    local modules="evdev spi-py youtube-dl pyserial RPi.GPIO"
-    local modules_spotify="Mopidy-Iris"
-    local modules_pn532="py532lib"
-    local modules_rc522="pi-rc522"
+    local modules=$(call_with_pip_packages_from_file "${jukebox_dir}"/requirements.txt echo)
+    local modules_spotify=$(call_with_pip_packages_from_file "${jukebox_dir}"/requirements-spotify.txt echo)
+    local modules_pn532=$(call_with_pip_packages_from_file "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt echo)
+    local modules_rc522=$(call_with_pip_packages_from_file "${jukebox_dir}"/components/rfid-reader/RC522/requirements.txt echo)
     local deviceName="${jukebox_dir}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
