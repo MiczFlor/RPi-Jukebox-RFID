@@ -838,13 +838,13 @@ install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
-
-    local break_system_packages=""
-    if [[ ${OS_CODENAME} == "bookworm" ]]; then
+    local pip_install="sudo python3 -m pip install --upgrade --force-reinstall -q"
+ 
+    if [[ "${OS_CODENAME}" == "bookworm" ]]; then
         # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP 668 https://stackoverflow.com/a/75696359
         # this switch exists only under bookworm
         echo "Allowing --break-system-packages under bookworm for PEP 668"
-        break_system_packages="--break-system-packages"
+        pip_install="${pip_install} --break-system-packages"
     fi
 
     clear
@@ -961,12 +961,12 @@ install_main() {
         ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
 
         # Install necessary Python packages
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt ${break-system-packages}
+        ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt ${break-system-packages}
+    ${pip_install} -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -1100,7 +1100,7 @@ install_main() {
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt ${break-system-packages}
+        ${pip_install} -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
