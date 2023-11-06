@@ -1117,6 +1117,11 @@ install_main() {
         sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
+
+        # start mpd
+        echo "Starting mpd service..."
+        sudo service mpd restart
+        sudo systemctl enable mpd
     fi
 
     # set which version has been installed
