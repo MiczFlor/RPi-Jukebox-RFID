@@ -233,7 +233,7 @@ call_with_apt_packages_from_file() {
 verify_apt_packages() {
     local jukebox_dir="$1"
     local packages=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt echo)
-    local packages_raspberrypi=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-arm.txt echo)
+    local packages_raspberrypi=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
     local packages_spotify=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt echo)
     local packages_autohotspot=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
 

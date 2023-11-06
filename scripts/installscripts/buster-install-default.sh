@@ -935,7 +935,7 @@ install_main() {
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
-        call_with_apt_packages_from_file "${jukebox_dir}"/packages-arm.txt ${apt_get} ${allow_downgrades} install
+        call_with_apt_packages_from_file "${jukebox_dir}"/packages-raspberrypi.txt ${apt_get} ${allow_downgrades} install
     fi
 
     call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
