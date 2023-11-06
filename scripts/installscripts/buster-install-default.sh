@@ -859,7 +859,7 @@ call_with_apt_packages_from_file () {
     shift
 
     # read line from the file and remove comments. Pass it over xargs as arguments to the given command.
-    sed 's/#.*//' ${package_file} | xargs "$@"
+    sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
 install_main() {
