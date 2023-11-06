@@ -16,8 +16,7 @@ systemctl stop phoniebox-gpio-buttons.service
 systemctl disable phoniebox-gpio-buttons.service
 
 echo 'Install all required python modules'
-echo "WARNING: When using Bookworm, uncomment breaking system packages in line 20 of install.sh as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"
-python3 -m pip install --upgrade --force-reinstall -r requirements.txt #--break-system-packages
+python3 -m pip install --upgrade --force-reinstall -r requirements.txt
 
 echo
 echo 'Installing GPIO_Control service'

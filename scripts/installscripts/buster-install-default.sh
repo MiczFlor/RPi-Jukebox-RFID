@@ -840,13 +840,6 @@ install_main() {
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
     local pip_install="sudo python3 -m pip install --upgrade --force-reinstall -q"
  
-    if [[ "${OS_CODENAME}" == "bookworm" ]]; then
-        # Allow breaking system packages (as 2.x is legacy) since Bookworm implemented PEP 668 https://stackoverflow.com/a/75696359
-        # this switch exists only under bookworm
-        echo "Allowing --break-system-packages under bookworm for PEP 668"
-        pip_install="${pip_install} --break-system-packages"
-    fi
-
     clear
 
     echo "#####################################################
@@ -926,6 +919,8 @@ install_main() {
 
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    # make compatible for Bookworm, which implements PEP 668
+    sudo python3 -m pip config set global.break-system-packages true
 
     # Get github code
     cd "${HOME_DIR}" || exit

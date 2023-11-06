@@ -33,8 +33,7 @@ else
 fi
 
 printf "Installing Python requirements for PN532...\n"
-echo "WARNING: When using Bookworm, uncomment breaking system packages in line 37 of setup_pn532.sh as Bookworm implemented PEP668 https://stackoverflow.com/a/75696359"
-sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt #--break-system-packages
+sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/PN532/requirements.txt
 
 printf "Configure RFID reader in Phoniebox...\n"
 cp "${JUKEBOX_HOME_DIR}"/scripts/Reader.py.experimental "${JUKEBOX_HOME_DIR}"/scripts/Reader.py
