@@ -1065,6 +1065,7 @@ install_main() {
         local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
         echo "Configuring Spotify support..."
         sudo systemctl disable mpd
+        sudo service mpd stop
         sudo systemctl enable mopidy
         # Install Config Files
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
