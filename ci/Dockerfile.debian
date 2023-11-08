@@ -20,12 +20,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get -y upgrade \
   && apt-get -y install \
+    alsa-utils \
     build-essential \
     git \
-    iw \
     locales \
     sudo \
     systemd \
+    wireless-tools \
     wget \
     wpasupplicant \
     # install internally used packages here to speed up GitHub Action

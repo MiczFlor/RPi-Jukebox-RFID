@@ -228,6 +228,90 @@ esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
+config_autohotspot() {
+    #####################################################
+    # Ask if an autohotspot should be created if no known network is found.
+
+    clear
+
+    echo "#####################################################
+#
+# CONFIGURE AUTOHOTSPOT
+#
+# Automatically sets up a wifi hotspot if no known network is found.
+# This enables you to directly connect to your phoniebox
+# and change configuration (e.g. while you travel).
+# (Note: can be done manually later, if you are unsure.)
+"
+read -rp "Do you want to configure autohotspot? [y/N] " response
+echo ""
+case "$response" in
+    [yY][eE][sS]|[yY])
+        AUTOHOTSPOTconfig=YES
+        AUTOHOTSPOTssid="phoniebox"
+        AUTOHOTSPOTcountryCode="DE"
+        AUTOHOTSPOTpass="PlayItLoud"
+        AUTOHOTSPOTip="10.0.0.5"
+        echo ""
+        echo "The autohotspot configuration uses this default values:"
+        echo "SSID              : $AUTOHOTSPOTssid"
+        echo "WiFi Country Code : $AUTOHOTSPOTcountryCode"
+        echo "Password          : $AUTOHOTSPOTpass"
+        echo "Static IP         : $AUTOHOTSPOTip"
+        read -rp "Do you want to use this default values? [Y/n] " response
+        echo ""
+        case "$response" in
+            [nN][oO]|[nN])
+                #Ask for SSID
+                read -rp "* Type SSID name: " AUTOHOTSPOTssid
+                #Ask for wifi country code
+                read -rp "* Type WiFi Country Code (e.g. DE, GB, CZ or US): " AUTOHOTSPOTcountryCode
+                #Ask for password
+                read -rp "* Type password (8 characters at least. max 63 characters): " AUTOHOTSPOTpass
+                #Ask for IP
+                read -rp "* Type Static IP (e.g. 10.0.0.5, 192.168.1.199): " AUTOHOTSPOTip
+                echo ""
+                echo "Your Autohotspot config:"
+                echo "SSID              : $AUTOHOTSPOTssid"
+                echo "WiFi Country Code : $AUTOHOTSPOTcountryCode"
+                echo "Password          : $AUTOHOTSPOTpass"
+                echo "Static IP         : $AUTOHOTSPOTip"
+                read -rp "Are these values correct? [Y/n] " response
+                echo ""
+                case "$response" in
+                    [nN][oO]|[nN])
+                        echo "The values are incorrect."
+                        read -rp "Hit ENTER to exit and start over." INPUT; exit
+                        ;;
+                    *)
+                        # step out and continue
+                        ;;
+                esac
+                ;;
+            *)
+                # step out and continue
+                ;;
+        esac
+        # append variables to config file
+        {
+            echo "AUTOHOTSPOTconfig=\"$AUTOHOTSPOTconfig\"";
+            echo "AUTOHOTSPOTssid=\"$AUTOHOTSPOTssid\"";
+            echo "AUTOHOTSPOTcountryCode=\"$AUTOHOTSPOTcountryCode\"";
+            echo "AUTOHOTSPOTpass=\"$AUTOHOTSPOTpass\"";
+            echo "AUTOHOTSPOTip=\"$AUTOHOTSPOTip\"";
+        } >> "${HOME_DIR}/PhonieboxInstall.conf"
+        ;;
+    *)
+        AUTOHOTSPOTconfig=NO
+        echo "You don't want to configure Autohotspot."
+        # append variables to config file
+        echo "AUTOHOTSPOTconfig=$AUTOHOTSPOTconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        ;;
+
+esac
+read -rp "Hit ENTER to proceed to the next step." INPUT
+}
+
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
@@ -674,6 +758,7 @@ check_config_file() {
             check_variable "WIFIipRouter"
         fi
     fi
+
     check_variable "EXISTINGuse"
     check_variable "AUDIOiFace"
 
@@ -690,6 +775,18 @@ check_config_file() {
     check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
     check_variable "GPIOconfig"
+
+    # Feature optional. if config not present, defaults to NO
+    if [[ -z "${AUTOHOTSPOTconfig}" ]]; then
+        echo "INFO: \$AUTOHOTSPOTconfig is missing or not set"
+    else
+        if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+            check_variable "AUTOHOTSPOTssid"
+            check_variable "AUTOHOTSPOTcountryCode"
+            check_variable "AUTOHOTSPOTpass"
+            check_variable "AUTOHOTSPOTip"
+        fi
+    fi
 
     if [ "${fail}" == "true" ]; then
       exit 1
@@ -795,9 +892,6 @@ install_main() {
     # INSTALLATION
 
     # Read install config as written so far
-    # (this might look stupid so far, but makes sense once
-    # the option to install from config file is introduced.)
-    # shellcheck source=scripts/installscripts/tests/ShellCheck/PhonieboxInstall.conf
     . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
@@ -1049,9 +1143,7 @@ install_main() {
 }
 
 wifi_settings() {
-    local sample_configs_dir="$1"
-    local dhcpcd_conf="$2"
-    local wpa_supplicant_conf="$3"
+    local jukebox_dir="$1"
 
     ###############################
     # WiFi settings (SSID password)
@@ -1063,10 +1155,12 @@ wifi_settings() {
     # $WIFIip
     # $WIFIipRouter
     if [ "${WIFIconfig}" == "YES" ]; then
+
         # DHCP configuration settings
+        local dhcpcd_conf="/etc/dhcpcd.conf"
         echo "Setting ${dhcpcd_conf}..."
         #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-        sudo cp "${sample_configs_dir}"/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
         # Change IP for router and Phoniebox
         sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
         sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
@@ -1076,9 +1170,10 @@ wifi_settings() {
         sudo chmod 664 "${dhcpcd_conf}"
 
         # WiFi SSID & Password
+        local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
         echo "Setting ${wpa_supplicant_conf}..."
         # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-        sudo cp "${sample_configs_dir}"/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' "${wpa_supplicant_conf}"
         sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
@@ -1227,6 +1322,17 @@ folder_access() {
     #####################################################
 }
 
+autohotspot() {
+    local jukebox_dir="$1"
+
+    # Behave the same as other steps and only add configuration if selected and dont remove
+    if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
+        local setup_script="${jukebox_dir}/scripts/helperscripts/setup_autohotspot.sh"
+        sudo chmod +x "${setup_script}"
+        "${setup_script}" "${jukebox_dir}" "${AUTOHOTSPOTconfig}" "${AUTOHOTSPOTssid}" "${AUTOHOTSPOTcountryCode}" "${AUTOHOTSPOTpass}" "${AUTOHOTSPOTip}"
+    fi
+}
+
 finish_installation() {
     local jukebox_dir="$1"
     echo "
@@ -1317,6 +1423,7 @@ main() {
         #reset_install_config_file
         config_wifi
         check_existing "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}" "${HOME_DIR}"
+        config_autohotspot
         config_audio_interface
         config_spotify
         config_mpd
@@ -1327,7 +1434,8 @@ main() {
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
-    wifi_settings "${JUKEBOX_HOME_DIR}/misc/sampleconfigs" "/etc/dhcpcd.conf" "/etc/wpa_supplicant/wpa_supplicant.conf"
+    wifi_settings "${JUKEBOX_HOME_DIR}"
+    autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
 
