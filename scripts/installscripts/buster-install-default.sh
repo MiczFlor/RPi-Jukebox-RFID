@@ -870,6 +870,7 @@ install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
+    local pip_install="sudo python3 -m pip install --upgrade --force-reinstall -q"
 
     clear
 
@@ -952,6 +953,8 @@ install_main() {
 
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+    # make compatible for Bookworm, which implements PEP 668
+    sudo python3 -m pip config set global.break-system-packages true
 
     # VERSION of installation
 
@@ -981,12 +984,12 @@ install_main() {
         call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # Install necessary Python packages
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt
+        ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
     fi
 
     # Install more required packages
     echo "Installing additional Python packages..."
-    sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements.txt
+    ${pip_install} -r "${jukebox_dir}"/requirements.txt
 
     samba_config
 
@@ -1090,6 +1093,7 @@ install_main() {
         local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
         echo "Configuring Spotify support..."
         sudo systemctl disable mpd
+        sudo service mpd stop
         sudo systemctl enable mopidy
         # Install Config Files
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
@@ -1120,7 +1124,7 @@ install_main() {
 
     # GPIO-Control
     if [[ "${GPIOconfig}" == "YES" ]]; then
-        sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-GPIO.txt
+        ${pip_install} -r "${jukebox_dir}"/requirements-GPIO.txt
         sudo systemctl enable phoniebox-gpio-control.service
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
@@ -1142,6 +1146,11 @@ install_main() {
         sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
         sudo chown mpd:audio "${mpd_conf}"
         sudo chmod 640 "${mpd_conf}"
+
+        # start mpd
+        echo "Starting mpd service..."
+        sudo service mpd restart
+        sudo systemctl enable mpd
     fi
 
     # set which version has been installed

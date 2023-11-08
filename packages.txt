@@ -16,7 +16,7 @@ git
 ffmpeg
 resolvconf
 spi-tools
-netcat
+netcat-traditional
 alsa-utils
 lsof
 procps

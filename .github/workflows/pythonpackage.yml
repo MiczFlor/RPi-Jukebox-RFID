@@ -41,12 +41,20 @@ jobs:
       run: |
         pip install -r requirements.txt
         pytest --cov --cov-report xml
-    - name: Report to Coveralls
+    - name: Report to Coveralls (parallel)
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         file: ./components/gpio_control/coverage.xml
         format: cobertura
+        parallel: true
 
-
-  
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v1
+        with:
+          parallel-finished: true
+          #carryforward: "run-1,run-2"

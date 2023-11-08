@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        debian_version_name: ['bullseye', 'buster']
+        debian_version_name: ['bullseye', 'buster', 'bookworm']
     uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
     with:
       runs_on: ubuntu-latest
