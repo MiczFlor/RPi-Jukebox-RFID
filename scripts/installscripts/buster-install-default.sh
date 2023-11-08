@@ -854,11 +854,15 @@ web_server_config() {
     sudo chmod 440 "${sudoers}"
 }
 
-call_with_apt_packages_from_file () {
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments.
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file () {
     local package_file="$1"
     shift
 
-    # read line from the file and remove comments. Pass it over xargs as arguments to the given command.
     sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
@@ -935,10 +939,10 @@ install_main() {
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
-        call_with_apt_packages_from_file "${jukebox_dir}"/packages-raspberrypi.txt ${apt_get} ${allow_downgrades} install
+        call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt ${apt_get} ${allow_downgrades} install
     fi
 
-    call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
+    call_with_args_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -974,7 +978,7 @@ install_main() {
 
         ${apt_get} update
         ${apt_get} upgrade
-        call_with_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
+        call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # Install necessary Python packages
         sudo python3 -m pip install --upgrade --force-reinstall -q -r "${jukebox_dir}"/requirements-spotify.txt

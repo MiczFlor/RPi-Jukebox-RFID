@@ -222,20 +222,24 @@ verify_autohotspot_settings() {
     fi
 }
 
-call_with_apt_packages_from_file() {
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments, egg-prefixes and version suffixes
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file() {
     local package_file="$1"
     shift
 
-    # read line from the file and remove comments. Pass it over xargs as arguments to the default echo command.
-    sed 's/#.*//g' ${package_file} | xargs "$@"
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs "$@"
 }
 
 verify_apt_packages() {
     local jukebox_dir="$1"
-    local packages=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages.txt echo)
-    local packages_raspberrypi=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
-    local packages_spotify=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-spotify.txt echo)
-    local packages_autohotspot=$(call_with_apt_packages_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
+    local packages=$(call_with_args_from_file "${jukebox_dir}"/packages.txt echo)
+    local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
+    local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
+    local packages_autohotspot=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -266,20 +270,12 @@ verify_apt_packages() {
     done
 }
 
-call_with_pip_packages_from_file() {
-    local package_file="$1"
-    shift
-
-    # read line from the file and remove comments. Pass it over xargs as arguments to the default echo command.
-    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs "$@"
-}
-
 verify_pip_packages() {
     local jukebox_dir="$1"
-    local modules=$(call_with_pip_packages_from_file "${jukebox_dir}"/requirements.txt echo)
-    local modules_spotify=$(call_with_pip_packages_from_file "${jukebox_dir}"/requirements-spotify.txt echo)
-    local modules_pn532=$(call_with_pip_packages_from_file "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt echo)
-    local modules_rc522=$(call_with_pip_packages_from_file "${jukebox_dir}"/components/rfid-reader/RC522/requirements.txt echo)
+    local modules=$(call_with_args_from_file "${jukebox_dir}"/requirements.txt echo)
+    local modules_spotify=$(call_with_args_from_file "${jukebox_dir}"/requirements-spotify.txt echo)
+    local modules_pn532=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt echo)
+    local modules_rc522=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/RC522/requirements.txt echo)
     local deviceName="${jukebox_dir}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"

@@ -14,11 +14,15 @@ if [[ "$#" -lt 2 || ( "${AUTOHOTSPOTconfig}" != "NO" && "${AUTOHOTSPOTconfig}" !
     exit 1
 fi
 
-call_with_apt_packages_from_file () {
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments.
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file () {
     local package_file="$1"
     shift
 
-    # read line from the file and remove comments. Pass it over xargs as arguments to the given command.
     sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
@@ -44,7 +48,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo iwconfig wlan0 power off
 
     # required packages
-    call_with_apt_packages_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot.txt ${apt_get} install
+    call_with_args_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot.txt ${apt_get} install
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
     sudo systemctl stop hostapd
