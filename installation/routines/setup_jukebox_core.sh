@@ -74,7 +74,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # we need to compile the latest version in Github
   # As soon WebSockets support is stable in ZMQ, this can be removed
   # Sources:
-  # https://pyzmq.readthedocs.io/en/latest/draft.html
+  # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "  Build and install pyzmq with WebSockets Support"
 
@@ -98,8 +98,8 @@ _jukebox_core_build_and_install_pyzmq() {
       _jukebox_core_download_prebuild_libzmq_with_drafts
     fi
 
-    sudo ZMQ_PREFIX=${ZMQ_PREFIX} ZMQ_DRAFT_API=1 \
-      pip3 install --no-cache-dir --pre pyzmq
+    sudo ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
+         pip3 install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
   else
     echo "    Skipping. pyzmq already installed"
   fi
