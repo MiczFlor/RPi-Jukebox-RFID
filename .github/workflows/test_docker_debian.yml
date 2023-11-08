@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        debian_codename: ['bullseye', 'buster']
+        debian_codename: ['bookworm', 'bullseye', 'buster']
     uses: ./.github/workflows/test_docker_debian_codename_sub.yml
     with:
       runs_on: ubuntu-latest
