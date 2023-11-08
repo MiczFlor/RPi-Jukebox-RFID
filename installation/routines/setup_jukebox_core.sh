@@ -98,8 +98,8 @@ _jukebox_core_build_and_install_pyzmq() {
       _jukebox_core_download_prebuild_libzmq_with_drafts
     fi
 
-    sudo ZMQ_PREFIX=${ZMQ_PREFIX} ZMQ_DRAFT_API=1 \
-      pip3 install --no-cache-dir --pre pyzmq
+    sudo ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
+         pip3 install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
   else
     echo "    Skipping. pyzmq already installed"
   fi
