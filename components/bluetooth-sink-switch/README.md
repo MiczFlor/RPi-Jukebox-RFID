@@ -28,7 +28,7 @@ You need to set up both audio sinks and make sure they work. This is pretty much
 
 Follow the instructions for your soundcard. Configure `/etc/asound.conf`correctly. And make sure it works!
 
-Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
+Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Connecting_Bluetooth_device_to_Phoniebox). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
 
 The new entry should end up looking like this:
 

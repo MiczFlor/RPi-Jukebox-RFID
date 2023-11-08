@@ -5,7 +5,7 @@ This component provides support for controlling your Phoniebox through these but
 
 ### Installation
 
-1. Make sure your bluetooth headset is connected to the Phoniebox. Follow the instructions in the [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth).
+1. Make sure your bluetooth headset is connected to the Phoniebox. Follow the instructions in the [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Connecting_Bluetooth_device_to_Phoniebox).
 2. Execute `$ ./install-bt-buttons.sh. It will ask you to identify your headset and set up appropriate user rights, and registers the script as a service. It should work immediatly. In case of doubt, reboot.
     - If later changing the headset, re-run `$ ./register-device.py`. Reboot or restart the service with `sudo systemctl restart phoniebox-bt-buttons.service`
 

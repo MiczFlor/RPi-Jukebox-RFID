@@ -9,8 +9,7 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
-#    (note: currently only works for buster and newer OS)
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/scripts/installscripts
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
@@ -37,9 +36,9 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
-# Get the RaspberryPi OS code name (e.g. buster or bullseye)
+# Get the Raspberry Pi OS codename (e.g. buster, bullseye, ...)
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
-printf "Used RaspberryPi OS: ${OS_CODENAME}\n"
+printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
 INTERACTIVE=true
 

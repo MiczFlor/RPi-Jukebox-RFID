@@ -11,7 +11,7 @@ use JukeBox\Utils\Strings;
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
-* INSTALL-stretch.md instructions.
+* INSTALL.md instructions.
 * If you want to change the paths, edit config.php
 ***************************************************/
 
