@@ -1087,6 +1087,28 @@ install_main() {
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
+    if [ "${MPDconfig}" == "YES" ]; then
+        local mpd_conf="/etc/mpd.conf"
+
+        echo "Configuring MPD..."
+        # MPD configuration
+        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
+        # Change vars to match install config
+        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+        sudo chown mpd:audio "${mpd_conf}"
+        sudo chmod 640 "${mpd_conf}"
+
+        # start mpd
+        echo "Starting mpd service..."
+        sudo service mpd restart
+        sudo systemctl enable mpd
+    fi
+
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
         local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
@@ -1129,28 +1151,6 @@ install_main() {
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
         fi
-    fi
-
-    if [ "${MPDconfig}" == "YES" ]; then
-        local mpd_conf="/etc/mpd.conf"
-
-        echo "Configuring MPD..."
-        # MPD configuration
-        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
-        # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
-        sudo chown mpd:audio "${mpd_conf}"
-        sudo chmod 640 "${mpd_conf}"
-
-        # start mpd
-        echo "Starting mpd service..."
-        sudo service mpd restart
-        sudo systemctl enable mpd
     fi
 
     # set which version has been installed
