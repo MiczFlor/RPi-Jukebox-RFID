@@ -1,8 +1,8 @@
 # Base Target to build and install all needed base configuration and packages. Specifie the needed platform with the docker '--platform XXX' option
-ARG DEBIAN_VERSION_NAME=bullseye
+ARG DEBIAN_CODENAME=bullseye
 ARG BASE_TEST_IMAGE=test-code
-FROM debian:${DEBIAN_VERSION_NAME}-slim as base
-ARG DEBIAN_VERSION_NAME
+FROM debian:${DEBIAN_CODENAME}-slim as base
+ARG DEBIAN_CODENAME
 
 ENV DOCKER_RUNNING=true
 RUN touch /boot/cmdlinetxt
@@ -17,8 +17,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && echo "--- add sources ---" \
   && curl -fsSL http://raspbian.raspberrypi.org/raspbian.public.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-raspbian-keyring.gpg \
   && curl -fsSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg \
-  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-raspbian-keyring.gpg] http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_VERSION_NAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
-  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg] http://archive.raspberrypi.org/debian/ ${DEBIAN_VERSION_NAME} main" >> /etc/apt/sources.list.d/raspi.list \
+  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-raspbian-keyring.gpg] http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_CODENAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
+  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg] http://archive.raspberrypi.org/debian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list.d/raspi.list \
   && echo "--- install packages (2) ---" \
   && apt-get update \
   && apt-get -y upgrade \

@@ -9,7 +9,7 @@ on:
         platform:
           required: true
           type: string
-        debian_version_name:
+        debian_codename:
           required: true
           type: string
         cache_scope:
@@ -32,7 +32,7 @@ on:
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
-    group: ${{ inputs.cache_scope }}-${{ inputs.debian_version_name }}
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}
     cancel-in-progress: true
 
 jobs:
@@ -68,13 +68,13 @@ jobs:
     - name: Set Output pre-vars
       id: pre-vars
       env:
-        DEBIAN_VERSION_NAME: ${{ inputs.debian_version_name }}
+        DEBIAN_CODENAME: ${{ inputs.debian_codename }}
         DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
         CACHE_SCOPE: ${{ inputs.cache_scope }}
       run: |
-        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_VERSION_NAME }}-test" >> $GITHUB_OUTPUT
-        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_VERSION_NAME }}.tar" >> $GITHUB_OUTPUT
-        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_VERSION_NAME }}" >> $GITHUB_OUTPUT
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-test" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}" >> $GITHUB_OUTPUT
 
     - name: Set Output vars
       id: vars
@@ -102,7 +102,7 @@ jobs:
         cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
         cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.cache_scope }}
         build-args: |
-          DEBIAN_VERSION_NAME=${{ inputs.debian_version_name }}
+          DEBIAN_CODENAME=${{ inputs.debian_codename }}
           GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           GIT_URL=${{ github.server_url }}/${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
@@ -159,7 +159,7 @@ jobs:
         docker load --input ${{ needs.build.outputs.image_file_name }}
 
     # Run test
-    - name: Run Test ${{ inputs.debian_version_name }}-${{ matrix.username }}-${{ matrix.test_script }}
+    - name: Run Test ${{ inputs.debian_codename }}-${{ matrix.username }}-${{ matrix.test_script }}
       uses: tj-actions/docker-run@v2
       with:
         image: ${{ needs.build.outputs.image_tag_name }}
