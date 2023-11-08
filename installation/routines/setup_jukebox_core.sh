@@ -59,7 +59,7 @@ _jukebox_core_build_libzmq_with_drafts() {
   make && make install
 }
 
-_jukebox_core_download_prebuild_libzmq_with_drafts() {
+_jukebox_core_download_prebuilt_libzmq_with_drafts() {
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
 
   _download_file_from_google_drive "${LIBZMQ_GD_DOWNLOAD_ID}" "${ZMQ_TAR_FILENAME}"
@@ -95,7 +95,7 @@ _jukebox_core_build_and_install_pyzmq() {
     if [ "$BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE" = true ] ; then
       _jukebox_core_build_libzmq_with_drafts
     else
-      _jukebox_core_download_prebuild_libzmq_with_drafts
+      _jukebox_core_download_prebuilt_libzmq_with_drafts
     fi
 
     sudo ZMQ_PREFIX=${ZMQ_PREFIX} ZMQ_DRAFT_API=1 \
@@ -103,24 +103,6 @@ _jukebox_core_build_and_install_pyzmq() {
   else
     echo "    Skipping. pyzmq already installed"
   fi
-}
-
-_jukebox_core_download_prebuilt_pyzmq() {
-  echo "  Download prebuilt pyzmq with WebSockets Support"
-  local PYZMQ_TAR_FILENAME="pyzmq-build-armv6.tar.gz"
-
-  cd "${HOME_PATH}" || exit_on_error
-
-  # ARMv7 as default
-  PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV7}
-  if [[ $(uname -m) == "armv6l" ]]; then
-    # ARMv6 as fallback
-    PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV6}
-  fi
-
-  _download_file_from_google_drive "${PYZMQ_GD_DOWNLOAD_ID}" "${PYZMQ_TAR_FILENAME}"
-  tar -xvf "${PYZMQ_TAR_FILENAME}" -C /
-  rm -f "${PYZMQ_TAR_FILENAME}"
 }
 
 _jukebox_core_install_python_requirements() {
