@@ -39,7 +39,7 @@ Another bunch of wonderful designs! 2023 is the fifth Phoniebox calendar. If you
 
 If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
 
-## <a name="install">Install Phoniebox
+## Install Phoniebox
 
 If you are looking for the latest **stable version 2.x**, use the [install script for Raspberry Pi](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL).
 

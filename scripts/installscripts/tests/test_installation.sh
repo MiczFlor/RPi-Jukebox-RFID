@@ -10,6 +10,8 @@ PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 USER_NAME="$(whoami)"
 HOME_DIR=$(getent passwd "$USER_NAME" | cut -d: -f6)
 
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
+
 tests=0
 failed_tests=0
 
@@ -220,16 +222,24 @@ verify_autohotspot_settings() {
     fi
 }
 
-verify_apt_packages(){
-    local phpver="$(ls -1 /etc/php)"
-    local packages="samba
-samba-common-bin gcc lighttpd php${phpver}-common php${phpver}-cgi php${phpver} at mpd mpc mpg123 git ffmpeg
-resolvconf spi-tools python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero
-python3-spidev netcat-traditional alsa-utils"
-    local packages_raspberrypi="raspberrypi-kernel-headers"
-    local packages_spotify="libspotify-dev mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
-python3-cffi python3-ply python3-pycparser python3-spotify"
-    local packages_autohotspot="dnsmasq hostapd iw"
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments, egg-prefixes and version suffixes
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file() {
+    local package_file="$1"
+    shift
+
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs "$@"
+}
+
+verify_apt_packages() {
+    local jukebox_dir="$1"
+    local packages=$(call_with_args_from_file "${jukebox_dir}"/packages.txt echo)
+    local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
+    local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
+    local packages_autohotspot=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -247,9 +257,10 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
         packages="${packages} ${packages_raspberrypi}"
     fi
 
+    local apt_list_installed=$(apt -qq list --installed 2>/dev/null)
     for package in ${packages}
     do
-        if [[ $(apt -qq list "${package}" 2>/dev/null | grep 'installed') ]]; then
+        if [[ $(echo "${apt_list_installed}" | grep -i "${package}.*installed") ]]; then
             echo "  ${package} is installed"
         else
             echo "  ERROR: ${package} is not installed"
@@ -260,11 +271,12 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
-    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO"
-    local modules_spotify="Mopidy-Iris"
-    local modules_pn532="py532lib"
-    local modules_rc522="pi-rc522"
-    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
+    local jukebox_dir="$1"
+    local modules=$(call_with_args_from_file "${jukebox_dir}"/requirements.txt echo)
+    local modules_spotify=$(call_with_args_from_file "${jukebox_dir}"/requirements-spotify.txt echo)
+    local modules_pn532=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt echo)
+    local modules_rc522=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/RC522/requirements.txt echo)
+    local deviceName="${jukebox_dir}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -275,21 +287,22 @@ verify_pip_packages() {
 
     if [[ -f "${deviceName}" ]]; then
         # RC522 reader is used
-        if grep -Fxq "${deviceName}" MFRC522
+        if grep -Fxq "MFRC522" "${deviceName}"
         then
             modules="${modules} ${modules_rc522}"
         fi
 
         # PN532 reader is used
-        if grep -Fxq "${deviceName}" PN532
+        if grep -Fxq "PN532" "${deviceName}"
         then
             modules="${modules} ${modules_pn532}"
         fi
     fi
 
+    local pip_list_installed=$(pip3 list)
     for module in ${modules}
     do
-        if [[ $(pip3 show "${module}") ]]; then
+        if [[ $(echo "${pip_list_installed}" | grep -i "${module}") ]]; then
             echo "  ${module} is installed"
         else
             echo "  ERROR: pip module ${module} is not installed"
@@ -370,7 +383,7 @@ verify_mpd_config() {
 }
 
 verify_folder_access() {
-    local jukebox_dir="${HOME_DIR}/RPi-Jukebox-RFID"
+    local jukebox_dir="$1"
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
@@ -395,8 +408,8 @@ main() {
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings
     fi
-    verify_apt_packages
-    verify_pip_packages
+    verify_apt_packages "${JUKEBOX_HOME_DIR}"
+    verify_pip_packages "${JUKEBOX_HOME_DIR}"
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
@@ -405,7 +418,7 @@ main() {
     fi
     verify_mpd_config
     verify_autohotspot_settings
-    verify_folder_access
+    verify_folder_access "${JUKEBOX_HOME_DIR}"
 }
 
 start=$(date +%s)
