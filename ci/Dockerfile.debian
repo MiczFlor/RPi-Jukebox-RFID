@@ -86,7 +86,7 @@ ARG GIT_URL
 
 ENV GIT_BRANCH=$GIT_BRANCH GIT_URL=$GIT_URL
 
-COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages*.txt .
+COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages.txt packages-raspberrypi.txt ./
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && echo "--- install internal packages ---" \
@@ -96,9 +96,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && sed 's/#.*//g' packages-raspberrypi.txt | xargs apt-get -y install \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/buster-install-default.sh .
+COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/buster-install-default.sh ./
 WORKDIR /tests
-COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/tests/*.sh .
+COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/tests/*.sh ./
 
 # ------
 
