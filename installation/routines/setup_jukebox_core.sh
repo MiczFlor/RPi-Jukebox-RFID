@@ -99,7 +99,7 @@ _jukebox_core_build_and_install_pyzmq() {
     fi
 
     sudo ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
-         pip3 install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
+         pip3 install --no-cache-dir --no-binary "pyzmq" --pre --break-system-packages pyzmq
   else
     echo "    Skipping. pyzmq already installed"
   fi
@@ -108,7 +108,7 @@ _jukebox_core_build_and_install_pyzmq() {
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd "${INSTALLATION_PATH}"  || exit_on_error
-  sudo pip3 install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
+  sudo pip3 install --no-cache-dir --break-system-packages -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_install_settings() {
