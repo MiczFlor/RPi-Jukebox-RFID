@@ -25,7 +25,7 @@ tornado
 
 # Documentation build flow
 sphinx
-sphinx_rtd_theme
+sphinx-markdown-builder
 
 # Code quality
 flake8>=4.0.0

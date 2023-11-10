@@ -10,44 +10,17 @@ Welcome to RPi Jukebox RFID's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting Started:
-
-   featurelist
-   install
-   migration
-   issues
-
-.. toctree::
-   :maxdepth: 2
    :caption: User Guide:
 
-   userguide/concepts
-   userguide/system
-   userguide/configuration
-   userguide/audio
-   userguide/troubleshooting
    rfid/rfid
-   userguide/gpioz
-   userguide/bluetooth_audio_buttons
    userguide/rpc_commands
    userguide/rpc_command_reference
    userguide/rpc_command_alias_reference
-   userguide/carddatabase
-   userguide/autohotspot
    userguide/sync_rfidcards
-
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Developer Reference:
-
    developer/developer_issues.rst
    developer/coreapps
    developer/development_environment
    api/api.rst
-
-
-
 
 Indices and tables
 ==================

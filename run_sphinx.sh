@@ -13,9 +13,13 @@ usage() {
 # Change working directory to location of script
 SOURCE=${BASH_SOURCE[0]}
 SCRIPT_DIR="$(dirname "$SOURCE")"
-cd "$SCRIPT_DIR/docs/sphinx" || (echo "Could not change to docs directory" && exit 1)
+echo SCRIPT_DIR
+cd "$SCRIPT_DIR" || (echo "Could not change to docs directory" && exit 1)
 
-BUILD_DIR=_build
+echo 'echo "[$BASH_SOURCE]"' | bash
+cd documentation/sphinx
+
+BUILD_DIR=documentation/content/developers
 
 CLEAN_BUILD=false
 SPHINX_OPTS="-W --keep-going -T"
@@ -40,6 +44,6 @@ if [[ $CLEAN_BUILD = true ]]; then
   SPHINX_OPTS="$SPHINX_OPTS -a -E"
 fi
 
-echo "Building docs [ sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html/docs ]"
-sphinx-build $SPHINX_OPTS -b html . ${BUILD_DIR}/html/docs
+echo "Building docs [ sphinx-build $SPHINX_OPTS -b markdown . ${BUILD_DIR}/api-reference ]"
+sphinx-build $SPHINX_OPTS -b markdown . ${BUILD_DIR}/api-reference
 

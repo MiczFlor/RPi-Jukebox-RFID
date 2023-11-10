@@ -37,6 +37,3 @@ RUN pip3 install pyzmq
 EXPOSE 5555 5556
 
 WORKDIR ${INSTALLATION_PATH}/src/jukebox
-
-# Run Jukebox
-CMD python3 ${INSTALLATION_PATH}/src/jukebox/run_jukebox.py
