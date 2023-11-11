@@ -11,24 +11,7 @@ project check out the [documentation of Version 2](<https://github.com/MiczFlor/
 
 ## Where are the Help pages?
 
-### Online
-
-Read the documentation at [Readthedocs.io](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
-
-### Local
-
-Alternatively, build the help locally:
-
-~~~bash
-cd docs/sphinx
-make
-~~~
-
-Then navigate your browser to
-
-~~~bash
-file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/docs/index.html
-~~~
+The documentation can be found [here](documentation)
 
 ## Installation?
 

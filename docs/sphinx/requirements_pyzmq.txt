@@ -1,5 +1,0 @@
-# For operation of the Jukebox,
-# ZMQ must be compiled from sources due to Websocket support
-# When just building the docs, the regular ZMQ package is sufficient
-
-pyzmq

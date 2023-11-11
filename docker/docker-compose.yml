@@ -10,6 +10,7 @@ services:
       context: ../
       dockerfile: ./docker/mpd.Dockerfile
     container_name: mpd
+    image: phoniebox/mpd
     environment:
       - PULSE_SERVER=tcp:host.docker.internal:4713
     restart: unless-stopped
@@ -27,6 +28,7 @@ services:
       context: ../
       dockerfile: ./docker/jukebox.Dockerfile
     container_name: jukebox
+    image: phoniebox/jukebox
     depends_on:
       - mpd
     environment:
@@ -40,12 +42,14 @@ services:
     volumes:
       - ../shared:/root/RPi-Jukebox-RFID/shared
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
+    command: python3 run_jukebox.py
 
   webapp:
     build:
       context: ../
       dockerfile: ./docker/webapp.Dockerfile
     container_name: webapp
+    image: phoniebox/webapp
     depends_on:
       - jukebox
     environment:

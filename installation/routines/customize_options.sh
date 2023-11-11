@@ -188,29 +188,6 @@ ${DISABLE_ONBOARD_AUDIO_BACKUP} if things go pear-shaped.)
 
 }
 
-_option_build_local_docs() {
-  echo -e "Do you want to build the documentation locally and
-make it available under http://ip.of.your.box/docs ?
-
-Note:
- - This will force enable=true for the WebApp
- - Up to date documentation is also always available online
-Build and serve docs locally? [y/N] " 1>&3
-  read -r response
-  case "$response" in
-    [yY])
-      ENABLE_LOCAL_DOCS=true
-      ENABLE_WEBAPP=true
-      ;;
-    *)
-      ;;
-  esac
-
-  echo "ENABLE_LOCAL_DOCS=${ENABLE_LOCAL_DOCS}"
-  echo "ENABLE_WEBAPP=${ENABLE_WEBAPP}"
-
-}
-
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
@@ -250,7 +227,6 @@ customize_options() {
   _option_disable_onboard_audio
   _option_samba
   _option_webapp
-  _option_build_local_docs
   if [[ $ENABLE_WEBAPP == true ]] ; then
     _option_kiosk_mode
     _option_webapp_devel_build
