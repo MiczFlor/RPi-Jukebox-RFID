@@ -4,7 +4,7 @@
 GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
 
 # For ARMv7+
-NODE_SOURCE="https://deb.nodesource.com/setup_16.x"
+NODE_MAJOR=16
 # For ARMv6
 # To update version, follow these links
 # https://github.com/sdesalas/node-pi-zero
@@ -26,12 +26,18 @@ _jukebox_webapp_install_node() {
     # Zero and older versions of Pi with ARMv6 only
     # support experimental NodeJS
     if [[ $(uname -m) == "armv6l" ]]; then
-      NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
+      wget -O - ${NODE_SOURCE_EXPERIMENTAL} | sudo bash
+      sudo apt-get -qq -y install nodejs
+      sudo npm install --silent -g npm
+    else
+      # install NodeJS and npm as recommended in
+      # https://github.com/nodesource/distributions
+      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+      sudo apt-get update
+      sudo apt-get install nodejs npm -y
     fi
 
-    wget -O - ${NODE_SOURCE} | sudo bash
-    sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm
   fi
 }
 
@@ -66,6 +72,9 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 
   sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
+
+  # make sure nginx can access the home directory of the user
+  sudo chmod o+x /home/pi
 
   sudo service nginx restart
 }

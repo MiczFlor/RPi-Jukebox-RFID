@@ -27,10 +27,18 @@ _jukebox_core_install_os_dependencies() {
     python3-rpi.gpio python3-gpiozero \
     espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
+    libasound2-dev \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages
+
+  # add configuration that we break the global python system packages
+  # (required for bookworm, see 
+  # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2050). This
+  # should be removed once the jukebox has been isolated to a dedicated
+  # venv
+  sudo python3 -m pip config set global.break-system-packages true
 
   sudo pip3 install --upgrade pip
 }
