@@ -71,6 +71,7 @@ def init():
     register_mpd()
 
     plugin.register(player_arbiter, package='player', name='ctrl')
+    plugin.register(player_content, package='player', name='content')
 
 
 @plugin.atexit

@@ -32,3 +32,7 @@ class PlayerData:
     @plugin.tag
     def get_location_of_file(self, filename):
         [v.get('x', None) for v in self._database.values()]
+
+    @plugin.tag
+    def list_content(self):
+        return self._database
