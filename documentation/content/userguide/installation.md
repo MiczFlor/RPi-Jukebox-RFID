@@ -24,7 +24,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 <details>
 
-<summary>In case you forgot to customize the IS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
+<summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
 
 ### Pre-boot preparation
 
