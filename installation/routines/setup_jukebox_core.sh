@@ -27,6 +27,7 @@ _jukebox_core_install_os_dependencies() {
     python3-rpi.gpio python3-gpiozero \
     espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
+    libasound2-dev \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \

@@ -12,10 +12,10 @@ project check out the [documentation of Version 2](https://github.com/MiczFlor/R
 
 * [Installing Phoniebox future3](./content/userguide/installation.md)
 * [Update](./content/userguide/update.md)
-* [Feature Status](status.md)
+* [Feature Status](./content/developers/status.md)
 * [Known Issues](./content/developers/known-issues.md)
 * [User Guide](./content/userguide/)
-* [Developer Reference](developers)
+* [Developer Reference](./content/developers)
 
 ## future3
 
