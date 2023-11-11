@@ -23,9 +23,6 @@ tornado
 # On regular Linux PCs, Websocket is enabled in the Python package
 # pyzmq
 
-# Documentation build flow
-sphinx
-sphinx-markdown-builder
 
 # Code quality
 flake8>=4.0.0

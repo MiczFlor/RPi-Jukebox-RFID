@@ -54,23 +54,3 @@ The list of available commands is fetched from the running Jukebox service.
 ### run_publicity_sniffer.py
 
 A command line tool that monitors all messages being sent out from the Jukebox via the publishing interface. Received messages are printed in the console. Mainly used for debugging.
-
-### run_sphinx.sh (Legacy: TO BE REMOVED)
-
-This command rebuilds the documentation using a Sphinx flow, located in
-the main directory.
-
-The documentation is built partially from auto-generated RST-files. Thee
-files contain the
-`userguide/rpc_command_reference:RPC Command Reference`{.interpreted-text
-role="ref"} and
-`userguide/rpc_command_alias_reference:RPC Command Alias Reference`{.interpreted-text
-role="ref"}.
-
-``` bash
-run_jukebox.py -a
-```
-
-The above command regenerate these RST files. This only needs to be done
-when the RPC call references need to be updated within the documentation
-flow.

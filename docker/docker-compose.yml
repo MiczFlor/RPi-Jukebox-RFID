@@ -44,23 +44,6 @@ services:
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
     command: python3 run_jukebox.py
 
-  documentation:
-    profiles: ["documentation"]
-    build:
-      args:
-        - UID=0
-        - USER=root
-        - HOME=/root
-      context: ../
-      dockerfile: ./docker/build-documentation.Dockerfile
-    container_name: documentation
-    image: phoniebox/build-documentation
-    tty: true
-    volumes:
-      - ../shared:/root/RPi-Jukebox-RFID/shared
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
-    command: python3 ../../run_sphinx.py
-
   webapp:
     build:
       context: ../
