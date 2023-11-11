@@ -73,6 +73,9 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
 
+  # make sure nginx can access the home directory of the user
+  sudo chmod o+x /home/pi
+
   sudo service nginx restart
 }
 
