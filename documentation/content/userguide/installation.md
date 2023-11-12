@@ -9,7 +9,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 2. [Download](https://www.raspberrypi.org/software/)
-   the [Raspberry Pi Imager](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/>) and open it
+   the [Raspberry Pi Imager](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/) and open it
 3. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. future3 does not support 64bit kernels (`aarch64`). You can use the settings menu of the Raspberry Pi Imager to configure SSH and WiFi in a more userfriendly way, or do it manually as described in the next step. In case you already have a 64bit system installed, [you can fix the issue like this](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041>).
 4. Select your Micro SD card (your card will be formatted)
 5. Click *Write*
@@ -82,7 +82,7 @@ cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://ra
 This will switch directly to the specified feature branch during installation.
 
 > [!NOTE]
-> For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](developers/development-environment#steps-to-install)
+> For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](../developers/development-environment.md#steps-to-install)
 
 
 If you suspect an error you can monitor the installation-process with

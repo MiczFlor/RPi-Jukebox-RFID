@@ -18,10 +18,10 @@ Why should you care? Because we use the same protocol when triggering actions fr
 
 You will find a full list of RPC callable functions in [RPC Command Reference](rpc-command-reference.md) and aliases for convenience in [RPC Command Alias Reference](rpc-command-alias-reference.md).
 
-We also have a tool to send RPC commands to the running Jukebox application: [run_rpc_tool.py](src/jukebox/run_rpc_tool.py).
+We also have a tool to send RPC commands to the running Jukebox application: [run_rpc_tool.py](../../../src/jukebox/run_rpc_tool.py).
 
 ## Publishing Message Queue
 
 The Publishing Message Queue is the complementary part to the RPC where the core application publishes its status and status updates. As a user, you need not worry about it.
 
-If you want to interact with the Jukebox from your own application, this is where you get the current state from. Details about the protocol can be found here (TBD). A sniffer tool exists which listens and prints the incoming status messages: [run_publicity_sniffer.py](src/jukebox/run_rpc_tool.py).
+If you want to interact with the Jukebox from your own application, this is where you get the current state from. Details about the protocol can be found here (TBD). A sniffer tool exists which listens and prints the incoming status messages: [run_publicity_sniffer.py](../../../src/jukebox/run_rpc_tool.py).

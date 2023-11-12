@@ -8,7 +8,7 @@ The system consists of
 2. [PulseAudio](system.md#pulseaudio) for flexible audio output support
 3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and PulseAudio and providing all the features
 4. [Web UI](system.md#web-ui) which is served through an Nginx web server
-5. A set of [Configuration Tools](../developer/coreapps.md#configuration-tools) and a set of [Developer Tools](../developer/coreapps.md#developer-tools)
+5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
 .. note:: The default install puts everything into the folder `/home/pi/RPi-Jukebox-RFID`.
     Another folder might work, but is certainly not tested. Things are installed for the default user `pi`. Again,
