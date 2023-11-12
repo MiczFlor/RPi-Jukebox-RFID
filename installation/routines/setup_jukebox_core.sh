@@ -33,8 +33,9 @@ _jukebox_core_install_os_dependencies() {
     --allow-remove-essential \
     --allow-change-held-packages
 
-  VIRTUAL_ENV="${HOME_PATH}/venv"
+  VIRTUAL_ENV="${HOME_PATH}/.venv"
   python3 -m venv $VIRTUAL_ENV
+  source ="$VIRTUAL_ENV/bin/activate"
   PATH="$VIRTUAL_ENV/bin:$PATH"
 
   sudo pip install --upgrade pip
