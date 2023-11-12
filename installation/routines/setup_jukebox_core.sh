@@ -33,7 +33,7 @@ _jukebox_core_install_os_dependencies() {
     --allow-remove-essential \
     --allow-change-held-packages
 
-  VIRTUAL_ENV=/opt/venv
+  VIRTUAL_ENV="${HOME_PATH}/venv"
   python3 -m venv $VIRTUAL_ENV
   PATH="$VIRTUAL_ENV/bin:$PATH"
 
