@@ -15,7 +15,12 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 5. Select your Micro SD card (your card will be formatted)
 6. After you click `Next`, a prompt will ask you if you like to customize the OS settings
     * Click `Edit Settings`
-    * Switch to the `General` tab and provide a hostname, username and password, configure your Wifi and set locale settings
+    * Switch to the `General` tab
+        * Provide a hostname. (When on Mac, you will be able to use it to connect via SSH)
+        * Username currently MUST be `pi`. Other usernames are currently not supported.
+        * Password
+        * Wifi
+        * Set locale settings
     * Switch to the `Services` tab. Enable SSH with "Use password authentication"
     * Click `Save`
 6. In the same dialog, click `Yes`
