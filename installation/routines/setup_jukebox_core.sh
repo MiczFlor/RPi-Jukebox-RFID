@@ -35,10 +35,10 @@ _jukebox_core_install_os_dependencies() {
 
   VIRTUAL_ENV="${HOME_PATH}/.venv"
   python3 -m venv $VIRTUAL_ENV
-  source "$VIRTUAL_ENV/bin/activate"
   PATH="$VIRTUAL_ENV/bin:$PATH"
+  source "$VIRTUAL_ENV/bin/activate"
 
-  sudo pip install --upgrade pip
+  pip install --upgrade pip
 }
 
 _jukebox_core_configure_pulseaudio() {
@@ -84,7 +84,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "  Build and install pyzmq with WebSockets Support"
 
-  if ! sudo pip list | grep -F pyzmq >> /dev/null; then
+  if ! pip list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
     echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
 
@@ -114,7 +114,7 @@ _jukebox_core_build_and_install_pyzmq() {
 _jukebox_core_install_python_requirements() {
   echo "  Install requirements"
   cd "${INSTALLATION_PATH}"  || exit_on_error
-  sudo pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
+  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_install_settings() {
