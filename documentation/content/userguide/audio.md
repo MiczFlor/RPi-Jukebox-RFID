@@ -10,14 +10,14 @@ Stream transfer happens on user input or automatically on the connection of an a
 This is mainly targeted at Bluetooth Headsets/Speakers.
 
 Audio outputs run via PulseAudio and the basic configuration should be easy.
-There is a [configuration tool](..developers/coreapps#run_configure_audio.py),
+There is a [configuration tool](../developers/coreapps.md#run_configure_audio.py),
 to setup the configuration for the Jukebox Core App.
 
 To set up the audio
 
 1. Follow the setup steps according to your sound card
 2. Check that the sound output works [as described below](audio.md#checking-system-sound-output)
-3. Run the the tool [run_configure_audio](developers/coreapps.md#run_configure_audio.py)
+3. Run the the tool [run_configure_audio](../developers/coreapps.md#run_configure_audio.py)
 4. [Fine-tune audio parameters](audio.md#additional-options)
 
 ## Checking system sound output
@@ -99,7 +99,7 @@ Rerun the config tool to register the Bluetooth device with the Jukebox core app
 
 For other audio configuration options, please look at the `jukebox.yaml` for now.
 
-Directly edit `jukebox.yaml` following the steps: [Best practice procedure](.md#best-practice-procedure).
+Directly edit `jukebox.yaml` following the steps: [Best practice procedure](configuraton.md#best-practice-procedure).
 
 
 ## Developer Information
@@ -131,8 +131,8 @@ configurations which is part of the linux package `libasound2-plugin-equal`.
 
 You are, of course, free to modify the PulseAudio configuration to your needs. References
 
-1. [PulseAudio Documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User>)
-2. [PulseAudio Examples](https://wiki.archlinux.org/title/PulseAudio/Examples>)
+1. [PulseAudio Documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User)
+2. [PulseAudio Examples](https://wiki.archlinux.org/title/PulseAudio/Examples)
 
 In this case, run the configuration tool with below parameter to avoid touching the PulseAudio configuration file.
 
