@@ -35,7 +35,7 @@ _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
   echo "Do you want to enable a WiFi hotspot on demand?
 When enabled, this service spins up a WiFi hotspot
-when the Phonbox is unable to connect to a known
+when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 [y/N] " 1>&3
   read -r response
@@ -199,7 +199,7 @@ _option_webapp_devel_build() {
     echo -e "Your are installing from a non-release branch.
 This means, you will need to build the web app locally.
 For that you'll need Node.
-Do you want to install Node now?  [Y/n] " 1>&3
+Do you want to install Node?  [Y/n] " 1>&3
     read -r response
     case "$response" in
       [nN])
