@@ -118,15 +118,15 @@ $ pactl list sinks short
 Which means we can put any of these as sink into the jukebox configuration file (if there is any need).
 
 Mono down mix is enabled by the module `module-remap-sink`
-for which documentation and an example can be found [here](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-remap-sink>).
+for which documentation and an example can be found [here](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-remap-sink).
 
-The equalizer is the PulseAudio module `module-ladspa-sink` with the [corresponding documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-ladspa-sink>).
+The equalizer is the PulseAudio module `module-ladspa-sink` with the [corresponding documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-ladspa-sink).
 
 This in turn loads a [LADSPA plugin](https://www.ladspa.org/).
-The LADSPA plugin in the `Eq10X2` plugin of the [CAPS Library](http://quitte.de/dsp/caps.html#Eq10>). The CAPS library is available as linux package `caps`.
+The LADSPA plugin in the `Eq10X2` plugin of the [CAPS Library](http://quitte.de/dsp/caps.html#Eq10). The CAPS library is available as linux package `caps`.
 
 This is the same plugin which is used in the
-[equalizer for pure ALSA](https://github.com/raedwulf/alsaequal>)
+[equalizer for pure ALSA](https://github.com/raedwulf/alsaequal)
 configurations which is part of the linux package `libasound2-plugin-equal`.
 
 You are, of course, free to modify the PulseAudio configuration to your needs. References
