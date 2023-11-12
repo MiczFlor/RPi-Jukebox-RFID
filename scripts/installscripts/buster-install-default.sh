@@ -1412,6 +1412,44 @@ finish_installation() {
             done
     esac
 
+    echo "If you are using a sound card, connect it to your RPi."
+    # Use -e to display response of user in the logfile
+    read -e -r -p "Have you connected your sound card [Y/n] " response
+    case "$response" in
+        [nN][oO]|[nN])
+            ;;
+        *)
+            echo  'Please select the sound card you want to use'
+            options=("Hifiberry Miniamp" "Hifiberry AMP2" "Pimoroni Pirate Audio" "Manual configuration")
+            select opt in "${options[@]}"; do
+                case $opt in
+                    "Hifiberry Miniamp")
+                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh miniamp
+                        break
+                        ;;
+                    "Hifiberry AMP2")
+                        bash "${jukebox_dir}"/components/audio/Hifiberry/setup_Hifiberry.sh amp2
+                        break
+                        ;;
+                    "Pimoroni Pirate Audio")
+                        if [ "$SPOTinstall" == "YES" ]; then
+                            bash "${jukebox_dir}"/components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh spotify
+                        else
+                            bash "${jukebox_dir}"/components/audio/PirateAudioHAT/setup_pirateAudioHAT.sh classic
+                        fi
+                        break
+                        ;;
+                    "Manual configuration")
+                        echo "Please configure your sound card manually."
+                        break
+                        ;;
+                    *)
+                        echo "This is not a number"
+                        ;;
+                esac
+            done
+    esac
+
     echo
     echo "DONE. Let the sounds begin."
     echo "Find more information and documentation on the github account:"
