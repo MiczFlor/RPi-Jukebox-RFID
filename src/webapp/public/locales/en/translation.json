@@ -177,7 +177,8 @@
         "rebooting": "Rebooting",
         "button-title": "Reboot",
         "description-confirm": "Are you sure you want to reboot now?",
-        "failed": "Reboot failed"
+        "failed": "Reboot failed",
+        "bye": "👋 Good bye"
       },
       "shutdown": {
         "title": "Shut Down",

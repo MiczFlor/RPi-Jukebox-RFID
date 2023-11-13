@@ -177,7 +177,8 @@
         "rebooting": "Das System wird neu gestartet.",
         "button-title": "Neustart",
         "description-confirm": "Möchtest Du jetzt wirklich neu starten?",
-        "failed": "Neustart fehlgeschlagen"
+        "failed": "Neustart fehlgeschlagen",
+        "bye": "👋 Bis bald"
       },
       "shutdown": {
         "title": "Herunterfahren",

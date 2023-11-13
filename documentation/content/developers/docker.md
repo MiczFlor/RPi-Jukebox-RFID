@@ -52,7 +52,7 @@ They can be run individually or in combination. To do that, we use
 ### Linux
 
 Make sure you don\'t use `sudo` to run your `docker-compose`. Check out
-Docker\'s [post-installation guide](https://docs.docker.com/engine/install/linux-postinstall/] for more information.
+Docker\'s [post-installation guide](https://docs.docker.com/engine/install/linux-postinstall/) for more information.
 
 ``` bash
 // Build Images

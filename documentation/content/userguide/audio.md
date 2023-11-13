@@ -10,14 +10,14 @@ Stream transfer happens on user input or automatically on the connection of an a
 This is mainly targeted at Bluetooth Headsets/Speakers.
 
 Audio outputs run via PulseAudio and the basic configuration should be easy.
-There is a [configuration tool](..developers/coreapps#run_configure_audio.py),
+There is a [configuration tool](../developers/coreapps.md#run_configure_audio.py),
 to setup the configuration for the Jukebox Core App.
 
 To set up the audio
 
 1. Follow the setup steps according to your sound card
 2. Check that the sound output works [as described below](audio.md#checking-system-sound-output)
-3. Run the the tool [run_configure_audio](developers/coreapps.md#run_configure_audio.py)
+3. Run the the tool [run_configure_audio](../developers/coreapps.md#run_configure_audio.py)
 4. [Fine-tune audio parameters](audio.md#additional-options)
 
 ## Checking system sound output
@@ -99,7 +99,7 @@ Rerun the config tool to register the Bluetooth device with the Jukebox core app
 
 For other audio configuration options, please look at the `jukebox.yaml` for now.
 
-Directly edit `jukebox.yaml` following the steps: [Best practice procedure](.md#best-practice-procedure).
+Directly edit `jukebox.yaml` following the steps: [Best practice procedure](configuraton.md#best-practice-procedure).
 
 
 ## Developer Information
@@ -118,21 +118,21 @@ $ pactl list sinks short
 Which means we can put any of these as sink into the jukebox configuration file (if there is any need).
 
 Mono down mix is enabled by the module `module-remap-sink`
-for which documentation and an example can be found [here](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-remap-sink>).
+for which documentation and an example can be found [here](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-remap-sink).
 
-The equalizer is the PulseAudio module `module-ladspa-sink` with the [corresponding documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-ladspa-sink>).
+The equalizer is the PulseAudio module `module-ladspa-sink` with the [corresponding documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Modules/#module-ladspa-sink).
 
 This in turn loads a [LADSPA plugin](https://www.ladspa.org/).
-The LADSPA plugin in the `Eq10X2` plugin of the [CAPS Library](http://quitte.de/dsp/caps.html#Eq10>). The CAPS library is available as linux package `caps`.
+The LADSPA plugin in the `Eq10X2` plugin of the [CAPS Library](http://quitte.de/dsp/caps.html#Eq10). The CAPS library is available as linux package `caps`.
 
 This is the same plugin which is used in the
-[equalizer for pure ALSA](https://github.com/raedwulf/alsaequal>)
+[equalizer for pure ALSA](https://github.com/raedwulf/alsaequal)
 configurations which is part of the linux package `libasound2-plugin-equal`.
 
 You are, of course, free to modify the PulseAudio configuration to your needs. References
 
-1. [PulseAudio Documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User>)
-2. [PulseAudio Examples](https://wiki.archlinux.org/title/PulseAudio/Examples>)
+1. [PulseAudio Documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User)
+2. [PulseAudio Examples](https://wiki.archlinux.org/title/PulseAudio/Examples)
 
 In this case, run the configuration tool with below parameter to avoid touching the PulseAudio configuration file.
 
