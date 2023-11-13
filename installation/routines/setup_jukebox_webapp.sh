@@ -4,7 +4,7 @@
 GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
 
 # For ARMv7+
-NODE_MAJOR=16
+NODE_MAJOR=20
 # For ARMv6
 # To update version, follow these links
 # https://github.com/sdesalas/node-pi-zero

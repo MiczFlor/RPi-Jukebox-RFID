@@ -35,7 +35,7 @@ _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
   echo "Do you want to enable a WiFi hotspot on demand?
 When enabled, this service spins up a WiFi hotspot
-when the Phonbox is unable to connect to a known
+when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 [y/N] " 1>&3
   read -r response
@@ -196,25 +196,29 @@ _option_webapp_devel_build() {
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
-    echo -e "Your are installing from a non-release branch.
+
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = false ]]; then
+      echo -e "Your are installing from a non-release branch.
 This means, you will need to build the web app locally.
 For that you'll need Node.
-Do you want to install Node now?  [Y/n] " 1>&3
-    read -r response
-    case "$response" in
-      [nN])
-        ENABLE_INSTALL_NODE=false
-        ;;
-      *)
-        ;;
-    esac
-    # This message will be displayed at the end of the installation process
-    FIN_MESSAGE="$FIN_MESSAGE\n\nATTENTION: You need to build the web app locally with
-    $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-    This must be done after reboot, due to memory restrictions.
-    Read the documentation regarding local Web App builds!"
-  fi
+Do you want to install Node?  [Y/n] " 1>&3
+      read -r response
+      case "$response" in
+        [nN])
+          ENABLE_INSTALL_NODE=false
+          ;;
+        *)
+          ;;
+      esac
 
+      # This message will be displayed at the end of the installation process
+      FIN_MESSAGE="$FIN_MESSAGE\n\nATTENTION: You need to build the web app locally with
+      $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+      This must be done after reboot, due to memory restrictions.
+      Read the documentation regarding local Web App builds!"
+      ENABLE_WEBAPP_PROD_DOWNLOAD=false
+    fi
+  fi
 }
 
 customize_options() {

@@ -27,17 +27,17 @@ def reader_install_dependencies(reader_path: str, dependency_install: str) -> No
             # The python dependencies (if any)
             print("\nInstalling/Checking Python dependencies  ...\n")
             print("IMPORTANT for developers: Python dependencies will be installed using "
-                  " $ sudo pip3 install --upgrade -r requirements.txt'\n"
+                  " $ pip install --upgrade -r requirements.txt'\n"
                   " i.e. on system level. This is target for the default RPI setup. "
                   "If you do not want that, but rather have them in a local or virtual environment, "
                   "hit No here and manually install the dependencies from your virtual environment\n"
-                  " $ pip3 install --upgrade -r requirements.txt'\n"
+                  " $ pip install --upgrade -r requirements.txt'\n"
                   "It is no problem to install them after running this script.\n\n")
             if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
                                                                 prompt_color=Colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
                 quiet_level = '-q' if logger.isEnabledFor(logging.DEBUG) else ''
-                subprocess.run(f"sudo pip3 install --upgrade {quiet_level} -r requirements.txt", cwd=reader_path,
+                subprocess.run(f"pip install --upgrade {quiet_level} -r requirements.txt", cwd=reader_path,
                                shell=True, check=False)
                 print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
         if os.path.exists(reader_path + '/setup.inc.sh'):
@@ -78,7 +78,7 @@ def reader_load_module(reader_name):
                             "If this script is called with -d a, an attempt will be made to install the dependencies "
                             "automatically\n"
                             "You may install the dependencies manually before re-executing this script by:\n"
-                            "'$ pip3 install -r requirements.txt' in the reader's submodule directory and \n"
+                            "'$ pip install -r requirements.txt' in the reader's submodule directory and \n"
                             "'$ ./setup.inc.sh'\n"
                             "In case of doubt reboot!\n\n"
                             f"{'=' * 80}\n")

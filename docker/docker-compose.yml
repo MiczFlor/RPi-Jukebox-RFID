@@ -42,7 +42,7 @@ services:
     volumes:
       - ../shared:/root/RPi-Jukebox-RFID/shared
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
-    command: python3 run_jukebox.py
+    command: python run_jukebox.py
 
   webapp:
     build:
