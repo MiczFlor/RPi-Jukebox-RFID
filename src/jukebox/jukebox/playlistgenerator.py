@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Playlists are build from directory content in the following way:
 a directory is parsed and files are added to the playlist in the following way
