@@ -50,7 +50,7 @@ def register_mpd():
 
 
 @plugin.initialize
-def init():
+def initialize():
     global event_loop
     global player_arbiter
     global player_status

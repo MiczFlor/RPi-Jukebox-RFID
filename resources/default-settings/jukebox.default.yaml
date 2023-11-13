@@ -78,8 +78,8 @@ alsawave:
   # Config of the Wave through ALSA Jingle Service
   device: default
 players:
-  mpd:
-    host: localhost
+  content:
+    audiofile: /home/pi/RPi-Jukebox-RFID/shared/audiofolders/audiofiles.yaml
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json

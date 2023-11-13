@@ -29,6 +29,7 @@ class PlayerData:
 
     @plugin.tag
     def read_player_content(self, content_type):
+        self._fill_database(self.audiofile)
         return self._database.get(content_type, "empty")
 
     @plugin.tag
