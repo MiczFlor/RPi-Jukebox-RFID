@@ -3,9 +3,13 @@
 _option_static_ip() {
   # ENABLE_STATIC_IP
   CURRENT_IP_ADDRESS=$(hostname -I)
-  echo "Would you like to set a static IP (will be ${CURRENT_IP_ADDRESS})?
-It'll save a lot of start up time. This can be changed later.
-[Y/n] " 1>&3
+  clear 1>&3
+  echo "----------------------- STATIC IP -----------------------
+
+Setting a static IP will save a lot of start up time.
+The adress will be '${CURRENT_IP_ADDRESS}'.
+
+Set a static IP? [Y/n]" 1>&3
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -19,7 +23,13 @@ It'll save a lot of start up time. This can be changed later.
 
 _option_ipv6() {
   # DISABLE_IPv6
-  echo "Do you want to disable IPv6? [Y/n] " 1>&3
+  clear 1>&3
+  echo "------------------------- IP V6 -------------------------
+
+IPv6 is only needed if you intend to use it.
+Otherwise it can be disabled.
+
+Do you want to disable IPv6? [Y/n]" 1>&3
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -33,14 +43,17 @@ _option_ipv6() {
 
 _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
-  echo "Do you want to enable a WiFi hotspot on demand?
+  clear 1>&3
+  echo "---------------------- AUTOHOTSPOT ----------------------
+
 When enabled, this service spins up a WiFi hotspot
 when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
-[y/N] " 1>&3
+
+Do you want to enable an Autohotpot? [y/N]" 1>&3
   read -r response
   case "$response" in
-    [yY])
+    [yY][eE][sS]|[yY])
       ENABLE_AUTOHOTSPOT=true
       ;;
     *)
@@ -80,9 +93,13 @@ WiFi. This way you can still access it.
 
 _option_bluetooth() {
   # DISABLE_BLUETOOTH
-  echo "Do you want to disable Bluetooth?
-Turn off Bluetooth if you do not plan to use it. It saves energy and start up time.
-[Y/n] " 1>&3
+  clear 1>&3
+  echo "----------------------- BLUETOOTH -----------------------
+
+Turning off Bluetooth will save energy and
+start up time, if you do not plan to use it.
+
+Do you want to disable Bluetooth? [Y/n]" 1>&3
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -96,10 +113,15 @@ Turn off Bluetooth if you do not plan to use it. It saves energy and start up ti
 
 _option_samba() {
   # ENABLE_SAMBA
-  echo "Samba will be installed. It is required to conveniently copy files to
-your Phoniebox via a network share. If you don't need it, feel free to skip
-the installation. If you are unsure, stick to YES!
-[Y/n] " 1>&3
+  clear 1>&3
+  echo "------------------------- SAMBA -------------------------
+
+Samba is required to conveniently copy files
+to your Phoniebox via a network share.
+If you don't need it, feel free to skip the installation.
+If you are unsure, stick to YES!
+
+Do you want to install Samba? [Y/n]" 1>&3
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -114,10 +136,13 @@ the installation. If you are unsure, stick to YES!
 
 _option_webapp() {
   # ENABLE_WEBAPP
-  echo "Would you like to install the web application?
-This is only required if you want to use a graphical interface
-to manage your Phoniebox!
-[Y/n] " 1>&3
+  clear 1>&3
+  echo "------------------------ WEBAPP -------------------------
+
+This is only required if you want to use
+a graphical interface to manage your Phoniebox!
+
+Would you like to install the web application? [Y/n]" 1>&3
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -132,14 +157,18 @@ to manage your Phoniebox!
 
 _option_kiosk_mode() {
   # ENABLE_KIOSK_MODE
-  echo "Would you like to enable the Kiosk Mode?
-If you have a screen attached to your RPi, this will launch the
-web application right after boot. It will only install the necessary
-xserver dependencies and not the entire RPi desktop environment.
-[y/N] " 1>&3
+  clear 1>&3
+  echo "----------------------- KIOSK MODE ----------------------
+
+If you have a screen attached to your RPi,
+this will launch the web application right after boot.
+It will only install the necessary xserver dependencies
+and not the entire RPi desktop environment.
+
+Would you like to enable the Kiosk Mode? [y/N]" 1>&3
   read -r response
   case "$response" in
-    [yY])
+    [yY][eE][sS]|[yY])
       ENABLE_KIOSK_MODE=true
       ;;
     *)
@@ -150,12 +179,16 @@ xserver dependencies and not the entire RPi desktop environment.
 
 _options_update_raspi_os() {
   # UPDATE_RASPI_OS
-  echo "Would you like to update the operating system?
-This shall be done eventually, but increases the installation time a lot.
-[Y/n] " 1>&3
+  clear 1>&3
+  echo "----------------------- UPDATE OS -----------------------
+
+This shall be done eventually,
+but increases the installation time a lot.
+
+Would you like to update the operating system? [Y/n]" 1>&3
   read -r response
   case "$response" in
-    [nN])
+    [nN][oO]|[nN])
       UPDATE_RASPI_OS=false
       ;;
     *)
@@ -167,18 +200,25 @@ This shall be done eventually, but increases the installation time a lot.
 _option_disable_onboard_audio() {
   # Disable BCM on-chip audio (typically Headphones)
   # not needed when external sound card is sued
+  clear 1>&3
+  echo "--------------------- ON-CHIP AUDIO ---------------------
 
-  echo -e "Disable Pi's on-chip audio (headphone / jack output)?
-If you are using an external sound card (e.g. USB, HifiBerry, PirateAudio, etc),
-we recommend to disable the on-chip audio. It will make the ALSA sound configuration easier.
-If you are planning to only use Bluetooth speakers, leave the on-chip audio enabled!
-(This will touch your boot configuration in ${RPI_BOOT_CONFIG_FILE}.
-We will do our best not to mess anything up. However, a backup copy will be written to
-${DISABLE_ONBOARD_AUDIO_BACKUP} if things go pear-shaped.)
-[y/N] " 1>&3
+If you are using an external sound card (e.g. USB,
+HifiBerry, PirateAudio, etc), we recommend to disable
+the on-chip audio. It will make the ALSA sound
+configuration easier.
+If you are planning to only use Bluetooth speakers,
+leave the on-chip audio enabled!
+(This will touch your boot configuration in
+${RPI_BOOT_CONFIG_FILE}.
+We will do our best not to mess anything up. However,
+a backup copy will be written to
+${DISABLE_ONBOARD_AUDIO_BACKUP} )
+
+Disable Pi's on-chip audio (headphone / jack output)? [y/N]" 1>&3
   read -r response
   case "$response" in
-    [yY])
+    [yY][eE][sS]|[yY])
       DISABLE_ONBOARD_AUDIO=true
       ;;
     *)
@@ -196,27 +236,28 @@ _option_webapp_devel_build() {
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
-
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = false ]]; then
-      echo -e "Your are installing from a non-release branch.
+      clear 1>&3
+      echo "--------------------- WEBAPP NODE ---------------------
+
+You are installing from a non-release branch.
 This means, you will need to build the web app locally.
 For that you'll need Node.
-Do you want to install Node?  [Y/n] " 1>&3
+
+Do you want to install Node? [Y/n]" 1>&3
       read -r response
       case "$response" in
-        [nN])
+        [nN][oO]|[nN])
           ENABLE_INSTALL_NODE=false
           ;;
         *)
           ;;
       esac
-
       # This message will be displayed at the end of the installation process
       FIN_MESSAGE="$FIN_MESSAGE\n\nATTENTION: You need to build the web app locally with
       $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
       This must be done after reboot, due to memory restrictions.
       Read the documentation regarding local Web App builds!"
-      ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
   fi
 }
