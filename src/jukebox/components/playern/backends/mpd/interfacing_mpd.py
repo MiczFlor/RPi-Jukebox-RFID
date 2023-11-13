@@ -210,6 +210,7 @@ class MPDBackend:
         :returns: List of file(s) and directories including meta data
         """
         path = sanitize(path)
+        self._run_cmd(self.client.update, path)
         if os.path.isfile(path):
             files = self._run_cmd(self.client.find, 'file', path)
         elif not recursive:
@@ -220,6 +221,8 @@ class MPDBackend:
 
     @plugin.tag
     def get_track(self, path):
+        path = sanitize(path)
+        self._run_cmd(self.client.update, path)
         playlist = self._run_cmd(self.client.find, 'file', path)
         if len(playlist) != 1:
             raise ValueError(f"Path decodes to more than one file: '{path}'")
@@ -265,6 +268,7 @@ class MPDBackend:
             * file: List podcast playlist
 
         """
+        path = sanitize(path)
         pass
 
     def _get_livestream_items(self, path):
@@ -280,6 +284,7 @@ class MPDBackend:
             * file: List livestream playlist
 
         """
+        path = sanitize(path)
         pass
 
     # -----------------------------------------------------
