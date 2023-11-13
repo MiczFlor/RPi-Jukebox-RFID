@@ -1,7 +1,5 @@
-.. RPI Jukebox RFID
-.. Copyright (c) 2022 Chris Banz
-..
-.. SPDX-License-Identifier: MIT License
+.. RPI Jukebox RFID Version 3
+.. Copyright (c) See file LICENSE in project root folder
 
 GPIO Recipes
 **************
@@ -124,7 +122,7 @@ A button to increase the volume by 5 steps every 0.75 seconds as long as it is p
 Button: Shutdown
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-A button to shutdown the Jukebox if it is presse for more than 3 seconds. Note the different ``type`` here!
+A button to shutdown the Jukebox if it is pressed for more than 3 seconds. Note the different ``type`` here!
 
 .. code-block:: yaml
 
@@ -132,12 +130,11 @@ A button to shutdown the Jukebox if it is presse for more than 3 seconds. Note t
       IncreaseVolume:
         type: LongPressButton
         kwargs:
-          pin: 13
+          pin: 3
           hold_time: 3
         actions:
           on_press:
-            alias: change_volume
-            args: +5
+            alias: shutdown
 
 Button: Dual Action
 ^^^^^^^^^^^^^^^^^^^^^^^^

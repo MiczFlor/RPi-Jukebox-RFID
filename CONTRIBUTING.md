@@ -14,19 +14,19 @@ The naming conventions have changed from Version 2 to Version 3. Do use the new 
 The Jukebox core app is written entirely in Python. Therefore, we follow the [Python Style Guide](https://www.python.org/dev/peps/pep-0008/).
 
 * **Files & folder names**
-    * all **lower case**
-    * separate words with **underscore** `_` (**no** dashes - this conflicts with Python module names!)
-      * Note: This is the major difference to Version 2. Follow this rule!
-    * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
-    * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
-    * unique and clear product IDs (e.g. MAX7219)
-        * the product ID should be written as is (no lowercase)
-        * the product ID should come last in a descriptive name (e.g. `dot_matrix_module_MAX7219`)
-    * be consistent and look at existing examples before you invent something new
+  * all **lower case**
+  * separate words with **underscore** `_` (**no** dashes - this conflicts with Python module names!)
+    * Note: This is the major difference to Version 2. Follow this rule!
+  * be **descriptive** in your wording (e.g. `raspberry`, not `juicy-red-thing`)
+  * move **from general to specific** (e.g. `food-fruit-raspberry`, not `raspberry-food-fruit`)
+  * unique and clear product IDs (e.g. MAX7219)
+    * the product ID should be written as is (no lowercase)
+    * the product ID should come last in a descriptive name (e.g. `dot_matrix_module_MAX7219`)
+  * be consistent and look at existing examples before you invent something new
 
 * **Documentation**
-    * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
-    * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
+  * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
+  * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
 
 # Structure of files and folders
 
@@ -53,12 +53,7 @@ There are a few guidelines that we need contributors to follow so that we can ha
 
 Development for Version 3 is done on the git branch `future3/develop`. How to move to that branch, see below.
 
-For bug fixes and improvements just open an issue or PR as described below. If you plan to port
-a feature from Version 2.X or implement a new feature, it is advisable to contact us first. In this case,
-also open an issue describing what you are planning to do. We will just check that nobody else is already
-on the subject. We are looking forward to your work. Check the current
-[feature list](file:///home/chris/PycharmProjects/RPi-Jukebox-RFID/docs/sphinx/_build/html/featurelist.html#)
-for available features and work in progress.
+For bug fixes and improvements just open an issue or PR as described below. If you plan to port a feature from Version 2.X or implement a new feature, it is advisable to contact us first. In this case, also open an issue describing what you are planning to do. We will just check that nobody else is already on the subject. We are looking forward to your work. Check the current [feature list](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html) for available features and work in progress.
 
 ## Getting Started
 
@@ -68,9 +63,9 @@ for available features and work in progress.
     Version 2 will continue to live for quite a while.
   * Clearly describe the issue including steps to reproduce when it is a bug
   * Make sure you fill in the earliest version that you know has the issue
-* By default this will get you to the `future3/master` branch. You will move to the `future3/develop` branch, do this:
+* By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
 
-~~~
+~~~bash
 cd /home/pi/RPi-Jukebox-RFID
 git checkout future3/develop
 git fetch origin
@@ -81,7 +76,6 @@ git pull
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github).
 And, ideally pull requests use the "running code" on the `future3/develop` branch of your Phoniebox.
 Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-
 
 ## Making Changes
 
@@ -110,9 +104,9 @@ respectively.
 
 As new commits appear on Github you want to stay on the edge - especially if you are continuing to contribute.
 From time to time, you will need to update the Web App or the dependencies. To find out when, we provide a
-git hook script. To activate simply copy it in the git hook folder
+git hook script. To activate simply copy it in the git hook folder.
 
-~~~
+~~~bash
 cp .githooks/post-merge .git/hooks/.
 ~~~
 
@@ -121,7 +115,7 @@ cp .githooks/post-merge .git/hooks/.
 Run the checks below on the code. Fix those issues! Or you are running in delays in the acceptance of your PR.
 We provide git hooks for those checks for convenience. To activate
 
-~~~
+~~~bash
 cp .githooks/pre-commit .git/hooks/.
 ~~~
 
@@ -130,9 +124,9 @@ cp .githooks/pre-commit .git/hooks/.
 If you touched *any* Python file (even if only for fixing spelling errors), run flake8 in the top-level folder.
 It contains out setup file.
 
-~~~
-$ cd /home/pi/RPi-Jukebox-RFID
-$ ./run_flake8.sh
+~~~bash
+cd /home/pi/RPi-Jukebox-RFID
+./run_flake8.sh
 ~~~
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
@@ -144,7 +138,7 @@ When adding or improving documentation, build the documentation and look at it l
 If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
 Also run through this step in this case! Fix all warnings!
 
-~~~
+~~~bash
 $ cd /home/pi/RPi-Jukebox-RFID/
 $ ./run_sphinx.sh
 # open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
@@ -155,9 +149,9 @@ $ ./run_sphinx.sh
 Tests are very few at the moment, but it cannot hurt to run them. If you have tests for your new modules, please add
 them.
 
-~~~
-$ cd /home/pi/RPi-Jukebox-RFID/
-$ ./run_pytest.sh
+~~~bash
+cd /home/pi/RPi-Jukebox-RFID/
+./run_pytest.sh
 ~~~
 
 ## Submitting Changes
@@ -187,8 +181,9 @@ The original contributor will be notified of the revert.
 * Changes resulting in test failures will be reverted if they cannot
   be resolved within one business day.
 
-## Guidelines ##
-* Phoniebox runs on Raspian **Buster**. Therefore, all Python code should work with **Python 3.7**.
+## Guidelines
+
+* Phoniebox runs on Raspian **Buster**. Therefore, all Python code should work at least with **Python 3.7**.
 * For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
 ## Additional Resources

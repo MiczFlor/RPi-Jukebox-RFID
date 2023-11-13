@@ -59,7 +59,7 @@ log_all_cards *(default=false)*
 Board Connections
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following pin-out is for the default SPI Bus 0 on Raspberry Pins
+The following pin-out is for the default SPI Bus 0 on Raspberry Pins.
 
 .. table:: MFRC522 default wiring (spi_bus=0, spi_ce=0)
     :widths: auto
@@ -77,6 +77,9 @@ The following pin-out is for the default SPI Bus 0 on Raspberry Pins
     3.3V
     ===============   ========  =========  =========
 
+Some RC522 boards use reversed labeling for MOSI and MISO pins. The good thing is, no harm is done to
+the card reader when incorrectly connected. In case no cards are read, try swapping the connections 
+for MOSI and MISO.
 
 Hardware
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

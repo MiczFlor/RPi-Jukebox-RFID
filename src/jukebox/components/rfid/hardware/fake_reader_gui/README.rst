@@ -1,7 +1,5 @@
-.. RPI Jukebox RFID
-.. Copyright (c) 2021 Christian Banz
-..
-.. SPDX-License-Identifier: MIT License
+.. RPI Jukebox RFID Version 3
+.. Copyright (c) See file LICENSE in project root folder
 
 Mock Reader
 -----------------
