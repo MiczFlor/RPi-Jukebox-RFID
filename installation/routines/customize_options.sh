@@ -2,12 +2,19 @@
 
 _option_static_ip() {
   # ENABLE_STATIC_IP
-  CURRENT_IP_ADDRESS=$(hostname -I)
+  # Using the dynamically assigned IP address as it is the best guess to be free
+  # Reference: https://unix.stackexchange.com/a/505385
+  CURRENT_ROUTE=$(ip route get 8.8.8.8)
+  CURRENT_INTERFACE=$(echo "${CURRENT_ROUTE}" | awk '{ print $3; exit }')
+  CURRENT_GATEWAY=$(echo "${CURRENT_ROUTE}" | awk '{ print $5; exit }')
+  CURRENT_IP_ADDRESS=$(echo "${CURRENT_ROUTE}" | awk '{ print $7; exit }')
   clear 1>&3
   echo "----------------------- STATIC IP -----------------------
 
 Setting a static IP will save a lot of start up time.
-The adress will be '${CURRENT_IP_ADDRESS}'.
+The static adress will be '${CURRENT_IP_ADDRESS}'
+from interface '${CURRENT_INTERFACE}'
+with the gateway '${CURRENT_GATEWAY}'.
 
 Set a static IP? [Y/n]" 1>&3
   read -r response
@@ -265,8 +272,8 @@ Do you want to install Node? [Y/n]" 1>&3
 customize_options() {
   echo "Customize Options starts"
 
-  _option_static_ip
   _option_ipv6
+  _option_static_ip
   _option_autohotspot
   _option_bluetooth
   _option_disable_onboard_audio
