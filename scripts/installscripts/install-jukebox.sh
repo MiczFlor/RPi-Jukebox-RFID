@@ -13,7 +13,7 @@
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
-#    buster-install-default.sh -a
+#    install-jukebox.sh -a
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -138,7 +138,7 @@ an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   ${HOME_DIR}/buster-install-default.sh -a
+   ${HOME_DIR}/install-jukebox.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -522,7 +522,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
             *)
                 cd "${local_home_dir}"
                 clear
-                ./buster-install-default.sh -a
+                ./install-jukebox.sh -a
                 exit
                 ;;
         esac

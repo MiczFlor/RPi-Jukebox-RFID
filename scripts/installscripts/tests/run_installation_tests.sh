@@ -26,7 +26,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n no RFID registration
 # n No reboot
 
-./../buster-install-default.sh <<< $'y\nn\n\ny\ny\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+./../install-jukebox.sh <<< $'y\nn\n\ny\ny\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation
