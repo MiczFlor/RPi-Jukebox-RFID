@@ -5,8 +5,8 @@ _option_static_ip() {
   # Using the dynamically assigned IP address as it is the best guess to be free
   # Reference: https://unix.stackexchange.com/a/505385
   CURRENT_ROUTE=$(ip route get 8.8.8.8)
-  CURRENT_INTERFACE=$(echo "${CURRENT_ROUTE}" | awk '{ print $3; exit }')
-  CURRENT_GATEWAY=$(echo "${CURRENT_ROUTE}" | awk '{ print $5; exit }')
+  CURRENT_GATEWAY=$(echo "${CURRENT_ROUTE}" | awk '{ print $3; exit }')
+  CURRENT_INTERFACE=$(echo "${CURRENT_ROUTE}" | awk '{ print $5; exit }')
   CURRENT_IP_ADDRESS=$(echo "${CURRENT_ROUTE}" | awk '{ print $7; exit }')
   clear 1>&3
   echo "----------------------- STATIC IP -----------------------
