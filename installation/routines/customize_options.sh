@@ -71,7 +71,7 @@ Do you want to enable an Autohotpot? [y/N]" 1>&3
       echo "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] " 1>&3
       read -r response_pw_q
       case "$response_pw_q" in
-        [yY])
+        [yY][eE][sS]|[yY])
           while [ $(echo ${response_pw}|wc -m) -lt 8 ]
           do
               echo "Please type the new password (at least 8 character)." 1>&3
