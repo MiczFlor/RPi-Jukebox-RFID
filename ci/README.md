@@ -43,9 +43,9 @@ This is a work in progress so expect things to fail or being flaky.
     ```bash
       docker run --rm -ti rpi-jukebox-rfid:debian-latest /bin/bash
       cd /home/pi/
-      cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
+      cp /code/scripts/installscripts/install-jukebox.sh /home/pi/
       # set GIT_URL and GIT_BRANCH appropriately to your checkout
-      bash GIT_URL=https://github.com/MiczFlor/RPi-Jukebox-RFID.git GIT_BRANCH=main buster-install-default.sh
+      bash GIT_URL=https://github.com/MiczFlor/RPi-Jukebox-RFID.git GIT_BRANCH=main install-jukebox.sh
     ```
 
     NOTE: Get familiar with docker and its flags - `--rm` for example will remove the

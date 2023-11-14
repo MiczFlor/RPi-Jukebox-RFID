@@ -56,7 +56,7 @@ the following command will help with that
 ### Installscript
 
 <!--
-i.e. `scripts/installscripts/buster-install-default.sh`
+i.e. `scripts/installscripts/install-jukebox.sh`
 -->
 
 

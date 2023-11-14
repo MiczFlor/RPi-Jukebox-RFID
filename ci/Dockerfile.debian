@@ -96,7 +96,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && sed 's/#.*//g' packages-raspberrypi.txt | xargs apt-get -y install \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/buster-install-default.sh ./
+COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/install-jukebox.sh ./
 WORKDIR /tests
 COPY --chown=root:$TEST_USER_GROUP --chmod=770 scripts/installscripts/tests/*.sh ./
 
