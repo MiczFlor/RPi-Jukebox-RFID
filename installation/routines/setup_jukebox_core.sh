@@ -36,12 +36,13 @@ _jukebox_core_install_os_dependencies() {
 _jukebox_core_install_python_requirements() {
   echo "  Install Python requirements"
 
-  VIRTUAL_ENV="${HOME_PATH}/.venv"
+  cd "${INSTALLATION_PATH}"  || exit_on_error
+
+  VIRTUAL_ENV="${INSTALLATION_PATH}/.venv"
   python3 -m venv $VIRTUAL_ENV
   source "$VIRTUAL_ENV/bin/activate"
 
   pip install --upgrade pip
-  cd "${INSTALLATION_PATH}"  || exit_on_error
   pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 

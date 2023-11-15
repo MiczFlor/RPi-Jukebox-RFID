@@ -11,7 +11,7 @@ Requires=mpd.service pulseaudio.service
 
 [Service]
 WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/jukebox
-ExecStart=/bin/bash -c 'source /home/pi/.venv/bin/activate && /home/pi/.venv/bin/python run_jukebox.py'
+ExecStart=/bin/bash -c 'source /home/pi/RPi-Jukebox-RFID/.venv/bin/activate && python run_jukebox.py'
 StandardOutput=inherit
 StandardError=inherit
 Restart=always

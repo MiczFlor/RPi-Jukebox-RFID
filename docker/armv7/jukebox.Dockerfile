@@ -56,7 +56,7 @@ RUN mkdir -p ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
 #     zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
 #     make && make install;
 
-ENV VIRTUAL_ENV=/opt/venv
+ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
