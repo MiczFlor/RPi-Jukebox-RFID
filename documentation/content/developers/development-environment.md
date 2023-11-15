@@ -50,8 +50,7 @@ developing.
 
 The jukebox also runs on any Linux machine. The Raspberry Pi specific
 stuff will not work of course. That is no issue depending our your
-development area. USB RFID Readers, however, will work. You may setup a
-Python virtual environment or a conda virtual environment. You will have
+development area. USB RFID Readers, however, will work. You will have
 to install and configure [MPD (Music Player
 Daemon)](https://www.musicpd.org/).
 
