@@ -25,11 +25,10 @@ RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     at wget gcc \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
-    python3 python3-venv python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero
+    python3 python3-venv python3-dev python3-mutagen
 #samba samba-common-bin
 #raspberrypi-kernel-headers
 #resolvconf
-#python3-spidev
 
 # Install Jukebox
 # Install libzmq with Websocket support from pre-compiled source

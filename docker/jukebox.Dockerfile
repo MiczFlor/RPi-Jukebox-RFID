@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     gcc at wget \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
-    python3 python3-venv python3-dev python3-pip python3-mutagen python3-gpiozero
+    python3 python3-venv python3-dev python3-mutagen
 
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV

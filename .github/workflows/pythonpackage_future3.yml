@@ -34,8 +34,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libasound2-dev pulseaudio
         python3 -m pip install --upgrade pip
-        pip3 install wheel
-        pip3 install spidev
         pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
         # Also install all optional dependencies
