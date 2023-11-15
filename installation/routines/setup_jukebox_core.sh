@@ -124,8 +124,11 @@ _jukebox_core_install_settings() {
 
 _jukebox_core_register_as_service() {
   echo "  Register Jukebox Core user service"
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${SYSTEMD_USR_PATH}"
-  sudo chmod 644 "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+
+  local jukebox_service="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${jukebox_service}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${jukebox_service}"
+  sudo chmod 644 "${jukebox_service}"
 
   systemctl --user daemon-reload
   systemctl --user enable jukebox-daemon.service
