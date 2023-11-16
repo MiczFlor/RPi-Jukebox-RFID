@@ -1,4 +1,4 @@
-# Audio 
+# Audio
 
 ## Configuration
 
@@ -101,10 +101,10 @@ For other audio configuration options, please look at the `jukebox.yaml` for now
 
 Directly edit `jukebox.yaml` following the steps: [Best practice procedure](configuraton.md#best-practice-procedure).
 
-
 ## Developer Information
 
 The optional processing stages *Equalizer* and *Mono down mix* are realized by PulseAudio plugins. The processing chain is
+
 ```
 player --> mono mix --> equalizer --> hardware sink
 ```
