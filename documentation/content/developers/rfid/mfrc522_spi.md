@@ -6,7 +6,7 @@ RC522 RFID reader via SPI connection.
 
 ## Installation
 
-Run the ref:[run_rfid_configuration]{.title-ref} tool for guided
+Run the [run_register_rfid_reader.py](../coreapps.md#run_register_rfid_reader.py) tool for guided
 installation.
 
 ## Options

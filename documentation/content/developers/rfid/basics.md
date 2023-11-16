@@ -6,7 +6,7 @@ Cards placed on the reader trigger an action. An action may be any
 callable plugin function through the RPC with any arguments. Typically,
 this would be "play some folder", but can also be "activate shutdown
 timer", or "increase volume". This is configured in the
-[Card Database](../userguide/card-database.md).
+[Card Database](../../userguide/card-database.md).
 
 You may configure a single or even multiple parallel readers (of
 different or identical types).
@@ -26,7 +26,7 @@ when a card is placed and to pause it when it's removed.
 
 Generally, **not** all [USB-based RFID readers](genericusb.md) are place-capable.
 
-The known place-capable readers are [RDM6300 Reader](rdm6300:RDM6300), [MFRC522 SPI Reader](mfrc522_spi:MFRC522) or [PN532 I2C Reader](pn532_i2c:PN532).
+The known place-capable readers are [RDM6300 Reader](rdm6300.md), [MFRC522 SPI Reader](mfrc522_spi.md) or [PN532 I2C Reader](pn532_i2c.md).
 
 #### Frequency:
 
@@ -36,7 +36,7 @@ Readers operate on one of two different frequencies: 125kHz or 13.56 MHz. Make s
 
 During the installation process, you can already configure a RFID
 reader. To manually configure RFID reader(s),
-[please run the tool](../developer/coreapps.md#run_register_rfid_reader.py), (`src/jukebox/run_register_rfid_reader.py`).
+[please run the tool](../coreapps.md#run_register_rfid_reader.py), (`src/jukebox/run_register_rfid_reader.py`).
 
 It will generate a reader configuration file at
 `shared/settings/rfid.yaml`. You can re-run the tool to change the
@@ -67,7 +67,7 @@ Indicates the Python package used for this reader. Filled by the RFID configurat
 
 #### config:
 
-Filled by the [RFID configuration tool](../developer/coreapps.md#run_register_rfid_reader.py) (`src/jukebox/run_register_rfid_reader.py`) based on default values and user input. After running the tool, you may manually change some settings here, as not everything can be configured through the tool. Note that re-running the tool will completely rewrite the configuration file.
+Filled by the [RFID configuration tool](../coreapps.md#run_register_rfid_reader.py) (`src/jukebox/run_register_rfid_reader.py`) based on default values and user input. After running the tool, you may manually change some settings here, as not everything can be configured through the tool. Note that re-running the tool will completely rewrite the configuration file.
 
 #### same_id_delay: float \| integer
 
