@@ -29,10 +29,10 @@ Not enough memory for Node
 
 Prior to building set the node memory environment variable.
 
-1.  Make sure the value is less than the total available space on the
+1. Make sure the value is less than the total available space on the
     system, or you may run into the next issue. (Not always though!)
     Check memory availability with `free -mt`.
-2.  We also experience trouble, when the space is set too small a
+2. We also experience trouble, when the space is set too small a
     value. 512 always works, 256 sometimes does, sometimes does not.
     If your free memory is small, consider increasing the swap size of
     your system!
