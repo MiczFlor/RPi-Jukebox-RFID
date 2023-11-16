@@ -26,8 +26,8 @@ The SPI Bus ID. The default bus is 0. For other bus IDs, the RPi also needs to r
 
 SPI chip enable pin. On default SPI bus 0, this can be
 
--   0 = GPIO8 (Pin 24)
--   1 = GPIO7 (Pin 26)
+- 0 = GPIO8 (Pin 24)
+- 1 = GPIO7 (Pin 26)
 
 For other SPI buses refer to RPi documentation.
 
@@ -39,8 +39,8 @@ Mandatory IRQ pin. This can be any GPIO pin.
 
 Reset pin for hardware reset. This is an optional pin. If not used,
 
--   hardware reset will only be performed by power-on-reset. This has been tested on works fine.
--   you **must** tie the reset pin of the MFRC522 board **high**!
+- hardware reset will only be performed by power-on-reset. This has been tested on works fine.
+- you **must** tie the reset pin of the MFRC522 board **high**!
 
 #### mode_legacy *(default=false)*
 
@@ -67,7 +67,6 @@ The following pin-out is for the default SPI Bus 0 on Raspberry Pins.
 |MISO            |MISO      |GPIO9     |21       |
 |IRQ GND         |IRQ       |GPIO24    |18       |
 |RST 3.3V        |RST       |GPIO25    |22       |
-
 
 Some RC522 boards use reversed labeling for MOSI and MISO pins. The good
 thing is, no harm is done to the card reader when incorrectly connected.
