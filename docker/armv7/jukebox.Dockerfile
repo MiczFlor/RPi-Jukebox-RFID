@@ -25,11 +25,10 @@ RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     at wget gcc \
     mpc mpg123 git ffmpeg spi-tools netcat alsa-tools \
-    python3 python3-venv python3-dev python3-pip python3-setuptools python3-mutagen python3-gpiozero
+    python3 python3-venv python3-dev python3-mutagen
 #samba samba-common-bin
 #raspberrypi-kernel-headers
 #resolvconf
-#python3-spidev
 
 # Install Jukebox
 # Install libzmq with Websocket support from pre-compiled source
@@ -57,7 +56,7 @@ RUN mkdir -p ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
 #     zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
 #     make && make install;
 
-ENV VIRTUAL_ENV=/opt/venv
+ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 

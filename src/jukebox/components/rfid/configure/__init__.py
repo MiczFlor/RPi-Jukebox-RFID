@@ -26,13 +26,6 @@ def reader_install_dependencies(reader_path: str, dependency_install: str) -> No
         if os.path.exists(reader_path + '/requirements.txt'):
             # The python dependencies (if any)
             print("\nInstalling/Checking Python dependencies  ...\n")
-            print("IMPORTANT for developers: Python dependencies will be installed using "
-                  " $ pip install --upgrade -r requirements.txt'\n"
-                  " i.e. on system level. This is target for the default RPI setup. "
-                  "If you do not want that, but rather have them in a local or virtual environment, "
-                  "hit No here and manually install the dependencies from your virtual environment\n"
-                  " $ pip install --upgrade -r requirements.txt'\n"
-                  "It is no problem to install them after running this script.\n\n")
             if dependency_install == 'auto' or pyil.input_yesno("Install Python dependencies?", blank=True,
                                                                 prompt_color=Colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")

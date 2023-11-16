@@ -1,7 +1,7 @@
 RPI_BOOT_CONFIG_FILE="/boot/config.txt"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
-SYSTEMD_USR_PATH="/usr/lib/systemd/user/"
+SYSTEMD_USR_PATH="/usr/lib/systemd/user"
 
 # The default upstream user, release branch, and develop branch
 # These are used to prepare the repo for developers

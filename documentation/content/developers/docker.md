@@ -14,7 +14,7 @@ need to adapt some of those commands to your needs.
 
 ## Prerequisites
 
-1.  Install required software
+1. Install required software
     * Linux
         * [Docker](https://docs.docker.com/engine/install/debian/)
         * [Compose](https://docs.docker.com/compose/install/)
@@ -26,19 +26,22 @@ need to adapt some of those commands to your needs.
         * [pulseaudio (Windows)](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
 
 2. Pull the Jukebox repository:
-    ```
+
+    ```bash
     $ git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-    ``````
+    ```
 
 3. Create a jukebox.yaml file
     * Copy the `./resources/default-settings/jukebox.default.yaml` to `./shared/settings` and rename the file to `jukebox.yaml`.
-    ```
+
+    ```bash
     $ cp ./resources/default-settings/jukebox.default.yaml ./shared/settings/jukebox.yaml
     ```
+
     * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
-4.  Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders`
+4. Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders`
     and copy a set of MP3 files into this folder (for more fun when
     testing).
 
@@ -54,7 +57,7 @@ They can be run individually or in combination. To do that, we use
 Make sure you don\'t use `sudo` to run your `docker-compose`. Check out
 Docker\'s [post-installation guide](https://docs.docker.com/engine/install/linux-postinstall/) for more information.
 
-``` bash
+```bash
 // Build Images
 $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml build
 
@@ -104,29 +107,29 @@ $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml d
 
 ### Windows
 
-1.  Download
+1. Download
     [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
 
-2.  Uncompress somewhere in your user folder
+2. Uncompress somewhere in your user folder
 
-3.  Edit `$INSTALL_DIR/etc/pulse/default.pa`
+3. Edit `$INSTALL_DIR/etc/pulse/default.pa`
 
-4.  Add the following line
+4. Add the following line
 
     ``` bash
     load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
     ```
 
-5.  Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the
+5. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the
     following line and change it to:
 
     ``` bash
     exit-idle-time = -1
     ```
 
-6.  Execute `$INSTALL_DIR/bin/pulseaudio.exe`
+6. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
 
-7.  Run `cocker-compose`
+7. Run `docker-compose`
 
     ``` bash
     // Build Images
@@ -237,29 +240,29 @@ $ docker run -it --rm \
 
 **Mac**
 
--   <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
--   <https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac>
--   <https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile>
+* <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
+* <https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac>
+* <https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile>
 
 **Windows**
 
--   <https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host#>
--   <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
--   <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
--   <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
+* <https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host#>
+* <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
+* <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
+* <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
 
 **Audio**
 
--   <https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio>
--   <https://mpd.fandom.com/wiki/PulseAudio>
--   <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
+* <https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio>
+* <https://mpd.fandom.com/wiki/PulseAudio>
+* <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 
 **MPD**
 
--   <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
--   <https://github.com/Tob1asDocker/rpi-mpd>
--   <https://github.com/vimagick/dockerfiles/tree/master/mpd>
+* <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
+* <https://github.com/Tob1asDocker/rpi-mpd>
+* <https://github.com/vimagick/dockerfiles/tree/master/mpd>
 
 **ZMQ**
 
--   <https://codeblog.dotsandbrackets.com/using-zeromq-with-docker/>
+* <https://codeblog.dotsandbrackets.com/using-zeromq-with-docker/>

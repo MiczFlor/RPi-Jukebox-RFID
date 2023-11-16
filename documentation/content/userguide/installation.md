@@ -22,9 +22,9 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
         * Set locale settings
     * Switch to the `Services` tab. Enable SSH with "Use password authentication"
     * Click `Save`
-6. In the same dialog, click `Yes`
-7. Confirm the next warning about erasing the SD card with `Yes`
-8. Wait for the imaging process to be finished (it'll take a few minutes)
+7. In the same dialog, click `Yes`
+8. Confirm the next warning about erasing the SD card with `Yes`
+9. Wait for the imaging process to be finished (it'll take a few minutes)
 
 <details>
 
@@ -42,7 +42,6 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
     ```bash
     $ touch ssh
     ```
-
 
 5. Set up your Wifi connection.
 
@@ -99,7 +98,6 @@ This will switch directly to the specified feature branch during installation.
 
 > [!NOTE]
 > For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](../developers/development-environment.md#steps-to-install)
-
 
 If you suspect an error you can monitor the installation-process with
 
