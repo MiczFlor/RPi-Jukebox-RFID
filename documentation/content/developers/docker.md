@@ -129,24 +129,26 @@ $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml d
 
 6. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
 
-7. Run `docker-compose`
+7. Make sure Docker is running (e.g. start Docker Desktop)
+
+8. Run `docker-compose`
 
     ``` bash
     // Build Images
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml build
+    $ docker-compose -f docker/docker-compose.yml build
 
     // Run Docker Environment
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml up
+    $ docker-compose -f docker/docker-compose.yml up
 
     // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.windows.yml down
+    $ docker-compose -f docker/docker-compose.yml down
     ```
 
 ## Test & Develop
 
 The Dockerfile is defined to start all Phoniebox related services.
 
-Open <http://localhost:3001> in your browser to see the web application.
+Open <http://localhost:3000> in your browser to see the web application.
 
 While the `webapp` container does not require a reload while working on
 it (hot-reload is enabled), you will have to restart your `jukebox`
