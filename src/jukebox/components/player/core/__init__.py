@@ -138,6 +138,23 @@ class PlayerCtrl:
     def seek(self):
         self._active.seek()
 
+    @plugin.tag
+    def list_albums(self):
+        """
+        Coolects from every backend the albums and albumartists
+        """
+        album_list = []
+        for name, bkend in self._backends.items():
+            album_list.append(bkend.get_albums())
+
+        return album_list
+
+    @plugin.tag
+    def list_song_by_artist_and_album(self, artist, albumname):
+        for name, bkend in self._backends.items():
+            s_item = filter(lambda album: album['artist'] == artist and album['albumname'] == albumname, bkend.get_albums())
+        return s_item if s_item else None
+
     def _save_state(self):
         # Get the backend to save the state of the current playlist to the URI's config file
         self._active.save_state()

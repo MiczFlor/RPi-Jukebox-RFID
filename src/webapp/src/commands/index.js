@@ -4,19 +4,17 @@ const commands = {
     plugin: 'ctrl',
     method: 'get_by_filename_as_base64',
   },
-  // ToDo: Implement
+  // ToDo: Do we need that?
   directoryTreeOfAudiofolder: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'list_all_dirs',
   },
-  // ToDo: Implement new player
   albumList: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'list_albums',
   },
-  // ToDo: Implement
   songList: {
     _package: 'player',
     plugin: 'ctrl',
