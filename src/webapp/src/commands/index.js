@@ -4,27 +4,32 @@ const commands = {
     plugin: 'ctrl',
     method: 'get_by_filename_as_base64',
   },
+  // ToDo: Implement
   directoryTreeOfAudiofolder: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'list_all_dirs',
   },
+  // ToDo: Implement new player
   albumList: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'list_albums',
   },
+  // ToDo: Implement
   songList: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'list_song_by_artist_and_album',
   },
+  // ToDo: Implement
   getSongByUrl: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'get_song_by_url',
     argKeys: ['song_url']
   },
+  // ToDo: Implement
   folderList: {
     _package: 'player',
     plugin: 'ctrl',
@@ -60,12 +65,14 @@ const commands = {
     method: 'play_single',
     argKeys: ['song_url']
   },
+  // ToDo: verify if this is really needed?
   play_folder: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_folder',
     argKeys: ['folder']
   },
+  // ToDo: Implement
   play_album: {
     _package: 'player',
     plugin: 'ctrl',

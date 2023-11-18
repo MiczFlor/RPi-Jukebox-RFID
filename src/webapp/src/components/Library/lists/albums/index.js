@@ -44,7 +44,7 @@ const Albums = ({ musicFilter }) => {
     <>
       {isLoading
         ? <CircularProgress />
-        : <AlbumListmpd
+        : <AlbumList
             albums={albums.filter(search)}
             musicFilter={musicFilter}
       />}

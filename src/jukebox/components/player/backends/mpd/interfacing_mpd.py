@@ -10,6 +10,7 @@ import jukebox.plugs as plugin
 import jukebox.cfghandler
 
 from mpd.asyncio import MPDClient
+from components.player.backends import BackendPlayer
 
 logger = logging.getLogger('jb.mpd')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -19,7 +20,7 @@ def sanitize(path: str):
     return os.path.normpath(path).lstrip('./')
 
 
-class MPDBackend:
+class MPDBackend(BackendPlayer):
 
     def __init__(self, event_loop):
         self.client = MPDClient()

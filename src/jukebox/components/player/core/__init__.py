@@ -109,6 +109,10 @@ class PlayerCtrl:
         self._active.play()
 
     @plugin.tag
+    def play_single(self, uri):
+        self.play_uri(uri)
+
+    @plugin.tag
     def toggle(self):
         self._active.toggle()
 
@@ -125,6 +129,14 @@ class PlayerCtrl:
     @plugin.tag
     def get_queue(self):
         self._active.get_queue()
+
+    @plugin.tag
+    def repeatmode(self):
+        self._active.repeatmode()
+
+    @plugin.tag
+    def seek(self):
+        self._active.seek()
 
     def _save_state(self):
         # Get the backend to save the state of the current playlist to the URI's config file
