@@ -1,5 +1,4 @@
 import logging
-import os.path
 
 import yaml
 
@@ -14,7 +13,7 @@ class PlayerData:
 
     def __init__(self):
         self.audiofile = cfg.setndefault('players', 'content', 'audiofile', value='../../shared/audiofolders/audiofiles.yaml')
-        self._database = {'music': [{}],
+        self._database = {'file': [{}],
                           'podcasts': [{}],
                           'livestreams': [{}]}
         self._fill_database(self.audiofile)

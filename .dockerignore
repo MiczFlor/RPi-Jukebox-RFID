@@ -1,4 +1,6 @@
 .git
+.githooks
+.github
 .dockerignore
 .DS_Store
 
@@ -6,7 +8,6 @@
 docker
 docs
 installation
-src
 shared
 
 # webapp
