@@ -62,7 +62,6 @@ import collections
 import logging
 import threading
 import time
-import traceback
 
 import pulsectl
 import jukebox.cfghandler
@@ -648,6 +647,7 @@ def finalize():
         pulse_control.set_volume(startup_volume)
     else:
         pulse_control.publish_volume()
+
 
 @plugin.atexit
 def atexit(**ignored_kwargs):

@@ -28,6 +28,7 @@ player_status: PlayerStatus
 # The various backends
 backend_mpd: Optional[MPDBackend] = None
 
+
 def start_event_loop(loop: asyncio.AbstractEventLoop):
     # https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.shutdown_asyncgens
     logger.debug("Start player AsyncIO Background Event Loop")
