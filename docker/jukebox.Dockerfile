@@ -16,6 +16,7 @@ ARG USER
 ARG HOME
 ENV INSTALLATION_PATH ${HOME}/RPi-Jukebox-RFID
 
+USER root
 RUN test ${UID} -gt 0 && useradd -m -u ${UID} ${USER} || continue
 RUN usermod -aG pulse ${USER}
 
@@ -35,7 +36,8 @@ USER ${USER}
 WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
-RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+USER root
+RUN pip install --no-cache-dir --upgrade -r ${INSTALLATION_PATH}/requirements.txt
 RUN pip install pyzmq
 
 EXPOSE 5555 5556
