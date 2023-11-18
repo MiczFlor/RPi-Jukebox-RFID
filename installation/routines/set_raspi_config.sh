@@ -6,7 +6,7 @@ set_raspi_config() {
   # Source: https://raspberrypi.stackexchange.com/a/66939
 
   # Autologin
-  echo "  * Enable Autologin for 'pi' user"
+  echo "  * Enable Autologin for user"
   sudo raspi-config nonint do_boot_behaviour B2
 
   # Wait for network at boot

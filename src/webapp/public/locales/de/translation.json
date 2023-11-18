@@ -21,7 +21,9 @@
           "timer_shutdown": "Shut Down",
           "timer_stop_player": "Stop player",
           "timer_fade_volume": "Fade volume",
-          "toggle_output": "Audio-Ausgang umschalten"
+          "toggle_output": "Audio-Ausgang umschalten",
+          "sync_rfidcards_all": "Alle Audiodateien und Karteneinträge synchronisieren",
+          "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan' "
         }
       },
       "controls-selector": {
@@ -34,7 +36,8 @@
           "play_music": "Musik abspielen",
           "audio": "Audio & Lautstärke",
           "host": "System",
-          "timers": "Timer"
+          "timers": "Timer",
+          "synchronisation": "Synchronisation"
         }
       },
       "actions": {
@@ -58,6 +61,14 @@
         },
         "timers": {
           "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
+        },
+        "synchronisation": {
+          "rfidcards": {
+            "description": "Wähle den zu setzenden Status.",
+            "label-toggle": "Umschalten",
+            "label-enable": "Aktivieren",
+            "label-disable": "Deaktivieren"
+          }
         }
       }
     },
@@ -166,7 +177,8 @@
         "rebooting": "Das System wird neu gestartet.",
         "button-title": "Neustart",
         "description-confirm": "Möchtest Du jetzt wirklich neu starten?",
-        "failed": "Neustart fehlgeschlagen"
+        "failed": "Neustart fehlgeschlagen",
+        "bye": "👋 Bis bald"
       },
       "shutdown": {
         "title": "Herunterfahren",
@@ -215,7 +227,7 @@
       },
       "disk-usage": {
         "label": "Speicherverbrauch",
-        "loading-error": "Die Angaben zum Speicherverbrauch konntent nicht geladen werden.",
+        "loading-error": "Die Angaben zum Speicherverbrauch konnten nicht geladen werden.",
         "result": "{{used}} GB von {{total}} GB sind belegt ({{result}}%)"
       },
       "ip-address": {

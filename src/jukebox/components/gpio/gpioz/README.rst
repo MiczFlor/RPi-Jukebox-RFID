@@ -462,5 +462,3 @@ Simply change the header in the configuration file to enable it. Host is the IP 
       pigpio.PiGPIOFactory:
         kwargs:
           host: 192.168.178.32
-
-

@@ -168,7 +168,7 @@ def rpc_call_to_str(cfg_rpc_call: Dict, with_args=True) -> str:
             args_str = args
         else:
             try:
-                args_str = ", ".join([f"'{x}'" if type(x) == str else str(x) for x in args])
+                args_str = ", ".join([f"'{x}'" if isinstance(x, str) else str(x) for x in args])
             except TypeError:
                 args_str = f"{args}"
     if kwargs is not None:

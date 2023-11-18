@@ -26,8 +26,7 @@ The Jukebox core app is written entirely in Python. Therefore, we follow the [Py
 
 * **Documentation**
   * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
-  * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
-
+  
 # Structure of files and folders
 
 Inside the root folder or the repo, these folders are important:
@@ -38,8 +37,6 @@ Inside the root folder or the repo, these folders are important:
   * contains the Python packages that are loaded using the plugin interface
 * `src/webapp`
   * contains the Web Interface
-* `src/docs/sphinx`
-  * contains the documentation sources and build flow using Sphinx
 
 All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
 as local, temporary scratch areas.
@@ -116,7 +113,7 @@ Run the checks below on the code. Fix those issues! Or you are running in delays
 We provide git hooks for those checks for convenience. To activate
 
 ~~~bash
-cp .githooks/pre-commit .git/hooks/.
+cp .githooks/pre-commit` .git/hooks/.
 ~~~
 
 ### Python Code
@@ -131,18 +128,6 @@ cd /home/pi/RPi-Jukebox-RFID
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
 Let us know in the pull request - we will look at it.
-
-### Documentation
-
-When adding or improving documentation, build the documentation and look at it locally.
-If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
-Also run through this step in this case! Fix all warnings!
-
-~~~bash
-$ cd /home/pi/RPi-Jukebox-RFID/
-$ ./run_sphinx.sh
-# open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
-~~~
 
 ### Tests
 

@@ -17,9 +17,36 @@ GIT_BRANCH=${GIT_BRANCH:-"future3/main"}
 # Constants
 GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
-HOME_PATH="/home/pi"
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
+
+CURRENT_USER="${SUDO_USER:-$USER}"
+HOME_PATH=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
+echo "Current User: $CURRENT_USER"
+echo "User home dir: $HOME_PATH"
+
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
 INSTALL_ID=$(date +%s)
+
+checkPrerequisite() {
+  #currently the user 'pi' is mandatory
+  #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
+  if [ "${CURRENT_USER}" != "pi" ]; then
+    echo
+    echo "ERROR: User must be 'pi'!"
+    echo "       Other usernames are currently not supported."
+    echo "       Please check the wiki for further information"
+    exit 2
+  fi
+
+  if [ "${HOME_PATH}" != "/home/pi" ]; then
+    echo
+    echo "ERROR: HomeDir must be '/home/pi'!"
+    echo "       Other usernames are currently not supported."
+    echo "       Please check the wiki for further information"
+    exit 2
+  fi
+}
 
 download_jukebox_source() {
   wget -qO- "${GIT_URL}/tarball/${GIT_BRANCH}" | tar xz
@@ -40,6 +67,10 @@ download_jukebox_source() {
   mv "$GIT_REPO_DOWNLOAD" "$GIT_REPO_NAME"
   unset GIT_REPO_DOWNLOAD
 }
+
+
+### CHECK PREREQUISITE
+checkPrerequisite
 
 ### RUN INSTALLATION
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"

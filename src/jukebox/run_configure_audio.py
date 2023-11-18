@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 

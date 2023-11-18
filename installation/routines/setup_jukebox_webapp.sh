@@ -4,7 +4,7 @@
 GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
 
 # For ARMv7+
-NODE_SOURCE="https://deb.nodesource.com/setup_16.x"
+NODE_MAJOR=20
 # For ARMv6
 # To update version, follow these links
 # https://github.com/sdesalas/node-pi-zero
@@ -26,12 +26,20 @@ _jukebox_webapp_install_node() {
     # Zero and older versions of Pi with ARMv6 only
     # support experimental NodeJS
     if [[ $(uname -m) == "armv6l" ]]; then
-      NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
+      wget -O - ${NODE_SOURCE_EXPERIMENTAL} | sudo bash
+      sudo apt-get -qq -y install nodejs
+      sudo npm install --silent -g npm
+    else
+      # install NodeJS and npm as recommended in
+      # https://github.com/nodesource/distributions
+      sudo apt-get install -y ca-certificates curl gnupg
+      sudo mkdir -p /etc/apt/keyrings
+      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+      echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+      sudo apt-get update
+      sudo apt-get install -y nodejs
     fi
 
-    wget -O - ${NODE_SOURCE} | sudo bash
-    sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm
   fi
 }
 
@@ -67,14 +75,11 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
 
+  # make sure nginx can access the home directory of the user
+  sudo chmod o+x /home/pi
+
   sudo service nginx restart
 }
-
-_jukebox_build_local_docs() {
-  echo "  Build docs locally" | tee /dev/fd/3
-  "${INSTALLATION_PATH}/run_sphinx.sh" -c
-}
-
 
 setup_jukebox_webapp() {
   echo "Install web application" | tee /dev/fd/3
@@ -87,9 +92,6 @@ setup_jukebox_webapp() {
     # Local Web App build during installation does not work at the moment
     # Needs to be done after reboot! There will be a message at the end of the installation process
     # _jukebox_webapp_build
-  fi
-  if [[ $ENABLE_LOCAL_DOCS == true ]]; then
-    _jukebox_build_local_docs
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
 

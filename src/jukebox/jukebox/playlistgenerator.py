@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Playlists are build from directory content in the following way:
 a directory is parsed and files are added to the playlist in the following way
@@ -191,7 +191,7 @@ class PlaylistCollector:
         but is omitted when generating the playlist entries. I.e. all files in the playlist are relative to this base dir
         """
         self.playlist = []
-        self._music_library_base_path = os.path.abspath(music_library_base_path)
+        self._music_library_base_path = os.path.abspath(os.path.expanduser(music_library_base_path))
         # These two variables only store reference content to generate __str__
         self._folder = ''
         self._recursive = False
@@ -202,7 +202,7 @@ class PlaylistCollector:
         self.special_handlers = {'livestream.txt': decode_livestream,
                                  'podcast.txt': decode_podcast,
                                  # Ignore all other .txt files
-                                 '.txt': lambda f, p, l: None,
+                                 '.txt': lambda _f, _p, _l: None,
                                  '.m3u': decode_m3u}
         self.default_handler = decode_musicfile
 

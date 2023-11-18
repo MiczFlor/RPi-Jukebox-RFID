@@ -45,12 +45,13 @@ check_os_type() {
   local os_type
   os_type=$(uname -m)
 
-  echo "Checking OS type ... $os_type" | tee /dev/fd/3
+  echo -e "\nChecking OS type '$os_type'" | tee /dev/fd/3
 
   if [[ $os_type == "armv7l" ||  $os_type == "armv6l" ]]; then
     echo -e "  ... OK!\n" | tee /dev/fd/3
   else
     echo "ERROR: Only 32 bit operating systems supported. Please use a 32bit version of RaspianOS!" | tee /dev/fd/3
+    echo "You can fix this problem for 64bit kernels: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041" | tee /dev/fd/3
     exit 1
   fi
 

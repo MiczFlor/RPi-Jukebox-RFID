@@ -19,6 +19,7 @@ modules:
     host: hostif.linux
     bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     gpio: gpio.gpioz.plugin
+    sync_rfidcards: synchronisation.rfidcards
   others:
   - music_cover_art
   - misc
@@ -155,3 +156,6 @@ speaking_text:
   speak_punct: False
   # Must be one of: female, male, croak, whisper
   voice: female
+sync_rfidcards:
+  enable: false
+  config_file: ../../shared/settings/sync_rfidcards.yaml
