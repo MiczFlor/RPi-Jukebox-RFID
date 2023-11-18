@@ -227,7 +227,7 @@
       },
       "disk-usage": {
         "label": "Speicherverbrauch",
-        "loading-error": "Die Angaben zum Speicherverbrauch konntent nicht geladen werden.",
+        "loading-error": "Die Angaben zum Speicherverbrauch konnten nicht geladen werden.",
         "result": "{{used}} GB von {{total}} GB sind belegt ({{result}}%)"
       },
       "ip-address": {
