@@ -1,7 +1,0 @@
-# You can add your spotify uri's in this yaml file
-# please stick to the syntax:
-#  - name: <Name to display in the Webapp
-#    uri: <Spotify URI>
-# Example:
-# - name: Gute Nacht!
-#   uri: spotify:playlist:37i9dQZF1DWSVYS2LMyMFg

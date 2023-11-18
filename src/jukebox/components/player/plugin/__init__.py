@@ -8,10 +8,10 @@ from typing import Optional
 
 import jukebox.plugs as plugin
 import jukebox.cfghandler
-from components.playern.backends.mpd.interfacing_mpd import MPDBackend
-from components.playern.core import PlayerCtrl
-from components.playern.core.player_content import PlayerData
-from components.playern.core.player_status import PlayerStatus
+from components.player.backends.mpd.interfacing_mpd import MPDBackend
+from components.player.core import PlayerCtrl
+from components.player.core.player_content import PlayerData
+from components.player.core.player_status import PlayerStatus
 
 logger = logging.getLogger('jb.player')
 cfg = jukebox.cfghandler.get_handler('jukebox')

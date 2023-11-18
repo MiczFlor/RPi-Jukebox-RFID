@@ -18,20 +18,14 @@ const SongListControls = ({
   isSelecting
 }) => {
   const { t } = useTranslation();
-
-  const command = 'mpd.play_uri';
-  const uri = [
-    'mpd',
-    'album', encodeURI(album),
-    'albumartist', encodeURI(albumartist)
-  ].join(':');
+  const command = 'play_album';
 
   const playAlbum = () => (
-    request(command, { uri })
+    request(command, { albumartist, album })
   );
 
   const registerAlbumToCard = () => (
-    registerMusicToCard(command, { uri })
+    registerMusicToCard(command, { albumartist, album })
   );
 
   return (

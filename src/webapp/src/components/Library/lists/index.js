@@ -47,13 +47,14 @@ const LibraryLists = () => {
   return (
     <Grid container id="library">
       {isSelecting && <SelectorHeader />}
-      <Grid container sx={{ padding: '16px' }}>
+      <Grid container sx={{ padding: '10px' }}>
         <LibraryHeader
           handleMusicFilder={handleMusicFilder}
           musicFilter={musicFilter}
         />
         <Grid
           container
+          spacing={1}
           sx={{
             display: 'flex',
             justifyContent: 'center',
@@ -80,7 +81,7 @@ const LibraryLists = () => {
               element={<Navigate to={`.%2F${urlSearch}`} replace />}
             />
             <Route
-              path="folders/:path"
+              path="folders/:dir"
               element={
                 <Folders
                   musicFilter={musicFilter}

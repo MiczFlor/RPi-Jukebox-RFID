@@ -9,27 +9,28 @@ import FolderListItemBack from './folder-list-item-back';
 import { ROOT_DIRS } from '../../../../config';
 
 const FolderList = ({
-  path,
+  dir,
   folders,
   isSelecting,
   registerMusicToCard,
 }) => {
-  const getParent = (path) => {
-    const decodedPath = decodeURIComponent(path);
-
+  const getParentDir = (dir) => {
     // TODO: ROOT_DIRS should be removed after paths are relative
-    if (ROOT_DIRS.includes(decodedPath)) return undefined;
+    const decodedDir = decodeURIComponent(dir);
 
-    return dropLast(1, decodedPath.split('/')).join('/') || './';
+    if (ROOT_DIRS.includes(decodedDir)) return undefined;
+
+    const parentDir = dropLast(1, decodedDir.split('/')).join('/');
+    return parentDir;
   }
 
-  const parent = getParent(path);
+  const parentDir = getParentDir(dir);
 
   return (
     <List sx={{ width: '100%' }}>
-      {parent &&
+      {parentDir &&
         <FolderListItemBack
-          path={parent}
+          dir={parentDir}
         />
       }
       {folders.map((folder, key) =>

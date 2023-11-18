@@ -11,14 +11,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import FolderLink from './folder-link';
 
-const FolderListItemBack = ({ path }) => {
+const FolderListItemBack = ({ dir }) => {
   const { t } = useTranslation();
 
   return (
     <ListItem disablePadding>
       <ListItemButton
         component={FolderLink}
-        data={{ path }}
+        data={{ dir }}
         aria-label={t('library.folders.back-button-label')}
       >
         <ArrowBackIcon />

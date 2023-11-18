@@ -1,9 +1,9 @@
-import Counter from "./Counter"
+import Countdown from "./Countdown"
 import SliderTimer from "./SliderTimer"
 import SwitchWithLoader from "./SwitchWithLoader"
 
 export {
-  Counter,
+  Countdown,
   SliderTimer,
   SwitchWithLoader,
 };

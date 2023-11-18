@@ -9,16 +9,15 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_all_dirs',
   },
-  'mpd.get_albums': {
+  albumList: {
     _package: 'player',
-    plugin: 'mpd',
-    method: 'get_albums',
+    plugin: 'ctrl',
+    method: 'list_albums',
   },
-  'mpd.get_album_tracks': {
+  songList: {
     _package: 'player',
-    plugin: 'mpd',
-    method: 'get_album_tracks',
-    argKeys: ['album_artist', 'album']
+    plugin: 'ctrl',
+    method: 'list_song_by_artist_and_album',
   },
   getSongByUrl: {
     _package: 'player',
@@ -26,11 +25,10 @@ const commands = {
     method: 'get_song_by_url',
     argKeys: ['song_url']
   },
-  'mpd.get_files': {
+  folderList: {
     _package: 'player',
-    plugin: 'mpd',
-    method: 'get_files',
-    argKeys: ['path']
+    plugin: 'ctrl',
+    method: 'get_folder_content',
   },
   cardsList: {
     _package: 'cards',
@@ -56,6 +54,24 @@ const commands = {
     plugin: 'ctrl',
     method: 'play',
   },
+  play_single: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_single',
+    argKeys: ['song_url']
+  },
+  play_folder: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_folder',
+    argKeys: ['folder']
+  },
+  play_album: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_album',
+    argKeys: ['albumartist', 'album']
+  },
   pause: {
     _package: 'player',
     plugin: 'ctrl',
@@ -79,17 +95,12 @@ const commands = {
   repeat: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'repeat',
+    method: 'repeatmode',
   },
   seek: {
-    _package: 'players',
-    plugin: 'seek',
-  },
-  'mpd.play_uri': {
     _package: 'player',
-    plugin: 'mpd',
-    method: 'play_uri',
-    argKeys: ['uri']
+    plugin: 'ctrl',
+    method: 'seek',
   },
 
   // Volume

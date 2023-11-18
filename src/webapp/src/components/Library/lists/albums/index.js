@@ -30,7 +30,7 @@ const Albums = ({ musicFilter }) => {
   useEffect(() => {
     const fetchAlbumList = async () => {
       setIsLoading(true);
-      const { result, error } = await request('mpd.get_albums');
+      const { result, error } = await request('albumList');
       setIsLoading(false);
 
       if(result) setAlbums(result.reduce(flatByAlbum, []));

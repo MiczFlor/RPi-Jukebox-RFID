@@ -17,7 +17,7 @@ const SongListItem = ({
 }) => {
   const { t } = useTranslation();
 
-  const command = 'mpd.play_uri';
+  const command = 'play_single';
   const {
     artist,
     duration,
@@ -25,14 +25,12 @@ const SongListItem = ({
     title,
   } = song;
 
-  const uri = `mpd:file:${file}`;
-
-  const playSingle = () => (
-    request(command, { uri })
-  );
+  const playSingle = () => {
+    request(command, { song_url: file })
+  }
 
   const registerSongToCard = () => (
-    registerMusicToCard(command, { uri })
+    registerMusicToCard(command, { song_url: file })
   );
 
   return (

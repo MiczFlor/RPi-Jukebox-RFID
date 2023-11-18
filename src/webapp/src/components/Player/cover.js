@@ -32,7 +32,7 @@ const Cover = ({ coverImage }) => {
           {coverImage &&
             <img
               alt={t('player.cover.title')}
-              src={coverImage}
+              src={`data:image/jpeg;base64,${coverImage}`}
               style={{ width: '100%', height: '100%' }}
             />}
           {!coverImage &&
