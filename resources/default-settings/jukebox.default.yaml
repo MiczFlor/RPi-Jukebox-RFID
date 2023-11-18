@@ -11,8 +11,7 @@ modules:
     jingle: jingle
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
-    player: playern.plugin
-    # spotify: playerspot
+    player: player.plugin
     cards: rfid.cards
     rfid: rfid.reader
     timers: timers
@@ -92,15 +91,6 @@ playermpd:
     update_on_startup: true
     check_user_rights: true
   mpd_conf: ~/.config/mpd/mpd.conf
-playerspot:
-  host: localhost
-  status_file: ../../shared/settings/spotify_player_status.json
-  collection_file:  ../../shared/audiofolders/spotify/spotify_collection.yaml
-  second_swipe_action:
-      # Note: Does not follow the RPC alias convention (yet)
-      # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
-      alias: toggle
-  spot_conf: ../../shared/spotify/config.toml"
 rpc:
   tcp_port: 5555
   websocket_port: 5556

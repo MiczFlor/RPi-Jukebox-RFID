@@ -269,7 +269,6 @@ Do you want to install Node? [Y/n]" 1>&3
   fi
 }
 
-
 customize_options() {
   echo "Customize Options starts"
 
