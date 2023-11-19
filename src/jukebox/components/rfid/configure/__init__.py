@@ -115,16 +115,18 @@ def query_user_for_reader(dependency_install='query') -> dict:
     package_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../hardware')
     logger.debug(f"Package location: {package_dir}")
     # For known included readers, specify manual order
-    included_readers = ['generic_usb', 'rdm6300_serial', 'rc522_spi', 'pn532_i2c_py532', 'fake_reader_gui']
+    no_rfid_reader = 'No RFID Reader'
+    included_readers = [no_rfid_reader, 'generic_usb', 'rdm6300_serial', 'rc522_spi', 'pn532_i2c_py532', 'fake_reader_gui']
     # Get all local directories (i.e subpackages) that conform to naming/structuring convention (except known readers)
     # Naming convention: modname/modname.py
-    reader_dirs = [x for x in os.listdir(package_dir)
+    additional_readers = [x for x in os.listdir(package_dir)
                    if (os.path.isdir(package_dir + '/' + x)
                        and os.path.exists(package_dir + '/' + x + '/' + x + '.py')
                        and os.path.isfile(package_dir + '/' + x + '/' + x + '.py')
                        and not x.endswith('template_new_reader')
                        and x not in included_readers)]
-    reader_dirs = [*included_readers, *sorted(reader_dirs, key=lambda x: x.casefold())]
+    reader_dirs = [*included_readers, *sorted(additional_readers, key=lambda x: x.casefold())]
+
     logger.debug(f"reader_dirs = {reader_dirs}")
 
     # Try to load the description modules from all valid directories (as this has no dependencies)
@@ -132,22 +134,29 @@ def query_user_for_reader(dependency_install='query') -> dict:
     reader_description_modules = []
     reader_descriptions = []
     for reader_type in reader_dirs:
-        try:
-            reader_description_modules.append(importlib.import_module('components.rfid.hardware.' + reader_type
-                                                                      + '.description', 'pkg.subpkg'))
-            reader_descriptions.append(reader_description_modules[-1].DESCRIPTION)
-        except ModuleNotFoundError:
-            # The developer for this reader simply omitted to provide a description module
-            # Or there is no valid module in this directory, despite correct naming scheme. But this we will only find out
-            # later, because we want to be as lenient as possible and don't already load and check reader modules the user is
-            # not selecting (and thus no interested in)
-            logger.warning(f"No module 'description.py' available for reader subpackage '{reader_type}'")
-            reader_descriptions.append('(No description provided!)')
-        except AttributeError:
-            # The module loaded ok, but has no identifier 'DESCRIPTION'
-            logger.warning(f"Module 'description.py' of reader subpackage '{reader_type}' is missing 'DESCRIPTION'. "
-                           f"Spelling error?")
-            reader_descriptions.append('(No description provided!)')
+        if reader_type == no_rfid_reader:
+            # Add Option to not add a RFid Reader
+            reader_description_modules.append(no_rfid_reader)
+            reader_descriptions.append(no_rfid_reader)
+        else:
+            reader_description_modules.append(f"{reader_type + '/' + reader_type + '.py'}")
+            try:
+                reader_description = (importlib.import_module('components.rfid.hardware.' + reader_type
+                                                                        + '.description', 'pkg.subpkg'))
+                reader_descriptions.append(reader_description.DESCRIPTION)
+            except ModuleNotFoundError:
+                # The developer for this reader simply omitted to provide a description module
+                # Or there is no valid module in this directory, despite correct naming scheme.
+                # But this we will only find out later, because we want to be as lenient as possible
+                # and don't already load and check reader modules the user is
+                # not selecting (and thus no interested in)
+                logger.warning(f"No module 'description.py' available for reader subpackage '{reader_type}'")
+                reader_descriptions.append('(No description provided!)')
+            except AttributeError:
+                # The module loaded ok, but has no identifier 'DESCRIPTION'
+                logger.warning(f"Module 'description.py' of reader subpackage '{reader_type}' is missing 'DESCRIPTION'. "
+                            f"Spelling error?")
+                reader_descriptions.append('(No description provided!)')
 
     # Prepare the configuration collector with the base values
     config_dict = {'rfid': {'readers': {}}}
@@ -157,14 +166,21 @@ def query_user_for_reader(dependency_install='query') -> dict:
     while True:
         # List all modules and query user
         print("Choose Reader Module from list:\n")
-        for idx, (des, mod) in enumerate(zip(reader_descriptions, reader_dirs)):
+        for idx, (des, mod) in enumerate(zip(reader_descriptions, reader_description_modules)):
             print(f" {Colors.lightgreen}{idx:2d}{Colors.reset}: {Colors.lightcyan}{Colors.bold}{des:40s}{Colors.reset} "
-                  f"(Module: {mod + '/' + mod + '.py'})")
+                  f"(Module: {mod})")
         print("")
         reader_id = pyil.input_int("Reader module number?", min=0, max=len(reader_descriptions) - 1,
                                    prompt_color=Colors.lightgreen, prompt_hint=True)
+
         # The (short) name of the selected reader module, which is identical to the directory name
-        reader_select_name.append(reader_dirs[reader_id])
+        reader_selected = reader_dirs[reader_id]
+        print(f"Reader selected: '{reader_selected}'")
+        if reader_selected == no_rfid_reader:
+            logger.debug(f"'{no_rfid_reader}' selected. skip")
+            break
+
+        reader_select_name.append(reader_selected)
 
         # If this reader has not been selected before, auto install dependencies
         if reader_select_name[-1] not in reader_select_name[:-1]:
