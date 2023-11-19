@@ -2,6 +2,7 @@
 
 # Constants
 GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
+WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
 # For ARMv7+
 NODE_MAJOR=20
@@ -70,15 +71,27 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo apt-get -y purge apache2
   sudo apt-get -y install nginx
 
-  sudo service nginx start
-
-  sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
+  sudo mv -f "${WEBAPP_NGINX_SITE_DEFAULT_CONF}" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}.orig"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
   # make sure nginx can access the home directory of the user
   sudo chmod o+x /home/pi
+}
 
-  sudo service nginx restart
+_jukebox_webapp_check () {
+    echo "Check WebApp Installation" | tee /dev/fd/3
+
+    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+        verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+    fi
+    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+        verify_apt_packages nodejs
+    fi
+
+    verify_apt_packages nginx
+    verify_files_exists "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+
+    check_service_enablement nginx.service enabled
 }
 
 setup_jukebox_webapp() {
@@ -94,6 +107,7 @@ setup_jukebox_webapp() {
     # _jukebox_webapp_build
   fi
   _jukebox_webapp_register_as_system_service_with_nginx
+  _jukebox_webapp_check
 
   echo "DONE: setup_jukebox_webapp"
 }
