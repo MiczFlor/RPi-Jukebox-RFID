@@ -158,7 +158,6 @@ Do you want to install Samba? [Y/n]" 1>&3
   case "$response" in
     [nN][oO]|[nN])
       ENABLE_SAMBA=false
-      ENABLE_KIOSK_MODE=false
       ;;
     *)
       ;;
