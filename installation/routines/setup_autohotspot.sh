@@ -14,7 +14,7 @@ _get_interface() {
 }
 
 _install_packages() {
-    sudo apt-get -y install hostapd dnsmasq
+    sudo apt-get -y install hostapd dnsmasq iw
 
     # disable services. We want to start them manually
     sudo systemctl unmask hostapd
@@ -66,7 +66,7 @@ _install_autohotspot_script() {
 _autohotspot_check () {
     echo "Check AutoHotspot Installation" | tee /dev/fd/3
 
-    verify_apt_packages hostapd dnsmasq
+    verify_apt_packages hostapd dnsmasq iw
 
     check_service_enablement hostapd.service disabled
     check_service_enablement dnsmasq.service disabled
@@ -90,8 +90,8 @@ setup_autohotspot() {
         # inspired by
         # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-        _get_interface
         _install_packages
+        _get_interface
         _configure_hostapd
         _configure_dnsmasq
         _other_configuration
