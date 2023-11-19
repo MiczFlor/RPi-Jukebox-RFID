@@ -20,7 +20,8 @@ GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 echo GIT_BRANCH $GIT_BRANCH
 echo GIT_URL $GIT_URL
 
-CURRENT_USER="${SUDO_USER:-$USER}"
+CURRENT_USER="${SUDO_USER:-$(whoami)}"
+CURRENT_USER_GROUP=$(id -gn "$CURRENT_USER")
 HOME_PATH=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
 echo "Current User: $CURRENT_USER"
 echo "User home dir: $HOME_PATH"
@@ -80,8 +81,13 @@ download_jukebox_source() {
 checkPrerequisite
 
 ### RUN INSTALLATION
+cd "${HOME_PATH}"
 INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
-exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "Cannot create log file. Panic."; exit 1; }
+if [ "$CI_RUNNING" == "true" ]; then
+    exec 3>&1 2>&1
+else
+    exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "Cannot create log file. Panic."; exit 1; }
+fi
 echo "Log start: ${INSTALL_ID}"
 
 clear 1>&3
