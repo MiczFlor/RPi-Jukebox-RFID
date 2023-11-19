@@ -10,6 +10,8 @@ import misc.inputminus as pyil
 
 logger = logging.getLogger()
 
+NO_RFID_READER = 'No RFID Reader'
+
 
 def reader_install_dependencies(reader_path: str, dependency_install: str) -> None:
     """
@@ -80,6 +82,40 @@ def reader_load_module(reader_name):
     return reader_module
 
 
+def _get_reader_descriptions(reader_dirs: list[str]) -> dict[str, tuple[str, str]]:
+    # Try to load the description modules from all valid directories (as this has no dependencies)
+    # If unavailable, use placeholder description
+    reader_descriptions = {}
+    for reader_type in reader_dirs:
+        reader_description_module_name = ''
+        reader_description = ''
+        if reader_type == NO_RFID_READER:
+            # Add Option to not add a RFid Reader
+            reader_description_module_name = reader_type
+            reader_description = reader_type
+        else:
+            reader_description_module_name = f"{reader_type + '/' + reader_type + '.py'}"
+            try:
+                reader_description_module = (importlib.import_module('components.rfid.hardware.' + reader_type
+                                                                        + '.description', 'pkg.subpkg'))
+                reader_description = reader_description_module.DESCRIPTION
+            except ModuleNotFoundError:
+                # The developer for this reader simply omitted to provide a description module
+                # Or there is no valid module in this directory, despite correct naming scheme.
+                # But this we will only find out later, because we want to be as lenient as possible
+                # and don't already load and check reader modules the user is
+                # not selecting (and thus no interested in)
+                logger.warning(f"No module 'description.py' available for reader subpackage '{reader_type}'")
+                reader_description = '(No description provided!)'
+            except AttributeError:
+                # The module loaded ok, but has no identifier 'DESCRIPTION'
+                logger.warning(f"Module 'description.py' of reader subpackage '{reader_type}' is missing 'DESCRIPTION'. "
+                            f"Spelling error?")
+                reader_description = '(No description provided!)'
+        reader_descriptions[reader_type] = (reader_description, reader_description_module_name)
+    return reader_descriptions
+
+
 def query_user_for_reader(dependency_install='query') -> dict:
     """
     Ask the user to select a RFID reader and prompt for the reader's configuration
@@ -115,8 +151,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
     package_dir = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../hardware')
     logger.debug(f"Package location: {package_dir}")
     # For known included readers, specify manual order
-    no_rfid_reader = 'No RFID Reader'
-    included_readers = [no_rfid_reader, 'generic_usb', 'rdm6300_serial', 'rc522_spi', 'pn532_i2c_py532', 'fake_reader_gui']
+    included_readers = [NO_RFID_READER, 'generic_usb', 'rdm6300_serial', 'rc522_spi', 'pn532_i2c_py532', 'fake_reader_gui']
     # Get all local directories (i.e subpackages) that conform to naming/structuring convention (except known readers)
     # Naming convention: modname/modname.py
     additional_readers = [x for x in os.listdir(package_dir)
@@ -129,34 +164,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
 
     logger.debug(f"reader_dirs = {reader_dirs}")
 
-    # Try to load the description modules from all valid directories (as this has no dependencies)
-    # If unavailable, use placeholder description
-    reader_description_modules = []
-    reader_descriptions = []
-    for reader_type in reader_dirs:
-        if reader_type == no_rfid_reader:
-            # Add Option to not add a RFid Reader
-            reader_description_modules.append(no_rfid_reader)
-            reader_descriptions.append(no_rfid_reader)
-        else:
-            reader_description_modules.append(f"{reader_type + '/' + reader_type + '.py'}")
-            try:
-                reader_description = (importlib.import_module('components.rfid.hardware.' + reader_type
-                                                                        + '.description', 'pkg.subpkg'))
-                reader_descriptions.append(reader_description.DESCRIPTION)
-            except ModuleNotFoundError:
-                # The developer for this reader simply omitted to provide a description module
-                # Or there is no valid module in this directory, despite correct naming scheme.
-                # But this we will only find out later, because we want to be as lenient as possible
-                # and don't already load and check reader modules the user is
-                # not selecting (and thus no interested in)
-                logger.warning(f"No module 'description.py' available for reader subpackage '{reader_type}'")
-                reader_descriptions.append('(No description provided!)')
-            except AttributeError:
-                # The module loaded ok, but has no identifier 'DESCRIPTION'
-                logger.warning(f"Module 'description.py' of reader subpackage '{reader_type}' is missing 'DESCRIPTION'. "
-                            f"Spelling error?")
-                reader_descriptions.append('(No description provided!)')
+    reader_descriptions = _get_reader_descriptions(reader_dirs)
 
     # Prepare the configuration collector with the base values
     config_dict = {'rfid': {'readers': {}}}
@@ -166,7 +174,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
     while True:
         # List all modules and query user
         print("Choose Reader Module from list:\n")
-        for idx, (des, mod) in enumerate(zip(reader_descriptions, reader_description_modules)):
+        for idx, (des, mod) in enumerate(reader_descriptions.values):
             print(f" {Colors.lightgreen}{idx:2d}{Colors.reset}: {Colors.lightcyan}{Colors.bold}{des:40s}{Colors.reset} "
                   f"(Module: {mod})")
         print("")
@@ -174,10 +182,10 @@ def query_user_for_reader(dependency_install='query') -> dict:
                                    prompt_color=Colors.lightgreen, prompt_hint=True)
 
         # The (short) name of the selected reader module, which is identical to the directory name
-        reader_selected = reader_dirs[reader_id]
+        reader_selected = list(reader_descriptions.keys())[reader_id]
         print(f"Reader selected: '{reader_selected}'")
-        if reader_selected == no_rfid_reader:
-            logger.debug(f"'{no_rfid_reader}' selected. skip")
+        if reader_selected == NO_RFID_READER:
+            logger.debug(f"Entry '{NO_RFID_READER}' selected. skip")
             break
 
         reader_select_name.append(reader_selected)
