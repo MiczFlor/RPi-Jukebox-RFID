@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+_get_onboard_audio() {
+  if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" ${RPI_BOOT_CONFIG_FILE}
+  then
+    echo 1
+  else
+    echo 0
+  fi
+}
 
 set_raspi_config() {
   echo "Set default raspi-config" | tee /dev/fd/3
@@ -18,7 +26,7 @@ set_raspi_config() {
   sudo iwconfig wlan0 power off
 
   # On-board audio
-  if [[ $(get_onboard_audio) -eq 1 ]]; then
+  if [[ $(_get_onboard_audio) -eq 1 ]]; then
     DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO:-false}
     if [[ $DISABLE_ONBOARD_AUDIO = true ]]; then
       echo "  * Disable on-chip BCM audio"

@@ -28,15 +28,6 @@ _download_file_from_google_drive() {
   echo "Downloaded from Google Drive ID ${GD_SHARING_ID} into ${TAR_FILENAME}"
 }
 
-get_onboard_audio() {
-  if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" ${RPI_BOOT_CONFIG_FILE}
-  then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
 check_os_type() {
   # Check if current distro is a 32 bit version
   # Support for 64 bit Distros has not been checked (or precisely: is known not to work)
