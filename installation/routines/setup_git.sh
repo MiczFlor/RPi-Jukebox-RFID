@@ -115,7 +115,7 @@ _git_convert_tardir_git_repo() {
   if [[ "${HASH_BRANCH}" != "${HASH_HEAD}" ]]; then
     echo "*** IMPORTANT NOTICE *******************************"
     echo "* Your requested branch has moved on while you were installing."
-    echo "* Don't worry! We will stay within the the exact download version!"
+    echo "* Don't worry! We will stay within the exact download version!"
     echo "* But we set up the git repo to be ready for updating."
     echo "* To start updating (observe updating guidelines!), do:"
     echo "* $ git pull origin $GIT_BRANCH"
@@ -137,12 +137,20 @@ _git_convert_tardir_git_repo() {
   unset HASH_BRANCH
 }
 
+_git_repo_check () {
+    echo "Check Git & repository installation" | tee /dev/fd/3
+
+    verify_apt_packages git
+    verify_dirs_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${INSTALLATION_PATH}/.git"
+}
+
 init_git_repo_from_tardir() {
   echo "Install Git & init repository" | tee /dev/fd/3
 
   cd "${INSTALLATION_PATH}" || exit_on_error
   _git_install_os_dependencies
   _git_convert_tardir_git_repo
+  _git_repo_check
 
   echo "DONE: init_git_repo_from_tardir"
 }
