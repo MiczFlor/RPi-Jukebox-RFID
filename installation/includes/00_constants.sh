@@ -2,6 +2,8 @@ RPI_BOOT_CONFIG_FILE="/boot/config.txt"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 SYSTEMD_USR_PATH="/usr/lib/systemd/user"
+# Do not change this directory! It must match MPDs expectation where to find the user configuration
+MPD_CONF_PATH="${HOME}/.config/mpd/mpd.conf"
 
 # The default upstream user, release branch, and develop branch
 # These are used to prepare the repo for developers

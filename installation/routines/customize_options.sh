@@ -118,6 +118,31 @@ Do you want to disable Bluetooth? [Y/n]" 1>&3
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 }
 
+_option_mpd() {
+    if [[ "$SETUP_MPD" == true ]]; then
+        if [[ -f "${MPD_CONF_PATH}" || -f "${SYSTEMD_USR_PATH}/mpd.service" ]]; then
+            echo "-------------------------- MPD --------------------------
+
+It seems there is a MPD already installed.
+Note: It is important that MPD runs as a user service!
+Would you like to overwrite your configuration? [Y/n]" 1>&3
+            read -r response
+            case "$response" in
+                [nN][oO]|[nN])
+                    ENABLE_MPD_OVERWRITE_INSTALL=false
+                    ;;
+                *)
+                    ;;
+            esac
+        fi
+    fi
+
+    echo "SETUP_MPD=${SETUP_MPD}"
+    if [ "$SETUP_MPD" == true ]; then
+        echo "ENABLE_MPD_OVERWRITE_INSTALL=${ENABLE_MPD_OVERWRITE_INSTALL}"
+    fi
+}
+
 _option_samba() {
   # ENABLE_SAMBA
   clear 1>&3
@@ -277,6 +302,7 @@ customize_options() {
   _option_autohotspot
   _option_bluetooth
   _option_disable_onboard_audio
+  _option_mpd
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then
