@@ -2,6 +2,7 @@ RPI_BOOT_CONFIG_FILE="/boot/config.txt"
 SHARED_PATH="${INSTALLATION_PATH}/shared"
 SETTINGS_PATH="${SHARED_PATH}/settings"
 SYSTEMD_USR_PATH="/usr/lib/systemd/user"
+VIRTUAL_ENV="${INSTALLATION_PATH}/.venv"
 # Do not change this directory! It must match MPDs expectation where to find the user configuration
 MPD_CONF_PATH="${HOME}/.config/mpd/mpd.conf"
 

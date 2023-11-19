@@ -9,6 +9,9 @@ GD_ID_COMPILED_PYZMQ_ARMV6="1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n" # https://drive.g
 ZMQ_TMP_DIR="libzmq"
 ZMQ_PREFIX="/usr/local"
 
+JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
+JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+
 _show_slow_hardware_message() {
 echo "  --------------------------------------------------------------------
   | Your hardware is a little slower so this step will take a while. |
@@ -27,6 +30,7 @@ _jukebox_core_install_os_dependencies() {
     espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
     libasound2-dev \
+    rsync \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
@@ -38,7 +42,6 @@ _jukebox_core_install_python_requirements() {
 
   cd "${INSTALLATION_PATH}"  || exit_on_error
 
-  VIRTUAL_ENV="${INSTALLATION_PATH}/.venv"
   python3 -m venv $VIRTUAL_ENV
   source "$VIRTUAL_ENV/bin/activate"
 
@@ -48,8 +51,8 @@ _jukebox_core_install_python_requirements() {
 
 _jukebox_core_configure_pulseaudio() {
   echo "Copy PulseAudio configuration"
-  mkdir -p ~/.config/pulse
-  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" ~/.config/pulse/default.pa
+  mkdir -p $(dirname "$JUKEBOX_PULSE_CONFIG")
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" "${JUKEBOX_PULSE_CONFIG}"
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
@@ -125,13 +128,39 @@ _jukebox_core_install_settings() {
 _jukebox_core_register_as_service() {
   echo "  Register Jukebox Core user service"
 
-  local jukebox_service="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${jukebox_service}"
-  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${jukebox_service}"
-  sudo chmod 644 "${jukebox_service}"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${JUKEBOX_SERVICE_NAME}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${JUKEBOX_SERVICE_NAME}"
+  sudo chmod 644 "${JUKEBOX_SERVICE_NAME}"
 
   systemctl --user daemon-reload
   systemctl --user enable jukebox-daemon.service
+}
+
+_jukebox_core_check () {
+    echo "Check Jukebox Core Installation" | tee /dev/fd/3
+    verify_apt_packages at \
+        alsa-utils \
+        python3 python3-venv python3-dev \
+        espeak ffmpeg mpg123 \
+        pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
+        libasound2-dev \
+        rsync
+
+    verify_dirs_exists "${VIRTUAL_ENV}"
+
+    local pip_modules=$(get_args_from_file "${INSTALLATION_PATH}/requirements.txt")
+    verify_pip_modules pyzmq $pip_modules
+
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
+
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
+
+    verify_files_chmod_chown 644 root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+
+    verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
+
+    check_service_enablement jukebox-daemon.service enabled --user
 }
 
 setup_jukebox_core() {
@@ -143,6 +172,7 @@ setup_jukebox_core() {
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings
   _jukebox_core_register_as_service
+  _jukebox_core_check
 
   echo "DONE: setup_jukebox_core"
 }
