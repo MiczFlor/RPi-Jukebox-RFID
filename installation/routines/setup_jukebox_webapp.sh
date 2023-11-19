@@ -95,19 +95,21 @@ _jukebox_webapp_check () {
 }
 
 setup_jukebox_webapp() {
-  echo "Install web application" | tee /dev/fd/3
+    if [ "$ENABLE_WEBAPP" == true ] ; then
+        echo "Install web application" | tee /dev/fd/3
 
-  if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
-    _jukebox_webapp_download
-  fi
-  if [[ $ENABLE_INSTALL_NODE == true ]] ; then
-    _jukebox_webapp_install_node
-    # Local Web App build during installation does not work at the moment
-    # Needs to be done after reboot! There will be a message at the end of the installation process
-    # _jukebox_webapp_build
-  fi
-  _jukebox_webapp_register_as_system_service_with_nginx
-  _jukebox_webapp_check
+        if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+            _jukebox_webapp_download
+        fi
+        if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+            _jukebox_webapp_install_node
+            # Local Web App build during installation does not work at the moment
+            # Needs to be done after reboot! There will be a message at the end of the installation process
+            # _jukebox_webapp_build
+        fi
+        _jukebox_webapp_register_as_system_service_with_nginx
+        _jukebox_webapp_check
 
-  echo "DONE: setup_jukebox_webapp"
+        echo "DONE: setup_jukebox_webapp"
+    fi
 }

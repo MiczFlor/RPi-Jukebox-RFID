@@ -44,27 +44,29 @@ _mpd_check () {
 }
 
 setup_mpd() {
-  echo "Install MPD" | tee /dev/fd/3
+    if [ "$SETUP_MPD" == true ] ; then
+        echo "Install MPD" | tee /dev/fd/3
 
-  if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
+        if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
 
-    # Install/update only if enabled: do not stuff up any existing configuration
-    _mpd_install_os_dependencies
+            # Install/update only if enabled: do not stuff up any existing configuration
+            _mpd_install_os_dependencies
 
-    # Make sure system-wide mpd is disabled
-    echo "Configure MPD as user local service" | tee /dev/fd/3
-    sudo systemctl stop mpd.socket
-    sudo systemctl stop mpd.service
-    sudo systemctl disable mpd.socket
-    sudo systemctl disable mpd.service
-    _mpd_configure
-    # Prepare user-service MPD to be started at next boot
-    systemctl --user daemon-reload
-    systemctl --user enable mpd.socket
-    systemctl --user enable mpd.service
+            # Make sure system-wide mpd is disabled
+            echo "Configure MPD as user local service" | tee /dev/fd/3
+            sudo systemctl stop mpd.socket
+            sudo systemctl stop mpd.service
+            sudo systemctl disable mpd.socket
+            sudo systemctl disable mpd.service
+            _mpd_configure
+            # Prepare user-service MPD to be started at next boot
+            systemctl --user daemon-reload
+            systemctl --user enable mpd.socket
+            systemctl --user enable mpd.service
 
-    _mpd_check
-  fi
+            _mpd_check
+        fi
 
-  echo "DONE: setup_mpd"
+        echo "DONE: setup_mpd"
+    fi
 }

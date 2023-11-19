@@ -85,18 +85,20 @@ _autohotspot_check () {
 }
 
 setup_autohotspot() {
-    echo "Install AutoHotspot functionality" | tee /dev/fd/3
-    # inspired by
-    # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
+    if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
+        echo "Install AutoHotspot functionality" | tee /dev/fd/3
+        # inspired by
+        # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-    _get_interface
-    _install_packages
-    _configure_hostapd
-    _configure_dnsmasq
-    _other_configuration
-    _install_autohotspot_script
-    _install_service_and_timer
-    _autohotspot_check
+        _get_interface
+        _install_packages
+        _configure_hostapd
+        _configure_dnsmasq
+        _other_configuration
+        _install_autohotspot_script
+        _install_service_and_timer
+        _autohotspot_check
 
-    echo "DONE: setup_autohotspot"
+        echo "DONE: setup_autohotspot"
+    fi
 }

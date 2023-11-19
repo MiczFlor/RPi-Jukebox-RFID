@@ -79,12 +79,14 @@ _kiosk_mode_check () {
 }
 
 setup_kiosk_mode() {
-  echo "Setup Kiosk Mode" | tee /dev/fd/3
+    if [ "$ENABLE_KIOSK_MODE" == true ] ; then
+        echo "Setup Kiosk Mode" | tee /dev/fd/3
 
-  _kiosk_mode_install_os_dependencies
-  _kiosk_mode_set_autostart
-  _kiosk_mode_update_settings
-  _kiosk_mode_check
+        _kiosk_mode_install_os_dependencies
+        _kiosk_mode_set_autostart
+        _kiosk_mode_update_settings
+        _kiosk_mode_check
 
-  echo "DONE: setup_kiosk_mode"
+        echo "DONE: setup_kiosk_mode"
+    fi
 }

@@ -56,13 +56,15 @@ _samba_check () {
 }
 
 setup_samba() {
-  echo "Install Samba and configure user" | tee /dev/fd/3
+    if [ "$ENABLE_SAMBA" == true ] ; then
+        echo "Install Samba and configure user" | tee /dev/fd/3
 
-  # Skip interactive Samba WINS config dialog
-  echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
-  _samba_install_os_dependencies
-  _samba_set_user
-  _samba_check
+        # Skip interactive Samba WINS config dialog
+        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+        _samba_install_os_dependencies
+        _samba_set_user
+        _samba_check
 
-  echo "DONE: setup_samba"
+        echo "DONE: setup_samba"
+    fi
 }
