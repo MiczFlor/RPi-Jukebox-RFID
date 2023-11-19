@@ -46,6 +46,13 @@ checkPrerequisite() {
     echo "       Please check the wiki for further information"
     exit 2
   fi
+
+  if [ ! -d "${HOME_PATH}" ]; then
+    echo
+    echo "Warning: HomeDir ${HOME_PATH} does not exist."
+    echo "         Please create it and start again."
+    exit 2
+  fi
 }
 
 download_jukebox_source() {
