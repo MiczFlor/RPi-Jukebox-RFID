@@ -12,7 +12,7 @@ install() {
   if [ "$ENABLE_SAMBA" = true ] ; then setup_samba; fi;
   if [ "$ENABLE_WEBAPP" = true ] ; then setup_jukebox_webapp; fi;
   if [ "$ENABLE_KIOSK_MODE" = true ] ; then setup_kiosk_mode; fi;
-  setup_rfid_reader
+  if [ "$ENABLE_RFID_READER" = true ] ; then setup_rfid_reader; fi;
   optimize_boot_time
   if [ "$ENABLE_AUTOHOTSPOT" = true ] ; then setup_autohotspot; fi;
   cleanup

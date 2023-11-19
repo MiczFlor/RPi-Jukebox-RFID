@@ -143,6 +143,28 @@ Would you like to overwrite your configuration? [Y/n]" 1>&3
     fi
 }
 
+_option_rfid_reader() {
+  # ENABLE_RFID_READER
+  clear 1>&3
+  echo "---------------------- RFID READER ----------------------
+
+Phoniebox can be controlled with rfid cards/tags, if you
+have a rfid reader connected.
+Choose yes to setup a reader. You get prompted for
+the type selection and configuration later on.
+
+Do you want to setup a rfid reader? [Y/n]" 1>&3
+  read -r response
+  case "$response" in
+    [nN][oO]|[nN])
+      ENABLE_RFID_READER=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "ENABLE_RFID_READER=${ENABLE_RFID_READER}"
+}
+
 _option_samba() {
   # ENABLE_SAMBA
   clear 1>&3
@@ -303,6 +325,7 @@ customize_options() {
   _option_bluetooth
   _option_disable_onboard_audio
   _option_mpd
+  _option_rfid_reader
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then
