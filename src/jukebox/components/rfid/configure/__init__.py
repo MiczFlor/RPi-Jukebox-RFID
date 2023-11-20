@@ -174,7 +174,7 @@ def query_user_for_reader(dependency_install='query') -> dict:
     while True:
         # List all modules and query user
         print("Choose Reader Module from list:\n")
-        for idx, (des, mod) in enumerate(reader_descriptions.values):
+        for idx, (des, mod) in enumerate(reader_descriptions.values()):
             print(f" {Colors.lightgreen}{idx:2d}{Colors.reset}: {Colors.lightcyan}{Colors.bold}{des:40s}{Colors.reset} "
                   f"(Module: {mod})")
         print("")
