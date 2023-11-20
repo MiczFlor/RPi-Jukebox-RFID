@@ -1,5 +1,4 @@
 install() {
-  check_os_type
   clear 1>&3
   customize_options
   clear 1>&3
