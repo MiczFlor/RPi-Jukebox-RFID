@@ -15,7 +15,6 @@ _samba_install_os_dependencies() {
 
 _samba_set_user() {
   echo "  Configure Samba" | tee /dev/fd/3
-  local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
 
   # Samba has not been configured
@@ -23,7 +22,7 @@ _samba_set_user() {
     echo "    Skipping. Already set up!" | tee /dev/fd/3
   else
     # Create Samba user
-    (echo "${SMB_PASSWD}"; echo "${SMB_PASSWD}") | sudo smbpasswd -s -a $SMB_USER
+    (echo "${SMB_PASSWD}"; echo "${SMB_PASSWD}") | sudo smbpasswd -s -a "${CURRENT_USER}"
 
     sudo chown root:root $SMB_CONF
     sudo chmod 777 $SMB_CONF
@@ -55,6 +54,10 @@ _samba_check() {
 
     verify_file_contains_string "${SMB_CONF_HEADER}" "${SMB_CONF}"
     verify_file_contains_string "${SHARED_PATH}" "${SMB_CONF}"
+
+    if ! (sudo pdbedit -L | grep -qw "^${CURRENT_USER}") ; then
+        exit_on_error "ERROR: samba user not found"
+    fi
 }
 
 _run_setup_samba() {
