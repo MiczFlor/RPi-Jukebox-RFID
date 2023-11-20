@@ -28,6 +28,7 @@ echo "User home dir: $HOME_PATH"
 
 INSTALLATION_PATH="${HOME_PATH}/${GIT_REPO_NAME}"
 INSTALL_ID=$(date +%s)
+INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
 
 # Check if current distro is a 32 bit version
 # Support for 64 bit Distros has not been checked (or precisely: is known not to work)
@@ -73,6 +74,27 @@ _check_user() {
   fi
 }
 
+# Manipulate file descriptor for logging
+# Behavior:
+# Write To logfile:
+#   default stdout will only write to logfile
+#   default stderr will only write to logfile
+#       e.g echo "write only to logfile"
+# Write To console (user window):
+#   redirect to fd 3 will only write to the console
+#       e.g. echo "write only to console" 1>&3
+# Write To both:
+#   use tee to write output to logfile and console
+#       e.g. echo "write to both" | tee /dev/fd/3
+_setup_logging(){
+    if [ "$CI_RUNNING" == "true" ]; then
+        exec 3>&1 2>&1
+    else
+        exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "ERROR: Cannot create log file."; exit 1; }
+    fi
+    echo "Log start: ${INSTALL_ID}"
+}
+
 # Generic emergency error handler that exits the script immediately
 # Print additional custom message if passed as first argument
 # Examples:
@@ -94,6 +116,10 @@ Check install log for details:" | tee /dev/fd/3
 }
 
 download_jukebox_source() {
+  echo "Downloading Phoniebox software from Github ..." 1>&3
+  echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
+
+  cd "${HOME_PATH}" || exit_on_error "ERROR: Changing to home dir failed."
   wget -qO- "${GIT_URL}/tarball/${GIT_BRANCH}" | tar xz
   # Use case insensitive search/sed because user names in Git Hub are case insensitive
   GIT_REPO_DOWNLOAD=$(find . -maxdepth 1 -type d -iname "${GIT_USER}-${GIT_REPO_NAME}-*")
@@ -116,20 +142,10 @@ download_jukebox_source() {
 _check_os_type
 _check_user
 
+### SETUP LOGGING
+_setup_logging
+
 ### RUN INSTALLATION
-cd "${HOME_PATH}"
-INSTALLATION_LOGFILE="${HOME_PATH}/INSTALL-${INSTALL_ID}.log"
-if [ "$CI_RUNNING" == "true" ]; then
-    exec 3>&1 2>&1
-else
-    exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "Cannot create log file. Panic."; exit 1; }
-fi
-echo "Log start: ${INSTALL_ID}"
-
-clear 1>&3
-echo "Downloading Phoniebox software from Github ..." 1>&3
-echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
-
 download_jukebox_source
 
 cd "${INSTALLATION_PATH}" || exit_on_error "ERROR: Changing to install dir failed."
