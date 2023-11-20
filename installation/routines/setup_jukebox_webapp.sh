@@ -40,7 +40,6 @@ _jukebox_webapp_install_node() {
       sudo apt-get update
       sudo apt-get install -y nodejs
     fi
-
   fi
 }
 

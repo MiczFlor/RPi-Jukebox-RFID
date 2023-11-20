@@ -23,14 +23,10 @@ echo "  --------------------------------------------------------------------
 # Functions
 _jukebox_core_install_os_dependencies() {
   echo "  Install Jukebox OS dependencies" | tee /dev/fd/3
+
+  local apt_packages=$(get_args_from_file "${INSTALLATION_PATH}/packages-core.txt")
   sudo apt-get -y update && sudo apt-get -y install \
-    at \
-    alsa-utils \
-    python3 python3-venv python3-dev \
-    espeak ffmpeg mpg123 \
-    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
-    libasound2-dev \
-    rsync \
+    $apt_packages \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
@@ -139,13 +135,8 @@ _jukebox_core_register_as_service() {
 _jukebox_core_check() {
     print_verify_installation
 
-    verify_apt_packages at \
-        alsa-utils \
-        python3 python3-venv python3-dev \
-        espeak ffmpeg mpg123 \
-        pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
-        libasound2-dev \
-        rsync
+    local apt_packages=$(get_args_from_file "${INSTALLATION_PATH}/packages-core.txt")
+    verify_apt_packages $apt_packages
 
     verify_dirs_exists "${VIRTUAL_ENV}"
 

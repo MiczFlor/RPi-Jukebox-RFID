@@ -26,9 +26,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get -y upgrade \
   && apt-get -y install \
-    alsa-utils \
     build-essential \
-    locales \
+    iproute2 \
     openssh-client \
     sudo \
     systemd \
@@ -73,15 +72,13 @@ ARG GIT_USER
 
 ENV GIT_BRANCH=$GIT_BRANCH GIT_USER=$GIT_USER
 
-# COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages.txt packages-raspberrypi.txt ./
+COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages-core.txt ./
 
-# RUN export DEBIAN_FRONTEND=noninteractive \
-#   && echo "--- install internal packages ---" \
-#   && apt-get update \
-#   # remove resolvconf as installation will fail in container
-#   && sed 's/#.*//g' packages.txt | sed 's/resolvconf//' | xargs apt-get -y install \
-#   && sed 's/#.*//g' packages-raspberrypi.txt | xargs apt-get -y install \
-#   && rm -rf /var/lib/apt/lists/*
+RUN export DEBIAN_FRONTEND=noninteractive \
+   && echo "--- install internal packages ---" \
+   && apt-get update \
+   && sed 's/#.*//g' packages-core.txt | xargs apt-get -y install \
+   && rm -rf /var/lib/apt/lists/*
 
 ENV INSTALL_SCRIPT_PATH=/code
 
