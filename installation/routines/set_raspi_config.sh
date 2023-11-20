@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-_get_onboard_audio() {
-  if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" ${RPI_BOOT_CONFIG_FILE}
-  then
-    echo 1
-  else
-    echo 0
-  fi
-}
-
 _run_set_raspi_config() {
   # Source: https://raspberrypi.stackexchange.com/a/66939
 
@@ -25,16 +16,15 @@ _run_set_raspi_config() {
   sudo iwconfig wlan0 power off
 
   # On-board audio
-  if [[ $(_get_onboard_audio) -eq 1 ]]; then
-    DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO:-false}
-    if [[ $DISABLE_ONBOARD_AUDIO = true ]]; then
-      echo "  Disable on-chip BCM audio"
+  if [ "$DISABLE_ONBOARD_AUDIO" == true ]; then
+    echo "  Disable on-chip BCM audio"
+    if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" "${RPI_BOOT_CONFIG_FILE}" ; then
       echo "    Backup ${RPI_BOOT_CONFIG_FILE} --> ${DISABLE_ONBOARD_AUDIO_BACKUP}"
       sudo cp "${RPI_BOOT_CONFIG_FILE}" "${DISABLE_ONBOARD_AUDIO_BACKUP}"
       sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "${RPI_BOOT_CONFIG_FILE}"
+    else
+      echo "    On board audio seems to be off already. Not touching ${RPI_BOOT_CONFIG_FILE}"
     fi
-  else
-    echo "    On board audio seems to be off already. Not touching ${RPI_BOOT_CONFIG_FILE}"
   fi
 }
 
