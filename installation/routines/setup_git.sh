@@ -2,7 +2,7 @@ GIT_ABORT_MSG="Aborting dir to git repo conversion.
 Your directory content is untouched, you simply cannot use git for updating / developing"
 
 _git_install_os_dependencies() {
-  echo "Install Git dependencies"
+  echo "  Install Git dependencies"
   sudo apt-get -y update; sudo apt-get -y install \
     git \
     --no-install-recommends \

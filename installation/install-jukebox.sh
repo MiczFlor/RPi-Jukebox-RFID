@@ -116,7 +116,8 @@ Check install log for details:" | tee /dev/fd/3
 }
 
 _download_jukebox_source() {
-  echo -e "\n\n#########################################################"
+  echo -e "\n\n"
+  echo "#########################################################"
   echo "Downloading Phoniebox software from Github ..." 1>&3
   echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
@@ -136,6 +137,7 @@ _download_jukebox_source() {
   fi
   mv "$git_repo_download" "$GIT_REPO_NAME"
   echo -e "\nDONE: Downloading Phoniebox software from Github"
+  echo "#########################################################"
 }
 
 _load_sources() {

@@ -4,8 +4,9 @@ AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
 PLAYLISTS_PATH="${SHARED_PATH}/playlists"
 
 _mpd_install_os_dependencies() {
+  echo "  Install MPD OS dependencies"
   sudo apt-get -y update
-  echo "Install MPD OS dependencies"
+
   echo "Note: Installing MPD might cause a message: 'Job failed. See journalctl -xe for details'"
   echo "It can be ignored! It's an artefact of the MPD installation - nothing we can do about it."
   sudo apt-get -y install \
@@ -17,6 +18,13 @@ _mpd_install_os_dependencies() {
 }
 
 _mpd_configure() {
+  echo "  Configure MPD as user local service" | tee /dev/fd/3
+
+  # Make sure system-wide mpd is disabled
+  sudo systemctl stop mpd.socket
+  sudo systemctl stop mpd.service
+  sudo systemctl disable mpd.socket
+  sudo systemctl disable mpd.service
   # MPD will be setup as user process (rather than a system-wide process)
   mkdir -p $(dirname "$MPD_CONF_PATH")
 
@@ -25,6 +33,11 @@ _mpd_configure() {
   # Prepare new mpd.conf
   sed -i 's|%%JUKEBOX_AUDIOFOLDERS_PATH%%|'"$AUDIOFOLDERS_PATH"'|' "${MPD_CONF_PATH}"
   sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' "${MPD_CONF_PATH}"
+
+  # Prepare user-service MPD to be started at next boot
+  systemctl --user daemon-reload
+  systemctl --user enable mpd.socket
+  systemctl --user enable mpd.service
 }
 
 _mpd_check() {
@@ -45,23 +58,10 @@ _mpd_check() {
 }
 
 _run_setup_mpd() {
+    # Install/update only if enabled: do not stuff up any existing configuration
     if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
-
-        # Install/update only if enabled: do not stuff up any existing configuration
         _mpd_install_os_dependencies
-
-        # Make sure system-wide mpd is disabled
-        echo "Configure MPD as user local service" | tee /dev/fd/3
-        sudo systemctl stop mpd.socket
-        sudo systemctl stop mpd.service
-        sudo systemctl disable mpd.socket
-        sudo systemctl disable mpd.service
         _mpd_configure
-        # Prepare user-service MPD to be started at next boot
-        systemctl --user daemon-reload
-        systemctl --user enable mpd.socket
-        systemctl --user enable mpd.service
-
         _mpd_check
     fi
 }

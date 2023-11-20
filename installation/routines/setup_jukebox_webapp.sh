@@ -47,7 +47,7 @@ _jukebox_webapp_install_node() {
 # TODO: Avoid building the app locally
 # Instead implement a Github Action that prebuilds on commititung a git tag
 _jukebox_webapp_build() {
-  echo "  Building web application"
+  echo "  Building web application" | tee /dev/fd/3
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   npm ci --prefer-offline --no-audit --production
   rm -rf build

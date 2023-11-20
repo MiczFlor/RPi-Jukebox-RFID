@@ -4,7 +4,7 @@ SMB_CONF="/etc/samba/smb.conf"
 SMB_CONF_HEADER="## Jukebox Samba Config"
 
 _samba_install_os_dependencies() {
-  echo "Install Samba Core dependencies"
+  echo "  Install Samba Core dependencies"
   sudo apt-get -qq -y update; sudo apt-get -qq -y install \
     samba samba-common-bin \
     --no-install-recommends \
@@ -14,12 +14,13 @@ _samba_install_os_dependencies() {
 }
 
 _samba_set_user() {
+  echo "  Configure Samba" | tee /dev/fd/3
   local SMB_USER="pi"
   local SMB_PASSWD="raspberry"
 
   # Samba has not been configured
   if grep -q "$SMB_CONF_HEADER" "$SMB_CONF"; then
-    echo "  Skipping. Already set up!" | tee /dev/fd/3
+    echo "    Skipping. Already set up!" | tee /dev/fd/3
   else
     # Create Samba user
     (echo "${SMB_PASSWD}"; echo "${SMB_PASSWD}") | sudo smbpasswd -s -a $SMB_USER
@@ -66,6 +67,6 @@ _run_setup_samba() {
 
 setup_samba() {
     if [ "$ENABLE_SAMBA" == true ] ; then
-        run_with_log_frame _run_setup_samba "Install Samba and configure user"
+        run_with_log_frame _run_setup_samba "Install Samba"
     fi
 }

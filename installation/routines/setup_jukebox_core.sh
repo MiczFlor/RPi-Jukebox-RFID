@@ -22,7 +22,7 @@ echo "  --------------------------------------------------------------------
 
 # Functions
 _jukebox_core_install_os_dependencies() {
-  echo "  Install Jukebox OS dependencies"
+  echo "  Install Jukebox OS dependencies" | tee /dev/fd/3
   sudo apt-get -y update && sudo apt-get -y install \
     at \
     alsa-utils \
@@ -38,7 +38,7 @@ _jukebox_core_install_os_dependencies() {
 }
 
 _jukebox_core_install_python_requirements() {
-  echo "  Install Python requirements"
+  echo "  Install Python requirements" | tee /dev/fd/3
 
   cd "${INSTALLATION_PATH}"  || exit_on_error
 
@@ -50,7 +50,7 @@ _jukebox_core_install_python_requirements() {
 }
 
 _jukebox_core_configure_pulseaudio() {
-  echo "Copy PulseAudio configuration"
+  echo "  Copy PulseAudio configuration" | tee /dev/fd/3
   mkdir -p $(dirname "$JUKEBOX_PULSE_CONFIG")
   cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" "${JUKEBOX_PULSE_CONFIG}"
 }
@@ -90,7 +90,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # Sources:
   # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
-  echo "  Build and install pyzmq with WebSockets Support"
+  echo "  Build and install pyzmq with WebSockets Support" | tee /dev/fd/3
 
   if ! pip list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
@@ -115,18 +115,18 @@ _jukebox_core_build_and_install_pyzmq() {
     ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
       pip install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
   else
-    echo "    Skipping. pyzmq already installed"
+    echo "    Skipping. pyzmq already installed" | tee /dev/fd/3
   fi
 }
 
 _jukebox_core_install_settings() {
-  echo "  Register Jukebox settings"
+  echo "  Register Jukebox settings" | tee /dev/fd/3
   cp -f "${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml" "${SETTINGS_PATH}/jukebox.yaml"
   cp -f "${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml" "${SETTINGS_PATH}/logger.yaml"
 }
 
 _jukebox_core_register_as_service() {
-  echo "  Register Jukebox Core user service"
+  echo "  Register Jukebox Core user service" | tee /dev/fd/3
 
   sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${JUKEBOX_SERVICE_NAME}"
   sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${JUKEBOX_SERVICE_NAME}"

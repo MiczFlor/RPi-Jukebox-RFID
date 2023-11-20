@@ -308,9 +308,9 @@ Do you want to install Node? [Y/n]" 1>&3
       esac
       # This message will be displayed at the end of the installation process
       local tmp_fin_message="ATTENTION: You need to build the web app locally with
-      $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-      This must be done after reboot, due to memory restrictions.
-      Read the documentation regarding local Web App builds!"
+           $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+           This must be done after reboot, due to memory restrictions.
+           Read the documentation regarding local Web App builds!"
       FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
     fi
   fi

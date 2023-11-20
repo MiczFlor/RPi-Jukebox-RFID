@@ -14,8 +14,8 @@ Your SSH connection will disconnect.
 After the reboot, you can access the WebApp in your browser at
 http://${local_hostname}.local or http://${CURRENT_IP_ADDRESS}
 Don't forget to upload files.
-
-Do you want to reboot now? [Y/n]" 1>&3
+" | tee /dev/fd/3
+echo "Do you want to reboot now? [Y/n]" 1>&3
 
   read -r response
   case "$response" in
