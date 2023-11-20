@@ -7,8 +7,8 @@ ARG DEBIAN_CODENAME
 ENV CI_RUNNING=true TERM=xterm
 
 # create pi configs to test installation
-RUN touch /boot/cmdline.txt
 RUN touch /boot/config.txt
+RUN echo "logo.nologo" > /boot/cmdline.txt
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && echo "--- install packages (1) ---" \

@@ -104,13 +104,13 @@ _optimize_handle_boot_logs() {
     echo "  Disable boot logs"
 
     if [ ! -s "${RPI_BOOT_CMDLINE_FILE}" ];then
-        sudo tee $RPI_BOOT_CMDLINE_FILE <<-EOF
+        sudo tee "${RPI_BOOT_CMDLINE_FILE}" <<-EOF
 ${OPTIMIZE_BOOT_CMDLINE_OPTIONS}
 EOF
     else
         for option in $OPTIMIZE_BOOT_CMDLINE_OPTIONS
         do
-            if ! $(grep -iw "$option" "${RPI_BOOT_CMDLINE_FILE}") ; then
+            if ! grep -qiw "$option" "${RPI_BOOT_CMDLINE_FILE}" ; then
                 sudo sed -i "s/$/ $option/" "${RPI_BOOT_CMDLINE_FILE}"
             fi
         done
