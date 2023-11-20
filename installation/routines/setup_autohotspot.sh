@@ -11,6 +11,16 @@ _get_interface() {
     # interfaces may vary
     WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
     WIFI_REGION=$(iw reg get | grep country | awk '{ print $2}' | cut -d: -f1)
+
+    # fix for CI runs on docker
+    if [ "${CI_RUNNING}" == "true" ]; then
+        if [ -z "${WIFI_INTERFACE}" ]; then
+            WIFI_INTERFACE="CI TEST INTERFACE"
+        fi
+        if [ -z "${WIFI_REGION}" ]; then
+            WIFI_REGION="CI TEST REGION"
+        fi
+    fi
 }
 
 _install_packages() {
