@@ -5,13 +5,10 @@
 
 # Objective: Test installation with script using a simple configuration
 
-local_install_script_path="${INSTALL_SCRIPT_PATH:-./../../installation/}"
-local_install_script_path="${local_install_script_path%/}"
-
-# Preparations
-# No interactive frontend
-export DEBIAN_FRONTEND=noninteractive
-echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+SOURCE="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(dirname "$SOURCE")"
+LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
+LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
 # Run installation (in interactive mode)
 # y - start setup
@@ -28,7 +25,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y - install node
 # n - reboot
 
-"$local_install_script_path"/install-jukebox.sh <<< 'y
+"${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y
 n
 n
 n

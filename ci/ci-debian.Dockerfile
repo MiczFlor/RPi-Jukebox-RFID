@@ -4,14 +4,14 @@ ARG BASE_TEST_IMAGE=test-code
 FROM debian:${DEBIAN_CODENAME}-slim as base
 ARG DEBIAN_CODENAME
 
-ENV CI_RUNNING=true TERM=xterm
+ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
+ENV CI_RUNNING=true
 
 # create pi configs to test installation
 RUN touch /boot/config.txt
 RUN echo "logo.nologo" > /boot/cmdline.txt
 
-RUN export DEBIAN_FRONTEND=noninteractive \
-  && echo "--- install packages (1) ---" \
+RUN echo "--- install packages (1) ---" \
   && apt-get update \
   && apt-get -y install \
     apt-utils \
@@ -35,6 +35,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     wget \
     wpasupplicant \
   && rm -rf /var/lib/apt/lists/*
+
+# Set NonInteractive for sudo usage in container. 'sudo' package needed
+RUN echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 # ------
 
 # Base Target for setting up the default user. user can be selected with the docker '--user YYY' option
@@ -74,8 +77,7 @@ ENV GIT_BRANCH=$GIT_BRANCH GIT_USER=$GIT_USER
 
 COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages-core.txt ./
 
-RUN export DEBIAN_FRONTEND=noninteractive \
-   && echo "--- install internal packages ---" \
+RUN echo "--- install internal packages ---" \
    && apt-get update \
    && sed 's/#.*//g' packages-core.txt | xargs apt-get -y install \
    && rm -rf /var/lib/apt/lists/*
@@ -92,8 +94,7 @@ COPY --chown=root:$TEST_USER_GROUP --chmod=770 ci/installation/*.sh ./
 
 # Target for applying latest updates (should not be cached!)
 FROM $BASE_TEST_IMAGE as test-update
-RUN export DEBIAN_FRONTEND=noninteractive \
-  && apt-get update \
+RUN apt-get update \
   && apt-get -y upgrade \
   && rm -rf /var/lib/apt/lists/*
 # ------

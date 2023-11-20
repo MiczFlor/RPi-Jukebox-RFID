@@ -5,18 +5,15 @@
 
 # Objective: Test installation with script using a simple configuration
 
-local_install_script_path="${INSTALL_SCRIPT_PATH:-./../../installation/}"
-local_install_script_path="${local_install_script_path%/}"
-
-# Preparations
-# No interactive frontend
-export DEBIAN_FRONTEND=noninteractive
-echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+SOURCE="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(dirname "$SOURCE")"
+LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
+LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
 # Run installation (in interactive mode)
 # - - Installation must abort early
 
-"$local_install_script_path"/install-jukebox.sh
+"${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh"
 INSTALLATION_EXITCODE=$?
 
 # only count abortion due to "not user pi" as success
