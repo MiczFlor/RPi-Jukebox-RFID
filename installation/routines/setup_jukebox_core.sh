@@ -160,7 +160,7 @@ _jukebox_core_check () {
 
     verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
 
-    check_service_enablement jukebox-daemon.service enabled --user
+    verify_service_enablement jukebox-daemon.service enabled --user
 }
 
 setup_jukebox_core() {

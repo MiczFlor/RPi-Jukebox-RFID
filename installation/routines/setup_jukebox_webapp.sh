@@ -91,7 +91,7 @@ _jukebox_webapp_check () {
     verify_apt_packages nginx
     verify_files_exists "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
-    check_service_enablement nginx.service enabled
+    verify_service_enablement nginx.service enabled
 }
 
 setup_jukebox_webapp() {

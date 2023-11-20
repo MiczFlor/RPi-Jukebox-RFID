@@ -36,11 +36,11 @@ _mpd_check () {
     verify_file_contains_string "${AUDIOFOLDERS_PATH}" "${MPD_CONF_PATH}"
     verify_file_contains_string "${PLAYLISTS_PATH}" "${MPD_CONF_PATH}"
 
-    check_service_enablement mpd.socket disabled
-    check_service_enablement mpd.service disabled
+    verify_service_enablement mpd.socket disabled
+    verify_service_enablement mpd.service disabled
 
-    check_service_enablement mpd.socket enabled --user
-    check_service_enablement mpd.service enabled --user
+    verify_service_enablement mpd.socket enabled --user
+    verify_service_enablement mpd.service enabled --user
 }
 
 setup_mpd() {

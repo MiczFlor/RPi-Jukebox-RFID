@@ -124,18 +124,18 @@ EOF
 _optimize_check () {
     echo "Check Optimize boot time" | tee /dev/fd/3
 
-    check_optional_service_enablement keyboard-setup.service disabled
-    check_optional_service_enablement triggerhappy.service disabled
-    check_optional_service_enablement triggerhappy.socket disabled
-    check_optional_service_enablement raspi-config.service disabled
-    check_optional_service_enablement apt-daily.service disabled
-    check_optional_service_enablement apt-daily-upgrade.service disabled
-    check_optional_service_enablement apt-daily.timer disabled
-    check_optional_service_enablement apt-daily-upgrade.timer disabled
+    verify_optional_service_enablement keyboard-setup.service disabled
+    verify_optional_service_enablement triggerhappy.service disabled
+    verify_optional_service_enablement triggerhappy.socket disabled
+    verify_optional_service_enablement raspi-config.service disabled
+    verify_optional_service_enablement apt-daily.service disabled
+    verify_optional_service_enablement apt-daily-upgrade.service disabled
+    verify_optional_service_enablement apt-daily.timer disabled
+    verify_optional_service_enablement apt-daily-upgrade.timer disabled
 
     if [ "$DISABLE_BLUETOOTH" = true ] ; then
-        check_optional_service_enablement hciuart.service disabled
-        check_optional_service_enablement bluetooth.service disabled
+        verify_optional_service_enablement hciuart.service disabled
+        verify_optional_service_enablement bluetooth.service disabled
     fi
 
     if [ "$ENABLE_STATIC_IP" = true ] ; then

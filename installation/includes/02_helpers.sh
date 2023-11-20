@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Helpers
+### Helpers
 
 # $1->start, $2->end
 calc_runtime_and_print() {
@@ -48,12 +48,16 @@ check_os_type() {
 }
 
 
-##### Check helpers
+### Verify helpers
 
 # Check if the file(s) exists
 verify_files_exists() {
     local files="$@"
     echo "Verify '${files}' exists"
+
+    if [[ -z "${files}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     for file in $files
     do
@@ -66,6 +70,10 @@ verify_files_exists() {
 verify_dirs_exists() {
     local dirs="$@"
     echo "Verify '${dirs}' exists"
+
+    if [[ -z "${dirs}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     for dir in $dirs
     do
@@ -82,6 +90,10 @@ verify_files_chmod_chown() {
     local group_expected=$3
     local files="${@:4}"
     echo "Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${files}'"
+
+    if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${files}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     for file in $files
     do
@@ -105,6 +117,10 @@ verify_dirs_chmod_chown() {
     local dirs="${@:4}"
     echo "Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${dirs}'"
 
+    if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${dirs}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
     for dir in $dirs
     do
         test ! -d ${dir} && exit_on_error "ERROR: '${dir}' does not exists or is not a dir!"
@@ -124,6 +140,10 @@ verify_file_contains_string() {
     local file="$2"
     echo "Verify '${string}' found in '${file}'"
 
+    if [[ -z "${string}" || -z "${file}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
     if [[ ! $(grep -iw "${string}" "${file}") ]]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     fi
@@ -135,6 +155,10 @@ verify_file_contains_string_once() {
     local file="$2"
     echo "Verify '${string}' found in '${file}'"
 
+    if [[ -z "${string}" || -z "${file}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
     local file_contains_string_count=$(grep -oiw "${string}" "${file}" | wc -l)
     if [ "$file_contains_string_count" -lt 1 ]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
@@ -144,11 +168,15 @@ verify_file_contains_string_once() {
     echo "CHECK"
 }
 
-check_service_state() {
+verify_service_state() {
     local service="$1"
     local desired_state="$2"
 	local option="${3:+$3 }" # optional, dont't quote in next call!
     echo "Verify service '${option}${service}' is '${desired_state}'"
+
+    if [[ -z "${service}" || -z "${desired_state}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     local actual_state=$(systemctl is-active ${option}${service})
     if [[ ! "${actual_state}" == "${desired_state}" ]]; then
@@ -157,11 +185,15 @@ check_service_state() {
     echo "CHECK"
 }
 
-check_service_enablement() {
+verify_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
     local option="${3:+$3 }" # optional, dont't quote in next call!
     echo "Verify service ${option}${service} is ${desired_enablement}"
+
+    if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     local actual_enablement=$(systemctl is-enabled ${option}${service})
     if [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
@@ -170,11 +202,15 @@ check_service_enablement() {
     echo "CHECK"
 }
 
-check_optional_service_enablement() {
+verify_optional_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
     local option="${3:+$3 }" # optional, dont't quote in next call!
     echo "Verify service ${option}${service} is ${desired_enablement}"
+
+    if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
 
     local actual_enablement=$(systemctl is-enabled ${option}${service}) 2>/dev/null
     if [[ -z "${actual_enablement}" ]]; then
@@ -201,15 +237,17 @@ verify_apt_packages() {
     local packages="$@"
     echo "Verify packages are installed: '${packages}'"
 
-    if [ -n "${packages}" ]; then
-        local apt_list_installed=$(apt -qq list --installed 2>/dev/null)
-        for package in ${packages}
-        do
-            if [[ ! $(echo "${apt_list_installed}" | grep -i "^${package}/.*installed") ]]; then
-                exit_on_error "ERROR: ${package} is not installed"
-            fi
-        done
+    if [[ -z "${packages}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
     fi
+
+    local apt_list_installed=$(apt -qq list --installed 2>/dev/null)
+    for package in ${packages}
+    do
+        if [[ ! $(echo "${apt_list_installed}" | grep -i "^${package}/.*installed") ]]; then
+            exit_on_error "ERROR: ${package} is not installed"
+        fi
+    done
     echo "CHECK"
 }
 
@@ -218,14 +256,16 @@ verify_pip_modules() {
     local modules="$@"
     echo "Verify modules are installed: '${modules}'"
 
-    if [ -n "${modules}" ]; then
-        local pip_list_installed=$(pip list 2>/dev/null)
-        for module in ${modules}
-        do
-            if [[ ! $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
-                exit_on_error "ERROR: ${module} is not installed"
-            fi
-        done
+    if [[ -z "${modules}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
     fi
+
+    local pip_list_installed=$(pip list 2>/dev/null)
+    for module in ${modules}
+    do
+        if [[ ! $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
+            exit_on_error "ERROR: ${module} is not installed"
+        fi
+    done
     echo "CHECK"
 }

@@ -68,9 +68,9 @@ _autohotspot_check () {
 
     verify_apt_packages hostapd dnsmasq iw
 
-    check_service_enablement hostapd.service disabled
-    check_service_enablement dnsmasq.service disabled
-    check_service_enablement autohotspot.service enabled
+    verify_service_enablement hostapd.service disabled
+    verify_service_enablement dnsmasq.service disabled
+    verify_service_enablement autohotspot.service enabled
 
     verify_files_exists "/etc/cron.d/autohotspot"
     verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
