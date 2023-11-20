@@ -58,16 +58,14 @@ _mpd_check() {
 }
 
 _run_setup_mpd() {
-    # Install/update only if enabled: do not stuff up any existing configuration
-    if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
-        _mpd_install_os_dependencies
-        _mpd_configure
-        _mpd_check
-    fi
+    _mpd_install_os_dependencies
+    _mpd_configure
+    _mpd_check
 }
 
 setup_mpd() {
-    if [ "$SETUP_MPD" == true ] ; then
+    # Install/update only if enabled: do not stuff up any existing configuration
+    if [[ "$SETUP_MPD" == true && $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
         run_with_log_frame _run_setup_mpd "Install MPD"
     fi
 }
