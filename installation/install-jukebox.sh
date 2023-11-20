@@ -115,26 +115,25 @@ Check install log for details:" | tee /dev/fd/3
   exit 1
 }
 
-download_jukebox_source() {
+_download_jukebox_source() {
   echo "Downloading Phoniebox software from Github ..." 1>&3
   echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
   cd "${HOME_PATH}" || exit_on_error "ERROR: Changing to home dir failed."
   wget -qO- "${GIT_URL}/tarball/${GIT_BRANCH}" | tar xz
   # Use case insensitive search/sed because user names in Git Hub are case insensitive
-  GIT_REPO_DOWNLOAD=$(find . -maxdepth 1 -type d -iname "${GIT_USER}-${GIT_REPO_NAME}-*")
-  echo "GIT REPO DOWNLOAD = $GIT_REPO_DOWNLOAD"
-  GIT_HASH=$(echo "$GIT_REPO_DOWNLOAD" | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/ip")
+  local git_repo_download=$(find . -maxdepth 1 -type d -iname "${GIT_USER}-${GIT_REPO_NAME}-*")
+  echo "GIT REPO DOWNLOAD = $git_repo_download"
+  GIT_HASH=$(echo "$git_repo_download" | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/ip")
   # Save the git hash for this particular download for later git repo initialization
   echo "GIT HASH = $GIT_HASH"
-  if [[ -z "${GIT_REPO_DOWNLOAD}" ]]; then
+  if [[ -z "${git_repo_download}" ]]; then
     exit_on_error "ERROR: Couldn't find git download."
   fi
   if [[ -z "${GIT_HASH}" ]]; then
     exit_on_error "ERROR: Couldn't determine git hash from download."
   fi
-  mv "$GIT_REPO_DOWNLOAD" "$GIT_REPO_NAME"
-  unset GIT_REPO_DOWNLOAD
+  mv "$git_repo_download" "$GIT_REPO_NAME"
 }
 
 _load_sources() {
@@ -157,7 +156,7 @@ _check_user
 _setup_logging
 
 ### RUN INSTALLATION
-download_jukebox_source
+_download_jukebox_source
 cd "${INSTALLATION_PATH}" || exit_on_error "ERROR: Changing to install dir failed."
 _load_sources
 
