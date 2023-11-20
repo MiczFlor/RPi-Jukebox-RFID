@@ -119,6 +119,7 @@ Do you want to disable Bluetooth? [Y/n]" 1>&3
 }
 
 _option_mpd() {
+    clear 1>&3
     if [[ "$SETUP_MPD" == true ]]; then
         if [[ -f "${MPD_CONF_PATH}" || -f "${SYSTEMD_USR_PATH}/mpd.service" ]]; then
             echo "-------------------------- MPD --------------------------
