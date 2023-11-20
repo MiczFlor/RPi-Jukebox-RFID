@@ -75,7 +75,9 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
   # make sure nginx can access the home directory of the user
-  sudo chmod o+x /home/pi
+  sudo chmod o+x "${HOME_PATH}"
+
+  sudo systemctl restart nginx.service
 }
 
 _jukebox_webapp_check() {
