@@ -9,7 +9,7 @@ calc_runtime_and_print() {
   ((m=(${runtime}%3600)/60))
   ((s=${runtime}%60))
 
-  echo "Done in ${h}h ${m}m ${s}s."
+  echo "Done in ${h}h ${m}m ${s}s"
 }
 
 run_with_timer() {
@@ -18,10 +18,10 @@ run_with_timer() {
   $1; # Executes the function passed as an argument
 
   calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
-  echo "--------------------------------------"
 }
 
 run_with_log_frame() {
+    local time_start=$(date +%s);
     local description="$2"
     echo -e "\n\n"
     echo "#########################################################"
@@ -29,7 +29,8 @@ run_with_log_frame() {
 
     $1; # Executes the function passed as an argument
 
-    echo -e "\nDONE: ${description}"
+    local done_in=$(calc_runtime_and_print time_start $(date +%s))
+    echo -e "\n${done_in} - ${description}"
     echo "#########################################################"
 }
 
