@@ -137,6 +137,17 @@ download_jukebox_source() {
   unset GIT_REPO_DOWNLOAD
 }
 
+_load_sources() {
+    # Load / Source dependencies
+    for i in "${INSTALLATION_PATH}"/installation/includes/*; do
+    source "$i"
+    done
+
+    for j in "${INSTALLATION_PATH}"/installation/routines/*; do
+    source "$j"
+    done
+}
+
 
 ### CHECK PREREQUISITE
 _check_os_type
@@ -147,16 +158,8 @@ _setup_logging
 
 ### RUN INSTALLATION
 download_jukebox_source
-
 cd "${INSTALLATION_PATH}" || exit_on_error "ERROR: Changing to install dir failed."
-# Load / Source dependencies
-for i in "${INSTALLATION_PATH}"/installation/includes/*; do
-  source "$i"
-done
-
-for j in "${INSTALLATION_PATH}"/installation/routines/*; do
-  source "$j"
-done
+_load_sources
 
 welcome
 run_with_timer install
