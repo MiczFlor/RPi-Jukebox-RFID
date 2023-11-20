@@ -73,6 +73,26 @@ _check_user() {
   fi
 }
 
+# Generic emergency error handler that exits the script immediately
+# Print additional custom message if passed as first argument
+# Examples:
+#   a command || exit_on_error
+#   a command || exit_on_error "Execution of command failed"
+exit_on_error () {
+  echo -e "\n****************************************" | tee /dev/fd/3
+  echo "ERROR OCCURRED!
+A non-recoverable error occurred.
+Check install log for details:" | tee /dev/fd/3
+  echo "$INSTALLATION_LOGFILE" | tee /dev/fd/3
+  echo "****************************************" | tee /dev/fd/3
+  if [[ -n $1 ]]; then
+    echo "$1" | tee /dev/fd/3
+    echo "****************************************" | tee /dev/fd/3
+  fi
+  echo "Abort!"
+  exit 1
+}
+
 download_jukebox_source() {
   wget -qO- "${GIT_URL}/tarball/${GIT_BRANCH}" | tar xz
   # Use case insensitive search/sed because user names in Git Hub are case insensitive
@@ -81,13 +101,11 @@ download_jukebox_source() {
   GIT_HASH=$(echo "$GIT_REPO_DOWNLOAD" | sed -rn "s/.*${GIT_USER}-${GIT_REPO_NAME}-([0-9a-fA-F]+)/\1/ip")
   # Save the git hash for this particular download for later git repo initialization
   echo "GIT HASH = $GIT_HASH"
-  if [[ -z ${GIT_REPO_DOWNLOAD} ]]; then
-    echo "ERROR in finding git download. Panic."
-    exit 1
+  if [[ -z "${GIT_REPO_DOWNLOAD}" ]]; then
+    exit_on_error "ERROR: Couldn't find git download."
   fi
-  if [[ -z ${GIT_HASH} ]]; then
-    echo "ERROR in determining git hash from download. Panic."
-    exit 1
+  if [[ -z "${GIT_HASH}" ]]; then
+    exit_on_error "ERROR: Couldn't determine git hash from download."
   fi
   mv "$GIT_REPO_DOWNLOAD" "$GIT_REPO_NAME"
   unset GIT_REPO_DOWNLOAD
@@ -113,8 +131,8 @@ echo "Downloading Phoniebox software from Github ..." 1>&3
 echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
 download_jukebox_source
-cd "${INSTALLATION_PATH}" || { echo "ERROR in changing to install dir. Panic."; exit 1; }
 
+cd "${INSTALLATION_PATH}" || exit_on_error "ERROR: Changing to install dir failed."
 # Load / Source dependencies
 for i in "${INSTALLATION_PATH}"/installation/includes/*; do
   source "$i"
