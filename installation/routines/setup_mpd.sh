@@ -27,8 +27,9 @@ _mpd_configure() {
   sed -i 's|%%JUKEBOX_PLAYLISTS_PATH%%|'"$PLAYLISTS_PATH"'|' "${MPD_CONF_PATH}"
 }
 
-_mpd_check () {
-    echo "Check MPD Installation" | tee /dev/fd/3
+_mpd_check() {
+    print_verify_installation
+
     verify_apt_packages mpd mpc
 
     verify_files_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${MPD_CONF_PATH}"
@@ -43,30 +44,30 @@ _mpd_check () {
     verify_service_enablement mpd.service enabled --user
 }
 
+_run_setup_mpd() {
+    if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
+
+        # Install/update only if enabled: do not stuff up any existing configuration
+        _mpd_install_os_dependencies
+
+        # Make sure system-wide mpd is disabled
+        echo "Configure MPD as user local service" | tee /dev/fd/3
+        sudo systemctl stop mpd.socket
+        sudo systemctl stop mpd.service
+        sudo systemctl disable mpd.socket
+        sudo systemctl disable mpd.service
+        _mpd_configure
+        # Prepare user-service MPD to be started at next boot
+        systemctl --user daemon-reload
+        systemctl --user enable mpd.socket
+        systemctl --user enable mpd.service
+
+        _mpd_check
+    fi
+}
+
 setup_mpd() {
     if [ "$SETUP_MPD" == true ] ; then
-        echo "Install MPD" | tee /dev/fd/3
-
-        if [[ $ENABLE_MPD_OVERWRITE_INSTALL == true ]] ; then
-
-            # Install/update only if enabled: do not stuff up any existing configuration
-            _mpd_install_os_dependencies
-
-            # Make sure system-wide mpd is disabled
-            echo "Configure MPD as user local service" | tee /dev/fd/3
-            sudo systemctl stop mpd.socket
-            sudo systemctl stop mpd.service
-            sudo systemctl disable mpd.socket
-            sudo systemctl disable mpd.service
-            _mpd_configure
-            # Prepare user-service MPD to be started at next boot
-            systemctl --user daemon-reload
-            systemctl --user enable mpd.socket
-            systemctl --user enable mpd.service
-
-            _mpd_check
-        fi
-
-        echo "DONE: setup_mpd"
+        run_with_log_frame _run_setup_mpd "Install MPD"
     fi
 }

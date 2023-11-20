@@ -30,6 +30,7 @@ _git_convert_tardir_git_repo() {
   # We simply get everything from the beginning of future 3 development but excluding Version 2.X
   if [[ $GIT_USE_SSH == true ]]; then
     git remote add origin "git@github.com:${GIT_USER}/${GIT_REPO_NAME}.git"
+    echo ""
     echo "*** Git fetch (SSH) *******************************"
     # Prevent: The authenticity of host 'github.com (140.82.121.4)' can't be established.
     # Do only for this one command, so we do not disable the checks forever
@@ -43,6 +44,7 @@ _git_convert_tardir_git_repo() {
       echo "* Defaulting to HTTPS protocol. You can change back to SSH later with"
       echo "* git remote set-url origin git@github.com:${GIT_USER}/${GIT_REPO_NAME}.git"
       echo "* git remote set-url upstream git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+      echo ""
       git remote remove origin
       GIT_USE_SSH=false
     else
@@ -58,7 +60,8 @@ _git_convert_tardir_git_repo() {
     if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
       git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
     fi
-      echo "*** Git fetch (HTTPS) *****************************"
+    echo ""
+    echo "*** Git fetch (HTTPS) *****************************"
     if ! git fetch origin --set-upstream --shallow-since=2021-04-21 --tags "${GIT_BRANCH}"; then
       echo "Error: Could not fetch repository!"
       echo -e "$GIT_ABORT_MSG"
@@ -66,6 +69,7 @@ _git_convert_tardir_git_repo() {
     fi
   fi
   HASH_BRANCH=$(git rev-parse FETCH_HEAD) || { echo -e "$GIT_ABORT_MSG"; return; }
+  echo ""
   echo "*** FETCH_HEAD ($GIT_BRANCH) = $HASH_BRANCH"
 
   git add .
@@ -113,12 +117,14 @@ _git_convert_tardir_git_repo() {
 
   # Provide some status outputs to the user
   if [[ "${HASH_BRANCH}" != "${HASH_HEAD}" ]]; then
+    echo ""
     echo "*** IMPORTANT NOTICE *******************************"
     echo "* Your requested branch has moved on while you were installing."
     echo "* Don't worry! We will stay within the exact download version!"
     echo "* But we set up the git repo to be ready for updating."
     echo "* To start updating (observe updating guidelines!), do:"
     echo "* $ git pull origin $GIT_BRANCH"
+    echo ""
   fi
 
   echo "*** Git remotes ************************************"
@@ -137,20 +143,20 @@ _git_convert_tardir_git_repo() {
   unset HASH_BRANCH
 }
 
-_git_repo_check () {
-    echo "Check Git & repository installation" | tee /dev/fd/3
+_git_repo_check() {
+    print_verify_installation
 
     verify_apt_packages git
     verify_dirs_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${INSTALLATION_PATH}/.git"
 }
 
+_run_init_git_repo_from_tardir() {
+    cd "${INSTALLATION_PATH}" || exit_on_error
+    _git_install_os_dependencies
+    _git_convert_tardir_git_repo
+    _git_repo_check
+}
+
 init_git_repo_from_tardir() {
-  echo "Install Git & init repository" | tee /dev/fd/3
-
-  cd "${INSTALLATION_PATH}" || exit_on_error
-  _git_install_os_dependencies
-  _git_convert_tardir_git_repo
-  _git_repo_check
-
-  echo "DONE: init_git_repo_from_tardir"
+    run_with_log_frame _run_init_git_repo_from_tardir "Install Git & init repository"
 }

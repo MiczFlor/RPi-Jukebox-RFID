@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# inspired by
+# https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
+
+
 AUTOHOTSPOT_HOSTAPD_CONF_FILE="/etc/hostapd/hostapd.conf"
 AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE="/etc/default/hostapd"
 AUTOHOTSPOT_DNSMASQ_CONF_FILE="/etc/dnsmasq.conf"
@@ -73,8 +77,8 @@ _install_autohotspot_script() {
 }
 
 
-_autohotspot_check () {
-    echo "Check AutoHotspot Installation" | tee /dev/fd/3
+_autohotspot_check() {
+    print_verify_installation
 
     verify_apt_packages hostapd dnsmasq iw
 
@@ -94,21 +98,19 @@ _autohotspot_check () {
     verify_file_contains_string "nohook wpa_supplicant" "${AUTOHOTSPOT_DHCPD_CONF_FILE}"
 }
 
+_run_setup_autohotspot() {
+    _install_packages
+    _get_interface
+    _configure_hostapd
+    _configure_dnsmasq
+    _other_configuration
+    _install_autohotspot_script
+    _install_service_and_timer
+    _autohotspot_check
+}
+
 setup_autohotspot() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
-        echo "Install AutoHotspot functionality" | tee /dev/fd/3
-        # inspired by
-        # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
-
-        _install_packages
-        _get_interface
-        _configure_hostapd
-        _configure_dnsmasq
-        _other_configuration
-        _install_autohotspot_script
-        _install_service_and_timer
-        _autohotspot_check
-
-        echo "DONE: setup_autohotspot"
+        run_with_log_frame _run_setup_autohotspot "Install AutoHotspot"
     fi
 }

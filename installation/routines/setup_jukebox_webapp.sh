@@ -78,8 +78,8 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo chmod o+x /home/pi
 }
 
-_jukebox_webapp_check () {
-    echo "Check WebApp Installation" | tee /dev/fd/3
+_jukebox_webapp_check() {
+    print_verify_installation
 
     if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
         verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
@@ -94,22 +94,22 @@ _jukebox_webapp_check () {
     verify_service_enablement nginx.service enabled
 }
 
+_run_setup_jukebox_webapp() {
+    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+        _jukebox_webapp_download
+    fi
+    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+        _jukebox_webapp_install_node
+        # Local Web App build during installation does not work at the moment
+        # Needs to be done after reboot! There will be a message at the end of the installation process
+        # _jukebox_webapp_build
+    fi
+    _jukebox_webapp_register_as_system_service_with_nginx
+    _jukebox_webapp_check
+}
+
 setup_jukebox_webapp() {
     if [ "$ENABLE_WEBAPP" == true ] ; then
-        echo "Install web application" | tee /dev/fd/3
-
-        if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
-            _jukebox_webapp_download
-        fi
-        if [[ $ENABLE_INSTALL_NODE == true ]] ; then
-            _jukebox_webapp_install_node
-            # Local Web App build during installation does not work at the moment
-            # Needs to be done after reboot! There will be a message at the end of the installation process
-            # _jukebox_webapp_build
-        fi
-        _jukebox_webapp_register_as_system_service_with_nginx
-        _jukebox_webapp_check
-
-        echo "DONE: setup_jukebox_webapp"
+        run_with_log_frame _run_setup_jukebox_webapp "Install web application"
     fi
 }

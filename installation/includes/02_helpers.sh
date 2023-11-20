@@ -21,6 +21,18 @@ run_with_timer() {
   echo "--------------------------------------"
 }
 
+run_with_log_frame() {
+    local description="$2"
+    echo -e "\n\n"
+    echo "#########################################################"
+    echo "${description}" | tee /dev/fd/3
+
+    $1; # Executes the function passed as an argument
+
+    echo -e "\nDONE: ${description}"
+    echo "#########################################################"
+}
+
 _download_file_from_google_drive() {
   GD_SHARING_ID=${1}
   TAR_FILENAME=${2}
@@ -30,6 +42,13 @@ _download_file_from_google_drive() {
 
 
 ### Verify helpers
+
+print_verify_installation() {
+    echo ""
+    echo "---------------------------------------------------------"
+    echo "Check installation"
+    echo ""
+}
 
 # Check if the file(s) exists
 verify_files_exists() {

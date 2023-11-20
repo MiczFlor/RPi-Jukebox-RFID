@@ -136,8 +136,9 @@ _jukebox_core_register_as_service() {
   systemctl --user enable jukebox-daemon.service
 }
 
-_jukebox_core_check () {
-    echo "Check Jukebox Core Installation" | tee /dev/fd/3
+_jukebox_core_check() {
+    print_verify_installation
+
     verify_apt_packages at \
         alsa-utils \
         python3 python3-venv python3-dev \
@@ -163,16 +164,16 @@ _jukebox_core_check () {
     verify_service_enablement jukebox-daemon.service enabled --user
 }
 
+_run_setup_jukebox_core() {
+    _jukebox_core_install_os_dependencies
+    _jukebox_core_install_python_requirements
+    _jukebox_core_configure_pulseaudio
+    _jukebox_core_build_and_install_pyzmq
+    _jukebox_core_install_settings
+    _jukebox_core_register_as_service
+    _jukebox_core_check
+}
+
 setup_jukebox_core() {
-  echo "Install Jukebox Core" | tee /dev/fd/3
-
-  _jukebox_core_install_os_dependencies
-  _jukebox_core_install_python_requirements
-  _jukebox_core_configure_pulseaudio
-  _jukebox_core_build_and_install_pyzmq
-  _jukebox_core_install_settings
-  _jukebox_core_register_as_service
-  _jukebox_core_check
-
-  echo "DONE: setup_jukebox_core"
+    run_with_log_frame _run_setup_jukebox_core "Install Jukebox Core"
 }

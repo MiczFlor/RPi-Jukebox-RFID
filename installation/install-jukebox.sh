@@ -68,8 +68,8 @@ _check_user() {
 
   if [ ! -d "${HOME_PATH}" ]; then
     echo
-    echo "Warning: HomeDir ${HOME_PATH} does not exist."
-    echo "         Please create it and start again."
+    echo "ERROR: HomeDir ${HOME_PATH} does not exist."
+    echo "       Please create it and start again."
     exit 2
   fi
 }
@@ -116,6 +116,7 @@ Check install log for details:" | tee /dev/fd/3
 }
 
 _download_jukebox_source() {
+  echo -e "\n\n#########################################################"
   echo "Downloading Phoniebox software from Github ..." 1>&3
   echo "Download Source: ${GIT_URL}/${GIT_BRANCH}" | tee /dev/fd/3
 
@@ -134,6 +135,7 @@ _download_jukebox_source() {
     exit_on_error "ERROR: Couldn't determine git hash from download."
   fi
   mv "$git_repo_download" "$GIT_REPO_NAME"
+  echo -e "\nDONE: Downloading Phoniebox software from Github"
 }
 
 _load_sources() {

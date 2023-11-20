@@ -9,8 +9,7 @@ _get_onboard_audio() {
   fi
 }
 
-set_raspi_config() {
-  echo "Set default raspi-config" | tee /dev/fd/3
+_run_set_raspi_config() {
   # Source: https://raspberrypi.stackexchange.com/a/66939
 
   # Autologin
@@ -30,12 +29,15 @@ set_raspi_config() {
     DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO:-false}
     if [[ $DISABLE_ONBOARD_AUDIO = true ]]; then
       echo "  * Disable on-chip BCM audio"
-      echo "Backup ${RPI_BOOT_CONFIG_FILE} --> ${DISABLE_ONBOARD_AUDIO_BACKUP}"
+      echo "    Backup ${RPI_BOOT_CONFIG_FILE} --> ${DISABLE_ONBOARD_AUDIO_BACKUP}"
       sudo cp "${RPI_BOOT_CONFIG_FILE}" "${DISABLE_ONBOARD_AUDIO_BACKUP}"
       sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "${RPI_BOOT_CONFIG_FILE}"
     fi
   else
-    echo "On board audio seems to be off already. Not touching ${RPI_BOOT_CONFIG_FILE}"
+    echo "    On board audio seems to be off already. Not touching ${RPI_BOOT_CONFIG_FILE}"
   fi
+}
 
+set_raspi_config() {
+    run_with_log_frame _run_set_raspi_config "Set default raspi-config"
 }

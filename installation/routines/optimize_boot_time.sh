@@ -121,8 +121,8 @@ EOF
 }
 
 
-_optimize_check () {
-    echo "Check Optimize boot time" | tee /dev/fd/3
+_optimize_check() {
+    print_verify_installation
 
     verify_optional_service_enablement keyboard-setup.service disabled
     verify_optional_service_enablement triggerhappy.service disabled
@@ -156,16 +156,16 @@ _optimize_check () {
     fi
 }
 
+_run_optimize_boot_time() {
+    _optimize_disable_irrelevant_services
+    _optimize_handle_bluetooth
+    _optimize_handle_network_connection
+    _optimize_ipv6_arp
+    _optimize_handle_boot_screen
+    _optimize_handle_boot_logs
+    _optimize_check
+}
+
 optimize_boot_time() {
-  echo "Optimize boot time" | tee /dev/fd/3
-
-  _optimize_disable_irrelevant_services
-  _optimize_handle_bluetooth
-  _optimize_handle_network_connection
-  _optimize_ipv6_arp
-  _optimize_handle_boot_screen
-  _optimize_handle_boot_logs
-  _optimize_check
-
-  echo "DONE: optimize_boot_time"
+    run_with_log_frame _run_optimize_boot_time "Optimize boot time"
 }

@@ -45,8 +45,9 @@ EOF
   fi
 }
 
-_samba_check () {
-    echo "Check Samba Installation" | tee /dev/fd/3
+_samba_check() {
+    print_verify_installation
+
     verify_apt_packages samba samba-common-bin
 
     verify_files_chmod_chown 644 root root "${SMB_CONF}"
@@ -55,16 +56,16 @@ _samba_check () {
     verify_file_contains_string "${SHARED_PATH}" "${SMB_CONF}"
 }
 
+_run_setup_samba() {
+    # Skip interactive Samba WINS config dialog
+    echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
+    _samba_install_os_dependencies
+    _samba_set_user
+    _samba_check
+}
+
 setup_samba() {
     if [ "$ENABLE_SAMBA" == true ] ; then
-        echo "Install Samba and configure user" | tee /dev/fd/3
-
-        # Skip interactive Samba WINS config dialog
-        echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
-        _samba_install_os_dependencies
-        _samba_set_user
-        _samba_check
-
-        echo "DONE: setup_samba"
+        run_with_log_frame _run_setup_samba "Install Samba and configure user"
     fi
 }

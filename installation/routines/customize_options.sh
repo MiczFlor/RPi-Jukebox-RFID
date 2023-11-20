@@ -316,9 +316,7 @@ Do you want to install Node? [Y/n]" 1>&3
   fi
 }
 
-customize_options() {
-  echo "Customize Options starts"
-
+_run_customize_options() {
   _option_ipv6
   _option_static_ip
   _option_autohotspot
@@ -335,6 +333,8 @@ customize_options() {
   # Bullseye is currently under active development and should be updated in any case.
   # Hence, removing the step below as it becomse mandatory
   # _options_update_raspi_os
+}
 
-  echo "Customize Options ends"
+customize_options() {
+    run_with_log_frame _run_customize_options "Customize Options"
 }

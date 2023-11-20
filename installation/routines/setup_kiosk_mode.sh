@@ -60,8 +60,9 @@ CHROMIUM_FLAGS=\"\$\{CHROMIUM_FLAGS\} --check-for-update-interval=31536000\"
 EOF
 }
 
-_kiosk_mode_check () {
-    echo "Check Kiosk Mode Installation" | tee /dev/fd/3
+_kiosk_mode_check() {
+    print_verify_installation
+
     verify_apt_packages xserver-xorg \
         x11-xserver-utils \
         xinit \
@@ -78,15 +79,16 @@ _kiosk_mode_check () {
     verify_file_contains_string "${KIOSK_MODE_CONF_HEADER}" "${KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK}"
 }
 
+_run_setup_kiosk_mode() {
+    _kiosk_mode_install_os_dependencies
+    _kiosk_mode_set_autostart
+    _kiosk_mode_update_settings
+    _kiosk_mode_check
+}
+
+
 setup_kiosk_mode() {
     if [ "$ENABLE_KIOSK_MODE" == true ] ; then
-        echo "Setup Kiosk Mode" | tee /dev/fd/3
-
-        _kiosk_mode_install_os_dependencies
-        _kiosk_mode_set_autostart
-        _kiosk_mode_update_settings
-        _kiosk_mode_check
-
-        echo "DONE: setup_kiosk_mode"
+        run_with_log_frame _run_setup_kiosk_mode "Setup Kiosk Mode"
     fi
 }
