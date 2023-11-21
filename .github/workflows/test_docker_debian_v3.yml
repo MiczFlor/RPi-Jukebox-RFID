@@ -20,12 +20,12 @@ jobs:
   # Build container and run tests. Duplication of job intended for better visualization.
   run_bookworm:
     name: 'bookworm'
-    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+    uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
       debian_codename: 'bookworm'
 
   run_bullseye:
     name: 'bullseye'
-    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+    uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
       debian_codename: 'bullseye'
