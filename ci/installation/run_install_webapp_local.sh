@@ -4,36 +4,39 @@
 # Used e.g. for tests on Docker
 
 # Objective:
-# Test for disabling features (suggestions for faststartup). Skips installing all additionals.
+# Test for the WebApp (build locally) and dependent features path.
 
 SOURCE="${BASH_SOURCE[0]}"
 SCRIPT_DIR="$(dirname "$SOURCE")"
 LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
 LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
+export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # Run installation (in interactive mode)
 # y - start setup
-# y - use static ip
-# y - deactivate ipv6
+# n - use static ip
+# n - deactivate ipv6
 # n - setup autohotspot
-# y - deactivate bluetooth
-# y - disable on-chip audio
+# n - deactivate bluetooth
+# n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
 # n - setup rfid reader
 # n - setup samba
-# n - setup webapp
-# - - setup kiosk mode (only with webapp = y)
-# - - install node (only with webapp = y)
+# y - setup webapp
+# y - setup kiosk mode
+# y - install node
 # n - reboot
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y
-y
-y
-n
-y
-y
 n
 n
 n
+n
+n
+n
+n
+y
+y
+y
 n
 '
