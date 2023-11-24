@@ -6,7 +6,7 @@ Cards placed on the reader trigger an action. An action may be any
 callable plugin function through the RPC with any arguments. Typically,
 this would be "play some folder", but can also be "activate shutdown
 timer", or "increase volume". This is configured in the
-[Card Database](../../userguide/card-database.md).
+[Card Database](../../builders/card-database.md).
 
 You may configure a single or even multiple parallel readers (of
 different or identical types).
@@ -79,7 +79,7 @@ For place-capable RFID readers enable dual action mode: a start action (e.g. pla
 
 #### card_removal_action: Dictionary
 
-Executes the given function on card removal. Only relevant if place_not_swipe is true. The action is identical for all cards read on that reader. The removal-action can be set to ignored on a card-by-card basis. More on card action configurations in [RPC Commands](../userguide/rpc-commands.md).
+Executes the given function on card removal. Only relevant if place_not_swipe is true. The action is identical for all cards read on that reader. The removal-action can be set to ignored on a card-by-card basis. More on card action configurations in [RPC Commands](../builders/rpc-commands.md).
 
 > [!NOTE]
 > Developer's note: The reason for a unique removal action for all cards is that card triggering and card removal are happening in two separate threads. Removal needs to be in a time-out thread. Thus, we would need to transport information from one thread to another. This can be done of course but is not implemented (yet). Ignoring card removal is much easier and works for now.

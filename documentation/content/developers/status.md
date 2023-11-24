@@ -183,7 +183,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
 
 ### GPIO
 
-- [x] All done! Read the docs at [GPIO Recipes](#userguide/gpioz:GPIO Recipes)!
+- [x] All done! Read the docs at [GPIO Recipes](#builders/gpioz:GPIO Recipes)!
 - [ ] USB Buttons: It's a different category as it works similar to the RFID cards (in progress)
 
 ### WLAN
