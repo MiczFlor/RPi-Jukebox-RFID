@@ -12,7 +12,7 @@ project check out the [documentation of Version 2](https://github.com/MiczFlor/R
 
 * For Builders: Building a Phoniebox
   * [Installing Phoniebox future3](./content/builders/installation.md)
-  * [User Guide](./content/builders/README.md)
+  * [Builder Guides](./content/builders/README.md)
   * [Update](./content/builders/update.md)
 * For Developers: Add features or fix bugs
   * [Developer Reference](./content/developers/README.md)
