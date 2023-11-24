@@ -20,7 +20,7 @@ need to adapt some of those commands to your needs.
         * [Compose](https://docs.docker.com/compose/install/)
     * Mac
         * [Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
-        * [pulseaudio (Docker)](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html)
+        * [pulseaudio (Docker)](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712) ([other reference](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html))
     * Windows
         * [Docker & Compose (Windows)](https://docs.docker.com/docker-for-windows/install/)
         * [pulseaudio (Windows)](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
