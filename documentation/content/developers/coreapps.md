@@ -13,14 +13,14 @@ $ ./run_app_name.py -h
 
 This is the main app and starts the Jukebox Core.
 
-Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart the service. For example after a configuration change. Not all configuration changes can be applied on-the-fly. See [Jukebox Configuration](../userguide/configuration.md#jukebox-configuration).
+Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart the service. For example after a configuration change. Not all configuration changes can be applied on-the-fly. See [Jukebox Configuration](../builders/configuration.md#jukebox-configuration).
 
-For debugging, it is usually desirable to run the Jukebox directly from the console rather than as service. This gives direct logging info in the console and allows changing command line parameters. See [Troubleshooting](../userguide/troubleshooting.md).
+For debugging, it is usually desirable to run the Jukebox directly from the console rather than as service. This gives direct logging info in the console and allows changing command line parameters. See [Troubleshooting](../builders/troubleshooting.md).
 
 ## Configuration Tools
 
 Before running the configuration tools, stop the Jukebox Core service.
-See [Best practice procedure](../userguide/configuration.md#best-practice-procedure).
+See [Best practice procedure](../builders/configuration.md#best-practice-procedure).
 
 ### `run_configure_audio.py`
 
@@ -28,7 +28,7 @@ Setup tool to register the PulseAudio sinks as primary and secondary audio outpu
 
 Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
-Run this once after installation. Can be re-run at any time to change the settings. For more information see [Audio Configuration](../userguide/audio.md).
+Run this once after installation. Can be re-run at any time to change the settings. For more information see [Audio Configuration](../builders/audio.md).
 
 ### `run_register_rfid_reader.py`
 
