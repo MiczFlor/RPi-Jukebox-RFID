@@ -38,9 +38,9 @@ The whole hotspot configuration can be found at
 
 The following parameters are relevant:
 
--   `ssid` for the displayed hotspot name
--   `wpa_passphrase` for the password of the hotspot
--   `country_code` the country you are currently in
+- `ssid` for the displayed hotspot name
+- `wpa_passphrase` for the password of the hotspot
+- `country_code` the country you are currently in
 
 ``` bash
 $ cat /etc/hostapd/hostapd.conf

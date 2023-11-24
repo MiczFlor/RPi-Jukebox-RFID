@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Command Line Interface to the Jukebox RPC Server
 

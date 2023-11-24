@@ -19,12 +19,11 @@ echo "  --------------------------------------------------------------------
 
 # Functions
 _jukebox_core_install_os_dependencies() {
-  echo "Install Jukebox OS dependencies"
-  sudo apt-get -y update; sudo apt-get -y install \
+  echo "  Install Jukebox OS dependencies"
+  sudo apt-get -y update && sudo apt-get -y install \
     at \
     alsa-utils \
-    python3 python3-dev python3-pip python3-setuptools \
-    python3-rpi.gpio python3-gpiozero \
+    python3 python3-venv python3-dev \
     espeak ffmpeg mpg123 \
     pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
     libasound2-dev \
@@ -32,15 +31,19 @@ _jukebox_core_install_os_dependencies() {
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages
+}
 
-  # add configuration that we break the global python system packages
-  # (required for bookworm, see 
-  # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2050). This
-  # should be removed once the jukebox has been isolated to a dedicated
-  # venv
-  sudo python3 -m pip config set global.break-system-packages true
+_jukebox_core_install_python_requirements() {
+  echo "  Install Python requirements"
 
-  sudo pip3 install --upgrade pip
+  cd "${INSTALLATION_PATH}"  || exit_on_error
+
+  VIRTUAL_ENV="${INSTALLATION_PATH}/.venv"
+  python3 -m venv $VIRTUAL_ENV
+  source "$VIRTUAL_ENV/bin/activate"
+
+  pip install --upgrade pip
+  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_configure_pulseaudio() {
@@ -86,7 +89,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
   echo "  Build and install pyzmq with WebSockets Support"
 
-  if ! sudo pip3 list | grep -F pyzmq >> /dev/null; then
+  if ! pip list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
     echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
 
@@ -106,17 +109,11 @@ _jukebox_core_build_and_install_pyzmq() {
       _jukebox_core_download_prebuilt_libzmq_with_drafts
     fi
 
-    sudo ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
-         pip3 install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
+    ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
+      pip install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
   else
     echo "    Skipping. pyzmq already installed"
   fi
-}
-
-_jukebox_core_install_python_requirements() {
-  echo "  Install requirements"
-  cd "${INSTALLATION_PATH}"  || exit_on_error
-  sudo pip3 install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_install_settings() {
@@ -127,8 +124,11 @@ _jukebox_core_install_settings() {
 
 _jukebox_core_register_as_service() {
   echo "  Register Jukebox Core user service"
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${SYSTEMD_USR_PATH}"
-  sudo chmod 644 "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+
+  local jukebox_service="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${jukebox_service}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${jukebox_service}"
+  sudo chmod 644 "${jukebox_service}"
 
   systemctl --user daemon-reload
   systemctl --user enable jukebox-daemon.service
@@ -138,8 +138,8 @@ setup_jukebox_core() {
   echo "Install Jukebox Core" | tee /dev/fd/3
 
   _jukebox_core_install_os_dependencies
-  _jukebox_core_configure_pulseaudio
   _jukebox_core_install_python_requirements
+  _jukebox_core_configure_pulseaudio
   _jukebox_core_build_and_install_pyzmq
   _jukebox_core_install_settings
   _jukebox_core_register_as_service

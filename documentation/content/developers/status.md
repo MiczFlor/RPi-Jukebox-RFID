@@ -1,4 +1,4 @@
-## Feature Status
+# Feature Status
 
 **This is where we are in a nutshell:** Playing music from local folders via RFID trigger. We also built a new WebUI to control the Jukebox from a browser.
 
@@ -12,26 +12,28 @@ Topics marked _in progress_ are already in the process of implementation by comm
 
 ## Table of Contents
 
-- [Jukebox Core App](#jukebox-core-app)
-  - [Base](#base)
-  - [Via RPC](#via-rpc)
-  - [Config handler](#config-handler)
-  - [ZMQ Publisher](#zmq-publisher)
-  - [Playback](#playback)
-  - [MPD Player](#mpd-player)
-  - [RFID](#rfid)
-  - [Cards](#cards)
-  - [Timer](#timer)
-  - [Volume](#volume)
-  - [GPIO](#gpio)
-  - [WLAN](#wlan)
-  - [Spotify](#spotify)
-  - [Others](#others)
-  - [Start-up stuff](#start-up-stuff)
-- [Debug Tools](#debug-tools)
-- [WebUI](#webui)
-- [Installation Procedure](#installation-procedure)
-- [Documentation](#documentation)
+- [Feature Status](#feature-status)
+  - [Table of Contents](#table-of-contents)
+  - [Jukebox Core App](#jukebox-core-app)
+    - [Base](#base)
+    - [Via RPC](#via-rpc)
+    - [Config handler](#config-handler)
+    - [ZMQ Publisher](#zmq-publisher)
+    - [Playback](#playback)
+    - [MPD Player](#mpd-player)
+    - [RFID](#rfid)
+    - [Cards](#cards)
+    - [Timer](#timer)
+    - [Volume](#volume)
+    - [GPIO](#gpio)
+    - [WLAN](#wlan)
+    - [Spotify](#spotify)
+    - [Others](#others)
+    - [Start-up stuff](#start-up-stuff)
+  - [Debug Tools](#debug-tools)
+  - [WebUI](#webui)
+  - [Installation Procedure](#installation-procedure)
+  - [Documentation](#documentation)
 
 ## Jukebox Core App
 

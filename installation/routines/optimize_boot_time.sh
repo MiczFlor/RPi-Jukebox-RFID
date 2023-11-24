@@ -40,26 +40,17 @@ _optimize_handle_network_connection() {
       echo "    Skipping. Already set up!" | tee /dev/fd/3
     else
       # DHCP has not been configured
-      # Reference: https://unix.stackexchange.com/a/307790/478030
-      INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
-
-      # Reference: https://serverfault.com/a/31179/431930
-      GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
-
-      # Using the dynamically assigned IP address as it is the best guess to be free
-      # Reference: https://unix.stackexchange.com/a/48254/478030
-      CURRENT_IP_ADDRESS=$(hostname -I)
-      echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
-      echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
+      echo "    * ${CURRENT_INTERFACE} is the default network interface" | tee /dev/fd/3
+      echo "    * ${CURRENT_GATEWAY} is the Router Gateway address" | tee /dev/fd/3
       echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
 
       sudo tee -a $DHCP_CONF <<-EOF
 
 ## Jukebox DHCP Config
-interface ${INTERFACE}
+interface ${CURRENT_INTERFACE}
 static ip_address=${CURRENT_IP_ADDRESS}/24
-static routers=${GATEWAY}
-static domain_name_servers=${GATEWAY}
+static routers=${CURRENT_GATEWAY}
+static domain_name_servers=${CURRENT_GATEWAY}
 
 EOF
 

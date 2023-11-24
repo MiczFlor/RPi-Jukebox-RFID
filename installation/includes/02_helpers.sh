@@ -45,7 +45,7 @@ check_os_type() {
   local os_type
   os_type=$(uname -m)
 
-  echo "Checking OS type ... $os_type" | tee /dev/fd/3
+  echo -e "\nChecking OS type '$os_type'" | tee /dev/fd/3
 
   if [[ $os_type == "armv7l" ||  $os_type == "armv6l" ]]; then
     echo -e "  ... OK!\n" | tee /dev/fd/3

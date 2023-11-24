@@ -1,4 +1,4 @@
-FROM node:18-bullseye-slim
+FROM node:20-alpine
 
 USER node
 RUN mkdir -p /home/node/webapp

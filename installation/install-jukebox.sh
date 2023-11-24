@@ -32,7 +32,7 @@ checkPrerequisite() {
   #currently the user 'pi' is mandatory
   #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
   if [ "${CURRENT_USER}" != "pi" ]; then
-    echo 
+    echo
     echo "ERROR: User must be 'pi'!"
     echo "       Other usernames are currently not supported."
     echo "       Please check the wiki for further information"
@@ -40,7 +40,7 @@ checkPrerequisite() {
   fi
 
   if [ "${HOME_PATH}" != "/home/pi" ]; then
-    echo 
+    echo
     echo "ERROR: HomeDir must be '/home/pi'!"
     echo "       Other usernames are currently not supported."
     echo "       Please check the wiki for further information"

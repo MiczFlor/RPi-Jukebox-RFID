@@ -3,20 +3,34 @@
 ## Install Raspberry Pi OS Lite
 
 > [!IMPORTANT]
-> Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4! Pi 1 and Zero's are currently unstable and will require a bit more work!
+> Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4! Pi 1 and Zero's are currently unstable and will require a bit more work! Pi 4 and 5 are an excess ;-)
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
-2. [Download](https://www.raspberrypi.org/software/)
-   the [Raspberry Pi Imager](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/) and open it
-3. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. future3 does not support 64bit kernels (`aarch64`). You can use the settings menu of the Raspberry Pi Imager to configure SSH and WiFi in a more userfriendly way, or do it manually as described in the next step. In case you already have a 64bit system installed, [you can fix the issue like this](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041>).
-4. Select your Micro SD card (your card will be formatted)
-5. Click *Write*
-6. Wait for the imaging process to be finished (it'll take a few minutes)
+2. Download the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) and run it
+3. Click on "Raspberry Pi Device" and select "No filtering"
+4. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. `future3` does not support 64bit kernels (`aarch64`).
+5. Select your Micro SD card (your card will be formatted)
+6. After you click `Next`, a prompt will ask you if you like to customize the OS settings
+    * Click `Edit Settings`
+    * Switch to the `General` tab
+        * Provide a hostname. (When on Mac, you will be able to use it to connect via SSH)
+        * Username currently MUST be `pi`. Other usernames are currently not supported.
+        * Password
+        * Wifi
+        * Set locale settings
+    * Switch to the `Services` tab. Enable SSH with "Use password authentication"
+    * Click `Save`
+7. In the same dialog, click `Yes`
+8. Confirm the next warning about erasing the SD card with `Yes`
+9. Wait for the imaging process to be finished (it'll take a few minutes)
 
+<details>
 
-## Pre-boot preparation
+<summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
+
+### Pre-boot preparation
 
 You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to proceed with the next steps.
 
@@ -28,7 +42,6 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
     ```bash
     $ touch ssh
     ```
-
 
 5. Set up your Wifi connection.
 
@@ -62,6 +75,8 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 9. Login into your Raspberry Pi, username is `pi` and password is `raspberry`.
    If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
 
+</details>
+
 ## Install Phoniebox software
 
 Run the following command in your SSH terminal and follow the instructions
@@ -84,10 +99,8 @@ This will switch directly to the specified feature branch during installation.
 > [!NOTE]
 > For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](../developers/development-environment.md#steps-to-install)
 
-
 If you suspect an error you can monitor the installation-process with
 
 ```bash
 cd; tail -f INSTALL-<fullname>.log
 ```
-

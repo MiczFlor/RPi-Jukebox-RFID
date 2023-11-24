@@ -14,18 +14,18 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. This
 hardware won\'t be needed in production, but it can be slow while
 developing.
 
-1.  Install the latest Pi OS on a SD card.
-2.  Boot up your Raspberry Pi.
-3.  [Install](../userguide/installation.md) the Jukebox software as if you were building a
+1. Install the latest Pi OS on a SD card.
+2. Boot up your Raspberry Pi.
+3. [Install](../userguide/installation.md) the Jukebox software as if you were building a
     Phoniebox. You can install from your own fork and feature branch if
     you wish which can be changed later as well. The original repository
     will be set as `upstream`.
-4.  Once the installation has successfully ran, reboot your Pi.
-5.  Due to some resource constraints, the Webapp does not build the
+4. Once the installation has successfully ran, reboot your Pi.
+5. Due to some resource constraints, the Webapp does not build the
     latest changes and instead consumes the latest official release. To
     change that, you need to install NodeJS and build the Webapp
     locally.
-6.  Install NodeJS using the existing installer
+6. Install NodeJS using the existing installer
 
     ``` bash
     cd ~/RPi-Jukebox-RFID/installation/routines; \
@@ -33,8 +33,8 @@ developing.
     _jukebox_webapp_install_node
     ```
 
-7.  To free up RAM, reboot your Pi.
-8.  Build the Webapp using the existing build command. If the build
+7. To free up RAM, reboot your Pi.
+8. Build the Webapp using the existing build command. If the build
     fails, you might have forgotten to reboot.
 
     ``` bash
@@ -42,7 +42,7 @@ developing.
     ./run_rebuild.sh -u
     ```
 
-9.  The Webapp should now be updated.
+9. The Webapp should now be updated.
 10. To continuously update Webapp, pull the latest changes from your
     repository and rerun the command above.
 
@@ -50,8 +50,7 @@ developing.
 
 The jukebox also runs on any Linux machine. The Raspberry Pi specific
 stuff will not work of course. That is no issue depending our your
-development area. USB RFID Readers, however, will work. You may setup a
-Python virtual environment or a conda virtual environment. You will have
+development area. USB RFID Readers, however, will work. You will have
 to install and configure [MPD (Music Player
 Daemon)](https://www.musicpd.org/).
 
@@ -62,7 +61,7 @@ Github, which is taken care of by the installation script. For regular
 machines, the normal package can be installed:
 
 ``` bash
-pip3 install pyzmq
+pip install pyzmq
 ```
 
 You will have to start Jukebox core application and the WebUI
