@@ -14,16 +14,8 @@ need to adapt some of those commands to your needs.
 
 ## Prerequisites
 
-1. Install required software
-    * Linux
-        * [Docker](https://docs.docker.com/engine/install/debian/)
-        * [Compose](https://docs.docker.com/compose/install/)
-    * Mac
-        * [Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
-        * [pulseaudio (Docker)](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712) ([other reference](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html))
-    * Windows
-        * [Docker & Compose (Windows)](https://docs.docker.com/docker-for-windows/install/)
-        * [pulseaudio (Windows)](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
+1. Install required software: Docker, Compose and pulseaudio
+    * Check installations guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
 
 2. Pull the Jukebox repository:
 
@@ -52,9 +44,68 @@ practice to isolate different components in different Docker images.
 They can be run individually or in combination. To do that, we use
 `docker-compose`.
 
+### Mac
+
+1. [Install Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
+2. [Install pulseaudio](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712) (Other references: [[1]](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html), [[2]](https://stackoverflow.com/a/50939994/1062438))
+
+``` bash
+// Build Images
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
+
+// Run Docker Environment
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
+
+// Shuts down Docker containers and Docker network
+$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
+```
+
+### Windows
+
+1. Install [Docker & Compose (Windows)](https://docs.docker.com/docker-for-windows/install/)
+
+2. Download [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
+
+3. Uncompress somewhere in your user folder
+
+4. Edit `$INSTALL_DIR/etc/pulse/default.pa`
+
+5. Add the following line
+
+    ``` bash
+    load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+    ```
+
+6. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the
+    following line and change it to:
+
+    ``` bash
+    exit-idle-time = -1
+    ```
+
+7. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
+
+8. Make sure Docker is running (e.g. start Docker Desktop)
+
+9. Run `docker-compose`
+
+    ``` bash
+    // Build Images
+    $ docker-compose -f docker/docker-compose.yml build
+
+    // Run Docker Environment
+    $ docker-compose -f docker/docker-compose.yml up
+
+    // Shuts down Docker containers and Docker network
+    $ docker-compose -f docker/docker-compose.yml down
+    ```
+
 ### Linux
 
-Make sure you don\'t use `sudo` to run your `docker-compose`. Check out
+1. Install Docker & Compose
+    * [Docker](https://docs.docker.com/engine/install/debian/)
+    * [Compose](https://docs.docker.com/compose/install/)
+2. Make sure you don\'t use `sudo` to run your `docker-compose`. Check out
 Docker\'s [post-installation guide](https://docs.docker.com/engine/install/linux-postinstall/) for more information.
 
 ```bash
@@ -88,61 +139,6 @@ Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already i
 
 Read these threads for details: [thread 1](https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd) and [thread 2](https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755)
 
-### Mac
-
-Remember, pulseaudio is a prerequisite. [Follow these
-instructions](https://stackoverflow.com/a/50939994/1062438) for Mac
-hosts.
-
-``` bash
-// Build Images
-$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml build
-
-// Run Docker Environment
-$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml up
-
-// Shuts down Docker containers and Docker network
-$ docker-compose -f docker/docker-compose.yml -f docker/docker-compose.mac.yml down
-```
-
-### Windows
-
-1. Download
-    [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/Ports/Windows/Support/)
-
-2. Uncompress somewhere in your user folder
-
-3. Edit `$INSTALL_DIR/etc/pulse/default.pa`
-
-4. Add the following line
-
-    ``` bash
-    load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
-    ```
-
-5. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the
-    following line and change it to:
-
-    ``` bash
-    exit-idle-time = -1
-    ```
-
-6. Execute `$INSTALL_DIR/bin/pulseaudio.exe`
-
-7. Make sure Docker is running (e.g. start Docker Desktop)
-
-8. Run `docker-compose`
-
-    ``` bash
-    // Build Images
-    $ docker-compose -f docker/docker-compose.yml build
-
-    // Run Docker Environment
-    $ docker-compose -f docker/docker-compose.yml up
-
-    // Shuts down Docker containers and Docker network
-    $ docker-compose -f docker/docker-compose.yml down
-    ```
 
 ## Test & Develop
 
