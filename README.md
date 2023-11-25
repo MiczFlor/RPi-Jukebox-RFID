@@ -60,7 +60,7 @@ And, of course you still have all the goodies that were introduced in Version 3.
 * Preperation for Text-to-Speech + Read My IP as a first example
 * Bugfixes for Install Script
 
-The goal for Version 3 was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://rpi-jukebox-rfid.readthedocs.io/en/latest/).
+The goal for Version 3 was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/README.md).
 
 #### 👋 Looking for adopters, testers and contributors
 
@@ -70,11 +70,11 @@ While Version 3 is still under development, it is becoming a lot more stable! Al
 
 If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
-* 🚀 **[Install Jukebox Version 3 Beta](https://rpi-jukebox-rfid.readthedocs.io/en/latest/install.html)**
+* 🚀 **[Install Jukebox Version 3 Beta](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/builders/installation.md)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
-* ☑️ [Feature Status](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html)
-* 📖 [Documentation](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
-* 👩‍💻 [Development](https://rpi-jukebox-rfid.readthedocs.io/en/latest/development_environment.html)
+* ☑️ [Feature Status](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/status.md)
+* 📖 [Documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/README.md)
+* 👩‍💻 [Development](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/README.md)
 * 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/main), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop)
 
 ### Version 2 (stable)
