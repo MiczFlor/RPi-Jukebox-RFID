@@ -1,2 +1,2 @@
 
-For documentation see [documentation/content/developers/rfid/rdm6300.md](../../../../../../documentation/content/developers/rfid/rdm6300.md).
+For documentation see [documentation/developers/rfid/rdm6300.md](../../../../../../documentation/developers/rfid/rdm6300.md).

@@ -10,7 +10,7 @@ Don't fear (overly), they contain commentaries.
 For several aspects we have :ref:`developer/coreapps:Configuration Tools` and detailed guides:
 
 * [Audio Configuration](./audio.md#audio-configuration)
-* [RFID Reader Configuration](./rfid/basics.md#reader-configuration)
+* [RFID Reader Configuration](../developers/rfid/basics.md#reader-configuration)
 
 Even after running the tools, certain aspects can only be changed by modifying the configuration files directly.
 
