@@ -13,8 +13,4 @@ The documentation can be found [here](./documentation/README.md)
 
 ## Installation?
 
-Run the following one-liner in a shell and follow the instructions
-
-~~~bash
-cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
-~~~
+[Install Phoniebox software](documentation/builders/installation.md#install-phoniebox-software)
