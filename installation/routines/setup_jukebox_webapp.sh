@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
+GD_ID_COMPILED_WEBAPP="1um-smyfsVPzVZn18hhwuFt97XR3PjAbB" # https://drive.google.com/file/d/1um-smyfsVPzVZn18hhwuFt97XR3PjAbB/view?usp=sharing
 
 # For ARMv7+
 NODE_MAJOR=20
