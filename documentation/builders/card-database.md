@@ -4,7 +4,7 @@ In the card database, an RPC command is assigned to every card.
 
 This RPC command is called every time when the card is swiped (or
 placed) on the reader. Every RPC callable function can be called. See
-[RPC Commands](builders/rpc_commands.md) for an introduction.
+[RPC Commands](rpc-commands.md) for an introduction.
 
 The card database is stored in `shared\settings\cards.yaml`. Here are
 some examples for RPC command assignments to cards \'0001\' to \'0003\'
