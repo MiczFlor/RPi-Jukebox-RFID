@@ -11,13 +11,13 @@ project check out the [documentation of Version 2](https://github.com/MiczFlor/R
 ## Quickstart
 
 * For Builders: Building a Phoniebox
-  * [Installing Phoniebox future3](./content/builders/installation.md)
-  * [Builder Guides](./content/builders/README.md)
-  * [Update](./content/builders/update.md)
+  * [Installing Phoniebox future3](./builders/installation.md)
+  * [Builder Guides](./builders/README.md)
+  * [Update](./builders/update.md)
 * For Developers: Add features or fix bugs
-  * [Developer Reference](./content/developers/README.md)
-  * [Feature Status](./content/developers/status.md)
-  * [Known Issues](./content/developers/known-issues.md)
+  * [Developer Guides](./developers/README.md)
+  * [Feature Status](./developers/status.md)
+  * [Known Issues](./developers/known-issues.md)
 
 ## future3
 
