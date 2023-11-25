@@ -16,7 +16,7 @@ developing.
 
 1. Install the latest Pi OS on a SD card.
 2. Boot up your Raspberry Pi.
-3. [Install](../userguide/installation.md) the Jukebox software as if you were building a
+3. [Install](../builders/installation.md) the Jukebox software as if you were building a
     Phoniebox. You can install from your own fork and feature branch if
     you wish which can be changed later as well. The original repository
     will be set as `upstream`.

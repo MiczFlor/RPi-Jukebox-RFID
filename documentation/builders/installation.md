@@ -3,7 +3,7 @@
 ## Install Raspberry Pi OS Lite
 
 > [!IMPORTANT]
-> Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4! Pi 1 and Zero's are currently unstable and will require a bit more work!
+> Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4! Pi 1 and Zero's are currently unstable and will require a bit more work! Pi 4 and 5 are an excess ;-)
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 

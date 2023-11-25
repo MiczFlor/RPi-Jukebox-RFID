@@ -6,16 +6,18 @@ The exciting, new Version 3 of the RPi Jukebox RFID. A complete rewrite of the J
 > This documentation applies to the Version 3 which is developed in the branches `future3/main` and `future3/develop`. Currently the default Version is 2.x
 
 To find out more about the RPi Jukebox RFID
-project check out the [documentation of Version 2](https://github.com/MiczFlor/RPi-Jukebox-RFID) or [www.phoniebox.de](https://www.phoniebox.de/).
+project check out the [documentation of Version 2](https://github.com/MiczFlor/RPi-Jukebox-RFID) or [www.phoniebox.de](https://phoniebox.de/).
 
 ## Quickstart
 
-* [Installing Phoniebox future3](./content/userguide/installation.md)
-* [Update](./content/userguide/update.md)
-* [Feature Status](./content/developers/status.md)
-* [Known Issues](./content/developers/known-issues.md)
-* [User Guide](./content/userguide/)
-* [Developer Reference](./content/developers)
+* For Builders: Building a Phoniebox
+  * [Installing Phoniebox future3](./builders/installation.md)
+  * [Builder Guides](./builders/README.md)
+  * [Update](./builders/update.md)
+* For Developers: Add features or fix bugs
+  * [Developer Guides](./developers/README.md)
+  * [Feature Status](./developers/status.md)
+  * [Known Issues](./developers/known-issues.md)
 
 ## future3
 

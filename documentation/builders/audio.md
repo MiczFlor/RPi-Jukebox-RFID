@@ -99,7 +99,7 @@ Rerun the config tool to register the Bluetooth device with the Jukebox core app
 
 For other audio configuration options, please look at the `jukebox.yaml` for now.
 
-Directly edit `jukebox.yaml` following the steps: [Best practice procedure](configuraton.md#best-practice-procedure).
+Directly edit `jukebox.yaml` following the steps: [Best practice procedure](configuration.md#best-practice-procedure).
 
 ## Developer Information
 
