@@ -826,6 +826,8 @@ web_server_config() {
     local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
+    # make sure lighttp can access the home directory of the user
+    sudo chmod o+x ${HOME_DIR}
     # Web server configuration settings
     # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
