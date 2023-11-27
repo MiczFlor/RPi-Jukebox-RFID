@@ -137,11 +137,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        username: ['pi']
+        username: ['hans']
         test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh']
-        include:
-          - username: hans
-            test_script: run_install_user_not_pi.sh
 
     steps:
     - name: Set up QEMU
