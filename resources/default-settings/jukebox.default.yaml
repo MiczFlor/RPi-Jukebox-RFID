@@ -1,5 +1,5 @@
 # IMPORTANT:
-# Do not use paths with '~/some/dir' - always use '/home/pi/some/dir'
+# Do not use paths with '~/some/dir' - always use relativ path from settingsfile '../../'
 # Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox

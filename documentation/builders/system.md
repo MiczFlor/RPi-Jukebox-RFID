@@ -10,9 +10,8 @@ The system consists of
 4. [Web UI](system.md#web-ui) which is served through an Nginx web server
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
-.. note:: The default install puts everything into the folder `/home/pi/RPi-Jukebox-RFID`.
-    Another folder might work, but is certainly not tested. Things are installed for the default user `pi`. Again,
-    another user might work, but is not tested.
+.. note:: The default install puts everything into the users home folder `/home/$USER/RPi-Jukebox-RFID`.
+    Another folder might work, but is certainly not tested.
 
 ## Music Player Daemon (MPD)
 
@@ -102,7 +101,7 @@ Starting and stopping the service can be useful for debugging or configuration c
 The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
 ```
-/home/pi/RPi-Jukebox-RFID/src/webapp/build
+/home/$USER/RPi-Jukebox-RFID/src/webapp/build
 ```
 
 The Nginx configuration is located at

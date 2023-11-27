@@ -50,7 +50,7 @@ Otherwise the output of `cat /etc/os-release`
 i.e. `master`
 
 the following command will help with that
-`cd /home/pi/RPi-Jukebox-RFID/ && git status | head -2`
+`cd /home/$USER/RPi-Jukebox-RFID/ && git status | head -2`
 -->
 
 ### Installscript
