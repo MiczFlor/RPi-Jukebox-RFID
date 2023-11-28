@@ -40,8 +40,8 @@ RUN echo "--- install packages (1) ---" \
 RUN echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
 # ------
 
-# Base Target for setting up the default user. user can be selected with the docker '--user YYY' option
-FROM base as user
+# Base Target for setting up a test user. user can be selected with the docker '--user YYY' option
+FROM base as test-user
 ARG USER_NAME=pi
 ARG USER_GROUP=$USER_NAME
 ARG USER_ID=1000
@@ -55,18 +55,6 @@ RUN groupadd --gid 1000 $USER_GROUP \
 
 ENV XDG_RUNTIME_DIR=/run/user/$USER_ID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$USER_ID/bus
 # ------
-
-
-# Target for setting up an alternativ user 'hans:wurst'. user can be selected with the docker '--user YYY' option
-FROM user as test-user
-
-RUN export USER_ALT=hans \
-  && export USER_ALT_GROUP=wurst \
-  && groupadd --gid 1001 $USER_ALT_GROUP \
-  && useradd -u 1001 -g $USER_ALT_GROUP -G sudo,$TEST_USER_GROUP -d /home/$USER_ALT -m -s /bin/bash -p '$1$iV7TOwOe$6ojkJQXyEA9bHd/SqNLNj0' $USER_ALT \
-  && echo "$USER_ALT ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER_ALT
-# ------
-
 
 # Target for adding envs and scripts from the repo to test installation
 FROM test-user as test-code
