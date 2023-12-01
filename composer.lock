@@ -496,16 +496,16 @@
         },
         {
             "name": "php-mock/php-mock-phpunit",
-            "version": "2.8.0",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-mock/php-mock-phpunit.git",
-                "reference": "56edee85ad3232caa0202f98f2a3c899ab16bdb7"
+                "reference": "3dabfd474d43da4d1d2fee5260c634457c5da344"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/56edee85ad3232caa0202f98f2a3c899ab16bdb7",
-                "reference": "56edee85ad3232caa0202f98f2a3c899ab16bdb7",
+                "url": "https://api.github.com/repos/php-mock/php-mock-phpunit/zipball/3dabfd474d43da4d1d2fee5260c634457c5da344",
+                "reference": "3dabfd474d43da4d1d2fee5260c634457c5da344",
                 "shasum": ""
             },
             "require": {
@@ -552,7 +552,7 @@
             ],
             "support": {
                 "issues": "https://github.com/php-mock/php-mock-phpunit/issues",
-                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.8.0"
+                "source": "https://github.com/php-mock/php-mock-phpunit/tree/2.9.0"
             },
             "funding": [
                 {
@@ -560,7 +560,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-30T07:06:12+00:00"
+            "time": "2023-12-01T21:50:22+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
