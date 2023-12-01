@@ -278,13 +278,6 @@ html_bootstrap3_createHeader("en", "Files and Folders | Phoniebox", $conf['base_
                                     }
                                 }
 
-                                // check if we can preselect an audiofolder if NOT a foldername was posted
-                                if (!isset($fpost['folder'])) {
-                                    if (array_key_exists($fpost['cardID'], $shortcuts)) {
-                                        $fpost['folder'] = $shortcuts[$fpost['cardID']];
-                                    }
-                                }
-
                                 // go through all folders
                                 foreach ($audiofolders as $keyfolder => $audiofolder) {
 
