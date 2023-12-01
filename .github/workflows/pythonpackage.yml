@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Close parallel build
-        uses: coverallsapp/github-action@v1
+        uses: coverallsapp/github-action@v2
         with:
           parallel-finished: true
           #carryforward: "run-1,run-2"
