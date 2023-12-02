@@ -63,14 +63,14 @@ $messageWarning = "";
 */
 if ($_POST['ACTION'] == "fileUpload") {
     /*
-    * I spent 3 hours trying to find out why when I upload multiples file $_FILES  return empty, 
-    * I did noticed it was only when I select files that exceed 3m so I thought it was something 
-    * related to the MAX_UPLOAD_SIZE that for my surprice came as default as 20m which was very 
-    * confusing. Later I discovery the problem was in the POST_MAX_SIZE been 3m, so it happen 
-    * that not only MAX_UPLOAD_SIZE is responsible and that is why I'd like to know there is no 
+    * I spent 3 hours trying to find out why when I upload multiples file $_FILES  return empty,
+    * I did noticed it was only when I select files that exceed 3m so I thought it was something
+    * related to the MAX_UPLOAD_SIZE that for my surprice came as default as 20m which was very
+    * confusing. Later I discovery the problem was in the POST_MAX_SIZE been 3m, so it happen
+    * that not only MAX_UPLOAD_SIZE is responsible and that is why I'd like to know there is no
     * error message that shows the cause.
-    */    
-    
+    */
+
     $uFiles = getFiles();
     //print "<pre>"; print_r($uFiles); print "</pre>"; //???
     // are there any files?
@@ -82,7 +82,7 @@ if ($_POST['ACTION'] == "fileUpload") {
     if (count($uFiles['ufile']) == 0) {
         // if 0 there are no files
         $messageWarning .= "<p>No files were uploaded.</p>";
-    } 
+    }
     /*
     * let's start building the path to move the files to
     * as a relative path.
@@ -112,7 +112,7 @@ if ($_POST['ACTION'] == "fileUpload") {
         if(!file_exists($Audio_Folders_Path . "/" . $moveFolder)) {
             // no, so create the folder
             $exec = 'mkdir "' . $moveFolder . '"; chown -R pi:www-data "' . $moveFolder . '"; sudo chmod -R 777 "' . $moveFolder . '"';
-            exec($exec);   
+            exec($exec);
             $messageAction .= "Will create new folder and move files to: '" . $moveFolder . "'";
         } else {
             // folder exists already :(
@@ -126,7 +126,7 @@ if ($_POST['ACTION'] == "fileUpload") {
     if(realpath($moveFolder) == realpath($Audio_Folders_Path)) {
         $messageWarning .= $lang['manageFilesFoldersErrorNoNewFolder'];
     }
-    
+
     // if no error message
     if ($messageWarning == "") {
         // move files to folder
@@ -161,12 +161,12 @@ if ($_POST['ACTION'] == "folderCreateNew") {
     if($messageWarning == "") {
         /*
         * create folder
-        */        
+        */
         $exec = 'mkdir "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; sudo chmod -R 777 "'.$Audio_Folders_Path.'/'.$newDirPathRel.'"; chown -R pi:www-data "' . $Audio_Folders_Path.'/'.$newDirPathRel . '"';
         exec($exec);
         $messageSuccess = "<p>".$lang['manageFilesFoldersSuccessNewFolder']." '".$newDirPathRel."'</p>";
-        
-        
+
+
     }
 }
 
@@ -278,13 +278,6 @@ html_bootstrap3_createHeader("en", "Files and Folders | Phoniebox", $conf['base_
                                     }
                                 }
 
-                                // check if we can preselect an audiofolder if NOT a foldername was posted
-                                if (!isset($fpost['folder'])) {
-                                    if (array_key_exists($fpost['cardID'], $shortcuts)) {
-                                        $fpost['folder'] = $shortcuts[$fpost['cardID']];
-                                    }
-                                }
-
                                 // go through all folders
                                 foreach ($audiofolders as $keyfolder => $audiofolder) {
 
@@ -340,19 +333,19 @@ html_bootstrap3_createHeader("en", "Files and Folders | Phoniebox", $conf['base_
                 <!--input type="hidden" name="filename" value="<?php print $post['filename']; ?>"-->
                 <input type="hidden" name="ACTION" value="folderCreateNew">
 
-        <fieldset>        
+        <fieldset>
         <!-- Form Name -->
         <legend><i class='mdi mdi-folder-plus'></i> <?php print $lang['manageFilesFoldersNewFolderTitle']; ?></legend>
-        
+
         <!-- Text input-->
         <div class="form-group">
-          <label class="col-md-3 control-label" for="folderCreateNew"><?php print $lang['globalFolderName']; ?></label>  
+          <label class="col-md-3 control-label" for="folderCreateNew"><?php print $lang['globalFolderName']; ?></label>
           <div class="col-md-7">
           <input value="" id="folderCreateNew" name="folderCreateNew" placeholder="<?php print $lang['cardFormYTFolderPlaceholder']; ?>" class="form-control input-md" type="text">
-          <span class="help-block"><?php print $lang['folderCreateNew']; ?></span>  
+          <span class="help-block"><?php print $lang['folderCreateNew']; ?></span>
           </div>
         </div>
-        
+
         <!-- Select Basic -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="folderParent"><?php print $lang['manageFilesFoldersNewFolderPositionLegend']; ?></label>
@@ -368,16 +361,16 @@ foreach($audiofolders as $keyfolder => $audiofolder) {
         print " selected=selected";
     }
     print ">".$audiofolder."</option>\n";
-   
+
 }
 ?>
             </select>
-            <span class="help-block"></span>  
+            <span class="help-block"></span>
           </div>
         </div>
-        
+
         </fieldset>
-        
+
         <!-- Button (Double) -->
         <div class="form-group">
           <label class="col-md-3 control-label" for="submit"></label>
