@@ -239,14 +239,22 @@ class ReaderRunner(threading.Thread):
 
 @plugs.finalize
 def finalize():
-    jukebox.cfghandler.load_yaml(cfg_rfid, cfg_main.getn('rfid', 'reader_config'))
+    try:
+        reader_config_file = cfg_main.getn('rfid', 'reader_config')
+        jukebox.cfghandler.load_yaml(cfg_rfid, reader_config_file)
+    except FileNotFoundError:
+        cfg_rfid.config_dict({'rfid': {'readers': {}}})
+        log.warning(f"rfid reader database file not found. Creating empty database: '{reader_config_file}'")
+        # Save the empty rfid reader database, to make sure we can create the file and have access to it
+        cfg_rfid.save(only_if_changed=False)
 
-    # Load all the required modules
-    # Start a ReaderRunner-Thread for each Reader
-    for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
-        _READERS[reader_cfg_key] = ReaderRunner(reader_cfg_key)
-    for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
-        _READERS[reader_cfg_key].start()
+    if 'rfid' in cfg_rfid and 'readers' in cfg_rfid['rfid']:
+        # Load all the required modules
+        # Start a ReaderRunner-Thread for each Reader
+        for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
+            _READERS[reader_cfg_key] = ReaderRunner(reader_cfg_key)
+        for reader_cfg_key in cfg_rfid['rfid']['readers'].keys():
+            _READERS[reader_cfg_key].start()
 
 
 @plugs.atexit

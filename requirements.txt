@@ -12,7 +12,7 @@ wheel
 evdev
 pyalsaaudio
 pulsectl
-python_mpd2
+python-mpd2
 ruamel.yaml
 # For playlistgenerator
 requests
@@ -27,7 +27,6 @@ gpiozero
 # On the PI, it needs to be compiled with special options to enable Websocket support
 # On regular Linux PCs, Websocket is enabled in the Python package
 # pyzmq
-
 
 # Code quality
 flake8>=4.0.0
