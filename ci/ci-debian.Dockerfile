@@ -7,7 +7,7 @@ ARG DEBIAN_CODENAME
 ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
 ENV CI_RUNNING=true
 
-# create pi configs to test installation
+# create RPi configs to test installation
 RUN touch /boot/config.txt
 RUN echo "logo.nologo" > /boot/cmdline.txt
 
