@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_LIBZMQ_ARMV7="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
+GD_ID_COMPILED_LIBZMQ_ARMV7="1950psO7Mbs4GdWBMqIzdTAZPLnKhDg7F" # ARMv7: https://drive.google.com/file/d/1950psO7Mbs4GdWBMqIzdTAZPLnKhDg7F/view?usp=sharing
 GD_ID_COMPILED_LIBZMQ_ARMV6="1iygOm-G1cg_3YERuVRT6FhGBE34ZkwgV" # ARMv6: https://drive.google.com/file/d/1iygOm-G1cg_3YERuVRT6FhGBE34ZkwgV/view?usp=sharing
 GD_ID_COMPILED_PYZMQ_ARMV7=""
 GD_ID_COMPILED_PYZMQ_ARMV6="1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n" # https://drive.google.com/file/d/1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n/view?usp=sharing
