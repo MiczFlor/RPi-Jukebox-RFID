@@ -246,6 +246,18 @@ if [ "$CARDID" ]; then
             # stop player after -v minutes
             $PATHDATA/playout_controls.sh -c=playerstopafter -v=60
             ;;
+        $STOPAFTER120)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=120
+            ;;
+        $STOPAFTER180)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=180
+            ;;
+        $STOPAFTER240)
+            # stop player after -v minutes
+            $PATHDATA/playout_controls.sh -c=playerstopafter -v=240
+            ;;
         $SHUTDOWNAFTER5)
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=5
@@ -262,6 +274,18 @@ if [ "$CARDID" ]; then
             # shutdown after -v minutes
             $PATHDATA/playout_controls.sh -c=shutdownafter -v=60
             ;;
+        $SHUTDOWNAFTER120)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=120
+            ;;
+        $SHUTDOWNAFTER180)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=180
+            ;;
+        $SHUTDOWNAFTER240)
+            # shutdown after -v minutes
+            $PATHDATA/playout_controls.sh -c=shutdownafter -v=240
+            ;;
 		$SHUTDOWNVOLUMEREDUCTION10)
 			# reduce volume until shutdown in -v minutes
 			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=10
@@ -277,6 +301,18 @@ if [ "$CARDID" ]; then
 		$SHUTDOWNVOLUMEREDUCTION60)
 			# reduce volume until shutdown in -v minutes
 			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=60
+			;;
+		$SHUTDOWNVOLUMEREDUCTION120)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=120
+			;;
+		$SHUTDOWNVOLUMEREDUCTION180)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=180
+			;;
+		$SHUTDOWNVOLUMEREDUCTION240)
+			# reduce volume until shutdown in -v minutes
+			$PATHDATA/playout_controls.sh -c=shutdownvolumereduction -v=240
 			;;
         $ENABLEWIFI)
             $PATHDATA/playout_controls.sh -c=enablewifi
