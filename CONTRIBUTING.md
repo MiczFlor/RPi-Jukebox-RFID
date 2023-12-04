@@ -122,7 +122,7 @@ If you touched *any* Python file (even if only for fixing spelling errors), run 
 It contains out setup file.
 
 ~~~bash
-cd /home/$USER/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 ./run_flake8.sh
 ~~~
 
@@ -135,7 +135,7 @@ Tests are very few at the moment, but it cannot hurt to run them. If you have te
 them.
 
 ~~~bash
-cd /home/$USER/RPi-Jukebox-RFID/
+cd ~/RPi-Jukebox-RFID/
 ./run_pytest.sh
 ~~~
 
