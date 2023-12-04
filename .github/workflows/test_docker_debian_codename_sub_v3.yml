@@ -28,8 +28,8 @@ on:
           default: ubuntu-latest
 
 env:
-    TEST_USER_NAME: hans
-    TEST_USER_GROUP: wurst
+    TEST_USER_NAME: testuser
+    TEST_USER_GROUP: testusergroup
 
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
