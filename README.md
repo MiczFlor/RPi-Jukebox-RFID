@@ -45,7 +45,7 @@ If you are looking for the latest **stable version 2.x**, use the [install scrip
 
 ### 🔥 Version 3 is coming
 
-#### Newest release: V3.2.1 Beta -> 30. Dec 2022
+#### Newest release: V3.3 Beta -> 25. Nov 2023
 
 Just as the year ends, we have put together a small update for Version 3 with bug fixes and documentation fixes.
 
