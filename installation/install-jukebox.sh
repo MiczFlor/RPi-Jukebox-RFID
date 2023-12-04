@@ -47,15 +47,6 @@ _check_os_type() {
   fi
 }
 
-_check_user() {
-  if [ ! -d "${HOME_PATH}" ]; then
-    echo
-    echo "ERROR: HomeDir ${HOME_PATH} does not exist."
-    echo "       Please create it and start again."
-    exit 2
-  fi
-}
-
 # Manipulate file descriptor for logging
 # Behavior:
 # Write To logfile:
@@ -136,7 +127,6 @@ _load_sources() {
 
 ### CHECK PREREQUISITE
 _check_os_type
-_check_user
 
 ### SETUP LOGGING
 _setup_logging
