@@ -1,5 +1,5 @@
 # IMPORTANT:
-# Do not use paths with '~/some/dir' - always use relativ path from settingsfile '../../'
+# Always use relative path from settingsfile `../../`, but do not use relative paths with `~/`.
 # Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox

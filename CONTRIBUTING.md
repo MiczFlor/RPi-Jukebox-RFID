@@ -63,7 +63,7 @@ For bug fixes and improvements just open an issue or PR as described below. If y
 * By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
 
 ~~~bash
-cd /home/$USER/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 git checkout future3/develop
 git fetch origin
 git reset --hard origin/future3/develop
