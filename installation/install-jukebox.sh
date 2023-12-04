@@ -47,33 +47,6 @@ _check_os_type() {
   fi
 }
 
-# currently the user 'pi' is mandatory
-# https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
-_check_user() {
-  if [ "${CURRENT_USER}" != "pi" ]; then
-    echo
-    echo "ERROR: User must be 'pi'!"
-    echo "       Other usernames are currently not supported."
-    echo "       Please check the wiki for further information"
-    exit 2
-  fi
-
-  if [ "${HOME_PATH}" != "/home/pi" ]; then
-    echo
-    echo "ERROR: HomeDir must be '/home/pi'!"
-    echo "       Other usernames are currently not supported."
-    echo "       Please check the wiki for further information"
-    exit 2
-  fi
-
-  if [ ! -d "${HOME_PATH}" ]; then
-    echo
-    echo "ERROR: HomeDir ${HOME_PATH} does not exist."
-    echo "       Please create it and start again."
-    exit 2
-  fi
-}
-
 # Manipulate file descriptor for logging
 # Behavior:
 # Write To logfile:
@@ -154,7 +127,6 @@ _load_sources() {
 
 ### CHECK PREREQUISITE
 _check_os_type
-_check_user
 
 ### SETUP LOGGING
 _setup_logging

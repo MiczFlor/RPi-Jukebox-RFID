@@ -27,6 +27,10 @@ on:
           type: string
           default: ubuntu-latest
 
+env:
+    TEST_USER_NAME: testuser
+    TEST_USER_GROUP: testusergroup
+
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
@@ -101,6 +105,8 @@ jobs:
         cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.cache_scope }}
         build-args: |
           DEBIAN_CODENAME=${{ inputs.debian_codename }}
+          USER_NAME=${{ env.TEST_USER_NAME }}
+          USER_GROUP=${{ env.TEST_USER_GROUP }}
           GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           GIT_USER=${{ github.event.pull_request.head.user.login || github.repository_owner }}
 
@@ -137,11 +143,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        username: ['pi']
         test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh']
-        include:
-          - username: hans
-            test_script: run_install_user_not_pi.sh
 
     steps:
     - name: Set up QEMU
@@ -160,11 +162,11 @@ jobs:
         docker load --input ${{ needs.build.outputs.image_file_name }}
 
     # Run test
-    - name: Run Test ${{ inputs.debian_codename }}-${{ matrix.username }}-${{ matrix.test_script }}
+    - name: Run Test ${{ inputs.debian_codename }}-${{ env.TEST_USER_NAME }}-${{ matrix.test_script }}
       uses: tj-actions/docker-run@v2
       with:
         image: ${{ needs.build.outputs.image_tag_name }}
-        options: --platform ${{ inputs.platform }} --user ${{ matrix.username }} --init
+        options: --platform ${{ inputs.platform }} --user ${{ env.TEST_USER_NAME }} --init
         name: ${{ matrix.test_script }}
         args: |
           ./${{ matrix.test_script }}

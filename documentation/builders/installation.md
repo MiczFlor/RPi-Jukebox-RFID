@@ -16,7 +16,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
     * Click `Edit Settings`
     * Switch to the `General` tab
         * Provide a hostname. (When on Mac, you will be able to use it to connect via SSH)
-        * Username currently MUST be `pi`. Other usernames are currently not supported.
+        * Username
         * Password
         * Wifi
         * Set locale settings
@@ -72,7 +72,7 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 7. Eject your SD card and insert it into your Raspberry Pi.
 8. Start your Raspberry Pi by attaching a power supply.
-9. Login into your Raspberry Pi, username is `pi` and password is `raspberry`.
+9. Login into your Raspberry Pi
    If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
 
 </details>

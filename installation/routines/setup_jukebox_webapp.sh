@@ -72,6 +72,7 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 
   sudo mv -f "${WEBAPP_NGINX_SITE_DEFAULT_CONF}" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}.orig"
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
   # make sure nginx can access the home directory of the user
   sudo chmod o+x "${HOME_PATH}"
