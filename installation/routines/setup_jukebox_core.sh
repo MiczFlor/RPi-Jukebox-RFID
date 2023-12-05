@@ -8,6 +8,7 @@ GD_ID_COMPILED_PYZMQ_ARMV7=""
 
 ZMQ_TMP_DIR="libzmq"
 ZMQ_PREFIX="/usr/local"
+ZMQ_VERSION="4.3.5"
 
 JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
@@ -52,9 +53,10 @@ _jukebox_core_configure_pulseaudio() {
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
-  LIBSODIUM_VERSION="1.0.18"
-  ZMQ_VERSION="4.3.4"
+  echo "  Building libzmq with drafts support" | tee /dev/fd/3
 
+  LIBSODIUM_VERSION="1.0.18"
+  echo "    Building libsodium v${LIBSODIUM_VERSION}" | tee /dev/fd/3
   { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
   wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz
   tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz
@@ -62,6 +64,7 @@ _jukebox_core_build_libzmq_with_drafts() {
   ./configure
   make && make install
 
+  echo "    Building libzmq v${ZMQ_VERSION}" | tee /dev/fd/3
   cd "${HOME}/${ZMQ_TMP_DIR}" || exit_on_error
   wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
   tar -xzf libzmq.tar.gz
@@ -71,8 +74,9 @@ _jukebox_core_build_libzmq_with_drafts() {
 
 _jukebox_core_download_prebuilt_libzmq_with_drafts() {
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
+  ARCH=$(get_architecture)
 
-  _download_file_from_google_drive "${LIBZMQ_GD_DOWNLOAD_ID}" "${ZMQ_TAR_FILENAME}"
+  wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O ${ZMQ_TAR_FILENAME}
   tar -xzf ${ZMQ_TAR_FILENAME}
   rm -f ${ZMQ_TAR_FILENAME}
   sudo rsync -a ./* ${ZMQ_PREFIX}/
@@ -86,7 +90,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # Sources:
   # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
-  echo "  Build and install pyzmq with WebSockets Support" | tee /dev/fd/3
+  echo "  Install pyzmq with WebSockets Support" | tee /dev/fd/3
 
   if ! pip list | grep -F pyzmq >> /dev/null; then
     # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
@@ -94,11 +98,7 @@ _jukebox_core_build_and_install_pyzmq() {
 
     { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
 
-    # ARMv7 as default
-    LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV7}
     if [[ $(uname -m) == "armv6l" ]]; then
-      # ARMv6 as fallback
-      LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV6}
       _show_slow_hardware_message
     fi
 
@@ -109,7 +109,7 @@ _jukebox_core_build_and_install_pyzmq() {
     fi
 
     ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
-      pip install --no-cache-dir --no-binary "pyzmq" --pre pyzmq
+      pip install -v --no-binary pyzmq --pre pyzmq
   else
     echo "    Skipping. pyzmq already installed" | tee /dev/fd/3
   fi

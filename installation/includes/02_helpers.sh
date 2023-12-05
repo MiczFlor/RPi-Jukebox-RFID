@@ -34,6 +34,21 @@ run_with_log_frame() {
     echo "#########################################################"
 }
 
+get_architecture() {
+  ARCH=""
+  if [ "$(uname -m)" = "armv7l" ]; then
+    ARCH="armv7"
+  elif [ "$(uname -m)" = "armv6l" ]; then
+    ARCH="armv6"
+  elif [ "$(uname -m)" = "aarch64" ]; then
+    ARCH="arm64"
+  else
+    ARCH="$(uname -m)"
+  fi
+
+  echo $ARCH
+}
+
 _download_file_from_google_drive() {
   GD_SHARING_ID=${1}
   TAR_FILENAME=${2}

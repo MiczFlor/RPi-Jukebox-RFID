@@ -1,6 +1,6 @@
 # Known Issues
 
-## Installing limzmq in Docker fails
+## Installing `libzmq` in Docker fails
 
 To speed up the Docker build process, we are distributing pre-build versions of libzmq with drafts flag at the latest version. In case the download fails because the respective architecture build does not exist, you can build the version yourself.
 
