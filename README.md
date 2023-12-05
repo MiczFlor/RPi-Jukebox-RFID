@@ -1,5 +1,11 @@
 # RFID Jukebox Version 3 (aka future3)
 
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MiczFlor/RPi-Jukebox-RFID/future3/develop)
+
+[![Test Install Scripts Debian v3](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml) [![Python + Docs Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml)
+
+[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
+
 ## What is this?
 
 The exiting, new **Version 3** of the RPi Jukebox RFID. A complete re-write of the Jukebox.
@@ -13,8 +19,4 @@ The documentation can be found [here](./documentation/README.md)
 
 ## Installation?
 
-Run the following one-liner in a shell and follow the instructions
-
-~~~bash
-cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
-~~~
+[Install Phoniebox software](documentation/builders/installation.md#install-phoniebox-software)

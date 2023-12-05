@@ -2,6 +2,7 @@
 
 # Constants
 GD_ID_COMPILED_WEBAPP="1um-smyfsVPzVZn18hhwuFt97XR3PjAbB" # https://drive.google.com/file/d/1um-smyfsVPzVZn18hhwuFt97XR3PjAbB/view?usp=sharing
+WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
 # For ARMv7+
 NODE_MAJOR=20
@@ -39,14 +40,13 @@ _jukebox_webapp_install_node() {
       sudo apt-get update
       sudo apt-get install -y nodejs
     fi
-
   fi
 }
 
 # TODO: Avoid building the app locally
 # Instead implement a Github Action that prebuilds on commititung a git tag
 _jukebox_webapp_build() {
-  echo "  Building web application"
+  echo "  Building web application" | tee /dev/fd/3
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   npm ci --prefer-offline --no-audit --production
   rm -rf build
@@ -70,30 +70,48 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo apt-get -y purge apache2
   sudo apt-get -y install nginx
 
-  sudo service nginx start
-
-  sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
+  sudo mv -f "${WEBAPP_NGINX_SITE_DEFAULT_CONF}" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}.orig"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
   # make sure nginx can access the home directory of the user
-  sudo chmod o+x /home/pi
+  sudo chmod o+x "${HOME_PATH}"
 
-  sudo service nginx restart
+  sudo systemctl restart nginx.service
+}
+
+_jukebox_webapp_check() {
+    print_verify_installation
+
+    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+        verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+    fi
+    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+        verify_apt_packages nodejs
+    fi
+
+    verify_apt_packages nginx
+    verify_files_exists "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+
+    verify_service_enablement nginx.service enabled
+}
+
+_run_setup_jukebox_webapp() {
+    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+        _jukebox_webapp_download
+    fi
+    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+        _jukebox_webapp_install_node
+        # Local Web App build during installation does not work at the moment
+        # Needs to be done after reboot! There will be a message at the end of the installation process
+        # _jukebox_webapp_build
+    fi
+    _jukebox_webapp_register_as_system_service_with_nginx
+    _jukebox_webapp_check
 }
 
 setup_jukebox_webapp() {
-  echo "Install web application" | tee /dev/fd/3
-
-  if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
-    _jukebox_webapp_download
-  fi
-  if [[ $ENABLE_INSTALL_NODE == true ]] ; then
-    _jukebox_webapp_install_node
-    # Local Web App build during installation does not work at the moment
-    # Needs to be done after reboot! There will be a message at the end of the installation process
-    # _jukebox_webapp_build
-  fi
-  _jukebox_webapp_register_as_system_service_with_nginx
-
-  echo "DONE: setup_jukebox_webapp"
+    if [ "$ENABLE_WEBAPP" == true ] ; then
+        run_with_log_frame _run_setup_jukebox_webapp "Install web application"
+    fi
 }

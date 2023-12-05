@@ -118,6 +118,54 @@ Do you want to disable Bluetooth? [Y/n]" 1>&3
   echo "DISABLE_BLUETOOTH=${DISABLE_BLUETOOTH}"
 }
 
+_option_mpd() {
+    clear 1>&3
+    if [[ "$SETUP_MPD" == true ]]; then
+        if [[ -f "${MPD_CONF_PATH}" || -f "${SYSTEMD_USR_PATH}/mpd.service" ]]; then
+            echo "-------------------------- MPD --------------------------
+
+It seems there is a MPD already installed.
+Note: It is important that MPD runs as a user service!
+Would you like to overwrite your configuration? [Y/n]" 1>&3
+            read -r response
+            case "$response" in
+                [nN][oO]|[nN])
+                    ENABLE_MPD_OVERWRITE_INSTALL=false
+                    ;;
+                *)
+                    ;;
+            esac
+        fi
+    fi
+
+    echo "SETUP_MPD=${SETUP_MPD}"
+    if [ "$SETUP_MPD" == true ]; then
+        echo "ENABLE_MPD_OVERWRITE_INSTALL=${ENABLE_MPD_OVERWRITE_INSTALL}"
+    fi
+}
+
+_option_rfid_reader() {
+  # ENABLE_RFID_READER
+  clear 1>&3
+  echo "---------------------- RFID READER ----------------------
+
+Phoniebox can be controlled with rfid cards/tags, if you
+have a rfid reader connected.
+Choose yes to setup a reader. You get prompted for
+the type selection and configuration later on.
+
+Do you want to setup a rfid reader? [Y/n]" 1>&3
+  read -r response
+  case "$response" in
+    [nN][oO]|[nN])
+      ENABLE_RFID_READER=false
+      ;;
+    *)
+      ;;
+  esac
+  echo "ENABLE_RFID_READER=${ENABLE_RFID_READER}"
+}
+
 _option_samba() {
   # ENABLE_SAMBA
   clear 1>&3
@@ -133,7 +181,6 @@ Do you want to install Samba? [Y/n]" 1>&3
   case "$response" in
     [nN][oO]|[nN])
       ENABLE_SAMBA=false
-      ENABLE_KIOSK_MODE=false
       ;;
     *)
       ;;
@@ -237,13 +284,13 @@ Disable Pi's on-chip audio (headphone / jack output)? [y/N]" 1>&3
 
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
-  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
+  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" || "$CI_RUNNING" == "true" ]]; then
     ENABLE_INSTALL_NODE=true
     # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
-    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = "release-only" ]]; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
-    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" = false ]]; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
       clear 1>&3
       echo "--------------------- WEBAPP NODE ---------------------
 
@@ -261,22 +308,23 @@ Do you want to install Node? [Y/n]" 1>&3
           ;;
       esac
       # This message will be displayed at the end of the installation process
-      FIN_MESSAGE="$FIN_MESSAGE\nATTENTION: You need to build the web app locally with
-      $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-      This must be done after reboot, due to memory restrictions.
-      Read the documentation regarding local Web App builds!"
+      local tmp_fin_message="ATTENTION: You need to build the web app locally with
+           $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+           This must be done after reboot, due to memory restrictions.
+           Read the documentation regarding local Web App builds!"
+      FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
     fi
   fi
 }
 
-customize_options() {
-  echo "Customize Options starts"
-
+_run_customize_options() {
   _option_ipv6
   _option_static_ip
   _option_autohotspot
   _option_bluetooth
   _option_disable_onboard_audio
+  _option_mpd
+  _option_rfid_reader
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then
@@ -286,6 +334,8 @@ customize_options() {
   # Bullseye is currently under active development and should be updated in any case.
   # Hence, removing the step below as it becomse mandatory
   # _options_update_raspi_os
+}
 
-  echo "Customize Options ends"
+customize_options() {
+    run_with_log_frame _run_customize_options "Customize Options"
 }

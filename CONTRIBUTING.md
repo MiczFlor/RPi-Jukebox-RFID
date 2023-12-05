@@ -63,7 +63,7 @@ For bug fixes and improvements just open an issue or PR as described below. If y
 * By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 git checkout future3/develop
 git fetch origin
 git reset --hard origin/future3/develop
@@ -122,7 +122,7 @@ If you touched *any* Python file (even if only for fixing spelling errors), run 
 It contains out setup file.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 ./run_flake8.sh
 ~~~
 
@@ -135,7 +135,7 @@ Tests are very few at the moment, but it cannot hurt to run them. If you have te
 them.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID/
+cd ~/RPi-Jukebox-RFID/
 ./run_pytest.sh
 ~~~
 

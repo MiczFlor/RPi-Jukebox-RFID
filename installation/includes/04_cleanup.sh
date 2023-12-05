@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-cleanup() {
-  sudo rm -rf /var/lib/apt/lists/*
+_run_cleanup() {
+    sudo rm -rf /var/lib/apt/lists/*
+}
 
-  echo "DONE: cleanup"
+cleanup() {
+    run_with_log_frame _run_cleanup "Cleanup"
 }

@@ -28,7 +28,7 @@ After connecting to the `Phoniebox_Hotspot` you are able to connect via
 ssh to your Jukebox
 
 ``` bash
-ssh pi@10.0.0.5
+ssh <username>@10.0.0.5
 ```
 
 ## Changing basic configuration of the hotspot
