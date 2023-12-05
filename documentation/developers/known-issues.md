@@ -2,7 +2,9 @@
 
 ## Installing limzmq in Docker fails
 
-To speed up the Docker build process, we are distributing pre-build versions of libzmq with drafts flag at the latest version. In case the download fails because the respective architecture build does not exist, you can build the version yourself. Just replace the command to download the pre-built library with the following command
+To speed up the Docker build process, we are distributing pre-build versions of libzmq with drafts flag at the latest version. In case the download fails because the respective architecture build does not exist, you can build the version yourself.
+
+Add `build-essential` to tbe installed additionally with `apt-get`. Additionally, replace the command to download the pre-built library with the following command.
 
 ```
 # Compile ZMQ
@@ -16,7 +18,7 @@ RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
 
 ## Configuration
 
-In `jukebox.yaml` (and all other config files): 
+In `jukebox.yaml` (and all other config files):
 Always use relative path from settingsfile `../../`, but do not use relative paths with `~/`.
 
 **Sole** exception is in `playermpd.mpd_conf`.
