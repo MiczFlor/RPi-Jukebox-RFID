@@ -7,7 +7,7 @@ The Jukebox requires `libzmq` to work properly. We provide downloadable builds t
 * https://github.com/pabera/libzmq/releases
 
 > [!NOTE]
-> We can't use stable builds that are distributed by zeromq directly because the Jukebox requires draft builds to support WebSockets. These draft builds are not officially provided through zeromq for Raspberry Pi architecture (e.g. `armv6` or `armv7`).
+> We can't use stable builds that are distributed by [zeromq](https://github.com/zeromq/libzmq/releases) directly because the Jukebox requires draft builds to support WebSockets. These [draft builds](https://pyzmq.readthedocs.io/en/latest/howto/draft.html) are not officially provided through zeromq for Raspberry Pi architecture (e.g. `armv6` or `armv7`).
 
 ## Building `libzmp`
 

@@ -4,7 +4,7 @@
 
 To speed up the Docker build process, we are distributing pre-build versions of libzmq with drafts flag at the latest version. In case the download fails because the respective architecture build does not exist, you can build the version yourself.
 
-Add `build-essential` to tbe installed additionally with `apt-get`. Additionally, replace the command to download the pre-built library with the following command.
+Add `build-essential` to be installed additionally with `apt-get`. Additionally, replace the command to download the pre-built library with the following command.
 
 ```
 # Compile ZMQ
