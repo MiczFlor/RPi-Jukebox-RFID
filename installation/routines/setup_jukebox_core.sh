@@ -68,6 +68,7 @@ _jukebox_core_build_libzmq_with_drafts() {
 }
 
 _jukebox_core_download_prebuilt_libzmq_with_drafts() {
+  echo "    Download pre-compiled libzmq"
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
   ARCH=$(get_architecture)
 
@@ -85,12 +86,9 @@ _jukebox_core_build_and_install_pyzmq() {
   # Sources:
   # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
-  echo "  Install pyzmq with WebSockets Support" | tee /dev/fd/3
+  echo "  Install pyzmq with libzmq-drafts to support WebSockets" | tee /dev/fd/3
 
   if ! pip list | grep -F pyzmq >> /dev/null; then
-    # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
-    echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
-
     { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
 
     if [[ $(uname -m) == "armv6l" ]]; then

@@ -35,18 +35,18 @@ run_with_log_frame() {
 }
 
 get_architecture() {
-  ARCH=""
+  local arch=""
   if [ "$(uname -m)" = "armv7l" ]; then
-    ARCH="armv7"
+    arch="armv7"
   elif [ "$(uname -m)" = "armv6l" ]; then
-    ARCH="armv6"
+    arch="armv6"
   elif [ "$(uname -m)" = "aarch64" ]; then
-    ARCH="arm64"
+    arch="arm64"
   else
-    ARCH="$(uname -m)"
+    arch="$(uname -m)"
   fi
 
-  echo $ARCH
+  echo $arch
 }
 
 _download_file_from_google_drive() {
