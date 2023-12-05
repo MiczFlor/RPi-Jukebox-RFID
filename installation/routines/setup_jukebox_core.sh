@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_LIBZMQ_ARMV6="17VTgriCsYmAm72YKkga97jO0nExtq6G-" # armv6: https://drive.google.com/file/d/17VTgriCsYmAm72YKkga97jO0nExtq6G-/view?usp=sharing
-GD_ID_COMPILED_LIBZMQ_ARMV7="1950psO7Mbs4GdWBMqIzdTAZPLnKhDg7F" # armv7: https://drive.google.com/file/d/1950psO7Mbs4GdWBMqIzdTAZPLnKhDg7F/view?usp=sharing
-GD_ID_COMPILED_PYZMQ_ARMV6="1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n" # https://drive.google.com/file/d/1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n/view?usp=sharing
-GD_ID_COMPILED_PYZMQ_ARMV7=""
-
 ZMQ_TMP_DIR="libzmq"
 ZMQ_PREFIX="/usr/local"
 ZMQ_VERSION="4.3.5"
