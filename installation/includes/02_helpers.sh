@@ -49,13 +49,23 @@ get_architecture() {
   echo $arch
 }
 
-_download_file_from_google_drive() {
-  GD_SHARING_ID=${1}
-  TAR_FILENAME=${2}
-  wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=${GD_SHARING_ID}' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=${GD_SHARING_ID}" -O ${TAR_FILENAME} && rm -rf /tmp/cookies.txt
-  echo "Downloaded from Google Drive ID ${GD_SHARING_ID} into ${TAR_FILENAME}"
-}
+get_version_string() {
+  local python_file="$1"
+  local version_major
+  local version_minor
+  local version_patch
 
+  version_major=$(grep 'VERSION_MAJOR\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
+  version_minor=$(grep 'VERSION_MINOR\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
+  version_patch=$(grep 'VERSION_PATCH\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
+
+  if [ -n "$version_major" ] && [ -n "$version_minor" ] && [ -n "$version_patch" ]; then
+    local version_string="${version_major}.${version_minor}.${version_patch}"
+    echo "$version_string"
+  else
+    echo "Unable to extract version information from $python_file"
+  fi
+}
 
 ### Verify helpers
 

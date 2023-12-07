@@ -61,7 +61,7 @@ _jukebox_core_build_libzmq_with_drafts() {
 
   echo "    Building libzmq v${ZMQ_VERSION}" | tee /dev/fd/3
   cd "${HOME}/${ZMQ_TMP_DIR}" || exit_on_error
-  wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
+  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
   tar -xzf libzmq.tar.gz
   zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
   make && make install
@@ -72,7 +72,7 @@ _jukebox_core_download_prebuilt_libzmq_with_drafts() {
   local ZMQ_TAR_FILENAME="libzmq.tar.gz"
   ARCH=$(get_architecture)
 
-  wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O ${ZMQ_TAR_FILENAME}
+  wget --quiet https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O ${ZMQ_TAR_FILENAME}
   tar -xzf ${ZMQ_TAR_FILENAME}
   rm -f ${ZMQ_TAR_FILENAME}
   sudo rsync -a ./* ${ZMQ_PREFIX}/
