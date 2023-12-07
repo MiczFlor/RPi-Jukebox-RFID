@@ -303,6 +303,7 @@ Do you want to install Node? [Y/n]" 1>&3
       case "$response" in
         [nN][oO]|[nN])
           ENABLE_INSTALL_NODE=false
+          ENABLE_WEBAPP_PROD_DOWNLOAD=true
           ;;
         *)
           ;;
