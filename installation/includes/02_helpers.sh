@@ -55,20 +55,19 @@ get_version_string() {
   local version_minor
   local version_patch
 
-  version_major=$(grep 'VERSION_MAJOR\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
-  version_minor=$(grep 'VERSION_MINOR\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
-  version_patch=$(grep 'VERSION_PATCH\s*=\s*[0-9]*' "$python_file" | awk -F= '{print $2}' | tr -d ' ')
+  version_major=$(grep 'VERSION_MAJOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
+  version_minor=$(grep 'VERSION_MINOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
+  version_patch=$(grep 'VERSION_PATCH\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
 
   if [ -n "$version_major" ] && [ -n "$version_minor" ] && [ -n "$version_patch" ]; then
     local version_string="${version_major}.${version_minor}.${version_patch}"
-    echo "$version_string"
+    echo "Jukebox Version: ${version_string}"
   else
-    echo "Unable to extract version information from $python_file"
+    echo "Unable to extract version information from ${python_file}"
   fi
 }
 
 ### Verify helpers
-
 print_verify_installation() {
     echo ""
     echo "  -------------------------------------------------------"

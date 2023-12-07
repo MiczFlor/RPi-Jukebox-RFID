@@ -55,7 +55,7 @@ _jukebox_webapp_build() {
 
 _jukebox_webapp_download() {
   echo "  Downloading web application" | tee /dev/fd/3
-  local JUKEBOX_VERSION==$(get_version_string "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
+  local JUKEBOX_VERSION=$(get_version_string "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
   local TAR_FILENAME="webapp-build.tar.gz"
 
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
