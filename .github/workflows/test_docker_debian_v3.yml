@@ -18,14 +18,16 @@ concurrency:
 jobs:
 
   # Build container and run tests. Duplication of job intended for better visualization.
-  run_bookworm:
-    name: 'bookworm'
+  run_bookworm_armv7:
+    name: 'bookworm armv7'
     uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
       debian_codename: 'bookworm'
+      platform: linux/arm/v7
 
-  run_bullseye:
-    name: 'bullseye'
+  run_bullseye_armv7:
+    name: 'bullseye armv7'
     uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
       debian_codename: 'bullseye'
+      platform: linux/arm/v7
