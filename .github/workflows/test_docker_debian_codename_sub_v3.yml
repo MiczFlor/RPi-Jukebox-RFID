@@ -6,14 +6,13 @@ on:
         debian_codename:
           required: true
           type: string
+        platform:
+          required: true
+          type: string
         docker_image_name:
           required: false
           type: string
           default: rpi-jukebox-rfid-v3
-        platform:
-          required: false
-          type: string
-          default: linux/arm/v7
         cache_scope:
           required: false
           type: string
@@ -34,7 +33,7 @@ env:
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
-    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}-${{ inputs.platform }}
     cancel-in-progress: true
 
 jobs:
@@ -73,10 +72,12 @@ jobs:
         DEBIAN_CODENAME: ${{ inputs.debian_codename }}
         DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
         CACHE_SCOPE: ${{ inputs.cache_scope }}
+        PLATFORM: ${{ inputs.platform }}
       run: |
-        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-test" >> $GITHUB_OUTPUT
-        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}.tar" >> $GITHUB_OUTPUT
-        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}" >> $GITHUB_OUTPUT
+        PLATFORM=${PLATFORM////_}
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-${PLATFORM}-test" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}" >> $GITHUB_OUTPUT
 
     - name: Set Output vars
       id: vars
