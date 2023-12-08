@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_WEBAPP="1um-smyfsVPzVZn18hhwuFt97XR3PjAbB" # https://drive.google.com/file/d/1um-smyfsVPzVZn18hhwuFt97XR3PjAbB/view?usp=sharing
 WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
 # For ARMv7+
@@ -56,9 +55,14 @@ _jukebox_webapp_build() {
 
 _jukebox_webapp_download() {
   echo "  Downloading web application" | tee /dev/fd/3
+  local JUKEBOX_VERSION=$(get_version_string "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
   local TAR_FILENAME="webapp-build.tar.gz"
+  local DOWNLOAD_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID/releases/download/v${JUKEBOX_VERSION}/webapp-v${JUKEBOX_VERSION}.tar.gz"
+  echo "    DOWNLOAD_URL: ${DOWNLOAD_URL}"
+
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
+  # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
+  wget --quiet ${DOWNLOAD_URL} -O ${TAR_FILENAME}
   tar -xzf ${TAR_FILENAME}
   rm -f ${TAR_FILENAME}
   cd "${INSTALLATION_PATH}" || exit_on_error

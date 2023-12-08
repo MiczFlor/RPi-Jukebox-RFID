@@ -31,7 +31,7 @@ _samba_set_user() {
     sudo cat << EOF >> $SMB_CONF
 ${SMB_CONF_HEADER}
 [phoniebox]
-  comment= Pi Jukebox
+  comment=Pi Jukebox
   path=${SHARED_PATH}
   browseable=Yes
   writeable=Yes
