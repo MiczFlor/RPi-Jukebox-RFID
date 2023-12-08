@@ -1,0 +1,29 @@
+name: Docstring to Markdown
+
+on:
+  push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '**.py'
+        - '**.py.*'
+  pull_request:
+    branches:
+        - 'future3/**'
+    paths:
+        - '**.py'
+        - '**.py.*'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+
+    steps:
+              - name: Python Markdown Documentation
+                uses: jbheard/markdown-docs@v0.1
+            
