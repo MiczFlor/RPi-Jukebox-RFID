@@ -7,7 +7,7 @@ KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium-browser/customiza
 KIOSK_MODE_CHROMIUM_FLAG_UPDATE_INTERVAL='--check-for-update-interval=31536000'
 
 _kiosk_mode_install_os_dependencies() {
-  echo "  Install Kiosk Mode dependencies" | tee /dev/fd/3
+  print_lc "  Install Kiosk Mode dependencies"
   # Resource:
   # https://blog.r0b.io/post/minimal-rpi-kiosk/
   sudo apt-get -qq -y install --no-install-recommends \
@@ -19,7 +19,7 @@ _kiosk_mode_install_os_dependencies() {
 }
 
 _kiosk_mode_set_autostart() {
-  echo "  Configure Kiosk Mode" | tee /dev/fd/3
+  print_lc "  Configure Kiosk Mode"
   local _DISPLAY='$DISPLAY'
   local _XDG_VTNR='$XDG_VTNR'
 

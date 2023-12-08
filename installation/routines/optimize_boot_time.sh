@@ -9,17 +9,17 @@ OPTIMIZE_IPV6_CONF_HEADER="## Jukebox IPV6 Config"
 OPTIMIZE_BOOT_CONF_HEADER="## Jukebox Boot Config"
 
 _optimize_disable_irrelevant_services() {
-  echo "  Disable keyboard-setup.service"
+  log "  Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
 
-  echo "  Disable triggerhappy.service"
+  log "  Disable triggerhappy.service"
   sudo systemctl disable triggerhappy.service
   sudo systemctl disable triggerhappy.socket
 
-  echo "  Disable raspi-config.service"
+  log "  Disable raspi-config.service"
   sudo systemctl disable raspi-config.service
 
-  echo "  Disable apt-daily.service & apt-daily-upgrade.service"
+  log "  Disable apt-daily.service & apt-daily-upgrade.service"
   sudo systemctl disable apt-daily.service
   sudo systemctl disable apt-daily-upgrade.service
   sudo systemctl disable apt-daily.timer
@@ -29,7 +29,7 @@ _optimize_disable_irrelevant_services() {
 # TODO: If false, actually make sure bluetooth is enabled
 _optimize_handle_bluetooth() {
   if [ "$DISABLE_BLUETOOTH" = true ] ; then
-    echo "  Disable bluetooth" | tee /dev/fd/3
+    print_lc "  Disable bluetooth"
     sudo systemctl disable hciuart.service
     sudo systemctl disable bluetooth.service
   fi
@@ -39,14 +39,14 @@ _optimize_handle_bluetooth() {
 _optimize_static_ip() {
   # Static IP Address and DHCP optimizations
   if [ "$ENABLE_STATIC_IP" = true ] ; then
-    echo "  Set static IP address" | tee /dev/fd/3
+    print_lc "  Set static IP address"
     if grep -q "${OPTIMIZE_DHCP_CONF_HEADER}" "$OPTIMIZE_DHCP_CONF"; then
-      echo "    Skipping. Already set up!"
+      log "    Skipping. Already set up!"
     else
       # DHCP has not been configured
-      echo "    ${CURRENT_INTERFACE} is the default network interface"
-      echo "    ${CURRENT_GATEWAY} is the Router Gateway address"
-      echo "    Using ${CURRENT_IP_ADDRESS} as the static IP for now"
+      log "    ${CURRENT_INTERFACE} is the default network interface"
+      log "    ${CURRENT_GATEWAY} is the Router Gateway address"
+      log "    Using ${CURRENT_IP_ADDRESS} as the static IP for now"
 
       sudo tee -a $OPTIMIZE_DHCP_CONF <<-EOF
 
@@ -65,9 +65,9 @@ EOF
 # TODO: Allow both Enable and Disable
 _optimize_ipv6_arp() {
   if [ "$DISABLE_IPv6" = true ] ; then
-    echo "  Disabling IPV6" | tee /dev/fd/3
+    print_lc "  Disabling IPV6"
     if grep -q "${OPTIMIZE_IPV6_CONF_HEADER}" "$OPTIMIZE_DHCP_CONF"; then
-      echo "    Skipping. Already set up!"
+      log "    Skipping. Already set up!"
     else
       sudo tee -a $OPTIMIZE_DHCP_CONF <<-EOF
 
@@ -84,9 +84,9 @@ EOF
 # TODO: Allow both Enable and Disable
 _optimize_handle_boot_screen() {
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-    echo "  Disable RPi rainbow screen"
+    log "  Disable RPi rainbow screen"
     if grep -q "${OPTIMIZE_BOOT_CONF_HEADER}" "$RPI_BOOT_CONFIG_FILE"; then
-      echo "    Skipping. Already set up!"
+      log "    Skipping. Already set up!"
     else
       sudo tee -a $RPI_BOOT_CONFIG_FILE <<-EOF
 
@@ -101,7 +101,7 @@ EOF
 # TODO: Allow both Enable and Disable
 _optimize_handle_boot_logs() {
   if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
-    echo "  Disable boot logs"
+    log "  Disable boot logs"
 
     if [ ! -s "${RPI_BOOT_CMDLINE_FILE}" ];then
         sudo tee "${RPI_BOOT_CMDLINE_FILE}" <<-EOF

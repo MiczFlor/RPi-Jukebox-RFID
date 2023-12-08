@@ -2,7 +2,7 @@
 
 welcome() {
   clear 1>&3
-  echo "#########################################################
+  print_c "#########################################################
 #                                                       #
 #      ___  __ ______  _  __________ ____   __  _  _    #
 #     / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ )   #
@@ -29,16 +29,16 @@ in a separate SSH session:
 cd; tail -f ${INSTALLATION_LOGFILE}
 
 Let's set up your Phoniebox.
-Do you want to start the installation? [Y/n]" 1>&3
+Do you want to start the installation? [Y/n]"
   read -r response
   case "$response" in
     [nN][oO]|[nN])
       exit
       ;;
     *)
-      echo "Starting installation
+      print_c "Starting installation
 ---------------------
-" 1>&3
+"
       ;;
   esac
 }
