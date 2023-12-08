@@ -24,4 +24,5 @@ jobs:
     - name: Open docs update PR
       uses: peter-evans/create-pull-request@v5
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}           
+        token: ${{ secrets.GITHUB_TOKEN }}
+        base: future3/develop
