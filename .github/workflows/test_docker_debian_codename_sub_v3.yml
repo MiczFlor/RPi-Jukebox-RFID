@@ -143,7 +143,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh']
+        test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh', 'run_install_libzmq_local.sh']
 
     steps:
     - name: Set up QEMU
