@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Generate Python Docs
-      uses: jbheard/markdown-docs@v1
+      uses: s-martin/markdown-docs@master
       with:
         src_path: /src
         dst_path: /documentation/developers
