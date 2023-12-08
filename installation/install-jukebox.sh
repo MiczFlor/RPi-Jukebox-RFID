@@ -17,6 +17,9 @@ GIT_BRANCH=${GIT_BRANCH:-"future3/main"}
 # Constants
 GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
+
 CURRENT_USER="${SUDO_USER:-$(whoami)}"
 CURRENT_USER_GROUP=$(id -gn "$CURRENT_USER")
 HOME_PATH=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
@@ -91,9 +94,8 @@ _check_os_type() {
 }
 
 _download_jukebox_source() {
-  log "\n\n"
   log "#########################################################"
-  print_c "Downloading Phoniebox software from Github ..." 1>&3
+  print_c "Downloading Phoniebox software from Github ..."
   print_lc "Download Source: ${GIT_URL}/${GIT_BRANCH}"
 
   cd "${HOME_PATH}" || exit_on_error "ERROR: Changing to home dir failed."
@@ -133,8 +135,6 @@ _setup_logging
 _check_os_type
 
 ### RUN INSTALLATION
-log GIT_BRANCH $GIT_BRANCH
-log GIT_URL $GIT_URL
 log "Current User: $CURRENT_USER"
 log "User home dir: $HOME_PATH"
 
