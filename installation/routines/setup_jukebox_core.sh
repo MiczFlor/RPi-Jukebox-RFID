@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # Constants
-ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
-ZMQ_PREFIX="/usr/local"
-ZMQ_VERSION="4.3.5"
+JUKEBOX_ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
+JUKEBOX_ZMQ_PREFIX="/usr/local"
+JUKEBOX_ZMQ_VERSION="4.3.5"
 
 JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
@@ -48,30 +48,30 @@ _jukebox_core_configure_pulseaudio() {
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
-  echo "    Building libzmq v${ZMQ_VERSION} with drafts support" | tee /dev/fd/3
-  local zmq_filename="zeromq-${ZMQ_VERSION}"
+  echo "    Building libzmq v${JUKEBOX_ZMQ_VERSION} with drafts support" | tee /dev/fd/3
+  local zmq_filename="zeromq-${JUKEBOX_ZMQ_VERSION}"
   local zmq_tar_filename="${zmq_filename}.tar.gz"
   local cpu_count=${CPU_COUNT:-$(python3 -c "import os; print(os.cpu_count())")}
 
-  cd "${ZMQ_TMP_DIR}" || exit_on_error
-  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/${zmq_tar_filename}
+  cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
+  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/${zmq_tar_filename}
   tar -xzf ${zmq_tar_filename}
   rm -f ${zmq_tar_filename}
   cd ${zmq_filename} || exit_on_error
-  ./configure --prefix=${ZMQ_PREFIX} --enable-drafts --disable-Werror
+  ./configure --prefix=${JUKEBOX_ZMQ_PREFIX} --enable-drafts --disable-Werror
   make -j${cpu_count} && sudo make install
 }
 
 _jukebox_core_download_prebuilt_libzmq_with_drafts() {
   echo "    Download pre-compiled libzmq with drafts support"
-  local ZMQ_TAR_FILENAME="libzmq.tar.gz"
+  local zmq_tar_filename="libzmq.tar.gz"
   ARCH=$(get_architecture)
 
-  cd "${ZMQ_TMP_DIR}" || exit_on_error
-  wget --quiet https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O ${ZMQ_TAR_FILENAME}
-  tar -xzf ${ZMQ_TAR_FILENAME}
-  rm -f ${ZMQ_TAR_FILENAME}
-  sudo rsync -a ./* ${ZMQ_PREFIX}/
+  cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
+  wget --quiet https://github.com/pabera/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/libzmq5-${ARCH}-${JUKEBOX_ZMQ_VERSION}.tar.gz -O ${zmq_tar_filename}
+  tar -xzf ${zmq_tar_filename}
+  rm -f ${zmq_tar_filename}
+  sudo rsync -a ./* ${JUKEBOX_ZMQ_PREFIX}/
 }
 
 _jukebox_core_build_and_install_pyzmq() {
@@ -82,6 +82,7 @@ _jukebox_core_build_and_install_pyzmq() {
   # Sources:
   # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
+  # https://github.com/zeromq/pyzmq/issues/1523#issuecomment-1593120264
   echo "  Install pyzmq with libzmq-drafts to support WebSockets" | tee /dev/fd/3
 
   if ! pip list | grep -F pyzmq >> /dev/null; then
@@ -90,14 +91,14 @@ _jukebox_core_build_and_install_pyzmq() {
       _show_slow_hardware_message
     fi
 
-    mkdir -p "${ZMQ_TMP_DIR}" || exit_on_error
+    mkdir -p "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
     if [ "$BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE" = true ] ; then
       _jukebox_core_build_libzmq_with_drafts
     else
       _jukebox_core_download_prebuilt_libzmq_with_drafts
     fi
 
-    ZMQ_PREFIX="${ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
+    ZMQ_PREFIX="${JUKEBOX_ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
       pip install -v --no-binary pyzmq --pre pyzmq
   else
     echo "    Skipping. pyzmq already installed" | tee /dev/fd/3
