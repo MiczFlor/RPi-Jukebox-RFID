@@ -1,29 +1,27 @@
-name: Docstring to Markdown
-
+name: Build Docs and Open PR
 on:
   push:
     branches:
         - 'future3/**'
     paths:
         - '**.py'
-        - '**.py.*'
   pull_request:
     branches:
         - 'future3/**'
     paths:
         - '**.py'
-        - '**.py.*'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-
     steps:
-              - name: Python Markdown Documentation
-                uses: jbheard/markdown-docs@v0.1
-            
+    - uses: actions/checkout@v2
+    - name: Generate Python Docs
+      uses: jbheard/markdown-docs@v1
+      with:
+        src_path: /src
+        dest_path: /documentation/developers
+    - name: Open docs update PR
+      uses: peter-evans/create-pull-request@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}           
