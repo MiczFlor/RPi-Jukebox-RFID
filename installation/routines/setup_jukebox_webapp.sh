@@ -57,9 +57,12 @@ _jukebox_webapp_download() {
   echo "  Downloading web application" | tee /dev/fd/3
   local JUKEBOX_VERSION=$(get_version_string "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
   local TAR_FILENAME="webapp-build.tar.gz"
+  local DOWNLOAD_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID/releases/download/v${JUKEBOX_VERSION}/webapp-v${JUKEBOX_VERSION}.tar.gz"
+  echo "    DOWNLOAD_URL: ${DOWNLOAD_URL}"
 
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  wget --quiet ${GIT_URL}/releases/download/v${JUKEBOX_VERSION}/webapp-v${JUKEBOX_VERSION}.tar.gz -O ${TAR_FILENAME}
+  # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
+  wget --quiet ${DOWNLOAD_URL} -O ${TAR_FILENAME}
   tar -xzf ${TAR_FILENAME}
   rm -f ${TAR_FILENAME}
   cd "${INSTALLATION_PATH}" || exit_on_error
