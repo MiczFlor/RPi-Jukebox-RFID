@@ -61,9 +61,9 @@ get_version_string() {
 
   if [ -n "$version_major" ] && [ -n "$version_minor" ] && [ -n "$version_patch" ]; then
     local version_string="${version_major}.${version_minor}.${version_patch}"
-    echo "Jukebox Version: ${version_string}"
+    echo ${version_string}
   else
-    echo "Unable to extract version information from ${python_file}"
+    exit_on_error "ERROR: Unable to extract version information from ${python_file}"
   fi
 }
 
