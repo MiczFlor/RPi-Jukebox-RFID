@@ -20,7 +20,7 @@ jobs:
       uses: jbheard/markdown-docs@v1
       with:
         src_path: /src
-        dest_path: /documentation/developers
+        dst_path: /documentation/developers
     - name: Open docs update PR
       uses: peter-evans/create-pull-request@v2
       with:
