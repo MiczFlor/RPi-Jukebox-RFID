@@ -1,6 +1,6 @@
 # Jukebox Configuration
 
-The Jukebox configuration is managed by set of files located in `../shared/settings`.
+The Jukebox configuration is managed by a set of files located in `shared/settings`.
 Some configuration changes can be made through the WebUI and take immediate effect.
 
 The majority of configuration options is only available by editing the config files -

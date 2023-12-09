@@ -101,7 +101,7 @@ Starting and stopping the service can be useful for debugging or configuration c
 The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
 ```
-~/RPi-Jukebox-RFID/src/webapp/build
+./src/webapp/build
 ```
 
 The Nginx configuration is located at
