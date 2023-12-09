@@ -4,8 +4,9 @@ The Jukebox\'s core apps are located in `src/jukebox`. Run the following
 command to learn more about each app and its parameters:
 
 ``` bash
-$ ./run_app_name.py -h
+$ ./run_python.sh ./src/jukebox/<app_scriptname.py> -h
 ```
+
 
 ## Jukebox Core
 
@@ -18,6 +19,7 @@ This is the main app and starts the Jukebox Core.
 Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart the service. For example after a configuration change. Not all configuration changes can be applied on-the-fly. See [Jukebox Configuration](../builders/configuration.md#jukebox-configuration).
 
 For debugging, it is usually desirable to run the Jukebox directly from the console rather than as service. This gives direct logging info in the console and allows changing command line parameters. See [Troubleshooting](../builders/troubleshooting.md).
+
 
 ## Configuration Tools
 
@@ -44,6 +46,7 @@ Run this once to register and configure the RFID readers with the Jukebox. Can b
 
 > [!NOTE]
 > This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user). Any manual modifications to the settings will have to be re-applied
+
 
 ## Developer Tools
 

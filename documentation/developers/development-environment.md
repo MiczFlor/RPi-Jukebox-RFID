@@ -61,7 +61,7 @@ Github, which is taken care of by the installation script. For regular
 machines, the normal package can be installed:
 
 ``` bash
-pip install pyzmq
+./run_python.sh pip install pyzmq
 ```
 
 You will have to start Jukebox core application and the WebUI

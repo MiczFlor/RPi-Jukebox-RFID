@@ -17,7 +17,7 @@ To set up the audio
 
 1. Follow the setup steps according to your sound card
 2. Check that the sound output works [as described below](audio.md#checking-system-sound-output)
-3. Run the the tool [run_configure_audio](../developers/coreapps.md#run_configure_audio.py)
+3. Run the [audio configuration tool](../developers/coreapps.md#run_configure_audio.py)
 4. [Fine-tune audio parameters](audio.md#additional-options)
 
 ## Checking system sound output
@@ -134,8 +134,4 @@ You are, of course, free to modify the PulseAudio configuration to your needs. R
 1. [PulseAudio Documentation](https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User)
 2. [PulseAudio Examples](https://wiki.archlinux.org/title/PulseAudio/Examples)
 
-In this case, run the configuration tool with below parameter to avoid touching the PulseAudio configuration file.
-
-```bash
-$ ./run_configure_audio.py --ro_pulse
-```
+In this case, run the [audio configuration tool](../developers/coreapps.md#run_configure_audio.py) with the parameter `--ro_pulse` to avoid touching the PulseAudio configuration file.

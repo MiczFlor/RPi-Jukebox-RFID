@@ -43,7 +43,7 @@ warn_python_requirements() {
   echo "ATTENTION: Python requirements have changed since last pull!"
   echo ""
   echo "To update python requirements on the RPi run"
-  echo "$ python -m pip install --upgrade -r requirements.txt"
+  echo "$ ./run_python.sh pip install --upgrade -r requirements.txt"
   echo "************************************************************"
   echo -e "\n"
 }

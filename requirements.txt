@@ -1,5 +1,5 @@
 # Common python packages
-# You need to install these with `python -m pip install --no-cache-dir -r requirements.txt`
+# You need to install these with `./run_python.sh pip install --upgrade --force-reinstall -q -r path/to/requirements.txt`
 
 setuptools
 wheel
