@@ -21,6 +21,9 @@ jobs:
       with:
         src_path: src
         dst_path: documentation/developers/docstring
+    - name: Fix permissions
+      run: |
+        sudo chown -R $USER:$USER .
     - name: Open docs update PR
       uses: peter-evans/create-pull-request@v5
       with:
