@@ -21,7 +21,7 @@ For debugging, it is usually desirable to run the Jukebox directly from the cons
 
 ## Configuration Tools
 
-Before running the configuration tools, stop the Jukebox Core service.
+Before running the configuration tools, stop the Jukebox Core service `systemctl --user stop jukebox-daemon`. Make sure to start the service afterwards.
 See [Best practice procedure](../builders/configuration.md#best-practice-procedure).
 
 ### `run_configure_audio.py`
