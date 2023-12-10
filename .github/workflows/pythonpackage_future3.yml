@@ -42,8 +42,24 @@ jobs:
     - name: Run pytest
       run: |
         ./run_pytest.sh
+    - name: Report to Coveralls (parallel)
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: coverage.xml
+        format: cobertura
+        parallel: true
     - name: Lint with flake8
       run: |
         pip3 install flake8
         # Stop the build if linting fails
         ./run_flake8.sh
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
