@@ -10,8 +10,6 @@ $ ./run_python.sh ./src/jukebox/<app_scriptname.py> -h
 
 ## Jukebox Core
 
-### `run_jukebox.py`
-
 [run_jukebox.py](../../src/jukebox/run_jukebox.py)
 
 This is the main app and starts the Jukebox Core.
@@ -26,9 +24,9 @@ For debugging, it is usually desirable to run the Jukebox directly from the cons
 Before running the configuration tools, stop the Jukebox Core service.
 See [Best practice procedure](../builders/configuration.md#best-practice-procedure).
 
-### `run_configure_audio.py`
+### Audio
 
-[run_configure_audio.py](../../src/jukebox/run_configure_audio.py)
+Scriptname: [run_configure_audio.py](../../src/jukebox/run_configure_audio.py)
 
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
@@ -36,9 +34,9 @@ Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
 Run this once after installation. Can be re-run at any time to change the settings. For more information see [Audio Configuration](../builders/audio.md).
 
-### `run_register_rfid_reader.py`
+### RFID Reader
 
-[run_register_rfid_reader.py](../../src/jukebox/run_register_rfid_reader.py)
+Scriptname: [run_register_rfid_reader.py](../../src/jukebox/run_register_rfid_reader.py)
 
 Setup tool to configure the RFID Readers.
 
@@ -50,9 +48,9 @@ Run this once to register and configure the RFID readers with the Jukebox. Can b
 
 ## Developer Tools
 
-### `run_rpc_tool.py`
+### RPC
 
-[run_rpc_tool.py](../../src/jukebox/run_rpc_tool.py)
+Scriptname: [run_rpc_tool.py](../../src/jukebox/run_rpc_tool.py)
 
 Command Line Interface to the Jukebox RPC Server.
 
@@ -62,9 +60,8 @@ The tool features auto-completion and command history.
 
 The list of available commands is fetched from the running Jukebox service.
 
+### Publicity Sniffer
 
-### `run_publicity_sniffer.py`
-
- [run_publicity_sniffer.py](../../src/jukebox/run_publicity_sniffer.py)
+Scriptname: [run_publicity_sniffer.py](../../src/jukebox/run_publicity_sniffer.py)
 
 A command line tool that monitors all messages being sent out from the Jukebox via the publishing interface. Received messages are printed in the console. Mainly used for debugging.
