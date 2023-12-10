@@ -3,7 +3,7 @@
 ## Getting started
 
 * [Development Environment](./development-environment.md)
-* [Setting up Docker](./docker.md)
+* [Python Development Notes](pyhton.md)
 
 ## Reference
 
