@@ -2,9 +2,10 @@ name: Build Docs and Open PR
 on:
   push:
     branches:
-        - 'future3/**'
+        - 'future3/**' #set to future3/develop after testing
     paths:
         - '**.py'
+  # remove after testing
   pull_request:
     branches:
         - 'future3/**'
@@ -31,16 +32,6 @@ jobs:
         base: future3/develop
         branch: future3/doc-update
         title: Docstring to markdown update
-        labels: documentation
-
-
-
-
-
-
-
-
-        
-
-
-
+        body: Automatic updating of the markdown documentation from docstring comments in py files.
+        labels: documentation, bot
+        delete-branch: true
