@@ -11,7 +11,7 @@ the conventions outlined below, your new reader will be picked up
 automatically There is no extra need to register the reader module with
 the Phoniebox. Just re-run [RFID reader configuration tool](../coreapps.md#run_register_rfid_reader.py).
 
-Follow the instructions in [template_new_reader.py]
+Follow the instructions in [template_new_reader.py](../../../src/jukebox/components/rfid/hardware/template_new_reader/template_new_reader.py)
 
 Also have a look at the other reader subpackages to see how stuff works
 with an example

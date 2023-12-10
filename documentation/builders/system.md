@@ -70,7 +70,7 @@ Service control and service configuration file location is identical to MPD.
 
 ## Jukebox Core Service
 
-The :ref:`developer/coreapps:Jukebox Core` runs as a *user-local* service with the name `jukebox-daemon`.
+The [Jukebox Core Service](../developers/coreapps.md#Jukebox-Core) runs as a *user-local* service with the name `jukebox-daemon`.
 Similar to MPD, it's important that it does run as system-wide service to be able to interact with PulseAudio.
 
 The service can be controlled with the `systemctl`-command by adding the parameter `--user`

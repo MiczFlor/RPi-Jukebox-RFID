@@ -28,7 +28,7 @@ Custom key bindings
 You may change or extend the actions assigned to a button in the configuration. If the configuration contains
 a block 'mapping', the default button-action mapping is *completely* replaced with the new mapping. The definitions for
 each key looks like ``key-code: {rpc_command_definition}``.
-The RPC command follows the regular RPC command rules as defined in :ref:`userguide/rpc_commands:RPC Commands`.
+The RPC command follows the regular RPC command rules as defined in :ref:`documentation/builders/rpc-commands.md:RPC Commands`.
 
 .. code-block:: yaml
 

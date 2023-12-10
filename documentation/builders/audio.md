@@ -31,7 +31,7 @@ $ pactl list sinks short
 1	bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink	        module-bluez5-device.c	s16le 2ch 44100Hz
 
 # Set the default sink (this will be reset at reboot)
-$ pactl set-default-sink sink_name
+$ pactl set-default-sink <sink_name>
 
 # Check default sink is correctly set
 $ pactl info
@@ -50,7 +50,7 @@ You can also try different PulseAudio sinks without setting the default sink. In
 volume level for this sink:
 
 ```bash
-$ paplay -d sink_name /usr/share/sounds/alsa/Front_Center.wav
+$ paplay -d <sink_name> /usr/share/sounds/alsa/Front_Center.wav
 ```
 
 # Bluetooth

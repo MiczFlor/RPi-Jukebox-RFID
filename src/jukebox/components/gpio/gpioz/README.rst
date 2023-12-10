@@ -16,7 +16,7 @@ this entry and modify it accordingly:
           enable: true
           config_file: ../../shared/settings/gpio.yaml
 
-The GPIO configuration itself is stored in a separate file, in this case ``../../shared/settings/gpio.yaml``.
+The GPIO configuration itself is stored in a separate file, in this case ``shared/settings/gpio.yaml``.
 
 The GPIO module uses `GPIOZero <https://gpiozero.readthedocs.io/>`_ as a backend to access the RPi's GPIO pins.
 It's a wrapper to integrate GPIOZero into the Jukebox's API, allowing a YAML based configuration and providing
@@ -56,7 +56,7 @@ Configuring input devices consists of 2 aspects:
     #. Define an input device and configure it's parameters. All available
        input devices can be found in :class:`components.gpio.gpioz.core.input_devices`.
     #. Assign an action to execute on input state change.
-       Actions are defined as :ref:`userguide/rpc_commands:RPC Commands`,
+       Actions are defined as :ref:`documentation/builders/rpc-commands.md:RPC Commands`,
        just the same as for assigning card actions.
 
 
@@ -87,7 +87,7 @@ parameters, which relate directly to the class' initialization parameters.
     from inside ``kwargs``. The name is automatically assigned from the unique name of configuration entry.
 
 Usually, only the pin(s) are mandatory parameters. In the section ``actions``, the RPC commands are linked,
-either as alias (i.e. shortcut) or full :ref:`userguide/rpc_commands:RPC Commands` specification.
+either as alias (i.e. shortcut) or full :ref:`documentation/builders/rpc-commands.md:RPC Commands` specification.
 
 The default configuration of the Button uses the internal pull-up resistor. So, the physical connection to
 the RPi looks:
@@ -435,7 +435,7 @@ Use Mock Pins
 
 Using GPIOZero `Mock pins <https://gpiozero.readthedocs.io/en/stable/api_pins.html#mock-pins>`_,
 allows to do function development on an arbitrary machine. If you have
-configured the :ref:`Mock RFID Reader <rfid/mock_reader:Mock Reader>`,
+configured the :ref:`Mock RFID Reader <documentation/developers/rfid/mock_reader.md:Mock Reader>`,
 the GPIO input and output devices are added to the GUI. Simply change the header in the configuration file to:
 
 .. code-block:: yaml

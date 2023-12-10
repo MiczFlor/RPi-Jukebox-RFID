@@ -26,7 +26,7 @@ Integration
 Pulse Audio runs as a user process. Processes who want to communicate / stream to it
 must also run as a user process.
 
-This means must also run as user process, as described in :ref:`userguide/system:Music Player Daemon (MPD)`
+This means must also run as user process, as described in `documentation/builders/system.md #Music Player Daemon (MPD)`
 
 Misc
 
