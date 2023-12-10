@@ -80,6 +80,7 @@ sudo -u mpd speaker-test -t wav -c 2
 # Toggle (und 2nd Swipe generell) ist immer vom Status des Zielsystems abhängig und kann damit nur vom Zielsystem geändert
 # werden. Bei Wifi also braucht man 3 Funktionen: on / off / toggle. Toggle ist dann first swipe / second swipe
 
+import os
 import mpd
 import threading
 import logging
@@ -574,6 +575,11 @@ class PlayerMPD:
 
     @plugs.tag
     def get_song_by_url(self, song_url):
+        # MPD can play absolute paths but can find songs in its database only by relative path
+        # In certain situations, `song_url` can be an absolute path. Then, it will be trimed to be relative
+        _music_library_path_absolute = os.path.expanduser(components.player.get_music_library_path())
+        song_url = song_url.replace(f'{_music_library_path_absolute}/', '')
+
         with self.mpd_lock:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
 

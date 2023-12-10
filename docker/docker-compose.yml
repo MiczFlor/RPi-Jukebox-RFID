@@ -40,6 +40,7 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
+      - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
       - ../shared:/root/RPi-Jukebox-RFID/shared
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
     command: python run_jukebox.py
