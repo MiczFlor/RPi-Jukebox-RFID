@@ -41,6 +41,9 @@ jobs:
         pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
+    - name: Run pytest
+      run: |
+        ./run_pytest.sh
     - name: Lint with flake8
       run: |
         pip3 install flake8
