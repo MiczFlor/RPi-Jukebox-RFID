@@ -30,5 +30,6 @@ gpiozero
 
 # Code quality
 flake8>=4.0.0
+flake8-docstrings
 pytest
 mock
