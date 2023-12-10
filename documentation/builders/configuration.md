@@ -24,7 +24,8 @@ $ systemctl --user stop jukebox-daemon
 $ nano ./shared/settings/jukebox.yaml
 
 # Start Jukebox in console and check the log output (optional)
-$ ./run_python.sh ./src/jukebox/run_jukebox.py
+$ cd src/jukebox
+$ ../../run_python.sh ./run_jukebox.py 
 # and if OK, press Ctrl-C and restart the service
 
 # Restart the service
@@ -36,5 +37,6 @@ This could be useful if you want your Jukebox to only allow a lower volume when 
 at night time when there is time to go to bed :-)
 
 ```bash
-$ ./run_python.sh ./src/jukebox/run_jukebox.py --conf path/to/custom/config.yaml
+$ cd src/jukebox
+$ ../../run_python.sh ./run_jukebox.py --conf path/to/custom/config.yaml
 ```

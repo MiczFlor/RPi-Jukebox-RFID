@@ -4,7 +4,8 @@ The Jukebox\'s core apps are located in `src/jukebox`. Run the following
 command to learn more about each app and its parameters:
 
 ``` bash
-$ ./run_python.sh ./src/jukebox/<app_scriptname.py> -h
+$ cd src/jukebox
+$ ../../run_python.sh ./<app_scriptname.py> -h
 ```
 
 
