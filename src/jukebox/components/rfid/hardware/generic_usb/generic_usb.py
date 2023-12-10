@@ -82,7 +82,8 @@ def query_customization() -> dict:
     print(f" {Colors.lightgreen}ID{Colors.reset}: "
           f"{Colors.lightgreen}isKey{Colors.reset}: {Colors.lightcyan}Name{Colors.reset}")
     if len(devices) == 0:
-        logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run RFID reader configuration tool")
+        logger.error("USB device list is empty. Make sure USB RFID reader is connected."
+        "Then re-run RFID reader configuration tool")
         return {'device_name': '__error_empty_device_list__'}
     for idx, (dev, key) in enumerate(zip(devices, devices_is_key)):
         print(f" {Colors.lightgreen}{idx:2d}{Colors.reset}:"
