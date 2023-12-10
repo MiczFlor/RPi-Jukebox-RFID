@@ -41,7 +41,7 @@ jobs:
         pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
     - name: Run pytest
       run: |
-        ./run_pytest.sh
+        ./run_pytest.sh --cov --cov-report xml
     - name: Report to Coveralls (parallel)
       uses: coverallsapp/github-action@v2
       with:

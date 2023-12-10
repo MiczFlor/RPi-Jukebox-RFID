@@ -10,4 +10,4 @@ SCRIPT_DIR="$(dirname "$SOURCE")"
 cd "$SCRIPT_DIR" || (echo "Could not change to top-level project directory" && exit 1)
 
 # Run pytest
-pytest -c pytest.ini
+pytest -c pytest.ini $1 $2 $3
