@@ -123,7 +123,7 @@ It contains out setup file.
 
 ~~~bash
 cd ~/RPi-Jukebox-RFID
-./run_flake8.sh
+./run_python.sh ./run_flake8.sh
 ~~~
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
@@ -136,7 +136,7 @@ them.
 
 ~~~bash
 cd ~/RPi-Jukebox-RFID/
-./run_pytest.sh
+./run_python.sh ./run_pytest.sh
 ~~~
 
 ## Submitting Changes

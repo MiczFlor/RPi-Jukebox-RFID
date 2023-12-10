@@ -10,4 +10,4 @@ SCRIPT_DIR="$(dirname "$SOURCE")"
 cd "$SCRIPT_DIR" || (echo "Could not change to top-level project directory" && exit 1)
 
 # Run flake8
-./run_python.sh flake8 --config .flake8 "$@"
+flake8 --config .flake8 "$@"
