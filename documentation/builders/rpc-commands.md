@@ -107,6 +107,6 @@ You will find some more examples the configuration of the [Card Database](card-d
 
 ## For developers
 
-To send RPC commands for testing and debugging purpose you can use the CLI Tool [`run_rpc_tool.py`](../developers/coreapps.md#run_rpc_toolpy)
+To send RPC commands for testing and debugging purpose you can use the [CLI Tool](../developers/coreapps.md#RPC).
 Also here is a ready-to-use decoding functions which decodes an RPC command (with or without alias)
 from a YAML entry:func:`jukebox.utils.decode_rpc_command`.

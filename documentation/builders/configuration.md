@@ -1,13 +1,13 @@
 # Jukebox Configuration
 
-The Jukebox configuration is managed by set of files located in `../shared/settings`.
+The Jukebox configuration is managed by a set of files located in `shared/settings`.
 Some configuration changes can be made through the WebUI and take immediate effect.
 
 The majority of configuration options is only available by editing the config files -
 *when the service is not running!*
 Don't fear (overly), they contain commentaries.
 
-For several aspects we have :ref:`developer/coreapps:Configuration Tools` and detailed guides:
+For several aspects we have [configuration tools](../developers/coreapps.md#configuration-tools) and detailed guides:
 
 * [Audio Configuration](./audio.md#audio-configuration)
 * [RFID Reader Configuration](../developers/rfid/basics.md#reader-configuration)
@@ -24,7 +24,8 @@ $ systemctl --user stop jukebox-daemon
 $ nano ./shared/settings/jukebox.yaml
 
 # Start Jukebox in console and check the log output (optional)
-$ ./src/jukebox/run_jukebox.py
+$ cd src/jukebox
+$ ./run_jukebox.py 
 # and if OK, press Ctrl-C and restart the service
 
 # Restart the service
@@ -36,5 +37,6 @@ This could be useful if you want your Jukebox to only allow a lower volume when 
 at night time when there is time to go to bed :-)
 
 ```bash
-$./run_jukebox.py --conf ../path/to/custom/config.yaml
+$ cd src/jukebox
+$ ./run_jukebox.py --conf path/to/custom/config.yaml
 ```

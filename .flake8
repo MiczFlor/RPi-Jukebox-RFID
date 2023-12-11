@@ -15,7 +15,7 @@ per-file-ignores =
 count = True
 max-complexity = 12
 statistics = True
-filename = *.py,*.py.*
+filename = *.py
 extend-exclude =
     # Ignore all scratch development directories
     scratch*,

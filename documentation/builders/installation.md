@@ -16,7 +16,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
     * Click `Edit Settings`
     * Switch to the `General` tab
         * Provide a hostname. (When on Mac, you will be able to use it to connect via SSH)
-        * Username currently MUST be `pi`. Other usernames are currently not supported.
+        * Username
         * Password
         * Wifi
         * Set locale settings
@@ -72,7 +72,7 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 7. Eject your SD card and insert it into your Raspberry Pi.
 8. Start your Raspberry Pi by attaching a power supply.
-9. Login into your Raspberry Pi, username is `pi` and password is `raspberry`.
+9. Login into your Raspberry Pi
    If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
 
 </details>
@@ -85,22 +85,24 @@ Run the following command in your SSH terminal and follow the instructions
 cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
 ```
 
-This will get the latest stable release from the branch future3/main.
+This will get the latest **stable release** from the branch *future3/main*.
+
 To install directly from a specific branch and/or a different repository
 specify the variables like this:
 
 ```bash
-
 cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```
 
 This will switch directly to the specified feature branch during installation.
 
 > [!NOTE]
-> For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](../developers/development-environment.md#steps-to-install)
+> For all branches *except* the current Release future3/main, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Developer steps to install](../developers/development-environment.md#steps-to-install)
 
 If you suspect an error you can monitor the installation-process with
 
 ```bash
 cd; tail -f INSTALL-<fullname>.log
 ```
+
+After successful installation, continue with [configuring your Phoniebox](configuration.md).

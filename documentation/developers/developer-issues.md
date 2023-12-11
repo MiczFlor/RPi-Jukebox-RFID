@@ -46,6 +46,7 @@ Alternatively, use the provided script, which sets the variable for you
 (provided your swap size is large enough):
 
 ``` bash
+$ cd src/webapp
 $ ./run_rebuild.sh
 ```
 
