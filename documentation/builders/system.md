@@ -70,7 +70,7 @@ Service control and service configuration file location is identical to MPD.
 
 ## Jukebox Core Service
 
-The :ref:`developer/coreapps:Jukebox Core` runs as a *user-local* service with the name `jukebox-daemon`.
+The [Jukebox Core Service](../developers/coreapps.md#Jukebox-Core) runs as a *user-local* service with the name `jukebox-daemon`.
 Similar to MPD, it's important that it does run as system-wide service to be able to interact with PulseAudio.
 
 The service can be controlled with the `systemctl`-command by adding the parameter `--user`
@@ -101,7 +101,7 @@ Starting and stopping the service can be useful for debugging or configuration c
 The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
 ```
-~/RPi-Jukebox-RFID/src/webapp/build
+./src/webapp/build
 ```
 
 The Nginx configuration is located at
