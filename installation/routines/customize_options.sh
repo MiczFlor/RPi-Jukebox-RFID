@@ -25,11 +25,7 @@ Set a static IP? [Y/n]"
     *)
       ;;
   esac
-
   log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
-  if [ "$ENABLE_STATIC_IP" = true ]; then
-    log "STATIC_IP_ADDRESS=${CURRENT_IP_ADDRESS}"
-  fi
 }
 
 _option_ipv6() {
