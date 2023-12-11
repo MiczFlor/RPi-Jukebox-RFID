@@ -17,7 +17,7 @@ run_with_timer() {
 
   $1; # Executes the function passed as an argument
 
-  calc_runtime_and_print time_start $(date +%s) | log
+  run_and_log calc_runtime_and_print time_start $(date +%s)
 }
 
 run_with_log_frame() {

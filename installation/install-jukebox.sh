@@ -50,6 +50,11 @@ log() {
   echo -e "$message"
 }
 
+# Function to run a command where the output will be logged to both console and logfile
+run_and_log() {
+  "$@" | tee /dev/fd/3
+}
+
 # Function to log to console only
 print_c() {
   local message="$1"
