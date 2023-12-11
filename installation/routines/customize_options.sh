@@ -85,9 +85,8 @@ Do you want to enable an Autohotpot? [y/N]"
 
       if [ "$ENABLE_STATIC_IP" = true ]; then
         print_c "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
-        print_c "---------------------\n\n"
         ENABLE_STATIC_IP=false
-        print_lc "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+        log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
       fi
   fi
 
@@ -314,6 +313,11 @@ Do you want to install Node? [Y/n]"
            Read the documentation regarding local Web App builds!"
       FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
     fi
+  fi
+
+  log "ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE}"
+  if [ "$ENABLE_INSTALL_NODE" != true ]; then
+    log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
   fi
 }
 

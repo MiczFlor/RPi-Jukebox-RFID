@@ -41,7 +41,7 @@ _git_convert_tardir_git_repo() {
 * Did you forget to upload the ssh key for this machine to GitHub?
 * Defaulting to HTTPS protocol. You can change back to SSH later with
 * git remote set-url origin git@github.com:${GIT_USER}/${GIT_REPO_NAME}.git
-* git remote set-url upstream git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+* git remote set-url upstream git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git\n"
 
       git remote remove origin
       GIT_USE_SSH=false
@@ -119,7 +119,7 @@ _git_convert_tardir_git_repo() {
 * Don't worry! We will stay within the exact download version!
 * But we set up the git repo to be ready for updating.
 * To start updating (observe updating guidelines!), do:
-* $ git pull origin $GIT_BRANCH"
+* $ git pull origin $GIT_BRANCH\n"
 
   fi
 

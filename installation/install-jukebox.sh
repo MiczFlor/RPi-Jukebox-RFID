@@ -53,7 +53,7 @@ log() {
 # Function to log to console only
 print_c() {
   local message="$1"
-  echo -e "$message" >&3
+  echo -e "$message" 1>&3
 }
 
 # Function to clear console screen
