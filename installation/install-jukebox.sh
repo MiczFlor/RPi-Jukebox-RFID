@@ -56,6 +56,11 @@ print_c() {
   echo -e "$message" >&3
 }
 
+# Function to clear console screen
+clear_c() {
+  clear 1>&3
+}
+
 # Generic emergency error handler that exits the script immediately
 # Print additional custom message if passed as first argument
 # Examples:

@@ -1,7 +1,7 @@
 install() {
-  clear 1>&3
+  clear_c
   customize_options
-  clear 1>&3
+  clear_c
   set_raspi_config
   set_ssh_qos
   update_raspi_os

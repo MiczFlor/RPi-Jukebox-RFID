@@ -8,7 +8,7 @@ _option_static_ip() {
   CURRENT_GATEWAY=$(echo "${CURRENT_ROUTE}" | awk '{ print $3; exit }')
   CURRENT_INTERFACE=$(echo "${CURRENT_ROUTE}" | awk '{ print $5; exit }')
   CURRENT_IP_ADDRESS=$(echo "${CURRENT_ROUTE}" | awk '{ print $7; exit }')
-  clear 1>&3
+  clear_c
   print_c "----------------------- STATIC IP -----------------------
 
 Setting a static IP will save a lot of start up time.
@@ -30,7 +30,7 @@ Set a static IP? [Y/n]"
 
 _option_ipv6() {
   # DISABLE_IPv6
-  clear 1>&3
+  clear_c
   print_c "------------------------- IP V6 -------------------------
 
 IPv6 is only needed if you intend to use it.
@@ -50,7 +50,7 @@ Do you want to disable IPv6? [Y/n]"
 
 _option_autohotspot() {
   # ENABLE_AUTOHOTSPOT
-  clear 1>&3
+  clear_c
   print_c "---------------------- AUTOHOTSPOT ----------------------
 
 When enabled, this service spins up a WiFi hotspot
@@ -99,7 +99,7 @@ Do you want to enable an Autohotpot? [y/N]"
 
 _option_bluetooth() {
   # DISABLE_BLUETOOTH
-  clear 1>&3
+  clear_c
   print_c "----------------------- BLUETOOTH -----------------------
 
 Turning off Bluetooth will save energy and
@@ -118,7 +118,7 @@ Do you want to disable Bluetooth? [Y/n]"
 }
 
 _option_mpd() {
-    clear 1>&3
+    clear_c
     if [[ "$SETUP_MPD" == true ]]; then
         if [[ -f "${MPD_CONF_PATH}" || -f "${SYSTEMD_USR_PATH}/mpd.service" ]]; then
             print_c "-------------------------- MPD --------------------------
@@ -145,7 +145,7 @@ Would you like to overwrite your configuration? [Y/n]"
 
 _option_rfid_reader() {
   # ENABLE_RFID_READER
-  clear 1>&3
+  clear_c
   print_c "---------------------- RFID READER ----------------------
 
 Phoniebox can be controlled with rfid cards/tags, if you
@@ -167,7 +167,7 @@ Do you want to setup a rfid reader? [Y/n]"
 
 _option_samba() {
   # ENABLE_SAMBA
-  clear 1>&3
+  clear_c
   print_c "------------------------- SAMBA -------------------------
 
 Samba is required to conveniently copy files
@@ -189,7 +189,7 @@ Do you want to install Samba? [Y/n]"
 
 _option_webapp() {
   # ENABLE_WEBAPP
-  clear 1>&3
+  clear_c
   print_c "------------------------ WEBAPP -------------------------
 
 This is only required if you want to use
@@ -210,7 +210,7 @@ Would you like to install the web application? [Y/n]"
 
 _option_kiosk_mode() {
   # ENABLE_KIOSK_MODE
-  clear 1>&3
+  clear_c
   print_c "----------------------- KIOSK MODE ----------------------
 
 If you have a screen attached to your RPi,
@@ -232,7 +232,7 @@ Would you like to enable the Kiosk Mode? [y/N]"
 
 _options_update_raspi_os() {
   # UPDATE_RASPI_OS
-  clear 1>&3
+  clear_c
   print_c "----------------------- UPDATE OS -----------------------
 
 This shall be done eventually,
@@ -253,7 +253,7 @@ Would you like to update the operating system? [Y/n]"
 _option_disable_onboard_audio() {
   # Disable BCM on-chip audio (typically Headphones)
   # not needed when external sound card is sued
-  clear 1>&3
+  clear_c
   print_c "--------------------- ON-CHIP AUDIO ---------------------
 
 If you are using an external sound card (e.g. USB,
@@ -290,7 +290,7 @@ _option_webapp_devel_build() {
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
-      clear 1>&3
+      clear_c
       print_c "--------------------- WEBAPP NODE ---------------------
 
 You are installing from a non-release branch.
