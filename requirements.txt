@@ -31,4 +31,5 @@ gpiozero
 # Code quality
 flake8>=4.0.0
 pytest
+pytest-cov
 mock

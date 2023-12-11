@@ -2,6 +2,12 @@
 
 ## Updating your Jukebox Version 3
 
+### Update from v3.2.1 and prior
+
+As there are some significant changes in the installation, a new setup on a fresh image is required.
+
+### General
+
 Things on Version 3 are moving fast and you may want to keep up with recent changes. Since we are in Alpha Release stage,
 a fair number of fixes are expected to be committed in the near future.
 

@@ -14,7 +14,7 @@ AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
 _get_interface() {
     # interfaces may vary
     WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
-    WIFI_REGION=$(iw reg get | grep country | awk '{ print $2}' | cut -d: -f1)
+    WIFI_REGION=$(iw reg get | grep country |  head -n 1 | awk '{ print $2}' | cut -d: -f1)
 
     # fix for CI runs on docker
     if [ "${CI_RUNNING}" == "true" ]; then
