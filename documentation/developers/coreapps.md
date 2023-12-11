@@ -21,7 +21,8 @@ For debugging, it is usually desirable to run the Jukebox directly from the cons
 
 ## Configuration Tools
 
-Before running the configuration tools, stop the Jukebox Core service. See [Best practice procedure](../builders/configuration.md#best-practice-procedure).
+Before running the configuration tools, stop the Jukebox Core service.
+See [Best practice procedure](../builders/configuration.md#best-practice-procedure).
 
 ### `run_configure_audio.py`
 
