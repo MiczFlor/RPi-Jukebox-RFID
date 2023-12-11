@@ -17,21 +17,21 @@ run_with_timer() {
 
   $1; # Executes the function passed as an argument
 
-  calc_runtime_and_print time_start $(date +%s) | tee /dev/fd/3
+  run_and_print_lc calc_runtime_and_print time_start $(date +%s)
 }
 
 run_with_log_frame() {
     local time_start=$(date +%s);
     local description="$2"
-    echo -e "\n\n"
-    echo "#########################################################"
-    echo "${description}" | tee /dev/fd/3
+    log "\n\n"
+    log "#########################################################"
+    print_lc "${description}"
 
     $1; # Executes the function passed as an argument
 
     local done_in=$(calc_runtime_and_print time_start $(date +%s))
-    echo -e "\n${done_in} - ${description}"
-    echo "#########################################################"
+    log "\n${done_in} - ${description}"
+    log "#########################################################"
 }
 
 get_architecture() {
@@ -69,16 +69,16 @@ get_version_string() {
 
 ### Verify helpers
 print_verify_installation() {
-    echo ""
-    echo "  -------------------------------------------------------"
-    echo "  Check installation"
-    echo ""
+    log "\n
+  -------------------------------------------------------
+  Check installation
+"
 }
 
 # Check if the file(s) exists
 verify_files_exists() {
     local files="$@"
-    echo "  Verify '${files}' exists"
+    log "  Verify '${files}' exists"
 
     if [[ -z "${files}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -88,13 +88,13 @@ verify_files_exists() {
     do
         test ! -f ${file} && exit_on_error "ERROR: '${file}' does not exists or is not a file!"
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 # Check if the dir(s) exists
 verify_dirs_exists() {
     local dirs="$@"
-    echo "  Verify '${dirs}' exists"
+    log "  Verify '${dirs}' exists"
 
     if [[ -z "${dirs}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -104,7 +104,7 @@ verify_dirs_exists() {
     do
         test ! -d ${dir} && exit_on_error "ERROR: '${dir}' does not exists or is not a dir!"
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 # Check if the file(s) has/have the expected owner and modifications
@@ -113,7 +113,7 @@ verify_files_chmod_chown() {
     local user_expected=$2
     local group_expected=$3
     local files="${@:4}"
-    echo "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${files}'"
+    log "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${files}'"
 
     if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${files}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -130,7 +130,7 @@ verify_files_chmod_chown() {
         test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${file}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
         test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${file}' actual group '${group_actual}' differs from expected '${group_expected}'!"
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 # Check if the dir(s) has/have the expected owner and modifications
@@ -139,7 +139,7 @@ verify_dirs_chmod_chown() {
     local user_expected=$2
     local group_expected=$3
     local dirs="${@:4}"
-    echo "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${dirs}'"
+    log "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${dirs}'"
 
     if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${dirs}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -156,13 +156,13 @@ verify_dirs_chmod_chown() {
         test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${dir}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
         test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${dir}' actual group '${group_actual}' differs from expected '${group_expected}'!"
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 verify_file_contains_string() {
     local string="$1"
     local file="$2"
-    echo "  Verify '${string}' found in '${file}'"
+    log "  Verify '${string}' found in '${file}'"
 
     if [[ -z "${string}" || -z "${file}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -171,13 +171,13 @@ verify_file_contains_string() {
     if [[ ! $(grep -iw "${string}" "${file}") ]]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     fi
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 verify_file_contains_string_once() {
     local string="$1"
     local file="$2"
-    echo "  Verify '${string}' found in '${file}'"
+    log "  Verify '${string}' found in '${file}'"
 
     if [[ -z "${string}" || -z "${file}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -189,14 +189,14 @@ verify_file_contains_string_once() {
     elif [ "$file_contains_string_count" -gt 1 ]; then
         exit_on_error "ERROR: '${string}' found more than once in '${file}'"
     fi
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 verify_service_state() {
     local service="$1"
     local desired_state="$2"
 	local option="${3:+$3 }" # optional, dont't quote in next call!
-    echo "  Verify service '${option}${service}' is '${desired_state}'"
+    log "  Verify service '${option}${service}' is '${desired_state}'"
 
     if [[ -z "${service}" || -z "${desired_state}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -206,14 +206,14 @@ verify_service_state() {
     if [[ ! "${actual_state}" == "${desired_state}" ]]; then
         exit_on_error "ERROR: service '${option}${service}' is not '${desired_state}' (state: '${actual_state}')."
     fi
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 verify_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
     local option="${3:+$3 }" # optional, dont't quote in next call!
-    echo "  Verify service ${option}${service} is ${desired_enablement}"
+    log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -223,14 +223,14 @@ verify_service_enablement() {
     if [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 verify_optional_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
     local option="${3:+$3 }" # optional, dont't quote in next call!
-    echo "  Verify service ${option}${service} is ${desired_enablement}"
+    log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -238,13 +238,13 @@ verify_optional_service_enablement() {
 
     local actual_enablement=$(systemctl is-enabled ${option}${service}) 2>/dev/null
     if [[ -z "${actual_enablement}" ]]; then
-        echo "  INFO: optional service ${option}${service} is not installed."
+        log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then
-        echo "  INFO: optional service ${option}${service} is set static."
+        log "  INFO: optional service ${option}${service} is set static."
     elif [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 # Reads a textfile and returns all lines as args.
@@ -259,7 +259,7 @@ get_args_from_file() {
 # Check if all passed packages are installed. Fail on first missing.
 verify_apt_packages() {
     local packages="$@"
-    echo "  Verify packages are installed: '${packages}'"
+    log "  Verify packages are installed: '${packages}'"
 
     if [[ -z "${packages}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -272,13 +272,13 @@ verify_apt_packages() {
             exit_on_error "ERROR: ${package} is not installed"
         fi
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
 
 # Check if all passed modules are installed. Fail on first missing.
 verify_pip_modules() {
     local modules="$@"
-    echo "  Verify modules are installed: '${modules}'"
+    log "  Verify modules are installed: '${modules}'"
 
     if [[ -z "${modules}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
@@ -291,5 +291,5 @@ verify_pip_modules() {
             exit_on_error "ERROR: ${module} is not installed"
         fi
     done
-    echo "  CHECK"
+    log "  CHECK"
 }
