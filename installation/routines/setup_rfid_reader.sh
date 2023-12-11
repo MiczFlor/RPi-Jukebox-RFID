@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _run_setup_rfid_reader() {
-    run_and_log python "${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py"
+    run_and_print_lc python "${INSTALLATION_PATH}/src/jukebox/run_register_rfid_reader.py"
 }
 
 setup_rfid_reader() {

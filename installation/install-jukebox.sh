@@ -51,7 +51,7 @@ log() {
 }
 
 # Function to run a command where the output will be logged to both console and logfile
-run_and_log() {
+run_and_print_lc() {
   "$@" | tee /dev/fd/3
 }
 
