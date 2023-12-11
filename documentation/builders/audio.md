@@ -13,14 +13,14 @@ Audio outputs run via PulseAudio and the basic configuration should be easy.
 There is a [configuration tool](../developers/coreapps.md#Audio),
 to setup the configuration for the Jukebox Core App.
 
-To set up the audio
+### To set up the audio
 
 1. Follow the setup steps according to your sound card
 2. Check that the sound output works [as described below](audio.md#checking-system-sound-output)
 3. Run the [audio configuration tool](../developers/coreapps.md#Audio)
 4. [Fine-tune audio parameters](audio.md#additional-options)
 
-## Checking system sound output
+#### Checking system sound output
 
 Run the following steps in a console:
 
@@ -53,7 +53,7 @@ volume level for this sink:
 $ paplay -d <sink_name> /usr/share/sounds/alsa/Front_Center.wav
 ```
 
-# Bluetooth
+## Bluetooth
 
 Bluetooth setup consists of three steps
 
