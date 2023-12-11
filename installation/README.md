@@ -3,7 +3,7 @@
 ## Logging - Bash Script output rules
 
 ```bash
-run_and_print_lc "Run a command and log its output to logfile"
+run_and_print_lc "Run a command and log its output to both console and logfile"
 print_lc         "This message will be logged to both console and logfile"
 print_c          "This message will only be logged to the console"
 log              "This message will only be logged to the logfile"
