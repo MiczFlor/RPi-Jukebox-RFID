@@ -65,15 +65,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 ### Version 2 (stable)
 
-**Phoniebox [2.4.0](https://github.com/MiczFlor/RPi-Jukebox-RFID/milestone/7?closed=1)** released (2022-12-18).
-
-#### What's new in Version 2.4.0?
-
-* 🔥 Fixed `evdev` bug (fixes e.g. #1721, #1653, #1618, #1501 etc.)
-* 🔥 New support for Raspberry Pi OS Bullseye (and still for Buster) #1849
-* Publish "card swiped" event via MQTT #1496
-* Spotify integration **still doesn't work** - please follow the discussion at <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
-* More fixed bugs and minor improvements...
+ ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
 
 #### Features Version 2
 
