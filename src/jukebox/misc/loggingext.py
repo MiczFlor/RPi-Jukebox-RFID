@@ -1,7 +1,6 @@
 """
 ##############
 Logger
-
 ##############
 We use a hierarchical Logger structure based on pythons logging module. It can be finely configured with a yaml file.
 
