@@ -45,21 +45,6 @@ If you are looking for the latest **stable version 2.x**, use the [install scrip
 
 ### 🔥 Version 3 is coming
 
-#### Newest release: V3.3 Beta -> 25. Nov 2023
-
-Just as the year ends, we have put together a small update for Version 3 with bug fixes and documentation fixes.
-
-And, of course you still have all the goodies that were introduced in Version 3.2.0:
-
-* New GPIO backend based on GPIOZero including more sophisticated controls for inputs and outputs
-* Bluetooth Headset support with device buttons
-* Equalizer + Mono down mixer
-* Localization support for Webapp, current languages supported are English and German (help us translate!)
-* Timer support in Webapp and via RFID cards
-* Additional system information in Webapp like Battery status, CPU temperature or IP address
-* Preperation for Text-to-Speech + Read My IP as a first example
-* Bugfixes for Install Script
-
 The goal for Version 3 was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/README.md).
 
 #### 👋 Looking for adopters, testers and contributors
@@ -70,6 +55,7 @@ While Version 3 is still under development, it is becoming a lot more stable! Al
 
 If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
+* ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v3&expanded=true)**
 * 🚀 **[Install Jukebox Version 3 Beta](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/builders/installation.md)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
 * ☑️ [Feature Status](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/status.md)
