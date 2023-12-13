@@ -1,0 +1,72 @@
+name: Build WebApp Bundle
+
+on:
+    release:
+        types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      WEBAPP_ROOT_PATH: ./src/webapp
+
+    outputs:
+      release_upload_url:  ${{ github.event.release.upload_url }}
+      webapp_bundle_name: ${{ steps.vars.outputs.webapp_bundle_name }}
+
+    steps:
+    - name: Set Output vars
+      id: vars
+      run: |
+        echo "webapp_bundle_name=webapp-${{ github.event.release.tag_name }}.tar.gz" >> $GITHUB_OUTPUT
+
+    - uses: actions/checkout@v3
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+    - name: npm install
+      working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+      run: npm install
+    - name: npm build
+      working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+      env:
+        CI: false
+      run: npm run build
+
+    - name: Create Bundle
+      working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+      run: |
+        tar -czvf ${{ steps.vars.outputs.webapp_bundle_name }} build
+
+    - name: Artifact Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ steps.vars.outputs.webapp_bundle_name }}
+        path: ${{ env.WEBAPP_ROOT_PATH }}/${{ steps.vars.outputs.webapp_bundle_name }}
+        retention-days: 5
+
+  upload:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Artifact Download
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ needs.build.outputs.webapp_bundle_name }}
+
+    - name: Upload Release Asset
+      uses: shogo82148/actions-upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.build.outputs.release_upload_url }}
+        asset_name: ${{ needs.build.outputs.webapp_bundle_name }}
+        asset_path: ${{ needs.build.outputs.webapp_bundle_name }}
+        asset_content_type: application/gzip
+        overwrite: true
