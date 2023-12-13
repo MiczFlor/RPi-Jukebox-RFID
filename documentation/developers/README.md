@@ -11,3 +11,8 @@
 * [RFID Readers](./rfid)
 * [Feature Status](./status.md)
 * [Known Issues](./known-issues.md)
+
+## RPC
+
+* [LibZMQ](./libzmq.md)
+* [CLI Client for RPC](./cli-client.md)
