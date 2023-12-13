@@ -54,7 +54,7 @@ _jukebox_core_build_libzmq_with_drafts() {
   local cpu_count=${CPU_COUNT:-$(python3 -c "import os; print(os.cpu_count())")}
 
   cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
-  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/${zmq_tar_filename}
+  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/${zmq_tar_filename} || exit_on_error "Download failed"
   tar -xzf ${zmq_tar_filename}
   rm -f ${zmq_tar_filename}
   cd ${zmq_filename} || exit_on_error
@@ -68,7 +68,7 @@ _jukebox_core_download_prebuilt_libzmq_with_drafts() {
   ARCH=$(get_architecture)
 
   cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
-  wget --quiet https://github.com/pabera/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/libzmq5-${ARCH}-${JUKEBOX_ZMQ_VERSION}.tar.gz -O ${zmq_tar_filename}
+  wget --quiet https://github.com/pabera/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/libzmq5-${ARCH}-${JUKEBOX_ZMQ_VERSION}.tar.gz -O ${zmq_tar_filename} || exit_on_error "Download failed"
   tar -xzf ${zmq_tar_filename}
   rm -f ${zmq_tar_filename}
   sudo rsync -a ./* ${JUKEBOX_ZMQ_PREFIX}/

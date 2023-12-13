@@ -62,7 +62,7 @@ _jukebox_webapp_download() {
 
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
-  wget --quiet ${DOWNLOAD_URL} -O ${TAR_FILENAME}
+  wget --quiet ${DOWNLOAD_URL} -O ${TAR_FILENAME} || exit_on_error "Download failed"
   tar -xzf ${TAR_FILENAME}
   rm -f ${TAR_FILENAME}
   cd "${INSTALLATION_PATH}" || exit_on_error
