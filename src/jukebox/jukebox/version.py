@@ -8,7 +8,7 @@ __version__ = '%i.%i.%i' % (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 __version_info__ = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 
 if VERSION_EXTRA:
-    __version__ = "%s.%s" % (__version__, VERSION_EXTRA)
+    __version__ = "%s-%s" % (__version__, VERSION_EXTRA)
     __version_info__ = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_EXTRA)
 
 
