@@ -19,6 +19,8 @@
 * [Auto Hotspot](./autohotspot.md)
 * [Concepts](./concepts.md)
 * [System](./system.md)
+* [RPC Commands](./rpc-commands.md)
+* [CLI Client for RPC](./cli-client.md)
 * [Feature Status](../developers/status.md)
 * [Known Issues](../developers/known-issues.md)
 * [Developer Reference](../developers/README.md)

@@ -11,7 +11,9 @@ The CLI (command line interface) client can be used to send RPC commands from co
 ## Usage
 
 * Get help info: `./pbc -h`
-* **TODO**
+* Example shutdown: `./pbc -p host -o shutdown`
+
+See also [RPC Commands](./rpc-commands.md) reference.
 
 ## Reference
 
