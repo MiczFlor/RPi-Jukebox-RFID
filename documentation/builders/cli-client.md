@@ -1,6 +1,6 @@
 # CLI Client
 
-The CLI (command line interface) client can be used to send RPC commands from command line to Phoniebox.
+The CLI (command line interface) client can be used to send [RPC commands](./rpc-commands.md) from command line to Phoniebox.
 
 ## Installation
 
