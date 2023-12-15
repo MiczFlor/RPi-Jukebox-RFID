@@ -1,0 +1,127 @@
+name: Bundle Webapp and Release
+
+on:
+  push:
+    branches:
+      # change to future3/main and future3/develop
+      - 'future3/test/**'
+
+jobs:
+
+  build:
+    # change to MiczFlor
+    if: ${{ github.repository_owner == 'AlvinSchiller' }}
+    runs-on: ubuntu-latest
+
+    env:
+      WEBAPP_ROOT_PATH: ./src/webapp
+
+    outputs:
+      commit_sha: ${{ steps.vars.outputs.commit_sha }}
+      webapp_bundle_name: ${{ steps.vars.outputs.webapp_bundle_name }}
+      webapp_bundle_name_latest: ${{ steps.vars.outputs.webapp_bundle_name_latest }}
+      tag_name: ${{ steps.vars.outputs.tag_name }}
+      is_main: ${{ steps.vars.outputs.is_main }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Output vars
+        id: vars
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "webapp_bundle_name=webapp-build-${COMMIT_SHA}.tar.gz" >> $GITHUB_OUTPUT
+          echo "webapp_bundle_name_latest=webapp-build-latest.tar.gz" >> $GITHUB_OUTPUT
+          echo "tag_name=v$(python ./src/jukebox/jukebox/version.py)" >> $GITHUB_OUTPUT
+          if [ ${{ github.ref_name }} == 'main' ]; then IS_MAIN=true; else IS_MAIN=false; fi
+          echo "is_main=${IS_MAIN}" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+      - name: npm install
+        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+        run: npm install
+      - name: npm build
+        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+        env:
+          CI: false
+        run: npm run build
+
+      - name: Create Bundle
+        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+        run: |
+          tar -czvf ${{ steps.vars.outputs.webapp_bundle_name }} build
+
+      - name: Artifact Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.vars.outputs.webapp_bundle_name }}
+          path: ${{ env.WEBAPP_ROOT_PATH }}/${{ steps.vars.outputs.webapp_bundle_name }}
+          retention-days: 5
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ needs.build.outputs.tag_name }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Artifact Download
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.webapp_bundle_name }}
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          commit: ${{ needs.build.outputs.commit_sha }}
+          tag: ${{ needs.build.outputs.tag_name }}
+          body: "Automated Release for ${{ needs.build.outputs.tag_name }}"
+          makeLatest: 'false'
+          prerelease: ${{ needs.build.outputs.is_main == 'false' }}
+          generateReleaseNotes: ${{ needs.build.outputs.is_main == 'true' }}
+          skipIfReleaseExists: false
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: false
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Release by tag
+        id: get_release
+        uses: joutvhu/get-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.build.outputs.tag_name }}
+
+      - name: Upload Release Asset
+        uses: shogo82148/actions-upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_name: ${{ needs.build.outputs.webapp_bundle_name }}
+          asset_path: ${{ needs.build.outputs.webapp_bundle_name }}
+          asset_content_type: application/gzip
+          overwrite: true
+
+      - name: Upload Release Asset as Latest
+        uses: shogo82148/actions-upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_name: ${{ needs.build.outputs.webapp_bundle_name_latest }}
+          asset_path: ${{ needs.build.outputs.webapp_bundle_name }}
+          asset_content_type: application/gzip
+          overwrite: true
