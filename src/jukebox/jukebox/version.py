@@ -23,3 +23,7 @@ def version_info():
     If this is a development version, an identifier string will be appended after the third integer.
     """
     return __version_info__
+
+
+if __name__ == '__main__':
+    print(version())
