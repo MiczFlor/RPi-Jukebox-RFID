@@ -49,26 +49,17 @@ get_architecture() {
   echo $arch
 }
 
-get_version_string() {
-  local python_file="$1"
-  local version_major
-  local version_minor
-  local version_patch
+validate_url() {
+    local url=$1
+    wget --spider ${url} >/dev/null 2>&1
+    return $?
+}
 
-  version_major=$(grep -o 'VERSION_MAJOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
-  version_minor=$(grep -o 'VERSION_MINOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
-  version_patch=$(grep -o 'VERSION_PATCH\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
-  version_extra=$(grep -o 'VERSION_EXTRA\s*=\s*\".*\"' "${python_file}" | awk -F= '{print $2}' | tr -d ' "')
-
-  if [ -n "$version_major" ] && [ -n "$version_minor" ] && [ -n "$version_patch" ]; then
-    local version_string="${version_major}.${version_minor}.${version_patch}"
-    if [ -n "$version_extra" ]; then
-        version_string="${version_string}-${version_extra}"
-    fi
-    echo ${version_string}
-  else
-    exit_on_error "ERROR: Unable to extract version information from ${python_file}"
-  fi
+download_from_url() {
+    local url=$1
+    local output_filename=$2
+    wget --quiet ${url} -O ${output_filename} || exit_on_error "Download failed"
+    return $?
 }
 
 ### Verify helpers
