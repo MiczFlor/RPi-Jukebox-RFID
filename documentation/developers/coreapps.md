@@ -53,11 +53,13 @@ Run this once to register and configure the RFID readers with the Jukebox. Can b
 
 Command Line Interface to the Jukebox RPC Server.
 
-A command line tool for sending RPC commands to the running jukebox app. This uses the same interface as the WebUI. Can be used for additional control or for debugging.
+A command line tool for sending RPC commands to the running jukebox app. This uses the same interface as the WebUI. Can be used for additional control or for debugging. Use `./run_rpc_tool.py` to start the tool in interactive mode.
 
 The tool features auto-completion and command history.
 
 The list of available commands is fetched from the running Jukebox service.
+
+The tool can also be used to send commands directly, when passing a `-c` argument, e.g. `./run_rpc_tool.py -c host.shutdown`.
 
 
 ### `run_publicity_sniffer.py`
