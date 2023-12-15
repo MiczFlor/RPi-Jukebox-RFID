@@ -313,7 +313,7 @@ def runcmd(cmd):
     """
     Just run a command.
     Right now duplicates more or less main()
-    @TODO remove duplication of code
+    :todo remove duplication of code
     """
 
     # Split on whitespaces to separate cmd and arg list
@@ -338,7 +338,6 @@ def runcmd(cmd):
         print("Could not reach RPC Server. Jukebox running? Correct Port?\n")
         print('-' * 70 + "\n\n")
         return
-
     except Exception as e:
         print(f":: Exception response =\n{e}\n")
         return
