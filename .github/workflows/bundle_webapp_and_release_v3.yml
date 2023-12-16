@@ -9,8 +9,7 @@ on:
 jobs:
 
   check:
-    # TODO change to MiczFlor
-    if: ${{ github.repository_owner == 'AlvinSchiller' }}
+    if: ${{ github.repository_owner == 'MiczFlor' }}
     runs-on: ubuntu-latest
 
     outputs:
