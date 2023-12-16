@@ -292,9 +292,15 @@ _option_webapp_devel_build() {
       clear_c
       print_c "--------------------- WEBAPP NODE ---------------------
 
-You are installing from a non-release branch.
-This means, you will need to build the web app locally.
-For that you'll need Node.
+You are not installing from an official branch.
+This means there is no matching prebuild web app bundle
+available and you will need to build the web app locally.
+Node needs to be installed to enable this.
+
+If you choose to not install Node, the latest available
+prebuild web app bundle for your version will be downloaded.
+This is possibly stale and could be not compatible.
+You have been warned.
 
 Do you want to install Node? [Y/n]"
       read -r response
@@ -304,14 +310,14 @@ Do you want to install Node? [Y/n]"
           ENABLE_WEBAPP_PROD_DOWNLOAD=true
           ;;
         *)
-          ;;
-      esac
-      # This message will be displayed at the end of the installation process
-      local tmp_fin_message="ATTENTION: You need to build the web app locally with
+          # This message will be displayed at the end of the installation process
+          local tmp_fin_message="ATTENTION: You need to build the web app locally with
            $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
            This must be done after reboot, due to memory restrictions.
            Read the documentation regarding local Web App builds!"
-      FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+          FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+          ;;
+      esac
     fi
   fi
 
@@ -332,8 +338,8 @@ _run_customize_options() {
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then
-    _option_kiosk_mode
     _option_webapp_devel_build
+    _option_kiosk_mode
   fi
   # Bullseye is currently under active development and should be updated in any case.
   # Hence, removing the step below as it becomse mandatory
