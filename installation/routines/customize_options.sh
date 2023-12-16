@@ -300,7 +300,7 @@ Node needs to be installed to enable this.
 If you choose to not install Node, the latest available
 prebuild web app bundle for your version will be downloaded.
 This is possibly stale and could be not compatible.
-You have been warned.
+You have been warned. :-)
 
 Do you want to install Node? [Y/n]"
       read -r response
