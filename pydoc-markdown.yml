@@ -1,0 +1,7 @@
+loaders:
+- type: python
+  search_path: [./src]
+renderer:
+  type: markdown
+  render_toc: true
+  filename: docstring.md
