@@ -66,7 +66,7 @@ _jukebox_webapp_download() {
   if validate_url ${download_url_commit} ; then
     log "    DOWNLOAD_URL ${download_url_commit}"
     download_from_url ${download_url_commit} ${tar_filename}
-  else [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true ]] && validate_url ${download_url_latest}
+  elif [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true ]] && validate_url ${download_url_latest} ; then
     log "    DOWNLOAD_URL ${download_url_latest}"
     download_from_url ${download_url_latest} ${tar_filename}
   else
