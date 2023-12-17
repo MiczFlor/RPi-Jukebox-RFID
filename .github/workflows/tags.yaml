@@ -1,0 +1,10 @@
+- syntax: ":param name description"
+  collection: params
+- syntax: ":throws type message"
+  collection: throws
+- syntax: ":author author"
+  collection: authors
+- syntax: ":return message"
+  collection: return
+- syntax: ":returns message"
+  collection: return
