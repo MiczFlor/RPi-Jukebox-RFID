@@ -292,15 +292,14 @@ _option_webapp_devel_build() {
       clear_c
       print_c "--------------------- WEBAPP NODE ---------------------
 
-You are not installing from an official branch.
-This means there is no matching prebuild web app bundle
-available and you will need to build the web app locally.
-Node needs to be installed to enable this.
+You are installing from an unofficial branch.
+Therefore a prebuilt web app is not available and
+you will have to build it locally.
+This requires Node to be installed.
 
-If you choose to not install Node, the latest available
-prebuild web app bundle for your version will be downloaded.
-This is possibly stale and could be not compatible.
-You have been warned. :-)
+You can choose to decline the Node installation and
+the lastest prebuilt version from the main repository
+will be installed. This can lead to incompatibilities.
 
 Do you want to install Node? [Y/n]"
       read -r response
