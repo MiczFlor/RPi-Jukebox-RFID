@@ -1,2 +1,2 @@
 
-For documentation see [documentation/content/developers/rfid/genericusb.md](../../../../../../documentation/content/developers/rfid/genericusb.md).
+For documentation see [documentation/developers/rfid/genericusb.md](../../../../../../documentation/developers/rfid/genericusb.md).

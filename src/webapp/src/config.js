@@ -17,9 +17,7 @@ const SUBSCRIPTIONS = [
   'volume.level',
 ];
 
-// TODO: This is not optimal, we should not know about this path here!
-// Let's try to work with relatives paths in the RPC only!
-const DEFAULT_AUDIO_DIR = '/home/pi/RPi-Jukebox-RFID/shared/audiofolders';
+const DEFAULT_AUDIO_DIR = '../../shared/audiofolders';
 const ROOT_DIRS = ['./', DEFAULT_AUDIO_DIR];
 
 

@@ -1,7 +1,5 @@
 FROM debian:bullseye-slim
 
-# Prepare Raspberry Pi like environment
-
 # These are only dependencies that are required to get as close to the
 # Raspberry Pi environment as possible.
 RUN apt-get update && apt-get install -y \
@@ -36,9 +34,19 @@ USER ${USER}
 WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
-USER root
-RUN pip install --no-cache-dir --upgrade -r ${INSTALLATION_PATH}/requirements.txt
-RUN pip install pyzmq
+RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+
+ENV ZMQ_TMP_DIR libzmq
+ENV ZMQ_VERSION 4.3.5
+ENV ZMQ_PREFIX /usr/local
+
+RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
+    wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+    tar -xzf libzmq.tar.gz -C ${ZMQ_PREFIX}; \
+    rm -f libzmq.tar.gz;
+
+RUN export ZMQ_PREFIX=${PREFIX} && export ZMQ_DRAFT_API=1
+RUN pip install -v --no-binary pyzmq --pre pyzmq
 
 EXPOSE 5555 5556
 
