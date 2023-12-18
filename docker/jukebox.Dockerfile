@@ -26,11 +26,11 @@ RUN apt-get update && apt-get install -qq -y \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-venv python3-dev python3-mutagen
 
+USER ${USER}
 ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-USER ${USER}
 WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
