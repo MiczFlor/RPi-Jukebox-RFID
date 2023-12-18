@@ -22,7 +22,7 @@ RUN usermod -aG pulse ${USER}
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    gcc at wget \
+    gcc g++ at wget \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-venv python3-dev python3-mutagen
 

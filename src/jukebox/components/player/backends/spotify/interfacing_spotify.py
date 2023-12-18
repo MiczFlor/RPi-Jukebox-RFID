@@ -34,9 +34,12 @@ class SPOTBackend:
                                             value='http://localhost:3001')
 
         spot_scope = "user-read-playback-state,user-modify-playback-state"
-        self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id, client_secret=self.client_id, redirect_uri=self.redirect_uri, cache_path=sanitize(self.cache_file))
-        self.auth_uri = self.auth_manager.get_authorize_url()
-        logger.info(f"Please log in here: {self.auth_uri}")
+        try:
+            self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id, client_secret=self.client_id, redirect_uri=self.redirect_uri, cache_path=sanitize(self.cache_file))
+            self.auth_uri = self.auth_manager.get_authorize_url()
+            logger.info(f"Please log in here: {self.auth_uri}")
+        except Exception as err:
+            logger.error(err)
 
         #self.collection_file_location = cfg.setndefault('playerspot', 'collection_file',
         #                                                value="../../shared/audio/spotify/spotify_collection.yaml")
