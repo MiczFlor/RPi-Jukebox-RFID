@@ -30,7 +30,7 @@ const commands = {
   // ToDo: Implement
   folderList: {
     _package: 'player',
-    plugin: 'ctrl',
+    plugin: 'content',
     method: 'get_folder_content',
   },
   cardsList: {

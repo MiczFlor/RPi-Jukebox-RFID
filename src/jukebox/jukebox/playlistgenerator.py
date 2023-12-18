@@ -55,6 +55,8 @@ import requests
 
 from typing import (List)
 
+from components.player.core import player_content
+
 logger = logging.getLogger('jb.plgen')
 
 # From .xml podcasts, need to parse out these strings:
@@ -71,22 +73,22 @@ TYPE_DECODE = ['file', 'directory', 'stream', 'podcast']
 
 
 class PlaylistEntry:
-    def __init__(self, filetype: int, name: str, path: str):
+    def __init__(self, filetype: int, name: str, uri: str = None):
         self._type = filetype
         self._name = name
-        self._path = path
+        self._uri = uri
 
     @property
     def name(self):
         return self._name
 
     @property
-    def path(self):
-        return self._path
-
-    @property
     def filetype(self):
         return self._type
+
+    @property
+    def uri(self):
+        return self._uri
 
 
 def decode_podcast_core(url, playlist):
@@ -212,7 +214,7 @@ class PlaylistCollector:
         Check if filename is valid
         """
         return direntry.is_file() and not direntry.name.startswith('.') \
-               and PlaylistCollector._exclude_re.match(direntry.name) is None and direntry.name.find('.') >= 0
+            and PlaylistCollector._exclude_re.match(direntry.name) is None and direntry.name.find('.') >= 0
 
     @classmethod
     def set_exclusion_endings(cls, endings: List[str]):
@@ -276,8 +278,9 @@ class PlaylistCollector:
         except FileNotFoundError as e:
             logger.error(f" {e.__class__.__name__}: {e}")
         else:
+            logger.debug(f"Playlist Content: {content}")
             for m in content:
-                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path})
+                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path, 'uri': m.uri})
 
     def _parse_nonrecusive(self, path='.'):
         return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
