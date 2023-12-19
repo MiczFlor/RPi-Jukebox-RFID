@@ -91,7 +91,7 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
-          echo "webapp_bundle_name=webapp-build-${COMMIT_SHA}.tar.gz" >> $GITHUB_OUTPUT
+          echo "webapp_bundle_name=webapp-build-${COMMIT_SHA:0:10}.tar.gz" >> $GITHUB_OUTPUT
           echo "webapp_bundle_name_latest=webapp-build-latest.tar.gz" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js 20.x

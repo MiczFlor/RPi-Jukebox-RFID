@@ -57,9 +57,10 @@ _jukebox_webapp_download() {
   print_lc "  Downloading web application"
   local jukebox_version=$(python "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
   local git_head_hash=$(git -C "${INSTALLATION_PATH}" rev-parse --verify --quiet HEAD)
+  local git_head_hash_short=${git_head_hash:0:10}
   local tar_filename="webapp-build.tar.gz"
   # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
-  local download_url_commit="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-${git_head_hash}.tar.gz"
+  local download_url_commit="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-${git_head_hash_short}.tar.gz"
   local download_url_latest="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-latest.tar.gz"
 
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
