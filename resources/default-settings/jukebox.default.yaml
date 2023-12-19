@@ -30,7 +30,7 @@ pulse:
   toggle_on_connect: true
   # Limit maximum volume range to XX % - can be changed through the UI (for temporary use)
   soft_max_volume: 70
-  # Run the tool run_configure_audio.py to configure the pulseaudio sinks
+  # Run the audio configuration tool to configure the pulseaudio sinks
   #
   # After startup, the audio output defaults to primary
   # Any Bluetooth device should be the secondary (as it may not always be available directly after boot)

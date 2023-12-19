@@ -2,7 +2,7 @@
 
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MiczFlor/RPi-Jukebox-RFID/future3/develop)
 
-[![Test Install Scripts Debian v3](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml) [![Python + Docs Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml)
+[![Test Install Scripts Debian v3](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml) [![Python + Docs Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml) [![Coverage Status](https://coveralls.io/repos/github/MiczFlor/RPi-Jukebox-RFID/badge.svg?branch=future3/develop)](https://coveralls.io/github/MiczFlor/RPi-Jukebox-RFID?branch=future3/develop)
 
 [![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 

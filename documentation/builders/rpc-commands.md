@@ -1,6 +1,5 @@
 # RPC Commands
 
-
 We use the RPC commands when triggering actions from different inputs like a card swipe,
 a GPIO button press, etc. Triggering an action is equal to sending an RPC function call.
 In many places the command to send when an input is triggered is configurable in a YAML-file.
@@ -36,7 +35,6 @@ Or like this for a three part function with the argument set to ``5``:
 The keyword ``method`` is optional. If needs to be used depends on the function you want to call.
 
 ## Aliases
-
 
 Not so complicated, right? It will get even easier. For common commands we have defined aliases. An alias simply maps
 to a pre-defined RPC command, e.g. ``play_card`` maps to ``player.ctrl.play_card``.
@@ -98,15 +96,13 @@ do exactly the same, but use different ways of specifying the command.
         folder: path/to/folder
         recursive: True
 
-
 .. important:: *args* must be a **list** of arguments to be passed! Even if only a single argument is passed.
     So, use *args: [value]*. We try catch mis-uses but that might not always work.
-
 
 You will find some more examples the configuration of the [Card Database](card-database.md)
 
 ## For developers
 
-To send RPC commands for testing and debugging purpose you can use the CLI Tool [`run_rpc_tool.py`](../developers/coreapps.md#run_rpc_toolpy)
+To send RPC commands for testing and debugging purpose you can use the [CLI Tool](../developers/coreapps.md#RPC).
 Also here is a ready-to-use decoding functions which decodes an RPC command (with or without alias)
 from a YAML entry:func:`jukebox.utils.decode_rpc_command`.

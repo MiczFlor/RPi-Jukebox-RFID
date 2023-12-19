@@ -33,7 +33,7 @@ need to adapt some of those commands to your needs.
     * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
-4. Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders`
+4. Change directory into the `./shared/audiofolders`
     and copy a set of MP3 files into this folder (for more fun when
     testing).
 

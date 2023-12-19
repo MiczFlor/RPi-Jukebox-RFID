@@ -35,8 +35,7 @@ Readers operate on one of two different frequencies: 125kHz or 13.56 MHz. Make s
 ## Reader Configuration
 
 During the installation process, you can already configure a RFID
-reader. To manually configure RFID reader(s),
-[please run the tool](../coreapps.md#run_register_rfid_reader.py), (`src/jukebox/run_register_rfid_reader.py`).
+reader. To manually configure RFID reader(s) run the [RFID reader configuration tool](../coreapps.md#RFID-Reader).
 
 It will generate a reader configuration file at
 `shared/settings/rfid.yaml`. You can re-run the tool to change the
@@ -67,7 +66,7 @@ Indicates the Python package used for this reader. Filled by the RFID configurat
 
 #### config:
 
-Filled by the [RFID configuration tool](../coreapps.md#run_register_rfid_reader.py) (`src/jukebox/run_register_rfid_reader.py`) based on default values and user input. After running the tool, you may manually change some settings here, as not everything can be configured through the tool. Note that re-running the tool will completely rewrite the configuration file.
+Filled by the [RFID reader configuration tool](../coreapps.md#RFID-Reader) based on default values and user input. After running the tool, you may manually change some settings here, as not everything can be configured through the tool. Note that re-running the tool will completely rewrite the configuration file.
 
 #### same_id_delay: float \| integer
 

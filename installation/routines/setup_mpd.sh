@@ -4,11 +4,11 @@ AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
 PLAYLISTS_PATH="${SHARED_PATH}/playlists"
 
 _mpd_install_os_dependencies() {
-  echo "  Install MPD OS dependencies"
+  log "  Install MPD OS dependencies"
   sudo apt-get -y update
 
-  echo "Note: Installing MPD might cause a message: 'Job failed. See journalctl -xe for details'"
-  echo "It can be ignored! It's an artefact of the MPD installation - nothing we can do about it."
+  log "Note: Installing MPD might cause a message: 'Job failed. See journalctl -xe for details'
+It can be ignored! It's an artefact of the MPD installation - nothing we can do about it."
   sudo apt-get -y install \
     mpd mpc \
     --no-install-recommends \
@@ -18,7 +18,7 @@ _mpd_install_os_dependencies() {
 }
 
 _mpd_configure() {
-  echo "  Configure MPD as user local service" | tee /dev/fd/3
+  print_lc "  Configure MPD as user local service"
 
   # Make sure system-wide mpd is disabled
   sudo systemctl stop mpd.socket

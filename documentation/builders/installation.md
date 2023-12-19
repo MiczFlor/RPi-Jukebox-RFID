@@ -85,22 +85,24 @@ Run the following command in your SSH terminal and follow the instructions
 cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
 ```
 
-This will get the latest stable release from the branch future3/main.
+This will get the latest **stable release** from the branch *future3/main*.
+
 To install directly from a specific branch and/or a different repository
 specify the variables like this:
 
 ```bash
-
 cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```
 
 This will switch directly to the specified feature branch during installation.
 
 > [!NOTE]
-> For all branches *except* the current Release, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Steps to install](../developers/development-environment.md#steps-to-install)
+> For all branches *except* the current Release future3/main, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Developer steps to install](../developers/development-environment.md#steps-to-install)
 
 If you suspect an error you can monitor the installation-process with
 
 ```bash
 cd; tail -f INSTALL-<fullname>.log
 ```
+
+After successful installation, continue with [configuring your Phoniebox](configuration.md).
