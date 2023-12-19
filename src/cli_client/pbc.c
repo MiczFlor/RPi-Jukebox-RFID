@@ -28,7 +28,7 @@
 
     pbc -> PhonieBox Command line interface
 
-    depenmds on libczmq:
+    depends on libczmq:
     apt-get install libczmq-dev
 
     how to compile:
