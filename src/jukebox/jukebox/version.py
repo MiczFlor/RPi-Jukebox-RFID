@@ -4,6 +4,8 @@ VERSION_MINOR = 5
 VERSION_PATCH = 0
 VERSION_EXTRA = "alpha"
 
+# build a version string in compliance with the SemVer specification
+# https://semver.org/#semantic-versioning-specification-semver
 __version__ = '%i.%i.%i' % (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 __version_info__ = (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
 
