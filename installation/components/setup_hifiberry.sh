@@ -10,7 +10,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # List of HiFiBerry boards
-echo -m "\n
+echo "
 Select your HiFiBerry board:
 1) DAC for Raspberry Pi 1/DAC+ Light/DAC Zero/MiniAmp/Beocreate/DAC+ DSP/DAC+ RTC
 2) DAC+ Standard/Pro/Amp2
@@ -53,6 +53,9 @@ if grep -q 'dtoverlay=vc4-kms-v3d' /boot/config.txt; then
     echo "Disabling audio in vc4-kms-v3d overlay..."
     sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' /boot/config.txt
 fi
+
+echo "Disabling HDMI audio..."
+sed -i '/hdmi_drive/c\#hdmi_drive=2' /boot/config.txt
 
 if [ -f /etc/asound.conf ]; then
     echo "Backing up existing asound.conf..."
