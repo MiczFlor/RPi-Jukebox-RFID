@@ -18,6 +18,8 @@ The setup is based on [HiFiBerry's instructions](https://www.hifiberry.com/docs/
 
 Most HiFiBerry boards come with 40-pin header that you can directly attach to your Pi. This idles many GPIO pins that may be required for other inputs to be attached (like GPIO buttons or RFID). You can also connect your HiFiBerry board separately. The following table show cases the pins required.
 
+* [Raspberry Pi Pinout](https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/os/using-gpio.adoc)
+
 | Board pin name | Board pin | Physical RPi pin | RPi pin name |
 |----------------|-----------|------------------|--------------|
 | 3.3V           | 1         | 1, 17            | 3V3 power    |
