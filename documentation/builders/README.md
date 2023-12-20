@@ -13,6 +13,10 @@
 * [Card Database](./card-database.md)
 * [Troubleshooting](./troubleshooting.md)
 
+## Components
+* [Soundcards](./components/soundcards/)
+    * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
+
 ## Advanced
 
 * [Bluetooth (and audio buttons)](./bluetooth-audio-buttons.md)

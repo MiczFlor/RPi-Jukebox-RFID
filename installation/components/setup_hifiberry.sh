@@ -54,27 +54,4 @@ if grep -q 'dtoverlay=vc4-kms-v3d' /boot/config.txt; then
     sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' /boot/config.txt
 fi
 
-echo "Disabling HDMI audio..."
-sed -i '/hdmi_drive/c\#hdmi_drive=2' /boot/config.txt
-
-if [ -f /etc/asound.conf ]; then
-    echo "Backing up existing asound.conf..."
-    cp /etc/asound.conf "/etc/asound.conf.backup.$(date +%Y%m%d%H%M%S)"
-fi
-
-echo "Configuring sound settings..."
-cat > /etc/asound.conf << EOF
-pcm.hifiberry {
-    type softvol
-    slave.pcm "plughw:0"
-    control.name "HifiBerry"
-    control.card 0
-}
-
-pcm.!default {
-    type plug
-    slave.pcm "hifiberry"
-}
-EOF
-
 echo "Configuration complete. Please restart your device."
