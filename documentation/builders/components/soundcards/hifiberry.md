@@ -8,6 +8,8 @@ Run the following command to install any HiFiBerry board. Make sure you reboot y
 $ cd; cd ~/RPi-Jukebox-RFID/installation/components && chmod +x setup_hifiberry.sh && sudo ./setup_hifiberry.sh
 ```
 
+Optional: You can register your sound card with ALSA. Define the following variable before running the script: `CONFIGURE_ALSA=true`
+
 ## Additional information
 
 If you like to understand what's happening under the hood, feel free to check the [install script](../../../../installation/components/setup_hifiberry.sh).
