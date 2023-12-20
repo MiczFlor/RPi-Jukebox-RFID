@@ -9,6 +9,39 @@ if [ "$(id -u)" != "0" ]; then
    exit 1
 fi
 
+check_existing_hifiberry() {
+    existing_config=$(grep 'dtoverlay=hifiberry-' /boot/config.txt)
+    if [ ! -z "$existing_config" ]; then
+        echo "Existing HiFiBerry configuration detected: $existing_config"
+        read -p "Do you want to proceed with a new configuration? This will remove the existing one. (y/n): " yn
+        case $yn in
+            [Yy]* )
+                remove_existing_hifiberry
+                return 0;;
+            [Nn]* )
+                echo "Exiting without making changes.";
+                exit;;
+            * )
+                echo "Please answer yes or no.";
+                check_existing_hifiberry;;
+        esac
+    fi
+}
+
+remove_existing_hifiberry() {
+    echo "Removing existing HiFiBerry configuration..."
+    sed -i '/dtoverlay=hifiberry-/d' /boot/config.txt
+    sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' /boot/config.txt
+    sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' /boot/config.txt
+}
+
+enable_hifiberry() {
+    echo "Enabling HiFiBerry board..."
+    grep -qxF "dtoverlay=$1" /boot/config.txt || echo "dtoverlay=$1" >> /boot/config.txt
+}
+
+check_existing_hifiberry
+
 # List of HiFiBerry boards
 echo "
 Select your HiFiBerry board:
@@ -23,11 +56,7 @@ Select your HiFiBerry board:
 9) Amp3"
 read -p "Enter your choice (1-9): " choice
 
-enable_hifiberry() {
-    echo "Enabling HiFiBerry board..."
-    grep -qxF "dtoverlay=$1" /boot/config.txt || echo "dtoverlay=$1" >> /boot/config.txt
-}
-
+# Enable selected HiFiBerry board
 case $choice in
     1) enable_hifiberry "hifiberry-dac";;
     2) enable_hifiberry "hifiberry-dacplus";;
@@ -44,12 +73,12 @@ esac
 echo "Disabling onboard sound..."
 sed -i '/dtparam=audio=on/c\dtparam=audio=off' /boot/config.txt
 
-if grep -q 'dtoverlay=vc4-fkms-v3d' /boot/config.txt; then
+if grep -qx 'dtoverlay=vc4-fkms-v3d' /boot/config.txt; then
     echo "Disabling audio in vc4-fkms-v3d overlay..."
     sed -i '/dtoverlay=vc4-fkms-v3d/c\dtoverlay=vc4-fkms-v3d,audio=off' /boot/config.txt
 fi
 
-if grep -q 'dtoverlay=vc4-kms-v3d' /boot/config.txt; then
+if grep -qx 'dtoverlay=vc4-kms-v3d' /boot/config.txt; then
     echo "Disabling audio in vc4-kms-v3d overlay..."
     sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' /boot/config.txt
 fi
