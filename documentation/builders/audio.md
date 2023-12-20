@@ -105,7 +105,7 @@ Directly edit `jukebox.yaml` following the steps: [Best practice procedure](conf
 
 The optional processing stages *Equalizer* and *Mono down mix* are realized by PulseAudio plugins. The processing chain is
 
-```
+```text
 player --> mono mix --> equalizer --> hardware sink
 ```
 

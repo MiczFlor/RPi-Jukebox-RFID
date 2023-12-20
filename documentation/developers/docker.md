@@ -139,7 +139,6 @@ Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already i
 
 Read these threads for details: [thread 1](https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd) and [thread 2](https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755)
 
-
 ## Test & Develop
 
 The Dockerfile is defined to start all Phoniebox related services.
@@ -236,31 +235,31 @@ $ docker run -it --rm \
 
 ### Resources
 
-**Mac**
+#### Mac
 
 * <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
 * <https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac>
 * <https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile>
 
-**Windows**
+#### Windows
 
 * <https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host#>
 * <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
 * <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
 * <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
 
-**Audio**
+#### Audio
 
 * <https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio>
 * <https://mpd.fandom.com/wiki/PulseAudio>
 * <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 
-**MPD**
+#### MPD
 
 * <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 * <https://github.com/Tob1asDocker/rpi-mpd>
 * <https://github.com/vimagick/dockerfiles/tree/master/mpd>
 
-**ZMQ**
+#### ZMQ
 
 * <https://codeblog.dotsandbrackets.com/using-zeromq-with-docker/>

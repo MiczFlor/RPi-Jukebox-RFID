@@ -58,7 +58,6 @@ The list of available commands is fetched from the running Jukebox service.
 
 The tool can also be used to send commands directly, when passing a `-c` argument, e.g. `./run_rpc_tool.py -c host.shutdown`.
 
-
 ### Publicity Sniffer
 
 **Scriptname:** [run_publicity_sniffer.py](../../src/jukebox/run_publicity_sniffer.py)
