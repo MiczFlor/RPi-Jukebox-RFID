@@ -11,6 +11,7 @@ For several aspects we have [configuration tools](../developers/coreapps.md#conf
 
 * [Audio Configuration](./audio.md#audio-configuration)
 * [RFID Reader Configuration](../developers/rfid/basics.md#reader-configuration)
+* [GPIO Recipes](./gpio.md)
 
 Even after running the tools, certain aspects can only be changed by modifying the configuration files directly.
 

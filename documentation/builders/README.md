@@ -10,6 +10,7 @@
 
 * [Audio](./audio.md)
 * [RFID](./rfid.md)
+* [GPIO Recipes](./gpio.md)
 * [Card Database](./card-database.md)
 * [Troubleshooting](./troubleshooting.md)
 
