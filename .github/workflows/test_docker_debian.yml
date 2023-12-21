@@ -7,9 +7,27 @@ on:
   push:
     branches-ignore:
       - 'future3/**'
+    paths:
+      - 'ci/**'
+      - 'misc/sampleconfigs/**'
+      - 'scripts/helperscripts/setup_*'
+      - 'scripts/installscripts/**'
+      - 'settings/version-number'
+      - 'packages*.txt'
+      - 'requirements*.txt'
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ develop ]
+    branches:
+      - develop
+      - main
+    paths:
+      - 'ci/**'
+      - 'misc/sampleconfigs/**'
+      - 'scripts/helperscripts/setup_*'
+      - 'scripts/installscripts/**'
+      - 'settings/version-number'
+      - 'packages*.txt'
+      - 'requirements*.txt'
 
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant

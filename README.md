@@ -21,15 +21,11 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 **Spotify has [disabled access to libspotify on May 16, 2022](https://developer.spotify.com/community/news/2022/04/12/libspotify-sunset/).**
 
-This means **Spotify in Phoniebox doesn't work at the moment**, as Phoniebox can not communicate with Spotify via libspotify (and mopidy-spotify) anymore.
+This means **Spotify in Phoniebox doesn't work at the moment**. For further information see [Spotify FAQ](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)
 
-The problem is not our code but the cut off by Spotify. We want Phoniebox users to be able to connect their box to their Spotify accounts and play their content. The possibilities Spotify offers are -- at first glance -- not supporting an integration with Phoniebox.
-
-Third party projects like [librespot-java](https://github.com/librespot-org/librespot-java) enter a grey zone regarding violation of Spotify's *Terms of Services* (ToS). For a potential Spotify re-integration, we are committed to a Spotify ToS compliant way of doing so (both in Version 2 and Version 3). This means looking into the (relatively new) Spotify Playback API, which is going to take an unknown amount of time.
-
-This leaves us in a pickle and **we are happy to hear from developer talent in the Phoniebox community on how to move forward regarding Spotify integration**.
-
-We are also curious to learn about alternative services we can connect with and which you would like to see supported -- or have developed support for already: <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
+We are working to provide an integrated solution.
+For Version 2 there is a possible fix to reactivate spotify with a manual installation described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983).
+For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is laying the groundwork. Help is greatly appreciated.
 
 ## The Phoniebox Calendar 2023 is here
 
@@ -37,11 +33,9 @@ Another bunch of wonderful designs! 2023 is the fifth Phoniebox calendar. If you
 
 ![The 2023 Phoniebox Calendar](docs/2023-Phoniebox-Calendar.jpg "The 2023 Phoniebox Calendar")
 
-If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
+If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2115).
 
 ## Install Phoniebox
-
-If you are looking for the latest **stable version 2.x**, use the [install script for Raspberry Pi](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL).
 
 ### 🔥 Version 3 is coming
 
@@ -63,9 +57,20 @@ If you seek the adventure, your support will be more then welcome. Before contri
 * 👩‍💻 [Development](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/README.md)
 * 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/main), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop)
 
-### Version 2 (stable)
+---
 
- ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
+### 🎵 Version 2
+
+> [!NOTE]
+> Version 3 is becoming mature and will soon be the new default of Phoniebox. Therefore Version 2 is slowly going into a maintenance mode and no new features will be added to this version.
+
+Check out the following references.
+
+ * ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
+ * 🚀 **[Install Jukebox Version 2](#quick-install-version-2)**
+ * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2C+needs+triage&projects=&template=bug_template.md&title=%F0%9F%90%9B+%7C+BUG+SUMMARY)
+ * ☑️ [Features](#features-version-2)
+ * 📖 [Documentation](#documentation)
 
 #### Features Version 2
 
@@ -100,13 +105,13 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 #### Quick install Version 2
 
-* [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) for Raspberry Pi OS.
+* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL) with the [One line install script](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL#one-line-install-command) for Raspberry Pi OS.
 * Two editions:
   * *Phoniebox Classic* supports local audio, web radio, podcasts, YouTube (download and convert), GPIO and/or RFID
   * **MUST READ** for users of *[Phoniebox +Spotify Edition](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)*
-* Check [Installation instructions](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL) or [Complete Install Guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-COMPLETE-GUIDE)
 * Once everything has been installed and configured, [read the manual](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL) to change settings, register RFID cards, add audio.
 * Adding push buttons to control volume, skipping tracks, pause, play: read the [GPIO Control Readme](components/gpio_control/README.md).
+* There's also a [Complete Install Guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/INSTALL-COMPLETE-GUIDE)
 
 ## Contact and Support
 
