@@ -23,7 +23,9 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 This means **Spotify in Phoniebox doesn't work at the moment**. For further information see [Spotify FAQ](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)
 
-While we are working to provide an integrated solution, a   possible fix to reactivate spotify with a manual installation for Version 2 is described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983)
+We are working to provide an integrated solution.
+For Version 2 there is a possible fix to reactivate spotify with a manual installation described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983).
+For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is laying the groundwork. Help is greatly appreciated.
 
 ## The Phoniebox Calendar 2023 is here
 
