@@ -16,7 +16,7 @@
 # A section starts with ##
 # Example: ## Audio player
 # A command's description is *above* the command and starts with ###
-# Example: 
+# Example:
 # ### Stop player
 # CMDSTOP="%CMDSTOP%"
 # This structuring was introduced to have a human readable display in the Web UI
@@ -115,6 +115,12 @@ STOPAFTER15="%STOPAFTER15%"
 STOPAFTER30="%STOPAFTER30%"
 ### Stop player after 60 min.
 STOPAFTER60="%STOPAFTER60%"
+### Stop player after 120 min.
+STOPAFTER120="%STOPAFTER120%"
+### Stop player after 180 min.
+STOPAFTER180="%STOPAFTER180%"
+### Stop player after 240 min.
+STOPAFTER240="%STOPAFTER240%"
 
 ## Timer: shutdown after x minutes
 ### Shutdown after 5 min.
@@ -125,6 +131,12 @@ SHUTDOWNAFTER15="%SHUTDOWNAFTER15%"
 SHUTDOWNAFTER30="%SHUTDOWNAFTER30%"
 ### Shutdown after 60 min.
 SHUTDOWNAFTER60="%SHUTDOWNAFTER60%"
+### Shutdown after 120 min.
+SHUTDOWNAFTER120="%SHUTDOWNAFTER120%"
+### Shutdown after 180 min.
+SHUTDOWNAFTER180="%SHUTDOWNAFTER180%"
+### Shutdown after 240 min.
+SHUTDOWNAFTER240="%SHUTDOWNAFTER240%"
 
 ## Shutdown Timer Volume Reduction : reduce volume until shutdown in x minutes
 ### Reduce volume and Shutdown after 10 min.
@@ -135,6 +147,12 @@ SHUTDOWNVOLUMEREDUCTION15="%SHUTDOWNVOLUMEREDUCTION15%"
 SHUTDOWNVOLUMEREDUCTION30="%SHUTDOWNVOLUMEREDUCTION30%"
 ### Reduce volume and Shutdown after 60 min.
 SHUTDOWNVOLUMEREDUCTION60="%SHUTDOWNVOLUMEREDUCTION60%"
+### Reduce volume and Shutdown after 120 min.
+SHUTDOWNVOLUMEREDUCTION120="%SHUTDOWNVOLUMEREDUCTION120%"
+### Reduce volume and Shutdown after 180 min.
+SHUTDOWNVOLUMEREDUCTION180="%SHUTDOWNVOLUMEREDUCTION180%"
+### Reduce volume and Shutdown after 240 min.
+SHUTDOWNVOLUMEREDUCTION240="%SHUTDOWNVOLUMEREDUCTION240%"
 
 ## Wifi: switch on/off and other
 ### Enable Wifi
@@ -146,7 +164,7 @@ TOGGLEWIFI="%TOGGLEWIFI%"
 ### Read out the Wifi IP over the Phoniebox speakers
 CMDREADWIFIIP="%CMDREADWIFIIP%"
 
-## Recording audio commands 
+## Recording audio commands
 ### Start recording for 10 sec. duration
 RECORDSTART10="%RECORDSTART10%"
 ### Start recording for 60 sec. duration
@@ -157,3 +175,9 @@ RECORDSTART600="%RECORDSTART600%"
 RECORDSTOP="%RECORDSTOP%"
 ### Replay latest recording
 RECORDPLAYBACKLATEST="%RECORDPLAYBACKLATEST%"
+
+## Synchronisation
+### Synchronise all shared files
+SYNCSHAREDFULL="%SYNCSHAREDFULL%"
+### Toggle activation of 'sync on RFID scan'
+SYNCSHAREDONRFIDSCANTOGGLE="%SYNCSHAREDONRFIDSCANTOGGLE%"

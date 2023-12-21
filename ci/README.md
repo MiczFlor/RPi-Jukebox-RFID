@@ -8,7 +8,7 @@ This is a work in progress so expect things to fail or being flaky.
 ## Howto
 
 * First you need a raspberry pi with some decent performance (RPi 3 or 4 would be recommended)
-* Flash its sd card with **raspbian buster lite**
+* Flash its sd card with **Raspberry Pi OS lite**
 * use raspi-config to resize the filesystem to the whole sd card (menu: 7 -> A1)
 * install some tools and reboot:
 ```bash
@@ -19,30 +19,33 @@ This is a work in progress so expect things to fail or being flaky.
       sudo reboot
 ```
 * login to your RPi
-* clone this repo and cd into its local clone:
+* clone the repo and cd into its local clone:
 ```bash
+      cd /home/pi/
+      # optional: change to your fork appropriately
       git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-      cd /home/pi/RPi-Jukebox-RFID/
+      cd RPi-Jukebox-RFID/
+      # optional: switch to another branch
+      git checkout <branch_name>
 ```
 * build the docker image:
-    * **on normal PCs:**
-      ```bash
-      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.amd64 .
-      docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.amd64 .
-      ```
+    ```bash
+    docker build -t rpi-jukebox-rfid:debian-latest -f ci/Dockerfile.debian --platform=linux/arm/v7 --target=code .
+    ```
+    * additional arguments
+        * for builds
+          - on normal PCs use `--platform=linux/amd64`
+          - on a raspberry pi use `--platform=linux/arm/v7`
+        * to use a different debian version as base add parameter `--build-arg="DEBIAN_CODENAME=<code_name>"` (<code_name> = e.g. buster, bullseye, ...).
 
-    * **on a raspberry pi:**
-      ```bash
-      docker build -t rpi-jukebox-rfid-stretch:latest -f ci/Dockerfile.stretch.armv7 .
-      docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile.buster.armv7 .
-      ```
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
     ```bash
-      docker run --rm -ti rpi-jukebox-rfid-buster:latest /bin/bash
+      docker run --rm -ti rpi-jukebox-rfid:debian-latest /bin/bash
       cd /home/pi/
-      cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
-      bash buster-install-default.sh
+      cp /code/scripts/installscripts/install-jukebox.sh /home/pi/
+      # set GIT_URL and GIT_BRANCH appropriately to your checkout
+      bash GIT_URL=https://github.com/MiczFlor/RPi-Jukebox-RFID.git GIT_BRANCH=main install-jukebox.sh
     ```
 
     NOTE: Get familiar with docker and its flags - `--rm` for example will remove the
@@ -50,19 +53,7 @@ This is a work in progress so expect things to fail or being flaky.
 
 ### mount hosts code as volume
 
-The created image now contains all the code in the directory `/code` - if you do not want to
-rebuild the image after each code-change you can 'mount' the RPi's code version into the
-container:
-
-```bash
-    git clone https://github.com/MiczFlor/RPi-Jukebox-RFID.git
-    cd /home/pi/RPi-Jukebox-RFID/
-    docker build -t rpi-jukebox-rfid-buster:latest -f ci/Dockerfile .
-    docker run --rm -ti -w /code -v $PWD:/code rpi-jukebox-rfid-buster:latest /bin/bash
-
-    cd /home/pi/
-    cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
-    bash buster-install-default.sh
-```
+The created image now contains all the code in the directory `/code` - if you do not want to rebuild the image after each code-change you can 'mount' the RPi's code version into the container. 
+Add `-w /code -v $PWD:/code` to the `docker run` parameter.
 
 In that way every change to the code in the container will be available on the RPi as well as vice versa.

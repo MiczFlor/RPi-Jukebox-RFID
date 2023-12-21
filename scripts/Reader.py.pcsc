@@ -63,7 +63,7 @@ class Reader:
                         'Failed to release context: ' + \
                         SCardGetErrorMessage(hresult))
 
-                return(toHexString(response, PACK))
+                return (toHexString(response, PACK))
 
         except error as e:
             print(e)

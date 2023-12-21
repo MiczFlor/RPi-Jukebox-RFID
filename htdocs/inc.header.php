@@ -4,7 +4,7 @@ namespace JukeBox;
 /**************************************************
 * VARIABLES
 * No changes required if you stuck to the
-* INSTALL-stretch.md instructions.
+* INSTALL.md instructions.
 * If you want to change the paths, edit config.php
 ***************************************************/
 
@@ -75,6 +75,7 @@ $debugAvail = array(
 "DEBUG_rfid_trigger_play_sh",
 "DEBUG_shuffle_play_sh",
 "DEBUG_single_play_sh",
+"DEBUG_sync_shared_sh",
 );
 $debugOptions = array("TRUE", "FALSE");
 

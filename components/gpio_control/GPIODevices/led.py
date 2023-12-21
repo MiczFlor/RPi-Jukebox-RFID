@@ -41,4 +41,3 @@ class StatusLED(LED):
             time.sleep(1)
         self.logger.info('phoniebox-startup-scripts service active')
         self.on()
-

@@ -4,7 +4,7 @@
 
 This component provides a mechanism to toggle between both audio sinks through all the usual user interfaces (i.e. GPIO, RFID Card Swipe, Web Interface). The current status is reflected in the Web Interface and through an optional LED.
 
-**Convinced? So, what is the vision?**
+## Convinced? So, what is the vision?
 
 When a user powers on their Bluetooth headphones, they connect automatically to the Phoniebox. At the switch of the button (or card swipe, etc) the (already running) audio playback is transferred from the speakers to the headphones. This happens almost seamlessly. Parents feel an instant wave of relief at not having to listen to the 500th iteration of this month favourite song. The small user feels instantly proud at having working headphones much like the mom/dad always uses while doing home-office online meetings. If no Bluetooth headphones are connected, the audio sink toggle request defaults to speakers. An LED indicates the currently active audio sink.
 
@@ -14,21 +14,21 @@ If no bluetooth device is connected, the output defaults back to speakers. After
 
 ![Web Interface Add-on in settings.php](webif.png  "Web Interface Add-on in settings.php")
 
-**Limitations**
+### Limitations
 
 This feature only works for the *Classic* Edition. Why? It relies on the mpd multiple output channels feature to switch between outputs. This is no available in mopidy, which is used in the Spotify Edition.
 
-### Installation
+## Installation
 
 This looks lengthy, but I the major deal is setting up your audio output devices. I have been rather explicit to avoid confusion.
 
-#### Step 1) Setting up asound.conf
+### Step 1) Setting up asound.conf
 
 You need to set up both audio sinks and make sure they work. This is pretty much a prerequisite for everything that follows.
 
 Follow the instructions for your soundcard. Configure `/etc/asound.conf`correctly. And make sure it works!
 
-Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Bluetooth). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
+Then follow the instructions on the [Wiki on how to connect the bluetooth device](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Connecting_Bluetooth_device_to_Phoniebox). We diverge where we set up two audio sinks instead of one: Just **add** the `pcm.btspeaker` section described in the wiki  to `/etc/asound.conf` (choose a name to your liking). Do **not** touch the mpd.conf yet!
 
 The new entry should end up looking like this:
 
@@ -58,7 +58,7 @@ $ aplay -D btheadphone /usr/share/sounds/alsa/Front_Center.wav
 $ aplay -D hifiberry /usr/share/sounds/alsa/Front_Center.wav
 ~~~
 
-#### Step 2) Setting up mpd.conf
+### Step 2) Setting up mpd.conf
 
 You need to set up two audio_output sections. **The order is important**: the first entry must relate to the soundcard setup, the second entry must relate to the bluetooth setup. Give meaningful names, as they will show up in the Web Interface.
 
@@ -98,7 +98,7 @@ Output 2 (Gesas Headphones) is enabled
 
 You may switch with `$ mpc enable only 1` and `$ mpc enable only 2`. Play some music and use these commands to check you mpd configuration. You should be able to switch the audio output between the two devices.
 
-#### Step 3) Run the installer
+### Step 3) Run the installer
 
 This sets up the appropriate user rights and registers the component with global settings etc.
 
@@ -107,9 +107,9 @@ $ cd components/bluetooth-sink-switch
 $ ./install-bt-sink-switch.sh
 ~~~
 
-#### Step 4) Fine-tuning
+### Step 4) Fine-tuning
 
-**Status LED**
+#### Status LED
 
 An optional status LED will be turned on if the audio sink is set to bluetooth. If a toggle command is issued, but no bluetooth device is connected, the LED will blink three times. Looks very neat, if you have a button with integrated LED. Add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`, to use GPIO 13 as LED signal. It is `led_pin` the BCM number of the GPIO pin (i.e. 'led_pin = 13' means GPIO13) and defaults to None. Create the file, if it does not exist.
 
@@ -121,7 +121,7 @@ enabled: True
 led_pin: 13
 ~~~
 
-**GPIO control**
+#### GPIO control
 
 If you want to toggle from a GPIO button (e.g. on GPIO5), add these lines to your `RPi-Jukebox-RFID/settings/gpio_settings.ini`. Create it, if it does not exist.
 
@@ -135,7 +135,7 @@ hold_time: 0.3
 functionCall: functionCallBluetoothToggle
 ~~~
 
-**RFID Card**
+#### RFID Card
 
 If you want to toggle by RFID card swipe, set the card id in `rfid_trigger_play.conf`, e.g.:
 
@@ -144,7 +144,7 @@ If you want to toggle by RFID card swipe, set the card id in `rfid_trigger_play.
 CMDBLUETOOTHTOGGLE="1364237231134"
 ~~~
 
-**Volume attenuation**
+#### Volume attenuation
 
 Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restricting the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
 

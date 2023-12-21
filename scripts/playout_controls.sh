@@ -73,6 +73,8 @@ NOW=`date +%Y-%m-%d.%H:%M:%S`
 # readwifiipoverspeaker
 # bluetoothtoggle
 # switchaudioiface
+# sharedsyncfull
+# sharedsyncchangeonrfidscan
 
 # The absolute path to the folder which contains all the scripts.
 # Unless you are working with symlinks, leave the following line untouched.
@@ -117,6 +119,8 @@ if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "VAR VALUE: ${VALUE}"
 # and we can immediately jump to the switch-case statement. Increases execution
 # speed of these commands.
 shortcutCommands="^(setvolume|volumedown|volumeup|mute)$"
+
+autohotspot_script="/usr/bin/autohotspot"
 
 # Run the code from this block only, if the current command is not in "shortcutCommands"
 if [[ ! "$COMMAND" =~ $shortcutCommands ]]
@@ -285,7 +289,7 @@ case $COMMAND in
 			# schedule shutdown after VALUE minutes
 			echo "${PATHDATA}/playout_controls.sh -c=shutdownsilent" | at -q q now + ${VALUE} minute
 		fi
-		;;			
+		;;
     reboot)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         ${PATHDATA}/resume_play.sh -c=savepos && mpc clear
@@ -1003,6 +1007,7 @@ case $COMMAND in
     enablewifi)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
         rfkill unblock wifi
+        if [ -f "$autohotspot_script" ]; then sudo "$autohotspot_script"; fi
         ;;
     disablewifi)
         if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   ${COMMAND}" >> ${PATHDATA}/../logs/debug.log; fi
@@ -1028,6 +1033,7 @@ case $COMMAND in
             if [ "${DEBUG_playout_controls_sh}" == "TRUE" ]; then echo "   Wifi will now be activated" >> ${PATHDATA}/../logs/debug.log; fi
             echo "Wifi will now be activated"
             rfkill unblock wifi
+            if [ -f "$autohotspot_script" ]; then sudo "$autohotspot_script"; fi
         fi
         ;;
     randomcard)
@@ -1135,6 +1141,12 @@ case $COMMAND in
         else
             dbg "Command requires \"amixer\" as volume manager."
         fi
+        ;;
+    sharedsyncfull)
+        $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=full
+        ;;
+    sharedsyncchangeonrfidscan)
+        $PATHDATA/../components/synchronisation/sync-shared/sync-shared.sh -c=changeOnRfidScan -v="$VALUE"
         ;;
     *)
         echo Unknown COMMAND $COMMAND VALUE $VALUE

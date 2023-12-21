@@ -4,8 +4,13 @@
 # This script needs to be adapted, if new packages, etc are added to the install script
 
 # The absolute path to the folder which contains this script
+INSTALLATION_EXITCODE="${1:-0}"
+
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-HOME_DIR="/home/pi"
+USER_NAME="$(whoami)"
+HOME_DIR=$(getent passwd "$USER_NAME" | cut -d: -f6)
+
+JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 
 tests=0
 failed_tests=0
@@ -74,6 +79,19 @@ check_variable() {
 }
 
 # Verify functions
+verify_installation_exitcode() {
+    if [ "${INSTALLATION_EXITCODE}" -eq 0 ]; then
+        echo "Installation successfull."
+        echo "Performing further checks..."
+    elif [ "${INSTALLATION_EXITCODE}" -eq 2 ]; then
+        echo "ABORT: Installation aborted due to prerequisite."
+        echo "Further checks skipped."
+        exit 0
+    else
+        echo "ERROR: Installation exited with errorcode '${INSTALLATION_EXITCODE}'"
+        exit 1
+    fi
+}
 
 verify_conf_file() {
     local install_conf="${HOME_DIR}/PhonieboxInstall.conf"
@@ -120,6 +138,18 @@ verify_conf_file() {
     fi
     check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
+    check_variable "GPIOconfig"
+
+    # Feature optional. if config not present, defaults to NO
+    if [[ -n "${AUTOHOTSPOTconfig}" ]]; then
+        echo "\$AUTOHOTSPOTconfig is set to '$AUTOHOTSPOTconfig'"
+        if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+            check_variable "AUTOHOTSPOTssid"
+            check_variable "AUTOHOTSPOTcountryCode"
+            check_variable "AUTOHOTSPOTpass"
+            check_variable "AUTOHOTSPOTip"
+        fi
+    fi
 
     if [ "${fail}" == "true" ]; then
       exit 1
@@ -151,15 +181,65 @@ verify_wifi_settings() {
     check_service_enablement dhcpcd enabled
 }
 
-verify_apt_packages(){
-    local packages="libspotify-dev samba
-samba-common-bin gcc lighttpd php7.3-common php7.3-cgi php7.3 at mpd mpc mpg123 git ffmpeg
-resolvconf spi-tools python3 python3-dev python3-pip python3-mutagen python3-gpiozero
-python3-spidev netcat alsa-utils"
-    # TODO apt-transport-https checking only on RPi is currently a workaround
-    local packages_raspberrypi="apt-transport-https raspberrypi-kernel-headers"
-    local packages_spotify="mopidy mopidy-mpd mopidy-local mopidy-spotify libspotify12
-python3-cffi python3-ply python3-pycparser python3-spotify"
+verify_autohotspot_settings() {
+    if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+        printf "\nTESTING autohotspot settings...\n\n"
+
+        local autohotspot_service="autohotspot.service"
+        local autohotspot_script="/usr/bin/autohotspot"
+
+        local dnsmasq_conf=/etc/dnsmasq.conf
+        local hostapd_conf=/etc/hostapd/hostapd.conf
+        local hostapd_deamon=/etc/default/hostapd
+        local dhcpcd_conf=/etc/dhcpcd.conf
+
+        check_file_contains_string "${AUTOHOTSPOTip}" "${autohotspot_script}"
+        local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+        check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
+        check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
+        check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
+        check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
+        check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
+        check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
+        check_file_contains_string "ExecStart=${AUTOHOTSPOT_SCRIPT}" "/etc/systemd/system/${autohotspot_service}"
+
+        local crontab_user=$(crontab -l 2>/dev/null)
+        if [[ ! $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
+            echo "  ERROR: crontab for user not installed"
+            ((failed_tests++))
+        fi
+        ((tests++))
+
+        # check owner and permissions
+        check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
+        check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+        check_chmod_chown 644 root root "/etc/systemd/system" "${autohotspot_service}"
+
+        # check that the services are activ
+        check_service_enablement "${autohotspot_service}" enabled
+        check_service_enablement hostapd disabled
+        check_service_enablement dnsmasq disabled
+    fi
+}
+
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments, egg-prefixes and version suffixes
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file() {
+    local package_file="$1"
+    shift
+
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs "$@"
+}
+
+verify_apt_packages() {
+    local jukebox_dir="$1"
+    local packages=$(call_with_args_from_file "${jukebox_dir}"/packages.txt echo)
+    local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
+    local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
+    local packages_autohotspot=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -168,14 +248,19 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
         packages="${packages} ${packages_spotify}"
     fi
 
+    if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
+        packages="${packages} ${packages_autohotspot}"
+    fi
+
     # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
         packages="${packages} ${packages_raspberrypi}"
     fi
 
+    local apt_list_installed=$(apt -qq list --installed 2>/dev/null)
     for package in ${packages}
     do
-        if [[ $(apt -qq list "${package}" 2>/dev/null | grep 'installed') ]]; then
+        if [[ $(echo "${apt_list_installed}" | grep -i "${package}.*installed") ]]; then
             echo "  ${package} is installed"
         else
             echo "  ERROR: ${package} is not installed"
@@ -186,11 +271,12 @@ python3-cffi python3-ply python3-pycparser python3-spotify"
 }
 
 verify_pip_packages() {
-    local modules="evdev spi-py youtube_dl pyserial RPi.GPIO"
-    local modules_spotify="Mopidy-Iris"
-    local modules_pn532="py532lib"
-    local modules_rc522="pi-rc522"
-    local deviceName="${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
+    local jukebox_dir="$1"
+    local modules=$(call_with_args_from_file "${jukebox_dir}"/requirements.txt echo)
+    local modules_spotify=$(call_with_args_from_file "${jukebox_dir}"/requirements-spotify.txt echo)
+    local modules_pn532=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/PN532/requirements.txt echo)
+    local modules_rc522=$(call_with_args_from_file "${jukebox_dir}"/components/rfid-reader/RC522/requirements.txt echo)
+    local deviceName="${jukebox_dir}"/scripts/deviceName.txt
 
     printf "\nTESTING installed pip modules...\n\n"
 
@@ -201,21 +287,22 @@ verify_pip_packages() {
 
     if [[ -f "${deviceName}" ]]; then
         # RC522 reader is used
-        if grep -Fxq "${deviceName}" MFRC522
+        if grep -Fxq "MFRC522" "${deviceName}"
         then
             modules="${modules} ${modules_rc522}"
         fi
 
         # PN532 reader is used
-        if grep -Fxq "${deviceName}" PN532
+        if grep -Fxq "PN532" "${deviceName}"
         then
             modules="${modules} ${modules_pn532}"
         fi
     fi
 
+    local pip_list_installed=$(pip3 list)
     for module in ${modules}
     do
-        if [[ $(pip3 show "${module}") ]]; then
+        if [[ $(echo "${pip_list_installed}" | grep -i "${module}") ]]; then
             echo "  ${module} is installed"
         else
             echo "  ERROR: pip module ${module} is not installed"
@@ -233,10 +320,11 @@ verify_samba_config() {
 }
 
 verify_webserver_config() {
+    local phpver="$(ls -1 /etc/php)"
     printf "\nTESTING webserver config...\n\n"
     check_chmod_chown 644 root root "/etc/lighttpd" "lighttpd.conf"
     check_chmod_chown 644 root root "/etc/lighttpd/conf-available" "15-fastcgi-php.conf"
-    check_chmod_chown 644 root root "/etc/php/7.3/cgi" "php.ini"
+    check_chmod_chown 644 root root "/etc/php/${phpver}/cgi" "php.ini"
     check_chmod_chown 440 root root "/etc" "sudoers"
 
     # Bonus TODO: check that fastcgi and fastcgi-php mods are enabled
@@ -295,13 +383,13 @@ verify_mpd_config() {
 }
 
 verify_folder_access() {
-    local jukebox_dir="${HOME_DIR}/RPi-Jukebox-RFID"
+    local jukebox_dir="$1"
     printf "\nTESTING folder access...\n\n"
 
     # check owner and permissions
-    check_chmod_chown 775 pi www-data "${jukebox_dir}" "playlists shared htdocs settings"
+    check_chmod_chown 775 "$USER_NAME" www-data "${jukebox_dir}" "playlists shared htdocs settings"
     # ${DIRaudioFolders} => "testing" "audiofolders"
-    check_chmod_chown 775 pi www-data "${DIRaudioFolders}/.." "audiofolders"
+    check_chmod_chown 775 "$USER_NAME" www-data "${DIRaudioFolders}/.." "audiofolders"
 
     #find .sh and .py scripts that are NOT executable
     local count=$(find . -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) ! -executable | wc -l)
@@ -315,12 +403,13 @@ verify_folder_access() {
 
 main() {
     printf "\nTesting installation:\n"
+    verify_installation_exitcode
     verify_conf_file
     if [[ "$WIFIconfig" == "YES" ]]; then
         verify_wifi_settings
     fi
-    verify_apt_packages
-    verify_pip_packages
+    verify_apt_packages "${JUKEBOX_HOME_DIR}"
+    verify_pip_packages "${JUKEBOX_HOME_DIR}"
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
@@ -328,7 +417,8 @@ main() {
         verify_spotify_config
     fi
     verify_mpd_config
-    verify_folder_access
+    verify_autohotspot_settings
+    verify_folder_access "${JUKEBOX_HOME_DIR}"
 }
 
 start=$(date +%s)
