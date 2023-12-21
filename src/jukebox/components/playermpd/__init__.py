@@ -86,6 +86,8 @@ import threading
 import logging
 import time
 import functools
+from slugify import slugify
+from base64 import b64encode
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -97,6 +99,7 @@ import misc
 
 from jukebox.NvManager import nv_manager
 from .playcontentcallback import PlayContentCallbacks, PlayCardState
+from .coverart_cache_manager import CoverartCacheManager
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -154,6 +157,7 @@ class PlayerMPD:
         self.decode_2nd_swipe_option()
 
         self.mpd_client = mpd.MPDClient()
+        self.coverart_cache_manager = CoverartCacheManager(os.path.expanduser('~/RPi-Jukebox-RFID/src/webapp/build/cover-cache'))
         # The timeout refer to the low-level socket time-out
         # If these are too short and the response is not fast enough (due to the PI being busy),
         # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket
@@ -465,6 +469,50 @@ class PlayerMPD:
             self.play_folder(folder, recursive)
 
     @plugs.tag
+    def get_single_coverart(self, song_url):
+        """
+        Saves the album art image to a cache and returns the filename.
+        """
+        base_filename = slugify(song_url)
+
+        try:
+            metadata_list = self.mpd_client.listallinfo(song_url)
+            metadata = {}
+            if metadata_list:
+                metadata = metadata_list[0]
+
+            if 'albumartist' in metadata and 'album' in metadata:
+                base_filename = slugify(f"{metadata['albumartist']}-{metadata['album']}")
+
+            cache_filename = self.coverart_cache_manager.find_file_by_hash(base_filename)
+
+            if cache_filename:
+                return cache_filename
+
+            # Cache file does not exist
+            # Fetch cover art binary
+            album_art_data = self.mpd_client.readpicture(song_url)
+
+            # Save to cache
+            cache_filename = self.coverart_cache_manager.save_to_cache(base_filename, album_art_data)
+
+            return cache_filename
+
+        except mpd.base.CommandError as e:
+            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+        except Exception as e:
+            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+
+        return ""
+
+    @plugs.tag
+    def get_album_coverart(self, albumartist: str, album: str):
+        song_list = self.list_songs_by_artist_and_album(albumartist, album)
+
+        return self.get_single_coverart(song_list[0]['file'])
+
+
+    @plugs.tag
     def get_folder_content(self, folder: str):
         """
         Get the folder content as content list with meta-information. Depth is always 1.
@@ -562,16 +610,16 @@ class PlayerMPD:
     @plugs.tag
     def list_albums(self):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
+            album_list = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
 
-        return albums
+        return album_list
 
     @plugs.tag
-    def list_song_by_artist_and_album(self, albumartist, album):
+    def list_songs_by_artist_and_album(self, albumartist, album):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
+            song_list = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
 
-        return albums
+        return song_list
 
     @plugs.tag
     def get_song_by_url(self, song_url):
