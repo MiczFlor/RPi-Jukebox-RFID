@@ -87,7 +87,6 @@ import logging
 import time
 import functools
 from slugify import slugify
-from base64 import b64encode
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -157,7 +156,10 @@ class PlayerMPD:
         self.decode_2nd_swipe_option()
 
         self.mpd_client = mpd.MPDClient()
-        self.coverart_cache_manager = CoverartCacheManager(os.path.expanduser('~/RPi-Jukebox-RFID/src/webapp/build/cover-cache'))
+
+        coverart_cache_path = cfg.getn('webapp', 'coverart_cache_path')
+        self.coverart_cache_manager = CoverartCacheManager(os.path.expanduser(coverart_cache_path))
+
         # The timeout refer to the low-level socket time-out
         # If these are too short and the response is not fast enough (due to the PI being busy),
         # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket

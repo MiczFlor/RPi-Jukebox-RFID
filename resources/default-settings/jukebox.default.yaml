@@ -145,3 +145,5 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+webapp:
+  coverart_cache_path: ../../src/webapp/build/cover-cache
