@@ -513,7 +513,6 @@ class PlayerMPD:
 
         return self.get_single_coverart(song_list[0]['file'])
 
-
     @plugs.tag
     def get_folder_content(self, folder: str):
         """

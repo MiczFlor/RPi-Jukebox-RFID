@@ -1,5 +1,6 @@
 import os
 
+
 class CoverartCacheManager:
     def __init__(self, cache_folder_path):
         self.cache_folder_path = cache_folder_path
