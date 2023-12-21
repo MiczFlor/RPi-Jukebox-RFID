@@ -31,7 +31,7 @@ Another bunch of wonderful designs! 2023 is the fifth Phoniebox calendar. If you
 
 ![The 2023 Phoniebox Calendar](docs/2023-Phoniebox-Calendar.jpg "The 2023 Phoniebox Calendar")
 
-If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/639).
+If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2115).
 
 ## Install Phoniebox
 
