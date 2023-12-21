@@ -46,7 +46,7 @@ $ journalctl --user -b -u mpd
 
 The `systemd` service file is located at the default location for user services:
 
-```
+```text
 /usr/lib/systemd/user/mpd.service
 ```
 
@@ -62,7 +62,7 @@ There is a number of reasons for that:
 
 The PulseAudio configuration file is located at
 
-```
+```text
 ~/.config/pulse/default.pa
 ```
 
@@ -90,7 +90,7 @@ $ journalctl --user -b -u jukebox-daemon
 
 The `systemd` service file is located at the default location for user services:
 
-```
+```text
 /usr/lib/systemd/user/jukebox-daemon.service
 ```
 
@@ -100,12 +100,12 @@ Starting and stopping the service can be useful for debugging or configuration c
 
 The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
-```
+```text
 ./src/webapp/build
 ```
 
 The Nginx configuration is located at
 
-```
+```text
 /etc/nginx/sites-available/default
 ```

@@ -11,7 +11,6 @@ SCRIPT_DIR="$(dirname "$SOURCE")"
 LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
 LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
-export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # Run installation (in interactive mode)
 # y - start setup
 # n - use static ip
@@ -23,8 +22,8 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
+# n - install node
 # y - setup kiosk mode
-# - - install node (forced webapp download)
 # n - reboot
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y
@@ -36,6 +35,7 @@ n
 n
 n
 y
+n
 y
 n
 '

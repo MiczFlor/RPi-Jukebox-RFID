@@ -130,11 +130,11 @@ _download_jukebox_source() {
 _load_sources() {
     # Load / Source dependencies
     for i in "${INSTALLATION_PATH}"/installation/includes/*; do
-    source "$i"
+        source "$i" || exit_on_error
     done
 
     for j in "${INSTALLATION_PATH}"/installation/routines/*; do
-    source "$j"
+        source "$j" || exit_on_error
     done
 }
 

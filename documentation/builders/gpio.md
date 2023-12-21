@@ -1,72 +1,60 @@
-.. RPI Jukebox RFID Version 3
-.. Copyright (c) See file LICENSE in project root folder
+# GPIO Recipes
 
-GPIO Recipes
-**************
-
-Enabling GPIO
-----------------
+## Enabling GPIO
 
 The GPIO module needs to be enabled in your main configuration file ``shared/settings/jukebox.yaml``. Look for the
 this entry and modify it accordingly:
 
-.. code-block:: yaml
-
+```yml
         gpioz:
           enable: true
           config_file: ../../shared/settings/gpio.yaml
+```
 
 The GPIO configuration itself is stored in a separate file, in this case ``../../shared/settings/gpio.yaml``.
 
-The GPIO module uses `GPIOZero <https://gpiozero.readthedocs.io/>`_ as a backend to access the RPi's GPIO pins.
+The GPIO module uses [GPIOZero](https://gpiozero.readthedocs.io/) as a backend to access the RPi's GPIO pins.
 It's a wrapper to integrate GPIOZero into the Jukebox's API, allowing a YAML based configuration and providing
 helpful error messages on misconfiguration.
 
-Pin Numbering
------------------
+## Pin Numbering
 
 The pin numbering is the BCM pin numbering, as is the
-`default in GPIOZero <https://gpiozero.readthedocs.io/en/stable/recipes.html#pin-numbering>`_.
+[default in GPIOZero](https://gpiozero.readthedocs.io/en/stable/recipes.html#pin-numbering>).
 
-Configuration
--------------------
+## Configuration
 
 The GPIOZ configuration file has the following structure:
 
-.. code-block:: yaml
-
+```yml
     pin_factory:
       type: rpigpio.RPiGPIOFactory
     output_devices:
       ...
     input_devices:
       ...
+```
 
-There is no need to touch the header, but some `Developer options`_ can be found there.
+There is no need to touch the header, but some `Developer options` can be found there.
 
 A file with examples can be found in ``resources/default-settings/gpio.yaml``.
 Below you will find easy to adapt recipes for various configuration snippets.
 
-
-Input devices
----------------
+## Input devices
 
 Configuring input devices consists of 2 aspects:
 
-    #. Define an input device and configure it's parameters. All available
-       input devices can be found in :class:`components.gpio.gpioz.core.input_devices`.
-    #. Assign an action to execute on input state change.
-       Actions are defined as :ref:`userguide/rpc_commands:RPC Commands`,
-       just the same as for assigning card actions.
+1. Define an input device and configure it's parameters. All available
+input devices can be found in class `components.gpio.gpioz.core.input_devices`.
+2. Assign an action to execute on input state change.
+Actions are defined as [RPC Commands](rpc-commands.md),
+just the same as for assigning card actions.
 
-
-Button: Toggle Playback
-^^^^^^^^^^^^^^^^^^^^^^^^
+### Button: Toggle Playback
 
 A button to toggle music playback on single press:
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       TogglePlayback:
         type: Button
@@ -75,38 +63,37 @@ A button to toggle music playback on single press:
         actions:
           on_press:
             alias: toggle
+```
 
 Each device instantiation must be uniquely named, here  ``TogglePlayback``. The name can be freely chosen, as
 long as it is unique.
 
 The parameter ``type`` directly matches the GPIO input device class, in this case
-:class:`LED <components.gpio.gpioz.core.input_devices.Button>`. With ``kwargs`` you can set all the class initialization
+class `LED <components.gpio.gpioz.core.input_devices.Button>`. With ``kwargs`` you can set all the class initialization
 parameters, which relate directly to the class' initialization parameters.
 
-.. important:: You cannot set the class initialization parameters :attr:`pin_factory` or :attr:`name`
+**Important:** You cannot set the class initialization parameters :attr:`pin_factory` or :attr:`name`
     from inside ``kwargs``. The name is automatically assigned from the unique name of configuration entry.
 
 Usually, only the pin(s) are mandatory parameters. In the section ``actions``, the RPC commands are linked,
-either as alias (i.e. shortcut) or full :ref:`userguide/rpc_commands:RPC Commands` specification.
+either as alias (i.e. shortcut) or full [RPC Commands](rpc-commands.md) specification.
 
 The default configuration of the Button uses the internal pull-up resistor. So, the physical connection to
 the RPi looks:
 
-.. code-block:: text
-
+```text
  ----+
      |      1 kOhm   Button
    13| -----======------/ ----+
      |                        |
  ----+                        - GND
+```
 
-Button: Increase volume
-^^^^^^^^^^^^^^^^^^^^^^^^
+### Button: Increase volume
 
 A button to increase the volume by 5 steps every 0.75 seconds as long as it is pressed:
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       IncreaseVolume:
         type: Button
@@ -118,14 +105,13 @@ A button to increase the volume by 5 steps every 0.75 seconds as long as it is p
           on_press:
             alias: change_volume
             args: +5
+```
 
-Button: Shutdown
-^^^^^^^^^^^^^^^^^^^^^^^^
+### Button: Shutdown
 
 A button to shutdown the Jukebox if it is pressed for more than 3 seconds. Note the different ``type`` here!
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       IncreaseVolume:
         type: LongPressButton
@@ -135,9 +121,9 @@ A button to shutdown the Jukebox if it is pressed for more than 3 seconds. Note 
         actions:
           on_press:
             alias: shutdown
+```
 
-Button: Dual Action
-^^^^^^^^^^^^^^^^^^^^^^^^
+### Button: Dual Action
 
 A button to act differently on short and long presses. Go to previous song on single short press, start playlist from
 the beginning on press longer than 1 second.
@@ -145,8 +131,7 @@ the beginning on press longer than 1 second.
 Note: the short press action is executed on button release since we don't not know how much longer somebody is going
 to press the button. The long press action is executed as soon as the hold time has been reached.
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       PreviousSong:
         type: ShortLongPressButton
@@ -158,10 +143,9 @@ to press the button. The long press action is executed as soon as the hold time 
             alias: prev_song
           on_long_press:
             alias: replay
+```
 
-
-TwinButton: Six function beast
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### TwinButton: Six function beast
 
 Use two buttons to encode up to six actions depending on single / dual press and also short / long press.
 Single button short presses skip to prev/next song, while long presses decrease/increase the volume.
@@ -169,8 +153,7 @@ Here we also use make use of :attr:`hold_repeat`, to have the volume continue to
 down. Twin press toggle pause or changed the audio output sink from speakers to headset. The attribute :attr:`hold_repeat`
 only applies to single press actions, never to dual press actions.
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       SixActionBeast:
         type: TwinButton
@@ -193,12 +176,12 @@ only applies to single press actions, never to dual press actions.
             args: 3
           on_long_press_ab:
             alias: toggle_output
+```
 
 With a TwinButton not all functions need to be assigned. A button that only does prev/next song and causes as
 shutdown only on dual press with a minimum hold time of 2 seconds looks like this:
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       CombinationButton:
         type: TwinButton
@@ -213,10 +196,9 @@ shutdown only on dual press with a minimum hold time of 2 seconds looks like thi
             alias: next_song
           on_long_press_ab:
             alias: toggle_output
+```
 
-
-Rotary Encoder: Volume Control
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Rotary Encoder: Volume Control
 
 A rotary encoder to change the volume: A common module is the KY-040, which can be picked up from numerous shops.
 It has four pins, typically labelled DT, CLK, SW, GND. Connect GND to ground. Connect DT and CLK to the
@@ -225,8 +207,7 @@ direction does not match, simply swap the pins in the configuration file. The pi
 present. It is a button when the rotary encoder is pressed from the top. Configure a
 regular button entry separately for this button, e.g. `Button: Toggle Playback`_.
 
-.. code-block:: yaml
-
+```yml
     input_devices:
       VolumeRotator:
         type: RotaryEncoder
@@ -240,54 +221,51 @@ regular button entry separately for this button, e.g. `Button: Toggle Playback`_
           on_rotate_counter_clockwise:
             alias: change_volume
             args: -5
+```
 
-Rotary Encoder: Previous/Next Song
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Rotary Encoder: Previous/Next Song
 
 From the previous recipe, simply replace the actions to have a rotary encoder to step through the playlist:
 
-.. code-block:: yaml
-
+```yml
         ...
         actions:
           on_rotate_clockwise:
             alias: next_song
           on_rotate_counter_clockwise:
             alias: prev_song
+```
 
-
-Output devices
---------------
+## Output devices
 
 Configuring output devices contains 2 aspects:
 
-    #. Define the the output device. Available output devices can be found in :class:`components.gpio.gpioz.core.output_devices`.
-    #. Connect the device to some Jukebox function which then
-       activates the device on e.g. RFID card read. There are many predefined connections
-       available. Check them all out in :class:`components.gpio.gpioz.plugin.connectivity`
+1. Define the the output device. Available output devices can be found in class `components.gpio.gpioz.core.output_devices`.
+2. Connect the device to some Jukebox function which then
+activates the device on e.g. RFID card read. There are many predefined connections
+available. Check them all out in class `components.gpio.gpioz.plugin.connectivity`
 
-.. note:: There are two different types of buzzers:
+**Note:** There are two different types of buzzers:
 
-    Active buzzer:
-        These buzzers make a single-frequency beep sound when a constant voltage is applied. A common module is
-        the KY-012. These buzzers must be mapped to :class:`Buzzer <components.gpio.gpioz.core.output_devices.Buzzer>`.
+_Active buzzer_
 
-    Passive buzzer:
-        These buzzers must be used with a PWM signal but then can emit different frequency beeps. This is all handled
-        by us. A common module is the KY-006. These buzzers *must* be mapped to :class:`TonalBuzzer <components.gpio.gpioz.core.output_devices.TonalBuzzer>`
+These buzzers make a single-frequency beep sound when a constant voltage is applied. A common module is
+the KY-012. These buzzers must be mapped to class `components.gpio.gpioz.core.output_devices.Buzzer`.
 
-    For many connection function is does not matter if a :class:`Buzzer <components.gpio.gpioz.core.output_devices.Buzzer>`
-    or a :class:`TonalBuzzer <components.gpio.gpioz.core.output_devices.TonalBuzzer>` is connected.
-    The connection function takes care of the differences internally - as long as the class matches the physical
-    hardware device!
+_Passive buzzer_
+These buzzers must be used with a PWM signal but then can emit different frequency beeps. This is all handled
+by us. A common module is the KY-006. These buzzers _must_ be mapped to class `components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
-Status LED
-^^^^^^^^^^^^^^
+For many connection function is does not matter if a class `components.gpio.gpioz.core.output_devices.Buzzer`
+or a class `components.gpio.gpioz.core.output_devices.TonalBuzzer` is connected.
+The connection function takes care of the differences internally - as long as the class matches the physical
+hardware device!
+
+### Status LED
 
 An LED that lights up when the Jukebox service is operational.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       StatusLED:
         type: LED
@@ -295,10 +273,11 @@ An LED that lights up when the Jukebox service is operational.
           - gpio.gpioz.plugin.connectivity.register_status_led_callback
         kwargs:
           pin: 17
+```
 
 As with the input devices, every output device requires a unique, but freely chosen name - here ``StatusLED``.
 The parameter ``type`` directly matches the GPIO output device class, in this case
-:class:`LED <components.gpio.gpioz.core.output_devices.LED>`.
+class `<components.gpio.gpioz.core.output_devices.LED>`.
 The parameters in ``kwargs`` relate to the class initialization parameters.
 
 The ``connect`` option is a list of functions to call to connect this device with a function inside
@@ -307,13 +286,11 @@ the Jukebox. An output device can be used by multiple functions.
 .. important:: You cannot set the class initialization parameters :attr:`pin_factory` or :attr:`name`
     from inside ``kwargs``. The name is automatically assigned from the unique name of configuration entry.
 
-Card Read Buzzer
-^^^^^^^^^^^^^^^^^^
+### Card Read Buzzer
 
 Sound a Piezzo Buzzer once when a card swipe has been detected. For unknown cards, sound it 3 times.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       RfidBuzzer:
         type: Buzzer
@@ -321,17 +298,15 @@ Sound a Piezzo Buzzer once when a card swipe has been detected. For unknown card
           - gpio.gpioz.plugin.connectivity.register_rfid_callback
         kwargs:
           pin: 12
+```
 
-Card Read + Volume + Status Buzzer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Card Read + Volume + Status Buzzer
 
 Extend the card read buzzer to also sound one long beep after completed boot up and two beeps on shutdown.
 On top sound a short beep when minimum or maximum volume is reached.
 The only difference is the two additional connection functions.
 
-
-.. code-block:: yaml
-
+```yml
     output_devices:
       RfidBuzzer:
         type: Buzzer
@@ -341,15 +316,14 @@ The only difference is the two additional connection functions.
           - gpio.gpioz.plugin.connectivity.register_volume_buzzer_callback
         kwargs:
           pin: 12
+```
 
-Tonal Status Buzzer
-^^^^^^^^^^^^^^^^^^^^^^
+### Tonal Status Buzzer
 
 Have an active buzzer play a 4 note melody on startup and a 3 note melody on closing down.
 Use the same buzzer to beep on RFID card swipes.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       RfidBuzzer:
         type: TonalBuzzer
@@ -358,15 +332,13 @@ Use the same buzzer to beep on RFID card swipes.
           - gpio.gpioz.plugin.connectivity.register_rfid_callback
         kwargs:
           pin: 12
+```
 
+### Card Read LED
 
-Card Read LED
-^^^^^^^^^^^^^^^^^^
+Just like `Card Read Buzzer`, but flash a LED instead of buzzing a sound. The difference is the output device type.
 
-Just like `Card Read Buzzer`_, but flash a LED instead of buzzing a sound. The difference is the output device type.
-
-.. code-block:: yaml
-
+```yml
     output_devices:
       RfidLED:
         type: LED
@@ -374,48 +346,44 @@ Just like `Card Read Buzzer`_, but flash a LED instead of buzzing a sound. The d
           - gpio.gpioz.plugin.connectivity.register_rfid_callback
         kwargs:
           pin: 12
+```
 
-Volume LED
-^^^^^^^^^^^^
+### Volume LED
 
 Have a LED change it's brightness to reflect the current volume level. It also flashes when minimum or maximum
 volume level is reached.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       VolumeLED:
         type: PWMLED
         connect: gpio.gpioz.plugin.connectivity.register_volume_led_callback
         kwargs:
           pin: 18
+```
 
-Color Volume LED
-^^^^^^^^^^^^^^^^^^
+### Color Volume LED
 
 Have an RGBLED change it's color to reflect the current volume level. It also flashes when minimum or maximum
 volume level is reached. RGBLED's can be found as modules, e.g. KY-016 or KY-009, or as individual components from any
 electronics shop.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       VolumeLED:
         type: RGBLED
         connect: gpio.gpioz.plugin.connectivity.register_volume_rgbled_callback
         kwargs:
           pin: 18
+```
 
-
-Bluetooth audio output LED
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Bluetooth audio output LED
 
 Indicates the current audio output sink. LED is off when audio sink is primary sink, and
 on when audio sink is secondary sink (e.g. a bluetooth headset). When sink toggle fails, LED blinks
 3 times.
 
-.. code-block:: yaml
-
+```yml
     output_devices:
       HeadsetConnected:
         type: LED
@@ -423,42 +391,37 @@ on when audio sink is secondary sink (e.g. a bluetooth headset). When sink toggl
           - gpio.gpioz.plugin.connectivity.register_audio_sink_change_callback
         kwargs:
           pin: 27
+```
 
-
-Developer options
----------------------
+## Developer options
 
 For developers there are 2 options. Both replace the pin factory used by GPIOZero.
 
-Use Mock Pins
-^^^^^^^^^^^^^^^
+### Use Mock Pins
 
-Using GPIOZero `Mock pins <https://gpiozero.readthedocs.io/en/stable/api_pins.html#mock-pins>`_,
+Using GPIOZero [Mock pins](https://gpiozero.readthedocs.io/en/stable/api_pins.html#mock-pins),
 allows to do function development on an arbitrary machine. If you have
-configured the :ref:`Mock RFID Reader <rfid/mock_reader:Mock Reader>`,
+configured the [Mock RFID Reader](../developers/rfid/mock_reader.md),
 the GPIO input and output devices are added to the GUI. Simply change the header in the configuration file to:
 
-.. code-block:: yaml
-
+```yml
     pin_factory:
       type: mock.MockFactory
+```
 
-.. image:: mock_gpio.png
-    :width: 80 %
-    :align: center
+![Mock GPIO](mock_gpio.png)
 
-Use Remote Pins
-^^^^^^^^^^^^^^^^^^
+### Use Remote Pins
 
-Using `GPIOZero's remote pins <https://gpiozero.readthedocs.io/en/stable/remote_gpio.html>`_
+Using [GPIOZero's remote pins](https://gpiozero.readthedocs.io/en/stable/remote_gpio.html)
 allows to run the Jukebox code on a single machine and have the GPIO
 happen on a RPi board. See the GPIOZero documentation how to set it up.
 Simply change the header in the configuration file to enable it. Host is the IP address of your RPi board.
 
-.. code-block:: yaml
-
+```yml
     pin_factory:
       type: pigpio.PiGPIOFactory
       pigpio.PiGPIOFactory:
         kwargs:
           host: 192.168.178.32
+```

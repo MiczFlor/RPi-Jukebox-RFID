@@ -23,8 +23,8 @@ export BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=true
 # n - setup rfid reader
 # n - setup samba
 # n - setup webapp
-# - - setup kiosk mode (only with webapp = y)
 # - - install node (only with webapp = y)
+# - - setup kiosk mode (only with webapp = y)
 # n - reboot
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y
