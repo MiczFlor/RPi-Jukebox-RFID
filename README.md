@@ -21,15 +21,9 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 **Spotify has [disabled access to libspotify on May 16, 2022](https://developer.spotify.com/community/news/2022/04/12/libspotify-sunset/).**
 
-This means **Spotify in Phoniebox doesn't work at the moment**, as Phoniebox can not communicate with Spotify via libspotify (and mopidy-spotify) anymore.
+This means **Spotify in Phoniebox doesn't work at the moment**. For further information see [Spotify FAQ](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)
 
-The problem is not our code but the cut off by Spotify. We want Phoniebox users to be able to connect their box to their Spotify accounts and play their content. The possibilities Spotify offers are -- at first glance -- not supporting an integration with Phoniebox.
-
-Third party projects like [librespot-java](https://github.com/librespot-org/librespot-java) enter a grey zone regarding violation of Spotify's *Terms of Services* (ToS). For a potential Spotify re-integration, we are committed to a Spotify ToS compliant way of doing so (both in Version 2 and Version 3). This means looking into the (relatively new) Spotify Playback API, which is going to take an unknown amount of time.
-
-This leaves us in a pickle and **we are happy to hear from developer talent in the Phoniebox community on how to move forward regarding Spotify integration**.
-
-We are also curious to learn about alternative services we can connect with and which you would like to see supported -- or have developed support for already: <https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/1835>
+While we are working to provide an integrated solution, a   possible fix to reactivate spotify with a manual installation for Version 2 is described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983)
 
 ## The Phoniebox Calendar 2023 is here
 
