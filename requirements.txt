@@ -40,3 +40,4 @@ mock
 spotipy
 urllib3
 websocket
+bottle

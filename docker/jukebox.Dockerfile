@@ -4,6 +4,7 @@ FROM debian:bullseye-slim
 # Raspberry Pi environment as possible.
 RUN apt-get update && apt-get install -y \
     libasound2-dev \
+    libzmq3-dev \
     pulseaudio \
     pulseaudio-utils \
     --no-install-recommends \
@@ -14,7 +15,6 @@ ARG USER
 ARG HOME
 ENV INSTALLATION_PATH ${HOME}/RPi-Jukebox-RFID
 
-USER root
 RUN test ${UID} -gt 0 && useradd -m -u ${UID} ${USER} || continue
 RUN usermod -aG pulse ${USER}
 
@@ -22,16 +22,17 @@ RUN usermod -aG pulse ${USER}
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    gcc g++ at wget \
+    g++ at wget \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-venv python3-dev python3-mutagen
 
 USER ${USER}
+WORKDIR ${HOME}
+
 ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
 RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
@@ -46,7 +47,8 @@ RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     rm -f libzmq.tar.gz;
 
 RUN export ZMQ_PREFIX=${PREFIX} && export ZMQ_DRAFT_API=1
-RUN pip install -v --no-binary pyzmq --pre pyzmq
+#RUN pip install -v --no-binary pyzmq --pre pyzmq
+RUN pip install -v --no-binary=:all: pyzmq --pre pyzmq
 
 EXPOSE 5555 5556
 

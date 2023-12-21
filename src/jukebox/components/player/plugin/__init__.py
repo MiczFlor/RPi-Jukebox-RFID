@@ -55,11 +55,12 @@ def register_mpd():
 
 
 def register_spotify():
+    global event_loop
     global backend_spot
     global player_arbiter
     global player_status
 
-    backend_spot = SPOTBackend(player_status)
+    backend_spot = SPOTBackend(player_status, event_loop)
     # Register with plugin interface to call directly
     plugin.register(backend_spot, package='player', name='spotify')
     player_arbiter.register('spotify', backend_spot)

@@ -1,18 +1,19 @@
 # Copyright: 2022
 # SPDX License Identifier: MIT License
-
 import logging
 import os.path
 import os
+import threading
 
 from ruamel import yaml
-from spotipy import CacheFileHandler
 
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 
 from spotipy.oauth2 import SpotifyOAuth
 import spotipy
+
+from components.player.backends.spotify.oauth import create_oauth_website
 
 logger = logging.getLogger('jb.spotify')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -23,44 +24,39 @@ def sanitize(path: str):
 
 
 class SPOTBackend:
-    def __init__(self, player_status):
-        host = cfg.getn('playerspot', 'host')
+    def __init__(self, player_status, event_loop):
+        self.loop = event_loop
         self.player_status = player_status
-        self.cache_handler = CacheFileHandler(cache_path='../../shared/spotify/')
-        self.cache_file = '../../shared/spotify/.spotipyoauthcache'
+        self.cache_file = cfg.setndefault('playerspot', 'oauthcache', value='../../shared/spotify/.spotipyoauthcache')
         self.client_id = cfg.setndefault('playerspot', 'client_id', value='Phoniebox')
         self.client_secret = cfg.setndefault('playerspot', 'client_secret', value='Phoniebox_secret')
         self.redirect_uri = cfg.setndefault('playerspot', 'callback_url',
                                             value='http://localhost:3001')
 
-        spot_scope = "user-read-playback-state,user-modify-playback-state"
-        try:
-            self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id, client_secret=self.client_id, redirect_uri=self.redirect_uri, cache_path=sanitize(self.cache_file))
-            self.auth_uri = self.auth_manager.get_authorize_url()
-            logger.info(f"Please log in here: {self.auth_uri}")
-        except Exception as err:
-            logger.error(err)
-
-        #self.collection_file_location = cfg.setndefault('playerspot', 'collection_file',
-        #                                                value="../../shared/audio/spotify/spotify_collection.yaml")
-        #self.spotify_collection_data = self._read_data_file()
+        spot_scope = "user-read-playback-state,user-modify-playback-state,streaming"
+        self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, cache_path=os.path.abspath(self.cache_file))
+        self.access_token = ""
+        self.spot_client = None
 
     @plugin.tag
     def init_spotclient(self, spot_code=None):
         token_info = self.auth_manager.get_cached_token()
+        token_info = self.auth_manager.validate_token(token_info)
         logger.debug(f"Token Info: {token_info}")
 
         if token_info:
             logger.debug("Found cached token for Spotify Client!")
-            access_token = token_info['access_token']
+            self.access_token = token_info['access_token']
         else:
-            # ToDo: implement this within the web app
-            token_info = self.auth_manager.get_access_token(spot_code)
-            access_token = token_info['access_token']
+            spotify_oauth_website = create_oauth_website(self.auth_manager)
+            self.thread = threading.Thread(target=spotify_oauth_website.run, kwargs={'host': '', 'port': 3001, 'debug': True})
+            self.thread.daemon = True
+            self.thread.start()
 
-        if access_token:
-            self.spot_client = spotipy.Spotify(access_token)
-            self.auth_code = cfg.setndefault('playerspot', 'auth_code', value=access_token)
+        if self.access_token:
+            logger.debug("Creating Spotify Client")
+            self.spot_client = spotipy.Spotify(self.access_token)
+            return self.spot_client.devices()
 
     def _read_data_file(self) -> dict:
         try:

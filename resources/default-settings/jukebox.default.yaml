@@ -94,7 +94,7 @@ playermpd:
 playerspot:
   host: localhost
   status_file: ../../shared/settings/spotify_player_status.json
-  collection_file:  ../../shared/audio/spotify/spotify_collection.yaml
+  oauthcache:  ../../shared/audio/spotify/.spotipyoauthcache
   second_swipe_action:
       # Note: Does not follow the RPC alias convention (yet)
       # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
