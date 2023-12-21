@@ -5,3 +5,4 @@ renderer:
   type: markdown
   render_toc: true
   filename: docstring.md
+  render_page_title: true

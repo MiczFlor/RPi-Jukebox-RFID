@@ -32,3 +32,6 @@ gpiozero
 flake8>=4.0.0
 pytest
 mock
+
+# API docs generation
+lazydocs
