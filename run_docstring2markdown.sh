@@ -12,12 +12,12 @@ cd "$SCRIPT_DIR" || (echo "Could not change to top-level project directory" && e
 lazydocs \
     --output-path="./documentation/developers/docstring-lazydocs" \
     --overview-file="docstring.md" \
-    --src-base-url="https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop/src/jukebox/" \
-    --ignored-modules="ruamel,pulsectl" \
+    --src-base-url="https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop/" \
+    --ignored-modules=r"ruamel,pulsectl" \
     ./src/jukebox
 
 # Run pydoc-markdown
 # make sure, directory exists
-mkdir ./documentation/developers/docstring-pydoc-markdown
+mkdir -p ./documentation/developers/docstring-pydoc-markdown
 # expects pydoc-markdown.yml at working dir
 pydoc-markdown 
