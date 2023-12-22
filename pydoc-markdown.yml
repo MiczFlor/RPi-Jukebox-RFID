@@ -1,6 +1,8 @@
 loaders:
 - type: python
   search_path: [./src/jukebox]
+processors:
+- type: filter
 renderer:
   type: markdown
   render_toc: true
