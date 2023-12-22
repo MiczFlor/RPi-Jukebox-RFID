@@ -16,5 +16,8 @@ lazydocs \
     --ignored-modules="ruamel,pulsectl" \
     ./src/jukebox
 
+# Run pydoc-markdown
+# make sure, directory exists
+mkdir ./documentation/developers/docstring-pydoc-markdown
 # expects pydoc-markdown.yml at working dir
 pydoc-markdown 
