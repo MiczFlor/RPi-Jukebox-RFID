@@ -34,6 +34,4 @@ pytest
 mock
 
 # API docs generation
-lazydocs
-pydocstyle
 pydoc-markdown

@@ -1,8 +1,12 @@
 loaders:
 - type: python
   search_path: [./src/jukebox]
+processors:
+  - type: filter
+  - type: smart
+  - type: crossref
 renderer:
   type: markdown
   render_toc: true
-  filename: ./documentation/developers/docstring-pydoc-markdown/docstring.md
+  filename: ./documentation/developers/docstring/docstring-api.md
   render_page_title: true

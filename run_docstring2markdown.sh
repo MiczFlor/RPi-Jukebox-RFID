@@ -8,16 +8,8 @@ SOURCE=${BASH_SOURCE[0]}
 SCRIPT_DIR="$(dirname "$SOURCE")"
 cd "$SCRIPT_DIR" || (echo "Could not change to top-level project directory" && exit 1)
 
-# Run lazydocs
-lazydocs \
-    --output-path="./documentation/developers/docstring-lazydocs" \
-    --overview-file="docstring.md" \
-    --src-base-url="https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop/" \
-    --ignored-modules=r"ruamel,pulsectl" \
-    ./src/jukebox
-
 # Run pydoc-markdown
 # make sure, directory exists
-mkdir -p ./documentation/developers/docstring-pydoc-markdown
+mkdir -p ./documentation/developers/docstring
 # expects pydoc-markdown.yml at working dir
 pydoc-markdown 
