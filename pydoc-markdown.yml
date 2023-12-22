@@ -1,8 +1,8 @@
 loaders:
 - type: python
-  search_path: [./src]
+  search_path: [./src/jukebox]
 renderer:
   type: markdown
   render_toc: true
-  filename: docstring.md
+  filename: ./documentation/developers/docstring-pydoc-markdown/docstring.md
   render_page_title: true
