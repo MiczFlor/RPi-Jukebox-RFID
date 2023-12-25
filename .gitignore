@@ -6,6 +6,7 @@
 /shared/logs/*.log*
 /shared/*.*
 /shared/*
+/src/webapp/public/cover-cache/*.*
 
 # Application
 /src/cli_client/pbc

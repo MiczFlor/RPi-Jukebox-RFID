@@ -1,8 +1,13 @@
 const commands = {
-  musicCoverByFilenameAsBase64: {
-    _package: 'music_cover_art',
+  getSingleCoverArt: {
+    _package: 'player',
     plugin: 'ctrl',
-    method: 'get_by_filename_as_base64',
+    method: 'get_single_coverart',
+  },
+  getAlbumCoverArt: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_album_coverart',
   },
   directoryTreeOfAudiofolder: {
     _package: 'player',

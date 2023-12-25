@@ -32,8 +32,12 @@ const Cover = ({ coverImage }) => {
           {coverImage &&
             <img
               alt={t('player.cover.title')}
-              src={`data:image/jpeg;base64,${coverImage}`}
-              style={{ width: '100%', height: '100%' }}
+              src={coverImage}
+              style={{
+                borderRadius: '5px',
+                height: '100%',
+                width: '100%',
+              }}
             />}
           {!coverImage &&
             <MusicNoteIcon

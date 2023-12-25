@@ -58,7 +58,7 @@ shared/logs/errors.log : Only Errors and Warnings
 For debugging, it is usually very helpful to observe the apps output directly
 on the console log.
 
-``` bash
+```bash
 # Make sure the Jukebox service is stopped:
 $ systemctl --user stop jukebox-daemon
 
@@ -77,7 +77,7 @@ It is possible to start the Jukebox with a catch-all debug enabler with a logger
 Attention: This only emits messages to the console and does not write to the log files!
 This is more a fallback features:
 
-``` bash
+```bash
 $ cd src/jukebox
 $ ./run_jukebox.py -vv
 ```
@@ -94,6 +94,6 @@ gone pear-shaped. Services are restarted automatically when they fail.
 
 Things are just not behaving as expected? Time to check the system logs:
 
-``` bash
+```bash
 $ journalctl --user -b -u jukebox-daemon
 ```

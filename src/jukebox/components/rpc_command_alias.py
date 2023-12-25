@@ -36,6 +36,12 @@ cmd_alias_definitions = {
         'package': 'player',
         'plugin': 'ctrl',
         'method': 'play_folder'},
+    'play': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play',
+        'note': 'Play the currently selected song',
+        'ignore_card_removal_action': True},
     'pause': {
         'package': 'player',
         'plugin': 'ctrl',
@@ -56,6 +62,18 @@ cmd_alias_definitions = {
         'package': 'player',
         'plugin': 'ctrl',
         'method': 'toggle',
+        'ignore_card_removal_action': True},
+    'shuffle': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'shuffle',
+        'note': 'Toggles Shuffle',
+        'ignore_card_removal_action': True},
+    'repeat': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'repeat',
+        'note': 'Switches Repeat option',
         'ignore_card_removal_action': True},
 
     # VOLUME
