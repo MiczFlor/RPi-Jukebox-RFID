@@ -17,7 +17,7 @@ const commands = {
   songList: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'list_song_by_artist_and_album',
+    method: 'list_songs_by_artist_and_album',
   },
   getSongByUrl: {
     _package: 'player',
@@ -77,12 +77,12 @@ const commands = {
     plugin: 'ctrl',
     method: 'pause',
   },
-  previous: {
+  prev_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'prev',
   },
-  next: {
+  next_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'next',

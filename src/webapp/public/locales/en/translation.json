@@ -24,10 +24,10 @@
           "toggle_output": "Toggle audio output",
           "sync_rfidcards_all": "Sync all audiofiles and card entries",
           "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'",
-          "next": "Next song",
+          "next_song": "Next song",
           "pause": "Pause",
           "play": "Play",
-          "previous": "Pevious song",
+          "prev_song": "Pevious song",
           "shuffle": "Toggle Shuffle",
           "repeat": "Toggle Repeat",
           "toggle": "Toggle Play/Pause"
@@ -148,10 +148,10 @@
         "activate": "Activate shuffle",
         "deactivate": "Deactivate shuffle"
       },
-      "skip": "Skip previous track",
+      "prev_song": "Skip to previous track",
       "play": "Play",
       "pause": "Pause",
-      "next": "Skip next track",
+      "next_song": "Skip to next track",
       "repeat": {
         "activate": "Activate repeat",
         "activate-single": "Activate single repeat",
@@ -214,6 +214,7 @@
     },
     "secondswipe": {
       "title": "Second Swipe",
+      "description": "Second action after the same card swiped again",
       "restart": "Restart playlist",
       "toggle": "Toggle pause / play",
       "skip": "Skip to next track",

@@ -89,14 +89,14 @@ const Controls = () => {
         <ShuffleRoundedIcon style={{ fontSize: 22 }} />
       </IconButton>
 
-      {/* Skip previous track */}
+      {/* Skip to previous song */}
       <IconButton
-        aria-label={t('player.controls.skip')}
+        aria-label={t('player.controls.prev_song')}
         disabled={!songIsScheduled}
-        onClick={e => request('previous')}
+        onClick={e => request('prev_song')}
         size="large"
         sx={iconStyles}
-        title={t('player.controls.skip')}
+        title={t('player.controls.prev_song')}
       >
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
@@ -127,14 +127,14 @@ const Controls = () => {
         </IconButton>
       }
 
-      {/* Skip next track */}
+      {/* Skip to next song */}
       <IconButton
-        aria-label={t('player.controls.next')}
+        aria-label={t('player.controls.next_song')}
         disabled={!songIsScheduled}
-        onClick={e => request('next')}
+        onClick={e => request('next_song')}
         size="large"
         sx={iconStyles}
-        title={t('player.controls.next')}
+        title={t('player.controls.next_song')}
       >
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>

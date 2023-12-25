@@ -148,10 +148,10 @@
         "activate": "Shuffle aktivieren",
         "deactivate": "Shuffle deaktivieren"
       },
-      "skip": "Zurück",
+      "prev_song": "Zurück",
       "play": "Abspielen",
       "pause": "Pause",
-      "next": "Weiter",
+      "next_song": "Weiter",
       "repeat": {
         "activate": "Wiederholen aktivieren",
         "activate-single": "1 Wiederholen aktivieren",
