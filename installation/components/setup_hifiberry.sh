@@ -16,7 +16,6 @@ check_existing_hifiberry() {
         read -p "Do you want to proceed with a new configuration? This will remove the existing one. (y/n): " yn
         case $yn in
             [Yy]* )
-                remove_existing_hifiberry
                 return 0;;
             [Nn]* )
                 echo "Exiting without making changes.";
@@ -70,6 +69,8 @@ case $choice in
     *) echo "Invalid selection. Exiting."; exit 1;;
 esac
 
+remove_existing_hifiberry
+
 echo "Disabling onboard sound..."
 sed -i '/dtparam=audio=on/c\dtparam=audio=off' /boot/config.txt
 
@@ -83,18 +84,34 @@ if grep -qx 'dtoverlay=vc4-kms-v3d' /boot/config.txt; then
     sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' /boot/config.txt
 fi
 
-# Check for CONFIGURE_ALSA environment variable
-if [ "${CONFIGURE_ALSA}" == "true" ]; then
-    if [ -f /etc/asound.conf ]; then
-        echo "Backing up existing asound.conf..."
-        cp /etc/asound.conf "/etc/asound.conf.backup.$(date +%Y%m%d%H%M%S)"
-    fi
+if [ -z "${CONFIGURE_ALSA}" ]; then
+    echo "CONFIGURE_ALSA not set. Skipping configuration of sound settings in asound.conf."
+else
+    if [ "${CONFIGURE_ALSA}" == "true" ]; then
+        if [ -f /etc/asound.conf ]; then
+            echo "Backing up existing asound.conf..."
+            cp /etc/asound.conf "/etc/asound.conf.backup.$(date +%Y%m%d%H%M%S)"
+        fi
 
-    echo "Configuring sound settings in asound.conf..."
+        aplay -l
+
+        # Prompt the user for the card number
+        while true; do
+            read -p "Which card number is your HifiBerry sound card? " card_number
+
+            # Check if the input is a number
+            if [[ "$card_number" =~ ^[0-9]+$ ]]; then
+                break
+            else
+                echo "Please enter a valid number."
+            fi
+        done
+
+        echo "Configuring sound settings in asound.conf..."
     cat > /etc/asound.conf << EOF
 pcm.hifiberry {
     type softvol
-    slave.pcm "plughw:0"
+    slave.pcm "plughw:$card_number"
     control.name "HifiBerry"
     control.card 0
 }
@@ -104,6 +121,7 @@ pcm.!default {
     slave.pcm "hifiberry"
 }
 EOF
+    fi
 fi
 
 echo "Configuration complete. Please restart your device."
