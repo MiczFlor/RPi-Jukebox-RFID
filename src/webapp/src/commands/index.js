@@ -87,6 +87,11 @@ const commands = {
     plugin: 'ctrl',
     method: 'next',
   },
+  toggle: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'toggle',
+  },
   shuffle: {
     _package: 'player',
     plugin: 'ctrl',

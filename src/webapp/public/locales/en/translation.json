@@ -23,7 +23,14 @@
           "timer_fade_volume": "Fade volume",
           "toggle_output": "Toggle audio output",
           "sync_rfidcards_all": "Sync all audiofiles and card entries",
-          "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'"
+          "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'",
+          "next": "Next song",
+          "pause": "Pause",
+          "play": "Play",
+          "previous": "Pevious song",
+          "shuffle": "Toggle Shuffle",
+          "repeat": "Toggle Repeat",
+          "toggle": "Toggle Play/Pause"
         }
       },
       "controls-selector": {
