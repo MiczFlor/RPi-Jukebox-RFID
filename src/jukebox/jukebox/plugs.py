@@ -72,6 +72,7 @@ method
     1. In case the object is a class instance a bound method to call from the class instance
     2. The string name to above object
 
+    
 """
 
 import importlib
