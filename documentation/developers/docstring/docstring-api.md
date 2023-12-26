@@ -4670,10 +4670,6 @@ you can implement a Factory Pattern using this package. Take a look at volume.py
 
 **Example:** Decorate a function for auto-registering under it's own name::
 
-import jukebox.plugs as plugs
-@plugs.register
-def func1(param):
-pass
 
 **Example:** Decorate a function for auto-registering under a new name::
 
@@ -4725,6 +4721,12 @@ The string name of the plugin object for registration
 method
 1. In case the object is a class instance a bound method to call from the class instance
 2. The string name to above object
+```python
+import jukebox.plugs as plugs
+@plugs.register
+def func1(param):
+    pass
+```
 
 <a id="jukebox.plugs.PluginPackageClass"></a>
 
