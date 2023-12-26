@@ -12,4 +12,4 @@ cd "$SCRIPT_DIR" || (echo "Could not change to top-level project directory" && e
 # make sure, directory exists
 mkdir -p ./documentation/developers/docstring
 # expects pydoc-markdown.yml at working dir
-pydoc-markdown 
+pydoc-markdown
