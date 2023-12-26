@@ -7,7 +7,7 @@
 # Checks
 # - flake8 on staged python files
 #   Note: This only checks the modified files
-# - docs build of if any python file or any doc file is staged
+# - docs build of if any python file is staged
 #   Note: This builds the entire documentation if a changed file goes into the documentation
 #
 # If there are problem with this script, commit may still be done with
@@ -27,6 +27,18 @@ if [[ -n $PY_FILES ]]; then
 fi
 
 code=$(( flake8_code ))
+
+doc_code=0
+if [[ -n $PY_FILES ]]; then
+  echo -e "\n**************************************************************"
+  echo -e "Modified Python source files. Generation markdown docs from docstring ... \n"
+  echo -e "**************************************************************\n"
+  ./run_docgeneration.sh -c
+  doc_code=$?
+  echo "pydoc_markdown return code: $doc_code"
+fi
+
+code=$(( flake8_code + doc_code ))
 
 if [[ code -gt 0 ]]; then
   echo -e "\n**************************************************************"
