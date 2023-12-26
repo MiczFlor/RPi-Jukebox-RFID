@@ -4877,8 +4877,6 @@ you can implement a Factory Pattern using this package. Take a look at volume.py
 
 **Example:** Decorate a function for auto-registering under it's own name:
 
-.. code-block:: python
-
     import jukebox.plugs as plugs
     @plugs.register
     def func1(param):
