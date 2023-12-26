@@ -14,14 +14,12 @@ python packages and can be accessed by normal means
 If you want to provide additional functionality to the same feature (probably even for run-time switching)
 you can implement a Factory Pattern using this package. Take a look at volume.py as an example.
 
-**Example:** Decorate a function for auto-registering under it's own name::
+**Example:** Decorate a function for auto-registering under it's own name:
 
-```python
-import jukebox.plugs as plugs
-@plugs.register
-def func1(param):
-    pass
-```
+    import jukebox.plugs as plugs
+    @plugs.register
+    def func1(param):
+        pass
 
 **Example:** Decorate a function for auto-registering under a new name::
 

@@ -395,6 +395,7 @@ For debugging, it is usually desirable to run the Jukebox directly from the cons
 as service. This gives direct logging info in the console and allows changing command line parameters.
 See :ref:`userguide/troubleshooting:Troubleshooting`.
 
+
 <a id="__init__"></a>
 
 # \_\_init\_\_
@@ -410,6 +411,7 @@ the settings. For more information see :ref:`rfid/rfid:RFID Readers`.
 
 .. note:: This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
     Any manual modifications to the settings will have to be re-applied
+
 
 <a id="run_rpc_tool"></a>
 
@@ -428,6 +430,7 @@ The list of available commands is fetched from the running Jukebox service.
 .. todo:
     - kwargs support
 
+
 <a id="run_rpc_tool.get_common_beginning"></a>
 
 #### get\_common\_beginning
@@ -437,6 +440,7 @@ def get_common_beginning(strings)
 ```
 
 Return the strings that are common to the beginning of each string in the strings list.
+
 
 <a id="run_configure_audio"></a>
 
@@ -449,13 +453,16 @@ Will also setup equalizer and mono down mixer in the pulseaudio config file.
 Run this once after installation. Can be re-run at any time to change the settings.
 For more information see :ref:`userguide/audio:Audio Configuration`.
 
+
 <a id="run_publicity_sniffer"></a>
 
 # run\_publicity\_sniffer
 
 A command line tool that monitors all messages being sent out from the
+
 Jukebox via the publishing interface.  Received messages are printed in the console.
 Mainly used for debugging.
+
 
 <a id="misc"></a>
 
@@ -476,6 +483,7 @@ flags from the stats module.
 
 Reference: https://docs.python.org/3/library/os.html#os.chmod
 
+
 <a id="misc.flatten"></a>
 
 #### flatten
@@ -485,6 +493,7 @@ def flatten(iterable)
 ```
 
 Flatten all levels of hierarchy in nested iterables
+
 
 <a id="misc.getattr_hierarchical"></a>
 
@@ -496,6 +505,7 @@ def getattr_hierarchical(obj: Any, name: str) -> Any
 
 Like the builtin getattr, but descends though the hierarchy levels
 
+
 <a id="misc.inputminus"></a>
 
 # misc.inputminus
@@ -504,6 +514,7 @@ Zero 3rd-party dependency module for user prompting
 
 Yes, there are modules out there to do the same and they have more features.
 However, this is low-complexity and has zero dependencies
+
 
 <a id="misc.inputminus.input_int"></a>
 
@@ -564,6 +575,7 @@ boolean value read from user input
 # misc.loggingext
 
 ##############
+
 Logger
 ##############
 We use a hierarchical Logger structure based on pythons logging module. It can be finely configured with a yaml file.
@@ -573,25 +585,6 @@ level below 'jb'. It will inherit settings from it's parent logger unless otherw
 Hierarchy separator is the '.'. If the logger already exits, getLogger will return a reference to the same, else it will be
 created on the spot.
 
-:Example: How to get logger and log away at your heart's content:
->>> import logging
->>> logger = logging.getLogger('jb.awesome_module')
->>> logger.info('Started general awesomeness aura')
-
-Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module::
-``
-loggers:
-jb:
-level: WARNING
-handlers: [console, debug_file_handler, error_file_handler]
-propagate: no
-jb.awesome_module:
-level: DEBUG
-``
-
-.. note::
-The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense)
-There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 
 <a id="misc.loggingext.ColorFilter"></a>
 
@@ -610,6 +603,7 @@ It also adds the keyword {levelnameColored} which is an auto-colored drop-in rep
 for the levelname depending on severity.
 
 Don't forget to {reset} the color settings at the end of the string.
+
 
 <a id="misc.loggingext.ColorFilter.__init__"></a>
 
@@ -633,6 +627,7 @@ class PubStream()
 ```
 
 "
+
 Stream handler wrapper around the publisher for logging.StreamHandler
 
 Allows logging to send all log information (based on logging configuration)
@@ -647,6 +642,7 @@ Recursions come up when
 
 IMPORTANT: To avoid endless recursions: The creation of a Publisher MUST NOT generate any log messages! Nor any of the
 functions in the send-function stack!
+
 
 <a id="misc.loggingext.PubStreamHandler"></a>
 
@@ -663,6 +659,7 @@ can be configured (which are automatically instantiated).
 Using this Handler, we can output to PubStream whithout
 support code to instantiate PubStream keeping this file generic
 
+
 <a id="misc.simplecolors"></a>
 
 # misc.simplecolors
@@ -671,6 +668,7 @@ Zero 3rd-party dependency module to add colors to unix terminal output
 
 Yes, there are modules out there to do the same and they have more features.
 However, this is low-complexity and has zero dependencies
+
 
 <a id="misc.simplecolors.Colors"></a>
 
@@ -681,6 +679,7 @@ class Colors()
 ```
 
 Container class for all the colors as constants
+
 
 <a id="misc.simplecolors.resolve"></a>
 
@@ -717,6 +716,7 @@ Drop-in replacement for print with color choice and auto color reset for conveni
 
 Use just as a regular print function, but with first parameter as color
 
+
 <a id="components"></a>
 
 # components
@@ -734,6 +734,7 @@ class PlayContentCallbacks(Generic[STATE], CallbackHandler)
 ```
 
 Callbacks are executed in various play functions
+
 
 <a id="components.playermpd.playcontentcallback.PlayContentCallbacks.register"></a>
 
@@ -762,7 +763,7 @@ Callback signature is
 def run_callbacks(folder: str, state: STATE)
 ```
 
-:meta private:
+
 
 <a id="components.playermpd"></a>
 
@@ -772,42 +773,42 @@ Package for interfacing with the MPD Music Player Daemon
 
 Status information in three topics
 1) Player Status: published only on change
-This is a subset of the MPD status (and not the full MPD status) ??
-- folder
-- song
-- volume (volume is published only via player status, and not separatly to avoid too many Threads)
-- ...
+  This is a subset of the MPD status (and not the full MPD status) ??
+  - folder
+  - song
+  - volume (volume is published only via player status, and not separatly to avoid too many Threads)
+  - ...
 2) Elapsed time: published every 250 ms, unless constant
-- elapsed
+  - elapsed
 3) Folder Config: published only on change
-This belongs to the folder being played
-Publish:
-- random, resume, single, loop
-On save store this information:
-Contains the information for resume functionality of each folder
-- random, resume, single, loop
-- if resume:
-- current song, elapsed
-- what is PLAYSTATUS for?
-When to save
-- on stop
-Angstsave:
-- on pause (only if box get turned off without proper shutdown - else stop gets implicitly called)
-- on status change of random, resume, single, loop (for resume omit current status if currently playing- this has now meaning)
-Load checks:
-- if resume, but no song, elapsed -> log error and start from the beginning
+   This belongs to the folder being played
+   Publish:
+   - random, resume, single, loop
+   On save store this information:
+   Contains the information for resume functionality of each folder
+   - random, resume, single, loop
+   - if resume:
+     - current song, elapsed
+   - what is PLAYSTATUS for?
+   When to save
+   - on stop
+   Angstsave:
+   - on pause (only if box get turned off without proper shutdown - else stop gets implicitly called)
+   - on status change of random, resume, single, loop (for resume omit current status if currently playing- this has now meaning)
+   Load checks:
+   - if resume, but no song, elapsed -> log error and start from the beginning
 
 Status storing:
-- Folder config for each folder (see above)
-- Information to restart last folder playback, which is:
-- last_folder -> folder_on_close
-- song, elapsed
-- random, resume, single, loop
-- if resume is enabled, after start we need to set last_played_folder, such that card swipe is detected as second swipe?!
-on the other hand: if resume is enabled, this is also saved to folder.config -> and that is checked by play card
+  - Folder config for each folder (see above)
+  - Information to restart last folder playback, which is:
+    - last_folder -> folder_on_close
+    - song, elapsed
+    - random, resume, single, loop
+    - if resume is enabled, after start we need to set last_played_folder, such that card swipe is detected as second swipe?!
+      on the other hand: if resume is enabled, this is also saved to folder.config -> and that is checked by play card
 
 Internal status
-- last played folder: Needed to detect second swipe
+  - last played folder: Needed to detect second swipe
 
 
 Saving {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
@@ -815,13 +816,13 @@ Saving {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CUR
 {'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
 'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
 
-**References**:
+References:
+https://github.com/Mic92/python-mpd2
+https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
+https://mpd.readthedocs.io/en/latest/protocol.html
 
-  https://github.com/Mic92/python-mpd2
-  https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
-  https://mpd.readthedocs.io/en/latest/protocol.html
-  
-  sudo -u mpd speaker-test -t wav -c 2
+sudo -u mpd speaker-test -t wav -c 2
+
 
 <a id="components.playermpd.PlayerMPD"></a>
 
@@ -833,6 +834,7 @@ class PlayerMPD()
 
 Interface to MPD Music Player Daemon
 
+
 <a id="components.playermpd.PlayerMPD.mpd_retry_with_mutex"></a>
 
 #### mpd\_retry\_with\_mutex
@@ -842,10 +844,12 @@ def mpd_retry_with_mutex(mpd_cmd, *args)
 ```
 
 This method adds thread saftey for acceses to mpd via a mutex lock,
+
 it shall be used for each access to mpd to ensure thread safety
 In case of a communication error the connection will be reestablished and the pending command will be repeated 2 times
 
 I think this should be refactored to a decorator
+
 
 <a id="components.playermpd.PlayerMPD.pause"></a>
 
@@ -861,6 +865,7 @@ Enforce pause to state (1: pause, 0: resume)
 This is what you want as card removal action: pause the playback, so it can be resumed when card is placed
 on the reader again. What happens on re-placement depends on configured second swipe option
 
+
 <a id="components.playermpd.PlayerMPD.next"></a>
 
 #### next
@@ -871,6 +876,7 @@ def next()
 ```
 
 Play next track in current playlist
+
 
 <a id="components.playermpd.PlayerMPD.rewind"></a>
 
@@ -885,6 +891,7 @@ Re-start current playlist from first track
 
 Note: Will not re-read folder config, but leave settings untouched
 
+
 <a id="components.playermpd.PlayerMPD.replay"></a>
 
 #### replay
@@ -898,6 +905,7 @@ Re-start playing the last-played folder
 
 Will reset settings to folder config
 
+
 <a id="components.playermpd.PlayerMPD.toggle"></a>
 
 #### toggle
@@ -908,6 +916,7 @@ def toggle()
 ```
 
 Toggle pause state, i.e. do a pause / resume depending on current state
+
 
 <a id="components.playermpd.PlayerMPD.replay_if_stopped"></a>
 
@@ -922,6 +931,7 @@ Re-start playing the last-played folder unless playlist is still playing
 
 .. note:: To me this seems much like the behaviour of play,
     but we keep it as it is specifically implemented in box 2.X
+
 
 <a id="components.playermpd.PlayerMPD.play_card"></a>
 
@@ -1010,6 +1020,7 @@ Get the current volume
 For volume control do not use directly, but use through the plugin 'volume',
 as the user may have configured a volume control manager other than MPD
 
+
 <a id="components.playermpd.PlayerMPD.set_volume"></a>
 
 #### set\_volume
@@ -1023,15 +1034,18 @@ Set the volume
 For volume control do not use directly, but use through the plugin 'volume',
 as the user may have configured a volume control manager other than MPD
 
+
 <a id="components.playermpd.play_card_callbacks"></a>
 
 #### play\_card\_callbacks
 
 Callback handler instance for play_card events.
+
 - is executed when play_card function is called
 States:
 - See :class:`PlayCardState`
 See :class:`PlayContentCallbacks`
+
 
 <a id="components.rpc_command_alias"></a>
 
@@ -1040,6 +1054,7 @@ See :class:`PlayContentCallbacks`
 This file provides definitions for RPC command aliases
 
 See :ref:`userguide/rpc_commands`
+
 
 <a id="components.synchronisation.rfidcards"></a>
 
@@ -1060,6 +1075,7 @@ This is done to allow to play audio offline.
 Otherwise we would also update other cardIds where the audiofolders have not been synced yet.
 The local copy is kept to reduce unnecessary syncing.
 
+
 <a id="components.synchronisation.rfidcards.SyncRfidcards"></a>
 
 ## SyncRfidcards Objects
@@ -1069,6 +1085,7 @@ class SyncRfidcards()
 ```
 
 Control class for sync RFID cards functionality
+
 
 <a id="components.synchronisation.rfidcards.SyncRfidcards.sync_change_on_rfid_scan"></a>
 
@@ -1095,7 +1112,9 @@ def sync_all() -> bool
 ```
 
 Sync all audiofolder and cardids from the remote server.
+
 Removes local entries not existing at the remote server.
+
 
 <a id="components.synchronisation.rfidcards.SyncRfidcards.sync_card_database"></a>
 
@@ -1199,6 +1218,7 @@ The following callbacks are provided. Register callbacks with these adder functi
     ``. :func:`add_on_output_change_callbacks`
     ``. :func:`add_on_volume_change_callback`
 
+
 <a id="components.volume.PulseMonitor"></a>
 
 ## PulseMonitor Objects
@@ -1217,6 +1237,7 @@ The context manager also locks the module to ensure proper thread sequencing,
 as only a single thread may work with pulsectl at any time. Currently, an RLock is
 used, even if it may not be necessary
 
+
 <a id="components.volume.PulseMonitor.SoundCardConnectCallbacks"></a>
 
 ## SoundCardConnectCallbacks Objects
@@ -1227,7 +1248,8 @@ class SoundCardConnectCallbacks(CallbackHandler)
 
 Callbacks are executed when
 
-    * new sound card gets connected
+* new sound card gets connected
+
 
 <a id="components.volume.PulseMonitor.SoundCardConnectCallbacks.register"></a>
 
@@ -1258,7 +1280,7 @@ Callback signature is
 def run_callbacks(sink_name, alias, sink_index, error_state)
 ```
 
-:meta private:
+
 
 <a id="components.volume.PulseMonitor.toggle_on_connect"></a>
 
@@ -1270,12 +1292,14 @@ def toggle_on_connect()
 ```
 
 Returns :data:`True` if the sound card shall be changed when a new card connects/disconnects. Setting this
+
 property changes the behavior.
 
 .. note:: A new card is always assumed to be the secondary device from the audio configuration.
     At the moment there is no check it actually is the configured device. This means any new
     device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
     system will be relatively stable once setup
+
 
 <a id="components.volume.PulseMonitor.toggle_on_connect"></a>
 
@@ -1288,6 +1312,7 @@ def toggle_on_connect(state=True)
 
 Toggle Doc 2
 
+
 <a id="components.volume.PulseMonitor.stop"></a>
 
 #### stop
@@ -1298,6 +1323,7 @@ def stop()
 
 Stop the pulse monitor thread
 
+
 <a id="components.volume.PulseMonitor.run"></a>
 
 #### run
@@ -1307,6 +1333,7 @@ def run() -> None
 ```
 
 Starts the pulse monitor thread
+
 
 <a id="components.volume.PulseVolumeControl"></a>
 
@@ -1329,6 +1356,7 @@ state. Which is ensured by the context manager
 All private functions starting with `_function_name` assume that this is ensured by
 the calling function. All user functions acquire proper context!
 
+
 <a id="components.volume.PulseVolumeControl.OutputChangeCallbackHandler"></a>
 
 ## OutputChangeCallbackHandler Objects
@@ -1339,7 +1367,8 @@ class OutputChangeCallbackHandler(CallbackHandler)
 
 Callbacks are executed when
 
-    * audio sink is changed
+* audio sink is changed
+
 
 <a id="components.volume.PulseVolumeControl.OutputChangeCallbackHandler.register"></a>
 
@@ -1375,7 +1404,7 @@ Callback signature is
 def run_callbacks(sink_name, alias, sink_index, error_state)
 ```
 
-:meta private:
+
 
 <a id="components.volume.PulseVolumeControl.OutputVolumeCallbackHandler"></a>
 
@@ -1387,7 +1416,8 @@ class OutputVolumeCallbackHandler(CallbackHandler)
 
 Callbacks are executed when
 
-    * audio volume level is changed
+* audio volume level is changed
+
 
 <a id="components.volume.PulseVolumeControl.OutputVolumeCallbackHandler.register"></a>
 
@@ -1417,7 +1447,7 @@ Callback signature is
 def run_callbacks(sink_name, alias, sink_index, error_state)
 ```
 
-:meta private:
+
 
 <a id="components.volume.PulseVolumeControl.toggle_output"></a>
 
@@ -1430,6 +1460,7 @@ def toggle_output()
 
 Toggle the audio output sink
 
+
 <a id="components.volume.PulseVolumeControl.get_outputs"></a>
 
 #### get\_outputs
@@ -1440,6 +1471,7 @@ def get_outputs()
 ```
 
 Get current output and list of outputs
+
 
 <a id="components.volume.PulseVolumeControl.publish_volume"></a>
 
@@ -1452,6 +1484,7 @@ def publish_volume()
 
 Publish (volume, mute)
 
+
 <a id="components.volume.PulseVolumeControl.publish_outputs"></a>
 
 #### publish\_outputs
@@ -1462,6 +1495,7 @@ def publish_outputs()
 ```
 
 Publish current output and list of outputs
+
 
 <a id="components.volume.PulseVolumeControl.set_volume"></a>
 
@@ -1474,6 +1508,7 @@ def set_volume(volume: int)
 
 Set the volume (0-100) for the currently active output
 
+
 <a id="components.volume.PulseVolumeControl.get_volume"></a>
 
 #### get\_volume
@@ -1484,6 +1519,7 @@ def get_volume()
 ```
 
 Get the volume
+
 
 <a id="components.volume.PulseVolumeControl.change_volume"></a>
 
@@ -1496,6 +1532,7 @@ def change_volume(step: int)
 
 Increase/decrease the volume by step for the currently active output
 
+
 <a id="components.volume.PulseVolumeControl.get_mute"></a>
 
 #### get\_mute
@@ -1506,6 +1543,7 @@ def get_mute()
 ```
 
 Return mute status for the currently active output
+
 
 <a id="components.volume.PulseVolumeControl.mute"></a>
 
@@ -1518,6 +1556,7 @@ def mute(mute=True)
 
 Set mute status for the currently active output
 
+
 <a id="components.volume.PulseVolumeControl.set_output"></a>
 
 #### set\_output
@@ -1528,6 +1567,7 @@ def set_output(sink_index: int)
 ```
 
 Set the active output (sink_index = 0: primary, 1: secondary)
+
 
 <a id="components.volume.PulseVolumeControl.set_soft_max_volume"></a>
 
@@ -1540,6 +1580,7 @@ def set_soft_max_volume(max_volume: int)
 
 Limit the maximum volume to max_volume for the currently active output
 
+
 <a id="components.volume.PulseVolumeControl.get_soft_max_volume"></a>
 
 #### get\_soft\_max\_volume
@@ -1551,6 +1592,7 @@ def get_soft_max_volume()
 
 Return the maximum volume limit for the currently active output
 
+
 <a id="components.volume.PulseVolumeControl.card_list"></a>
 
 #### card\_list
@@ -1560,6 +1602,7 @@ def card_list() -> List[pulsectl.PulseCardInfo]
 ```
 
 Return the list of present sound card
+
 
 <a id="components.rfid"></a>
 
@@ -1578,6 +1621,7 @@ class RfidCardDetectCallbacks(CallbackHandler)
 ```
 
 Callbacks are executed if rfid card is detected
+
 
 <a id="components.rfid.reader.RfidCardDetectCallbacks.register"></a>
 
@@ -1606,14 +1650,16 @@ Callback signature is
 def run_callbacks(card_id: str, state: RfidCardDetectState)
 ```
 
-:meta private:
+
 
 <a id="components.rfid.reader.rfid_card_detect_callbacks"></a>
 
 #### rfid\_card\_detect\_callbacks
 
 Callback handler instance for rfid_card_detect_callbacks events.
+
 See :class:`RfidCardDetectCallbacks`
+
 
 <a id="components.rfid.reader.CardRemovalTimerClass"></a>
 
@@ -1624,6 +1670,7 @@ class CardRemovalTimerClass(threading.Thread)
 ```
 
 A timer watchdog thread that calls timeout_action on time-out
+
 
 <a id="components.rfid.reader.CardRemovalTimerClass.__init__"></a>
 
@@ -1754,6 +1801,7 @@ Write configuration to config_file
 
 Add GPIO input devices and output devices to the RFID Mock Reader GUI
 
+
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.create_inputs"></a>
 
 #### create\_inputs
@@ -1782,6 +1830,7 @@ def set_state(value, box_state_var)
 
 Change the value of a checkbox state variable
 
+
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.que_set_state"></a>
 
 #### que\_set\_state
@@ -1791,6 +1840,7 @@ def que_set_state(value, box_state_var)
 ```
 
 Queue the action to change a checkbox state variable to the TK GUI main thread
+
 
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.fix_state"></a>
 
@@ -1802,6 +1852,7 @@ def fix_state(box_state_var)
 
 Prevent a checkbox state variable to change on checkbox mouse press
 
+
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.pbox_set_state"></a>
 
 #### pbox\_set\_state
@@ -1812,6 +1863,7 @@ def pbox_set_state(value, pbox_state_var, label_var)
 
 Update progress bar state and related state label
 
+
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.que_set_pbox"></a>
 
 #### que\_set\_pbox
@@ -1821,6 +1873,7 @@ def que_set_pbox(value, pbox_state_var, label_var)
 ```
 
 Queue the action to change the progress bar state to the TK GUI main thread
+
 
 <a id="components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.create_outputs"></a>
 
@@ -1878,6 +1931,7 @@ def decode(raw_card_id: bytearray, number_format: int) -> str
 
 Decode the RDM6300 data format into actual card ID
 
+
 <a id="components.rfid.hardware.rdm6300_serial.description"></a>
 
 # components.rfid.hardware.rdm6300\_serial.description
@@ -1887,8 +1941,10 @@ Decode the RDM6300 data format into actual card ID
 # components.rfid.hardware.template\_new\_reader.description
 
 Provide a short title for this reader.
+
 This is what that user will see when asked for selecting his RFID reader
 So, be precise but readable. Precise means 40 characters or less
+
 
 <a id="components.rfid.hardware.template_new_reader.template_new_reader"></a>
 
@@ -1908,6 +1964,7 @@ This function will be called during the configuration/setup phase when the user 
 It must return all configuration parameters that are necessary to later use the Reader class.
 You can ask the user for selections and choices. And/or provide default values.
 If your reader requires absolutely no configuration return {}
+
 
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass"></a>
 
@@ -1934,6 +1991,7 @@ Put your code into these functions (see below for more information)
   - cleanup
   - stop
 
+
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass.__init__"></a>
 
 #### \_\_init\_\_
@@ -1948,6 +2006,7 @@ As you are dealing directly with potentially user-manipulated config information
 advisable to do some sanity checks and give useful error messages. Even if you cannot recover gracefully,
 a good error message helps :-)
 
+
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass.cleanup"></a>
 
 #### cleanup
@@ -1961,6 +2020,7 @@ The cleanup function: free and release all resources used by this card reader (i
 Put all your cleanup code here, e.g. if you are using the serial bus or GPIO pins.
 Will be called implicitly via the __exit__ function
 This function must exist! If there is nothing to do, just leave the pass statement in place below
+
 
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass.stop"></a>
 
@@ -1979,6 +2039,7 @@ This function is called before cleanup is called.
     to read a card. Once called, the function read_card will not be called again. When the reader thread exits
     cleanup is called from the reader thread itself.
 
+
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass.read_card"></a>
 
 #### read\_card
@@ -1995,6 +2056,7 @@ In case of error, it may return None or an empty string
 
 The function should break and return with an empty string, once stop() is called
 
+
 <a id="components.rfid.readerbase"></a>
 
 # components.rfid.readerbase
@@ -2010,6 +2072,7 @@ class ReaderBaseClass(ABC)
 Abstract Base Class for all Reader Classes to ensure common API
 
 Look at template_new_reader.py for documentation how to integrate a new RFID reader
+
 
 <a id="components.rfid.cards"></a>
 
@@ -2029,6 +2092,7 @@ TODO: Add callback for on_database_change
 TODO: check card id type (if int, convert to str)
 TODO: check if args is really a list (convert if not?)
 
+
 <a id="components.rfid.cards.list_cards"></a>
 
 #### list\_cards
@@ -2043,6 +2107,7 @@ Provide a summarized, decoded list of all card actions
 This is intended as basis for a formatter function
 
 Format: 'id': {decoded_function_call, ignore_same_id_delay, ignore_card_removal_action, description, from_alias}
+
 
 <a id="components.rfid.cards.delete_card"></a>
 
@@ -2081,9 +2146,10 @@ If you are going to call this through the RPC it will get a little verbose
 **Example:** Registering a new card with ID *0009* for increment volume with a custom argument to inc_volume
 (*here: 15*) and custom *ignore_same_id_delay value*::
 
-plugin.call_ignore_errors('cards', 'register_card',
-args=['0009', 'inc_volume'],
-kwargs={'args': [15], 'ignore_same_id_delay': True, 'overwrite': True})
+    plugin.call_ignore_errors('cards', 'register_card',
+                              args=['0009', 'inc_volume'],
+                              kwargs={'args': [15], 'ignore_same_id_delay': True, 'overwrite': True})
+
 
 <a id="components.rfid.cards.register_card_custom"></a>
 
@@ -2096,6 +2162,7 @@ def register_card_custom()
 
 Register a new card with full RPC call specification (Not implemented yet)
 
+
 <a id="components.rfid.cards.save_card_database"></a>
 
 #### save\_card\_database
@@ -2107,6 +2174,7 @@ def save_card_database(filename=None, *, only_if_changed=True)
 
 Store the current card database. If filename is None, it is saved back to the file it was loaded from
 
+
 <a id="components.rfid.cardutils"></a>
 
 # components.rfid.cardutils
@@ -2114,6 +2182,7 @@ Store the current card database. If filename is None, it is saved back to the fi
 Common card decoding functions
 
 TODO: Thread safety when accessing the card DB!
+
 
 <a id="components.rfid.cardutils.decode_card_command"></a>
 
@@ -2124,6 +2193,7 @@ def decode_card_command(cfg_rpc_cmd: Mapping, logger: logging.Logger = log)
 ```
 
 Extension of utils.decode_action with card-specific parameters
+
 
 <a id="components.rfid.cardutils.card_command_to_str"></a>
 
@@ -2137,6 +2207,7 @@ Returns a list of strings with [card_action, ignore_same_id_delay, ignore_card_r
 
 The last two parameters are only present, if *long* is True and if they are present in the cfg_rpc_cmd
 
+
 <a id="components.rfid.cardutils.card_to_str"></a>
 
 #### card\_to\_str
@@ -2147,6 +2218,7 @@ def card_to_str(card_id: str, long=False) -> List[str]
 
 Returns a list of strings from card entry command in the format of :func:`card_command_to_str`
 
+
 <a id="components.publishing"></a>
 
 # components.publishing
@@ -2156,6 +2228,7 @@ Plugin interface for Jukebox Publisher
 Thin wrapper around jukebox.publishing to benefit from the plugin loading / exit handling / function handling
 
 This is the first package to be loaded and the last to be closed: put Hello and Goodbye publish messages here.
+
 
 <a id="components.publishing.republish"></a>
 
@@ -2186,6 +2259,7 @@ class MusicLibPath()
 
 Extract the music directory from the mpd.conf file
 
+
 <a id="components.player.get_music_library_path"></a>
 
 #### get\_music\_library\_path
@@ -2196,11 +2270,13 @@ def get_music_library_path()
 
 Get the music library path
 
+
 <a id="components.jingle"></a>
 
 # components.jingle
 
 Jingle Playback Factory for extensible run-time support of various file types
+
 
 <a id="components.jingle.JingleFactory"></a>
 
@@ -2212,6 +2288,7 @@ class JingleFactory()
 
 Jingle Factory
 
+
 <a id="components.jingle.JingleFactory.list"></a>
 
 #### list
@@ -2221,6 +2298,7 @@ def list()
 ```
 
 List the available volume services
+
 
 <a id="components.jingle.play"></a>
 
@@ -2251,6 +2329,7 @@ if (a) through the RPC or (b) some other plugin the volume is changed. Okay, now
 (c) no bluetooth device connects during this time (and pulseaudio control is set to toggle_on_connect)
 and take our changes with the threaded approach.
 
+
 <a id="components.jingle.play_startup"></a>
 
 #### play\_startup
@@ -2261,6 +2340,7 @@ def play_startup()
 ```
 
 Play the startup sound (using jingle.play)
+
 
 <a id="components.jingle.play_shutdown"></a>
 
@@ -2273,11 +2353,13 @@ def play_shutdown()
 
 Play the shutdown sound (using jingle.play)
 
+
 <a id="components.jingle.alsawave"></a>
 
 # components.jingle.alsawave
 
 ALSA wave jingle Service for jingle.JingleFactory
+
 
 <a id="components.jingle.alsawave.AlsaWave"></a>
 
@@ -2290,6 +2372,7 @@ class AlsaWave()
 
 Jingle Service for playing wave files directly from Python through ALSA
 
+
 <a id="components.jingle.alsawave.AlsaWave.play"></a>
 
 #### play
@@ -2300,6 +2383,7 @@ def play(filename)
 ```
 
 Play the wave file
+
 
 <a id="components.jingle.alsawave.AlsaWaveBuilder"></a>
 
@@ -2318,14 +2402,17 @@ def __init__()
 ```
 
 Builder instantiates AlsaWave during init and not during first call because
+
 we want AlsaWave registers as plugin function in any case if this plugin is loaded
 (and not only on first use!)
+
 
 <a id="components.jingle.jinglemp3"></a>
 
 # components.jingle.jinglemp3
 
 Generic MP3 jingle Service for jingle.JingleFactory
+
 
 <a id="components.jingle.jinglemp3.JingleMp3Play"></a>
 
@@ -2338,6 +2425,7 @@ class JingleMp3Play()
 
 Jingle Service for playing MP3 files
 
+
 <a id="components.jingle.jinglemp3.JingleMp3Play.play"></a>
 
 #### play
@@ -2347,6 +2435,7 @@ def play(filename)
 ```
 
 Play the MP3 file
+
 
 <a id="components.jingle.jinglemp3.JingleMp3PlayBuilder"></a>
 
@@ -2365,8 +2454,10 @@ def __init__()
 ```
 
 Builder instantiates JingleMp3Play during init and not during first call because
+
 we want JingleMp3Play registers as plugin function in any case if this plugin is loaded
 (and not only on first use!)
+
 
 <a id="components.hostif.linux"></a>
 
@@ -2383,6 +2474,7 @@ def shutdown()
 
 Shutdown the host machine
 
+
 <a id="components.hostif.linux.reboot"></a>
 
 #### reboot
@@ -2394,6 +2486,7 @@ def reboot()
 
 Reboot the host machine
 
+
 <a id="components.hostif.linux.jukebox_is_service"></a>
 
 #### jukebox\_is\_service
@@ -2404,6 +2497,7 @@ def jukebox_is_service()
 ```
 
 Check if current Jukebox process is running as a service
+
 
 <a id="components.hostif.linux.is_any_jukebox_service_active"></a>
 
@@ -2418,6 +2512,7 @@ Check if a Jukebox service is running
 
 .. note:: Does not have the be the current app, that is running as a service!
 
+
 <a id="components.hostif.linux.restart_service"></a>
 
 #### restart\_service
@@ -2429,6 +2524,7 @@ def restart_service()
 
 Restart Jukebox App if running as a service
 
+
 <a id="components.hostif.linux.get_disk_usage"></a>
 
 #### get\_disk\_usage
@@ -2439,6 +2535,7 @@ def get_disk_usage(path='/')
 ```
 
 Return the disk usage in Megabytes as dictionary for RPC export
+
 
 <a id="components.hostif.linux.get_cpu_temperature"></a>
 
@@ -2453,6 +2550,7 @@ Get the CPU temperature with single decimal point
 
 No error handling: this is expected to take place up-level!
 
+
 <a id="components.hostif.linux.get_ip_address"></a>
 
 #### get\_ip\_address
@@ -2463,6 +2561,7 @@ def get_ip_address()
 ```
 
 Get the IP address
+
 
 <a id="components.hostif.linux.wlan_disable_power_down"></a>
 
@@ -2478,6 +2577,7 @@ Turn off power management of wlan. Keep RPi reachable via WLAN
 This must be done after every reboot
 card=None takes card from configuration file
 
+
 <a id="components.hostif.linux.get_autohotspot_status"></a>
 
 #### get\_autohotspot\_status
@@ -2488,6 +2588,7 @@ def get_autohotspot_status()
 ```
 
 Get the status of the auto hotspot feature
+
 
 <a id="components.hostif.linux.stop_autohotspot"></a>
 
@@ -2502,6 +2603,7 @@ Stop auto hotspot functionality
 
 Basically disabling the cronjob and running the script one last time manually
 
+
 <a id="components.hostif.linux.start_autohotspot"></a>
 
 #### start\_autohotspot
@@ -2515,11 +2617,13 @@ start auto hotspot functionality
 
 Basically enabling the cronjob and running the script one time manually
 
+
 <a id="components.misc"></a>
 
 # components.misc
 
 Miscellaneous function package
+
 
 <a id="components.misc.rpc_cmd_help"></a>
 
@@ -2532,6 +2636,7 @@ def rpc_cmd_help()
 
 Return all commands for RPC
 
+
 <a id="components.misc.get_all_loaded_packages"></a>
 
 #### get\_all\_loaded\_packages
@@ -2542,6 +2647,7 @@ def get_all_loaded_packages()
 ```
 
 Get all successfully loaded plugins
+
 
 <a id="components.misc.get_all_failed_packages"></a>
 
@@ -2554,6 +2660,7 @@ def get_all_failed_packages()
 
 Get all plugins with error during load or initialization
 
+
 <a id="components.misc.get_start_time"></a>
 
 #### get\_start\_time
@@ -2565,6 +2672,7 @@ def get_start_time()
 
 Time when JukeBox has been started
 
+
 <a id="components.misc.get_log"></a>
 
 #### get\_log
@@ -2574,6 +2682,7 @@ def get_log(handler_name: str)
 ```
 
 Get the log file from the loggers (debug_file_handler, error_file_handler)
+
 
 <a id="components.misc.get_log_debug"></a>
 
@@ -2586,6 +2695,7 @@ def get_log_debug()
 
 Get the log file (from the debug_file_handler)
 
+
 <a id="components.misc.get_log_error"></a>
 
 #### get\_log\_error
@@ -2597,6 +2707,7 @@ def get_log_error()
 
 Get the log file (from the error_file_handler)
 
+
 <a id="components.misc.get_git_state"></a>
 
 #### get\_git\_state
@@ -2607,6 +2718,7 @@ def get_git_state()
 ```
 
 Return git state information for the current branch
+
 
 <a id="components.misc.empty_rpc_call"></a>
 
@@ -2638,6 +2750,7 @@ up the module call stack.
 # components.controls.bluetooth\_audio\_buttons
 
 Plugin to attempt to automatically listen to it's buttons (play, next, ...)
+
 when a bluetooth sound device (headphone, speakers) connects
 
 This effectively does:
@@ -2646,11 +2759,13 @@ This effectively does:
     * if that is a bluetooth device, try opening an input device with similar name using
     * button listeners are run each in its own thread
 
+
 <a id="components.controls.common.evdev_listener"></a>
 
 # components.controls.common.evdev\_listener
 
 Generalized listener for ``dev/input`` devices
+
 
 <a id="components.controls.common.evdev_listener.find_device"></a>
 
@@ -2690,12 +2805,14 @@ class EvDevKeyListener(threading.Thread)
 ```
 
 Opens and event input device from ``/dev/inputs``, and runs callbacks upon the button presses.
+
 Input devices could be .e.g. Keyboard, Bluetooth audio buttons, USB buttons
 
 Runs as a separate thread. When device disconnects or disappears, thread exists. A new thread must be started
 when device re-connects.
 
 Assign callbacks to :attr:`EvDevKeyListener.button_callbacks`
+
 
 <a id="components.controls.common.evdev_listener.EvDevKeyListener.__init__"></a>
 
@@ -2732,6 +2849,7 @@ def start() -> None
 
 Start the tread and start listening
 
+
 <a id="components.music_cover_art"></a>
 
 # components.music\_cover\_art
@@ -2739,6 +2857,7 @@ Start the tread and start listening
 Read all cover art from music save it to a cache for the UI to load
 
 .. note:: Not implemented. This is a feature planned for a future release.
+
 
 <a id="components.music_cover_art.MusicCoverArt"></a>
 
@@ -2759,6 +2878,7 @@ def get_by_filename_as_base64(audio_src: str)
 
 Not implemented. This is a feature planned for a future release.
 
+
 <a id="components.battery_monitor"></a>
 
 # components.battery\_monitor
@@ -2777,6 +2897,7 @@ class pt1_frac()
 
 fixed point first order filter, fractional format: 2^16,2^16
 
+
 <a id="components.battery_monitor.BatteryMonitorBase.BattmonBase"></a>
 
 ## BattmonBase Objects
@@ -2786,6 +2907,7 @@ class BattmonBase()
 ```
 
 Battery Monitor base class
+
 
 <a id="components.battery_monitor.batt_mon_simulator"></a>
 
@@ -2800,6 +2922,7 @@ class battmon_simulator(BatteryMonitorBase.BattmonBase)
 ```
 
 Battery Monitor Simulator
+
 
 <a id="components.battery_monitor.batt_mon_i2c_ads1015"></a>
 
@@ -2848,14 +2971,17 @@ Attention:
     - the time between sample needs to be a minimum 1sec with this high impedance voltage divider
       don't use the continuous conversion method!
 
+
 <a id="components.gpio.gpioz.plugin"></a>
 
 # components.gpio.gpioz.plugin
 
 The GPIOZ plugin interface build all input and output devices from the configuration file and connects
+
 the actions and callbacks. It also provides a very restricted, but common API for the output devices to the RPC.
 That API is mainly used for testing. All the relevant output state changes are usually made through callbacks directly
 using the output device's API.
+
 
 <a id="components.gpio.gpioz.plugin.output_devices"></a>
 
@@ -2863,18 +2989,22 @@ using the output device's API.
 
 List of all created output devices
 
+
 <a id="components.gpio.gpioz.plugin.input_devices"></a>
 
 #### input\_devices
 
 List of all created input devices
 
+
 <a id="components.gpio.gpioz.plugin.factory"></a>
 
 #### factory
 
 The global pin factory used in this module
+
 Using different pin factories for different devices is not supported
+
 
 <a id="components.gpio.gpioz.plugin.IS_ENABLED"></a>
 
@@ -2882,17 +3012,20 @@ Using different pin factories for different devices is not supported
 
 Indicates that the GPIOZ module is enabled and loaded w/o errors
 
+
 <a id="components.gpio.gpioz.plugin.IS_MOCKED"></a>
 
 #### IS\_MOCKED
 
 Indicates that the pin factory is a mock factory
 
+
 <a id="components.gpio.gpioz.plugin.CONFIG_FILE"></a>
 
 #### CONFIG\_FILE
 
 The path of the config file the GPIOZ configuration was loaded from
+
 
 <a id="components.gpio.gpioz.plugin.ServiceIsRunningCallbacks"></a>
 
@@ -2904,7 +3037,7 @@ class ServiceIsRunningCallbacks(CallbackHandler)
 
 Callbacks are executed when
 
-   * Jukebox app started
+* Jukebox app started
    * Jukebox shuts down
 
 This is intended to e.g. signal an LED to change state.
@@ -2913,6 +3046,7 @@ This is integrated into this module because:
     * we need the GPIO to control a LED (it must be available when the status callback comes)
     * the plugin callback functions provide all the functionality to control the status of the LED
     * which means no need to adapt other modules
+
 
 <a id="components.gpio.gpioz.plugin.ServiceIsRunningCallbacks.register"></a>
 
@@ -2940,14 +3074,16 @@ Callback signature is
 def run_callbacks(status: int)
 ```
 
-:meta private:
+
 
 <a id="components.gpio.gpioz.plugin.service_is_running_callbacks"></a>
 
 #### service\_is\_running\_callbacks
 
 Callback handler instance for service_is_running_callbacks events.
+
 See :class:`ServiceIsRunningCallbacks`
+
 
 <a id="components.gpio.gpioz.plugin.build_output_device"></a>
 
@@ -2962,6 +3098,7 @@ Construct and register a new output device
 In principal all supported GPIOZero output devices can be used.
 For all devices a custom functions need to be written to control the state of the outputs
 
+
 <a id="components.gpio.gpioz.plugin.build_input_device"></a>
 
 #### build\_input\_device
@@ -2973,6 +3110,7 @@ def build_input_device(name: str, config)
 Construct and connect a new input device
 
 Supported input devices are those from gpio.gpioz.core.input_devices
+
 
 <a id="components.gpio.gpioz.plugin.get_output"></a>
 
@@ -3072,16 +3210,19 @@ specific output device are silently ignored
 # components.gpio.gpioz.plugin.connectivity
 
 Provide connector functions to hook up to some kind of Jukebox functionality and change the output device's state
+
 accordingly.
 
 Connector functions can often be used for various output devices. Some connector functions are specific to
 an output device type.
+
 
 <a id="components.gpio.gpioz.plugin.connectivity.BUZZ_TONE"></a>
 
 #### BUZZ\_TONE
 
 The tone to be used as buzz tone when the buzzer is an active buzzer
+
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_rfid_callback"></a>
 
@@ -3101,6 +3242,7 @@ Compatible devices:
     - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
     - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
+
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_led_callback"></a>
 
 #### register\_status\_led\_callback
@@ -3117,6 +3259,7 @@ Compatible devices:
     - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
     - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
 
+
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_buzzer_callback"></a>
 
 #### register\_status\_buzzer\_callback
@@ -3132,6 +3275,7 @@ Compatible devices:
     - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
     - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
+
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_tonalbuzzer_callback"></a>
 
 #### register\_status\_tonalbuzzer\_callback
@@ -3146,6 +3290,7 @@ Compatible devices:
 
     - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
+
 <a id="components.gpio.gpioz.plugin.connectivity.register_audio_sink_change_callback"></a>
 
 #### register\_audio\_sink\_change\_callback
@@ -3155,6 +3300,7 @@ def register_audio_sink_change_callback(device)
 ```
 
 Turn LED on if secondary audio output is selected. If audio output change
+
 fails, blink thrice
 
 Compatible devices:
@@ -3162,6 +3308,7 @@ Compatible devices:
     - :class:`components.gpio.gpioz.core.output_devices.LED`
     - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
     - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_led_callback"></a>
 
@@ -3172,11 +3319,13 @@ def register_volume_led_callback(device)
 ```
 
 Have a PWMLED change it's brightness according to current volume. LED flashes when minimum or maximum volume
+
 is reached. Minimum value is still a very dimly turned on LED (i.e. LED is never off).
 
 Compatible devices:
 
     - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_buzzer_callback"></a>
 
@@ -3193,6 +3342,7 @@ Compatible devices:
     - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
     - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
+
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_rgbled_callback"></a>
 
 #### register\_volume\_rgbled\_callback
@@ -3202,18 +3352,22 @@ def register_volume_rgbled_callback(device)
 ```
 
 Have a :class:`RGBLED` change it's color according to current volume. LED flashes when minimum or maximum volume
+
 is reached.
 
 Compatible devices:
 
     - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
 
+
 <a id="components.gpio.gpioz.core.converter"></a>
 
 # components.gpio.gpioz.core.converter
 
 Provides converter functions/classes for various Jukebox parameters to
+
 values that can be assigned to GPIO output devices
+
 
 <a id="components.gpio.gpioz.core.converter.ColorProperty"></a>
 
@@ -3225,7 +3379,6 @@ class ColorProperty()
 
 Color descriptor ensuring valid weight ranges
 
-:meta private:
 
 <a id="components.gpio.gpioz.core.converter.VolumeToRGB"></a>
 
@@ -3277,11 +3430,13 @@ def luminize(r, g, b)
 
 Apply the color weight factors to the input color values
 
+
 <a id="components.gpio.gpioz.core.mock"></a>
 
 # components.gpio.gpioz.core.mock
 
 Changes to the GPIOZero devices for using with the Mock RFID Reader
+
 
 <a id="components.gpio.gpioz.core.mock.patch_mock_outputs_with_callback"></a>
 
@@ -3298,6 +3453,7 @@ Other output devices cannot be represented in the GUI and are silently ignored.
 
 ..note:: Only for developing purposes!
 
+
 <a id="components.gpio.gpioz.core.input_devices"></a>
 
 # components.gpio.gpioz.core.input\_devices
@@ -3312,6 +3468,7 @@ by using the :func:`set_rpc_actions` each input device exhibits.
 
 For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Input devices`
 
+
 <a id="components.gpio.gpioz.core.input_devices.NameMixin"></a>
 
 ## NameMixin Objects
@@ -3322,7 +3479,6 @@ class NameMixin(ABC)
 
 Provides name property and RPC decode function
 
-:meta private:
 
 <a id="components.gpio.gpioz.core.input_devices.NameMixin.set_rpc_actions"></a>
 
@@ -3350,7 +3506,6 @@ class EventProperty()
 
 Event callback property
 
-:meta private:
 
 <a id="components.gpio.gpioz.core.input_devices.ButtonBase"></a>
 
@@ -3362,7 +3517,6 @@ class ButtonBase(ABC)
 
 Common stuff for single button devices
 
-:meta private:
 
 <a id="components.gpio.gpioz.core.input_devices.ButtonBase.value"></a>
 
@@ -3375,6 +3529,7 @@ def value()
 
 Returns 1 if the button is currently pressed, and 0 if it is not.
 
+
 <a id="components.gpio.gpioz.core.input_devices.ButtonBase.pin"></a>
 
 #### pin
@@ -3385,6 +3540,7 @@ def pin()
 ```
 
 Returns the underlying pin class from GPIOZero.
+
 
 <a id="components.gpio.gpioz.core.input_devices.ButtonBase.pull_up"></a>
 
@@ -3397,6 +3553,7 @@ def pull_up()
 
 If :data:`True`, the device uses an internal pull-up resistor to set the GPIO pin “high” by default.
 
+
 <a id="components.gpio.gpioz.core.input_devices.ButtonBase.close"></a>
 
 #### close
@@ -3406,6 +3563,7 @@ def close()
 ```
 
 Close the device and release the pin
+
 
 <a id="components.gpio.gpioz.core.input_devices.Button"></a>
 
@@ -3454,6 +3612,7 @@ def on_press()
 
 The function to run when the device has been pressed
 
+
 <a id="components.gpio.gpioz.core.input_devices.LongPressButton"></a>
 
 ## LongPressButton Objects
@@ -3484,6 +3643,7 @@ def on_press(func)
 ```
 
 The function to run when the device has been pressed for longer than :attr:`hold_time`
+
 
 <a id="components.gpio.gpioz.core.input_devices.ShortLongPressButton"></a>
 
@@ -3541,6 +3701,7 @@ def pin_a()
 
 Returns the underlying pin A
 
+
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder.pin_b"></a>
 
 #### pin\_b
@@ -3551,6 +3712,7 @@ def pin_b()
 ```
 
 Returns the underlying pin B
+
 
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder.on_rotate_clockwise"></a>
 
@@ -3563,6 +3725,7 @@ def on_rotate_clockwise()
 
 The function to run when the encoder is rotated clockwise
 
+
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder.on_rotate_counter_clockwise"></a>
 
 #### on\_rotate\_counter\_clockwise
@@ -3574,6 +3737,7 @@ def on_rotate_counter_clockwise()
 
 The function to run when the encoder is rotated counter clockwise
 
+
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder.close"></a>
 
 #### close
@@ -3583,6 +3747,7 @@ def close()
 ```
 
 Close the device and release the pin
+
 
 <a id="components.gpio.gpioz.core.input_devices.TwinButton"></a>
 
@@ -3627,7 +3792,6 @@ class StateVar(Enum)
 
 State encoding of the Mealy FSM
 
-:meta private:
 
 <a id="components.gpio.gpioz.core.input_devices.TwinButton.close"></a>
 
@@ -3638,6 +3802,7 @@ def close()
 ```
 
 Close the device and release the pins
+
 
 <a id="components.gpio.gpioz.core.input_devices.TwinButton.value"></a>
 
@@ -3650,6 +3815,7 @@ def value()
 
 2 bit integer indicating if and which button is currently pressed. Button A is the LSB.
 
+
 <a id="components.gpio.gpioz.core.input_devices.TwinButton.is_active"></a>
 
 #### is\_active
@@ -3659,7 +3825,7 @@ def value()
 def is_active()
 ```
 
-:data:`True` if one or both buttons are currently pressed
+
 
 <a id="components.gpio.gpioz.core.output_devices"></a>
 
@@ -3677,6 +3843,7 @@ with parameters for this device and optional parameters from another device. Unu
 are silently ignored. This is done to reduce the amount of coding required for connectivity functions.
 
 For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Output devices`
+
 
 <a id="components.gpio.gpioz.core.output_devices.LED"></a>
 
@@ -3735,6 +3902,7 @@ def flash(on_time=1, off_time=1, n=1, *, background=True, **ignored_kwargs)
 
 Flash the device and restore the previous value afterwards
 
+
 <a id="components.gpio.gpioz.core.output_devices.PWMLED"></a>
 
 ## PWMLED Objects
@@ -3759,6 +3927,7 @@ def flash(on_time=1,
 ```
 
 Flash the LED and restore the previous value afterwards
+
 
 <a id="components.gpio.gpioz.core.output_devices.RGBLED"></a>
 
@@ -3787,6 +3956,7 @@ def flash(on_time=1,
 
 Flash the LED with :attr:`on_color` and restore the previous value afterwards
 
+
 <a id="components.gpio.gpioz.core.output_devices.TonalBuzzer"></a>
 
 ## TonalBuzzer Objects
@@ -3811,6 +3981,7 @@ def flash(on_time=1,
 
 Play the tone :data:`tone` for :attr:`n` times
 
+
 <a id="components.gpio.gpioz.core.output_devices.TonalBuzzer.melody"></a>
 
 #### melody
@@ -3825,6 +3996,7 @@ def melody(on_time=0.2,
 
 Play a melody from the list of tones in :attr:`tone`
 
+
 <a id="components.timers"></a>
 
 # components.timers
@@ -3838,6 +4010,7 @@ Play a melody from the list of tones in :attr:`tone`
 # jukebox.callingback
 
 Provides a generic callback handler
+
 
 <a id="jukebox.callingback.CallbackHandler"></a>
 
@@ -3886,6 +4059,7 @@ Run all registered callbacks.
 *ALL* exceptions from callback functions will be caught and logged only.
 Exceptions are not raised upwards!
 
+
 <a id="jukebox.callingback.CallbackHandler.has_callbacks"></a>
 
 #### has\_callbacks
@@ -3895,7 +4069,7 @@ Exceptions are not raised upwards!
 def has_callbacks()
 ```
 
-:data:`True` if there are any registered callbacks. Read-only property
+
 
 <a id="jukebox.version"></a>
 
@@ -3911,6 +4085,7 @@ def version()
 
 Return the Jukebox version as a string
 
+
 <a id="jukebox.version.version_info"></a>
 
 #### version\_info
@@ -3922,6 +4097,7 @@ def version_info()
 Return the Jukebox version as a tuple of three numbers
 
 If this is a development version, an identifier string will be appended after the third integer.
+
 
 <a id="jukebox.cfghandler"></a>
 
@@ -3942,6 +4118,7 @@ This eliminates the need to pass an effectively global configuration handler by 
 Handlers are identified by their name (in the above example *global*)
 
 The function :func:`get_handler` is the main entry point to obtain a new or existing handler.
+
 
 <a id="jukebox.cfghandler.ConfigHandler"></a>
 
@@ -3975,6 +4152,7 @@ Else we have a deadlock.
 Reading may be done without acquiring a lock. But be aware that when reading multiple values without locking, another
 thread may intervene and modify some values in between! So, locking is still recommended.
 
+
 <a id="jukebox.cfghandler.ConfigHandler.loaded_from"></a>
 
 #### loaded\_from
@@ -3986,6 +4164,7 @@ def loaded_from() -> Optional[str]
 
 Property to store filename from which the config was loaded
 
+
 <a id="jukebox.cfghandler.ConfigHandler.get"></a>
 
 #### get
@@ -3996,6 +4175,7 @@ def get(key, *, default=None)
 
 Enforce keyword on default to avoid accidental misuse when actually getn is wanted
 
+
 <a id="jukebox.cfghandler.ConfigHandler.setdefault"></a>
 
 #### setdefault
@@ -4005,6 +4185,7 @@ def setdefault(key, *, value)
 ```
 
 Enforce keyword on default to avoid accidental misuse when actually setndefault is wanted
+
 
 <a id="jukebox.cfghandler.ConfigHandler.getn"></a>
 
@@ -4018,6 +4199,7 @@ Get the value at arbitrary hierarchy depth. Return ``default`` if key not presen
 
 The *default* value is returned no matter at which hierarchy level the path aborts.
 A hierarchy is considered as any type with a :func:`get` method.
+
 
 <a id="jukebox.cfghandler.ConfigHandler.setn"></a>
 
@@ -4088,6 +4270,7 @@ Check if the data has changed since the last load/store
 .. note: This relies on the *__str__* representation of the underlying data structure
     In case of ruamel, this ignores comments and only looks at the data
 
+
 <a id="jukebox.cfghandler.ConfigHandler.clear_modified"></a>
 
 #### clear\_modified
@@ -4097,6 +4280,7 @@ def clear_modified() -> None
 ```
 
 Sets the current state as new baseline, clearing the is_modified state
+
 
 <a id="jukebox.cfghandler.ConfigHandler.save"></a>
 
@@ -4110,6 +4294,7 @@ Save config back to the file it was loaded from
 
 If you want to save to a different file, use :func:`write_yaml`.
 
+
 <a id="jukebox.cfghandler.ConfigHandler.load"></a>
 
 #### load
@@ -4119,6 +4304,7 @@ def load(filename: str) -> None
 ```
 
 Load YAML config file into memory
+
 
 <a id="jukebox.cfghandler.get_handler"></a>
 
@@ -4192,6 +4378,7 @@ None
 # jukebox.playlistgenerator
 
 Playlists are build from directory content in the following way:
+
 a directory is parsed and files are added to the playlist in the following way
 
 1. files are added in alphabetic order
@@ -4224,11 +4411,13 @@ This means, one ``*.m3u`` file per sub-folder is processed (if present).
 
 In ``*.txt`` and ``*.m3u`` files, all lines starting with ``#`` are ignored.
 
+
 <a id="jukebox.playlistgenerator.TYPE_DECODE"></a>
 
 #### TYPE\_DECODE
 
 Types if file entires in parsed directory
+
 
 <a id="jukebox.playlistgenerator.PlaylistCollector"></a>
 
@@ -4254,6 +4443,7 @@ But it can also be used with relative paths from current working directory::
 
 The file ending exclusion list :attr:`PlaylistCollector._exclude_endings` is a class variable for performance reasons.
 If changed it will affect all instances. For modifications always call :func:`set_exclusion_endings`.
+
 
 <a id="jukebox.playlistgenerator.PlaylistCollector.__init__"></a>
 
@@ -4282,6 +4472,7 @@ def set_exclusion_endings(cls, endings: List[str])
 Set the class-wide file ending exclusion list
 
 See :attr:`PlaylistCollector._exclude_endings`
+
 
 <a id="jukebox.playlistgenerator.PlaylistCollector.get_directory_content"></a>
 
@@ -4343,14 +4534,14 @@ different threads, always make a fresh call to ``get_publisher()`` to get the co
 
 Example::
 
-import jukebox.publishing as publishing
+    import jukebox.publishing as publishing
 
-class MyClass:
-def __init__(self):
-pass
+    class MyClass:
+        def __init__(self):
+            pass
 
-def say_hello(name):
-publishing.get_publisher().send('hello', f'Hi {name}, howya?')
+        def say_hello(name):
+            publishing.get_publisher().send('hello', f'Hi {name}, howya?')
 
 To stress what **NOT** to do: don't get a publisher instance in the constructor and save it to ``self._pub``.
 If you do and ``say_hello`` gets called from different threads, the publisher of the thread which instantiated the class
@@ -4361,6 +4552,7 @@ But: the use cases are very rare for that. I cannot think of one at the moment.
 
 **Remember**: Don’t share ZeroMQ sockets between threads.
 
+
 <a id="jukebox.publishing.subscriber"></a>
 
 # jukebox.publishing.subscriber
@@ -4370,6 +4562,7 @@ But: the use cases are very rare for that. I cannot think of one at the moment.
 # jukebox.publishing.server
 
 Publishing Server
+
 ********************
 
 The common publishing server for the entire Jukebox using ZeroMQ
@@ -4379,48 +4572,48 @@ Structure
 
 .. code-block:: text
 
-+-----------------------+
-|  functional interface |   Publisher
-|                       |     - functional interface for single Thread
-|        PUB            |     - sends data to publisher (and thus across threads)
-+-----------------------+
-| (1)
-v
-+-----------------------+
-|        SUB (bind)     |   PublishServer
-|                       |     - Last Value (LV) Cache
-|        XPUB (bind)    |     - Subscriber notification and LV resend
-+-----------------------+     - independent thread
-| (2)
-v
+  +-----------------------+
+  |  functional interface |   Publisher
+  |                       |     - functional interface for single Thread
+  |        PUB            |     - sends data to publisher (and thus across threads)
+  +-----------------------+
+            | (1)
+            v
+  +-----------------------+
+  |        SUB (bind)     |   PublishServer
+  |                       |     - Last Value (LV) Cache
+  |        XPUB (bind)    |     - Subscriber notification and LV resend
+  +-----------------------+     - independent thread
+            | (2)
+            v
 
 Connection (1): Internal connection
-Internal connection only - do not use (no, not even inside this App for you own plugins - always bind to the PublishServer)
+    Internal connection only - do not use (no, not even inside this App for you own plugins - always bind to the PublishServer)
 
-Protocol: Multi-part message
+    Protocol: Multi-part message
 
-Part 1: Topic (in topic tree format)
-E.g. player.status.elapsed
+    Part 1: Topic (in topic tree format)
+        E.g. player.status.elapsed
 
-Part 2: Payload or Message in json serialization
-If empty (i.e. ``b''``), it means delete the topic sub-tree from cache. And instruct subscribers to do the same
+    Part 2: Payload or Message in json serialization
+        If empty (i.e. ``b''``), it means delete the topic sub-tree from cache. And instruct subscribers to do the same
 
-Part 3: Command
-Usually empty, i.e. ``b''``. If not empty the message is treated as command for the PublishServer
-and the message is not forwarded to the outside. This third part of the message is never forwarded
+    Part 3: Command
+        Usually empty, i.e. ``b''``. If not empty the message is treated as command for the PublishServer
+        and the message is not forwarded to the outside. This third part of the message is never forwarded
 
 Connection (2): External connection
-Upon connection of a new subscriber, the entire current state is resend from cache to ALL subscribers!
-Subscribers must subscribe to topics. Topics are treated as topic trees! Subscribing to a root tree will
-also get you all the branch topics. To get everything, subscribe to ``b''``
+    Upon connection of a new subscriber, the entire current state is resend from cache to ALL subscribers!
+    Subscribers must subscribe to topics. Topics are treated as topic trees! Subscribing to a root tree will
+    also get you all the branch topics. To get everything, subscribe to ``b''``
 
-Protocol: Multi-part message
+    Protocol: Multi-part message
 
-Part 1: Topic (in topic tree format)
-E.g. player.status.elapsed
+    Part 1: Topic (in topic tree format)
+        E.g. player.status.elapsed
 
-Part 2: Payload or Message in json serialization
-If empty (i.e. b''), it means the subscriber must delete this key locally (not valid anymore)
+    Part 2: Payload or Message in json serialization
+        If empty (i.e. b''), it means the subscriber must delete this key locally (not valid anymore)
 
 Why? Why?
 -------------
@@ -4434,13 +4627,13 @@ Design Rationales
 -------------------
 
 * "If you need `millions of messages per second <https://zguide.zeromq.org/docs/chapter5/`Pros`-and-Cons-of-Pub-Sub>`_
-sent to thousands of points,
-you’ll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
+  sent to thousands of points,
+  you’ll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
 * "lower-volume network with a few dozen subscribers and a limited number of topics, we can use TCP and then
-the `XSUB and XPUB <https://zguide.zeromq.org/docs/chapter5/`Last`-Value-Caching>`_"
+  the `XSUB and XPUB <https://zguide.zeromq.org/docs/chapter5/`Last`-Value-Caching>`_"
 * "Let’s imagine `our feed has an average of 100,000 100-byte messages a second
-<https://zguide.zeromq.org/docs/chapter5/`High`-Speed-Subscribers-Black-Box-Pattern>`_ [...].
-While 100K messages a second is easy for a ZeroMQ application, ..."
+  <https://zguide.zeromq.org/docs/chapter5/`High`-Speed-Subscribers-Black-Box-Pattern>`_ [...].
+  While 100K messages a second is easy for a ZeroMQ application, ..."
 
 **But we have:**
 
@@ -4461,8 +4654,8 @@ This means, we can use less complex patters than used for these high-speed, high
 
 * Late joining client (or drop-off and re-join): get full state update
 * Server crash etc: No special handling necessary, we are simple
-and don't need recovery in this case. Server will publish initial state
-after re-start
+  and don't need recovery in this case. Server will publish initial state
+  after re-start
 * Subscriber too slow: Subscribers problem (TODO: Do we need to do anything about it?)
 
 **Start-up sequence:**
@@ -4481,8 +4674,8 @@ RPC can trigger through function call in components/publishing plugin that
 Plugins publishing state information should publish initial state at @plugin.finalize
 
 .. important:: Do not direclty instantiate the Publisher in your plugin module. Only one Publisher is
-required per thread. But the publisher instance **must** be thread-local!
-Always go through :func:`publishing.get_publisher()`.
+    required per thread. But the publisher instance **must** be thread-local!
+    Always go through :func:`publishing.get_publisher()`.
 
 **Sockets**
 
@@ -4491,12 +4684,13 @@ Three sockets are opened:
 ``. TCP (on a configurable port)
 ``. Websocket  (on a configurable port)
 ``. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
-that want to know about the current state on event based updates.
+   that want to know about the current state on event based updates.
 
 **Further ZeroMQ References:**
 
 * `Working with Messages <https://zguide.zeromq.org/docs/chapter2/`Working`-with-Messages>`_
 * `Multiple Threads <https://zguide.zeromq.org/docs/chapter2/`Multithreading`-with-ZeroMQ>`_
+
 
 <a id="jukebox.publishing.server.PublishServer"></a>
 
@@ -4507,11 +4701,13 @@ class PublishServer(threading.Thread)
 ```
 
 The publish proxy server that collects and caches messages from all internal publishers and
+
 forwards them to the outside world
 
 Handles new subscriptions by sending out the entire cached state to **all** subscribers
 
 The code is structures using a `Reactor Pattern <https://zguide.zeromq.org/docs/chapter5/`Using`-a-Reactor>`_
+
 
 <a id="jukebox.publishing.server.PublishServer.run"></a>
 
@@ -4523,6 +4719,7 @@ def run()
 
 Thread's activity
 
+
 <a id="jukebox.publishing.server.PublishServer.handle_message"></a>
 
 #### handle\_message
@@ -4533,6 +4730,7 @@ def handle_message(msg)
 
 Handle incoming messages
 
+
 <a id="jukebox.publishing.server.PublishServer.handle_subscription"></a>
 
 #### handle\_subscription
@@ -4542,6 +4740,7 @@ def handle_subscription(msg)
 ```
 
 Handle new subscribers
+
 
 <a id="jukebox.publishing.server.Publisher"></a>
 
@@ -4556,6 +4755,7 @@ The publisher that provides the functional interface to the application
 .. note::
   * An instance must not be shared across threads!
   * One instance per thread is enough
+
 
 <a id="jukebox.publishing.server.Publisher.__init__"></a>
 
@@ -4580,6 +4780,7 @@ def send(topic: str, payload)
 
 Send out a message for topic
 
+
 <a id="jukebox.publishing.server.Publisher.revoke"></a>
 
 #### revoke
@@ -4589,6 +4790,7 @@ def revoke(topic: str)
 ```
 
 Revoke a single topic element (not a topic tree!)
+
 
 <a id="jukebox.publishing.server.Publisher.resend"></a>
 
@@ -4602,6 +4804,7 @@ Instructs the PublishServer to resend current status to all subscribers
 
 Not necessary to call after incremental updates or new subscriptions - that will happen automatically!
 
+
 <a id="jukebox.publishing.server.Publisher.close_server"></a>
 
 #### close\_server
@@ -4611,6 +4814,7 @@ def close_server()
 ```
 
 Instructs the PublishServer to close itself down
+
 
 <a id="jukebox.daemon"></a>
 
@@ -4626,9 +4830,11 @@ def log_active_threads()
 ```
 
 This functions is registered with atexit very early, meaning it will be run very late. It is the best guess to
+
 evaluate which Threads are still running (and probably shouldn't be)
 
 This function is registered before all the plugins and their dependencies are loaded
+
 
 <a id="jukebox.daemon.JukeBox"></a>
 
@@ -4651,6 +4857,7 @@ Signal handler for orderly shutdown
 On first Ctrl-C (or SIGTERM) orderly shutdown procedure is embarked upon. It gets allocated a time-out!
 On third Ctrl-C (or SIGTERM), this is interrupted and there will be a hard exit!
 
+
 <a id="jukebox.plugs"></a>
 
 # jukebox.plugs
@@ -4668,65 +4875,66 @@ python packages and can be accessed by normal means
 If you want to provide additional functionality to the same feature (probably even for run-time switching)
 you can implement a Factory Pattern using this package. Take a look at volume.py as an example.
 
-**Example:** Decorate a function for auto-registering under it's own name::
+**Example:** Decorate a function for auto-registering under it's own name:
 
+.. code-block:: python
+
+    import jukebox.plugs as plugs
+    @plugs.register
+    def func1(param):
+        pass
 
 **Example:** Decorate a function for auto-registering under a new name::
 
-@plugs.register(name='better_name')
-def func2(param):
-pass
+    @plugs.register(name='better_name')
+    def func2(param):
+        pass
 
 **Example:** Register a function during run-time under it's own name::
 
-def func3(param):
-pass
-plugs.register(func3)
+    def func3(param):
+        pass
+    plugs.register(func3)
 
 **Example:** Register a function during run-time under a new name::
 
-def func4(param):
-pass
-plugs.register(func4, name='other_name', package='other_package')
+    def func4(param):
+        pass
+    plugs.register(func4, name='other_name', package='other_package')
 
 **Example:** Decorate a class for auto registering during initialization,
 including all methods (see _register_class for more info)::
 
-@plugs.register(auto_tag=True)
-class MyClass1:
-pass
+    @plugs.register(auto_tag=True)
+    class MyClass1:
+        pass
 
 **Example:** Register a class instance, from which only report is a callable method through the plugs interface::
 
-class MyClass2:
-@plugs.tag
-def report(self):
-pass
-myinst2 = MyClass2()
-plugin.register(myinst2, name='myinst2')
+    class MyClass2:
+        @plugs.tag
+        def report(self):
+            pass
+    myinst2 = MyClass2()
+    plugin.register(myinst2, name='myinst2')
 
 Naming convention:
 
 package
-1. Either a python package
-2. or a plugin package (which is the python package but probably loaded under a different name inside plugs)
+    1. Either a python package
+    2. or a plugin package (which is the python package but probably loaded under a different name inside plugs)
 
 plugin
-1. An object from the package that can be accessed through the plugs call function (i.e. a function or a class instance)
-2. The string name to above object
+    1. An object from the package that can be accessed through the plugs call function (i.e. a function or a class instance)
+    2. The string name to above object
 
 name
-The string name of the plugin object for registration
+    The string name of the plugin object for registration
 
 method
-1. In case the object is a class instance a bound method to call from the class instance
-2. The string name to above object
-```python
-import jukebox.plugs as plugs
-@plugs.register
-def func1(param):
-    pass
-```
+    1. In case the object is a class instance a bound method to call from the class instance
+    2. The string name to above object
+
 
 <a id="jukebox.plugs.PluginPackageClass"></a>
 
@@ -4737,6 +4945,7 @@ class PluginPackageClass()
 ```
 
 A local data class for holding all information about a loaded plugin package
+
 
 <a id="jukebox.plugs.register"></a>
 
@@ -4749,6 +4958,7 @@ def register(plugin: Callable) -> Callable
 
 1-level decorator around a function
 
+
 <a id="jukebox.plugs.register"></a>
 
 #### register
@@ -4759,6 +4969,7 @@ def register(plugin: Type) -> Any
 ```
 
 Signature: 1-level decorator around a class
+
 
 <a id="jukebox.plugs.register"></a>
 
@@ -4771,6 +4982,7 @@ def register(*, name: str, package: Optional[str] = None) -> Callable
 
 Signature: 2-level decorator around a function
 
+
 <a id="jukebox.plugs.register"></a>
 
 #### register
@@ -4781,6 +4993,7 @@ def register(*, auto_tag: bool = False, package: Optional[str] = None) -> Type
 ```
 
 Signature: 2-level decorator around a class
+
 
 <a id="jukebox.plugs.register"></a>
 
@@ -4796,6 +5009,7 @@ def register(plugin: Callable[..., Any] = None,
 ```
 
 Signature: Run-time registration of function / class instance / bound method
+
 
 <a id="jukebox.plugs.register"></a>
 
@@ -4977,6 +5191,7 @@ def load_all_unnamed(packages_unnamed: Iterable[str],
 
 Load all packages in packages_unnamed with default names
 
+
 <a id="jukebox.plugs.load_all_finalize"></a>
 
 #### load\_all\_finalize
@@ -4988,6 +5203,7 @@ def load_all_finalize(ignore_errors=False)
 Calls all functions registered with @finalize from all loaded modules in the order they were loaded
 
 This must be executed after the last plugin package is loaded
+
 
 <a id="jukebox.plugs.close_down"></a>
 
@@ -5076,6 +5292,7 @@ Errors get logged.
 
 See :func:`call` for parameter documentation.
 
+
 <a id="jukebox.plugs.exists"></a>
 
 #### exists
@@ -5087,6 +5304,7 @@ def exists(package: str,
 ```
 
 Check if an object is registered within the plugs package
+
 
 <a id="jukebox.plugs.get"></a>
 
@@ -5106,6 +5324,7 @@ The return object depends on the number of parameters
 * 2 arguments: Get the plugin reference for the plugs *package.plugin*
 * 3 arguments: Get the plugin reference for the plugs *package.plugin.method*
 
+
 <a id="jukebox.plugs.loaded_as"></a>
 
 #### loaded\_as
@@ -5115,6 +5334,7 @@ def loaded_as(module_name: str) -> str
 ```
 
 Return the plugin name a python module is loaded as
+
 
 <a id="jukebox.plugs.delete"></a>
 
@@ -5128,6 +5348,7 @@ Delete a plugin object from the registered plugs callables
 
 Note: This does not 'unload' the python module. It merely makes it un-callable via plugs!
 
+
 <a id="jukebox.plugs.dump_plugins"></a>
 
 #### dump\_plugins
@@ -5137,6 +5358,7 @@ def dump_plugins(stream)
 ```
 
 Write a human readable summary of all plugin callables to stream
+
 
 <a id="jukebox.plugs.summarize"></a>
 
@@ -5148,6 +5370,7 @@ def summarize()
 
 Create a reference summary of all plugin callables in dictionary format
 
+
 <a id="jukebox.plugs.generate_help_rst"></a>
 
 #### generate\_help\_rst
@@ -5157,6 +5380,7 @@ def generate_help_rst(stream)
 ```
 
 Write a reference of all plugin callables in Restructured Text format
+
 
 <a id="jukebox.plugs.get_all_loaded_packages"></a>
 
@@ -5200,11 +5424,13 @@ Dictionary of the form `{loaded_as: loaded_from, ...}`
 
 Text to Speech. Plugin to speak any given text via speaker
 
+
 <a id="jukebox.multitimer"></a>
 
 # jukebox.multitimer
 
 Multitimer Module
+
 
 <a id="jukebox.multitimer.MultiTimer"></a>
 
@@ -5225,6 +5451,7 @@ Initiates start and publishing by calling self.publish_callback
 
 Note: Inspired by threading.Timer and generally using the same API
 
+
 <a id="jukebox.multitimer.MultiTimer.cancel"></a>
 
 #### cancel
@@ -5235,6 +5462,7 @@ def cancel()
 
 Stop the timer if it hasn't finished all iterations yet.
 
+
 <a id="jukebox.multitimer.GenericTimerClass"></a>
 
 ## GenericTimerClass Objects
@@ -5244,6 +5472,7 @@ class GenericTimerClass()
 ```
 
 Interface for plugin / RPC accessibility for a single event timer
+
 
 <a id="jukebox.multitimer.GenericTimerClass.__init__"></a>
 
@@ -5271,6 +5500,7 @@ def start(wait_seconds=None)
 
 Start the timer (with default or new parameters)
 
+
 <a id="jukebox.multitimer.GenericTimerClass.cancel"></a>
 
 #### cancel
@@ -5281,6 +5511,7 @@ def cancel()
 ```
 
 Cancel the timer
+
 
 <a id="jukebox.multitimer.GenericTimerClass.toggle"></a>
 
@@ -5293,6 +5524,7 @@ def toggle()
 
 Toggle the activation of the timer
 
+
 <a id="jukebox.multitimer.GenericTimerClass.trigger"></a>
 
 #### trigger
@@ -5304,6 +5536,7 @@ def trigger()
 
 Trigger the next target execution before the time is up
 
+
 <a id="jukebox.multitimer.GenericTimerClass.is_alive"></a>
 
 #### is\_alive
@@ -5314,6 +5547,7 @@ def is_alive()
 ```
 
 Check if timer is active
+
 
 <a id="jukebox.multitimer.GenericTimerClass.get_timeout"></a>
 
@@ -5341,6 +5575,7 @@ def set_timeout(wait_seconds: float)
 
 Set a new time-out in seconds. Re-starts the timer if already running!
 
+
 <a id="jukebox.multitimer.GenericTimerClass.publish"></a>
 
 #### publish
@@ -5351,6 +5586,7 @@ def publish()
 ```
 
 Publish the current state and config
+
 
 <a id="jukebox.multitimer.GenericTimerClass.get_state"></a>
 
@@ -5363,6 +5599,7 @@ def get_state()
 
 Get the current state and config as dictionary
 
+
 <a id="jukebox.multitimer.GenericEndlessTimerClass"></a>
 
 ## GenericEndlessTimerClass Objects
@@ -5373,6 +5610,7 @@ class GenericEndlessTimerClass(GenericTimerClass)
 
 Interface for plugin / RPC accessibility for an event timer call function endlessly every m seconds
 
+
 <a id="jukebox.multitimer.GenericMultiTimerClass"></a>
 
 ## GenericMultiTimerClass Objects
@@ -5382,6 +5620,7 @@ class GenericMultiTimerClass(GenericTimerClass)
 ```
 
 Interface for plugin / RPC accessibility for an event timer that performs an action n times every m seconds
+
 
 <a id="jukebox.multitimer.GenericMultiTimerClass.__init__"></a>
 
@@ -5417,11 +5656,13 @@ def start(iterations=None, wait_seconds_per_iteration=None)
 
 Start the timer (with default or new parameters)
 
+
 <a id="jukebox.utils"></a>
 
 # jukebox.utils
 
 Common utility functions
+
 
 <a id="jukebox.utils.decode_rpc_call"></a>
 
@@ -5484,6 +5725,7 @@ def decode_and_call_rpc_command(rpc_cmd: Dict, logger: logging.Logger = log)
 
 Convenience function combining decode_rpc_command and plugs.call_ignore_errors
 
+
 <a id="jukebox.utils.bind_rpc_command"></a>
 
 #### bind\_rpc\_command
@@ -5540,6 +5782,7 @@ def generate_cmd_alias_rst(stream)
 
 Write a reference of all rpc command aliases in Restructured Text format
 
+
 <a id="jukebox.utils.generate_cmd_alias_reference"></a>
 
 #### generate\_cmd\_alias\_reference
@@ -5550,6 +5793,7 @@ def generate_cmd_alias_reference(stream)
 
 Write a reference of all rpc command aliases in text format
 
+
 <a id="jukebox.utils.get_git_state"></a>
 
 #### get\_git\_state
@@ -5559,6 +5803,7 @@ def get_git_state()
 ```
 
 Return git state information for the current branch
+
 
 <a id="jukebox.rpc"></a>
 
@@ -5573,6 +5818,7 @@ Return git state information for the current branch
 # jukebox.rpc.server
 
 Remote Procedure Call Server (RPC)
+
 *************************************
 
 Bind to tcp and/or websocket port and translates incoming requests to procedure calls.
@@ -5617,6 +5863,7 @@ Three sockets are opened
    the RPC instead of calling function directly we increase thread-safety and provide easy configurability (e.g. which
    button triggers what action)
 
+
 <a id="jukebox.rpc.server.RpcServer"></a>
 
 ## RpcServer Objects
@@ -5626,6 +5873,7 @@ class RpcServer()
 ```
 
 The RPC Server Class
+
 
 <a id="jukebox.rpc.server.RpcServer.__init__"></a>
 
@@ -5637,6 +5885,7 @@ def __init__(context=None)
 
 Initialize the connections and bind to the ports
 
+
 <a id="jukebox.rpc.server.RpcServer.run"></a>
 
 #### run
@@ -5646,5 +5895,7 @@ def run()
 ```
 
 The main endless loop waiting for requests and forwarding the
+
 call request to the plugin module
+
 

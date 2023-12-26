@@ -3,7 +3,7 @@ loaders:
   search_path: [./src/jukebox]
 processors:
   - type: filter
-  - type: smart
+  - type: sphinx
   - type: crossref
 renderer:
   type: markdown
