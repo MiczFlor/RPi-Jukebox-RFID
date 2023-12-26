@@ -504,9 +504,10 @@ def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]:
     """
     Decorator for functions that shall be called by the plugs package directly after at exit of program.
 
-    .. important:: There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
-        during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
-        shutdown handler.
+    > [!IMPORTANT]
+    > There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
+    > during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
+    > shutdown handler.
 
     The atexit-functions are called with a single integer argument, which is passed down from plugin.exit(int)
     It is intended for passing down the signal number that initiated the program termination

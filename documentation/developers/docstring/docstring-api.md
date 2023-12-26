@@ -389,11 +389,11 @@ This is the main app and starts the Jukebox Core.
 Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart
 the service.
 For example after a configuration change. Not all configuration changes can be applied on-the-fly.
-See :ref:`userguide/configuration:Jukebox Configuration`.
+See [Jukebox Configuration](../../builders/configuration.md#jukebox-configuration).
 
 For debugging, it is usually desirable to run the Jukebox directly from the console rather than
 as service. This gives direct logging info in the console and allows changing command line parameters.
-See :ref:`userguide/troubleshooting:Troubleshooting`.
+See [Troubleshooting](../../builders/troubleshooting.md).
 
 
 <a id="__init__"></a>
@@ -5118,9 +5118,10 @@ def atexit(func: Callable[[int], Any]) -> Callable[[int], Any]
 
 Decorator for functions that shall be called by the plugs package directly after at exit of program.
 
-.. important:: There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
-    during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
-    shutdown handler.
+> [!IMPORTANT]
+> There is no automatism as in atexit.atexit. The function plugs.shutdown() must be explicitly called
+> during the shutdown procedure of your program. This is by design, so you can choose the exact situation in your
+> shutdown handler.
 
 The atexit-functions are called with a single integer argument, which is passed down from plugin.exit(int)
 It is intended for passing down the signal number that initiated the program termination
