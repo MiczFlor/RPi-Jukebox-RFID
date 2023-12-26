@@ -5248,9 +5248,9 @@ Also remember, that method must have the attribute ``plugin_callable = True``
 
 Calls are serialized by a thread lock. The thread lock is shared with call_ignore_errors.
 
-.. note::
-    There is no logger in this function as they all belong up-level where the exceptions are handled.
-    If you want logger messages instead of exceptions, use :func:`call_ignore_errors`
+> [!NOTE]
+> There is no logger in this function as they all belong up-level where the exceptions are handled.
+> If you want logger messages instead of exceptions, use :func:`call_ignore_errors`
 
 **Arguments**:
 
@@ -5345,7 +5345,8 @@ def delete(package: str, plugin: Optional[str] = None, ignore_errors=False)
 
 Delete a plugin object from the registered plugs callables
 
-Note: This does not 'unload' the python module. It merely makes it un-callable via plugs!
+> [!NOTE]
+> This does not 'unload' the python module. It merely makes it un-callable via plugs!
 
 
 <a id="jukebox.plugs.dump_plugins"></a>

@@ -724,9 +724,9 @@ def call(package: str, plugin: str, method: Optional[str] = None, *,
 
     Calls are serialized by a thread lock. The thread lock is shared with call_ignore_errors.
 
-    .. note::
-        There is no logger in this function as they all belong up-level where the exceptions are handled.
-        If you want logger messages instead of exceptions, use :func:`call_ignore_errors`
+    > [!NOTE]
+    > There is no logger in this function as they all belong up-level where the exceptions are handled.
+    > If you want logger messages instead of exceptions, use :func:`call_ignore_errors`
 
     :param package: Name of the plugin package in which to look for function/class instance
     :param plugin: Function name or instance name of a class
@@ -825,7 +825,9 @@ def loaded_as(module_name: str) -> str:
 def delete(package: str, plugin: Optional[str] = None, ignore_errors=False):
     """Delete a plugin object from the registered plugs callables
 
-    Note: This does not 'unload' the python module. It merely makes it un-callable via plugs!"""
+    > [!NOTE]
+    > This does not 'unload' the python module. It merely makes it un-callable via plugs!
+    """
     with _lock_module:
         if exists(package, plugin):
             if plugin is None:

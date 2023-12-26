@@ -16,6 +16,8 @@ RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
     make && make install
 ```
 
+[libzmq details](./libzmq.md)
+
 ## Configuration
 
 In `jukebox.yaml` (and all other config files):
