@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Runner script for lazydocs to ensure
+# Runner script for pydoc-markdown to ensure
 # - independent from working directory
 
 # Change working directory to location of script
