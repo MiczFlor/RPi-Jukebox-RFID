@@ -6,8 +6,7 @@ RC522 RFID reader via SPI connection.
 
 ## Installation
 
-Run the [run_register_rfid_reader.py](../coreapps.md#run_register_rfid_reader.py) tool for guided
-installation.
+Run the [RFID reader configuration tool](../coreapps.md#RFID-Reader) for guided installation.
 
 ## Options
 
@@ -18,11 +17,11 @@ are just routed through to spidev. Have a look at the spidev
 documentation for details if you really want to use a different SPI bus.
 The default setup makes most sense for almost everyone.
 
-#### spi_bus *(default=0)*
+### spi_bus *(default=0)*
 
 The SPI Bus ID. The default bus is 0. For other bus IDs, the RPi also needs to re-configured. For that reason we set this to zero.
 
-#### spi_ce *(default=0)*
+### spi_ce *(default=0)*
 
 SPI chip enable pin. On default SPI bus 0, this can be
 
@@ -31,26 +30,26 @@ SPI chip enable pin. On default SPI bus 0, this can be
 
 For other SPI buses refer to RPi documentation.
 
-#### pin_irq
+### pin_irq
 
 Mandatory IRQ pin. This can be any GPIO pin.
 
-#### pin_rst *(default=0)*
+### pin_rst *(default=0)*
 
 Reset pin for hardware reset. This is an optional pin. If not used,
 
 - hardware reset will only be performed by power-on-reset. This has been tested on works fine.
 - you **must** tie the reset pin of the MFRC522 board **high**!
 
-#### mode_legacy *(default=false)*
+### mode_legacy *(default=false)*
 
 4-byte-only legacy mode: previously the pirc522 library could only read the lower 4 bytes of a card UID. It can now read 4-byte and full 7-byte UIDs. Legacy mode turns back to the old behaviour. This only makes sense, if you already have an large RFID collection and do not want to re-assign every card.
 
-#### antenna_gain *(default=4)*
+### antenna_gain *(default=4)*
 
 Antenna gain factor of the RFID reader chip on the MFRC522 board.
 
-#### log_all_cards *(default=false)*
+### log_all_cards *(default=false)*
 
 If true all card read-outs will be logged, even when card is permanently on reader. Only for debugging.
 

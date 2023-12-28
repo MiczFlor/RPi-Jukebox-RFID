@@ -15,8 +15,8 @@ Debugging your setup runs in several steps
 ## The short answer
 
 ```bash
-../shared/logs/app.log   : Complete Debug Messages
-../shared/logs/errors.log: Only Errors and Warnings
+shared/logs/app.log   : Complete Debug Messages
+shared/logs/errors.log: Only Errors and Warnings
 ```
 
 These files always contain the messages of the current run only.
@@ -25,7 +25,7 @@ shutdown of the service.
 
 The logs are also available via the Web Server:
 
-```
+```text
 http://ip.of.your.box/logs
 ```
 
@@ -33,9 +33,9 @@ http://ip.of.your.box/logs
 
 ## The long answer: A few more details
 
-If started without parameters, the Jukebox checks for the existence of `../shared/settings/logger.yaml`
+If started without parameters, the Jukebox checks for the existence of `shared/settings/logger.yaml`
 and if present, uses that configuration for logging. This file is created by the installation process.
-The default configuration file is also provided in `../resources/default-settings/logger.default.yaml`.
+The default configuration file is also provided in `resources/default-settings/logger.default.yaml`.
 We use Python's logging module to provide the debug messages which is configured through this file.
 
 **We are still in the Pre-Release phase which means full debug logging is enabled by default.**
@@ -47,8 +47,8 @@ The default logging config does 2 things:
 1. It writes 2 log files:
 
 ```bash
-../shared/logs/app.log    : Complete Debug Messages
-../shared/logs/errors.log : Only Errors and Warnings
+shared/logs/app.log    : Complete Debug Messages
+shared/logs/errors.log : Only Errors and Warnings
 ```
 
 2. Prints logging messages to the console. If run as a service, only error messages are emitted to console to avoid spamming the system log files.
@@ -58,16 +58,17 @@ The default logging config does 2 things:
 For debugging, it is usually very helpful to observe the apps output directly
 on the console log.
 
-``` bash
+```bash
 # Make sure the Jukebox service is stopped:
 $ systemctl --user stop jukebox-daemon
 
 # Start the Jukebox in debug mode:
+$ cd src/jukebox
+
 # with default logger:
 $ ./run_jukebox.py
-
 # or with custom logger configuration:
-$ ./run_jukebox.py --logger ../path/to/logger.yaml
+$ ./run_jukebox.py --logger path/to/custom/logger.yaml
 ```
 
 ### Fallback configuration
@@ -76,7 +77,8 @@ It is possible to start the Jukebox with a catch-all debug enabler with a logger
 Attention: This only emits messages to the console and does not write to the log files!
 This is more a fallback features:
 
-``` bash
+```bash
+$ cd src/jukebox
 $ ./run_jukebox.py -vv
 ```
 
@@ -92,6 +94,6 @@ gone pear-shaped. Services are restarted automatically when they fail.
 
 Things are just not behaving as expected? Time to check the system logs:
 
-``` bash
+```bash
 $ journalctl --user -b -u jukebox-daemon
 ```

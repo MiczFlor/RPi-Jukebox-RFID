@@ -6,7 +6,7 @@ To speed up the Docker build process, we are distributing pre-build versions of 
 
 Add `build-essential` to be installed additionally with `apt-get`. Additionally, replace the command to download the pre-built library with the following command.
 
-```
+```docker
 # Compile ZMQ
 RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
     wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \

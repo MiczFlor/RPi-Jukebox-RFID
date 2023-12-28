@@ -10,8 +10,7 @@ The system consists of
 4. [Web UI](system.md#web-ui) which is served through an Nginx web server
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
-> [!NOTE]
-> The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
+> [!NOTE] The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
 > Another folder might work, but is certainly not tested.
 
 ## Music Player Daemon (MPD)
@@ -35,8 +34,7 @@ $ systemctl --user start mpd
 $ systemctl --user stop mpd
 ```
 
-> [!IMPORTANT]
-> Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
+> [!IMPORTANT] Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
 
 To check if MPD is running or has issues, use
 
@@ -48,7 +46,7 @@ $ journalctl --user -b -u mpd
 
 The `systemd` service file is located at the default location for user services:
 
-```
+```text
 /usr/lib/systemd/user/mpd.service
 ```
 
@@ -64,7 +62,7 @@ There is a number of reasons for that:
 
 The PulseAudio configuration file is located at
 
-```
+```text
 ~/.config/pulse/default.pa
 ```
 
@@ -72,7 +70,7 @@ Service control and service configuration file location is identical to MPD.
 
 ## Jukebox Core Service
 
-The :ref:`developer/coreapps:Jukebox Core` runs as a *user-local* service with the name `jukebox-daemon`.
+The [Jukebox Core Service](../developers/coreapps.md#Jukebox-Core) runs as a *user-local* service with the name `jukebox-daemon`.
 Similar to MPD, it's important that it does run as system-wide service to be able to interact with PulseAudio.
 
 The service can be controlled with the `systemctl`-command by adding the parameter `--user`
@@ -92,7 +90,7 @@ $ journalctl --user -b -u jukebox-daemon
 
 The `systemd` service file is located at the default location for user services:
 
-```
+```text
 /usr/lib/systemd/user/jukebox-daemon.service
 ```
 
@@ -102,12 +100,12 @@ Starting and stopping the service can be useful for debugging or configuration c
 
 The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
 
-```
-~/RPi-Jukebox-RFID/src/webapp/build
+```text
+./src/webapp/build
 ```
 
 The Nginx configuration is located at
 
-```
+```text
 /etc/nginx/sites-available/default
 ```

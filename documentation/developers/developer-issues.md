@@ -21,11 +21,11 @@ Creating an optimized production build...
 FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
 ```
 
-**Reason**
+#### Reason
 
 Not enough memory for Node
 
-**Solution**
+#### Solution
 
 Prior to building set the node memory environment variable.
 
@@ -46,14 +46,15 @@ Alternatively, use the provided script, which sets the variable for you
 (provided your swap size is large enough):
 
 ``` bash
+$ cd src/webapp
 $ ./run_rebuild.sh
 ```
 
-**Changing Swap Size**
+#### Changing Swap Size
 
 This will set the swapsize to 1024 MB (and will deactivate swapfactor). Change accordingly if you have a SD Card with small capacity.
 
-```
+```bash
 sudo dphys-swapfile swapoff
 sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=1024|g" /etc/dphys-swapfile 
 sudo sed -i "s|^\s*CONF_SWAPFACTOR=|#CONF_SWAPFACTOR=|g" /etc/dphys-swapfile
@@ -75,11 +76,11 @@ The build failed because the process exited too early.
 This probably means the system ran out of memory or someone called 'kill -9' on the process.
 ```
 
-**Reason**
+#### Reason
 
 Node tried to allocate more memory than available on the system.
 
-**Solution**
+#### Solution
 
 Adjust the node memory variable as described in [JavaScript heap out of memory](#javascript-heap-out-of-memory). But make sure to allocate less memory than the available memory. If that is not sufficient, increase the swap file size of your
 system and try again.

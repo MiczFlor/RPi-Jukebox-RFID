@@ -33,7 +33,7 @@ need to adapt some of those commands to your needs.
     * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
-4. Change directory into the `./RPi-Jukebox-RFID/shared/audiofolders`
+4. Change directory into the `./shared/audiofolders`
     and copy a set of MP3 files into this folder (for more fun when
     testing).
 
@@ -48,6 +48,9 @@ They can be run individually or in combination. To do that, we use
 
 1. [Install Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
 2. [Install pulseaudio](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712) (Other references: [[1]](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html), [[2]](https://stackoverflow.com/a/50939994/1062438))
+
+> [!NOTE]
+> In order for Pulseaudio to work properly with Docker on your Mac, you need to start Pulseaudio in a specific way. Otherwise MPD will throw an exception. See [Pulseaudio issues on Mac](#pulseaudio-issue-on-mac) for more info.
 
 ``` bash
 // Build Images
@@ -139,7 +142,6 @@ Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already i
 
 Read these threads for details: [thread 1](https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd) and [thread 2](https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755)
 
-
 ## Test & Develop
 
 The Dockerfile is defined to start all Phoniebox related services.
@@ -169,6 +171,38 @@ trade-off between a development environment and solving the specific
 details.
 
 ### `mpd` container
+
+#### Pulseaudio issue on Mac
+
+If you notice the following exception while running MPD in Docker, it refers to a incorrect setup of your Mac host Pulseaudio.
+
+```
+mpd      | ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+mpd      | exception: Failed to read mixer for 'Global ALSA->Pulse stream': failed to attach to pulse: Connection refused
+```
+
+To fix the issue, try the following.
+
+1. Stop your Pulseaudio service
+    ```
+    brew service stop pulseaudio
+    ```
+2. Start Pulseaudio with this command
+    ```
+    pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 --daemon
+    ```
+3. Check if daemon is working
+    ```
+    pulseaudio --check -v
+    ```
+
+Everything else should have been set up properly as a [prerequisite](#mac)
+
+* [Source](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712)
+
+
+
+#### Other error messages
 
 When starting the `mpd` container, you will see the following errors.
 You can ignore them, MPD will run.
@@ -214,6 +248,16 @@ jukebox    | 171:__init__.py        - jb.host.lnx          - MainThread      - E
 jukebox    | 319:server.py          - jb.pub.server        - host.timer.cputemp - ERROR    - Publish command from different thread 'host.timer.cputemp' than publisher was created from 'MainThread'!
 ```
 
+#### Pulseaudio and Volume issues
+
+If you encounter the following error, refer to [Pulseaudio issues on Mac](#pulseaudio-issue-on-mac).
+
+```
+jukebox  | 21.12.2023 08:50:09 -  629:plugs.py           - jb.plugin            - MainThread      - ERROR    - Ignoring failed package load finalizer: 'volume.finalize()'
+jukebox  | 21.12.2023 08:50:09 -  630:plugs.py           - jb.plugin            - MainThread      - ERROR    - Reason: NameError: name 'pulse_control' is not defined
+```
+
+
 ## Appendix
 
 ### Individual Docker Image
@@ -236,31 +280,31 @@ $ docker run -it --rm \
 
 ### Resources
 
-**Mac**
+#### Mac
 
 * <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
 * <https://stackoverflow.com/questions/40136606/how-to-expose-audio-from-docker-container-to-a-mac>
 * <https://github.com/jessfraz/dockerfiles/blob/master/pulseaudio/Dockerfile>
 
-**Windows**
+#### Windows
 
 * <https://stackoverflow.com/questions/52890474/how-to-get-docker-audio-and-input-with-windows-or-mac-host#>
 * <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
 * <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
 * <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
 
-**Audio**
+#### Audio
 
 * <https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio>
 * <https://mpd.fandom.com/wiki/PulseAudio>
 * <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 
-**MPD**
+#### MPD
 
 * <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 * <https://github.com/Tob1asDocker/rpi-mpd>
 * <https://github.com/vimagick/dockerfiles/tree/master/mpd>
 
-**ZMQ**
+#### ZMQ
 
 * <https://codeblog.dotsandbrackets.com/using-zeromq-with-docker/>
