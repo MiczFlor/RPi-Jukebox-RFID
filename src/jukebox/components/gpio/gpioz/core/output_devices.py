@@ -12,7 +12,7 @@ with parameters for this device and optional parameters from another device. Unu
 are silently ignored. This is done to reduce the amount of coding required for connectivity functions.
 
 For examples how to use the devices from the configuration files, see
-[../../builders/gpio.md#output-devices](GPIO: Output Devices).
+[GPIO: Output Devices](../../builders/gpio.md#output-devices).
 """
 
 from typing import Optional, List

@@ -42,7 +42,7 @@ class RfidCardDetectCallbacks(CallbackHandler):
             :noindex:
 
         :param card_id: Card ID
-        :param state: See :class:`RfidCardDetectState`
+        :param state: See #RfidCardDetectState
         """
         super().register(func)
 
@@ -52,7 +52,7 @@ class RfidCardDetectCallbacks(CallbackHandler):
 
 
 #: Callback handler instance for rfid_card_detect_callbacks events.
-#: See :class:`RfidCardDetectCallbacks`
+#: See #RfidCardDetectCallbacks
 rfid_card_detect_callbacks: RfidCardDetectCallbacks = RfidCardDetectCallbacks('rfid_card_detect_callbacks', log)
 
 

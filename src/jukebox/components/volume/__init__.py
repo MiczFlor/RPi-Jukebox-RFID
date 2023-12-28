@@ -28,7 +28,7 @@ Pulse Audio runs as a user process. Processes who want to communicate / stream t
 must also run as a user process.
 
 This means must also run as user process, as described in
-[../../builders/system.md#music-player-daemon-mpd](Music Player Daemon).
+[Music Player Daemon](../../builders/system.md#music-player-daemon-mpd).
 
 ## Misc
 
@@ -140,7 +140,7 @@ class PulseMonitor(threading.Thread):
         # For the callback handler: We use the context lock only explicitly for registering new functions
         # When the callbacks are run, it happens from inside the pulse_monitor which an already acquired lock
         #: Callback handler instance for on_connect_callbacks events.
-        #: See :class:`PulseMonitor.SoundCardConnectCallbacks`
+        #: See #PulseMonitor.SoundCardConnectCallbacks
         self.on_connect_callbacks: PulseMonitor.SoundCardConnectCallbacks = PulseMonitor.SoundCardConnectCallbacks(
             'on_connect_callback', logger, context=self)
 
@@ -358,12 +358,12 @@ class PulseVolumeControl:
         # When the callbacks are run, it happens from inside the pulse_control which an already acquired lock
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See :class:`PulseVolumeControl.OutputChangeCallbackHandler`
+        #: See #PulseVolumeControl.OutputChangeCallbackHandler
         self.on_output_change_callbacks = PulseVolumeControl.OutputChangeCallbackHandler(
             'on_output_change_callbacks', logger, context=pulse_monitor)
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See :class:`PulseVolumeControl.OutputVolumeCallbackHandler`
+        #: See #PulseVolumeControl.OutputVolumeCallbackHandler
         self.on_volume_change_callbacks = PulseVolumeControl.OutputVolumeCallbackHandler(
             'on_volume_change_callbacks', logger, context=pulse_monitor)
 

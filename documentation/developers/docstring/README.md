@@ -1104,7 +1104,7 @@ See :class:`PlayContentCallbacks`
 
 This file provides definitions for RPC command aliases
 
-See [../../builders/rpc-commands.md](RPC Commands)
+See [RPC Commands](../../builders/rpc-commands.md)
 
 
 <a id="components.synchronisation.rfidcards"></a>
@@ -1239,7 +1239,7 @@ Pulse Audio runs as a user process. Processes who want to communicate / stream t
 must also run as a user process.
 
 This means must also run as user process, as described in
-[../../builders/system.md#music-player-daemon-mpd](Music Player Daemon).
+[Music Player Daemon](../../builders/system.md#music-player-daemon-mpd).
 
 ## Misc
 
@@ -1694,7 +1694,7 @@ Callback signature is
 **Arguments**:
 
 - `card_id`: Card ID
-- `state`: See :class:`RfidCardDetectState`
+- `state`: See `RfidCardDetectState`
 
 <a id="components.rfid.reader.RfidCardDetectCallbacks.run_callbacks"></a>
 
@@ -1712,7 +1712,7 @@ def run_callbacks(card_id: str, state: RfidCardDetectState)
 
 Callback handler instance for rfid_card_detect_callbacks events.
 
-See :class:`RfidCardDetectCallbacks`
+See [`RfidCardDetectCallbacks`](#components.rfid.reader.RfidCardDetectCallbacks)
 
 
 <a id="components.rfid.reader.CardRemovalTimerClass"></a>
@@ -2838,7 +2838,7 @@ Find an input device with device_name and mandatory keys.
 
 **Arguments**:
 
-- `device_name`: See :func:`_filter_by_device_name`
+- `device_name`: See :func:`_filter_by_device_name
 - `exact_name`: See :func:`_filter_by_device_name`
 - `mandatory_keys`: See :func:`_filter_by_mandatory_keys`
 
@@ -3490,7 +3490,7 @@ All callback handlers are replaced by GPIOZ callback handlers. These are usually
 by using the :func:`set_rpc_actions` each input device exhibits.
 
 For examples how to use the devices from the configuration files, see
-[../../builders/gpio.md#input-devices](GPIO: Input Devices).
+[GPIO: Input Devices](../../builders/gpio.md#input-devices).
 
 
 <a id="components.gpio.gpioz.core.input_devices.NameMixin"></a>
@@ -3650,8 +3650,8 @@ A Button that runs a single actions only when the button is pressed long enough
 **Arguments**:
 
 - `pull_up`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
-- `active_state`: See `Button`_
-- `bounce_time`: See `Button`_
+- `active_state`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `bounce_time`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 - `hold_repeat`: If :data:`True` repeat the :attr:`on_press` every :attr:`hold_time` seconds. Else only action
 is run only once independent of the length of time the button is pressed for.
 - `hold_time`: The minimum time, the button must be pressed be running :attr:`on_press` for the first time.
@@ -3687,16 +3687,16 @@ in this case!
 
 **Arguments**:
 
-- `pull_up`: See `Button`_
-- `active_state`: See `Button`_
-- `bounce_time`: See `Button`_
+- `pull_up`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `active_state`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `bounce_time`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 - `hold_time`: The time in seconds to differentiate if it is a short or long press. If the button is released before
 this time, it is a short press. As soon as the button is held for :attr:`hold_time` it is a long press and the
 short press action is ignored
 - `hold_repeat`: If :data:`True` repeat the long press action every :attr:`hold_time` seconds after first long press
 action
-- `pin_factory`: See `Button`_
-- `name`: See `Button`_
+- `pin_factory`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `name`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder"></a>
 
@@ -3710,9 +3710,9 @@ A rotary encoder to run one of two actions depending on the rotation direction.
 
 **Arguments**:
 
-- `bounce_time`: See `Button`_
-- `pin_factory`: See `Button`_
-- `name`: See `Button`_
+- `bounce_time`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `pin_factory`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `name`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 
 <a id="components.gpio.gpioz.core.input_devices.RotaryEncoder.pin_a"></a>
 
@@ -3795,16 +3795,16 @@ It is not necessary to configure all actions.
 
 **Arguments**:
 
-- `pull_up`: See `Button`_
-- `active_state`: See `Button`_
-- `bounce_time`: See `Button`_
+- `pull_up`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `active_state`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `bounce_time`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 - `hold_time`: The time in seconds to differentiate if it is a short or long press. If the button is released before
 this time, it is a short press. As soon as the button is held for :attr:`hold_time` it is a long press and the
 short press action is ignored.
 - `hold_repeat`: If :data:`True` repeat the long press action every :attr:`hold_time` seconds after first long press
 action. A long dual press is never repeated independent of this setting
-- `pin_factory`: See `Button`_
-- `name`: See `Button`_
+- `pin_factory`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
+- `name`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 
 <a id="components.gpio.gpioz.core.input_devices.TwinButton.StateVar"></a>
 
@@ -3867,7 +3867,7 @@ with parameters for this device and optional parameters from another device. Unu
 are silently ignored. This is done to reduce the amount of coding required for connectivity functions.
 
 For examples how to use the devices from the configuration files, see
-[../../builders/gpio.md#output-devices](GPIO: Output Devices).
+[GPIO: Output Devices](../../builders/gpio.md#output-devices).
 
 
 <a id="components.gpio.gpioz.core.output_devices.LED"></a>
