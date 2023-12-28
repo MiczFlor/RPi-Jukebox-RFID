@@ -949,8 +949,9 @@ def replay_if_stopped()
 
 Re-start playing the last-played folder unless playlist is still playing
 
-.. note:: To me this seems much like the behaviour of play,
-    but we keep it as it is specifically implemented in box 2.X
+> [!NOTE]
+> To me this seems much like the behaviour of play,
+> but we keep it as it is specifically implemented in box 2.X
 
 
 <a id="components.playermpd.PlayerMPD.play_card"></a>
@@ -1315,10 +1316,11 @@ Returns :data:`True` if the sound card shall be changed when a new card connects
 
 property changes the behavior.
 
-.. note:: A new card is always assumed to be the secondary device from the audio configuration.
-    At the moment there is no check it actually is the configured device. This means any new
-    device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
-    system will be relatively stable once setup
+> [!NOTE]
+> A new card is always assumed to be the secondary device from the audio configuration.
+> At the moment there is no check it actually is the configured device. This means any new
+> device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
+> system will be relatively stable once setup
 
 
 <a id="components.volume.PulseMonitor.toggle_on_connect"></a>
@@ -2054,10 +2056,11 @@ This function is called to tell the reader to exist it's reading function.
 
 This function is called before cleanup is called.
 
-.. note: This is usually called from a different thread than the reader's thread! And this is the reason for the
-    two-step exit strategy. This function works across threads to indicate to the reader that is should stop attempt
-    to read a card. Once called, the function read_card will not be called again. When the reader thread exits
-    cleanup is called from the reader thread itself.
+> [!NOTE]
+> This is usually called from a different thread than the reader's thread! And this is the reason for the
+> two-step exit strategy. This function works across threads to indicate to the reader that is should stop attempt
+> to read a card. Once called, the function read_card will not be called again. When the reader thread exits
+> cleanup is called from the reader thread itself.
 
 
 <a id="components.rfid.hardware.template_new_reader.template_new_reader.ReaderClass.read_card"></a>
@@ -2530,7 +2533,8 @@ def is_any_jukebox_service_active()
 
 Check if a Jukebox service is running
 
-.. note:: Does not have the be the current app, that is running as a service!
+> [!NOTE]
+> Does not have the be the current app, that is running as a service!
 
 
 <a id="components.hostif.linux.restart_service"></a>
@@ -4772,9 +4776,9 @@ class Publisher()
 
 The publisher that provides the functional interface to the application
 
-.. note::
-  * An instance must not be shared across threads!
-  * One instance per thread is enough
+> [!NOTE]
+> * An instance must not be shared across threads!
+> * One instance per thread is enough
 
 
 <a id="jukebox.publishing.server.Publisher.__init__"></a>
@@ -5426,13 +5430,13 @@ def get_all_failed_packages() -> Dict[str, str]
 
 Report those packages that did not load error free
 
-.. note:: Package could fail to load
-
-    1. altogether: these package are not registered
-    2. partially: during initializer, finalizer functions: The package is loaded,
-        but the function did not execute error-free
-
-    Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
+> [!NOTE]
+> Package could fail to load
+> * altogether: these package are not registered
+> * partially: during initializer, finalizer functions: The package is loaded,
+> but the function did not execute error-free
+>
+> Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
 
 **Returns**:
 
@@ -5694,7 +5698,8 @@ def decode_rpc_call(cfg_rpc_call: Dict) -> Optional[Dict]
 
 Makes sure that the core rpc call parameters have valid default values in cfg_rpc_call.
 
-.. important: Leaves all other parameters in cfg_action untouched or later downstream processing!
+> [!IMPORTANT]
+> Leaves all other parameters in cfg_action untouched or later downstream processing!
 
 **Arguments**:
 
@@ -5717,8 +5722,8 @@ Decode an RPC Command from a config entry.
 
 This means
 
-    * Decode RPC command alias (if present)
-    * Ensure all RPC call parameters have valid default values
+* Decode RPC command alias (if present)
+* Ensure all RPC call parameters have valid default values
 
 If the command alias cannot be decoded correctly, the command is mapped to misc.empty_rpc_call
 which emits a misuse warning when called
@@ -5837,18 +5842,14 @@ Return git state information for the current branch
 
 # jukebox.rpc.server
 
-Remote Procedure Call Server (RPC)
-
-*************************************
+## Remote Procedure Call Server (RPC)
 
 Bind to tcp and/or websocket port and translates incoming requests to procedure calls.
 Avaiable procedures to call are all functions registered with the plugin package.
 
-To protocol is loosely based on `jsonrpc <https://www.jsonrpc.org/specification>`_
+The protocol is loosely based on [jsonrpc](https://www.jsonrpc.org/specification)
 
 But with different elements directly relating to the plugin concept and Python function argument options
-
-.. code-block:: yaml
 
     {
       'package'  : str  # The plugin package loaded from python module
@@ -5876,9 +5877,9 @@ If present, 'id' and 'tsp' may not be None. If they are None, there are treated 
 
 Three sockets are opened
 
-``. TCP (on a configurable port)
-``. Websocket  (on a configurable port)
-``. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
+1. TCP (on a configurable port)
+2. Websocket (on a configurable port)
+3. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
    call arbitrary RPC functions from plugins that provide an interface to the outside world (e.g. GPIO). By also going though
    the RPC instead of calling function directly we increase thread-safety and provide easy configurability (e.g. which
    button triggers what action)

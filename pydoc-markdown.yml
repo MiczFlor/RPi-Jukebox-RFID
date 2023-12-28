@@ -8,5 +8,5 @@ processors:
 renderer:
   type: markdown
   render_toc: true
-  filename: ./documentation/developers/docstring/docstring-api.md
+  filename: ./documentation/developers/docstring/README.md
   render_page_title: true
