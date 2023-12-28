@@ -602,7 +602,8 @@ Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for
 
 
 > [!NOTE]
-> The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense).
+> The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes
+> sense).
 > There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 
 
