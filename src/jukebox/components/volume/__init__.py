@@ -149,10 +149,11 @@ class PulseMonitor(threading.Thread):
         """Returns :data:`True` if the sound card shall be changed when a new card connects/disconnects. Setting this
         property changes the behavior.
 
-        .. note:: A new card is always assumed to be the secondary device from the audio configuration.
-            At the moment there is no check it actually is the configured device. This means any new
-            device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
-            system will be relatively stable once setup
+        > [!NOTE]
+        > A new card is always assumed to be the secondary device from the audio configuration.
+        > At the moment there is no check it actually is the configured device. This means any new
+        > device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
+        > system will be relatively stable once setup
         """
         return self._toggle_on_connect
 

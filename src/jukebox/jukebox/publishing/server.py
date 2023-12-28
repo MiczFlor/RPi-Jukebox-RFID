@@ -271,9 +271,9 @@ class Publisher:
     """
     The publisher that provides the functional interface to the application
 
-    .. note::
-      * An instance must not be shared across threads!
-      * One instance per thread is enough
+    > [!NOTE]
+    > * An instance must not be shared across threads!
+    > * One instance per thread is enough
 
     """
     def __init__(self, check_thread_owner=True):

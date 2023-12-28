@@ -17,7 +17,8 @@ log = logging.getLogger('jb.utils')
 def decode_rpc_call(cfg_rpc_call: Dict) -> Optional[Dict]:
     """Makes sure that the core rpc call parameters have valid default values in cfg_rpc_call.
 
-    .. important: Leaves all other parameters in cfg_action untouched or later downstream processing!
+    > [!IMPORTANT]
+    > Leaves all other parameters in cfg_action untouched or later downstream processing!
 
     :param cfg_rpc_call: RPC command as configuration entry
     :return: A fully populated deep copy of cfg_rpc_call
@@ -41,8 +42,8 @@ def decode_rpc_command(cfg_rpc_cmd: Dict, logger: logging.Logger = log) -> Optio
 
     This means
 
-        * Decode RPC command alias (if present)
-        * Ensure all RPC call parameters have valid default values
+    * Decode RPC command alias (if present)
+    * Ensure all RPC call parameters have valid default values
 
     If the command alias cannot be decoded correctly, the command is mapped to misc.empty_rpc_call
     which emits a misuse warning when called

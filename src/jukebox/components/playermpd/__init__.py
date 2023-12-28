@@ -366,8 +366,9 @@ class PlayerMPD:
         """
         Re-start playing the last-played folder unless playlist is still playing
 
-        .. note:: To me this seems much like the behaviour of play,
-            but we keep it as it is specifically implemented in box 2.X"""
+        > [!NOTE]
+        > To me this seems much like the behaviour of play,
+        > but we keep it as it is specifically implemented in box 2.X"""
         with self.mpd_lock:
             if self.mpd_status['state'] == 'stop':
                 self.play_folder(self.music_player_status['player_status']['last_played_folder'])

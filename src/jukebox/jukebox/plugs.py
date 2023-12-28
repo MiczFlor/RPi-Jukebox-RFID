@@ -974,13 +974,13 @@ def get_all_loaded_packages() -> Dict[str, str]:
 def get_all_failed_packages() -> Dict[str, str]:
     """Report those packages that did not load error free
 
-    .. note:: Package could fail to load
-
-        1. altogether: these package are not registered
-        2. partially: during initializer, finalizer functions: The package is loaded,
-            but the function did not execute error-free
-
-        Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
+    > [!NOTE]
+    > Package could fail to load
+    > * altogether: these package are not registered
+    > * partially: during initializer, finalizer functions: The package is loaded,
+    > but the function did not execute error-free
+    >
+    > Partially loaded packages are listed in both _PLUGINS and _PLUGINS_FAILED
 
     :return: Dictionary of the form `{loaded_as: loaded_from, ...}`"""
     with _lock_module:
