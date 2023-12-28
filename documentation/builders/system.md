@@ -35,7 +35,8 @@ $ systemctl --user start mpd
 $ systemctl --user stop mpd
 ```
 
-.. important:: Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
+> [!IMPORTANT]
+> Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
 
 To check if MPD is running or has issues, use
 

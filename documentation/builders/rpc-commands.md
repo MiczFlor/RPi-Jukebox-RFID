@@ -1,6 +1,5 @@
 # RPC Commands
 
-
 We use the RPC commands when triggering actions from different inputs like a card swipe,
 a GPIO button press, etc. Triggering an action is equal to sending an RPC function call.
 In many places the command to send when an input is triggered is configurable in a YAML-file.
@@ -98,10 +97,9 @@ do exactly the same, but use different ways of specifying the command.
         folder: path/to/folder
         recursive: True
 
-
-.. important:: *args* must be a **list** of arguments to be passed! Even if only a single argument is passed.
-    So, use *args: [value]*. We try catch mis-uses but that might not always work.
-
+> [!IMPORTANT]
+> *args* must be a **list** of arguments to be passed! Even if only a single argument is passed.
+> So, use *args: [value]*. We try catch mis-uses but that might not always work.
 
 You will find some more examples the configuration of the [Card Database](card-database.md)
 
