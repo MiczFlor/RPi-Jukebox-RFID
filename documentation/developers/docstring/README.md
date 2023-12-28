@@ -7,6 +7,7 @@
 * [run\_register\_rfid\_reader](#run_register_rfid_reader)
 * [run\_rpc\_tool](#run_rpc_tool)
   * [get\_common\_beginning](#run_rpc_tool.get_common_beginning)
+  * [runcmd](#run_rpc_tool.runcmd)
 * [run\_configure\_audio](#run_configure_audio)
 * [run\_publicity\_sniffer](#run_publicity_sniffer)
 * [misc](#misc)
@@ -40,12 +41,14 @@
     * [toggle](#components.playermpd.PlayerMPD.toggle)
     * [replay\_if\_stopped](#components.playermpd.PlayerMPD.replay_if_stopped)
     * [play\_card](#components.playermpd.PlayerMPD.play_card)
+    * [get\_single\_coverart](#components.playermpd.PlayerMPD.get_single_coverart)
     * [get\_folder\_content](#components.playermpd.PlayerMPD.get_folder_content)
     * [play\_folder](#components.playermpd.PlayerMPD.play_folder)
     * [play\_album](#components.playermpd.PlayerMPD.play_album)
     * [get\_volume](#components.playermpd.PlayerMPD.get_volume)
     * [set\_volume](#components.playermpd.PlayerMPD.set_volume)
   * [play\_card\_callbacks](#components.playermpd.play_card_callbacks)
+* [components.playermpd.coverart\_cache\_manager](#components.playermpd.coverart_cache_manager)
 * [components.rpc\_command\_alias](#components.rpc_command_alias)
 * [components.synchronisation.rfidcards](#components.synchronisation.rfidcards)
   * [SyncRfidcards](#components.synchronisation.rfidcards.SyncRfidcards)
@@ -182,9 +185,6 @@
     * [\_\_init\_\_](#components.controls.common.evdev_listener.EvDevKeyListener.__init__)
     * [run](#components.controls.common.evdev_listener.EvDevKeyListener.run)
     * [start](#components.controls.common.evdev_listener.EvDevKeyListener.start)
-* [components.music\_cover\_art](#components.music_cover_art)
-  * [MusicCoverArt](#components.music_cover_art.MusicCoverArt)
-    * [get\_by\_filename\_as\_base64](#components.music_cover_art.MusicCoverArt.get_by_filename_as_base64)
 * [components.battery\_monitor](#components.battery_monitor)
 * [components.battery\_monitor.BatteryMonitorBase](#components.battery_monitor.BatteryMonitorBase)
   * [pt1\_frac](#components.battery_monitor.BatteryMonitorBase.pt1_frac)
@@ -441,6 +441,20 @@ def get_common_beginning(strings)
 ```
 
 Return the strings that are common to the beginning of each string in the strings list.
+
+
+<a id="run_rpc_tool.runcmd"></a>
+
+#### runcmd
+
+```python
+def runcmd(cmd)
+```
+
+Just run a command.
+
+Right now duplicates more or less main()
+:todo remove duplication of code
 
 
 <a id="run_configure_audio"></a>
@@ -973,6 +987,18 @@ accordingly.
 - `folder`: Folder path relative to music library path
 - `recursive`: Add folder recursively
 
+<a id="components.playermpd.PlayerMPD.get_single_coverart"></a>
+
+#### get\_single\_coverart
+
+```python
+@plugs.tag
+def get_single_coverart(song_url)
+```
+
+Saves the album art image to a cache and returns the filename.
+
+
 <a id="components.playermpd.PlayerMPD.get_folder_content"></a>
 
 #### get\_folder\_content
@@ -1067,6 +1093,10 @@ States:
 - See :class:`PlayCardState`
 See :class:`PlayContentCallbacks`
 
+
+<a id="components.playermpd.coverart_cache_manager"></a>
+
+# components.playermpd.coverart\_cache\_manager
 
 <a id="components.rpc_command_alias"></a>
 
@@ -2872,35 +2902,6 @@ def start() -> None
 ```
 
 Start the tread and start listening
-
-
-<a id="components.music_cover_art"></a>
-
-# components.music\_cover\_art
-
-Read all cover art from music save it to a cache for the UI to load
-
-.. note:: Not implemented. This is a feature planned for a future release.
-
-
-<a id="components.music_cover_art.MusicCoverArt"></a>
-
-## MusicCoverArt Objects
-
-```python
-class MusicCoverArt()
-```
-
-<a id="components.music_cover_art.MusicCoverArt.get_by_filename_as_base64"></a>
-
-#### get\_by\_filename\_as\_base64
-
-```python
-@plugin.tag
-def get_by_filename_as_base64(audio_src: str)
-```
-
-Not implemented. This is a feature planned for a future release.
 
 
 <a id="components.battery_monitor"></a>
