@@ -11,7 +11,7 @@ The tool features auto-completion and command history.
 The list of available commands is fetched from the running Jukebox service.
 
 .. todo:
-    - kwargs support
+   - kwargs support
 
 """
 

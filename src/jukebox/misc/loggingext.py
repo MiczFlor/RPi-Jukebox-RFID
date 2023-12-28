@@ -1,7 +1,6 @@
 """
-##############
-Logger
-##############
+## Logger
+
 We use a hierarchical Logger structure based on pythons logging module. It can be finely configured with a yaml file.
 
 The top-level logger is called 'jb' (to make it short). In any module you may simple create a child-logger at any hierarchy
@@ -9,25 +8,27 @@ level below 'jb'. It will inherit settings from it's parent logger unless otherw
 Hierarchy separator is the '.'. If the logger already exits, getLogger will return a reference to the same, else it will be
 created on the spot.
 
-:Example: How to get logger and log away at your heart's content:
+Example: How to get logger and log away at your heart's content:
+
     >>> import logging
     >>> logger = logging.getLogger('jb.awesome_module')
     >>> logger.info('Started general awesomeness aura')
 
-Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module::
-``
-loggers:
-  jb:
-    level: WARNING
-    handlers: [console, debug_file_handler, error_file_handler]
-    propagate: no
-  jb.awesome_module:
-    level: DEBUG
-``
+Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module:
 
-.. note::
-The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense)
-There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
+    loggers:
+      jb:
+        level: WARNING
+        handlers: [console, debug_file_handler, error_file_handler]
+        propagate: no
+      jb.awesome_module:
+        level: DEBUG
+
+
+> [!NOTE]
+> The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes
+> sense).
+> There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 """
 import sys
 import logging

@@ -407,10 +407,11 @@ See [Troubleshooting](../../builders/troubleshooting.md).
 Setup tool to configure the RFID Readers.
 
 Run this once to register and configure the RFID readers with the Jukebox. Can be re-run at any time to change
-the settings. For more information see :ref:`rfid/rfid:RFID Readers`.
+the settings. For more information see [RFID Readers](../rfid/README.md).
 
-.. note:: This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
-    Any manual modifications to the settings will have to be re-applied
+> [!NOTE]
+> This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
+> Any manual modifications to the settings will have to be re-applied
 
 
 <a id="run_rpc_tool"></a>
@@ -428,7 +429,7 @@ The tool features auto-completion and command history.
 The list of available commands is fetched from the running Jukebox service.
 
 .. todo:
-    - kwargs support
+   - kwargs support
 
 
 <a id="run_rpc_tool.get_common_beginning"></a>
@@ -451,7 +452,7 @@ Setup tool to register the PulseAudio sinks as primary and secondary audio outpu
 Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
 Run this once after installation. Can be re-run at any time to change the settings.
-For more information see :ref:`userguide/audio:Audio Configuration`.
+For more information see [Audio Configuration](../../builders/audio.md#audio-configuration).
 
 
 <a id="run_publicity_sniffer"></a>
@@ -574,16 +575,35 @@ boolean value read from user input
 
 # misc.loggingext
 
-##############
+## Logger
 
-Logger
-##############
 We use a hierarchical Logger structure based on pythons logging module. It can be finely configured with a yaml file.
 
 The top-level logger is called 'jb' (to make it short). In any module you may simple create a child-logger at any hierarchy
 level below 'jb'. It will inherit settings from it's parent logger unless otherwise configured in the yaml file.
 Hierarchy separator is the '.'. If the logger already exits, getLogger will return a reference to the same, else it will be
 created on the spot.
+
+Example: How to get logger and log away at your heart's content:
+
+    >>> import logging
+    >>> logger = logging.getLogger('jb.awesome_module')
+    >>> logger.info('Started general awesomeness aura')
+
+Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module:
+
+    loggers:
+      jb:
+        level: WARNING
+        handlers: [console, debug_file_handler, error_file_handler]
+        propagate: no
+      jb.awesome_module:
+        level: DEBUG
+
+
+> [!NOTE]
+> The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense).
+> There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 
 
 <a id="misc.loggingext.ColorFilter"></a>
