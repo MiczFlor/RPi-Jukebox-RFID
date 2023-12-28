@@ -4650,7 +4650,7 @@ For use case, we made a few simplifications
   you’ll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
 * "lower-volume network with a few dozen subscribers and a limited number of topics, we can use TCP and then
   the [XSUB and XPUB](https://zguide.zeromq.org/docs/chapter5/`Last`-Value-Caching)"
-* "Let’s imagine [our feed has an average of 100,000 100-byte messages a 
+* "Let’s imagine [our feed has an average of 100,000 100-byte messages a
   second](https://zguide.zeromq.org/docs/chapter5/`High`-Speed-Subscribers-Black-Box-Pattern) [...].
   While 100K messages a second is easy for a ZeroMQ application, ..."
 
