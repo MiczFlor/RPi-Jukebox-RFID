@@ -7,7 +7,7 @@
 # related libraries.
 evdev
 git+https://github.com/lthiery/SPI-Py.git#egg=spi-py
-git+https://github.com/ytdl-org/youtube-dl@master
+git+https://github.com/ytdl-org/youtube-dl@master#egg=youtube-dl
 pyserial
 RPi.GPIO
 
