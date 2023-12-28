@@ -41,8 +41,8 @@ class RfidCardDetectCallbacks(CallbackHandler):
         .. py:function:: func(card_id: str, state: int)
             :noindex:
 
-            :param card_id: Card ID
-            :param state: See :class:`RfidCardDetectState`
+        :param card_id: Card ID
+        :param state: See :class:`RfidCardDetectState`
         """
         super().register(func)
 

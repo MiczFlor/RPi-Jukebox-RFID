@@ -12,8 +12,6 @@ a directory is parsed and files are added to the playlist in the following way
 
 An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
 
-.. code-block:: bash
-
     01-livestream.txt
     02-livestream.txt
     music.mp3

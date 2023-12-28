@@ -1401,8 +1401,6 @@ Volume control manager for PulseAudio
 When accessing the pulse library, it needs to be put into a special
 state. Which is ensured by the context manager
 
-.. code-block: python
-
     with pulse_monitor as pulse ...
 
 
@@ -1693,9 +1691,10 @@ Callback signature is
 .. py:function:: func(card_id: str, state: int)
     :noindex:
 
-    :param card_id: Card ID
-    :param state: See :class:`RfidCardDetectState`
+**Arguments**:
 
+- `card_id`: Card ID
+- `state`: See :class:`RfidCardDetectState`
 
 <a id="components.rfid.reader.RfidCardDetectCallbacks.run_callbacks"></a>
 
@@ -2041,7 +2040,7 @@ which ensures proper resource de-allocation. For this to work derive this class 
 All the required interfaces are implemented there.
 
 Put your code into these functions (see below for more information)
-  - __init__
+  - `__init__`
   - read_card
   - cleanup
   - stop
@@ -3424,8 +3423,6 @@ traverses blue (0), cyan(60), green (120), yellow(180), red (240), magenta (340)
 - `section`: The section of the full color circle to use in degrees
 Map input :data:`0...100` to color range :data:`green...magenta` and get the color for level 50
 
-.. code-block:: python
-
     conv = VolumeToRGB(100, offset=120, section=180)
     (r, g, b) = conv(50)
 
@@ -3652,7 +3649,7 @@ A Button that runs a single actions only when the button is pressed long enough
 
 **Arguments**:
 
-- `pull_up`: See `Button`_
+- `pull_up`: See [`Button`](#components.gpio.gpioz.core.input_devices.Button)
 - `active_state`: See `Button`_
 - `bounce_time`: See `Button`_
 - `hold_repeat`: If :data:`True` repeat the :attr:`on_press` every :attr:`hold_time` seconds. Else only action
@@ -4417,8 +4414,6 @@ a directory is parsed and files are added to the playlist in the following way
    to the playlist except for ``*.xml`` and ``*.podcast`` URLS, which are expanded first
 
 An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
-
-.. code-block:: bash
 
     01-livestream.txt
     02-livestream.txt

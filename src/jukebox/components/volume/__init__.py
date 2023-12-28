@@ -283,8 +283,6 @@ class PulseVolumeControl:
     When accessing the pulse library, it needs to be put into a special
     state. Which is ensured by the context manager
 
-    .. code-block: python
-
         with pulse_monitor as pulse ...
 
 

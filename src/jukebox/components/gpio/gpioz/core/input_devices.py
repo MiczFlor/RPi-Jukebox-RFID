@@ -234,7 +234,7 @@ class LongPressButton(NameMixin, ButtonBase):
     """
     A Button that runs a single actions only when the button is pressed long enough
 
-    :param pull_up: See `Button`_
+    :param pull_up: See #Button
 
     :param active_state: See `Button`_
 

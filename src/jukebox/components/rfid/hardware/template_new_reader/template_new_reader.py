@@ -48,7 +48,7 @@ class ReaderClass(ReaderBaseClass):
     All the required interfaces are implemented there.
 
     Put your code into these functions (see below for more information)
-      - __init__
+      - `__init__`
       - read_card
       - cleanup
       - stop
