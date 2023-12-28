@@ -44,7 +44,7 @@ jobs:
     - name: Install dependencies
       run: |
         # Install necessary packages
-        'sed 's/#.*//g' packages.txt | xargs sudo apt-get install'
+        sudo apt-get install libasound2-dev pulseaudio
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         # Set the `CODEQL-PYTHON` environment variable to the Python executable
