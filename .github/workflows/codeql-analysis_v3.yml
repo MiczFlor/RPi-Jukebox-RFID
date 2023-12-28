@@ -41,8 +41,10 @@ jobs:
       uses: actions/setup-python@v4
       with:
           python-version: '3.x'
-    - name: Install dependencies for Python
+    - name: Install dependencies
       run: |
+        # Install necessary packages
+        'sed 's/#.*//g' packages.txt | xargs sudo apt-get install'
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         # Set the `CODEQL-PYTHON` environment variable to the Python executable
