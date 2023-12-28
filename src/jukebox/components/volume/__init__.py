@@ -2,33 +2,35 @@
 # Copyright (c) See file LICENSE in project root folder
 """PulseAudio Volume Control Plugin Package
 
-Features
+## Features
 
-    * Volume Control
-    * Two outputs
-    * Watcher thread on volume / output change
+* Volume Control
+* Two outputs
+* Watcher thread on volume / output change
 
-Publishes
+## Publishes
 
-    * volume.level
-    * volume.sink
+* volume.level
+* volume.sink
 
-PulseAudio References
+## PulseAudio References
 
-https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/
+<https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/>
 
 Check fallback device (on device de-connect):
-$ pacmd list-sinks | grep -e 'name:' -e 'index'
+
+    $ pacmd list-sinks | grep -e 'name:' -e 'index'
 
 
-Integration
+## Integration
 
 Pulse Audio runs as a user process. Processes who want to communicate / stream to it
 must also run as a user process.
 
-This means must also run as user process, as described in :ref:`userguide/system:Music Player Daemon (MPD)`
+This means must also run as user process, as described in
+[../../builders/system.md#music-player-daemon-mpd](Music Player Daemon).
 
-Misc
+## Misc
 
 PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
 with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration
@@ -36,27 +38,25 @@ in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
 If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!
 
-.. code-block:: text
-
     ### Use hot-plugged devices like Bluetooth or USB automatically (LP: #1702794)
     ### not available on PI?
     .ifexists module-switch-on-connect.so
     load-module module-switch-on-connect
     .endif
 
-Why PulseAudio?
+## Why PulseAudio?
 
 The audio configuration of the system is one of those topics,
 which has a myriad of options and possibilities. Every system is different and PulseAudio unifies these and
 makes our life easier. Besides, it is only option to support Bluetooth at the moment.
 
-Callbacks:
+## Callbacks:
 
 The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
 
-    #. :func:`add_on_connect_callback`
-    #. :func:`add_on_output_change_callbacks`
-    #. :func:`add_on_volume_change_callback`
+1. :func:`add_on_connect_callback`
+2. :func:`add_on_output_change_callbacks`
+3. :func:`add_on_volume_change_callback`
 """
 import collections
 import logging
@@ -116,10 +116,10 @@ class PulseMonitor(threading.Thread):
             .. py:function:: func(card_driver: str, device_name: str)
                 :noindex:
 
-                :param card_driver: The PulseAudio card driver module,
-                    e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
-                :param device_name: The sound card device name as reported
-                    in device properties
+            :param card_driver: The PulseAudio card driver module,
+                e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
+            :param device_name: The sound card device name as reported
+                in device properties
             """
             super().register(func)
 
@@ -310,12 +310,12 @@ class PulseVolumeControl:
             .. py:function:: func(sink_name: str, alias: str, sink_index: int, error_state: int)
                 :noindex:
 
-                :param sink_name: PulseAudio's sink name
-                :param alias: The alias for :attr:`sink_name`
-                :param sink_index: The index of the sink in the configuration list
-                :param error_state: 1 if there was an attempt to change the output
-                   but an error occurred. Above parameters always give the now valid sink!
-                   If a sink change is successful, it is 0.
+            :param sink_name: PulseAudio's sink name
+            :param alias: The alias for :attr:`sink_name`
+            :param sink_index: The index of the sink in the configuration list
+            :param error_state: 1 if there was an attempt to change the output
+               but an error occurred. Above parameters always give the now valid sink!
+               If a sink change is successful, it is 0.
             """
             super().register(func)
 
@@ -339,9 +339,9 @@ class PulseVolumeControl:
             .. py:function:: func(volume: int, is_min: bool, is_max: bool)
                 :noindex:
 
-                :param volume: Volume level
-                :param is_min: 1, if volume level is minimum, else 0
-                :param is_max: 1, if volume level is maximum, else 0
+            :param volume: Volume level
+            :param is_min: 1, if volume level is minimum, else 0
+            :param is_max: 1, if volume level is maximum, else 0
             """
             super().register(func)
 

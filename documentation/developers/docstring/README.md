@@ -1104,7 +1104,7 @@ See :class:`PlayContentCallbacks`
 
 This file provides definitions for RPC command aliases
 
-See :ref:`userguide/rpc_commands`
+See [../../builders/rpc-commands.md](RPC Commands)
 
 
 <a id="components.synchronisation.rfidcards"></a>
@@ -1213,33 +1213,35 @@ Sync the folder from the remote server, if existing
 
 PulseAudio Volume Control Plugin Package
 
-Features
+## Features
 
-    * Volume Control
-    * Two outputs
-    * Watcher thread on volume / output change
+* Volume Control
+* Two outputs
+* Watcher thread on volume / output change
 
-Publishes
+## Publishes
 
-    * volume.level
-    * volume.sink
+* volume.level
+* volume.sink
 
-PulseAudio References
+## PulseAudio References
 
-https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/
+<https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/>
 
 Check fallback device (on device de-connect):
-$ pacmd list-sinks | grep -e 'name:' -e 'index'
+
+    $ pacmd list-sinks | grep -e 'name:' -e 'index'
 
 
-Integration
+## Integration
 
 Pulse Audio runs as a user process. Processes who want to communicate / stream to it
 must also run as a user process.
 
-This means must also run as user process, as described in :ref:`userguide/system:Music Player Daemon (MPD)`
+This means must also run as user process, as described in
+[../../builders/system.md#music-player-daemon-mpd](Music Player Daemon).
 
-Misc
+## Misc
 
 PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
 with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration
@@ -1247,27 +1249,25 @@ in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
 If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!
 
-.. code-block:: text
-
     ### Use hot-plugged devices like Bluetooth or USB automatically (LP: `1702794`)
     ### not available on PI?
     .ifexists module-switch-on-connect.so
     load-module module-switch-on-connect
     .endif
 
-Why PulseAudio?
+## Why PulseAudio?
 
 The audio configuration of the system is one of those topics,
 which has a myriad of options and possibilities. Every system is different and PulseAudio unifies these and
 makes our life easier. Besides, it is only option to support Bluetooth at the moment.
 
-Callbacks:
+## Callbacks:
 
 The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
 
-    ``. :func:`add_on_connect_callback`
-    ``. :func:`add_on_output_change_callbacks`
-    ``. :func:`add_on_volume_change_callback`
+1. :func:`add_on_connect_callback`
+2. :func:`add_on_output_change_callbacks`
+3. :func:`add_on_volume_change_callback`
 
 
 <a id="components.volume.PulseMonitor"></a>
@@ -1317,11 +1317,12 @@ Callback signature is
 .. py:function:: func(card_driver: str, device_name: str)
     :noindex:
 
-    :param card_driver: The PulseAudio card driver module,
-        e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
-    :param device_name: The sound card device name as reported
-        in device properties
+**Arguments**:
 
+- `card_driver`: The PulseAudio card driver module,
+e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
+- `device_name`: The sound card device name as reported
+in device properties
 
 <a id="components.volume.PulseMonitor.SoundCardConnectCallbacks.run_callbacks"></a>
 
@@ -1440,13 +1441,14 @@ Callback signature is
 .. py:function:: func(sink_name: str, alias: str, sink_index: int, error_state: int)
     :noindex:
 
-    :param sink_name: PulseAudio's sink name
-    :param alias: The alias for :attr:`sink_name`
-    :param sink_index: The index of the sink in the configuration list
-    :param error_state: 1 if there was an attempt to change the output
-       but an error occurred. Above parameters always give the now valid sink!
-       If a sink change is successful, it is 0.
+**Arguments**:
 
+- `sink_name`: PulseAudio's sink name
+- `alias`: The alias for :attr:`sink_name`
+- `sink_index`: The index of the sink in the configuration list
+- `error_state`: 1 if there was an attempt to change the output
+but an error occurred. Above parameters always give the now valid sink!
+If a sink change is successful, it is 0.
 
 <a id="components.volume.PulseVolumeControl.OutputChangeCallbackHandler.run_callbacks"></a>
 
@@ -1486,10 +1488,11 @@ Callback signature is
 .. py:function:: func(volume: int, is_min: bool, is_max: bool)
     :noindex:
 
-    :param volume: Volume level
-    :param is_min: 1, if volume level is minimum, else 0
-    :param is_max: 1, if volume level is maximum, else 0
+**Arguments**:
 
+- `volume`: Volume level
+- `is_min`: 1, if volume level is minimum, else 0
+- `is_max`: 1, if volume level is maximum, else 0
 
 <a id="components.volume.PulseVolumeControl.OutputVolumeCallbackHandler.run_callbacks"></a>
 
@@ -2364,11 +2367,12 @@ def play(filename)
 
 Play the jingle using the configured jingle service
 
-Note: This runs in a separate thread. And this may cause troubles
-when changing the volume level before
-and after the sound playback: There is nothing to prevent another
-thread from changing the volume and sink while playback happens
-and afterwards we change the volume back to where it was before!
+> [!NOTE]
+> This runs in a separate thread. And this may cause troubles
+> when changing the volume level before
+> and after the sound playback: There is nothing to prevent another
+> thread from changing the volume and sink while playback happens
+> and afterwards we change the volume back to where it was before!
 
 There is no way around this dilemma except for not running the jingle as a
 separate thread. Currently (as thread) even the RPC is started before the sound
@@ -2809,9 +2813,9 @@ when a bluetooth sound device (headphone, speakers) connects
 
 This effectively does:
 
-    * register a callback with components.volume to get notified when a new sound card connects
-    * if that is a bluetooth device, try opening an input device with similar name using
-    * button listeners are run each in its own thread
+* register a callback with components.volume to get notified when a new sound card connects
+* if that is a bluetooth device, try opening an input device with similar name using
+* button listeners are run each in its own thread
 
 
 <a id="components.controls.common.evdev_listener"></a>
@@ -2833,18 +2837,17 @@ def find_device(device_name: str,
 
 Find an input device with device_name and mandatory keys.
 
-Raises
-
-    ``. FileNotFoundError, if no device is found.
-    ``. AttributeError, if device does not have the mandatory keys
-
-If multiple devices match, the first match is returned
-
 **Arguments**:
 
 - `device_name`: See :func:`_filter_by_device_name`
 - `exact_name`: See :func:`_filter_by_device_name`
 - `mandatory_keys`: See :func:`_filter_by_mandatory_keys`
+
+**Raises**:
+
+- `FileNotFoundError`: if no device is found.
+- `AttributeError`: if device does not have the mandatory key
+If multiple devices match, the first match is returned
 
 **Returns**:
 
@@ -2963,37 +2966,34 @@ class battmon_ads1015(BatteryMonitorBase.BattmonBase)
 
 Battery Monitor based on a ADS1015
 
-CAUTION - WARNING
-========================================================================
-Lithium and other batteries are dangerous and must be treated with care.
-Rechargeable Lithium Ion batteries are potentially hazardous and can
-present a serious FIRE HAZARD if damaged, defective or improperly used.
-Do not use this circuit to a lithium ion battery without expertise and
-training in handling and use of batteries of this type.
-Use appropriate test equipment and safety protocols during development.
-
-There is no warranty, this may not work as expected or at all!
-=========================================================================
+> [!CAUTION]
+> Lithium and other batteries are dangerous and must be treated with care.
+> Rechargeable Lithium Ion batteries are potentially hazardous and can
+> present a serious **FIRE HAZARD** if damaged, defective or improperly used.
+> Do not use this circuit to a lithium ion battery without expertise and
+> training in handling and use of batteries of this type.
+> Use appropriate test equipment and safety protocols during development.
+> There is no warranty, this may not work as expected or at all!
 
 This script is intended to read out the Voltage of a single Cell LiIon Battery using a CY-ADS1015 Board:
 
-                                              3.3V
-                                               +
-                                               |
-                                          .----o----.
-                    ___                   |         |  SDA
-          .--------|___|---o----o---------o AIN0    o------
-          |         2MΩ    |    |         |         |  SCL
-          |               .-.   |         | ADS1015 o------
-         ---              | |  ---        |         |
- Battery  -          1.5MΩ| |  ---100nF   '----o----'
- 2.9V-4.2V|               '-'   |              |
-          |                |    |              |
-         ===              ===  ===            ===
+                                                  3.3V
+                                                   +
+                                                   |
+                                              .----o----.
+                        ___                   |         |  SDA
+              .--------|___|---o----o---------o AIN0    o------
+              |         2MΩ    |    |         |         |  SCL
+              |               .-.   |         | ADS1015 o------
+             ---              | |  ---        |         |
+     Battery  -          1.5MΩ| |  ---100nF   '----o----'
+     2.9V-4.2V|               '-'   |              |
+              |                |    |              |
+             ===              ===  ===            ===
 
 Attention:
-    - the circuit is constantly draining the battery! (leak current up to: 2.1µA)
-    - the time between sample needs to be a minimum 1sec with this high impedance voltage divider
+* the circuit is constantly draining the battery! (leak current up to: 2.1µA)
+* the time between sample needs to be a minimum 1sec with this high impedance voltage divider
       don't use the continuous conversion method!
 
 
@@ -3063,14 +3063,14 @@ class ServiceIsRunningCallbacks(CallbackHandler)
 Callbacks are executed when
 
 * Jukebox app started
-   * Jukebox shuts down
+* Jukebox shuts down
 
 This is intended to e.g. signal an LED to change state.
 This is integrated into this module because:
 
-    * we need the GPIO to control a LED (it must be available when the status callback comes)
-    * the plugin callback functions provide all the functionality to control the status of the LED
-    * which means no need to adapt other modules
+* we need the GPIO to control a LED (it must be available when the status callback comes)
+* the plugin callback functions provide all the functionality to control the status of the LED
+* which means no need to adapt other modules
 
 
 <a id="components.gpio.gpioz.plugin.ServiceIsRunningCallbacks.register"></a>
@@ -3088,8 +3088,9 @@ Callback signature is
 .. py:function:: func(status: int)
     :noindex:
 
-    :param status: 1 if app started, 0 if app shuts down
+**Arguments**:
 
+- `status`: 1 if app started, 0 if app shuts down
 
 <a id="components.gpio.gpioz.plugin.ServiceIsRunningCallbacks.run_callbacks"></a>
 
@@ -3261,11 +3262,11 @@ Flash the output device once on successful RFID card detection and thrice if car
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.LED`
-    - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-    - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
-    - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-    - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+* :class:`components.gpio.gpioz.core.output_devices.LED`
+* :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+* :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+* :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+* :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_led_callback"></a>
@@ -3280,9 +3281,9 @@ Turn LED on when Jukebox App has started
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.LED`
-    - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-    - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+* :class:`components.gpio.gpioz.core.output_devices.LED`
+* :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+* :class:`components.gpio.gpioz.core.output_devices.RGBLED`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_buzzer_callback"></a>
@@ -3297,8 +3298,8 @@ Buzz once when Jukebox App has started, twice when closing down
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-    - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+* :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+* :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_status_tonalbuzzer_callback"></a>
@@ -3313,7 +3314,7 @@ Buzz a multi-note melody when Jukebox App has started and when closing down
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+* :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_audio_sink_change_callback"></a>
@@ -3330,9 +3331,9 @@ fails, blink thrice
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.LED`
-    - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-    - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+* :class:`components.gpio.gpioz.core.output_devices.LED`
+* :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+* :class:`components.gpio.gpioz.core.output_devices.RGBLED`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_led_callback"></a>
@@ -3349,7 +3350,7 @@ is reached. Minimum value is still a very dimly turned on LED (i.e. LED is never
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+* :class:`components.gpio.gpioz.core.output_devices.PWMLED`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_buzzer_callback"></a>
@@ -3364,8 +3365,8 @@ Sound a buzzer once when minimum or maximum value is reached
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-    - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+* :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+* :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
 
 
 <a id="components.gpio.gpioz.plugin.connectivity.register_volume_rgbled_callback"></a>
@@ -3382,7 +3383,7 @@ is reached.
 
 Compatible devices:
 
-    - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+* :class:`components.gpio.gpioz.core.output_devices.RGBLED`
 
 
 <a id="components.gpio.gpioz.core.converter"></a>
@@ -3476,7 +3477,7 @@ Monkey Patch LED + Buzzer to get a callback when state changes
 This targets to represent the state in the TK GUI.
 Other output devices cannot be represented in the GUI and are silently ignored.
 
-..note:: Only for developing purposes!
+> [!NOTE] Only for developing purposes!
 
 
 <a id="components.gpio.gpioz.core.input_devices"></a>
@@ -3491,7 +3492,8 @@ their documentation.
 All callback handlers are replaced by GPIOZ callback handlers. These are usually configured
 by using the :func:`set_rpc_actions` each input device exhibits.
 
-For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Input devices`
+For examples how to use the devices from the configuration files, see
+[../../builders/gpio.md#input-devices](GPIO: Input Devices).
 
 
 <a id="components.gpio.gpioz.core.input_devices.NameMixin"></a>
@@ -3867,7 +3869,8 @@ to all devices. This function provides a unified API to all devices. This means 
 with parameters for this device and optional parameters from another device. Unused/unsupported parameters
 are silently ignored. This is done to reduce the amount of coding required for connectivity functions.
 
-For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Output devices`
+For examples how to use the devices from the configuration files, see
+[../../builders/gpio.md#output-devices](GPIO: Output Devices).
 
 
 <a id="components.gpio.gpioz.core.output_devices.LED"></a>
@@ -4292,8 +4295,8 @@ def is_modified() -> bool
 
 Check if the data has changed since the last load/store
 
-.. note: This relies on the *__str__* representation of the underlying data structure
-    In case of ruamel, this ignores comments and only looks at the data
+> [!NOTE] This relies on the *__str__* representation of the underlying data structure
+> In case of ruamel, this ignores comments and only looks at the data
 
 
 <a id="jukebox.cfghandler.ConfigHandler.clear_modified"></a>

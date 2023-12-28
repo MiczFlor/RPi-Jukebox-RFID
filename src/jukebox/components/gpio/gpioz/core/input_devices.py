@@ -9,7 +9,8 @@ their documentation.
 All callback handlers are replaced by GPIOZ callback handlers. These are usually configured
 by using the :func:`set_rpc_actions` each input device exhibits.
 
-For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Input devices`
+For examples how to use the devices from the configuration files, see
+[../../builders/gpio.md#input-devices](GPIO: Input Devices).
 """
 
 import functools
