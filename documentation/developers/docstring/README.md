@@ -4647,10 +4647,10 @@ For use case, we made a few simplifications
 
 * "If you need [millions of messages per second](https://zguide.zeromq.org/docs/chapter5/`Pros`-and-Cons-of-Pub-Sub)
   sent to thousands of points,
-  you’ll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
+  you'll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
 * "lower-volume network with a few dozen subscribers and a limited number of topics, we can use TCP and then
   the [XSUB and XPUB](https://zguide.zeromq.org/docs/chapter5/`Last`-Value-Caching)"
-* "Let’s imagine [our feed has an average of 100,000 100-byte messages a
+* "Let's imagine [our feed has an average of 100,000 100-byte messages a
   second](https://zguide.zeromq.org/docs/chapter5/`High`-Speed-Subscribers-Black-Box-Pattern) [...].
   While 100K messages a second is easy for a ZeroMQ application, ..."
 
@@ -4901,32 +4901,32 @@ you can implement a Factory Pattern using this package. Take a look at volume.py
     def func1(param):
         pass
 
-**Example:** Decorate a function for auto-registering under a new name::
+**Example:** Decorate a function for auto-registering under a new name:
 
     @plugs.register(name='better_name')
     def func2(param):
         pass
 
-**Example:** Register a function during run-time under it's own name::
+**Example:** Register a function during run-time under it's own name:
 
     def func3(param):
         pass
     plugs.register(func3)
 
-**Example:** Register a function during run-time under a new name::
+**Example:** Register a function during run-time under a new name:
 
     def func4(param):
         pass
     plugs.register(func4, name='other_name', package='other_package')
 
 **Example:** Decorate a class for auto registering during initialization,
-including all methods (see _register_class for more info)::
+including all methods (see _register_class for more info):
 
     @plugs.register(auto_tag=True)
     class MyClass1:
         pass
 
-**Example:** Register a class instance, from which only report is a callable method through the plugs interface::
+**Example:** Register a class instance, from which only report is a callable method through the plugs interface:
 
     class MyClass2:
         @plugs.tag
@@ -4937,20 +4937,17 @@ including all methods (see _register_class for more info)::
 
 Naming convention:
 
-package
-    1. Either a python package
-    2. or a plugin package (which is the python package but probably loaded under a different name inside plugs)
-
-plugin
-    1. An object from the package that can be accessed through the plugs call function (i.e. a function or a class instance)
-    2. The string name to above object
-
-name
-    The string name of the plugin object for registration
-
-method
-    1. In case the object is a class instance a bound method to call from the class instance
-    2. The string name to above object
+* package
+  * Either a python package
+  * or a plugin package (which is the python package but probably loaded under a different name inside plugs)
+* plugin
+  * An object from the package that can be accessed through the plugs call function (i.e. a function or a class instance)
+  * The string name to above object
+* name
+  * The string name of the plugin object for registration
+* method
+  * In case the object is a class instance a bound method to call from the class instance
+  * The string name to above object
 
 
 <a id="jukebox.plugs.PluginPackageClass"></a>
@@ -5050,15 +5047,13 @@ The functions comes in five distinct signatures for 5 use cases:
 3. ``@plugs.register(auto_tag=bool)``: decorator for a class with 1 arguments
 4. ``@plugs.register(name=name, package=package)``: decorator for a function with 1 or 2 arguments
 5. ``plugs.register(plugin, name=name, package=package)``: run-time registration of
-
     * function
     * bound method
     * class instance
 
 For more documentation see the functions
-
-    * :func:`_register_obj`
-    * :func:`_register_class`
+* :func:`_register_obj`
+* :func:`_register_class`
 
 See the examples in Module :mod:`plugs` how to use this decorator / function
 
@@ -5165,11 +5160,11 @@ def load(package: str,
 
 Loads a python package as plugin package
 
-Executes a regular python package load. That means a potentially existing __init__.py is executed.
-Decorator @register can by used to register functions / classes / class istances as plugin callable
-Decorator @initializer can be used to tag functions that shall be called after package loading
-Decorator @finalizer can be used to tag functions that shall be called after ALL plugin packges have been loaded
-Instead of using @initializer, you may of course use __init__.py
+Executes a regular python package load. That means a potentially existing `__init__.py` is executed.
+Decorator `@register` can by used to register functions / classes / class istances as plugin callable
+Decorator `@initializer` can be used to tag functions that shall be called after package loading
+Decorator `@finalizer` can be used to tag functions that shall be called after ALL plugin packges have been loaded
+Instead of using `@initializer`, you may of course use `__init__.py`
 
 Python packages may be loaded under a different plugs package name. Python packages must be unique and the name under
 which they are loaded as plugin package also.
