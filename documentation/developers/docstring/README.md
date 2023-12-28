@@ -3519,7 +3519,7 @@ Set all input device callbacks from :attr:`action_config`
 **Arguments**:
 
 - `action_config`: Dictionary with one
-:ref:`RPC Command <userguide/rpc_commands:RPC commands>` definition entry for every device callback
+[RPC Commands](../../builders/rpc-commands.md) definition entry for every device callback
 
 <a id="components.gpio.gpioz.core.input_devices.EventProperty"></a>
 

@@ -76,7 +76,7 @@ class NameMixin(ABC):
         Set all input device callbacks from :attr:`action_config`
 
         :param action_config: Dictionary with one
-            :ref:`RPC Command <userguide/rpc_commands:RPC commands>` definition entry for every device callback
+            [RPC Commands](../../builders/rpc-commands.md) definition entry for every device callback
         """
         pass
 
