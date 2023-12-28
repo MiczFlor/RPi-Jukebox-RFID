@@ -236,7 +236,8 @@ class ConfigHandler:
         """
         Check if the data has changed since the last load/store
 
-        > [!NOTE] This relies on the *__str__* representation of the underlying data structure
+        > [!NOTE]
+        > This relies on the *__str__* representation of the underlying data structure
         > In case of ruamel, this ignores comments and only looks at the data
         """
         with self._lock:

@@ -3474,7 +3474,8 @@ Monkey Patch LED + Buzzer to get a callback when state changes
 This targets to represent the state in the TK GUI.
 Other output devices cannot be represented in the GUI and are silently ignored.
 
-> [!NOTE] Only for developing purposes!
+> [!NOTE]
+> Only for developing purposes!
 
 
 <a id="components.gpio.gpioz.core.input_devices"></a>
@@ -4292,7 +4293,8 @@ def is_modified() -> bool
 
 Check if the data has changed since the last load/store
 
-> [!NOTE] This relies on the *__str__* representation of the underlying data structure
+> [!NOTE]
+> This relies on the *__str__* representation of the underlying data structure
 > In case of ruamel, this ignores comments and only looks at the data
 
 
