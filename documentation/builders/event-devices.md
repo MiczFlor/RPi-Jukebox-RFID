@@ -6,6 +6,8 @@ This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as we
 
 A specific usecase for this could be, if a Zero Delay Arcade USB Encoder is used to wire arcade buttons instead of using GPIO pins.
 
+This functionality was previously implemented under the name of [USB buttons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/develop/components/controls/buttons_usb_encoder/README.md?plain=1).
+
 The devices and their button mappings need to be mapped in the configuration file.
 
 ## Configuration
