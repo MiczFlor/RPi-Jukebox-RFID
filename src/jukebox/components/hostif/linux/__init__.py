@@ -193,6 +193,9 @@ def get_ip_address():
         ip_address = p.stdout.strip().decode()
     else:
         ip_address = '127.0.0.1'
+
+    # only get first if multiple adresses are present (ipv4/ipv6)
+    ip_address = ip_address.split(' ')[0]
     return ip_address
 
 

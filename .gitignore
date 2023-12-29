@@ -6,9 +6,7 @@
 /shared/logs/*.log*
 /shared/*.*
 /shared/*
-
-# Documentation builder
-/docs/sphinx/_build/
+/src/webapp/public/cover-cache/*.*
 
 # Application
 /src/cli_client/pbc

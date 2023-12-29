@@ -26,7 +26,6 @@ The Jukebox core app is written entirely in Python. Therefore, we follow the [Py
 
 * **Documentation**
   * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
-  * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
   
 # Structure of files and folders
 
@@ -38,8 +37,6 @@ Inside the root folder or the repo, these folders are important:
   * contains the Python packages that are loaded using the plugin interface
 * `src/webapp`
   * contains the Web Interface
-* `src/docs/sphinx`  
-  * contains the documentation sources and build flow using Sphinx
 
 All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
 as local, temporary scratch areas.
@@ -66,7 +63,7 @@ For bug fixes and improvements just open an issue or PR as described below. If y
 * By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 git checkout future3/develop
 git fetch origin
 git reset --hard origin/future3/develop
@@ -125,24 +122,12 @@ If you touched *any* Python file (even if only for fixing spelling errors), run 
 It contains out setup file.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 ./run_flake8.sh
 ~~~
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
 Let us know in the pull request - we will look at it.
-
-### Documentation
-
-When adding or improving documentation, build the documentation and look at it locally.
-If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
-Also run through this step in this case! Fix all warnings!
-
-~~~bash
-$ cd /home/pi/RPi-Jukebox-RFID/
-$ ./run_sphinx.sh
-# open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
-~~~
 
 ### Tests
 
@@ -150,7 +135,7 @@ Tests are very few at the moment, but it cannot hurt to run them. If you have te
 them.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID/
+cd ~/RPi-Jukebox-RFID/
 ./run_pytest.sh
 ~~~
 

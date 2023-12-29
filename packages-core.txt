@@ -1,0 +1,17 @@
+# Define packages for apt-get.  These can be installed with
+# 'sed 's/#.*//g' packages.txt | xargs sudo apt-get install'
+
+at
+alsa-utils
+caps
+espeak
+ffmpeg
+libasound2-dev
+mpg123
+pulseaudio
+pulseaudio-module-bluetooth
+pulseaudio-utils
+python3
+python3-venv
+python3-dev
+rsync

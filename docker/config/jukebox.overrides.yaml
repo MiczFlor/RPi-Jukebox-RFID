@@ -1,7 +1,2 @@
 playermpd:
   host: mpd
-  mpd_conf: /etc/mpd.conf
-pulse:
-  outputs:
-    primary:
-      pulse_sink_name: Channel_1__Channel_2.2

@@ -1,12 +1,12 @@
 .git
+.githooks
+.github
 .dockerignore
 .DS_Store
 
 # Application
 docker
 docs
-installation
-src
 shared
 
 # webapp
