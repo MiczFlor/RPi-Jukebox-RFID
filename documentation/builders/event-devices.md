@@ -1,7 +1,7 @@
 # Event devices
 
 ## Background
-Event devices are generic input devices that are exposed in ``/dev/input``.
+Event devices are generic input devices that are exposed in `/dev/input`.
 This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as well as potentially bluetooth devices.
 
 A specific usecase for this could be, if a Zero Delay Arcade USB Encoder is used to wire arcade buttons instead of using GPIO pins.
@@ -93,7 +93,7 @@ Afterwards, when pressing keys, the key codes can be found in the log files. Pre
 while watching the logs with `tail -f shared/logs/app.log`.
 Look for entries like `No callback registered for button ...`.
 
-### Specifying the `{rpc_command_defintion}`
+### Specifying the `{rpc_command_definition}`
 
 Each key looks like `{key-code}: {rpc_command_definition}`.
 The RPC command follows the regular RPC command rules as defined in the [following documentation](./rpc-commands.md).
