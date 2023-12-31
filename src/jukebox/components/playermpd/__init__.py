@@ -363,7 +363,6 @@ class PlayerMPD:
     @plugs.tag
     def toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
-        logger.debug("Toggle")
         with self.mpd_lock:
             self.mpd_client.pause()
 
@@ -393,6 +392,20 @@ class PlayerMPD:
         with self.mpd_lock:
             self.mpd_client.repeat(repeat)
             self.mpd_client.single(single)
+
+    @plugs.tag
+    def toggle_repeat(self):
+        if self.mpd_status['repeat'] == '0':
+            self.repeatmode('repeat')
+        else:
+            self.repeatmode(None)
+
+    @plugs.tag
+    def toggle_repeat_single(self):
+        if self.mpd_status['single'] == '0':
+            self.repeatmode('single')
+        else:
+            self.repeatmode(None)
 
     @plugs.tag
     def get_current_song(self, param):

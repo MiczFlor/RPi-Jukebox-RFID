@@ -24,13 +24,14 @@
           "toggle_output": "Audio-Ausgang umschalten",
           "sync_rfidcards_all": "Alle Audiodateien und Karteneinträge synchronisieren",
           "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan'",
-          "next": "Nächster Song",
+          "next_song": "Nächster Song",
           "pause": "Pause",
           "play": "Abspielen",
-          "previous": "Vorheriger Song",
+          "prev_song": "Vorheriger Song",
           "shuffle": "Shuffle aktivieren/deaktivieren",
-          "repeat": "Wiederholen aktivieren/deaktivieren",
-          "toggle": "Abspielen/Pause"
+          "toggle_repeat": "Wiederholen aktivieren/deaktivieren",
+          "toggle_repeat_single": "1 wiederholen aktivieren/deaktivieren",
+          "toggle": "Abspielen/Pause umschalten"
         }
       },
       "controls-selector": {

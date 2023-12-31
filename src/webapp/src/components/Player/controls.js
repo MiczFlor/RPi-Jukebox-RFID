@@ -40,7 +40,7 @@ const Controls = () => {
     if (!isRepeat && !isSingle) mode = 'repeat';
     if (isRepeat && !isSingle) mode = 'single';
 
-    request('repeat', { mode });
+    request('repeatmode', { mode });
   }
 
   useEffect(() => {

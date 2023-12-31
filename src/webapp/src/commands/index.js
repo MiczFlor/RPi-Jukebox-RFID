@@ -102,7 +102,7 @@ const commands = {
     plugin: 'ctrl',
     method: 'shuffle',
   },
-  repeat: {
+  repeatmode: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'repeatmode',

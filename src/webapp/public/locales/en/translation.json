@@ -28,8 +28,9 @@
           "pause": "Pause",
           "play": "Play",
           "prev_song": "Previous song",
-          "shuffle": "Toggle Shuffle",
-          "repeat": "Toggle Repeat",
+          "shuffle": "Toggle shuffle",
+          "toggle_repeat": "Toggle repeat",
+          "toggle_repeat_single": "Toggle single repeat",
           "toggle": "Toggle Play/Pause"
         }
       },

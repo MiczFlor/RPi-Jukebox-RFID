@@ -49,7 +49,8 @@ const JUKEBOX_ACTIONS_MAP = {
       next_song: {},
       prev_song: {},
       shuffle: {},
-      repeat: {}
+      toggle_repeat: {},
+      toggle_repeat_single: {}
     },
   },
 
