@@ -44,16 +44,16 @@ check_existing_hifiberry
 # List of HiFiBerry boards
 echo "
 Select your HiFiBerry board:
-1) DAC for Raspberry Pi 1/DAC+ Light/DAC Zero/MiniAmp/Beocreate/DAC+ DSP/DAC+ RTC
-2) DAC+ Standard/Pro/Amp2
-3) DAC2 HD
-4) DAC+ ADC
-5) DAC+ ADC Pro
-6) Digi+
-7) Digi+ Pro
-8) Amp+ (not Amp2)
-9) Amp3"
-read -p "Enter your choice (1-9): " choice
+1) DAC (HiFiBerry MiniAmp, I2S PCM5102A DAC)
+2) HiFiBerry DAC+ Standard/Pro/Amp2
+3) HiFiBerry DAC2 HD
+4) HiFiBerry DAC+ ADC
+5) HiFiBerry DAC+ ADC Pro
+6) HiFiBerry Digi+
+7) HiFiBerry Digi+ Pro
+8) HiFiBerry Amp+ (not Amp2)
+9) HiFiBerry Amp3"
+read -p "Enter your choice (1-10): " choice
 
 # Enable selected HiFiBerry board
 case $choice in
