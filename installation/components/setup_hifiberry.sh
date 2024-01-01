@@ -93,27 +93,18 @@ else
             cp /etc/asound.conf "/etc/asound.conf.backup.$(date +%Y%m%d%H%M%S)"
         fi
 
-        aplay -l
+        card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
 
-        # Prompt the user for the card number
-        while true; do
-            read -p "Which card number is your HifiBerry sound card? " card_number
-
-            # Check if the input is a number
-            if [[ "$card_number" =~ ^[0-9]+$ ]]; then
-                break
-            else
-                echo "Please enter a valid number."
-            fi
-        done
-
-        echo "Configuring sound settings in asound.conf..."
+        if [ -z "$card_id" ]; then
+            echo "  Error: Could not find HifiBerry sound card in /etc/asound.conf."
+        else
+            echo "Configuring sound settings in asound.conf..."
     cat > /etc/asound.conf << EOF
 pcm.hifiberry {
     type softvol
-    slave.pcm "plughw:$card_number"
+    slave.pcm "plughw:$card_id"
     control.name "HifiBerry"
-    control.card 0
+    control.card $card_id
 }
 
 pcm.!default {
@@ -121,6 +112,7 @@ pcm.!default {
     slave.pcm "hifiberry"
 }
 EOF
+        fi
     fi
 fi
 
