@@ -34,6 +34,13 @@ run_with_log_frame() {
     log "#########################################################"
 }
 
+check_root() {
+  if [ "$(id -u)" != "0" ]; then
+     echo "This script must be run as root" 1>&2
+     exit 1
+  fi
+}
+
 get_architecture() {
   local arch=""
   if [ "$(uname -m)" = "armv7l" ]; then
@@ -47,6 +54,46 @@ get_architecture() {
   fi
 
   echo $arch
+}
+
+is_raspian() {
+    if [[ $(lsb_release -d 2>/dev/null) == *"Raspbian"* ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+get_debian_version() {
+    # Read the major version number from /etc/debian_version
+    local major_version=$(cut -d. -f1 /etc/debian_version)
+
+    case $major_version in
+        11)
+            echo "bullseye"
+            ;;
+        12)
+            echo "bookworm"
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+get_boot_config_path() {
+    if [ "$(is_raspian)" = true ]; then
+        local debian_version=get_debian_version
+
+        if [ "$debian_version" = "bookworm" ]; then
+            echo '/boot/firmware/config.txt'
+        else
+            echo '/boot/config.txt'
+        fi
+    else
+        echo "Error: It seems you are not running Raspian OS."
+        exit 1
+    fi
 }
 
 validate_url() {
