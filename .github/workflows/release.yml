@@ -17,7 +17,7 @@ jobs:
       check_abort: ${{ steps.vars.outputs.check_abort }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set Output vars
         id: vars
