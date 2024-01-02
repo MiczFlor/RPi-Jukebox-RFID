@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script follows the official HiFiBerry documentation
 # https://www.hifiberry.com/docs/software/configuring-linux-3-18-x/
 
 source ../includes/02_helpers.sh
-
 
 if [ "$(is_root)" = false ]; then
     echo "ERROR: This script must be run as root"
@@ -12,7 +11,7 @@ if [ "$(is_root)" = false ]; then
 fi
 
 boot_config_path=get_boot_config_path
-if [ "$(boot_config_path)" = "unknown" ]; then
+if [ "$boot_config_path" = "unknown" ]; then
     echo "ERROR: It seems you are not running Raspian OS."
     exit 1
 fi
@@ -62,7 +61,7 @@ Select your HiFiBerry board:
 7) HiFiBerry Digi+ Pro
 8) HiFiBerry Amp+ (not Amp2)
 9) HiFiBerry Amp3"
-read -p "Enter your choice (1-10): " choice
+read -p "Enter your choice (1-9): " choice
 
 # Enable selected HiFiBerry board
 case $choice in
