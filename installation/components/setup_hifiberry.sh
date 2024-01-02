@@ -10,7 +10,7 @@ if [ "$(is_root)" = false ]; then
     exit 1
 fi
 
-boot_config_path=get_boot_config_path
+boot_config_path=$(get_boot_config_path)
 if [ "$boot_config_path" = "unknown" ]; then
     echo "ERROR: It seems you are not running Raspian OS."
     exit 1
@@ -27,17 +27,14 @@ check_existing_hifiberry() {
     existing_config=$(grep 'dtoverlay=hifiberry-' "$boot_config_path")
     if [ ! -z "$existing_config" ]; then
         echo "Existing HiFiBerry configuration detected: $existing_config"
-        read -p "Do you want to proceed with a new configuration? This will remove the existing one. (y/n): " yn
+        read -p "Do you want to proceed with a new configuration? This will remove the existing one. (Y/n): " yn
         case $yn in
-            [Yy]* )
+            [yY][eE][sS]|[yY])
                 remove_existing_hifiberry;
                 return 0;;
-            [Nn]* )
+            *)
                 echo "Exiting without making changes.";
                 exit;;
-            * )
-                echo "Please answer yes or no.";
-                check_existing_hifiberry;;
         esac
     fi
 }
