@@ -29,12 +29,12 @@ check_existing_hifiberry() {
         echo "Existing HiFiBerry configuration detected: $existing_config"
         read -p "Do you want to proceed with a new configuration? This will remove the existing one. (Y/n): " yn
         case $yn in
-            [yY][eE][sS]|[yY])
-                remove_existing_hifiberry;
-                return 0;;
-            *)
+            [nN][oO]|[nN])
                 echo "Exiting without making changes.";
                 exit;;
+            *)
+                remove_existing_hifiberry;
+                return 0;;
         esac
     fi
 }
