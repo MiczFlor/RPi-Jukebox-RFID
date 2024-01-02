@@ -124,7 +124,7 @@ jobs:
           BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
 
     - name: Artifact Upload Docker Image
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.vars.outputs.image_file_name }}
         path: ${{ steps.vars.outputs.image_file_path }}
@@ -150,7 +150,7 @@ jobs:
       uses: docker/setup-buildx-action@v3.0.0
 
     - name: Artifact Download Docker Image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ needs.build.outputs.image_file_name }}
 
@@ -177,6 +177,6 @@ jobs:
 
     steps:
         - name: Artifact Delete Docker Image
-          uses: geekyeggo/delete-artifact@v2
+          uses: geekyeggo/delete-artifact@v4
           with:
             name: ${{ needs.build.outputs.image_file_name }}
