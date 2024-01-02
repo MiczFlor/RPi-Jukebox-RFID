@@ -419,7 +419,11 @@ class PlayerMPD:
     def play_single(self, song_url):
         with self.mpd_lock:
             self.mpd_client.clear()
-            self.mpd_client.addid(song_url)
+            if song_url.endswith(".m3u"):
+                logger.debug(f"Detected playlist, loading '{song_url}'")
+                self.mpd_client.load(song_url)
+            else:
+                self.mpd_client.addid(song_url)
             self.mpd_client.play()
 
     @plugs.tag

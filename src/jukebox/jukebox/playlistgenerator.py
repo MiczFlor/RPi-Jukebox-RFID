@@ -202,8 +202,7 @@ class PlaylistCollector:
         self.special_handlers = {'livestream.txt': decode_livestream,
                                  'podcast.txt': decode_podcast,
                                  # Ignore all other .txt files
-                                 '.txt': lambda _f, _p, _l: None,
-                                 '.m3u': decode_m3u}
+                                 '.txt': lambda _f, _p, _l: None}
         self.default_handler = decode_musicfile
 
     @classmethod
@@ -239,7 +238,7 @@ class PlaylistCollector:
         # And do this before parsing special content files. Reason: If there is a special content file (e.g. podcast)
         # which links to multiple streams, these will already be ordered
         dirs = sorted(dirs, key=lambda x: x.name.casefold())
-        content = [PlaylistEntry(TYPE_DIR, d.name, d.path) for d in dirs]
+        content = [PlaylistEntry(TYPE_DIR, d.name, os.path.relpath(d.path, self._music_library_base_path)) for d in dirs]
         files = sorted(files, key=lambda x: x.name.casefold())
         stop_processing = False
         for filename in files:
