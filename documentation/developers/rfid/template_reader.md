@@ -24,19 +24,19 @@ Your new reader is a python subpackage with these three mandatory files
 components/rfid/hardware/awesome_reader/
   +- awesome_reader.py  <-- The actual reader module
   +- description.py     <-- A description module w/o dependencies. Do not change the filename!
-  +- README.rst         <-- The Readme
+  +- README.md         <-- The Readme
 ```
 
-The module documentation must go into a separate file, called README.ME.
+The module documentation must go into a separate file, called README.md.
 
 ## Conventions
 
--   Single reader per directory / subpackage
--   reader module directory name and reader module file name must be
+- Single reader per directory / subpackage
+- reader module directory name and reader module file name must be
     identical
--   Obviously awesome_reader will be replaced with something more
+- Obviously awesome_reader will be replaced with something more
     descriptive. The naming scheme for the subpackage is
-    -   \<type_of_reader\>\_\<io_bus\>\_\<other_specials_like_special_lib\>
-    -   e.g. generic_usb/generic_usb.py
-    -   e.g. pn532_spi/pn532_spi.py
-    -   ...
+  - \<type_of_reader\>\_\<io_bus\>\_\<other_specials_like_special_lib\>
+  - e.g. generic_usb/generic_usb.py
+  - e.g. pn532_spi/pn532_spi.py
+  - ...
