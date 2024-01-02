@@ -28,7 +28,7 @@
 
     pbc -> PhonieBox Command line interface
 
-    depenmds on libczmq:
+    depends on libczmq:
     apt-get install libczmq-dev
 
     how to compile:
@@ -47,6 +47,7 @@ int g_verbose = 0;
 typedef struct 
 {
     char object [MAX_STRLEN];
+    char package [MAX_STRLEN];
     char method [MAX_STRLEN];
     char params [MAX_PARAMS][MAX_STRLEN];
     int num_params;
@@ -126,7 +127,7 @@ void * connect_and_send_request(t_request * tr)
     }
     else sprintf(kwargs, "\"kwargs\":{},");
 
-    snprintf(json_request,MAX_REQEST_STRLEN,"{\"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,kwargs,123);
+    snprintf(json_request,MAX_REQEST_STRLEN,"{\"package\": \"%s\", \"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->package,tr->object,tr->method,kwargs,123);
     json_len = strlen(json_request);
     
     if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);
@@ -146,7 +147,7 @@ int check_and_map_parameters_to_json(char * arg, t_request * tr)
     {
         name = strtok(arg, ":");
         value = strtok(NULL, ":");
-        fmt = (isdigit(*value)) ? "\"%s\":%s"  : "\"%s\":\"%s\"";
+        fmt = (isdigit(*value)||*value=='-') ? "\"%s\":%s"  : "\"%s\":\"%s\"";
         snprintf (tr->params[tr->num_params++],MAX_STRLEN, fmt,name,value);
         ret = 1;
     }
@@ -156,9 +157,10 @@ int check_and_map_parameters_to_json(char * arg, t_request * tr)
 
 void usage(void)
 {
-    fprintf(stderr,"\npbc -> PhonieBox Command line interface\nusage: pbc -o object -m method param_name:value\n\n");
+    fprintf(stderr,"\npbc -> PhonieBox Command line interface\nusage: pbc -p package -o plugin -m method param_name:value\n\n");
     fprintf(stderr,"    -h this screen\n");
-    fprintf(stderr,"    -o, --object object\n");
+    fprintf(stderr,"    -p, --package package\n");
+    fprintf(stderr,"    -o, --object plugin\n");
     fprintf(stderr,"    -m, --method method\n");
     fprintf(stderr,"    -a, --address   default=tcp://localhost:5555\n");
     fprintf(stderr,"    -v verbose\n");
@@ -184,6 +186,7 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
     /* These options don't set a flag.
     We distinguish them by their indices. */
     {"help",        no_argument,       0, 'h'},
+    {"package",     required_argument, 0, 'p'},
     {"object",      required_argument, 0, 'o'},
     {"method",      required_argument, 0, 'm'},
     {"address",     required_argument, 0, 'a'},
@@ -208,7 +211,9 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
         usage();
         puts ("option -a\n");
         break;
-
+      case 'p':
+        strncpy (tr->package,optarg,MAX_STRLEN);
+	break;
       case 'o':
         strncpy (tr->object,optarg,MAX_STRLEN);
         break;

@@ -59,7 +59,7 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 6. Insert the following content, update your country, Wifi credentials and save the file.
 
-    ```
+    ```text
     country=DE
     ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
     update_config=1

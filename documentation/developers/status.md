@@ -227,7 +227,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
   - [x] Enable/Disable Auto-Hotspot
 - [x] `run_npm_build` script
   - [x] Must consider `export NODE_OPTIONS=--max-old-space-size=512`
-- [ ] Upload audio files via WebUI https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138
+- [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
 
 ## Installation Procedure
 
