@@ -34,26 +34,27 @@ run_with_log_frame() {
     log "#########################################################"
 }
 
-check_root() {
-  if [ "$(id -u)" != "0" ]; then
-     echo "This script must be run as root" 1>&2
-     exit 1
-  fi
+is_root() {
+    if [ "$(id -u)" != "0" ]; then
+        echo false
+    else
+        echo true
+    fi
 }
 
 get_architecture() {
-  local arch=""
-  if [ "$(uname -m)" = "armv7l" ]; then
-    arch="armv7"
-  elif [ "$(uname -m)" = "armv6l" ]; then
-    arch="armv6"
-  elif [ "$(uname -m)" = "aarch64" ]; then
-    arch="arm64"
-  else
-    arch="$(uname -m)"
-  fi
+    local arch=""
+    if [ "$(uname -m)" = "armv7l" ]; then
+        arch="armv7"
+    elif [ "$(uname -m)" = "armv6l" ]; then
+        arch="armv6"
+    elif [ "$(uname -m)" = "aarch64" ]; then
+        arch="arm64"
+    else
+        arch="$(uname -m)"
+    fi
 
-  echo $arch
+    echo $arch
 }
 
 is_raspian() {
@@ -86,13 +87,12 @@ get_boot_config_path() {
         local debian_version=get_debian_version
 
         if [ "$debian_version" = "bookworm" ]; then
-            echo '/boot/firmware/config.txt'
+            echo "/boot/firmware/config.txt"
         else
-            echo '/boot/config.txt'
+            echo "/boot/config.txt"
         fi
     else
-        echo "Error: It seems you are not running Raspian OS."
-        exit 1
+        echo "unknown"
     fi
 }
 

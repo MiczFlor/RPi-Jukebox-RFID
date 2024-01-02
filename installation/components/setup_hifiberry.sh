@@ -5,9 +5,24 @@
 
 source ../includes/02_helpers.sh
 
-# Check if the script is run as root
-check_root
+
+if [ "$(is_root)" = false ]; then
+    echo "ERROR: This script must be run as root"
+    exit 1
+fi
+
 boot_config_path=get_boot_config_path
+if [ "$(boot_config_path)" = "unknown" ]; then
+    echo "ERROR: It seems you are not running Raspian OS."
+    exit 1
+fi
+
+remove_existing_hifiberry() {
+    echo "Removing existing HiFiBerry configuration..."
+    sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
+    sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
+    sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
+}
 
 check_existing_hifiberry() {
     existing_config=$(grep 'dtoverlay=hifiberry-' "$boot_config_path")
@@ -16,6 +31,7 @@ check_existing_hifiberry() {
         read -p "Do you want to proceed with a new configuration? This will remove the existing one. (y/n): " yn
         case $yn in
             [Yy]* )
+                remove_existing_hifiberry;
                 return 0;;
             [Nn]* )
                 echo "Exiting without making changes.";
@@ -25,13 +41,6 @@ check_existing_hifiberry() {
                 check_existing_hifiberry;;
         esac
     fi
-}
-
-remove_existing_hifiberry() {
-    echo "Removing existing HiFiBerry configuration..."
-    sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
-    sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
-    sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
 }
 
 enable_hifiberry() {
@@ -68,8 +77,6 @@ case $choice in
     9) enable_hifiberry "hifiberry-amp3";;
     *) echo "Invalid selection. Exiting."; exit 1;;
 esac
-
-remove_existing_hifiberry
 
 echo "Disabling onboard sound..."
 sed -i '/dtparam=audio=on/c\dtparam=audio=off' "$boot_config_path"
