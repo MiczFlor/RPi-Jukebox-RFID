@@ -21,7 +21,7 @@ RUN usermod -aG pulse ${USER}
 # Install all Jukebox dependencies
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-    g++ at wget \
+    build-essential at wget \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-venv python3-dev python3-mutagen
 
@@ -43,9 +43,15 @@ ENV ZMQ_PREFIX /usr/local
 RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
     tar -xzf libzmq.tar.gz -C ${ZMQ_PREFIX}; \
-    rm -f libzmq.tar.gz;
+    rm -f libzmq.tar.gz; uname -m; echo ${ZMQ_PREFIX}; ls -l ${ZMQ_PREFIX}; ls -l ${ZMQ_PREFIX}/lib; ls -l ${ZMQ_PREFIX}/include;
 
-RUN export ZMQ_PREFIX=${PREFIX} && export ZMQ_DRAFT_API=1 && pip install -vv --no-binary pyzmq --pre pyzmq
+RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install --no-binary pyzmq --pre pyzmq
+#RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install --no-binary pyzmq pyzmq
+#RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install --no-binary=:all: pyzmq pyzmq
+#RUN export ZMQ_PREFIX=bundled && export ZMQ_DRAFT_API=1 && pip install --no-binary pyzmq pyzmq
+#RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install --no-binary=:all: pyzmq --pre pyzmq
+#RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install --no-binary=:all: pyzmq
+#RUN export ZMQ_DRAFT_API=1 && pip install --no-binary pyzmq pyzmq
 #RUN pip install -v --no-binary pyzmq --pre pyzmq
 #RUN pip install -v --no-binary=:all: pyzmq --pre pyzmq
 
