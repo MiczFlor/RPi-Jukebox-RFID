@@ -48,6 +48,7 @@ jobs:
         debian_codename: ['bookworm', 'bullseye', 'buster']
     uses: ./.github/workflows/test_docker_debian_codename_sub.yml
     with:
+      secrets: inherit
       runs_on: ubuntu-latest
       platform: linux/arm/v7
       docker_image_name: rpi-jukebox-rfid
