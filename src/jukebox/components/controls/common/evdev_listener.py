@@ -54,7 +54,7 @@ def find_device(device_name: str, exact_name: bool = True, mandatory_keys: Optio
 
     If multiple devices match, the first match is returned
 
-    :param device_name: See :func:`_filter_by_device_name
+    :param device_name: See :func:`_filter_by_device_name`
     :param exact_name: See :func:`_filter_by_device_name`
     :param mandatory_keys: See :func:`_filter_by_mandatory_keys`
     :return: The path to the device
