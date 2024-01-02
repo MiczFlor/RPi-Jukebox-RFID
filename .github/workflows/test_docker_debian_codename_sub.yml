@@ -179,4 +179,5 @@ jobs:
         - name: Artifact Delete Docker Image
           uses: geekyeggo/delete-artifact@v4
           with:
+            token: ${{ secrets.GITHUB_TOKEN }}
             name: ${{ needs.build.outputs.image_file_name }}
