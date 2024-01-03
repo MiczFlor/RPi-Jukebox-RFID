@@ -341,6 +341,13 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
     @plugs.tag
+    def toggle_shuffle(self):
+        if self.mpd_status['shuffle'] == '0':
+            self.shuffle(1)
+        else:
+            self.shuffle(0)
+
+    @plugs.tag
     def rewind(self):
         """
         Re-start current playlist from first track
