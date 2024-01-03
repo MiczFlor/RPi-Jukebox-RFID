@@ -28,7 +28,7 @@
           "pause": "Pause",
           "play": "Abspielen",
           "prev_song": "Vorheriger Song",
-          "shuffle": "Shuffle aktivieren/deaktivieren",
+          "toogle_shuffle": "Shuffle aktivieren/deaktivieren",
           "toggle_repeat": "Wiederholen aktivieren/deaktivieren",
           "toggle_repeat_single": "1 wiederholen aktivieren/deaktivieren",
           "toggle": "Abspielen/Pause umschalten"

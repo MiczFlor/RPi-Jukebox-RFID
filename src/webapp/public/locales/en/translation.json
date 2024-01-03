@@ -28,7 +28,7 @@
           "pause": "Pause",
           "play": "Play",
           "prev_song": "Previous song",
-          "toogle_shuffle": "Toggle shuffle",
+          "toggle_shuffle": "Toggle shuffle",
           "toggle_repeat": "Toggle repeat",
           "toggle_repeat_single": "Toggle single repeat",
           "toggle": "Toggle Play/Pause"
