@@ -142,6 +142,42 @@ Would you like to overwrite your configuration? [Y/n]"
     fi
 }
 
+_option_spotify() {
+  # ENABLE_SPOTIFY
+  clear_c
+  print_c "---------------------- SPOTIFY ----------------------
+
+Installs an additional player, so that you can
+play music from spotify.
+
+Note: You need Spotify Premium to run this service!
+
+Do you want to enable the spotify player? [y/N]"
+  read -r response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      ENABLE_SPOTIFY=true
+      ;;
+    *)
+      ;;
+  esac
+
+  if [ "$ENABLE_SPOTIFY" = true ]; then
+      print_c "Please provide the Spotify username"
+      read -r response_username
+      SPOT_USERNAME="${response_username}"
+
+      print_c "Please provide the Spotify password"
+      read -r response_password
+      SPOT_PASSWORD="${response_password}"
+  fi
+
+  log "ENABLE_SPOTIFY=${ENABLE_SPOTIFY}"
+  if [ "$ENABLE_SPOTIFY" = true ]; then
+    log "Spotify service will be enabled with username ${SPOT_USERNAME}"
+  fi
+}
+
 _option_rfid_reader() {
   # ENABLE_RFID_READER
   clear_c
@@ -328,6 +364,7 @@ _run_customize_options() {
   _option_bluetooth
   _option_disable_onboard_audio
   _option_mpd
+  _option_spotify
   _option_rfid_reader
   _option_samba
   _option_webapp
