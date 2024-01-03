@@ -94,12 +94,14 @@ playermpd:
 playerspot:
   host: localhost
   status_file: ../../shared/settings/spotify_player_status.json
-  oauthcache:  ../../shared/audio/spotify/.spotipyoauthcache
+  oauthcache:  ../../shared/spotify/.spotipyoauthcache
   second_swipe_action:
       # Note: Does not follow the RPC alias convention (yet)
       # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
-      alias: toggle
-  spot_conf: ../../shared/spotify/config.toml"
+    alias: toggle
+  client_id: client_id
+  client_secret: client_secret
+  callback_url: http://localhost:3001
 rpc:
   tcp_port: 5555
   websocket_port: 5556
