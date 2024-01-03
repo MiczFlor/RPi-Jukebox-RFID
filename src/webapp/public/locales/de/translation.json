@@ -29,8 +29,8 @@
           "play": "Abspielen",
           "prev_song": "Vorheriger Song",
           "toggle_shuffle": "Shuffle aktivieren/deaktivieren",
-          "toggle_repeat": "Wiederholen aktivieren/deaktivieren",
-          "toggle_repeat_single": "1 wiederholen aktivieren/deaktivieren",
+          "toggle_repeat": "Wiedergabeliste Wiederholen aktivieren/deaktivieren",
+          "toggle_repeat_single": "Song Wiederholen aktivieren/deaktivieren",
           "toggle": "Abspielen/Pause umschalten"
         }
       },
@@ -154,8 +154,8 @@
       "pause": "Pause",
       "next_song": "Weiter",
       "repeat": {
-        "activate": "Wiederholen aktivieren",
-        "activate-single": "1 Wiederholen aktivieren",
+        "activate": "Wiedergabeliste Wiederholen aktivieren",
+        "activate-single": "Song Wiederholen aktivieren",
         "deactivate": "Wiederholen deaktivieren"
       }
     },
