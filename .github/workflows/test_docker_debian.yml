@@ -47,8 +47,6 @@ jobs:
       matrix:
         debian_codename: ['bookworm', 'bullseye', 'buster']
     uses: ./.github/workflows/test_docker_debian_codename_sub.yml
-    permissions:
-      actions: write
     secrets: inherit
     with:
       runs_on: ubuntu-latest
