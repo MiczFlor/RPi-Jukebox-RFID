@@ -9,7 +9,7 @@ SPOTIFYD_TAR_FILE_NAME="spotifyd.tar.gz"
 
 SPOTIFYD_TARGET_PATH="/usr/bin/"
 SPOTIFYD_TARGET_FILE="/usr/bin/spotifyd"
-SPOTIFYD_CONFIG_TARGET_FILE="/usr/spotifyd.conf"
+SPOTIFYD_CONFIG_TARGET_FILE="/etc/spotifyd.conf"
 
 
 _install_spotifyd_script() {
