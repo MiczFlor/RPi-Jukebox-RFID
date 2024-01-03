@@ -47,7 +47,7 @@ ENV ZMQ_PREFIX /usr/local
 RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
     tar -xzf libzmq.tar.gz -C ${ZMQ_PREFIX}; \
-    rm -f libzmq.tar.gz; uname -m; echo ${ZMQ_PREFIX}; ls -l ${ZMQ_PREFIX}; ls -l ${ZMQ_PREFIX}/lib; ls -l ${ZMQ_PREFIX}/include;
+    rm -f libzmq.tar.gz;
 
 RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install pyzmq --pre pyzmq
 
