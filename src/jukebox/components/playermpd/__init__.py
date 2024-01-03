@@ -342,7 +342,7 @@ class PlayerMPD:
 
     @plugs.tag
     def toggle_shuffle(self):
-        if self.mpd_status['shuffle'] == '0':
+        if self.mpd_status['random'] == '0':
             self.shuffle(1)
         else:
             self.shuffle(0)
