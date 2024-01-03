@@ -785,9 +785,10 @@ Callback signature is
 .. py:function:: func(folder: str, state: STATE)
     :noindex:
 
-    :param folder: relativ path to folder to play
-    :param state: indicator of the state inside the calling
+**Arguments**:
 
+- `folder`: relativ path to folder to play
+- `state`: indicator of the state inside the calling
 
 <a id="components.playermpd.playcontentcallback.PlayContentCallbacks.run_callbacks"></a>
 
@@ -2838,7 +2839,7 @@ Find an input device with device_name and mandatory keys.
 
 **Arguments**:
 
-- `device_name`: See :func:`_filter_by_device_name
+- `device_name`: See :func:`_filter_by_device_name`
 - `exact_name`: See :func:`_filter_by_device_name`
 - `mandatory_keys`: See :func:`_filter_by_mandatory_keys`
 
