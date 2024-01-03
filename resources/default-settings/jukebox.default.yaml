@@ -79,7 +79,7 @@ alsawave:
   device: default
 players:
   content:
-    audiofile: /home/pi/RPi-Jukebox-RFID/shared/audiofolders/audiofiles.yaml
+    audiofile: /../../shared/audiofolders/audiofiles.yaml
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
