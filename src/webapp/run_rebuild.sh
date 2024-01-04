@@ -124,4 +124,6 @@ if [[ $UPDATE_DEPENDENCIES == true ]]; then
 fi
 
 # Rebuild Web App
+rm -rf build.bak
+mv -f build build.bak
 npm run build

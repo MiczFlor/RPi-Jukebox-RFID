@@ -42,13 +42,9 @@ _jukebox_webapp_install_node() {
   fi
 }
 
-# TODO: Avoid building the app locally
-# Instead implement a Github Action that prebuilds on commititung a git tag
 _jukebox_webapp_build() {
   print_lc "  Building web application"
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  rm -rf build
-  # The build wrapper script checks available memory on system and sets Node options accordingly
   ./run_rebuild.sh -u
 }
 
