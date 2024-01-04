@@ -13,13 +13,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-    - name: npm install
+    - name: run build
       working-directory: ${{ inputs.webapp-root-path }}
       shell: bash
-      run: npm install
-    - name: npm build
-      working-directory: ${{ inputs.webapp-root-path }}
-      env:
-        CI: false
-      shell: bash
-      run: npm run build
+      run: ./run_rebuild.sh -u
