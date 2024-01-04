@@ -41,61 +41,65 @@ change_swap() {
     sudo dphys-swapfile swapon || return 1
 }
 
-RECURSION_BREAKER=false
+#RECURSION_BREAKER=false
 calc_nodemem() {
-
+    # keep a buffer for the kernel etc.
+    local mem_buffer=512
     # Need to check free space and limit Node memory usage
     # for PIs with little memory
     MemTotal=$(grep MemTotal /proc/meminfo | awk '{print $2}')
     MemFree=$(grep MemFree /proc/meminfo | awk '{print $2}')
+    SwapTotal=$(grep SwapTotal /proc/meminfo | awk '{print $2}')
     SwapFree=$(grep SwapFree /proc/meminfo | awk '{print $2}')
     TotalFree=$((SwapFree + MemFree))
 
     MemTotal=$((MemTotal / 1024))
     MemFree=$((MemFree / 1024))
+    SwapTotal=$((SwapTotal / 1024))
     SwapFree=$((SwapFree / 1024))
     TotalFree=$((TotalFree / 1024))
+    FreeToUse=$((TotalFree - mem_buffer))
 
-    echo "Total phys memory: ${MemTotal} MB"
-    echo "Free phys memory : ${MemFree} MB"
-    echo "Free swap memory : ${SwapFree} MB"
-    echo "Free total memory: ${TotalFree} MB"
+    echo "Total phys memory : ${MemTotal} MB"
+    echo "Free phys memory  : ${MemFree} MB"
+    echo "Total swap memory : ${SwapTotal} MB"
+    echo "Free swap memory  : ${SwapFree} MB"
+    echo "Free total memory : ${TotalFree} MB"
+    echo "Keep as buffer    : ${mem_buffer} MB"
+    echo "Free usable memory: ${FreeToUse} MB"
     echo ""
 
   if [[ -z $NODEMEM ]]; then
-    # Keep a buffer of minimum 20 MB
-    if [[ $TotalFree -gt 1044 ]]; then
-        NODEMEM=1024
-    elif [[ $TotalFree -gt 532 ]]; then
-        NODEMEM=512
-    elif [[ $TotalFree -gt 276 ]]; then
-        NODEMEM=256
+    # mininum memory used for node
+    local mem_min=256   
+    if [[ $FreeToUse -gt $mem_min ]]; then
+        NODEMEM=$FreeToUse
     else
-        if [ "$RECURSION_BREAKER" == true ]; then
-            return 1;
-        fi
+        #if [ "$RECURSION_BREAKER" == true ]; then
+        #    return 1;
+        #fi
 
-        local new_swap_size=532
-        echo "ERROR: Not enough memory available on system."
-        echo "Current free memory = $TotalFree MB"
-        echo "Swap file will be increased to ${new_swap_size} MB"
+        local new_swap_size=$((SwapTotal + mem_min))
+        echo "WARN: Not enough memory left on system for node (min. $mem_min MB)."
+        echo "Trying to adjust swap size ..."
 
+        # keep a buffer on the filesystem
         local filesystem_left=$((new_swap_size + 512))
         local filesystem_free=$(df -BM -P / | tail -n 1 | awk '{print $4}')
         filesystem_free=${filesystem_free//M}
-        if [ "${filesystem_free}" -le "${filesystem_left}" ]; then
+        if [ "${filesystem_free}" -lt "${filesystem_left}" ]; then
             echo "ERROR: Not enough space available on filesystem. At least ${filesystem_left} MB free memory are needed."
             echo "Current free space = $filesystem_free MB"
-            echo "Hint: if only a little memory is missing, stopping spocon, mpd, and jukebox-daemon might give you enough space"
             exit 1
         else
+            echo "Swap will be increased to ${new_swap_size} MB"
             if ! change_swap $new_swap_size ; then
-                echo "ERROR: failed to change swap file"
+                echo "ERROR: failed to change swap size"
                 exit 1
             fi
         fi
 
-        RECURSION_BREAKER=true
+        #RECURSION_BREAKER=true
         calc_nodemem || return 1
     fi
   fi
@@ -103,8 +107,8 @@ calc_nodemem() {
 
 calc_nodemem
 
-if [[ $NODEMEM -gt $TotalFree ]]; then
-  echo "ERROR: Requested node memory setting is larger than available free memory: $NODEMEM MB > $TotalFree MB"
+if [[ $NODEMEM -gt $FreeToUse ]]; then
+  echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FreeToUse MB"
   exit 1
 fi
 
