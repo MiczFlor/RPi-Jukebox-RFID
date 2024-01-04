@@ -82,25 +82,32 @@ const commands = {
     plugin: 'ctrl',
     method: 'pause',
   },
-  previous: {
+  prev_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'prev',
   },
-  next: {
+  next_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'next',
+  },
+  toggle: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'toggle',
   },
   shuffle: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'shuffle',
+    argKeys: ['option'],
   },
   repeat: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'repeatmode',
+    method: 'repeat',
+    argKeys: ['option'],
   },
   seek: {
     _package: 'player',

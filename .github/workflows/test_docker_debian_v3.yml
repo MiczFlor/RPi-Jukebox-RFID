@@ -8,6 +8,7 @@ on:
     branches:
         - 'future3/**'
     paths:
+        - '.github/workflows/test_docker_debian*.yml'
         - 'installation/**'
         - 'ci/**'
         - 'resources/**'
@@ -20,6 +21,7 @@ on:
         - future3/develop
         - future3/main
     paths:
+        - '.github/workflows/test_docker_debian*.yml'
         - 'installation/**'
         - 'ci/**'
         - 'resources/**'
