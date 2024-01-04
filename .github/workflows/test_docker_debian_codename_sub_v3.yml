@@ -1,4 +1,4 @@
-name: Subworkflow Test Install Scripts Debian V3
+name: Subworkflow Test Install Scripts Debian v3
 
 on:
     workflow_call:

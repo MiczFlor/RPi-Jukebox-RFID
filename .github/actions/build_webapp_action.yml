@@ -1,0 +1,23 @@
+name: Build Webapp
+description: 'Build Webapp with Node'
+inputs:
+  webapp-root-path:
+    description: 'root path of the webapp sources'
+    required: false
+    default: './src/webapp'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+    - name: npm install
+      working-directory: ${{ inputs.webapp-root-path }}
+      run: npm install
+    - name: npm build
+      working-directory: ${{ inputs.webapp-root-path }}
+      env:
+        CI: false
+      run: npm run build
