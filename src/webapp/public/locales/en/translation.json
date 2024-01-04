@@ -170,9 +170,9 @@
       "pause": "Pause",
       "next_song": "Skip to next track",
       "repeat": {
-        "activate": "Activate repeat",
-        "activate-single": "Activate single repeat",
-        "deactivate": "Deactivate repeat"
+        "enable": "Enable Playlist repeat",
+        "enable-single": "Enable Song repeat",
+        "disable": "Disable repeat"
       }
     },
     "cover": {

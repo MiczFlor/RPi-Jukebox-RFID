@@ -2,7 +2,6 @@ import React from 'react';
 
 import CommandSelector from '../../command-selector';
 import OptionsSelector from '../../options-selector';
-import ChangeOnRfidScan from './rfidcards/change-on-rfid-scan-options';
 
 import { getActionAndCommand } from '../../../utils';
 

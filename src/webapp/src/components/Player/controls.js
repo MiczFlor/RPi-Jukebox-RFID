@@ -59,9 +59,9 @@ const Controls = () => {
   );
 
   const labelRepeat = () => {
-    if (!isRepeat) return t('player.controls.repeat.activate');
-    if (isRepeat && !isSingle) return t('player.controls.repeat.activate-single');
-    if (isRepeat && isSingle) return t('player.controls.repeat.deactivate');
+    if (!isRepeat) return t('player.controls.repeat.enable');
+    if (isRepeat && !isSingle) return t('player.controls.repeat.enable-single');
+    if (isRepeat && isSingle) return t('player.controls.repeat.disable');
   };
 
   return (

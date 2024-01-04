@@ -80,7 +80,7 @@
             "label-disable": "Deaktivieren"
           },
           "volume": {
-            "title": "Volume steps"
+            "title": "Lautstärke Stufen"
           }
         },
         "timers": {
@@ -170,9 +170,9 @@
       "pause": "Pause",
       "next_song": "Weiter",
       "repeat": {
-        "activate": "Wiedergabeliste Wiederholen aktivieren",
-        "activate-single": "Song Wiederholen aktivieren",
-        "deactivate": "Wiederholen deaktivieren"
+        "enable": "Wiedergabeliste Wiederholen aktivieren",
+        "enable-single": "Song Wiederholen aktivieren",
+        "disable": "Wiederholen deaktivieren"
       }
     },
     "cover": {

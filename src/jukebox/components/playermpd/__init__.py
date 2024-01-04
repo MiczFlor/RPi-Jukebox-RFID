@@ -336,25 +336,6 @@ class PlayerMPD:
             self.mpd_client.seekcur(new_time)
 
     @plugs.tag
-    def shuffle(self, random):
-        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
-        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
-
-    @plugs.tag
-    def set_shuffle(self, option='toggle'):
-        if option == 'toggle':
-            if self.mpd_status['random'] == '0':
-                self.shuffle(1)
-            else:
-                self.shuffle(0)
-        elif option == 'enable':
-            self.shuffle(1)
-        elif option == 'disable':
-            self.shuffle(0)
-        else:
-            logger.error(f"'{option}' does not exist for set_shuffle")
-
-    @plugs.tag
     def rewind(self):
         """
         Re-start current playlist from first track
@@ -391,8 +372,27 @@ class PlayerMPD:
             if self.mpd_status['state'] == 'stop':
                 self.play_folder(self.music_player_status['player_status']['last_played_folder'])
 
+    # Shuffle
+    def _shuffle(self, random):
+        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
+
     @plugs.tag
-    def repeatmode(self, mode):
+    def set_shuffle(self, option='toggle'):
+        if option == 'toggle':
+            if self.mpd_status['random'] == '0':
+                self._shuffle(1)
+            else:
+                self._shuffle(0)
+        elif option == 'enable':
+            self._shuffle(1)
+        elif option == 'disable':
+            self._shuffle(0)
+        else:
+            logger.error(f"'{option}' does not exist for set_shuffle")
+
+    # Repeat
+    def _repeatmode(self, mode):
         if mode == 'repeat':
             repeat = 1
             single = 0
@@ -411,35 +411,29 @@ class PlayerMPD:
     def set_repeat(self, option='toggle'):
         if option == 'toggle':
             if self.mpd_status['repeat'] == '0':
-                self.repeatmode('repeat')
+             self._repeatmode('repeat')
             elif self.mpd_status['repeat'] == '1' and self.mpd_status['single'] == '0':
-                self.repeatmode('single')
+                self._repeatmode('single')
             else:
-                self.repeatmode(None)
+                self._repeatmode(None)
         elif option == 'toggle_repeat':
-            self.toggle_repeat()
+            if self.mpd_status['repeat'] == '0':
+                self._repeatmode('repeat')
+            else:
+                self._repeatmode(None)
         elif option == 'toggle_repeat_single':
-            self.toggle_repeat_single()
+            if self.mpd_status['single'] == '0':
+                self._repeatmode('single')
+            else:
+                self._repeatmode(None)
         elif option == 'enable_repeat':
-            self.repeatmode('repeat')
+            self._repeatmode('repeat')
         elif option == 'enable_repeat_single':
-            self.repeatmode('single')
+            self._repeatmode('single')
         elif option == 'disable':
-            self.repeatmode(None)
+            self._repeatmode(None)
         else:
             logger.error(f"'{option}' does not exist for set_repeat")
-
-    def toggle_repeat(self):
-        if self.mpd_status['repeat'] == '0':
-            self.repeatmode('repeat')
-        else:
-            self.repeatmode(None)
-
-    def toggle_repeat_single(self):
-        if self.mpd_status['single'] == '0':
-            self.repeatmode('single')
-        else:
-            self.repeatmode(None)
 
     @plugs.tag
     def get_current_song(self, param):
