@@ -42,7 +42,7 @@ change_swap() {
     sudo dphys-swapfile swapoff || return 1
     sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=${new_swap_size}|g" /etc/dphys-swapfile || return 1
     sudo sed -i "s|^\s*CONF_SWAPFACTOR=|#CONF_SWAPFACTOR=|g" /etc/dphys-swapfile || return 1
-    sudo dphys-swapfile setup || return 1
+    sudo dphys-swapfile setup 1&>/dev/null || return 1
     sudo dphys-swapfile swapon || return 1
 }
 
@@ -73,8 +73,9 @@ calc_nodemem() {
         echo "Free swap memory  : ${swap_free} MB"
         echo "Free total memory : ${total_free} MB"
         echo "Keep as buffer    : ${mem_buffer} MB"
+        echo -e "Free usable memory (incl. buffer): ${FREE_TO_USE} MB\n"
     fi
-    echo -e "Free usable memory: ${FREE_TO_USE} MB\n"
+
 
   if [[ -z $NODEMEM ]]; then
     # mininum memory used for node
@@ -82,8 +83,8 @@ calc_nodemem() {
     if [[ $FREE_TO_USE -gt $mem_min ]]; then
         NODEMEM=$FREE_TO_USE
     else
-        echo "WARN: Not enough memory left on system for node (min. $mem_min MB)."
-        echo "Trying to adjust swap size ..."
+        echo "WARN: Not enough memory left on system for build (usable ${FREE_TO_USE} MB, min. ${mem_min} MB)."
+        echo "      Trying to adjust swap size ..."
 
         local add_swap_size=$((mem_min / 2))
         local new_swap_size=$((swap_total + add_swap_size))
@@ -94,21 +95,17 @@ calc_nodemem() {
         filesystem_free=${filesystem_free//M}
 
         if [ "$VERBOSE" == true ]; then
-            echo "New swap size = $new_swap_size MB"
-            echo "Additional filesystem space needed = $filesystem_needed MB"
-            echo "Current free filesystem space = $filesystem_free MB"
+            echo "      New swap size = $new_swap_size MB"
+            echo "      Additional filesystem space needed = $filesystem_needed MB"
+            echo "      Current free filesystem space = $filesystem_free MB"
         fi
 
         if [ "${filesystem_free}" -lt "${filesystem_needed}" ]; then
-            echo "ERROR: Not enough space available on filesystem. At least ${filesystem_needed} MB free memory are needed."
-            echo "Current free filesystem space = $filesystem_free MB"
+            echo "ERROR: Not enough space available on filesystem for swap (free ${filesystem_free} MB, min. ${filesystem_needed} MB). Abort!"
             exit 1
-        else
-            echo "Swap size will be increased to ${new_swap_size} MB"
-            if ! change_swap $new_swap_size ; then
-                echo "ERROR: failed to change swap size"
-                exit 1
-            fi
+        elif ! change_swap $new_swap_size ; then
+            echo "ERROR: failed to change swap size. Abort!"
+            exit 1
         fi
 
         calc_nodemem || return 1
@@ -119,7 +116,7 @@ calc_nodemem() {
 calc_nodemem
 
 if [[ $NODEMEM -gt $FREE_TO_USE ]]; then
-  echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FREE_TO_USE MB"
+  echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FREE_TO_USE MB. Abort!"
   exit 1
 fi
 
