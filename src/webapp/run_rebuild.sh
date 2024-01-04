@@ -41,7 +41,6 @@ change_swap() {
     sudo dphys-swapfile swapon || return 1
 }
 
-#RECURSION_BREAKER=false
 calc_nodemem() {
     # keep a buffer for the kernel etc.
     local mem_buffer=256
@@ -75,10 +74,6 @@ calc_nodemem() {
     if [[ $FreeToUse -gt $mem_min ]]; then
         NODEMEM=$FreeToUse
     else
-        #if [ "$RECURSION_BREAKER" == true ]; then
-        #    return 1;
-        #fi
-
         local new_swap_size=$((SwapTotal + mem_min))
         echo "WARN: Not enough memory left on system for node (min. $mem_min MB)."
         echo "Trying to adjust swap size ..."
@@ -99,7 +94,6 @@ calc_nodemem() {
             fi
         fi
 
-        #RECURSION_BREAKER=true
         calc_nodemem || return 1
     fi
   fi
