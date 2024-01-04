@@ -30,4 +30,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build WebApp
-        uses: ./.github/actions/build_webapp_action.yml
+        uses: ./.github/actions/build-webapp
