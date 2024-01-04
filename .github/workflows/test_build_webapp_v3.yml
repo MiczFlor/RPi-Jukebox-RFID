@@ -1,4 +1,4 @@
-name: Test build Webapp v3
+name: Test Build Webapp v3
 
 on:
   schedule:
