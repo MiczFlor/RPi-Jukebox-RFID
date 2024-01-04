@@ -309,8 +309,9 @@ Do you want to install Node? [Y/n]"
             ENABLE_WEBAPP_PROD_DOWNLOAD=true
             ;;
         *)
-            print_c "Building the webapp takes some time.
-This can be done now or manually later on.
+            print_c "
+Building the webapp locally takes some time.
+This can be done now or manually after the installation.
 
 Do you want to build the webapp now? [Y/n]"
             read -r response
@@ -320,11 +321,11 @@ Do you want to build the webapp now? [Y/n]"
                     # This message will be displayed at the end of the installation process
                     local tmp_fin_message="ATTENTION: You need to build the web app locally with
                     $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-                    This must be done after reboot, due to memory restrictions.
                     Read the documentation regarding local Web App builds!"
                     FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
                     ;;
                 *)
+                    ENABLE_WEBAPP_BUILD=true
                     ;;
             esac
           ;;
