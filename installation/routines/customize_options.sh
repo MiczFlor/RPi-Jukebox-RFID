@@ -334,10 +334,8 @@ Do you want to build the webapp now? [Y/n]"
   fi
 
   log "ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE}"
-  if [ "$ENABLE_INSTALL_NODE" != true ]; then
-    log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
-    log "ENABLE_WEBAPP_BUILD=${ENABLE_WEBAPP_BUILD}"
-  fi
+  log "ENABLE_WEBAPP_BUILD=${ENABLE_WEBAPP_BUILD}"
+  log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
 }
 
 _run_customize_options() {
