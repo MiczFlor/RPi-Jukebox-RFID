@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
 
 usage() {
-  echo -e "\nRebuild the Web App\n"
-  echo "${BASH_SOURCE[0]} [-u] [-m SIZE]"
-  echo "  -u      : Update NPM dependencies before rebuild (only necessary on first build or if package.json changed"
-  echo "  -m SIZE : Set Node memory limit in MB (if omitted limit is deduced automatically and swap might be adjusted)"
-  echo "  -v      : Increase verbosity"
-  echo -e "\n\n"
+    echo -e "\nRebuild the Web App\n"
+    echo "${BASH_SOURCE[0]} [-u] [-m SIZE]"
+    echo "  -u      : Update NPM dependencies before rebuild (only necessary on first build or if package.json changed"
+    echo "  -m SIZE : Set Node memory limit in MB (if omitted limit is deduced automatically and swap might be adjusted)"
+    echo "  -v      : Increase verbosity"
+    echo -e "\n\n"
 }
 
 UPDATE_DEPENDENCIES=false
 VERBOSE=false
 
 while getopts ":uhvm:" opt; do
-  case ${opt} in
-  u)
-    UPDATE_DEPENDENCIES=true
-    ;;
-  m)
-    NODEMEM="${OPTARG}"
-    ;;
-  v)
-    VERBOSE=true
-    ;;
-  h)
-    usage
-    ;;
-  \?)
-    usage
-    ;;
-  esac
+    case ${opt} in
+    u)
+        UPDATE_DEPENDENCIES=true
+        ;;
+    m)
+        NODEMEM="${OPTARG}"
+        ;;
+    v)
+        VERBOSE=true
+        ;;
+    h)
+        usage
+        ;;
+    \?)
+        usage
+        ;;
+    esac
 done
 
 # Change working directory to location of script
@@ -76,48 +76,47 @@ calc_nodemem() {
         echo -e "Free usable memory (incl. buffer): ${FREE_TO_USE} MB\n"
     fi
 
+    if [[ -z $NODEMEM ]]; then
+        # mininum memory used for node
+        local mem_min=512
+        if [[ $FREE_TO_USE -gt $mem_min ]]; then
+            NODEMEM=$FREE_TO_USE
+        else
+            echo "WARN: Not enough memory left on system for build (usable ${FREE_TO_USE} MB, min. ${mem_min} MB)."
+            echo "      Trying to adjust swap size ..."
 
-  if [[ -z $NODEMEM ]]; then
-    # mininum memory used for node
-    local mem_min=512
-    if [[ $FREE_TO_USE -gt $mem_min ]]; then
-        NODEMEM=$FREE_TO_USE
-    else
-        echo "WARN: Not enough memory left on system for build (usable ${FREE_TO_USE} MB, min. ${mem_min} MB)."
-        echo "      Trying to adjust swap size ..."
+            local add_swap_size=$((mem_min / 2))
+            local new_swap_size=$((swap_total + add_swap_size))
 
-        local add_swap_size=$((mem_min / 2))
-        local new_swap_size=$((swap_total + add_swap_size))
+            # keep a buffer on the filesystem
+            local filesystem_needed=$((add_swap_size + 512))
+            local filesystem_free=$(df -BM -P / | tail -n 1 | awk '{print $4}')
+            filesystem_free=${filesystem_free//M}
 
-        # keep a buffer on the filesystem
-        local filesystem_needed=$((add_swap_size + 512))
-        local filesystem_free=$(df -BM -P / | tail -n 1 | awk '{print $4}')
-        filesystem_free=${filesystem_free//M}
+            if [ "$VERBOSE" == true ]; then
+                echo "      New swap size = $new_swap_size MB"
+                echo "      Additional filesystem space needed = $filesystem_needed MB"
+                echo "      Current free filesystem space = $filesystem_free MB"
+            fi
 
-        if [ "$VERBOSE" == true ]; then
-            echo "      New swap size = $new_swap_size MB"
-            echo "      Additional filesystem space needed = $filesystem_needed MB"
-            echo "      Current free filesystem space = $filesystem_free MB"
+            if [ "${filesystem_free}" -lt "${filesystem_needed}" ]; then
+                echo "ERROR: Not enough space available on filesystem for swap (free ${filesystem_free} MB, min. ${filesystem_needed} MB). Abort!"
+                exit 1
+            elif ! change_swap $new_swap_size ; then
+                echo "ERROR: failed to change swap size. Abort!"
+                exit 1
+            fi
+
+            calc_nodemem || return 1
         fi
-
-        if [ "${filesystem_free}" -lt "${filesystem_needed}" ]; then
-            echo "ERROR: Not enough space available on filesystem for swap (free ${filesystem_free} MB, min. ${filesystem_needed} MB). Abort!"
-            exit 1
-        elif ! change_swap $new_swap_size ; then
-            echo "ERROR: failed to change swap size. Abort!"
-            exit 1
-        fi
-
-        calc_nodemem || return 1
     fi
-  fi
 }
 
 calc_nodemem
 
 if [[ $NODEMEM -gt $FREE_TO_USE ]]; then
-  echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FREE_TO_USE MB. Abort!"
-  exit 1
+    echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FREE_TO_USE MB. Abort!"
+    exit 1
 fi
 
 export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
@@ -126,15 +125,15 @@ echo "Setting Node Options:"
 env | grep NODE
 
 if [[ $(uname -m) == armv6l ]]; then
-  echo "  You are running on a hardware with less resources. Building
-  the webapp might fail. If so, try to install the stable
-  release installation instead."
+    echo "  You are running on a hardware with less resources. Building
+    the webapp might fail. If so, try to install the stable
+    release installation instead."
 fi
 
 if [[ $UPDATE_DEPENDENCIES == true ]]; then
-  npm install
-  # TODO this was used in the install script (not activated for some time). Is one of the options prefered?
-  # npm ci --prefer-offline --no-audit --production
+    npm install
+    # TODO this was used in the install script (not activated for some time). Is one of the options prefered?
+    # npm ci --prefer-offline --no-audit --production
 fi
 
 # Rebuild Web App
