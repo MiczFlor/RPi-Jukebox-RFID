@@ -13,15 +13,16 @@ import {
 import {
   getActionAndCommand,
   getArgsValues,
-} from '../../../utils';
+} from '../utils.js';
 
-
-const ShuffleOptions = ({
+const OptionsSelector = ({
+  actionType,
   actionData,
   handleActionDataChange,
+  optionLabel,
+  options,
 }) => {
   const { t } = useTranslation();
-
   const { action, command } = getActionAndCommand(actionData);
   const [option] = getArgsValues(actionData);
 
@@ -33,30 +34,23 @@ const ShuffleOptions = ({
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
         <Typography>
-          {t('cards.controls.actions.audio.shuffle.description')}
+          {t(optionLabel)}
         </Typography>
         <FormControl component="fieldset">
           <RadioGroup
-            aria-label="gender"
-            name="audio_shuffle_options"
-            value={option || 'toggle'}
+            aria-label={actionType}
+            name={`${actionType}_options`}
+            value={option || options[0].value}
             onChange={onChange}
           >
-            <FormControlLabel
-              control={<Radio />}
-              label={t('cards.controls.actions.audio.shuffle.label-toggle')}
-              value="toggle"
-            />
-            <FormControlLabel
-              control={<Radio />}
-              label={t('cards.controls.actions.audio.shuffle.label-enable')}
-              value="enable"
-            />
-            <FormControlLabel
-              control={<Radio />}
-              label={t('cards.controls.actions.audio.shuffle.label-disable')}
-              value="disable"
-            />
+            {options.map(({ labelKey, value }) => (
+              <FormControlLabel
+                key={value}
+                control={<Radio />}
+                label={t(labelKey)}
+                value={value}
+              />
+            ))}
           </RadioGroup>
         </FormControl>
       </Grid>
@@ -64,4 +58,4 @@ const ShuffleOptions = ({
   );
 };
 
-export default ShuffleOptions;
+export default OptionsSelector;
