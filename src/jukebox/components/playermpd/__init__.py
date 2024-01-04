@@ -351,6 +351,8 @@ class PlayerMPD:
             self.shuffle(1)
         elif option == 'disable':
             self.shuffle(0)
+        else:
+            logger.error(f"'{option}' does not exist for set_shuffle")
 
     @plugs.tag
     def rewind(self):
@@ -406,13 +408,33 @@ class PlayerMPD:
             self.mpd_client.single(single)
 
     @plugs.tag
+    def set_repeat(self, option='toggle'):
+        if option == 'toggle':
+            if self.mpd_status['repeat'] == '0':
+                self.repeatmode('repeat')
+            elif self.mpd_status['repeat'] == '1' and self.mpd_status['single'] == '0':
+                self.repeatmode('single')
+            else:
+                self.repeatmode(None)
+        elif option == 'toggle_repeat':
+            self.toggle_repeat()
+        elif option == 'toggle_repeat_single':
+            self.toggle_repeat_single()
+        elif option == 'enable_repeat':
+            self.repeatmode('repeat')
+        elif option == 'enable_repeat_single':
+            self.repeatmode('single')
+        elif option == 'disable':
+            self.repeatmode(None)
+        else:
+            logger.error(f"'{option}' does not exist for set_repeat")
+
     def toggle_repeat(self):
         if self.mpd_status['repeat'] == '0':
             self.repeatmode('repeat')
         else:
             self.repeatmode(None)
 
-    @plugs.tag
     def toggle_repeat_single(self):
         if self.mpd_status['single'] == '0':
             self.repeatmode('single')

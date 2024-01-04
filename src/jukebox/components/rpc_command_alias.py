@@ -69,17 +69,11 @@ cmd_alias_definitions = {
         'method': 'set_shuffle',
         'note': 'Shuffle',
         'ignore_card_removal_action': True},
-    'toggle_repeat': {
+    'set_repeat': {
         'package': 'player',
         'plugin': 'ctrl',
-        'method': 'toggle_repeat',
-        'note': 'Toggles repeat option',
-        'ignore_card_removal_action': True},
-    'toggle_repeat_single': {
-        'package': 'player',
-        'plugin': 'ctrl',
-        'method': 'toggle_repeat_single',
-        'note': 'Toggles single repeat option',
+        'method': 'set_repeat',
+        'note': 'Repeat',
         'ignore_card_removal_action': True},
 
     # VOLUME

@@ -29,8 +29,7 @@
           "play": "Play",
           "prev_song": "Previous song",
           "set_shuffle": "Shuffle",
-          "toggle_repeat": "Toggle repeat",
-          "toggle_repeat_single": "Toggle single repeat",
+          "set_repeat": "Repeat",
           "toggle": "Toggle Play/Pause"
         }
       },
@@ -65,6 +64,15 @@
           "loading-song-error": "An error occurred while loading song."
         },
         "audio": {
+          "repeat": {
+            "description": "Choose the state to set.",
+            "label-toggle": "Toggle - Loops through 1) Repeat playlist, 2) Repeat song, 3) Disable repeat",
+            "label-toggle-repeat": "Toggle Repeat Playlist",
+            "label-toggle-repeat-single": "Toggle Repeat Song",
+            "label-enable-repeat": "Enable Repeat Playlist",
+            "label-enable-repeat-single": "Enable Repeat Song",
+            "label-disable": "Disable"
+          },
           "shuffle": {
             "description": "Choose the state to set.",
             "label-toggle": "Toggle",

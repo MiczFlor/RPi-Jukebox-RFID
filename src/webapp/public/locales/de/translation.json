@@ -29,8 +29,7 @@
           "play": "Abspielen",
           "prev_song": "Vorheriger Song",
           "set_shuffle": "Zufallswiedergabe",
-          "toggle_repeat": "Wiedergabeliste Wiederholen aktivieren/deaktivieren",
-          "toggle_repeat_single": "Song Wiederholen aktivieren/deaktivieren",
+          "set_repeat": "Wiedergabe wiederholen",
           "toggle": "Abspielen/Pause umschalten"
         }
       },
@@ -65,6 +64,15 @@
           "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
         },
         "audio": {
+          "repeat": {
+            "description": "Wähle den zu setzenden Status.",
+            "label-toggle": "Umschalten - Schaltet durch 1) Wiedergabeliste Wiederholen, 2) Song Wiederholen, 3) Wiederholen Deaktiveren",
+            "label-toggle-repeat": "Wiedergabeliste Wiederholen umschalten",
+            "label-toggle-repeat-single": "Song Wiederholen umschalten",
+            "label-enable-repeat": "Wiedergabeliste Wiederholen aktivieren",
+            "label-enable-repeat-single": "Song Wiederholen aktivieren",
+            "label-disable": "Wiederholen deaktivieren"
+          },
           "shuffle": {
             "description": "Wähle den zu setzenden Status.",
             "label-toggle": "Umschalten",

@@ -2,6 +2,7 @@ import React from 'react';
 
 import CommandSelector from '../../command-selector';
 import SliderChangeVolume from './slider-change-volume';
+import RepeatOptions from './repeat-options';
 import ShuffleOptions from './shuffle-options';
 
 import { getActionAndCommand } from '../../../utils';
@@ -26,6 +27,12 @@ const SelectAudioVolume = ({
       }
       {command === 'set_shuffle' &&
         <ShuffleOptions
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+        />
+      }
+      {command === 'set_repeat' &&
+        <RepeatOptions
           actionData={actionData}
           handleActionDataChange={handleActionDataChange}
         />

@@ -103,6 +103,12 @@ const commands = {
     method: 'set_shuffle',
     argKeys: ['option'],
   },
+  set_repeat: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'set_repeat',
+    argKeys: ['option'],
+  },
   repeatmode: {
     _package: 'player',
     plugin: 'ctrl',
