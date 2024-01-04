@@ -74,16 +74,17 @@ calc_nodemem() {
     if [[ $FreeToUse -gt $mem_min ]]; then
         NODEMEM=$FreeToUse
     else
-        local new_swap_size=$((SwapTotal + mem_min))
+        local add_swap_size=$((mem_min / 2))
+        local new_swap_size=$((SwapTotal + add_swap_size))
         echo "WARN: Not enough memory left on system for node (min. $mem_min MB)."
         echo "Trying to adjust swap size ..."
 
         # keep a buffer on the filesystem
-        local filesystem_left=$((new_swap_size + 512))
+        local filesystem_needed=$((add_swap_size + 512))
         local filesystem_free=$(df -BM -P / | tail -n 1 | awk '{print $4}')
         filesystem_free=${filesystem_free//M}
-        if [ "${filesystem_free}" -lt "${filesystem_left}" ]; then
-            echo "ERROR: Not enough space available on filesystem. At least ${filesystem_left} MB free memory are needed."
+        if [ "${filesystem_free}" -lt "${filesystem_needed}" ]; then
+            echo "ERROR: Not enough space available on filesystem. At least ${filesystem_needed} MB free memory are needed."
             echo "Current free space = $filesystem_free MB"
             exit 1
         else
@@ -125,5 +126,5 @@ fi
 
 # Rebuild Web App
 rm -rf build.bak
-mv -f build build.bak
+mv -f build build.bak 2>/dev/null
 npm run build
