@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+
+  check:
+    if: ${{ github.repository_owner == 'MiczFlor' }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      tag_name: ${{ steps.vars.outputs.tag_name }}
+      release_type: ${{ steps.vars.outputs.release_type }}
+      check_abort: ${{ steps.vars.outputs.check_abort }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set Output vars
+        id: vars
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          # Official SemVer Regex definition
+          # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+          # Needed changes to the regex:
+          # - '?:' capture command needed to be removed as it wasn't working in shell
+          # - '\d' had to be replaced with [0-9]
+          #
+          # Release versions like 1.0.0, 3.5.0, 100.4.50000+metadata
+          REGEX_VERSION_RELEASE="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
+          #
+          # Prerelease versions like 1.0.0-alpha, 3.5.0-whatsoever.12, 100.4.50000-identifier.12+metadata
+          REGEX_VERSION_PRERELEASE="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
+
+
+          # Get the version and calculate release type
+          VERSION=$(cat ./settings/version-number)
+          if echo "$VERSION" | grep -qoE "$REGEX_VERSION_RELEASE" ; then
+            RELEASE_TYPE=release
+          elif echo "$VERSION" | grep -qoE "$REGEX_VERSION_PRERELEASE" ; then
+            RELEASE_TYPE=prerelease
+          else
+            RELEASE_TYPE=none
+          fi
+
+          if [ "$BRANCH_NAME" == 'master' -a "$RELEASE_TYPE" == 'release' ] ; then
+            CHECK_ABORT=false
+          else
+            echo "::notice title=Abort due to not matching ${RELEASE_TYPE} version for branch!::'${VERSION}' on '${BRANCH_NAME}'"
+            CHECK_ABORT=true
+          fi
+
+          echo "::group::Output values"
+          echo "Version: ${VERSION}"
+          echo "RELEASE_TYPE: ${RELEASE_TYPE}"
+          echo "BRANCH_NAME: ${BRANCH_NAME}"
+          echo "CHECK_ABORT: ${CHECK_ABORT}"
+
+          echo "tag_name=v${VERSION}" >> $GITHUB_OUTPUT
+          echo "release_type=${RELEASE_TYPE}" >> $GITHUB_OUTPUT
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "check_abort=${CHECK_ABORT}" >> $GITHUB_OUTPUT
+          echo "::endgroup::"
+
+  release:
+    needs: [check]
+    if: ${{ needs.check.outputs.check_abort == 'false' }}
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ needs.check.outputs.tag_name }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          commit: ${{ github.sha }}
+          tag: ${{ needs.check.outputs.tag_name }}
+          body: "Automated Release for ${{ needs.check.outputs.tag_name }}"
+          makeLatest: ${{ needs.check.outputs.release_type == 'release' }}
+          prerelease: ${{ needs.check.outputs.release_type == 'prerelease' }}
+          generateReleaseNotes: ${{ needs.check.outputs.release_type == 'release' }}
+          skipIfReleaseExists: false
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: false
+          omitBodyDuringUpdate: true
+          omitNameDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}

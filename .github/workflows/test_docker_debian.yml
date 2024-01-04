@@ -7,9 +7,29 @@ on:
   push:
     branches-ignore:
       - 'future3/**'
+    paths:
+      - '.github/workflows/test_docker_debian*.yml'
+      - 'ci/**'
+      - 'misc/sampleconfigs/**'
+      - 'scripts/helperscripts/setup_*'
+      - 'scripts/installscripts/**'
+      - 'settings/version-number'
+      - 'packages*.txt'
+      - 'requirements*.txt'
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ develop ]
+    branches:
+      - develop
+      - main
+    paths:
+      - '.github/workflows/test_docker_debian*.yml'
+      - 'ci/**'
+      - 'misc/sampleconfigs/**'
+      - 'scripts/helperscripts/setup_*'
+      - 'scripts/installscripts/**'
+      - 'settings/version-number'
+      - 'packages*.txt'
+      - 'requirements*.txt'
 
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
@@ -21,12 +41,12 @@ jobs:
 
   # Build container and run tests
   run:
-    name: ${{ matrix.debian_version_name }}
+    name: ${{ matrix.debian_codename }}
     strategy:
       fail-fast: false
       matrix:
-        debian_version_name: ['bullseye', 'buster', 'bookworm']
-    uses: ./.github/workflows/test_docker_debian_versionname_sub.yml
+        debian_codename: ['bookworm', 'bullseye', 'buster']
+    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
     with:
       runs_on: ubuntu-latest
       platform: linux/arm/v7
@@ -34,4 +54,4 @@ jobs:
       cache_scope: ${{ github.ref }}-test-debian
       matrix_usernames: "['pi', 'hans']"
       matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
-      debian_version_name: ${{ matrix.debian_version_name }}
+      debian_codename: ${{ matrix.debian_codename }}

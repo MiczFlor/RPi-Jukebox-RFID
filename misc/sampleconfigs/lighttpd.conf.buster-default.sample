@@ -35,8 +35,8 @@ index-file.names            = ( "index.php", "index.html" )
 url.access-deny             = ( "~", ".inc" )
 static-file.exclude-extensions = ( ".php", ".pl", ".fcgi" )
 
-compress.cache-dir          = "/var/cache/lighttpd/compress/"
-compress.filetype           = ( "application/javascript", "text/css", "text/html", "text/plain" )
+deflate.cache-dir           = "/var/cache/lighttpd/compress/"
+deflate.mimetypes           = ( "application/javascript", "text/css", "text/html", "text/plain" )
 
 # default listening port for IPv6 falls back to the IPv4 port
 include_shell "/usr/share/lighttpd/use-ipv6.pl " + server.port
@@ -45,7 +45,7 @@ include "/etc/lighttpd/conf-enabled/*.conf"
 
 #server.compat-module-load   = "disable"
 server.modules += (
-	"mod_compress",
+	"mod_deflate",
 	"mod_dirlisting",
 	"mod_staticfile",
 )

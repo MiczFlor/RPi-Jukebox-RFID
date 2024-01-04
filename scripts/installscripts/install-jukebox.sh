@@ -9,12 +9,11 @@
 # which means you don't need to run the interactive install:
 #
 # 1. download the install file from github
-#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop/scripts/installscripts
-#    (note: currently only works for buster and newer OS)
+#    https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master/scripts/installscripts
 # 2. make the file executable: chmod +x
 # 3. place the PhonieboxInstall.conf in the folder $HOME
 # 4. run the installscript with option -a like this:
-#    buster-install-default.sh -a
+#    install-jukebox.sh -a
 
 # The absolute path to the folder which contains this script
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -37,9 +36,9 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
-# Get the RaspberryPi OS code name (e.g. buster or bullseye)
+# Get the Raspberry Pi OS codename (e.g. buster, bullseye, ...)
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
-printf "Used RaspberryPi OS: ${OS_CODENAME}\n"
+printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
 INTERACTIVE=true
 
@@ -111,6 +110,13 @@ checkPrerequisite() {
         echo "       Please check the wiki for further information"
         exit 2
     fi
+
+    if [ ! -d "${HOME_DIR}" ]; then
+        echo
+        echo "Warning: HomeDir ${HOME_DIR} does not exist."
+        echo "         Please create it and start again."
+        exit 2
+    fi
 }
 
 welcome() {
@@ -132,7 +138,7 @@ an existing configuration file, do the following:
 1. exit this install script (press n)
 2. place your PhonieboxInstall.conf in the folder ${HOME_DIR}
 3. run the installscript with option -a. For example like this:
-   .${HOME_DIR}/buster-install-default.sh -a
+   ${HOME_DIR}/install-jukebox.sh -a
    "
     read -rp "Continue interactive installation? [Y/n] " response
     case "$response" in
@@ -316,7 +322,7 @@ read -rp "Hit ENTER to proceed to the next step." INPUT
 check_existing() {
     local jukebox_dir="$1"
     local backup_dir="$2"
-    local home_dir="$3"
+    local local_home_dir="$3"
 
     #####################################################
     # Check for existing Phoniebox
@@ -327,7 +333,7 @@ check_existing() {
 
     # The install will be in the home dir of user pi
     # Move to home directory now to check
-    cd ~ || exit
+    cd "${local_home_dir}"
     if [ -d "${jukebox_dir}" ]; then
         # Houston, we found something!
         clear
@@ -372,9 +378,9 @@ check_existing() {
                 *)
                     EXISTINGusePhonieboxInstall=YES
                     # Copy PhonieboxInstall.conf configuration file to settings folder
-                    sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${home_dir}"/PhonieboxInstall.conf
-                    sudo chown pi:www-data "${home_dir}"/PhonieboxInstall.conf
-                    sudo chmod 775 "${home_dir}"/PhonieboxInstall.conf
+                    sudo cp "${jukebox_dir}"/settings/PhonieboxInstall.conf "${local_home_dir}"/PhonieboxInstall.conf
+                    sudo chown pi:www-data "${local_home_dir}"/PhonieboxInstall.conf
+                    sudo chmod 775 "${local_home_dir}"/PhonieboxInstall.conf
                     echo "The existing configuration will be used."
                     echo "Just a few more questions to answer."
                     read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -422,7 +428,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -434,7 +440,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -446,7 +452,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -458,9 +464,9 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${local_home_dir}/PhonieboxInstall.conf"
 
-                if [ "$(printf '%s\n' "2.1" "$(cat ~/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
+                if [ "$(printf '%s\n' "2.1" "$(cat ${local_home_dir}/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
                         case "$response" in
                             [nN][oO]|[nN])
@@ -480,7 +486,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     config_gpio
                 fi
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Button USB Encoder: use existing device and button mapping? [Y/n] " response
                 case "$response" in
@@ -492,7 +498,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${HOME_DIR}/PhonieboxInstall.conf"
+                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -501,7 +507,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=$EXISTINGuse" >> "${local_home_dir}/PhonieboxInstall.conf"
 
     # Check if we found a Phoniebox install configuration earlier and ask if to run this now
     if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
@@ -514,9 +520,9 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
             [nN][oO]|[nN])
                 ;;
             *)
-                cd "${home_dir}"
+                cd "${local_home_dir}"
                 clear
-                ./buster-install-default.sh -a
+                ./install-jukebox.sh -a
                 exit
                 ;;
         esac
@@ -820,6 +826,8 @@ web_server_config() {
     local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
+    # make sure lighttp can access the home directory of the user
+    sudo chmod o+x ${HOME_DIR}
     # Web server configuration settings
     # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
@@ -847,12 +855,24 @@ web_server_config() {
     sudo chmod 440 "${sudoers}"
 }
 
+# Reads a textfile and pipes all lines as args to the given command.
+# Does filter out comments.
+# Arguments:
+#   1    : textfile to read
+#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
+call_with_args_from_file () {
+    local package_file="$1"
+    shift
+
+    sed 's/#.*//g' ${package_file} | xargs "$@"
+}
+
 install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
     local allow_downgrades="--allow-downgrades --allow-remove-essential --allow-change-held-packages"
     local pip_install="sudo python3 -m pip install --upgrade --force-reinstall -q"
- 
+
     clear
 
     echo "#####################################################
@@ -914,12 +934,17 @@ install_main() {
     ${apt_get} update
     ${apt_get} upgrade
 
+    # Get github code. git must be installed before, even if defined in packages.txt!
+    ${apt_get} install git
+    cd "${HOME_DIR}"
+    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
+
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
-        ${apt_get} ${allow_downgrades} install raspberrypi-kernel-headers
+        call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt ${apt_get} ${allow_downgrades} install
     fi
 
-    ${apt_get} ${allow_downgrades} install samba samba-common-bin gcc lighttpd php-common php-cgi php at mpd mpc mpg123 git ffmpeg resolvconf spi-tools netcat-traditional alsa-utils lsof procps
+    call_with_args_from_file "${jukebox_dir}"/packages.txt ${apt_get} ${allow_downgrades} install
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -927,17 +952,10 @@ install_main() {
         sudo cp /etc/resolv.conf.orig /etc/resolv.conf
     fi
 
-    # prepare python3
-    ${apt_get} ${allow_downgrades} install python3 python3-dev python3-pip python3-setuptools python3-wheel python3-mutagen python3-gpiozero python3-spidev
-
     # use python3 as default
     sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
     # make compatible for Bookworm, which implements PEP 668
     sudo python3 -m pip config set global.break-system-packages true
-
-    # Get github code
-    cd "${HOME_DIR}" || exit
-    git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
     # VERSION of installation
 
@@ -964,9 +982,7 @@ install_main() {
 
         ${apt_get} update
         ${apt_get} upgrade
-        ${apt_get} install libspotify-dev
-        ${apt_get} ${allow_downgrades} install mopidy mopidy-mpd mopidy-local mopidy-spotify
-        ${apt_get} ${allow_downgrades} install libspotify12 python3-cffi python3-ply python3-pycparser python3-spotify
+        call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # Install necessary Python packages
         ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
@@ -1072,6 +1088,28 @@ install_main() {
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
+    if [ "${MPDconfig}" == "YES" ]; then
+        local mpd_conf="/etc/mpd.conf"
+
+        echo "Configuring MPD..."
+        # MPD configuration
+        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
+        # Change vars to match install config
+        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+        # Replace homedir; double quotes for variable expansion
+        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+        sudo chown mpd:audio "${mpd_conf}"
+        sudo chmod 640 "${mpd_conf}"
+
+        # start mpd
+        echo "Starting mpd service..."
+        sudo service mpd restart
+        sudo systemctl enable mpd
+    fi
+
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
         local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
@@ -1114,28 +1152,6 @@ install_main() {
         if [[ ! -f "${jukebox_dir}"/settings/gpio_settings.ini ]]; then
             cp "${jukebox_dir}"/misc/sampleconfigs/gpio_settings.ini.sample "${jukebox_dir}"/settings/gpio_settings.ini
         fi
-    fi
-
-    if [ "${MPDconfig}" == "YES" ]; then
-        local mpd_conf="/etc/mpd.conf"
-
-        echo "Configuring MPD..."
-        # MPD configuration
-        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
-        # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
-        sudo chown mpd:audio "${mpd_conf}"
-        sudo chmod 640 "${mpd_conf}"
-
-        # start mpd
-        echo "Starting mpd service..."
-        sudo service mpd restart
-        sudo systemctl enable mpd
     fi
 
     # set which version has been installed
@@ -1459,7 +1475,7 @@ main() {
     else
         echo "Skipping USB device setup..."
         echo "For manual registration of a USB card reader type:"
-        echo "python3 ${HOME_DIR}/RPi-Jukebox-RFID/scripts/RegisterDevice.py"
+        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
         echo " "
         echo "Reboot is required to activate all settings!"
     fi

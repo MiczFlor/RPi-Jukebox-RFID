@@ -1,0 +1,6 @@
+# Define packages for apt-get.  These can be installed with
+# 'sed 's/#.*//g' packages.txt | xargs sudo apt-get install'
+
+dnsmasq
+hostapd
+iw

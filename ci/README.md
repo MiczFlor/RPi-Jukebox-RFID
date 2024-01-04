@@ -8,7 +8,7 @@ This is a work in progress so expect things to fail or being flaky.
 ## Howto
 
 * First you need a raspberry pi with some decent performance (RPi 3 or 4 would be recommended)
-* Flash its sd card with **raspbian buster lite**
+* Flash its sd card with **Raspberry Pi OS lite**
 * use raspi-config to resize the filesystem to the whole sd card (menu: 7 -> A1)
 * install some tools and reboot:
 ```bash
@@ -30,22 +30,22 @@ This is a work in progress so expect things to fail or being flaky.
 ```
 * build the docker image:
     ```bash
-    docker build -t rpi-jukebox-rfid:buster-latest -f ci/Dockerfile.debian --platform=linux/arm/v7 --target=code --build-arg="DEBIAN_VERSION_NAME=buster" .
+    docker build -t rpi-jukebox-rfid:debian-latest -f ci/Dockerfile.debian --platform=linux/arm/v7 --target=code .
     ```
     * additional arguments
         * for builds
-          on normal PCs use `--platform=linux/amd64`
-          on a raspberry pi use `--platform=linux/arm/v7`
-        * to use a different debian version change `--build-arg="DEBIAN_VERSION_NAME=buster"` appropriately.
+          - on normal PCs use `--platform=linux/amd64`
+          - on a raspberry pi use `--platform=linux/arm/v7`
+        * to use a different debian version as base add parameter `--build-arg="DEBIAN_CODENAME=<code_name>"` (<code_name> = e.g. buster, bullseye, ...).
 
 * get something to drink or eat
 * run the freshly built docker image and start testing. For example:
     ```bash
-      docker run --rm -ti rpi-jukebox-rfid:buster-latest /bin/bash
+      docker run --rm -ti rpi-jukebox-rfid:debian-latest /bin/bash
       cd /home/pi/
-      cp /code/scripts/installscripts/buster-install-default.sh /home/pi/
+      cp /code/scripts/installscripts/install-jukebox.sh /home/pi/
       # set GIT_URL and GIT_BRANCH appropriately to your checkout
-      bash GIT_URL=https://github.com/MiczFlor/RPi-Jukebox-RFID.git GIT_BRANCH=main buster-install-default.sh
+      bash GIT_URL=https://github.com/MiczFlor/RPi-Jukebox-RFID.git GIT_BRANCH=main install-jukebox.sh
     ```
 
     NOTE: Get familiar with docker and its flags - `--rm` for example will remove the

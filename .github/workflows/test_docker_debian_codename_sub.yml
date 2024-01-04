@@ -9,7 +9,7 @@ on:
         platform:
           required: true
           type: string
-        debian_version_name:
+        debian_codename:
           required: true
           type: string
         cache_scope:
@@ -32,7 +32,7 @@ on:
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
-    group: ${{ inputs.cache_scope }}-${{ inputs.debian_version_name }}
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}
     cancel-in-progress: true
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
 
     outputs:
         cache_key: ${{ steps.vars.outputs.cache_key }}
-        image_file_path: ${{ steps.vars.outputs.image_file_path }}
+        image_file_name: ${{ steps.vars.outputs.image_file_name }}
         image_tag_name: ${{ steps.vars.outputs.image_tag_name }}
 
     # create local docker registry to use locally build images
@@ -68,23 +68,23 @@ jobs:
     - name: Set Output pre-vars
       id: pre-vars
       env:
-        DEBIAN_VERSION_NAME: ${{ inputs.debian_version_name }}
+        DEBIAN_CODENAME: ${{ inputs.debian_codename }}
         DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
         CACHE_SCOPE: ${{ inputs.cache_scope }}
       run: |
-        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_VERSION_NAME }}-test" >> $GITHUB_OUTPUT
-        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_VERSION_NAME }}" >> $GITHUB_OUTPUT
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-test" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}" >> $GITHUB_OUTPUT
 
     - name: Set Output vars
       id: vars
       env:
-        DEBIAN_VERSION_NAME: ${{ inputs.debian_version_name }}
-        DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
         LOCAL_REGISTRY_PORT: ${{ inputs.local_registry_port }}
       run: |
         echo "image_tag_name=${{ steps.pre-vars.outputs.image_tag_name }}" >> $GITHUB_OUTPUT
         echo "image_tag_name_local_base=localhost:${{ env.LOCAL_REGISTRY_PORT }}/${{ steps.pre-vars.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
-        echo "image_file_path=./${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_VERSION_NAME }}.tar" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
+        echo "image_file_path=./${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
         echo "cache_scope=${{ steps.pre-vars.outputs.cache_scope }}" >> $GITHUB_OUTPUT
         echo "cache_key=${{ steps.pre-vars.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
 
@@ -102,7 +102,7 @@ jobs:
         cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
         cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.cache_scope }}
         build-args: |
-          DEBIAN_VERSION_NAME=${{ inputs.debian_version_name }}
+          DEBIAN_CODENAME=${{ inputs.debian_codename }}
           GIT_BRANCH=${{ github.head_ref || github.ref_name }}
           GIT_URL=${{ github.server_url }}/${{ github.event.pull_request.head.repo.full_name || github.repository }}
 
@@ -123,12 +123,12 @@ jobs:
         build-args: |
           BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
 
-    # Cache image file for next jobs
-    - name: Cache Save Docker Image
-      uses: actions/cache/save@v3
+    - name: Artifact Upload Docker Image
+      uses: actions/upload-artifact@v3
       with:
-        key: ${{ steps.vars.outputs.cache_key }}
+        name: ${{ steps.vars.outputs.image_file_name }}
         path: ${{ steps.vars.outputs.image_file_path }}
+        retention-days: 2
 
 
   # Run tests with build image
@@ -149,20 +149,17 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3.0.0
 
-    # Load cached image file
-    - name: Cache Restore Docker Image
-      uses: actions/cache/restore@v3
+    - name: Artifact Download Docker Image
+      uses: actions/download-artifact@v3
       with:
-        key: ${{  needs.build.outputs.cache_key }}
-        path: ${{ needs.build.outputs.image_file_path }}
-        fail-on-cache-miss: true
+        name: ${{ needs.build.outputs.image_file_name }}
 
     - name: Load Docker Image
       run: |
-        docker load --input ${{ needs.build.outputs.image_file_path }}
+        docker load --input ${{ needs.build.outputs.image_file_name }}
 
     # Run test
-    - name: Run Test ${{ inputs.debian_version_name }}-${{ matrix.username }}-${{ matrix.test_script }}
+    - name: Run Test ${{ inputs.debian_codename }}-${{ matrix.username }}-${{ matrix.test_script }}
       uses: tj-actions/docker-run@v2
       with:
         image: ${{ needs.build.outputs.image_tag_name }}
@@ -170,3 +167,16 @@ jobs:
         name: ${{ matrix.test_script }}
         args: |
           ./${{ matrix.test_script }}
+
+  # cleanup after test execution
+  cleanup:
+    # run only if tests didn't fail: keep the artifact to make job reruns possible
+    if: ${{ !failure() }}
+    needs: [build, test]
+    runs-on: ${{ inputs.runs_on }}
+
+    steps:
+        - name: Artifact Delete Docker Image
+          uses: geekyeggo/delete-artifact@v2
+          with:
+            name: ${{ needs.build.outputs.image_file_name }}

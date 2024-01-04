@@ -9,8 +9,6 @@
 echo $PWD
 
 # Preparations
-# Skip interactive Samba WINS config dialog
-echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
 # No interactive frontend
 export DEBIAN_FRONTEND=noninteractive
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
@@ -29,7 +27,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # yes, reader is connected
 # n No reboot
 
-./../buster-install-default.sh <<< $'y\nn\n\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
+./../install-jukebox.sh <<< $'y\nn\n\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

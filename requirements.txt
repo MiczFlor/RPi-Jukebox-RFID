@@ -1,3 +1,4 @@
+# Test trigger
 # Library dependencies for the python code.  You need to install these with
 # `sudo python3 -m pip install --upgrade --force-reinstall -r requirements.txt` before you can run this.
 
@@ -6,7 +7,7 @@
 # related libraries.
 evdev
 git+https://github.com/lthiery/SPI-Py.git#egg=spi-py
-youtube_dl
+git+https://github.com/ytdl-org/youtube-dl@master#egg=youtube-dl
 pyserial
 RPi.GPIO
 
