@@ -23,6 +23,7 @@ LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 # n - setup samba
 # y - setup webapp
 # n - install node
+# - - build webapp (only with install node = y)
 # y - setup kiosk mode
 # n - reboot
 

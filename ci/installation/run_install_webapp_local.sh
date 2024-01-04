@@ -24,6 +24,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # n - setup samba
 # y - setup webapp
 # y - install node
+# n - build webapp
 # y - setup kiosk mode
 # n - reboot
 
@@ -37,6 +38,7 @@ n
 n
 y
 y
+n
 y
 n
 '
