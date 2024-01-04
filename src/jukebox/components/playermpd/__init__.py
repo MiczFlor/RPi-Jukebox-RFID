@@ -411,7 +411,7 @@ class PlayerMPD:
     def set_repeat(self, option='toggle'):
         if option == 'toggle':
             if self.mpd_status['repeat'] == '0':
-             self._repeatmode('repeat')
+                self._repeatmode('repeat')
             elif self.mpd_status['repeat'] == '1' and self.mpd_status['single'] == '0':
                 self._repeatmode('single')
             else:
