@@ -9,7 +9,7 @@ on:
         - 'future3/**'
     paths:
         - '.github/workflows/test_build_webapp_v3.yml'
-        - '.github/actions/build_webapp_action.yml'
+        - '.github/actions/build-webapp/**'
         - 'src/webapp/**'
   pull_request:
     # The branches below must be a subset of the branches above
@@ -18,7 +18,7 @@ on:
         - future3/main
     paths:
         - '.github/workflows/test_build_webapp_v3.yml'
-        - '.github/actions/build_webapp_action.yml'
+        - '.github/actions/build-webapp/**'
         - 'src/webapp/**'
 
 jobs:
