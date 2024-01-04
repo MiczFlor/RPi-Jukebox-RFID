@@ -28,7 +28,7 @@
           "pause": "Pause",
           "play": "Abspielen",
           "prev_song": "Vorheriger Song",
-          "toggle_shuffle": "Shuffle aktivieren/deaktivieren",
+          "set_shuffle": "Zufallswiedergabe",
           "toggle_repeat": "Wiedergabeliste Wiederholen aktivieren/deaktivieren",
           "toggle_repeat_single": "Song Wiederholen aktivieren/deaktivieren",
           "toggle": "Abspielen/Pause umschalten"
@@ -64,8 +64,16 @@
           "no-music-selected": "Es ist keine Musik ausgewählt.",
           "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
         },
-        "volume": {
-          "title": "Lautstärke Stufen"
+        "audio": {
+          "shuffle": {
+            "description": "Wähle den zu setzenden Status.",
+            "label-toggle": "Umschalten",
+            "label-enable": "Aktivieren",
+            "label-disable": "Deaktivieren"
+          },
+          "volume": {
+            "title": "Volume steps"
+          }
         },
         "timers": {
           "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
@@ -146,8 +154,8 @@
   "player": {
     "controls": {
       "shuffle": {
-        "activate": "Shuffle aktivieren",
-        "deactivate": "Shuffle deaktivieren"
+        "enable": "Zufallswiedergabe aktivieren",
+        "disable": "Zufallswiedergabe deaktivieren"
       },
       "prev_song": "Zurück",
       "play": "Abspielen",

@@ -63,11 +63,11 @@ cmd_alias_definitions = {
         'plugin': 'ctrl',
         'method': 'toggle',
         'ignore_card_removal_action': True},
-    'toggle_shuffle': {
+    'set_shuffle': {
         'package': 'player',
         'plugin': 'ctrl',
-        'method': 'toggle_shuffle',
-        'note': 'Toggles Shuffle',
+        'method': 'set_shuffle',
+        'note': 'Shuffle',
         'ignore_card_removal_action': True},
     'toggle_repeat': {
         'package': 'player',

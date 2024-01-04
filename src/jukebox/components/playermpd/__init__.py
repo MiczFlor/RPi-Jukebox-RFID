@@ -341,10 +341,15 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
     @plugs.tag
-    def toggle_shuffle(self):
-        if self.mpd_status['random'] == '0':
+    def set_shuffle(self, option='toggle'):
+        if option == 'toggle':
+            if self.mpd_status['random'] == '0':
+                self.shuffle(1)
+            else:
+                self.shuffle(0)
+        elif option == 'enable':
             self.shuffle(1)
-        else:
+        elif option == 'disable':
             self.shuffle(0)
 
     @plugs.tag

@@ -2,10 +2,11 @@ import React from 'react';
 
 import CommandSelector from '../../command-selector';
 import SliderChangeVolume from './slider-change-volume';
+import ShuffleOptions from './shuffle-options';
 
 import { getActionAndCommand } from '../../../utils';
 
-const SelectVolume = ({
+const SelectAudioVolume = ({
   actionData,
   handleActionDataChange,
 }) => {
@@ -23,8 +24,14 @@ const SelectVolume = ({
           handleActionDataChange={handleActionDataChange}
         />
       }
+      {command === 'set_shuffle' &&
+        <ShuffleOptions
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+        />
+      }
     </>
   );
 };
 
-export default SelectVolume;
+export default SelectAudioVolume;

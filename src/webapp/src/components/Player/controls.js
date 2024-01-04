@@ -58,8 +58,8 @@ const Controls = () => {
 
   const labelShuffle = () => (
     isShuffle
-      ? t('player.controls.shuffle.deactivate')
-      : t('player.controls.shuffle.activate')
+      ? t('player.controls.shuffle.disable')
+      : t('player.controls.shuffle.enable')
   );
 
   const labelRepeat = () => {

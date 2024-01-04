@@ -28,7 +28,7 @@
           "pause": "Pause",
           "play": "Play",
           "prev_song": "Previous song",
-          "toggle_shuffle": "Toggle shuffle",
+          "set_shuffle": "Shuffle",
           "toggle_repeat": "Toggle repeat",
           "toggle_repeat_single": "Toggle single repeat",
           "toggle": "Toggle Play/Pause"
@@ -64,8 +64,16 @@
           "no-music-selected": "No music selected",
           "loading-song-error": "An error occurred while loading song."
         },
-        "volume": {
-          "title": "Volume steps"
+        "audio": {
+          "shuffle": {
+            "description": "Choose the state to set.",
+            "label-toggle": "Toggle",
+            "label-enable": "Enable",
+            "label-disable": "Disable"
+          },
+          "volume": {
+            "title": "Volume steps"
+          }
         },
         "timers": {
           "description": "Choose the amount of minutes you want the action to be performed."
@@ -146,8 +154,8 @@
   "player": {
     "controls": {
       "shuffle": {
-        "activate": "Activate shuffle",
-        "deactivate": "Deactivate shuffle"
+        "enable": "Enable shuffle",
+        "disable": "Disable shuffle"
       },
       "prev_song": "Skip to previous track",
       "play": "Play",
