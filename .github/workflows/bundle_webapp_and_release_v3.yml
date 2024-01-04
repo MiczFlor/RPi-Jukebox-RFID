@@ -18,7 +18,7 @@ jobs:
       check_abort: ${{ steps.vars.outputs.check_abort }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set Output vars
         id: vars
@@ -72,9 +72,6 @@ jobs:
     if: ${{ needs.check.outputs.check_abort == 'false' }}
     runs-on: ubuntu-latest
 
-    env:
-      WEBAPP_ROOT_PATH: ./src/webapp
-
     outputs:
       tag_name: ${{ needs.check.outputs.tag_name }}
       release_type: ${{ needs.check.outputs.release_type }}
@@ -83,7 +80,7 @@ jobs:
       webapp_bundle_name_latest: ${{ steps.vars.outputs.webapp_bundle_name_latest }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set Output vars
         id: vars
@@ -94,21 +91,12 @@ jobs:
           echo "webapp_bundle_name=webapp-build-${COMMIT_SHA:0:10}.tar.gz" >> $GITHUB_OUTPUT
           echo "webapp_bundle_name_latest=webapp-build-latest.tar.gz" >> $GITHUB_OUTPUT
 
-      - name: Setup Node.js 20.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
-      - name: npm install
-        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
-        run: npm install
-      - name: npm build
-        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
-        env:
-          CI: false
-        run: npm run build
+      - name: Build WebApp
+        id: build-webapp
+        uses: ./.github/actions/build-webapp
 
       - name: Create Bundle
-        working-directory: ${{ env.WEBAPP_ROOT_PATH }}
+        working-directory: ${{ steps.build-webapp.outputs.webapp-root-path }}
         run: |
           tar -czvf ${{ steps.vars.outputs.webapp_bundle_name }} build
 
@@ -116,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.vars.outputs.webapp_bundle_name }}
-          path: ${{ env.WEBAPP_ROOT_PATH }}/${{ steps.vars.outputs.webapp_bundle_name }}
+          path: ${{ steps.build-webapp.outputs.webapp-root-path }}/${{ steps.vars.outputs.webapp_bundle_name }}
           retention-days: 5
 
   release:

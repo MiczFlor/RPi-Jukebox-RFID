@@ -5,6 +5,10 @@ inputs:
     description: 'root path of the webapp sources'
     required: false
     default: './src/webapp'
+outputs:
+  webapp-root-path:
+    description: 'used root path of the webapp sources'
+    value: ${{ inputs.webapp-root-path }}
 
 runs:
   using: "composite"
