@@ -47,10 +47,9 @@ _jukebox_webapp_install_node() {
 _jukebox_webapp_build() {
   print_lc "  Building web application"
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  npm ci --prefer-offline --no-audit --production
   rm -rf build
   # The build wrapper script checks available memory on system and sets Node options accordingly
-  ./run_rebuild.sh
+  ./run_rebuild.sh -u
 }
 
 _jukebox_webapp_download() {

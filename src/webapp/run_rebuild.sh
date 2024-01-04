@@ -3,8 +3,8 @@
 usage() {
   echo -e "\nRebuild the Web App\n"
   echo "${BASH_SOURCE[0]} [-u] [-m SIZE]"
-  echo "  -u      : Update NPM dependencies before rebuild (only necessary if package.json changed)"
-  echo "  -m SIZE : Set Node memory limit in MB (if omitted limit is deduced automatically)"
+  echo "  -u      : Update NPM dependencies before rebuild (only necessary on first build or if package.json changed"
+  echo "  -m SIZE : Set Node memory limit in MB (if omitted limit is deduced automatically and swap might be adjusted)"
   echo -e "\n\n"
 }
 
@@ -117,10 +117,10 @@ if [[ $(uname -m) == armv6l ]]; then
   release installation instead."
 fi
 
-# In rare cases you will need to update the npm dependencies
-# This is the case when the file package.json changed
 if [[ $UPDATE_DEPENDENCIES == true ]]; then
-  npm install
+  npm install 
+  # TODO this was used in the install script (not activated for some time). Is one of the options prefered?
+  # npm ci --prefer-offline --no-audit --production
 fi
 
 # Rebuild Web App
