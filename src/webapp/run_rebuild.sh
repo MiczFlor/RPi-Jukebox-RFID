@@ -49,6 +49,7 @@ change_swap() {
 # Need to check free space and limit Node memory usage for PIs with little memory.
 # Adjust swap if needed to have minimum memory available
 calc_nodemem() {
+    echo "calculate usable memory"
     # keep a buffer for the kernel etc.
     local mem_buffer=256
 
@@ -64,26 +65,26 @@ calc_nodemem() {
     swap_free=$((swap_free / 1024))
     total_free=$((total_free / 1024))
 
-    FREE_TO_USE=$((total_free - mem_buffer))
+    local free_to_use=$((total_free - mem_buffer))
 
     if [ "$VERBOSE" == true ]; then
-        echo "Total phys memory : ${mem_total} MB"
-        echo "Free phys memory  : ${mem_free} MB"
-        echo "Total swap memory : ${swap_total} MB"
-        echo "Free swap memory  : ${swap_free} MB"
-        echo "Free total memory : ${total_free} MB"
-        echo "Keep as buffer    : ${mem_buffer} MB"
-        echo -e "Free usable memory (incl. buffer): ${FREE_TO_USE} MB\n"
+        echo "  Total phys memory : ${mem_total} MB"
+        echo "  Free phys memory  : ${mem_free} MB"
+        echo "  Total swap memory : ${swap_total} MB"
+        echo "  Free swap memory  : ${swap_free} MB"
+        echo "  Free total memory : ${total_free} MB"
+        echo "  Keep as buffer    : ${mem_buffer} MB"
+        echo -e "  Free usable memory: ${free_to_use} MB\n"
     fi
 
     if [[ -z $NODEMEM ]]; then
         # mininum memory used for node
         local mem_min=512
-        if [[ $FREE_TO_USE -gt $mem_min ]]; then
-            NODEMEM=$FREE_TO_USE
+        if [[ $free_to_use -gt $mem_min ]]; then
+            NODEMEM=$free_to_use
         else
-            echo "WARN: Not enough memory left on system for build (usable ${FREE_TO_USE} MB, min. ${mem_min} MB)."
-            echo "      Trying to adjust swap size ..."
+            echo "  WARN: Not enough memory left on system for node (usable ${free_to_use} MB, min. ${mem_min} MB)."
+            echo "        Trying to adjust swap size ..."
 
             local add_swap_size=$((mem_min / 2))
             local new_swap_size=$((swap_total + add_swap_size))
@@ -94,30 +95,29 @@ calc_nodemem() {
             filesystem_free=${filesystem_free//M}
 
             if [ "$VERBOSE" == true ]; then
-                echo "      New swap size = $new_swap_size MB"
-                echo "      Additional filesystem space needed = $filesystem_needed MB"
-                echo "      Current free filesystem space = $filesystem_free MB"
+                echo "  New swap size = $new_swap_size MB"
+                echo "  Additional filesystem space needed = $filesystem_needed MB"
+                echo "  Current free filesystem space = $filesystem_free MB"
             fi
 
             if [ "${filesystem_free}" -lt "${filesystem_needed}" ]; then
-                echo "ERROR: Not enough space available on filesystem for swap (free ${filesystem_free} MB, min. ${filesystem_needed} MB). Abort!"
+                echo "  ERROR: Not enough space available on filesystem for swap (free ${filesystem_free} MB, min. ${filesystem_needed} MB). Abort!"
                 exit 1
             elif ! change_swap $new_swap_size ; then
-                echo "ERROR: failed to change swap size. Abort!"
+                echo "  ERROR: failed to change swap size. Abort!"
                 exit 1
             fi
 
             calc_nodemem || return 1
         fi
+
+    elif [[ $NODEMEM -gt $free_to_use ]]; then
+        echo "  ERROR: Requested node memory setting is larger than usable free memory: ${NODEMEM} MB > ${free_to_use} MB (free ${total_free} MB - buffer ${mem_buffer} MB). Abort!"
+        exit 1
     fi
 }
 
 calc_nodemem
-
-if [[ $NODEMEM -gt $FREE_TO_USE ]]; then
-    echo "ERROR: Requested node memory setting is larger than usable free memory: $NODEMEM MB > $FREE_TO_USE MB. Abort!"
-    exit 1
-fi
 
 export NODE_OPTIONS=--max-old-space-size=${NODEMEM}
 
