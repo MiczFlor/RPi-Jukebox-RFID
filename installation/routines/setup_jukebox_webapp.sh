@@ -102,6 +102,9 @@ _jukebox_webapp_check() {
     fi
     if [[ $ENABLE_INSTALL_NODE == true ]] ; then
         verify_apt_packages nodejs
+        if [[ $ENABLE_WEBAPP_BUILD == true ]] ; then
+            verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+        fi
     fi
 
     verify_apt_packages nginx
@@ -116,9 +119,9 @@ _run_setup_jukebox_webapp() {
     fi
     if [[ $ENABLE_INSTALL_NODE == true ]] ; then
         _jukebox_webapp_install_node
-        # Local Web App build during installation does not work at the moment
-        # Needs to be done after reboot! There will be a message at the end of the installation process
-        # _jukebox_webapp_build
+        if [[ $ENABLE_WEBAPP_BUILD == true ]] ; then
+            _jukebox_webapp_build
+        fi
     fi
     _jukebox_webapp_register_as_system_service_with_nginx
     _jukebox_webapp_check

@@ -31,3 +31,4 @@ GIT_USE_SSH=${GIT_USE_SSH:-"true"}
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}
 # Install Node during setup for Web App building. This is only needed for development builds
 ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE:-"false"}
+ENABLE_WEBAPP_BUILD=true

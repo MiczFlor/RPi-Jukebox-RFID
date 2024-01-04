@@ -305,16 +305,28 @@ Do you want to install Node? [Y/n]"
       read -r response
       case "$response" in
         [nN][oO]|[nN])
-          ENABLE_INSTALL_NODE=false
-          ENABLE_WEBAPP_PROD_DOWNLOAD=true
-          ;;
+            ENABLE_INSTALL_NODE=false
+            ENABLE_WEBAPP_PROD_DOWNLOAD=true
+            ;;
         *)
-          # This message will be displayed at the end of the installation process
-          local tmp_fin_message="ATTENTION: You need to build the web app locally with
-           $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-           This must be done after reboot, due to memory restrictions.
-           Read the documentation regarding local Web App builds!"
-          FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+            print_c "Building the webapp takes some time.
+This can be done now or manually later on.
+
+Do you want to build the webapp now? [Y/n]"
+            read -r response
+            case "$response" in
+                [nN][oO]|[nN])
+                    ENABLE_WEBAPP_BUILD=false
+                    # This message will be displayed at the end of the installation process
+                    local tmp_fin_message="ATTENTION: You need to build the web app locally with
+                    $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+                    This must be done after reboot, due to memory restrictions.
+                    Read the documentation regarding local Web App builds!"
+                    FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+                    ;;
+                *)
+                    ;;
+            esac
           ;;
       esac
     fi
@@ -323,6 +335,7 @@ Do you want to install Node? [Y/n]"
   log "ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE}"
   if [ "$ENABLE_INSTALL_NODE" != true ]; then
     log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
+    log "ENABLE_WEBAPP_BUILD=${ENABLE_WEBAPP_BUILD}"
   fi
 }
 
