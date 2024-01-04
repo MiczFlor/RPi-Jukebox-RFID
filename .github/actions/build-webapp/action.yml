@@ -16,4 +16,6 @@ runs:
     - name: run build
       working-directory: ${{ inputs.webapp-root-path }}
       shell: bash
+      env:
+        CI: false
       run: ./run_rebuild.sh -u
