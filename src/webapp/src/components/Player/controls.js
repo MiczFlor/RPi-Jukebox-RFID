@@ -32,15 +32,11 @@ const Controls = () => {
   } = state;
 
   const toggleShuffle = () => {
-    request('shuffle', { random: !isShuffle });
+    request('set_shuffle', { option: 'toggle' });
   }
 
   const toggleRepeat = () => {
-    let mode = null;
-    if (!isRepeat && !isSingle) mode = 'repeat';
-    if (isRepeat && !isSingle) mode = 'single';
-
-    request('repeatmode', { mode });
+    request('set_repeat', { option: 'toggle' });
   }
 
   useEffect(() => {

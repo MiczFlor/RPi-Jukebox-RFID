@@ -109,11 +109,6 @@ const commands = {
     method: 'set_repeat',
     argKeys: ['option'],
   },
-  repeatmode: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'repeatmode',
-  },
   seek: {
     _package: 'player',
     plugin: 'ctrl',
