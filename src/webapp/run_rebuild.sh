@@ -44,7 +44,7 @@ change_swap() {
 #RECURSION_BREAKER=false
 calc_nodemem() {
     # keep a buffer for the kernel etc.
-    local mem_buffer=512
+    local mem_buffer=256
     # Need to check free space and limit Node memory usage
     # for PIs with little memory
     MemTotal=$(grep MemTotal /proc/meminfo | awk '{print $2}')
@@ -71,7 +71,7 @@ calc_nodemem() {
 
   if [[ -z $NODEMEM ]]; then
     # mininum memory used for node
-    local mem_min=256   
+    local mem_min=512
     if [[ $FreeToUse -gt $mem_min ]]; then
         NODEMEM=$FreeToUse
     else
