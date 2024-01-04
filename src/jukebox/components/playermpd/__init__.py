@@ -378,7 +378,7 @@ class PlayerMPD:
         self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
 
     @plugs.tag
-    def set_shuffle(self, option='toggle'):
+    def shuffle(self, option='toggle'):
         if option == 'toggle':
             if self.mpd_status['random'] == '0':
                 self._shuffle(1)
@@ -389,7 +389,7 @@ class PlayerMPD:
         elif option == 'disable':
             self._shuffle(0)
         else:
-            logger.error(f"'{option}' does not exist for set_shuffle")
+            logger.error(f"'{option}' does not exist for 'shuffle'")
 
     # Repeat
     def _repeatmode(self, mode):
@@ -408,7 +408,7 @@ class PlayerMPD:
             self.mpd_client.single(single)
 
     @plugs.tag
-    def set_repeat(self, option='toggle'):
+    def repeat(self, option='toggle'):
         if option == 'toggle':
             if self.mpd_status['repeat'] == '0':
                 self._repeatmode('repeat')
@@ -433,7 +433,7 @@ class PlayerMPD:
         elif option == 'disable':
             self._repeatmode(None)
         else:
-            logger.error(f"'{option}' does not exist for set_repeat")
+            logger.error(f"'{option}' does not exist for 'repeat'")
 
     @plugs.tag
     def get_current_song(self, param):

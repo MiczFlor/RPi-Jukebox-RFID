@@ -28,8 +28,8 @@
           "pause": "Pause",
           "play": "Abspielen",
           "prev_song": "Vorheriger Song",
-          "set_shuffle": "Zufallswiedergabe",
-          "set_repeat": "Wiedergabe wiederholen",
+          "shuffle": "Zufallswiedergabe",
+          "repeat": "Wiedergabe wiederholen",
           "toggle": "Abspielen/Pause umschalten"
         }
       },

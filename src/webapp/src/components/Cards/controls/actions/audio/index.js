@@ -24,7 +24,7 @@ const SelectAudioVolume = ({
           handleActionDataChange={handleActionDataChange}
         />
       }
-      {command === 'set_shuffle' &&
+      {command === 'shuffle' &&
         <OptionsSelector
           actionType="audio_shuffle"
           actionData={actionData}
@@ -37,7 +37,7 @@ const SelectAudioVolume = ({
           ]}
         />
       }
-      {command === 'set_repeat' &&
+      {command === 'repeat' &&
         <OptionsSelector
           actionType="audio_repeat"
           actionData={actionData}

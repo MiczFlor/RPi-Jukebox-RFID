@@ -97,16 +97,16 @@ const commands = {
     plugin: 'ctrl',
     method: 'toggle',
   },
-  set_shuffle: {
+  shuffle: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'set_shuffle',
+    method: 'shuffle',
     argKeys: ['option'],
   },
-  set_repeat: {
+  repeat: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'set_repeat',
+    method: 'repeat',
     argKeys: ['option'],
   },
   seek: {

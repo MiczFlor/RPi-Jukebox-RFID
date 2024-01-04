@@ -28,8 +28,8 @@
           "pause": "Pause",
           "play": "Play",
           "prev_song": "Previous song",
-          "set_shuffle": "Shuffle",
-          "set_repeat": "Repeat",
+          "shuffle": "Shuffle",
+          "repeat": "Repeat",
           "toggle": "Toggle Play/Pause"
         }
       },
