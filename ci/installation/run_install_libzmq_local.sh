@@ -23,8 +23,7 @@ export BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=true
 # n - setup rfid reader
 # n - setup samba
 # n - setup webapp
-# - - install node (only with webapp = y)
-# - - build webapp (only with install node = y)
+# - - build webapp (only with webapp = y)
 # - - setup kiosk mode (only with webapp = y)
 # n - reboot
 

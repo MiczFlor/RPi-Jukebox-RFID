@@ -22,8 +22,7 @@ LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 # n - setup rfid reader
 # n - setup samba
 # n - setup webapp
-# - - install node (only with webapp = y)
-# - - build webapp (only with install node = y)
+# - - build webapp (only with webapp = y)
 # - - setup kiosk mode (only with webapp = y)
 # n - reboot
 

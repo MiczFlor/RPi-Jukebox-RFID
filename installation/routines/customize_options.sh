@@ -283,58 +283,42 @@ Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" || "$CI_RUNNING" == "true" ]]; then
-    ENABLE_INSTALL_NODE=true
     # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
-    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" != true && "$ENABLE_WEBAPP_PROD_DOWNLOAD" != "release-only" ]]; then
       clear_c
-      print_c "--------------------- WEBAPP NODE ---------------------
+      print_c "--------------------- WEBAPP BUILD ----------------------
 
 You are installing from an unofficial branch.
 Therefore a prebuilt web app is not available and
-you will have to build it locally.
+it needs to be build locally.
 This requires Node to be installed.
 
-You can choose to decline the Node installation and
-the lastest prebuilt version from the main repository
-will be installed. This can lead to incompatibilities.
+You can choose to decline and the lastest prebuilt
+version from the main repository will be installed.
+This can lead to incompatibilities.
 
-Do you want to install Node? [Y/n]"
+Do you want to build the webapp? [Y/n]"
       read -r response
       case "$response" in
         [nN][oO]|[nN])
-            ENABLE_INSTALL_NODE=false
             ENABLE_WEBAPP_PROD_DOWNLOAD=true
             ;;
         *)
-            print_c "
-Building the webapp locally takes some time.
-This can be done now or manually after the installation.
-
-Do you want to build the webapp now? [Y/n]"
-            read -r response
-            case "$response" in
-                [nN][oO]|[nN])
-                    ENABLE_WEBAPP_BUILD=false
-                    # This message will be displayed at the end of the installation process
-                    local tmp_fin_message="ATTENTION: You need to build the web app locally with
-                    $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-                    Read the documentation regarding local Web App builds!"
-                    FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
-                    ;;
-                *)
-                    ENABLE_WEBAPP_BUILD=true
-                    ;;
-            esac
-          ;;
+            # This message will be displayed at the end of the installation process
+            local tmp_fin_message="ATTENTION: You have installed from an unofficial branch.
+            If you make changes to the web app sources
+            you need to rebuild it locally with
+            $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+            Read the documentation regarding local web app builds!"
+            FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+            ;;
       esac
     fi
   fi
 
-  log "ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE}"
-  log "ENABLE_WEBAPP_BUILD=${ENABLE_WEBAPP_BUILD}"
   log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
 }
 

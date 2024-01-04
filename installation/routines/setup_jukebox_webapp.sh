@@ -62,7 +62,7 @@ _jukebox_webapp_download() {
   if validate_url ${download_url_commit} ; then
     log "    DOWNLOAD_URL ${download_url_commit}"
     download_from_url ${download_url_commit} ${tar_filename}
-  elif [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true ]] && validate_url ${download_url_latest} ; then
+  elif [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true ]] && validate_url ${download_url_latest} ; then
     log "    DOWNLOAD_URL ${download_url_latest}"
     download_from_url ${download_url_latest} ${tar_filename}
   else
@@ -92,14 +92,11 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
 _jukebox_webapp_check() {
     print_verify_installation
 
-    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
         verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
-    fi
-    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+    else
         verify_apt_packages nodejs
-        if [[ $ENABLE_WEBAPP_BUILD == true ]] ; then
-            verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
-        fi
+        verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
     fi
 
     verify_apt_packages nginx
@@ -109,14 +106,11 @@ _jukebox_webapp_check() {
 }
 
 _run_setup_jukebox_webapp() {
-    if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
         _jukebox_webapp_download
-    fi
-    if [[ $ENABLE_INSTALL_NODE == true ]] ; then
+    else
         _jukebox_webapp_install_node
-        if [[ $ENABLE_WEBAPP_BUILD == true ]] ; then
-            _jukebox_webapp_build
-        fi
+        _jukebox_webapp_build
     fi
     _jukebox_webapp_register_as_system_service_with_nginx
     _jukebox_webapp_check

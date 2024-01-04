@@ -26,9 +26,6 @@ GIT_USE_SSH=${GIT_USE_SSH:-"true"}
 # For non-production builds, the Wep App must be build locally
 # Valid values
 # - release-only: download in release branch only
-# - true: force download even in non-release branch,
+# - true: force download even in non-release branch
 # - false: never download
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}
-# Install Node during setup for Web App building. This is only needed for development builds
-ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE:-"false"}
-ENABLE_WEBAPP_BUILD=false

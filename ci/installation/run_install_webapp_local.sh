@@ -23,7 +23,6 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
-# y - install node
 # y - build webapp
 # y - setup kiosk mode
 # n - reboot
@@ -36,7 +35,6 @@ n
 n
 n
 n
-y
 y
 y
 y
