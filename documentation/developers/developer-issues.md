@@ -52,11 +52,11 @@ $ ./run_rebuild.sh
 
 #### Changing Swap Size
 
-This will set the swapsize to 1024 MB (and will deactivate swapfactor). Change accordingly if you have a SD Card with small capacity.
+This will set the swapsize to 512 MB (and will deactivate swapfactor). Change accordingly if you have a SD Card with small capacity.
 
 ```bash
 sudo dphys-swapfile swapoff
-sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=1024|g" /etc/dphys-swapfile 
+sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=512|g" /etc/dphys-swapfile 
 sudo sed -i "s|^\s*CONF_SWAPFACTOR=|#CONF_SWAPFACTOR=|g" /etc/dphys-swapfile
 sudo dphys-swapfile setup 
 sudo dphys-swapfile swapon
