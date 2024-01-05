@@ -1,6 +1,6 @@
 # Developer Issues
 
-## Building the Webapp on the PI
+## Building the Web App on the PI
 
 ### JavaScript heap out of memory
 

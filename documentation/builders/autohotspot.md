@@ -2,7 +2,7 @@
 
 The Auto-Hotspot function allows the Jukebox to switch between its
 connection between a known WiFi and an automatically generated hotspot
-so that you can still access via SSH or Webapp.
+so that you can still access via SSH or Web App.
 
 > [!IMPORTANT]
 > Please configure the WiFi connection to your home access point before enabling these feature!
@@ -17,10 +17,10 @@ hotspot named `Phoniebox_Hotspot`. You will be able to connect to this
 hotspot using the given password in the installation or the default
 password: `PlayItLoud!`
 
-### Webapp
+### Web App
 
 After connecting to the `Phoniebox_Hotspot` you are able to connect to
-the webapp accessing the website [10.0.0.5](http://10.0.0.5/).
+the Web App accessing the website [10.0.0.5](http://10.0.0.5/).
 
 ### ssh
 
@@ -69,7 +69,7 @@ ieee80211d=1
 
 ## Disabling automatism
 
-Auto-Hotspot can be enabled or disabled using the Webapp.
+Auto-Hotspot can be enabled or disabled using the Web App.
 
 > [!IMPORTANT]
 > Disabling or enabling will keep the last state.

@@ -4,7 +4,7 @@
 # Used e.g. for tests on Docker
 
 # Objective:
-# Test for the WebApp (download) and dependent features path.
+# Test for the Web App (download) and dependent features path.
 
 SOURCE="${BASH_SOURCE[0]}"
 SCRIPT_DIR="$(dirname "$SOURCE")"

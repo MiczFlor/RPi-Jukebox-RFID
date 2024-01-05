@@ -1,13 +1,13 @@
-name: Build Webapp
-description: 'Build Webapp with Node'
+name: Build Web App
+description: 'Build Web App with Node'
 inputs:
   webapp-root-path:
-    description: 'root path of the webapp sources'
+    description: 'root path of the Web App sources'
     required: false
     default: './src/webapp'
 outputs:
   webapp-root-path:
-    description: 'used root path of the webapp sources'
+    description: 'used root path of the Web App sources'
     value: ${{ inputs.webapp-root-path }}
 
 runs:

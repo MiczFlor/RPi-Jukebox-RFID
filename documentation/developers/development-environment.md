@@ -1,6 +1,6 @@
 # Development Environment
 
-You have 3 development options. Each option has its pros and cons. To interact with GPIO or other hardware, it's required to develop directly on a Raspberry Pi. For general development of Python code (Jukebox) or JavaScript (Webapp), we recommend Docker. Developing on your local machine (Linux, Mac, Windows) works as well and requires all dependencies to be installed locally.
+You have 3 development options. Each option has its pros and cons. To interact with GPIO or other hardware, it's required to develop directly on a Raspberry Pi. For general development of Python code (Jukebox) or JavaScript (Web App), we recommend Docker. Developing on your local machine (Linux, Mac, Windows) works as well and requires all dependencies to be installed locally.
 
 - [Development Environment](#development-environment)
   - [Develop in Docker](#develop-in-docker)
@@ -25,7 +25,7 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware 
 2. Boot up your Raspberry Pi.
 3. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
 4. Once the installation has successfully ran, reboot your Pi.
-5. Due to some resource constraints, the Webapp does not build the latest changes and instead consumes the latest official release. To change that, you  need to install NodeJS and build the Webapp locally.
+5. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you  need to install NodeJS and build the Web App locally.
 6. Install NodeJS using the existing installer
 
     ``` bash
@@ -35,15 +35,15 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware 
     ```
 
 7. To free up RAM, reboot your Pi.
-8. Build the Webapp using the existing build command. If the build fails, you might have forgotten to reboot.
+8. Build the Web App using the existing build command. If the build fails, you might have forgotten to reboot.
 
     ``` bash
     cd ~/RPi-Jukebox-RFID/src/webapp; \
     ./run_rebuild.sh -u
     ```
 
-9. The Webapp should now be updated.
-10. To continuously update Webapp, pull the latest changes from your repository and rerun the command above.
+9. The Web App should now be updated.
+10. To continuously update Web App, pull the latest changes from your repository and rerun the command above.
 
 ## Develop on local machine
 

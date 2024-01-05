@@ -146,7 +146,7 @@ Read these threads for details: [thread 1](https://unix.stackexchange.com/questi
 
 The Dockerfile is defined to start all Phoniebox related services.
 
-Open <http://localhost:3000> in your browser to see the web application.
+Open <http://localhost:3000> in your browser to see the Web App.
 
 While the `webapp` container does not require a reload while working on
 it (hot-reload is enabled), you will have to restart your `jukebox`

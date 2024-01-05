@@ -1,4 +1,4 @@
-name: Bundle Webapp and Release
+name: Bundle Web App and Release
 
 on:
   push:
@@ -91,7 +91,7 @@ jobs:
           echo "webapp_bundle_name=webapp-build-${COMMIT_SHA:0:10}.tar.gz" >> $GITHUB_OUTPUT
           echo "webapp_bundle_name_latest=webapp-build-latest.tar.gz" >> $GITHUB_OUTPUT
 
-      - name: Build WebApp
+      - name: Build Web App
         id: build-webapp
         uses: ./.github/actions/build-webapp
 

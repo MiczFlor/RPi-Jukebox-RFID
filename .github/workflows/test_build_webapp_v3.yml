@@ -1,4 +1,4 @@
-name: Test Build Webapp v3
+name: Test Build Web App v3
 
 on:
   schedule:
@@ -29,5 +29,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build WebApp
+      - name: Build Web App
         uses: ./.github/actions/build-webapp

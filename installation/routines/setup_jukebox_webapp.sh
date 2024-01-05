@@ -43,13 +43,13 @@ _jukebox_webapp_install_node() {
 }
 
 _jukebox_webapp_build() {
-  print_lc "  Building web application"
+  print_lc "  Building Web App"
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
   ./run_rebuild.sh -u
 }
 
 _jukebox_webapp_download() {
-  print_lc "  Downloading web application"
+  print_lc "  Downloading Web App"
   local jukebox_version=$(python "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
   local git_head_hash=$(git -C "${INSTALLATION_PATH}" rev-parse --verify --quiet HEAD)
   local git_head_hash_short=${git_head_hash:0:10}
@@ -66,7 +66,7 @@ _jukebox_webapp_download() {
     log "    DOWNLOAD_URL ${download_url_latest}"
     download_from_url ${download_url_latest} ${tar_filename}
   else
-    exit_on_error "No prebuild webapp bundle found!"
+    exit_on_error "No prebuild Web App bundle found!"
   fi
   tar -xzf ${tar_filename}
   rm -f ${tar_filename}
@@ -118,6 +118,6 @@ _run_setup_jukebox_webapp() {
 
 setup_jukebox_webapp() {
     if [ "$ENABLE_WEBAPP" == true ] ; then
-        run_with_log_frame _run_setup_jukebox_webapp "Install web application"
+        run_with_log_frame _run_setup_jukebox_webapp "Install Web App"
     fi
 }

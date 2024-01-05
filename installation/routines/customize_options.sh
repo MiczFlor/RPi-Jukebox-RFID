@@ -189,12 +189,12 @@ Do you want to install Samba? [Y/n]"
 _option_webapp() {
   # ENABLE_WEBAPP
   clear_c
-  print_c "------------------------ WEBAPP -------------------------
+  print_c "------------------------ WEB APP ------------------------
 
 This is only required if you want to use
 a graphical interface to manage your Phoniebox!
 
-Would you like to install the web application? [Y/n]"
+Would you like to install the Web App? [Y/n]"
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -213,7 +213,7 @@ _option_kiosk_mode() {
   print_c "----------------------- KIOSK MODE ----------------------
 
 If you have a screen attached to your RPi,
-this will launch the web application right after boot.
+this will launch the Web App right after boot.
 It will only install the necessary xserver dependencies
 and not the entire RPi desktop environment.
 
@@ -289,10 +289,10 @@ _option_webapp_devel_build() {
     fi
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" != true && "$ENABLE_WEBAPP_PROD_DOWNLOAD" != "release-only" ]]; then
       clear_c
-      print_c "--------------------- WEBAPP BUILD ----------------------
+      print_c "--------------------- WEB APP BUILD ---------------------
 
 You are installing from an unofficial branch.
-Therefore a prebuilt web app is not available and
+Therefore a prebuilt Web App is not available and
 it needs to be build locally.
 This requires Node to be installed.
 
@@ -300,7 +300,7 @@ If you choose to decline the lastest prebuilt
 version from the main repository will be installed.
 This can lead to incompatibilities.
 
-Do you want to build the webapp? [Y/n]"
+Do you want to build the Web App? [Y/n]"
       read -r response
       case "$response" in
         [nN][oO]|[nN])
@@ -309,10 +309,10 @@ Do you want to build the webapp? [Y/n]"
         *)
             # This message will be displayed at the end of the installation process
             local tmp_fin_message="ATTENTION: You have installed from an unofficial branch.
-            If you make changes to the web app sources
+            If you make changes to the Web App sources
             you need to rebuild it locally with
             $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-            Read the documentation regarding local web app builds!"
+            Read the documentation regarding local Web App builds!"
             FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
             ;;
       esac
