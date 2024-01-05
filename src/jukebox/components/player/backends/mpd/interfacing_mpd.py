@@ -13,7 +13,7 @@ from mpd.asyncio import MPDClient
 from components.player.backends import BackendPlayer
 
 logger = logging.getLogger('jb.mpd')
-cfg = jukebox.cfghandler.get_handler('jukebox')
+cfg = jukebox.cfghandler.get_handler('player')
 
 
 def sanitize(path: str):

@@ -16,7 +16,7 @@ import spotipy
 from components.player.backends.spotify.oauth import create_oauth_website
 
 logger = logging.getLogger('jb.spotify')
-cfg = jukebox.cfghandler.get_handler('jukebox')
+cfg = jukebox.cfghandler.get_handler('player')
 
 
 def sanitize(path: str):

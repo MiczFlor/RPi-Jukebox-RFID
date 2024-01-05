@@ -108,6 +108,7 @@ _jukebox_core_build_and_install_pyzmq() {
 _jukebox_core_install_settings() {
   print_lc "  Register Jukebox settings"
   cp -f "${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml" "${SETTINGS_PATH}/jukebox.yaml"
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/player.default.yaml" "${SETTINGS_PATH}/player.yaml"
   cp -f "${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml" "${SETTINGS_PATH}/logger.yaml"
 }
 

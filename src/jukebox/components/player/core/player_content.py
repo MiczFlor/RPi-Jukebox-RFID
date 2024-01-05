@@ -7,7 +7,7 @@ import jukebox.cfghandler
 from jukebox import playlistgenerator
 
 logger = logging.getLogger('jb.player_content')
-cfg = jukebox.cfghandler.get_handler('jukebox')
+cfg = jukebox.cfghandler.get_handler('player')
 
 
 class PlayerData:
