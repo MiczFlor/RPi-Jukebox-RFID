@@ -9,6 +9,7 @@
 ## Configuration
 
 * [Audio](./audio.md)
+* [Spotify](./spotify.md)
 * [RFID](./rfid.md)
 * [Card Database](./card-database.md)
 * [Troubleshooting](./troubleshooting.md)
