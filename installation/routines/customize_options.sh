@@ -152,6 +152,9 @@ play music from spotify.
 
 Note: You need Spotify Premium to run this service!
 
+For more information see documentation:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/builders/spotify.md
+
 Do you want to enable the spotify player? [y/N]"
   read -r response
   case "$response" in
@@ -163,6 +166,11 @@ Do you want to enable the spotify player? [y/N]"
   esac
 
   if [ "$ENABLE_SPOTIFY" = true ]; then
+      print_c "To configure Spotify properly, you need to create
+an App at https://developer.spotify.com/dashboard and provide the
+client_id and client_secret in the following prompts."
+      print_c ""
+      print_c ""
       print_c "Please provide the Spotify username"
       read -r response_username
       SPOT_USERNAME="${response_username}"
@@ -170,11 +178,19 @@ Do you want to enable the spotify player? [y/N]"
       print_c "Please provide the Spotify password"
       read -r response_password
       SPOT_PASSWORD="${response_password}"
+
+      print_c "Please provide the client_id of the Spotify App"
+      read -r response_client_id
+      SPOT_CLIENT_ID="${response_client_id}"
+
+      print_c "Please provide the client_secret of the Spotify App"
+      read -r response_client_secret
+      SPOT_CLIENT_SECRET="${response_client_secret}"
   fi
 
   log "ENABLE_SPOTIFY=${ENABLE_SPOTIFY}"
   if [ "$ENABLE_SPOTIFY" = true ]; then
-    log "Spotify service will be enabled with username ${SPOT_USERNAME}"
+    log "Spotify service will be enabled with username ${SPOT_USERNAME} and client_id ${SPOT_CLIENT_ID}"
   fi
 }
 

@@ -35,6 +35,14 @@ _configure_spotifyd() {
 
 }
 
+_configure_spotipy() {
+    local PLAYER_YAML_FILE="${SETTINGS_PATH}/player.yaml"
+
+    sed -i "s/%%SPOT_CLIENT_ID%%/${SPOT_CLIENT_ID}/g" "${PLAYER_YAML_FILE}"
+    sed -i "s/%%SPOT_CLIENT_SECRET%%/${SPOT_CLIENT_SECRET}/g" "${PLAYER_YAML_FILE}"
+
+}
+
 
 _spotifyd_check() {
     print_verify_installation
@@ -52,6 +60,7 @@ _run_setup_spotifyd() {
     _install_spotifyd_script
     _install_spotifyd_service
     _configure_spotifyd
+    _configure_spotipy
     _spotifyd_check
 }
 
