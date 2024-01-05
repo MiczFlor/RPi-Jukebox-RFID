@@ -46,6 +46,7 @@ jobs:
         cache_key: ${{ steps.vars.outputs.cache_key }}
         image_file_name: ${{ steps.vars.outputs.image_file_name }}
         image_tag_name: ${{ steps.vars.outputs.image_tag_name }}
+        docker_run_options: ${{ steps.vars.outputs.docker_run_options }}
 
     # create local docker registry to use locally build images
     services:
@@ -83,6 +84,7 @@ jobs:
       id: vars
       env:
         LOCAL_REGISTRY_PORT: ${{ inputs.local_registry_port }}
+        PLATFORM: ${{ inputs.platform }}
       run: |
         echo "image_tag_name=${{ steps.pre-vars.outputs.image_tag_name }}" >> $GITHUB_OUTPUT
         echo "image_tag_name_local_base=localhost:${{ env.LOCAL_REGISTRY_PORT }}/${{ steps.pre-vars.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
@@ -90,6 +92,9 @@ jobs:
         echo "image_file_path=./${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
         echo "cache_scope=${{ steps.pre-vars.outputs.cache_scope }}" >> $GITHUB_OUTPUT
         echo "cache_key=${{ steps.pre-vars.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+        if [ "${{ env.PLATFORM }}" == "linux/arm/v6" ] ; then
+            echo "docker_run_options=-e QEMU_CPU=arm1176" >> $GITHUB_OUTPUT
+        fi
 
     # Build base image for debian version name. Layers will be cached and image pushes to local registry
     - name: Build Image - Base
@@ -167,7 +172,7 @@ jobs:
       uses: tj-actions/docker-run@v2
       with:
         image: ${{ needs.build.outputs.image_tag_name }}
-        options: --platform ${{ inputs.platform }} --user ${{ env.TEST_USER_NAME }} --init
+        options: ${{ needs.build.outputs.docker_run_options }} --platform ${{ inputs.platform }} --user ${{ env.TEST_USER_NAME }} --init
         name: ${{ matrix.test_script }}
         args: |
           ./${{ matrix.test_script }}
