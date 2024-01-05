@@ -56,8 +56,8 @@ sudo -u mpd speaker-test -t wav -c 2
 """  # noqa: E501
 # Warum ist "Second Swipe" im Player und nicht im RFID Reader?
 # Second swipe ist abhängig vom Player State - nicht vom RFID state.
-# Beispiel: RFID triggered Folder1, Web App triggered Folder2, RFID Folder1: 
-# Dann muss das 2. Mal Folder1 auch als "first swipe" gewertet werden. 
+# Beispiel: RFID triggered Folder1, Web App triggered Folder2, RFID Folder1:
+# Dann muss das 2. Mal Folder1 auch als "first swipe" gewertet werden.
 # Wenn der RFID das basierend auf IDs macht, kann der nicht  unterscheiden und glaubt es ist 2. Swipe.
 # Beispiel 2: Jemand hat RFID Reader (oder 1x RFID und 1x Barcode Scanner oder so) angeschlossen. Liest zuerst Karte mit
 # Reader 1 und dann mit Reader 2: Reader 2 weiß nicht, was bei Reader 1 passiert ist und denkt es ist 1. swipe.
