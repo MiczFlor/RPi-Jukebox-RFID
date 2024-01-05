@@ -21,6 +21,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
+# n - setup Spotify
 # n - setup rfid reader
 # y - setup samba
 # y - setup webapp
@@ -32,6 +33,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 n
 n
 y
+n
 n
 n
 n
