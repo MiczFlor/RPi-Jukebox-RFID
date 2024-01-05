@@ -56,16 +56,16 @@ jobs:
         ./run_flake8.sh
     - name: Generate docstring
       run: |
-        # If commited docstring is not up to date, this triggers a modified file in git
+        # If commited docstring is not up to date, this triggers a dirty git
         ./run_docgeneration.sh
-    - name: Check docstring is up to date (if no modified file in git)
+    - name: Check docstring is up to date (if git is not dirty)
       uses: CatChen/check-git-status-action@v1
       with:
         fail-if-not-clean: true 
         push-if-not-clean: false 
-        request-changes-if-not-clean: true 
-        request-changes-token: ${{ secrets.GITHUB_TOKEN }}
-        request-changes-comment: 'Please execute ./run_docgeneration.sh, to ensure docstrings are generated.'
+        request-changes-if-not-clean: false 
+        #request-changes-token: ${{ secrets.GITHUB_TOKEN }}
+        #request-changes-comment: 'Please execute ./run_docgeneration.sh, to ensure docstrings are generated.'
         targets: './documentation/developers/docstring'
 
   finish:
