@@ -296,7 +296,7 @@ Therefore a prebuilt web app is not available and
 it needs to be build locally.
 This requires Node to be installed.
 
-You can choose to decline and the lastest prebuilt
+If you choose to decline the lastest prebuilt
 version from the main repository will be installed.
 This can lead to incompatibilities.
 

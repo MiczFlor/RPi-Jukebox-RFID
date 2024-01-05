@@ -125,7 +125,7 @@ echo "Setting Node Options:"
 env | grep NODE
 
 if [[ $(uname -m) == armv6l ]]; then
-    echo "  You are running on a hardware with less resources. Building
+    echo "  You are running a hardware with limited resources. Building
     the webapp might fail. If so, try to install the stable
     release installation instead."
 fi
