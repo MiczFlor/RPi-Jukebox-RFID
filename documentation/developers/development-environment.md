@@ -22,27 +22,29 @@ The full setup is running on the RPi and you access files via SSH. Pretty easy t
 We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware won\'t be needed in production, but it can be slow while developing.
 
 1. Install the latest Pi OS on a SD card.
-2. Boot up your Raspberry Pi.
-3. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
-4. Once the installation has successfully ran, reboot your Pi.
-5. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you need to install NodeJS and build the Web App locally.
-6. Install NodeJS using the recommended nodesource setup (https://github.com/nodesource/distributions)
+1. Boot up your Raspberry Pi.
+1. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
+1. Once the installation has successfully ran, reboot your Pi.
+1. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you need to install NodeJS and build the Web App locally.
+1. Install NodeJS using the recommended setup (https://deb.nodesource.com/)
 
     ``` bash
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - &&\
-    sudo apt-get install -y nodejs
+    sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
+    sudo mkdir -p /etc/apt/keyrings
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+    sudo apt-get -y update && sudo apt-get -y install nodejs
     ```
 
-7. To free up RAM, reboot your Pi.
-8. Build the Web App using the existing build command. If the build fails, you might have forgotten to reboot.
+1. Build the Web App using the existing build command. If the build fails, a reboot might help.
 
     ``` bash
     cd ~/RPi-Jukebox-RFID/src/webapp; \
     ./run_rebuild.sh -u
     ```
 
-9. The Web App should now be updated.
-10. To continuously update Web App, pull the latest changes from your repository and rerun the command above.
+1. The Web App should now be updated.
+1. To continuously update Web App, pull the latest changes from your repository and rerun the command above.
 
 ## Develop on local machine
 
