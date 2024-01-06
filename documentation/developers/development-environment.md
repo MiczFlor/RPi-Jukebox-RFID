@@ -25,13 +25,12 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware 
 2. Boot up your Raspberry Pi.
 3. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
 4. Once the installation has successfully ran, reboot your Pi.
-5. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you  need to install NodeJS and build the Web App locally.
-6. Install NodeJS using the existing installer
+5. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you need to install NodeJS and build the Web App locally.
+6. Install NodeJS using the recommended nodesource setup (https://github.com/nodesource/distributions)
 
     ``` bash
-    cd ~/RPi-Jukebox-RFID/installation/routines; \
-    source setup_jukebox_webapp.sh; \
-    _jukebox_webapp_install_node
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - &&\
+    sudo apt-get install -y nodejs
     ```
 
 7. To free up RAM, reboot your Pi.

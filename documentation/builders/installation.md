@@ -97,7 +97,8 @@ cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://ra
 This will switch directly to the specified feature branch during installation.
 
 > [!NOTE]
-> For all branches *except* the current Release future3/main, you will need to build the Web App locally on the Pi. This is not part of the installation process due to memory limitation issues. See [Developer steps to install](../developers/development-environment.md#steps-to-install)
+> For all branches *except* the current Release future3/main, the Web App needs to be build locally on the Pi. This is part of the installation process.
+> If you make changes to the Web App sources you need to rebuild it. See [Developer steps to install](../developers/development-environment.md#steps-to-install)
 
 If you suspect an error you can monitor the installation-process with
 
