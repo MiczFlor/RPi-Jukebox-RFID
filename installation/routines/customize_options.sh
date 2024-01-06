@@ -308,7 +308,7 @@ Do you want to build the Web App? [Y/n]"
             ;;
         *)
             # This message will be displayed at the end of the installation process
-            local tmp_fin_message="ATTENTION: You have installed from an unofficial branch.
+            local tmp_fin_message="ATTENTION:  You have installed from an unofficial branch.
             If you make changes to the Web App sources
             you need to rebuild it locally with
             $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
