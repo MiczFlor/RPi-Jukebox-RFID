@@ -3,43 +3,62 @@
 # Constants
 WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
-# For ARMv7+
+# Node major version used.
+# If changed also update in .github\actions\build-webapp\action.yml
 NODE_MAJOR=20
-# For ARMv6
-# To update version, follow these links
-# https://github.com/sdesalas/node-pi-zero
-# https://github.com/nodejs/unofficial-builds/
-NODE_SOURCE_EXPERIMENTAL="https://raw.githubusercontent.com/sdesalas/node-pi-zero/master/install-node-v16.3.0.sh"
+# Node version for ARMv6 (unofficial builds)
+NODE_ARMv6_VERSION=v20.10.0
 
 _jukebox_webapp_install_node() {
-  sudo apt-get -y update
-
-  if which node > /dev/null; then
-    print_lc "  Found existing NodeJS. Hence, updating NodeJS"
-    sudo npm cache clean -f
-    sudo npm install --silent -g n
-    sudo n --quiet latest
-    sudo npm update --silent -g
-  else
     print_lc "  Install NodeJS"
 
-    # Zero and older versions of Pi with ARMv6 only
-    # support experimental NodeJS
-    if [[ $(uname -m) == "armv6l" ]]; then
-      wget -O - ${NODE_SOURCE_EXPERIMENTAL} | sudo bash
-      sudo apt-get -qq -y install nodejs
-      sudo npm install --silent -g npm
+    local node_installed=$(node -v)
+    local arch=$(uname -m)
+    if [[ "$arch" == "armv6l" ]]; then
+        if [ "$node_installed" == "$NODE_ARMv6_VERSION" ]; then
+            print_lc "    Skipping. NodeJS already installed"
+        else
+            # For ARMv6 unofficial build
+            # https://github.com/nodejs/unofficial-builds/
+            local node_tmp_dir="${HOME_PATH}/node"
+            local node_install_dir=/usr/local/lib/nodejs
+            local node_filename="node-${NODE_ARMv6_VERSION}-linux-${arch}"
+            local node_tar_filename="${node_filename}.tar.gz"
+            node_download_url="https://unofficial-builds.nodejs.org/download/release/${NODE_ARMv6_VERSION}/${node_tar_filename}"
+
+            mkdir -p "${node_tmp_dir}" && cd "${node_tmp_dir}" || exit_on_error
+            download_from_url ${node_download_url} ${node_tar_filename}
+            tar -xzf ${node_tar_filename}
+            rm -rf ${node_tar_filename}
+
+            # see https://github.com/nodejs/help/wiki/Installation
+            # Remove existing symlinks
+            sudo unlink /usr/bin/node
+            sudo unlink /usr/bin/npm
+            sudo unlink /usr/bin/npx
+
+            # Clear existing nodejs and copy new files
+            sudo rm -rf "${node_install_dir}"
+            sudo mv "${node_filename}" "${node_install_dir}"
+
+            sudo ln -s "${node_install_dir}/bin/node" /usr/bin/node
+            sudo ln -s "${node_install_dir}/bin/npm" /usr/bin/npm
+            sudo ln -s "${node_install_dir}/bin/npx" /usr/bin/npx
+
+            cd "${HOME_PATH}" || exit_on_error
+            rm -rf "${node_tmp_dir}"
+        fi
     else
-      # install NodeJS and npm as recommended in
-      # https://github.com/nodesource/distributions
-      sudo apt-get install -y ca-certificates curl gnupg
-      sudo mkdir -p /etc/apt/keyrings
-      curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-      echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-      sudo apt-get update
-      sudo apt-get install -y nodejs
+        if [[ "$node_installed" == "v${NODE_MAJOR}."* ]]; then
+            print_lc "    Skipping. NodeJS already installed"
+        else
+            sudo apt-get remove -y nodejs
+            # install NodeJS as recommended in
+            # https://github.com/nodesource/distributions
+            curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | sudo bash - &&\
+            sudo apt-get install -y nodejs
+        fi
     fi
-  fi
 }
 
 _jukebox_webapp_build() {
@@ -75,7 +94,7 @@ _jukebox_webapp_download() {
 
 _jukebox_webapp_register_as_system_service_with_nginx() {
   print_lc "  Install and configure nginx"
-  sudo apt-get -qq -y update
+  sudo apt-get -y update
   sudo apt-get -y purge apache2
   sudo apt-get -y install nginx
 
@@ -95,7 +114,16 @@ _jukebox_webapp_check() {
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
         verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
     else
-        verify_apt_packages nodejs
+        local arch=$(uname -m)
+        if [[ "$arch" == "armv6l" ]]; then
+            local node_installed=$(node -v)
+            log "  Verify 'node' is installed"
+            test ! "${node_installed}" == "${NODE_ARMv6_VERSION}" && exit_on_error "ERROR: 'node' not in expected version: '${node_installed}' instead of '${NODE_ARMv6_VERSION}'!"
+            log "  CHECK"
+        else
+            verify_apt_packages nodejs
+        fi
+
         verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
     fi
 
