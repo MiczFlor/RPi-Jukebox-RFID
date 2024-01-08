@@ -33,9 +33,9 @@ _jukebox_webapp_install_node() {
 
             # see https://github.com/nodejs/help/wiki/Installation
             # Remove existing symlinks
-            sudo unlink /usr/bin/node
-            sudo unlink /usr/bin/npm
-            sudo unlink /usr/bin/npx
+            sudo unlink /usr/bin/node 2>/dev/null
+            sudo unlink /usr/bin/npm 2>/dev/null
+            sudo unlink /usr/bin/npx 2>/dev/null
 
             # Clear existing nodejs and copy new files
             sudo rm -rf "${node_install_dir}"
