@@ -119,7 +119,7 @@ _jukebox_webapp_check() {
     else
         local arch=$(uname -m)
         if [[ "$arch" == "armv6l" ]]; then
-            local node_version_installed=$(node -v 2>/dev/null))
+            local node_version_installed=$(node -v 2>/dev/null)
             log "  Verify 'node' is installed"
             test ! "${node_version_installed}" == "${NODE_ARMv6_VERSION}" && exit_on_error "ERROR: 'node' not in expected version: '${node_version_installed}' instead of '${NODE_ARMv6_VERSION}'!"
             log "  CHECK"
