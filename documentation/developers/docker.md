@@ -30,7 +30,7 @@ need to adapt some of those commands to your needs.
     $ cp ./resources/default-settings/jukebox.default.yaml ./shared/settings/jukebox.yaml
     ```
 
-    * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
+    * Override/Merge the values from the following [Override file](../../docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
 4. Change directory into the `./shared/audiofolders`
