@@ -13,6 +13,7 @@ import jukebox.cfghandler
 from spotipy.oauth2 import SpotifyOAuth
 import spotipy
 
+from components.player.backends import BackendPlayer
 from components.player.backends.spotify.oauth import create_oauth_website
 
 logger = logging.getLogger('jb.spotify')
@@ -23,7 +24,7 @@ def sanitize(path: str):
     return os.path.normpath(path).lstrip('./')
 
 
-class SPOTBackend:
+class SPOTBackend(BackendPlayer):
     def __init__(self, player_status, event_loop):
         self.loop = event_loop
         self.player_status = player_status
@@ -84,9 +85,11 @@ class SPOTBackend:
         return self.spot_client.next_track()
 
     def toggle(self):
+        # ToDo: Implement as soon as spotify is working
         pass
 
     def get_queue(self):
+        # ToDo: Implement as soon as spotify is working
         pass
 
     @plugin.tag
