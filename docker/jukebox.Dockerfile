@@ -4,7 +4,6 @@ FROM debian:bullseye-slim
 # Raspberry Pi environment as possible.
 RUN apt-get update && apt-get install -y \
     libasound2-dev \
-    libzmq3-dev \
     pulseaudio \
     pulseaudio-utils \
     --no-install-recommends \
@@ -26,14 +25,18 @@ RUN apt-get update && apt-get install -qq -y \
     espeak mpc mpg123 git ffmpeg spi-tools netcat \
     python3 python3-venv python3-dev python3-mutagen
 
+# Copy in the source code using the correct permissions
+COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
+
+# Switch to the `$USER` (typically `pi`)
 USER ${USER}
 WORKDIR ${HOME}
 
+# Initialize venv
 ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
 RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
@@ -47,8 +50,7 @@ RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     rm -f libzmq.tar.gz;
 
 RUN export ZMQ_PREFIX=${PREFIX} && export ZMQ_DRAFT_API=1
-#RUN pip install -v --no-binary pyzmq --pre pyzmq
-RUN pip install -v --no-binary=:all: pyzmq --pre pyzmq
+RUN pip install -v --no-binary pyzmq --pre pyzmq
 
 EXPOSE 5555 5556
 

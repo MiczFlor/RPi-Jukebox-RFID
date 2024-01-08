@@ -1,12 +1,13 @@
 # Development Environment
 
-
-
 You have 3 development options. Each option has its pros and cons. To interact with GPIO or other hardware, it's required to develop directly on a Raspberry Pi. For general development of Python code (Jukebox) or JavaScript (Webapp), we recommend Docker. Developing on your local machine (Linux, Mac, Windows) works as well and requires all dependencies to be installed locally.
 
-* [Develop in Docker](#develop-in-docker)
-* [Develop on Raspberry Pi](#develop-on-raspberry-pi)
-* [Develop on local machine](#develop-on-local-machine)
+- [Development Environment](#development-environment)
+  - [Develop in Docker](#develop-in-docker)
+  - [Develop on Raspberry Pi](#develop-on-raspberry-pi)
+    - [Steps to install](#steps-to-install)
+  - [Develop on local machine](#develop-on-local-machine)
+    - [Using WSL](#using-wsl)
 
 ## Develop in Docker
 
@@ -55,3 +56,14 @@ pip install pyzmq
 ```
 
 You will have to start Jukebox core application and the WebUI separately. The MPD usually runs as a service.
+
+### Using WSL
+
+You can also use WSL on Windows 10 or 11. This section describes how to use WSL with Visual Studio Code.
+
+1. Install a Debian or Ubuntu image from Microsoft Store
+2. Install the extension [Remote Explorer](https://marketplace.visualstudio.com/items?itemName=ms-vscode.remote-explorer) in Visual Studio Code
+3. Select Remote Explorer
+4. Select "WSL Targets"
+5. Right-click on the previously installed WSL image and select "Connect in Current/New Window"
+6. Follow the instructions from above

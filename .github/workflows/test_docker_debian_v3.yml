@@ -5,9 +5,29 @@ on:
     # run at 17:00 every sunday
     - cron: '0 17 * * 0'
   push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '.github/workflows/test_docker_debian*.yml'
+        - 'installation/**'
+        - 'ci/**'
+        - 'resources/**'
+        - 'src/jukebox/jukebox/version.py'
+        - 'packages*.txt'
+        - 'requirements*.txt'
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ future3/develop ]
+    branches:
+        - future3/develop
+        - future3/main
+    paths:
+        - '.github/workflows/test_docker_debian*.yml'
+        - 'installation/**'
+        - 'ci/**'
+        - 'resources/**'
+        - 'src/jukebox/jukebox/version.py'
+        - 'packages*.txt'
+        - 'requirements*.txt'
 
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant

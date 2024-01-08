@@ -55,16 +55,26 @@ _jukebox_webapp_build() {
 
 _jukebox_webapp_download() {
   print_lc "  Downloading web application"
-  local JUKEBOX_VERSION=$(get_version_string "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
-  local TAR_FILENAME="webapp-build.tar.gz"
-  local DOWNLOAD_URL="https://github.com/MiczFlor/RPi-Jukebox-RFID/releases/download/v${JUKEBOX_VERSION}/webapp-v${JUKEBOX_VERSION}.tar.gz"
-  log "    DOWNLOAD_URL: ${DOWNLOAD_URL}"
+  local jukebox_version=$(python "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
+  local git_head_hash=$(git -C "${INSTALLATION_PATH}" rev-parse --verify --quiet HEAD)
+  local git_head_hash_short=${git_head_hash:0:10}
+  local tar_filename="webapp-build.tar.gz"
+  # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
+  local download_url_commit="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-${git_head_hash_short}.tar.gz"
+  local download_url_latest="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-latest.tar.gz"
 
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
-  wget --quiet ${DOWNLOAD_URL} -O ${TAR_FILENAME}
-  tar -xzf ${TAR_FILENAME}
-  rm -f ${TAR_FILENAME}
+  if validate_url ${download_url_commit} ; then
+    log "    DOWNLOAD_URL ${download_url_commit}"
+    download_from_url ${download_url_commit} ${tar_filename}
+  elif [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true ]] && validate_url ${download_url_latest} ; then
+    log "    DOWNLOAD_URL ${download_url_latest}"
+    download_from_url ${download_url_latest} ${tar_filename}
+  else
+    exit_on_error "No prebuild webapp bundle found!"
+  fi
+  tar -xzf ${tar_filename}
+  rm -f ${tar_filename}
   cd "${INSTALLATION_PATH}" || exit_on_error
 }
 

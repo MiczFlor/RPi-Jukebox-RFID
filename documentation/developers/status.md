@@ -107,10 +107,9 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [ ] Folder configuration (_in progress_)
   - [ ] [Reference](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour)
   - [ ] Resume: Save and restore position (how interact with shuffle?)
-  - [ ] Single: Enable mpc single
-  - [ ] Shuffle: Enable mpc random (not shuffle)
-    - Rename to random, as this is mpc random
-  - [ ] Loop: Loop playlist
+  - [ ] Repeat Playlist
+  - [ ] Repeat Song
+  - [ ] Shuffle
 
 ### MPD Player
 
@@ -227,7 +226,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
   - [x] Enable/Disable Auto-Hotspot
 - [x] `run_npm_build` script
   - [x] Must consider `export NODE_OPTIONS=--max-old-space-size=512`
-- [ ] Upload audio files via WebUI https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138
+- [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
 
 ## Installation Procedure
 

@@ -39,8 +39,12 @@ project check out the [documentation of Version 2](https://github.com/MiczFlor/R
 
 ### Where are we? Help wanted!
 
-The initial proof-of-concept phase has been left behind and there is quite some functionality available already.
-This is still an ongoing process but the WebUI and RFID-triggered playback of local files work.
+Version 3 has reached a mature state and will soon be the default version.
+However, some features may still be missing. Please check the [Feature Status](./developers/status.md), if YOUR feature is already implemented.
+
+> ![NOTE] If version 3 has all the features you need, we recommend using Version 3.
+
+If there is a feature missing, please open an issue.
 
 Features/files from version 2.X will only be copied/merged once they can be integrated and tested.
 If you don't find your v2.X contributions, it doesn't mean they are obsolete. Things will be integrated step by step.
