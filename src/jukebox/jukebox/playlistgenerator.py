@@ -55,8 +55,6 @@ import requests
 
 from typing import (List)
 
-from components.player.core import player_content
-
 logger = logging.getLogger('jb.plgen')
 
 # From .xml podcasts, need to parse out these strings:

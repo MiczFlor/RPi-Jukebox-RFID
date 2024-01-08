@@ -38,4 +38,3 @@ def create_oauth_website(auth_manager):
         auth_url = auth_manager.get_authorize_url()
         return auth_url
     return app
-

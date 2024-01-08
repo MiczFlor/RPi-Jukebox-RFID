@@ -35,7 +35,9 @@ class SPOTBackend(BackendPlayer):
                                             value='http://localhost:3001')
 
         spot_scope = "user-read-playback-state,user-modify-playback-state,streaming"
-        self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, cache_path=os.path.abspath(self.cache_file))
+        self.auth_manager = SpotifyOAuth(open_browser=False, scope=spot_scope, client_id=self.client_id,
+                                         client_secret=self.client_secret, redirect_uri=self.redirect_uri,
+                                         cache_path=os.path.abspath(self.cache_file))
         self.access_token = ""
         self.spot_client = None
 
@@ -50,7 +52,8 @@ class SPOTBackend(BackendPlayer):
             self.access_token = token_info['access_token']
         else:
             spotify_oauth_website = create_oauth_website(self.auth_manager)
-            self.thread = threading.Thread(target=spotify_oauth_website.run, kwargs={'host': '', 'port': 3001, 'debug': True})
+            self.thread = threading.Thread(target=spotify_oauth_website.run,
+                                           kwargs={'host': '', 'port': 3001, 'debug': True})
             self.thread.daemon = True
             self.thread.start()
 
