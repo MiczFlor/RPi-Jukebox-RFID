@@ -25,11 +25,11 @@ To control the playback (spotipy), you need to create an app as Spotify develope
 
 The spotifyd daemon is using the username and password of your Spotify account.
 
-If the credentials changed, you can update them in the config file located at `/etc/spotifyd.conf`
+If the credentials have changed, you can update them in the config file located at `/etc/spotifyd.conf`
 
 ### spotipy
 
-Spotipy is using `client_id` and `client_secret` to controll the playback of the Phoniebox.
+Spotipy is using `client_id` and `client_secret` to control the playback of the Phoniebox.
 
 To update the credentials, please modify the file located at `~/RPi-Jukebox-RFID/shared/settings/player.yaml`
 

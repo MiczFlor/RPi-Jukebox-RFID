@@ -52,7 +52,6 @@ _spotifyd_check() {
     verify_files_exists "${SPOTIFYD_TARGET_FILE}"
 
     verify_file_contains_string "${SPOT_USERNAME}" "${SPOTIFYD_CONFIG_TARGET_FILE}"
-    verify_file_contains_string "${SPOT_PASSWORD}" "${SPOTIFYD_CONFIG_TARGET_FILE}"
 
 }
 

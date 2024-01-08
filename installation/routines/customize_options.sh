@@ -148,12 +148,12 @@ _option_spotify() {
   print_c "---------------------- SPOTIFY ----------------------
 
 Installs an additional player, so that you can
-play music from spotify.
+play music from spotify. You will need to create
+an app in the Spotify developer dashboard to use
+Spotify properly
 
-Note: You need Spotify Premium to run this service!
+Note: Spotify Premium is needed to operate player!
 
-For more information see documentation:
-https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/builders/spotify.md
 
 Do you want to enable the spotify player? [y/N]"
   read -r response

@@ -63,7 +63,10 @@ class MPDBackend(BackendPlayer):
         return await self.client.connect(self.host, self.port)
 
     def connect(self):
-        # May raise: mpd.base.ConnectionError: Can not send command to disconnected client
+        """
+        Connect to the MPD backend
+        :raises: mpd.base.ConnectionError
+        """
         result = asyncio.run_coroutine_threadsafe(self._connect(), self.loop).result()
         logger.debug(f"Connected to MPD version {self.client.mpd_version} @ {self.host}:{self.port}")
         return result

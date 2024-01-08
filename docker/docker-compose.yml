@@ -15,9 +15,9 @@ services:
       - PULSE_SERVER=tcp:host.docker.internal:4713
     restart: unless-stopped
     volumes:
-      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders
-      - ../shared/playlists:/home/pi/.config/mpd/playlists
-      - ./config/docker.pulse.mpd.conf://home/pi/.config/mpd/mpd.conf
+      - ../shared/audiofolders:/root/RPi-Jukebox-RFID/shared/audiofolders
+      - ../shared/playlists:/root/.config/mpd/playlists
+      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
 
   jukebox:
     build:
@@ -41,9 +41,9 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
-      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
-      - ./config/docker.pulse.mpd.conf:/home/pi/.config/mpd/mpd.conf
+      - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
+      - ../shared:/root/RPi-Jukebox-RFID/shared
+      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
     command: python run_jukebox.py
 
   webapp:
