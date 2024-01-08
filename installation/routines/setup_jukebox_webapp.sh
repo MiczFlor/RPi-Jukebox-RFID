@@ -12,10 +12,10 @@ NODE_ARMv6_VERSION=v20.10.0
 _jukebox_webapp_install_node() {
     print_lc "  Install NodeJS"
 
-    local node_installed=$(node -v)
+    local node_version_installed=$(node -v 2>/dev/null)
     local arch=$(uname -m)
     if [[ "$arch" == "armv6l" ]]; then
-        if [ "$node_installed" == "$NODE_ARMv6_VERSION" ]; then
+        if [ "$node_version_installed" == "$NODE_ARMv6_VERSION" ]; then
             print_lc "    Skipping. NodeJS already installed"
         else
             # For ARMv6 unofficial build
@@ -49,7 +49,7 @@ _jukebox_webapp_install_node() {
             rm -rf "${node_tmp_dir}"
         fi
     else
-        if [[ "$node_installed" == "v${NODE_MAJOR}."* ]]; then
+        if [[ "$node_version_installed" == "v${NODE_MAJOR}."* ]]; then
             print_lc "    Skipping. NodeJS already installed"
         else
             sudo apt-get -y remove nodejs
@@ -119,9 +119,9 @@ _jukebox_webapp_check() {
     else
         local arch=$(uname -m)
         if [[ "$arch" == "armv6l" ]]; then
-            local node_installed=$(node -v)
+            local node_version_installed=$(node -v 2>/dev/null))
             log "  Verify 'node' is installed"
-            test ! "${node_installed}" == "${NODE_ARMv6_VERSION}" && exit_on_error "ERROR: 'node' not in expected version: '${node_installed}' instead of '${NODE_ARMv6_VERSION}'!"
+            test ! "${node_version_installed}" == "${NODE_ARMv6_VERSION}" && exit_on_error "ERROR: 'node' not in expected version: '${node_version_installed}' instead of '${NODE_ARMv6_VERSION}'!"
             log "  CHECK"
         else
             verify_apt_packages nodejs
