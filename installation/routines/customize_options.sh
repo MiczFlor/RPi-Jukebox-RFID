@@ -327,22 +327,19 @@ Do you want to install Node? [Y/n]"
 }
 
 _run_customize_options() {
-  _option_ipv6
-  _option_static_ip
-  _option_autohotspot
-  _option_bluetooth
-  _option_disable_onboard_audio
-  _option_mpd
-  _option_rfid_reader
-  _option_samba
-  _option_webapp
+  _option_ipv6        # Optional: Not required for installation
+  _option_static_ip   # Optional: Not required for installation
+  _option_autohotspot # Optional: Not required for installation
+  _option_bluetooth   # Optional: Not required for installation
+  _option_disable_onboard_audio # Optional: Should be merged with other audio installations, like HifiBerry
+  _option_mpd         # !!Required, without options
+  _option_rfid_reader # !!Required, with options
+  _option_samba       # !!Required, without options
+  _option_webapp      # !!Required, without options
   if [[ $ENABLE_WEBAPP == true ]] ; then
-    _option_webapp_devel_build
-    _option_kiosk_mode
+    _option_webapp_devel_build # Optional: Not required for installation
+    _option_kiosk_mode # Optional: Not required for installation
   fi
-  # Bullseye is currently under active development and should be updated in any case.
-  # Hence, removing the step below as it becomse mandatory
-  # _options_update_raspi_os
 }
 
 customize_options() {
