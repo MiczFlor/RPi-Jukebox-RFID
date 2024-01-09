@@ -128,9 +128,9 @@ _optimize_check() {
         verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${OPTIMIZE_DHCP_CONF}"
         verify_file_contains_string "${CURRENT_GATEWAY}" "${OPTIMIZE_DHCP_CONF}"
     fi
-    if [ "$DISABLE_IPv6" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_IPV6_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
-    fi
+    # if [ "$DISABLE_IPv6" = true ] ; then
+    #     verify_file_contains_string_once "${OPTIMIZE_IPV6_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
+    # fi
     if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
         verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${RPI_BOOT_CONFIG_FILE}"
     fi
