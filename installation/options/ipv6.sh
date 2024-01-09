@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source ../../includes/02_helpers.sh
+source ../includes/02_helpers.sh
 
 if [ -z "$1" ] || { [ "$1" != "enable" ] && [ "$1" != "disable" ]; }; then
     print_lc "Error: Invalid or no argument provided.

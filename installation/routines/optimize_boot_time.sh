@@ -63,7 +63,7 @@ EOF
 
 _optimize_ipv6_arp() {
   if [ "$DISABLE_IPv6" = true ] ; then
-    ./options/ipv6.sh disable
+    ./../options/ipv6.sh disable
   fi
 }
 
