@@ -25,12 +25,9 @@ _optimize_disable_irrelevant_services() {
   sudo systemctl disable apt-daily-upgrade.timer
 }
 
-# TODO: If false, actually make sure bluetooth is enabled
 _optimize_handle_bluetooth() {
   if [ "$DISABLE_BLUETOOTH" = true ] ; then
-    print_lc "  Disable bluetooth"
-    sudo systemctl disable hciuart.service
-    sudo systemctl disable bluetooth.service
+    ./../options/bluetooth.sh disable
   fi
 }
 
@@ -117,10 +114,10 @@ _optimize_check() {
     verify_optional_service_enablement apt-daily.timer disabled
     verify_optional_service_enablement apt-daily-upgrade.timer disabled
 
-    if [ "$DISABLE_BLUETOOTH" = true ] ; then
-        verify_optional_service_enablement hciuart.service disabled
-        verify_optional_service_enablement bluetooth.service disabled
-    fi
+    # if [ "$DISABLE_BLUETOOTH" = true ] ; then
+    #     verify_optional_service_enablement hciuart.service disabled
+    #     verify_optional_service_enablement bluetooth.service disabled
+    # fi
 
     if [ "$ENABLE_STATIC_IP" = true ] ; then
         verify_file_contains_string_once "${OPTIMIZE_DHCP_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
