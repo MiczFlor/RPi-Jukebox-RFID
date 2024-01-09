@@ -5,7 +5,6 @@
 OPTIMIZE_DHCP_CONF="/etc/dhcpcd.conf"
 OPTIMIZE_BOOT_CMDLINE_OPTIONS="consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram"
 OPTIMIZE_DHCP_CONF_HEADER="## Jukebox DHCP Config"
-OPTIMIZE_IPV6_CONF_HEADER="## Jukebox IPV6 Config"
 OPTIMIZE_BOOT_CONF_HEADER="## Jukebox Boot Config"
 
 _optimize_disable_irrelevant_services() {
@@ -62,22 +61,9 @@ EOF
   fi
 }
 
-# TODO: Allow both Enable and Disable
 _optimize_ipv6_arp() {
   if [ "$DISABLE_IPv6" = true ] ; then
-    print_lc "  Disabling IPV6"
-    if grep -q "${OPTIMIZE_IPV6_CONF_HEADER}" "$OPTIMIZE_DHCP_CONF"; then
-      log "    Skipping. Already set up!"
-    else
-      sudo tee -a $OPTIMIZE_DHCP_CONF <<-EOF
-
-${OPTIMIZE_IPV6_CONF_HEADER}
-noarp
-ipv4only
-noipv6
-
-EOF
-    fi
+    ./options/ipv6.sh disable
   fi
 }
 
