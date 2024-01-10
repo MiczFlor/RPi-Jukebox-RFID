@@ -169,6 +169,21 @@ verify_file_contains_string() {
     log "  CHECK"
 }
 
+verify_file_does_not_contain_string() {
+    local string="$1"
+    local file="$2"
+    log "  Verify '${string}' not found in '${file}'"
+
+    if [[ -z "${string}" || -z "${file}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    if grep -iq "${string}" "${file}"; then
+        exit_on_error "ERROR: '${string}' found in '${file}'"
+    fi
+    log "  CHECK"
+}
+
 verify_file_contains_string_once() {
     local string="$1"
     local file="$2"
