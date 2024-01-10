@@ -27,7 +27,6 @@ Topics marked _in progress_ are already in the process of implementation by comm
     - [Volume](#volume)
     - [GPIO](#gpio)
     - [WLAN](#wlan)
-    - [Spotify](#spotify)
     - [Others](#others)
     - [Start-up stuff](#start-up-stuff)
   - [Debug Tools](#debug-tools)

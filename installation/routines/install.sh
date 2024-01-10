@@ -8,7 +8,6 @@ install() {
   init_git_repo_from_tardir
   setup_jukebox_core
   setup_mpd
-  setup_spotifyd
   setup_samba
   setup_jukebox_webapp
   setup_kiosk_mode

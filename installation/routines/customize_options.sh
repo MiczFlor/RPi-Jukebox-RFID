@@ -142,58 +142,6 @@ Would you like to overwrite your configuration? [Y/n]"
     fi
 }
 
-_option_spotify() {
-  # ENABLE_SPOTIFY
-  clear_c
-  print_c "---------------------- SPOTIFY ----------------------
-
-Installs an additional player, so that you can
-play music from spotify. You will need to create
-an app in the Spotify developer dashboard to use
-Spotify properly
-
-Note: Spotify Premium is needed to operate player!
-
-
-Do you want to enable the spotify player? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      ENABLE_SPOTIFY=true
-      ;;
-    *)
-      ;;
-  esac
-
-  if [ "$ENABLE_SPOTIFY" = true ]; then
-      print_c "To configure Spotify properly, you need to create
-an App at https://developer.spotify.com/dashboard and provide the
-client_id and client_secret in the following prompts."
-      print_c ""
-      print_c ""
-      print_c "Please provide the Spotify username"
-      read -r response_username
-      SPOT_USERNAME="${response_username}"
-
-      print_c "Please provide the Spotify password"
-      read -r response_password
-      SPOT_PASSWORD="${response_password}"
-
-      print_c "Please provide the client_id of the Spotify App"
-      read -r response_client_id
-      SPOT_CLIENT_ID="${response_client_id}"
-
-      print_c "Please provide the client_secret of the Spotify App"
-      read -r response_client_secret
-      SPOT_CLIENT_SECRET="${response_client_secret}"
-  fi
-
-  log "ENABLE_SPOTIFY=${ENABLE_SPOTIFY}"
-  if [ "$ENABLE_SPOTIFY" = true ]; then
-    log "Spotify service will be enabled with username ${SPOT_USERNAME} and client_id ${SPOT_CLIENT_ID}"
-  fi
-}
-
 _option_rfid_reader() {
   # ENABLE_RFID_READER
   clear_c
@@ -385,7 +333,6 @@ _run_customize_options() {
   _option_bluetooth
   _option_disable_onboard_audio
   _option_mpd
-  _option_spotify
   _option_rfid_reader
   _option_samba
   _option_webapp

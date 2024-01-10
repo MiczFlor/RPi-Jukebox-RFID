@@ -63,18 +63,3 @@ services:
     volumes:
       - ../src/webapp:/home/node/webapp
       - /home/node/webapp/node_modules
-
-  spotifyd:
-      build:
-          context: ../
-          dockerfile: ./docker/spotifyd.Dockerfile
-      container_name: spotifyd
-      ports:
-          - 1234:1234
-      restart: unless-stopped
-      environment:
-          - PULSE_SERVER=unix:/tmp/pulseaudio.socket
-          - PULSE_COOKIE=/tmp/pulseaudio.cookie
-      volumes:
-          - ../shared/spotify/docker.spotifyd.conf:/etc/spotifyd.conf
-          - $XDG_RUNTIME_DIR/pulse/native:/tmp/pulseaudio.socket

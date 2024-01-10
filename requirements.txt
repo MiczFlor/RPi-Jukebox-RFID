@@ -36,9 +36,3 @@ flake8>=4.0.0
 pytest
 pytest-cov
 mock
-
-# For Spotify
-spotipy
-urllib3
-websocket
-bottle

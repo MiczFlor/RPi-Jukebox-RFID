@@ -13,7 +13,7 @@ class PlayerStatus:
         'duration': 0,
         'elapsed': 0,
         'file': '',  # required for MPD // check if really is required
-        'player': '',  # TODO: TBD, Spotify or MPD
+        'player': '',
         'playing': False,
         'shuffle': False,
         'repeat': 0,

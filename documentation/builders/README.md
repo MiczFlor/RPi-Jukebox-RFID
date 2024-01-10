@@ -9,7 +9,6 @@
 ## Configuration
 
 * [Audio](./audio.md)
-* [Spotify](./spotify.md)
 * [RFID](./rfid.md)
 * [GPIO Recipes](./gpio.md)
 * [Card Database](./card-database.md)
