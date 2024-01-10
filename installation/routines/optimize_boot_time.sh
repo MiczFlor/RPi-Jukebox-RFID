@@ -15,6 +15,9 @@ _optimize_disable_irrelevant_services() {
   sudo systemctl disable triggerhappy.service
   sudo systemctl disable triggerhappy.socket
 
+  log "  Disable raspi-config.service"
+  sudo systemctl disable raspi-config.service
+
   log "  Disable apt-daily.service & apt-daily-upgrade.service"
   sudo systemctl disable apt-daily.service
   sudo systemctl disable apt-daily-upgrade.service
@@ -77,6 +80,7 @@ _optimize_check() {
     verify_optional_service_enablement keyboard-setup.service disabled
     verify_optional_service_enablement triggerhappy.service disabled
     verify_optional_service_enablement triggerhappy.socket disabled
+    verify_optional_service_enablement raspi-config.service disabled
     verify_optional_service_enablement apt-daily.service disabled
     verify_optional_service_enablement apt-daily-upgrade.service disabled
     verify_optional_service_enablement apt-daily.timer disabled
