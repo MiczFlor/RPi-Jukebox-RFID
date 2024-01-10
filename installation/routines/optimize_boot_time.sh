@@ -44,20 +44,9 @@ _optimize_ipv6_arp() {
   fi
 }
 
-# TODO: Allow both Enable and Disable
 _optimize_handle_boot_screen() {
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-    log "  Disable RPi rainbow screen"
-    if grep -q "${OPTIMIZE_BOOT_CONF_HEADER}" "$RPI_BOOT_CONFIG_FILE"; then
-      log "    Skipping. Already set up!"
-    else
-      sudo tee -a $RPI_BOOT_CONFIG_FILE <<-EOF
-
-${OPTIMIZE_BOOT_CONF_HEADER}
-disable_splash=1
-
-EOF
-    fi
+    ./../options/boot_screen.sh disable
   fi
 }
 
@@ -107,9 +96,9 @@ _optimize_check() {
     # if [ "$DISABLE_IPv6" = true ] ; then
     #     verify_file_contains_string_once "${OPTIMIZE_IPV6_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
     # fi
-    if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${RPI_BOOT_CONFIG_FILE}"
-    fi
+    # if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
+    #     verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${RPI_BOOT_CONFIG_FILE}"
+    # fi
 
     if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
         for option in $OPTIMIZE_BOOT_CMDLINE_OPTIONS
