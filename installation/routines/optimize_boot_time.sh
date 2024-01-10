@@ -35,26 +35,9 @@ _optimize_handle_bluetooth() {
 _optimize_static_ip() {
   # Static IP Address and DHCP optimizations
   if [ "$ENABLE_STATIC_IP" = true ] ; then
-    print_lc "  Set static IP address"
-    if grep -q "${OPTIMIZE_DHCP_CONF_HEADER}" "$OPTIMIZE_DHCP_CONF"; then
-      log "    Skipping. Already set up!"
-    else
-      # DHCP has not been configured
-      log "    ${CURRENT_INTERFACE} is the default network interface"
-      log "    ${CURRENT_GATEWAY} is the Router Gateway address"
-      log "    Using ${CURRENT_IP_ADDRESS} as the static IP for now"
-
-      sudo tee -a $OPTIMIZE_DHCP_CONF <<-EOF
-
-${OPTIMIZE_DHCP_CONF_HEADER}
-interface ${CURRENT_INTERFACE}
-static ip_address=${CURRENT_IP_ADDRESS}/24
-static routers=${CURRENT_GATEWAY}
-static domain_name_servers=${CURRENT_GATEWAY}
-
-EOF
-
-    fi
+    ./../options/static_ip.sh enable
+  else
+    ./../options/static_ip.sh disable
   fi
 }
 
@@ -119,12 +102,12 @@ _optimize_check() {
     #     verify_optional_service_enablement bluetooth.service disabled
     # fi
 
-    if [ "$ENABLE_STATIC_IP" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_DHCP_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
-        verify_file_contains_string "${CURRENT_INTERFACE}" "${OPTIMIZE_DHCP_CONF}"
-        verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${OPTIMIZE_DHCP_CONF}"
-        verify_file_contains_string "${CURRENT_GATEWAY}" "${OPTIMIZE_DHCP_CONF}"
-    fi
+    # if [ "$ENABLE_STATIC_IP" = true ] ; then
+    #     verify_file_contains_string_once "${OPTIMIZE_DHCP_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
+    #     verify_file_contains_string "${CURRENT_INTERFACE}" "${OPTIMIZE_DHCP_CONF}"
+    #     verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${OPTIMIZE_DHCP_CONF}"
+    #     verify_file_contains_string "${CURRENT_GATEWAY}" "${OPTIMIZE_DHCP_CONF}"
+    # fi
     # if [ "$DISABLE_IPv6" = true ] ; then
     #     verify_file_contains_string_once "${OPTIMIZE_IPV6_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
     # fi
