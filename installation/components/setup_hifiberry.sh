@@ -65,7 +65,7 @@ case $choice in
     7) enable_hifiberry "hifiberry-digi-pro";;
     8) enable_hifiberry "hifiberry-amp";;
     9) enable_hifiberry "hifiberry-amp3";;
-    9) remove_existing_hifiberry;;
+    0) remove_existing_hifiberry;;
     *) echo "Invalid selection. Exiting."; exit 1;;
 esac
 
