@@ -10,9 +10,9 @@ asound_conf_path="/etc/asound.conf"
 
 remove_existing_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
-    sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
-    sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
-    sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
+    sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
+    sudo sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
+    sudo sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
     mv "$asound_conf_path" "/etc/asound.conf.bak"
 }
 
@@ -70,16 +70,16 @@ case $choice in
 esac
 
 echo "Disabling onboard sound..."
-sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "$boot_config_path"
+sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "$boot_config_path"
 
 if grep -qx 'dtoverlay=vc4-fkms-v3d' "$boot_config_path"; then
     echo "Disabling audio in vc4-fkms-v3d overlay..."
-    sed -i '/dtoverlay=vc4-fkms-v3d/c\dtoverlay=vc4-fkms-v3d,audio=off' "$boot_config_path"
+    sudo sed -i '/dtoverlay=vc4-fkms-v3d/c\dtoverlay=vc4-fkms-v3d,audio=off' "$boot_config_path"
 fi
 
 if grep -qx 'dtoverlay=vc4-kms-v3d' "$boot_config_path"; then
     echo "Disabling audio in vc4-kms-v3d overlay..."
-    sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' "$boot_config_path"
+    sudo sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' "$boot_config_path"
 fi
 
 if [ -z "${CONFIGURE_ALSA}" ]; then
