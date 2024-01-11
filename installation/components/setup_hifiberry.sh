@@ -13,7 +13,7 @@ remove_existing_hifiberry() {
     sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
     sudo sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
     sudo sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
-    mv "$asound_conf_path" "/etc/asound.conf.bak"
+    mv -f "$asound_conf_path" "/etc/asound.conf.bak" 2>/dev/null
 }
 
 check_existing_hifiberry() {
@@ -65,7 +65,9 @@ case $choice in
     7) enable_hifiberry "hifiberry-digi-pro";;
     8) enable_hifiberry "hifiberry-amp";;
     9) enable_hifiberry "hifiberry-amp3";;
-    0) remove_existing_hifiberry;;
+    0)
+        remove_existing_hifiberry;
+        exit 1;;
     *) echo "Invalid selection. Exiting."; exit 1;;
 esac
 
@@ -88,7 +90,7 @@ else
     if [ "${CONFIGURE_ALSA}" == "true" ]; then
         if [ -f "$asound_conf_path" ]; then
             echo "Backing up existing asound.conf..."
-            cp "$asound_conf_path" "/etc/asound.conf.bak"
+            cp -f "$asound_conf_path" "/etc/asound.conf.bak"
         fi
 
         card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
