@@ -34,14 +34,6 @@ run_with_log_frame() {
     log "#########################################################"
 }
 
-is_root() {
-    if [ "$(id -u)" != "0" ]; then
-        echo false
-    else
-        echo true
-    fi
-}
-
 get_architecture() {
     local arch=""
     if [ "$(uname -m)" = "armv7l" ]; then
@@ -58,7 +50,7 @@ get_architecture() {
 }
 
 is_raspian() {
-    if [[ $(lsb_release -d 2>/dev/null) == *"Raspbian"* ]]; then
+    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
         echo true
     else
         echo false
@@ -67,7 +59,7 @@ is_raspian() {
 
 get_debian_version() {
     # Read the major version number from /etc/debian_version
-    local major_version=$(cut -d. -f1 /etc/debian_version)
+    local major_version="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
 
     case $major_version in
         11)
@@ -84,7 +76,7 @@ get_debian_version() {
 
 get_boot_config_path() {
     if [ "$(is_raspian)" = true ]; then
-        local debian_version=get_debian_version
+        local debian_version=$(get_debian_version)
 
         if [ "$debian_version" = "bookworm" ]; then
             echo "/boot/firmware/config.txt"

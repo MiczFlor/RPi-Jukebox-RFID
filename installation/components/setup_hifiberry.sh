@@ -5,22 +5,15 @@
 
 source ../includes/02_helpers.sh
 
-if [ "$(is_root)" = false ]; then
-    echo "ERROR: This script must be run as root"
-    exit 1
-fi
-
 boot_config_path=$(get_boot_config_path)
-if [ "$boot_config_path" = "unknown" ]; then
-    echo "ERROR: It seems you are not running Raspian OS."
-    exit 1
-fi
+asound_conf_path="/etc/asound.conf"
 
 remove_existing_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
     sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
     sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
     sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
+    mv "$asound_conf_path" "/etc/asound.conf.bak"
 }
 
 check_existing_hifiberry() {
@@ -57,8 +50,9 @@ Select your HiFiBerry board:
 6) HiFiBerry Digi+
 7) HiFiBerry Digi+ Pro
 8) HiFiBerry Amp+ (not Amp2)
-9) HiFiBerry Amp3"
-read -p "Enter your choice (1-9): " choice
+9) HiFiBerry Amp3
+0) Disable HiFiBerry sound card"
+read -p "Enter your choice (0-9): " choice
 
 # Enable selected HiFiBerry board
 case $choice in
@@ -71,11 +65,12 @@ case $choice in
     7) enable_hifiberry "hifiberry-digi-pro";;
     8) enable_hifiberry "hifiberry-amp";;
     9) enable_hifiberry "hifiberry-amp3";;
+    9) remove_existing_hifiberry;;
     *) echo "Invalid selection. Exiting."; exit 1;;
 esac
 
 echo "Disabling onboard sound..."
-sed -i '/dtparam=audio=on/c\dtparam=audio=off' "$boot_config_path"
+sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "$boot_config_path"
 
 if grep -qx 'dtoverlay=vc4-fkms-v3d' "$boot_config_path"; then
     echo "Disabling audio in vc4-fkms-v3d overlay..."
@@ -91,18 +86,18 @@ if [ -z "${CONFIGURE_ALSA}" ]; then
     echo "CONFIGURE_ALSA not set. Skipping configuration of sound settings in asound.conf."
 else
     if [ "${CONFIGURE_ALSA}" == "true" ]; then
-        if [ -f /etc/asound.conf ]; then
+        if [ -f "$asound_conf_path" ]; then
             echo "Backing up existing asound.conf..."
-            cp /etc/asound.conf "/etc/asound.conf.backup.$(date +%Y%m%d%H%M%S)"
+            cp "$asound_conf_path" "/etc/asound.conf.bak"
         fi
 
         card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
 
         if [ -z "$card_id" ]; then
-            echo "  Error: Could not find HifiBerry sound card in /etc/asound.conf."
+            echo "Error: Could not find HifiBerry sound card in $asound_conf_path."
         else
-            echo "Configuring sound settings in asound.conf..."
-    cat > /etc/asound.conf << EOF
+            echo "Configuring sound settings in $asound_conf_path..."
+            cat > "$asound_conf_path" << EOF
 pcm.hifiberry {
     type softvol
     slave.pcm "plughw:$card_id"
