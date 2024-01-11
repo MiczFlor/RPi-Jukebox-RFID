@@ -54,7 +54,7 @@ class Mfrc522Reader(object):
         import pirc522
         self.device = pirc522.RFID()
 
-    def readCard(self):
+    def readCard_legacy(self):
         # Scan for cards
         self.device.wait_for_tag()
         (error, tag_type) = self.device.request()
@@ -69,6 +69,17 @@ class Mfrc522Reader(object):
                 return card_id
         logger.debug("No Device ID found.")
         return None
+
+    def readCard(self):
+        # Scan for cards
+        uid = self.device.read_id(as_number=True)
+        if not uid:
+            logger.debug("No Device ID found.")
+            return None
+        card_id = str(uid)
+        logger.info("Card detected.")
+        logger.info(card_id)
+        return card_id
 
     @staticmethod
     def cleanup():
