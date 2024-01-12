@@ -28,7 +28,10 @@ example_usage() {
 }
 
 if [ $# -ge 1 ]; then
-    if { ([ "$1" != "enable" ] && [ "$1" != "disable" ]) || ([ "$1" -= "enable" ] && [ $# -ge 2 ]); }; then
+    $status="$1"
+    $board="$2"
+
+    if [[ "$status" != "enable" && "$status" != "disable" ]] || [[ "$status" == "enable" && -z "$board" ]]; then
         echo "Error: Invalid provided.
 Usage: ./${script_name} <status> <hifiberry-board>
 where <status> can be 'enable' or 'disable'"
@@ -92,7 +95,7 @@ main() {
     done
     echo "0) Remove existing HiFiBerry configuration"
 
-    read -p "Enter your choice (1-$board_count): " choice
+    read -p "Enter your choice (0-$board_count): " choice
 
     case $choice in
         [0])
