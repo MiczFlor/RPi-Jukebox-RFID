@@ -1,6 +1,6 @@
 # Web App
 
-The Web App is located in `src/webapp`. During installation from the official repositories release branches a prebuilt bundle of the Web App is deployed. If you install a feature branch or from a fork repository the Web App needs to be build locally. This requires Node to be installed and is part of the installation process.
+The Web App sources located in `src/webapp`. During installation from the official repositories release branches a prebuilt bundle of the Web App is deployed. If you install a feature branch or from a fork repository the Web App needs to be build locally. This requires Node to be installed and is part of the installation process.
 
 ## Install node manually
 
@@ -17,7 +17,8 @@ sudo apt-get -y update && sudo apt-get -y install nodejs
 ## Build the Web App
 
 After changes to the Web App sources (locally or caused by a pull from the repository) it needs to be rebuild manually.
-Use the provided script to rebuild whenever needed.
+Use the provided script to rebuild whenever needed. The result is written to the folder `build`.
+```
 
 ``` bash
 cd ~/RPi-Jukebox-RFID/src/webapp; \

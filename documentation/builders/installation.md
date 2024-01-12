@@ -3,7 +3,7 @@
 ## Install Raspberry Pi OS Lite
 
 > [!IMPORTANT]
-> Currently, the installation does only work on Raspberry Pi's with ARMv7 and ARMv8 architecture, so 2, 3 and 4! Pi 1 and Zero's are currently unstable and will require a bit more work! Pi 4 and 5 are an excess ;-)
+> Currently, the installation does work on all Raspberry Pi models. But ARMv6 models (Pi 1 and Zero 1) have limited resources and are potentially unstable and will require a bit more work! Pi 4 and 5 are an excess ;-)
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
@@ -98,8 +98,6 @@ This will install the latest **stable release** from the branch *future3/main*.
 ```bash
 cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
 ```
-
-
 
 ### Pre-Release
 This will install the latest **pre-release** from the branch *future3/develop*.

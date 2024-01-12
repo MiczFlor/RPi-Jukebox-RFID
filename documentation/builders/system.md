@@ -7,7 +7,7 @@ The system consists of
 1. [Music Player Daemon (MPD)](system.md#music-player-daemon-mpd) which we use for all music playback (local, stream, podcast, ...)
 2. [PulseAudio](system.md#pulseaudio) for flexible audio output support
 3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and PulseAudio and providing all the features
-4. [Web UI](system.md#web-ui) which is served through an Nginx web server
+4. [Web App](system.md#web-app-ui) as UI in a web browser
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
 > [!NOTE] The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
@@ -96,9 +96,9 @@ The `systemd` service file is located at the default location for user services:
 
 Starting and stopping the service can be useful for debugging or configuration checks.
 
-## Web UI
+## Web App (UI)
 
-The Web UI is served using nginx. Nginx runs as a system service. The home directory is localed at
+The [Web App](../developers/webapp.md) is served using nginx. Nginx runs as a system service. The home directory is localed at
 
 ```text
 ./src/webapp/build
