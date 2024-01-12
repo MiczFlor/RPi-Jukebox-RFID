@@ -46,7 +46,6 @@ fi
 
 # Guided installation
 boot_config_path=$(get_boot_config_path)
-asound_conf_path="/etc/asound.conf"
 
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
@@ -56,8 +55,6 @@ enable_hifiberry() {
 disable_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
     ./../options/onboard_sound.sh enable
-    echo "Moving potential ${asound_conf_path} to /etc/asound.conf.bak"
-    mv -f "$asound_conf_path" "/etc/asound.conf.bak" 2>/dev/null
 }
 
 check_existing_hifiberry() {
