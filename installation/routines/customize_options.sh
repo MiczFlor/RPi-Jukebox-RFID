@@ -282,7 +282,7 @@ Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
 
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
-  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" || "$CI_RUNNING" == "true" ]]; then
+  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" && "$GIT_BRANCH" != "${GIT_BRANCH_DEVELOP}" ]] || [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]] || [[ "$CI_RUNNING" == "true" ]] ; then
     # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
@@ -291,13 +291,14 @@ _option_webapp_devel_build() {
       clear_c
       print_c "--------------------- WEB APP BUILD ---------------------
 
-You are installing from an unofficial branch.
-Therefore a prebuilt Web App is not available and
-it needs to be build locally.
+You are installing from a non-release branch
+and/or an unofficial repository.
+Therefore a prebuilt Web App is not available
+and it needs to be build locally.
 This requires Node to be installed.
 
-If you choose to decline the lastest prebuilt
-version from the main repository will be installed.
+If you choose to decline the lastest prebuilt version
+from the official repository will be installed.
 This can lead to incompatibilities.
 
 Do you want to build the Web App? [Y/n]"

@@ -120,8 +120,8 @@ cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://ra
 ```
 
 > [!NOTE]
-> For all branches *except* the current Release `future3/main`, the Web App needs to be build locally on the Pi. This is part of the installation process.
-> If you make changes to the Web App sources you need to rebuild it manually. See the developers [Web App](../developers/webapp.md) documentation.
+> Installation of the official repositories release branches ([Stable Release](#stable-release) and [Pre-Release](#pre-release)) will deploy a prebuilt bundle of the Web App.
+> If you install another branch or from a fork repository the Web App needs to be build locally. This is part of the installation process. See the the developers [Web App](../developers/webapp.md) documentation for further details.
 
 ### Logs
 If you suspect an error you can monitor the installation process with
