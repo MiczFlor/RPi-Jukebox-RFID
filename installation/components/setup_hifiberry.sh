@@ -85,13 +85,14 @@ main() {
         echo "$counter) $description"
         ((counter++))
     done
+    echo "0) Remove existing HiFiBerry configuration"
 
     read -p "Enter your choice (1-$board_count): " choice
 
     case $choice in
         [0])
             disable_hifiberry;
-            exit 1;;
+            return 0;;
         [1-$board_count])
             check_existing_hifiberry
             selected_board=$(get_key_by_item_number hifiberry_map "$choice")
