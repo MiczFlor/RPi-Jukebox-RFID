@@ -50,7 +50,7 @@ asound_conf_path="/etc/asound.conf"
 
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
-    grep -qxF "dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" >> "$boot_config_path"
+    grep -qxF "dtoverlay=$1" "$boot_config_path" || sudo echo "dtoverlay=$1" >> "$boot_config_path"
 }
 
 disable_hifiberry() {
