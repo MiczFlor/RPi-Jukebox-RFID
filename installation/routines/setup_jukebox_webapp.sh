@@ -9,6 +9,8 @@ NODE_MAJOR=20
 # Node version for ARMv6 (unofficial builds)
 NODE_ARMv6_VERSION=v20.10.0
 
+OPTIONAL_WEBAPP_BUILD_FAILED=false
+
 _jukebox_webapp_install_node() {
     print_lc "  Install NodeJS"
 
@@ -65,9 +67,19 @@ _jukebox_webapp_install_node() {
 }
 
 _jukebox_webapp_build() {
-  print_lc "  Building Web App"
-  cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  ./run_rebuild.sh -u
+    print_lc "  Building Web App"
+    cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
+    if ! ./run_rebuild.sh -u ; then
+        print_lc "    Web App build failed!
+    Follow instructions shown at the end of installation!"
+        OPTIONAL_WEBAPP_BUILD_FAILED=true
+        # This message will be displayed at the end of the installation process
+        local tmp_fin_message="ATTENTION:  The build of the Web App failed during installation.
+            Please run the build manually with the following command
+            $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+            Read the documentation regarding local Web App builds!"
+        FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+    fi
 }
 
 _jukebox_webapp_download() {
@@ -127,7 +139,9 @@ _jukebox_webapp_check() {
             verify_apt_packages nodejs
         fi
 
-        verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+        if [[ "$OPTIONAL_WEBAPP_BUILD_FAILED" == false ]]; then
+            verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+        fi
     fi
 
     verify_apt_packages nginx

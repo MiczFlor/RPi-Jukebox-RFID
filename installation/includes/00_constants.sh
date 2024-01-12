@@ -16,4 +16,7 @@ GIT_BRANCH_DEVELOP=${GIT_BRANCH_DEVELOP:-future3/develop}
 
 # This message will be displayed at the end of the installation process
 # Functions wanting to have something important printed at the end should APPEND to this variable
+# example:
+# local tmp_fin_message="A Message"
+# FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
 FIN_MESSAGE=""
