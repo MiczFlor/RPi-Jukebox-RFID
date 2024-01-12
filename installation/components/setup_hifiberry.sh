@@ -19,11 +19,20 @@ declare -A hifiberry_map=(
 )
 
 # 1-line installation
+example_usage() {
+    for key in "${!hifiberry_map[@]}"; do
+        description="${hifiberry_map[$key]}"
+        echo "$key) $description"
+    done
+    echo "Example usage: ./${script_name} enable hifiberry-dac"
+}
+
 if [ $# -ge 1 ]; then
     if { ([ "$1" != "enable" ] && [ "$1" != "disable" ]) || ([ "$1" -= "enable" ] && [ $# -ge 2 ]); }; then
         echo "Error: Invalid provided.
-Usage: ./${script_name} <status> <hifiberry-board>[optional]
+Usage: ./${script_name} <status> <hifiberry-board>
 where <status> can be 'enable' or 'disable'"
+        example_usage
         exit 1
     fi
 
@@ -33,11 +42,7 @@ where <status> can be 'enable' or 'disable'"
             return 0;;
         *)
             echo "'$2' is not a valid option. You can choose from:"
-            for key in "${!hifiberry_map[@]}"; do
-                description="${hifiberry_map[$key]}"
-                echo "$key) $description"
-            done
-            echo "Example usage: ./${script_name} enable hifiberry-dac"
+            example_usage
             exit 1
             ;;
         esac
