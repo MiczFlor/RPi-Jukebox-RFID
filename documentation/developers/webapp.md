@@ -25,6 +25,11 @@ cd ~/RPi-Jukebox-RFID/src/webapp; \
 ./run_rebuild.sh -u
 ```
 
+After the successfull build you might need to restart the web server.
+```
+sudo systemctl restart nginx.service
+```
+
 ## Known Issues while building
 
 ### JavaScript heap out of memory
