@@ -33,8 +33,8 @@ where <status> can be 'enable' or 'disable'"
             return 0;;
         *)
             echo "'$2' is not a valid option. You can choose from:"
-            for key in "${!hifiberry_descriptions[@]}"; do
-                description="${hifiberry_descriptions[$key]}"
+            for key in "${!hifiberry_map[@]}"; do
+                description="${hifiberry_map[$key]}"
                 echo "$key) $description"
             done
             echo "Example usage: ./${script_name} enable hifiberry-dac"
@@ -77,20 +77,24 @@ check_existing_hifiberry() {
 }
 
 prompt_board_list() {
+    board_count=${#hifiberry_map[@]}
+
+    counter=1
     echo "Select your HiFiBerry board:"
-    for key in "${!hifiberry_descriptions[@]}"; do
-        description="${hifiberry_descriptions[$key]}"
-        echo "$key) $description"
+    for key in "${!hifiberry_map[@]}"; do
+        description="${hifiberry_map[$key]}"
+        echo "$counter) $description"
+        ((counter++))
     done
 
-    read -p "Enter your choice (0-9): " choice
+    read -p "Enter your choice (1-$board_count): " choice
 
     case $choice in
         [0])
             disable_hifiberry;
             exit 1;;
-        [1-9])
-            selected_board="${hifiberry_descriptions[$choice]}";
+        [1-$board_count])
+            selected_board="${hifiberry_map[$choice]}";
             enable_hifiberry "$selected_board";
             return 0;;
         *)
