@@ -125,20 +125,25 @@ echo "Setting Node Options:"
 env | grep NODE
 
 if [[ $(uname -m) == armv6l ]]; then
-    echo "  You are running a hardware with limited resources. Building
-    the Web App might fail. If so, try to install the stable
-    release installation instead."
+    echo "
+-----------------------------------------------------------
+| You are running a hardware with limited resources.      |
+| Building the Web App takes significantly more time      |
+| and might fail.                                         |
+| Its recommended to use an official release installation |
+| which already bundles the webapp.                       |
+-----------------------------------------------------------
+"
 fi
 
 if [[ $UPDATE_DEPENDENCIES == true ]]; then
-    npm install
-    # TODO this was used in the install script (not activated for some time). Is one of the options prefered?
-    # npm ci --prefer-offline --no-audit --production
+    npm install --prefer-offline --no-audit
 fi
 
+build_output_folder="build"
 # Rebuild Web App
-rm -rf build.bak
-if [ -d "build" ]; then
-    mv -f build build.bak
+rm -rf "${build_output_folder}.bak"
+if [ -d "${build_output_folder}" ]; then
+    mv -f "${build_output_folder}" "${build_output_folder}.bak"
 fi
 npm run build
