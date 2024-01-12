@@ -2,6 +2,21 @@
 
 ### Helpers
 
+# Get key by item number of associated array
+get_key_by_item_number() {
+    local -n array="$1"
+    local item_number="$2"
+    local count=0
+
+    for key in "${!array[@]}"; do
+        ((count++))
+        if [ "$count" -eq "$item_number" ]; then
+            echo "$key"
+            return
+        fi
+    done
+}
+
 # $1->start, $2->end
 calc_runtime_and_print() {
   runtime=$(($2-$1))

@@ -94,7 +94,7 @@ prompt_board_list() {
             disable_hifiberry;
             exit 1;;
         [1-$board_count])
-            selected_board="${hifiberry_map[$choice]}";
+            selected_board=$(get_key_by_item_number hifiberry_map "$choice")
             enable_hifiberry "$selected_board";
             return 0;;
         *)
