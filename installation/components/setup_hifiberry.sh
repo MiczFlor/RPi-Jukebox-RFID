@@ -19,15 +19,15 @@ declare -A hifiberry_map=(
 )
 
 # 1-line installation
-if [ $# -ge 1 ];
-    if { ([ "$1" != "enable" ] && [ "$1" != "disable" ]) || ([ "$1" -= "enable" ] && [ $# -ge 2 ]); }
+if [ $# -ge 1 ]; then
+    if { ([ "$1" != "enable" ] && [ "$1" != "disable" ]) || ([ "$1" -= "enable" ] && [ $# -ge 2 ]); }; then
         echo "Error: Invalid provided.
 Usage: ./${script_name} <status> <hifiberry-board>[optional]
 where <status> can be 'enable' or 'disable'"
         exit 1
     fi
 
-    if [ "$1" != "enable" ];
+    if [ "$1" != "enable" ]; then
         case "$2" in
         "${hifiberry_map[@]}")
             return 0;;
