@@ -99,44 +99,9 @@ prompt_board_list() {
     esac
 }
 
-setup_alsa() {
-    if [ -z "${CONFIGURE_ALSA}" ]; then
-        echo "CONFIGURE_ALSA not set. Skipping configuration of sound settings in asound.conf."
-    else
-        if [ "${CONFIGURE_ALSA}" == "true" ]; then
-            if [ -f "$asound_conf_path" ]; then
-                echo "Backing up existing asound.conf..."
-                cp -f "$asound_conf_path" "/etc/asound.conf.bak"
-            fi
-
-            card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
-
-            if [ -z "$card_id" ]; then
-                echo "Error: Could not find HifiBerry sound card in $asound_conf_path."
-            else
-                echo "Configuring sound settings in $asound_conf_path..."
-                cat > "$asound_conf_path" << EOF
-pcm.hifiberry {
-    type softvol
-    slave.pcm "plughw:$card_id"
-    control.name "HifiBerry"
-    control.card $card_id
-}
-
-pcm.!default {
-    type plug
-    slave.pcm "hifiberry"
-}
-EOF
-            fi
-        fi
-    fi
-}
-
 # Execute program
 check_existing_hifiberry
 prompt_board_list
 ./../options/onboard_sound.sh disable
-setup_alsa
 
 echo "Configuration complete. Please restart your device."
