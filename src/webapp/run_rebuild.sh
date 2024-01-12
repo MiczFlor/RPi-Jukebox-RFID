@@ -130,8 +130,6 @@ if [[ $(uname -m) == armv6l ]]; then
 | You are running a hardware with limited resources.      |
 | Building the Web App takes significantly more time      |
 | and might fail.                                         |
-| Its recommended to use an official release installation |
-| which already bundles the webapp.                       |
 -----------------------------------------------------------
 "
 fi
