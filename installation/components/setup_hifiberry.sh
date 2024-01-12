@@ -28,13 +28,12 @@ example_usage() {
 }
 
 if [ $# -ge 1 ]; then
-    $status="$1"
-    $board="$2"
-
-    if [[ "$status" != "enable" && "$status" != "disable" ]] || [[ "$status" == "enable" && -z "$board" ]]; then
-        echo "Error: Invalid provided.
+    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z $# -ge 2 ]]; then
+        echo "Error: Invalid arguments provided.
 Usage: ./${script_name} <status> <hifiberry-board>
-where <status> can be 'enable' or 'disable'"
+where <status> can be 'enable' or 'disable'.
+
+The following board options exist:"
         example_usage
         exit 1
     fi
