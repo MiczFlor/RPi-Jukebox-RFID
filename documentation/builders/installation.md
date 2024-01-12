@@ -79,31 +79,52 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 ## Install Phoniebox software
 
-Run the following command in your SSH terminal and follow the instructions
+Run a following command in your SSH terminal and follow the instructions.
+After successful installation, continue with [configuring your Phoniebox](configuration.md).
+
+> [!TIP]
+> Depending on your hardware, this installation might last
+around 60 minutes (usually it's faster). It updates OS
+packages, installs Phoniebox dependencies and registers
+settings. Be patient and don't let your computer go to
+sleep. It might disconnect your SSH connection causing
+the interruption of the installation process.
+Consider starting the installation in a terminal
+multiplexer like 'screen' or 'tmux' to avoid this.
+
+### Stable Release
+This will install the latest **stable release** from the branch *future3/main*.
 
 ```bash
 cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/main/installation/install-jukebox.sh)
 ```
 
-This will get the latest **stable release** from the branch *future3/main*.
 
-To install directly from a specific branch and/or a different repository
-specify the variables like this:
+
+### Pre-Release
+This will install the latest **pre-release** from the branch *future3/develop*.
+
+```bash
+cd; GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+```
+
+### Development
+To install directly from a specific branch and/or a different repository specify the variables like this. Make sure you also update the URL accordingly to the branch and fork used.
+> [!IMPORTANT]
+>A fork repository must be named '*RPi-Jukebox-RFID*' like the official repository
 
 ```bash
 cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```
 
-This will switch directly to the specified feature branch during installation.
-
 > [!NOTE]
 > For all branches *except* the current Release `future3/main`, the Web App needs to be build locally on the Pi. This is part of the installation process.
-> If you make changes to the Web App sources you need to rebuild it manually. See [Developer steps to install](../developers/development-environment.md#steps-to-install)
+> If you make changes to the Web App sources you need to rebuild it manually. See the developers [Web App](../developers/webapp.md) documentation.
 
-If you suspect an error you can monitor the installation-process with
+### Logs
+If you suspect an error you can monitor the installation process with
 
 ```bash
 cd; tail -f INSTALL-<fullname>.log
 ```
 
-After successful installation, continue with [configuring your Phoniebox](configuration.md).

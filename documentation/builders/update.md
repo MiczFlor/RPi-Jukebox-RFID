@@ -29,7 +29,7 @@ $ git pull
 $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
 
 $ cd src/webapp
-$ ./run_rebuild.sh
+$ ./run_rebuild.sh -u
 ```
 
 ## Migration Path from Version 2

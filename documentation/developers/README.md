@@ -8,6 +8,7 @@
 ## Reference
 
 * [Jukebox Apps](./coreapps.md)
+* [Web App](./webapp.md)
 * [RFID Readers](./rfid)
 * [Feature Status](./status.md)
 * [Known Issues](./known-issues.md)

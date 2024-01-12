@@ -15,36 +15,15 @@ There is a complete [Docker setup](./docker.md).
 
 ## Develop on Raspberry Pi
 
-The full setup is running on the RPi and you access files via SSH. Pretty easy to set up as you simply do a normal install and switch to the `future3/develop` branch.
+The full setup is running on the RPi and you access files via SSH.
 
 ### Steps to install
 
-We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware won\'t be needed in production, but it can be slow while developing.
+We recommend to use at least a Pi 3 or Pi Zero 2 for development. While this hardware won\'t be needed in production, it comes in helpful while developing.
 
-1. Install the latest Pi OS on a SD card.
-1. Boot up your Raspberry Pi.
-1. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
-1. Once the installation has successfully ran, reboot your Pi.
-1. Due to some resource constraints, the Web App does not build the latest changes and instead consumes the latest official release. To change that, you need to install NodeJS and build the Web App locally.
-1. Install NodeJS using the recommended setup (https://deb.nodesource.com/)
-
-    ``` bash
-    sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
-    sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-    sudo apt-get -y update && sudo apt-get -y install nodejs
-    ```
-
-1. Build the Web App using the existing build command. If the build fails, a reboot might help.
-
-    ``` bash
-    cd ~/RPi-Jukebox-RFID/src/webapp; \
-    ./run_rebuild.sh -u
-    ```
-
-1. The Web App should now be updated.
-1. To continuously update Web App, pull the latest changes from your repository and rerun the command above.
+1. Follow the [installation preperation](../builders/installation.md#install-raspberry-pi-os-lite) steps
+1. [Install](../builders/installation.md#development) the pre-release branch of the Jukebox software. You can also install from your own fork and feature branch. The original repository will be set as `upstream`.
+1. If neccessary [build the Web App](./webapp.md) locally
 
 ## Develop on local machine
 
