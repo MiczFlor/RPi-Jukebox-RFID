@@ -111,7 +111,7 @@ cd; GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.
 ```
 
 ### Development
-To install directly from a specific branch and/or a different repository specify the variables like this. Make sure you also update the URL accordingly to the branch and fork used.
+To install directly from a specific branch and/or a fork repository specify the variables like this. Make sure you also update the URL accordingly to the branch and repository used.
 > [!IMPORTANT]
 >A fork repository must be named '*RPi-Jukebox-RFID*' like the official repository
 

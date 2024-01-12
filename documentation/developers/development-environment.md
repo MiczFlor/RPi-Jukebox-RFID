@@ -22,7 +22,7 @@ The full setup is running on the RPi and you access files via SSH.
 We recommend to use at least a Pi 3 or Pi Zero 2 for development. While this hardware won\'t be needed in production, it comes in helpful while developing.
 
 1. Follow the [installation preperation](../builders/installation.md#install-raspberry-pi-os-lite) steps
-1. [Install](../builders/installation.md#development) the pre-release branch of the Jukebox software. You can also install from your own fork and feature branch. The original repository will be set as `upstream`.
+1. [Install](../builders/installation.md#development) your feature/fork branch of the Jukebox software. The official repository will be set as `upstream`.
 1. If neccessary [build the Web App](./webapp.md) locally
 
 ## Develop on local machine

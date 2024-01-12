@@ -98,7 +98,7 @@ Starting and stopping the service can be useful for debugging or configuration c
 
 ## Web App (UI)
 
-The [Web App](../developers/webapp.md) is served using nginx. Nginx runs as a system service. The home directory is localed at
+The [Web App](../developers/webapp.md) is served using nginx. Nginx runs as a system service. The home directory is located at
 
 ```text
 ./src/webapp/build
