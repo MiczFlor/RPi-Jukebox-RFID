@@ -79,7 +79,11 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 ## Install Phoniebox software
 
-Run a following command in your SSH terminal and follow the instructions.
+Choose a version, run the corresponding install command in your SSH terminal and follow the instructions.
+* [Stable Release](#stable-release)
+* [Pre-Release](#pre-release)
+* [Development](#development)
+
 After successful installation, continue with [configuring your Phoniebox](configuration.md).
 
 > [!TIP]
