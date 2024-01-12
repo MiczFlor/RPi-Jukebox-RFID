@@ -56,35 +56,6 @@ check_existing_hifiberry() {
     fi
 }
 
-main() {
-    board_count=${#hifiberry_map[@]}
-
-    counter=1
-    echo "Select your HiFiBerry board:"
-    for key in "${!hifiberry_map[@]}"; do
-        description="${hifiberry_map[$key]}"
-        echo "$counter) $description"
-        ((counter++))
-    done
-    echo "0) Remove existing HiFiBerry configuration"
-
-    read -p "Enter your choice (0-$board_count): " choice
-
-    case $choice in
-        [0])
-            disable_hifiberry;
-            return 0;;
-        [1-$board_count])
-            check_existing_hifiberry
-            selected_board=$(get_key_by_item_number hifiberry_map "$choice")
-            enable_hifiberry "$selected_board";
-            return 0;;
-        *)
-            echo "Invalid selection. Exiting.";
-            exit 1;;
-    esac
-}
-
 # 1-line installation
 if [ $# -ge 1 ]; then
     if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z "$2" ]]; then
@@ -99,13 +70,13 @@ The following board options exist:"
 
     if [ "$1" == "enable" ]; then
         if [[ -v hifiberry_map["$2"] ]]; then
-            return 0;;
-        else
-            echo "'$2' is not a valid option. You can choose from:"
-            example_usage
+            enable_hifiberry "$2"
             exit 1
-            ;;
         fi
+
+        echo "'$2' is not a valid option. You can choose from:"
+        example_usage
+        exit 1
     fi
 
     if [ "$1" == "disable" ]; then
@@ -115,6 +86,31 @@ The following board options exist:"
 fi
 
 # Guided installation
-main
+board_count=${#hifiberry_map[@]}
+counter=1
+
+echo "Select your HiFiBerry board:"
+for key in "${!hifiberry_map[@]}"; do
+    description="${hifiberry_map[$key]}"
+    echo "$counter) $description"
+    ((counter++))
+done
+echo "0) Remove existing HiFiBerry configuration"
+
+read -p "Enter your choice (0-$board_count): " choice
+
+case $choice in
+    [0])
+        disable_hifiberry;
+        return 0;;
+    [1-$board_count])
+        check_existing_hifiberry
+        selected_board=$(get_key_by_item_number hifiberry_map "$choice")
+        enable_hifiberry "$selected_board";
+        return 0;;
+    *)
+        echo "Invalid selection. Exiting.";
+        exit 1;;
+esac
 
 echo "Configuration complete. Please restart your device."
