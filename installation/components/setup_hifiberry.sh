@@ -6,6 +6,8 @@
 source ../includes/02_helpers.sh
 
 script_name=$(basename "$0")
+boot_config_path=$(get_boot_config_path)
+
 declare -A hifiberry_map=(
     ["hifiberry-dac"]="DAC (HiFiBerry MiniAmp, I2S PCM5102A DAC)"
     ["hifiberry-dacplus"]="HiFiBerry DAC+ Standard/Pro/Amp2"
@@ -18,7 +20,6 @@ declare -A hifiberry_map=(
     ["hifiberry-amp3"]="HiFiBerry Amp3"
 )
 
-# 1-line installation
 example_usage() {
     for key in "${!hifiberry_map[@]}"; do
         description="${hifiberry_map[$key]}"
@@ -26,9 +27,6 @@ example_usage() {
     done
     echo "Example usage: ./${script_name} enable hifiberry-dac"
 }
-
-# Guided installation
-boot_config_path=$(get_boot_config_path)
 
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
@@ -87,7 +85,7 @@ main() {
     esac
 }
 
-# Execute program
+# 1-line installation
 if [ $# -ge 1 ]; then
     if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z "$2" ]]; then
         echo "Error: Invalid arguments provided.
@@ -100,15 +98,14 @@ The following board options exist:"
     fi
 
     if [ "$1" == "enable" ]; then
-        case "$2" in
-        "${hifiberry_map[@]}")
+        if [[ -v hifiberry_map["$2"] ]]; then
             return 0;;
-        *)
+        else
             echo "'$2' is not a valid option. You can choose from:"
             example_usage
             exit 1
             ;;
-        esac
+        fi
     fi
 
     if [ "$1" == "disable" ]; then
@@ -117,6 +114,7 @@ The following board options exist:"
     fi
 fi
 
+# Guided installation
 main
 
 echo "Configuration complete. Please restart your device."
