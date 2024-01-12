@@ -6,7 +6,6 @@
 source ../includes/02_helpers.sh
 
 script_name=$(basename "$0")
-
 declare -A hifiberry_map=(
     ["hifiberry-dac"]="DAC (HiFiBerry MiniAmp, I2S PCM5102A DAC)"
     ["hifiberry-dacplus"]="HiFiBerry DAC+ Standard/Pro/Amp2"
@@ -42,8 +41,6 @@ where <status> can be 'enable' or 'disable'"
             echo "Example usage: ./${script_name} enable hifiberry-dac"
             ;;
         esac
-
-
     fi
 fi
 
@@ -51,11 +48,15 @@ fi
 boot_config_path=$(get_boot_config_path)
 asound_conf_path="/etc/asound.conf"
 
+enable_hifiberry() {
+    echo "Enabling HiFiBerry board..."
+    grep -qxF "dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" >> "$boot_config_path"
+}
+
 disable_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
-    sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
-    sudo sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
-    sudo sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
+    ./../options/onboard_sound.sh enable
+    echo "Moving potential ${asound_conf_path} to /etc/asound.conf.bak"
     mv -f "$asound_conf_path" "/etc/asound.conf.bak" 2>/dev/null
 }
 
@@ -75,64 +76,46 @@ check_existing_hifiberry() {
     fi
 }
 
-enable_hifiberry() {
-    echo "Enabling HiFiBerry board..."
-    grep -qxF "dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" >> "$boot_config_path"
+prompt_board_list() {
+    echo "Select your HiFiBerry board:"
+    for key in "${!hifiberry_descriptions[@]}"; do
+        description="${hifiberry_descriptions[$key]}"
+        echo "$key) $description"
+    done
+
+    read -p "Enter your choice (0-9): " choice
+
+    case $choice in
+        [0])
+            disable_hifiberry;
+            exit 1;;
+        [1-9])
+            selected_board="${hifiberry_descriptions[$choice]}";
+            enable_hifiberry "$selected_board";
+            return 0;;
+        *)
+            echo "Invalid selection. Exiting.";
+            exit 1;;
+    esac
 }
 
-check_existing_hifiberry
+setup_alsa() {
+    if [ -z "${CONFIGURE_ALSA}" ]; then
+        echo "CONFIGURE_ALSA not set. Skipping configuration of sound settings in asound.conf."
+    else
+        if [ "${CONFIGURE_ALSA}" == "true" ]; then
+            if [ -f "$asound_conf_path" ]; then
+                echo "Backing up existing asound.conf..."
+                cp -f "$asound_conf_path" "/etc/asound.conf.bak"
+            fi
 
-# List of HiFiBerry boards
-echo "Select your HiFiBerry board:"
-for key in "${!hifiberry_descriptions[@]}"; do
-    description="${hifiberry_descriptions[$key]}"
-    echo "$key) $description"
-done
+            card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
 
-read -p "Enter your choice (0-9): " choice
-
-case $choice in
-    [0])
-        disable_hifiberry;
-        exit 1;;
-    [1-9])
-        selected_board="${hifiberry_descriptions[$choice]}";
-        enable_hifiberry "$selected_board";
-        return 0;;
-    *)
-        echo "Invalid selection. Exiting.";
-        exit 1;;
-esac
-
-echo "Disabling onboard sound..."
-sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "$boot_config_path"
-
-if grep -qx 'dtoverlay=vc4-fkms-v3d' "$boot_config_path"; then
-    echo "Disabling audio in vc4-fkms-v3d overlay..."
-    sudo sed -i '/dtoverlay=vc4-fkms-v3d/c\dtoverlay=vc4-fkms-v3d,audio=off' "$boot_config_path"
-fi
-
-if grep -qx 'dtoverlay=vc4-kms-v3d' "$boot_config_path"; then
-    echo "Disabling audio in vc4-kms-v3d overlay..."
-    sudo sed -i '/dtoverlay=vc4-kms-v3d/c\dtoverlay=vc4-kms-v3d,noaudio' "$boot_config_path"
-fi
-
-if [ -z "${CONFIGURE_ALSA}" ]; then
-    echo "CONFIGURE_ALSA not set. Skipping configuration of sound settings in asound.conf."
-else
-    if [ "${CONFIGURE_ALSA}" == "true" ]; then
-        if [ -f "$asound_conf_path" ]; then
-            echo "Backing up existing asound.conf..."
-            cp -f "$asound_conf_path" "/etc/asound.conf.bak"
-        fi
-
-        card_id=$(cat /proc/asound/cards | grep -oP '(?<=^ )\d+(?= \[sndrpihifiberry\]:)' | head -n 1)
-
-        if [ -z "$card_id" ]; then
-            echo "Error: Could not find HifiBerry sound card in $asound_conf_path."
-        else
-            echo "Configuring sound settings in $asound_conf_path..."
-            cat > "$asound_conf_path" << EOF
+            if [ -z "$card_id" ]; then
+                echo "Error: Could not find HifiBerry sound card in $asound_conf_path."
+            else
+                echo "Configuring sound settings in $asound_conf_path..."
+                cat > "$asound_conf_path" << EOF
 pcm.hifiberry {
     type softvol
     slave.pcm "plughw:$card_id"
@@ -145,8 +128,15 @@ pcm.!default {
     slave.pcm "hifiberry"
 }
 EOF
+            fi
         fi
     fi
-fi
+}
+
+# Execute program
+check_existing_hifiberry
+prompt_board_list
+./../options/onboard_sound.sh disable
+setup_alsa
 
 echo "Configuration complete. Please restart your device."
