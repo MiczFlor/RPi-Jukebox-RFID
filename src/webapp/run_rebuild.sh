@@ -144,4 +144,7 @@ rm -rf "${build_output_folder}.bak"
 if [ -d "${build_output_folder}" ]; then
     mv -f "${build_output_folder}" "${build_output_folder}.bak"
 fi
-npm run build
+if ! npm run build ; then
+    echo "ERROR: rebuild of Web App failed!"
+    exit 1
+fi
