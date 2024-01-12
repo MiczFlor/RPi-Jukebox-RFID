@@ -14,7 +14,6 @@ arg="$1"
 
 if [ "$arg" = "enable" ]; then
     echo "Enabling Onboard Sound..."
-    sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
     sudo sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
     sudo sed -i '/dtoverlay=vc4-kms-v3d,noaudio/c\dtoverlay=vc4-kms-v3d' "$boot_config_path"
 elif [ "$arg" = "disable" ]; then

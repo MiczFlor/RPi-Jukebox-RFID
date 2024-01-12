@@ -50,10 +50,12 @@ boot_config_path=$(get_boot_config_path)
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
     grep -qxF "dtoverlay=$1" "$boot_config_path" || sudo echo "dtoverlay=$1" >> "$boot_config_path"
+    ./../options/onboard_sound.sh disable
 }
 
 disable_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
+    sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
     ./../options/onboard_sound.sh enable
 }
 
@@ -73,7 +75,7 @@ check_existing_hifiberry() {
     fi
 }
 
-prompt_board_list() {
+main() {
     board_count=${#hifiberry_map[@]}
 
     counter=1
@@ -91,6 +93,7 @@ prompt_board_list() {
             disable_hifiberry;
             exit 1;;
         [1-$board_count])
+            check_existing_hifiberry
             selected_board=$(get_key_by_item_number hifiberry_map "$choice")
             enable_hifiberry "$selected_board";
             return 0;;
@@ -101,8 +104,6 @@ prompt_board_list() {
 }
 
 # Execute program
-check_existing_hifiberry
-prompt_board_list
-./../options/onboard_sound.sh disable
+main
 
 echo "Configuration complete. Please restart your device."
