@@ -89,18 +89,13 @@ main() {
 
 # Execute program
 if [ $# -ge 1 ]; then
-    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z $# -ge 2 ]]; then
+    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" &&-z "$2" ]]; then
         echo "Error: Invalid arguments provided.
 Usage: ./${script_name} <status> <hifiberry-board>
 where <status> can be 'enable' or 'disable'.
 
 The following board options exist:"
         example_usage
-        exit 1
-    fi
-
-    if [ "$1" == "disable" ]; then
-        disable_hifiberry
         exit 1
     fi
 
@@ -114,6 +109,11 @@ The following board options exist:"
             exit 1
             ;;
         esac
+    fi
+
+    if [ "$1" == "disable" ]; then
+        disable_hifiberry
+        exit 1
     fi
 fi
 
