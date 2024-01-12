@@ -27,30 +27,6 @@ example_usage() {
     echo "Example usage: ./${script_name} enable hifiberry-dac"
 }
 
-if [ $# -ge 1 ]; then
-    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z $# -ge 2 ]]; then
-        echo "Error: Invalid arguments provided.
-Usage: ./${script_name} <status> <hifiberry-board>
-where <status> can be 'enable' or 'disable'.
-
-The following board options exist:"
-        example_usage
-        exit 1
-    fi
-
-    if [ "$1" != "enable" ]; then
-        case "$2" in
-        "${hifiberry_map[@]}")
-            return 0;;
-        *)
-            echo "'$2' is not a valid option. You can choose from:"
-            example_usage
-            exit 1
-            ;;
-        esac
-    fi
-fi
-
 # Guided installation
 boot_config_path=$(get_boot_config_path)
 
@@ -112,6 +88,35 @@ main() {
 }
 
 # Execute program
+if [ $# -ge 1 ]; then
+    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z $# -ge 2 ]]; then
+        echo "Error: Invalid arguments provided.
+Usage: ./${script_name} <status> <hifiberry-board>
+where <status> can be 'enable' or 'disable'.
+
+The following board options exist:"
+        example_usage
+        exit 1
+    fi
+
+    if [ "$1" == "disable" ]; then
+        disable_hifiberry
+        exit 1
+    fi
+
+    if [ "$1" == "enable" ]; then
+        case "$2" in
+        "${hifiberry_map[@]}")
+            return 0;;
+        *)
+            echo "'$2' is not a valid option. You can choose from:"
+            example_usage
+            exit 1
+            ;;
+        esac
+    fi
+fi
+
 main
 
 echo "Configuration complete. Please restart your device."
