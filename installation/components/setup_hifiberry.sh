@@ -89,7 +89,7 @@ main() {
 
 # Execute program
 if [ $# -ge 1 ]; then
-    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" &&-z "$2" ]]; then
+    if [[ "$1" != "enable" && "$1" != "disable" ]] || [[ "$1" == "enable" && -z "$2" ]]; then
         echo "Error: Invalid arguments provided.
 Usage: ./${script_name} <status> <hifiberry-board>
 where <status> can be 'enable' or 'disable'.
