@@ -29,9 +29,8 @@ where <status> can be 'enable' or 'disable'"
 
     if [ "$1" != "enable" ];
         case "$2" in
-        "${hifiberry_list[@]}")
-            echo "Variable is in the list."
-            ;;
+        "${hifiberry_map[@]}")
+            return 0;;
         *)
             echo "'$2' is not a valid option. You can choose from:"
             for key in "${!hifiberry_descriptions[@]}"; do
@@ -39,6 +38,7 @@ where <status> can be 'enable' or 'disable'"
                 echo "$key) $description"
             done
             echo "Example usage: ./${script_name} enable hifiberry-dac"
+            exit 1
             ;;
         esac
     fi
