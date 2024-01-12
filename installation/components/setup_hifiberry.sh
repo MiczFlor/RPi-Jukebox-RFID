@@ -43,6 +43,11 @@ disable_hifiberry() {
 check_existing_hifiberry() {
     existing_config=$(grep 'dtoverlay=hifiberry-' "$boot_config_path")
     if [ ! -z "$existing_config" ]; then
+        if [ "$1" = "silent" ]; then
+            disable_hifiberry
+            return 0
+        fi
+
         echo "Existing HiFiBerry configuration detected: $existing_config"
         read -p "Do you want to proceed with a new configuration? This will remove the existing one. (Y/n): " yn
         case $yn in
@@ -70,6 +75,7 @@ The following board options exist:"
 
     if [ "$1" == "enable" ]; then
         if [[ -v hifiberry_map["$2"] ]]; then
+            check_existing_hifiberry "silent"
             enable_hifiberry "$2"
             exit 1
         fi
@@ -79,10 +85,8 @@ The following board options exist:"
         exit 1
     fi
 
-    if [ "$1" == "disable" ]; then
-        disable_hifiberry
-        exit 1
-    fi
+    disable_hifiberry
+    exit 1
 fi
 
 # Guided installation
@@ -102,12 +106,10 @@ read -p "Enter your choice (0-$board_count): " choice
 case $choice in
     [0])
         disable_hifiberry;
-        return 0;;
     [1-$board_count])
         check_existing_hifiberry
         selected_board=$(get_key_by_item_number hifiberry_map "$choice")
         enable_hifiberry "$selected_board";
-        return 0;;
     *)
         echo "Invalid selection. Exiting.";
         exit 1;;
