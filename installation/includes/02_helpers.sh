@@ -49,6 +49,14 @@ run_with_log_frame() {
     log "#########################################################"
 }
 
+is_sudo() {
+    if [ "$(id -u)" != "0" ]; then
+        echo false
+    else
+        echo true
+    fi
+}
+
 get_architecture() {
     local arch=""
     if [ "$(uname -m)" = "armv7l" ]; then

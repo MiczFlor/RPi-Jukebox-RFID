@@ -5,6 +5,11 @@
 
 source ../includes/02_helpers.sh
 
+if [ "$(is_sudo)" = false ]; then
+    echo "ERROR: This script must be run as root"
+    exit 1
+fi
+
 script_name=$(basename "$0")
 boot_config_path=$(get_boot_config_path)
 
@@ -106,10 +111,12 @@ read -p "Enter your choice (0-$board_count): " choice
 case $choice in
     [0])
         disable_hifiberry;
+        ;;
     [1-$board_count])
         check_existing_hifiberry
         selected_board=$(get_key_by_item_number hifiberry_map "$choice")
         enable_hifiberry "$selected_board";
+        ;;
     *)
         echo "Invalid selection. Exiting.";
         exit 1;;
