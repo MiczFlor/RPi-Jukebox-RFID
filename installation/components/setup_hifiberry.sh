@@ -5,10 +5,53 @@
 
 source ../includes/02_helpers.sh
 
+script_name=$(basename "$0")
+
+declare -A hifiberry_map=(
+    ["hifiberry-dac"]="DAC (HiFiBerry MiniAmp, I2S PCM5102A DAC)"
+    ["hifiberry-dacplus"]="HiFiBerry DAC+ Standard/Pro/Amp2"
+    ["hifiberry-dacplushd"]="HiFiBerry DAC2 HD"
+    ["hifiberry-dacplusadc"]="HiFiBerry DAC+ ADC"
+    ["hifiberry-dacplusadcpro"]="HiFiBerry DAC+ ADC Pro"
+    ["hifiberry-digi"]="HiFiBerry Digi+"
+    ["hifiberry-digi-pro"]="HiFiBerry Digi+ Pro"
+    ["hifiberry-amp"]="HiFiBerry Amp+ (not Amp2)"
+    ["hifiberry-amp3"]="HiFiBerry Amp3"
+)
+
+# 1-line installation
+if [ $# -ge 1 ];
+    if { ([ "$1" != "enable" ] && [ "$1" != "disable" ]) || ([ "$1" -= "enable" ] && [ $# -ge 2 ]); }
+        echo "Error: Invalid provided.
+Usage: ./${script_name} <status> <hifiberry-board>[optional]
+where <status> can be 'enable' or 'disable'"
+        exit 1
+    fi
+
+    if [ "$1" != "enable" ];
+        case "$2" in
+        "${hifiberry_list[@]}")
+            echo "Variable is in the list."
+            ;;
+        *)
+            echo "'$2' is not a valid option. You can choose from:"
+            for key in "${!hifiberry_descriptions[@]}"; do
+                description="${hifiberry_descriptions[$key]}"
+                echo "$key) $description"
+            done
+            echo "Example usage: ./${script_name} enable hifiberry-dac"
+            ;;
+        esac
+
+
+    fi
+fi
+
+# Guided installation
 boot_config_path=$(get_boot_config_path)
 asound_conf_path="/etc/asound.conf"
 
-remove_existing_hifiberry() {
+disable_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
     sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
     sudo sed -i '/dtoverlay=vc4-fkms-v3d,audio=off/c\dtoverlay=vc4-fkms-v3d' "$boot_config_path"
@@ -26,7 +69,7 @@ check_existing_hifiberry() {
                 echo "Exiting without making changes.";
                 exit;;
             *)
-                remove_existing_hifiberry;
+                disable_hifiberry;
                 return 0;;
         esac
     fi
@@ -40,35 +83,25 @@ enable_hifiberry() {
 check_existing_hifiberry
 
 # List of HiFiBerry boards
-echo "
-Select your HiFiBerry board:
-1) DAC (HiFiBerry MiniAmp, I2S PCM5102A DAC)
-2) HiFiBerry DAC+ Standard/Pro/Amp2
-3) HiFiBerry DAC2 HD
-4) HiFiBerry DAC+ ADC
-5) HiFiBerry DAC+ ADC Pro
-6) HiFiBerry Digi+
-7) HiFiBerry Digi+ Pro
-8) HiFiBerry Amp+ (not Amp2)
-9) HiFiBerry Amp3
-0) Disable HiFiBerry sound card"
+echo "Select your HiFiBerry board:"
+for key in "${!hifiberry_descriptions[@]}"; do
+    description="${hifiberry_descriptions[$key]}"
+    echo "$key) $description"
+done
+
 read -p "Enter your choice (0-9): " choice
 
-# Enable selected HiFiBerry board
 case $choice in
-    1) enable_hifiberry "hifiberry-dac";;
-    2) enable_hifiberry "hifiberry-dacplus";;
-    3) enable_hifiberry "hifiberry-dacplushd";;
-    4) enable_hifiberry "hifiberry-dacplusadc";;
-    5) enable_hifiberry "hifiberry-dacplusadcpro";;
-    6) enable_hifiberry "hifiberry-digi";;
-    7) enable_hifiberry "hifiberry-digi-pro";;
-    8) enable_hifiberry "hifiberry-amp";;
-    9) enable_hifiberry "hifiberry-amp3";;
-    0)
-        remove_existing_hifiberry;
+    [0])
+        disable_hifiberry;
         exit 1;;
-    *) echo "Invalid selection. Exiting."; exit 1;;
+    [1-9])
+        selected_board="${hifiberry_descriptions[$choice]}";
+        enable_hifiberry "$selected_board";
+        return 0;;
+    *)
+        echo "Invalid selection. Exiting.";
+        exit 1;;
 esac
 
 echo "Disabling onboard sound..."
