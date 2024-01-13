@@ -35,7 +35,7 @@ example_usage() {
 
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
-    grep -qxF "dtoverlay=$1" "$boot_config_path" || sudo echo "dtoverlay=$1" >> "$boot_config_path"
+    grep -qxF "dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" | sudo tee -a "$boot_config_path" > /dev/null
     ./../options/onboard_sound.sh disable
 }
 
@@ -54,8 +54,8 @@ check_existing_hifiberry() {
         fi
 
         echo "Existing HiFiBerry configuration detected: $existing_config"
-        read -p "Do you want to proceed with a new configuration? This will remove the existing one. (Y/n): " yn
-        case $yn in
+        read -p "Do you want to proceed with a new configuration? This will remove the existing one. (Y/n): " choice
+        case $choice in
             [nN][oO]|[nN])
                 echo "Exiting without making changes.";
                 exit;;
@@ -107,7 +107,6 @@ done
 echo "0) Remove existing HiFiBerry configuration"
 
 read -p "Enter your choice (0-$board_count): " choice
-
 case $choice in
     [0])
         disable_hifiberry;
