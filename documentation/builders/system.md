@@ -7,7 +7,7 @@ The system consists of
 1. [Music Player Daemon (MPD)](system.md#music-player-daemon-mpd) which we use for all music playback (local, stream, podcast, ...)
 2. [PulseAudio](system.md#pulseaudio) for flexible audio output support
 3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and PulseAudio and providing all the features
-4. [Web App](system.md#web-app-ui) as UI in a web browser
+4. [Web App](system.md#web-app-ui) as User Interface (UI) for a web browser
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
 > [!NOTE] The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
