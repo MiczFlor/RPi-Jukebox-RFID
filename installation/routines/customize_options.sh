@@ -293,11 +293,11 @@ _option_webapp_devel_build() {
 
 You are installing from a non-release branch
 and/or an unofficial repository.
-Therefore a pre-built Web App is not available
+Therefore a pre-build Web App is not available
 and it needs to be built locally.
 This requires Node to be installed.
 
-If you decline, the lastest pre-built version
+If you decline, the lastest pre-build version
 from the official repository will be installed.
 This can lead to incompatibilities.
 
