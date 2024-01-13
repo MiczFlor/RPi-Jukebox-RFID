@@ -128,8 +128,9 @@ if [[ $(uname -m) == armv6l ]]; then
     echo "
 -----------------------------------------------------------
 | You are running a hardware with limited resources.      |
-| Building the Web App takes significantly more time      |
-| and might fail.                                         |
+| Building the Web App takes significantly more time.     |
+| In case it fails, check the documentation               |
+| to trouble shoot.                                       |
 -----------------------------------------------------------
 "
 fi
