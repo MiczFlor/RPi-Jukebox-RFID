@@ -1,12 +1,13 @@
 # Web App
 
-The Web App sources are located in `src/webapp`. A pre-build bundle of the Web App is deployed during when installing from the release branch (`main`). If you install from a feature branch or from a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
+The Web App sources are located in `src/webapp`. A pre-build bundle of the Web App is deployed when installing from an official release branch. If you install from a feature branch or a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
 
 ## Install node manually
 
-If you installed an official release branch, Node might not be installed. To install Node for local development, follow the [official setup](https://deb.nodesource.com/).
+If you installed from an official release branch, Node might not be installed. To install Node for local development, follow the [official setup](https://deb.nodesource.com/).
 
 ``` bash
+NODE_MAJOR=20
 sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
@@ -126,16 +127,23 @@ This tends to happen on `armv6l` devices where building takes significantly more
 
 #### Solution
 
-Try to use an ethernet connection. A reboot might also help. If the error still persists (or there is no ethernet port on your devices), try to raise the timeout for npm package resolution.
+Try to use an ethernet connection. A reboot and/or running the script multiple times might also help ([Build produces EOF errors](#build-produces-eof-errors) might occur). 
 
-1. Check the current config value (default is 120000)
-    ``` bash
-    npm config --location project get fetch-retry-maxtimeout
-    ```
+If the error still persists, try to raise the timeout for npm package resolution.
 
-1. Increase the value by '30000' (30 seconds) and set the new value
-    ``` bash
-    npm config --location project set fetch-retry-maxtimeout=xxx
-    ```
-
+1. Open the npm config file in an editor
+1. Increase the `fetch-retry-*` values by '30000' (30 seconds) and save
 1. Retry the build
+
+### Build produces EOF errors
+
+#### Reason
+
+A previous run failed during installation and left a package corrupted.
+
+#### Solution
+
+Remove the mode packages and rerun again the script.
+``` {.bash emphasize-lines="8,9"}
+rm -rf node_modules
+```
