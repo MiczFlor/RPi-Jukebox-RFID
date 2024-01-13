@@ -1,10 +1,10 @@
 # Web App
 
-The Web App sources located in `src/webapp`. During installation from the official repositories release branches a prebuilt bundle of the Web App is deployed. If you install a feature branch or from a fork repository the Web App needs to be build locally. This requires Node to be installed and is part of the installation process.
+The Web App sources are located in `src/webapp`. A pre-built bundle of the Web App is deployed during when installing from the release branch (`main`). If you install from a feature branch or from a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
 
 ## Install node manually
 
-If you installed an official release branch Node might not be installed (focus on builders). To add this for local development you can run the recommended setup (https://deb.nodesource.com/)
+If you installed an official release branch, Node might not be installed. To install Node for local development, follow the [official setup](https://deb.nodesource.com/).
 
 ``` bash
 sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
@@ -14,18 +14,28 @@ echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.co
 sudo apt-get -y update && sudo apt-get -y install nodejs
 ```
 
-## Build the Web App
+## Develop the Web App
 
-After changes to the Web App sources (locally or caused by a pull from the repository) it needs to be rebuild manually.
-Use the provided script to rebuild whenever needed. The result is written to the folder `build`.
+The Web App is a React application based on [Create React App](https://create-react-app.dev/). To start a development server, run the following command:
+
+```
+cd ~/RPi-Jukebox-RFID/src/webapp
+npm install # Just the first time or when dependencies change
+npm start
 ```
 
-``` bash
+## Build the Web App
+
+To build your Web App after its source code has changed (e.g. through a local change or through a pull from the repository), it needs to be rebuilt manually.
+Use the provided script to rebuild whenever required. The artifacts can be found in the folder `build`.
+
+```bash
 cd ~/RPi-Jukebox-RFID/src/webapp; \
 ./run_rebuild.sh -u
 ```
 
-After the successfull build you might need to restart the web server.
+After a successfull build you might need to restart the web server.
+
 ```
 sudo systemctl restart nginx.service
 ```
@@ -59,7 +69,7 @@ Use the [provided script](#build-the-web-app) to rebuild the Web App. It sets th
 
 If you need to run the commands manually, make sure to have enough memory available (min. 512 MB). The following commands might help.
 
-Set the swapsize to 512 MB (and deactivate swapfactor). Change accordingly if you have a SD Card with small capacity.
+Set the swapsize to 512 MB (and deactivate swapfactor). Adapt accordingly if you have a SD Card with small capacity.
 ```bash
 sudo dphys-swapfile swapoff
 sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=512|g" /etc/dphys-swapfile 
@@ -68,7 +78,7 @@ sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
 ```
 
-Set the maximum amount of memory for node to use. Memory must be available.
+Set Node's maximum amount of memory. Memory must be available.
 ``` bash
 export NODE_OPTIONS=--max-old-space-size=512
 npm run build
@@ -111,12 +121,12 @@ npm ERR! network 'proxy' config is set properly.  See: 'npm help config'
 
 #### Reason
 
-The network connection is to slow or has issues. 
-This can also happens on armv6l devices where the build takes significantly longer due to the limited resources. 
+The network connection is too slow or has issues. 
+This tends to happen on `armv6l` devices where building takes significantly more time due to limited resources. 
 
 #### Solution
 
-Try to use an ethernet connection. Also reboot might help. If the error still persists (or there is no ethernet port on your devices) try to raise the timeout for npm package resolution.
+Try to use an ethernet connection. A reboot might also help. If the error still persists (or there is no ethernet port on your devices), try to raise the timeout for npm package resolution.
 
 1. Check the current config value (default is 120000)
     ``` bash
@@ -129,4 +139,3 @@ Try to use an ethernet connection. Also reboot might help. If the error still pe
     ```
 
 1. Retry the build
-
