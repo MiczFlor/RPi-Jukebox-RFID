@@ -1,6 +1,6 @@
 # Web App
 
-The Web App sources are located in `src/webapp`. A pre-built bundle of the Web App is deployed during when installing from the release branch (`main`). If you install from a feature branch or from a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
+The Web App sources are located in `src/webapp`. A pre-build bundle of the Web App is deployed during when installing from the release branch (`main`). If you install from a feature branch or from a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
 
 ## Install node manually
 
