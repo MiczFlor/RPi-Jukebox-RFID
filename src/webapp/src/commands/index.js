@@ -9,7 +9,6 @@ const commands = {
     plugin: 'ctrl',
     method: 'get_album_coverart',
   },
-  // ToDo: Do we need that?
   directoryTreeOfAudiofolder: {
     _package: 'player',
     plugin: 'ctrl',
@@ -25,17 +24,15 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_songs_by_artist_and_album',
   },
-  // ToDo: Implement
   getSongByUrl: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'get_song_by_url',
     argKeys: ['song_url']
   },
-  // ToDo: Implement
   folderList: {
     _package: 'player',
-    plugin: 'content',
+    plugin: 'ctrl',
     method: 'get_folder_content',
   },
   cardsList: {
@@ -52,8 +49,8 @@ const commands = {
   },
   playerstatus: {
     _package: 'player',
-    plugin: 'ctrl',
-    method: 'playerstatus'
+    plugin: 'playerstatus',
+    method: 'status'
   },
 
   // Player Actions
@@ -75,7 +72,6 @@ const commands = {
     method: 'play_folder',
     argKeys: ['folder']
   },
-  // ToDo: Implement
   play_album: {
     _package: 'player',
     plugin: 'ctrl',

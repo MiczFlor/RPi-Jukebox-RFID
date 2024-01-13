@@ -113,8 +113,19 @@ class PlayerCtrl:
         self.play_uri(uri)
 
     @plugin.tag
+    def play_album(self, albumartist, album):
+        self._active.play_album(albumartist, album)
+
+    @plugin.tag
     def toggle(self):
         self._active.toggle()
+
+    @plugin.tag
+    def shuffle(self, option='toggle'):
+        """
+        Force the player to toggle the shuffle option of the current playing list/album
+        """
+        self._active.shuffle(option)
 
     @plugin.tag
     def pause(self):
@@ -131,12 +142,29 @@ class PlayerCtrl:
         self._active.get_queue()
 
     @plugin.tag
-    def repeatmode(self):
-        self._active.repeatmode()
+    def repeat(self):
+        self._active.repeat()
 
     @plugin.tag
     def seek(self):
         self._active.seek()
+
+    @plugin.tag
+    def get_single_coverart(self, song_url):
+        self._active.get_single_coverart(song_url)
+
+    @plugin.tag
+    def get_album_coverart(self):
+        self._active.get_album_coverart()
+
+    @plugin.tag
+    def list_all_dirs(self):
+        list_of_all_dirs = []
+        for name, bkend in self._backends.items():
+            list_of_all_dirs.append(bkend.list_dirs())
+        return list_of_all_dirs
+
+
 
     @plugin.tag
     def list_albums(self):
@@ -154,6 +182,15 @@ class PlayerCtrl:
         for name, bkend in self._backends.items():
             s_item = filter(lambda album: album['artist'] == artist and album['albumname'] == albumname, bkend.get_albums())
         return s_item if s_item else None
+
+    @plugin.tag
+    def get_song_by_url(self, song_url):
+        return self._active.get_song_by_url(song_url)
+
+    @plugin.tag
+    def get_folder_content(self):
+        return self._active.get_folder_content()
+
 
     def _save_state(self):
         # Get the backend to save the state of the current playlist to the URI's config file

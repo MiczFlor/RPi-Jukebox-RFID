@@ -1,4 +1,6 @@
 import logging
+
+import jukebox.plugs as plugin
 from jukebox import publishing
 
 logger = logging.getLogger('jb.player')
@@ -37,3 +39,7 @@ class PlayerStatus:
             'player_status',
             self._player_status
         )
+
+    @plugin.tag
+    def status(self):
+        return self._player_status

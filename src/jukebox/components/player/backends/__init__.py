@@ -1,53 +1,77 @@
-import jukebox.plugs as plugin
+from abc import ABC, abstractmethod
 
-
-class BackendPlayer:
+class BackendPlayer(ABC):
     """
-    Class to inherit, so that you can build a proper new Player
+    Abstract Class to inherit, so that you can build a proper new Player
     """
-    def __init__(self):
-        raise NotImplementedError
 
-    @plugin.tag
+    @abstractmethod
     def next(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
+    @abstractmethod
     def prev(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
-    def play(self, idx=None):
-        raise NotImplementedError
+    @abstractmethod
+    def play(self):
+        pass
 
-    @plugin.tag
+    @abstractmethod
+    def play_single(self, uri):
+        pass
+
+    @abstractmethod
+    def play_album(self, albumartist, album):
+        pass
+    @abstractmethod
     def toggle(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
+    @abstractmethod
+    def shuffle(self):
+        pass
+
+    @abstractmethod
     def pause(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
+    @abstractmethod
     def stop(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
+    @abstractmethod
     def get_queue(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
-    def play_uri(self, uri):
-        raise NotImplementedError
+    @abstractmethod
+    def repeat(self):
+        pass
 
-    @plugin.tag
-    def repeatmode(self):
-        raise NotImplementedError
-
-    @plugin.tag
+    @abstractmethod
     def seek(self):
-        raise NotImplementedError
+        pass
 
-    @plugin.tag
+    @abstractmethod
     def get_albums(self):
-        raise NotImplementedError
+        pass
+
+    @abstractmethod
+    def get_single_coverart(self, song_url):
+        pass
+
+    @abstractmethod
+    def get_album_coverart(self):
+        pass
+
+    @abstractmethod
+    def list_dirs(self):
+        pass
+
+    @abstractmethod
+    def get_song_by_url(self, song_url):
+        pass
+
+    @abstractmethod
+    def get_folder_content(self):
+        pass
