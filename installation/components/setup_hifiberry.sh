@@ -5,11 +5,6 @@
 
 source ../includes/02_helpers.sh
 
-if [ "$(is_sudo)" = false ]; then
-    echo "ERROR: This script must be run as root"
-    exit 1
-fi
-
 script_name=$(basename "$0")
 boot_config_path=$(get_boot_config_path)
 
