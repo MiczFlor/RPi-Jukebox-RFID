@@ -116,6 +116,17 @@ class MPDBackend(BackendPlayer):
         else:
             return self._run_cmd(self.client.play, idx)
 
+    @plugin.tag
+    def play_folder(self, folder: str, recursive: bool = False):
+        """
+        Playback a music folder.
+
+        :param folder: Folder path relative to music library path
+        :param recursive: Add folder recursively
+        """
+        self._run_cmd(self.client.clear)
+
+
     def toggle(self):
         """Toggle between playback / pause"""
         return self._run_cmd(self.client.pause)

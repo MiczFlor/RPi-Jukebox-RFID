@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BackendPlayer(ABC):
     """
     Abstract Class to inherit, so that you can build a proper new Player
