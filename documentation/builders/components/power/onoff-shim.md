@@ -7,7 +7,7 @@ The OnOff SHIM from Pimorino allows you to savely start and shutdown your Raspbe
 To install the software, open a terminal and type the following command to run the one-line-installer. A reboot will be required once the installation is finished.
 
 > [!NOTE]
-> The installations will ask you a few questions. You can safely answer with the default response.
+> The installation will ask you a few questions. You can safely answer with the default response.
 
 ```
 curl https://get.pimoroni.com/onoffshim | bash

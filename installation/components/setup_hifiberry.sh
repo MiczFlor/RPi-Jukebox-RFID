@@ -107,8 +107,8 @@ case $choice in
         disable_hifiberry;
         ;;
     [1-$board_count])
-        check_existing_hifiberry
         selected_board=$(get_key_by_item_number hifiberry_map "$choice")
+        check_existing_hifiberry
         enable_hifiberry "$selected_board";
         ;;
     *)

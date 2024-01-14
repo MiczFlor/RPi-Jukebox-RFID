@@ -72,31 +72,23 @@ is_raspian() {
     fi
 }
 
-get_debian_version() {
-    # Read the major version number from /etc/debian_version
-    local major_version="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
-
-    case $major_version in
-        11)
-            echo "bullseye"
-            ;;
-        12)
-            echo "bookworm"
-            ;;
-        *)
-            echo "unknown"
-            ;;
-    esac
+get_debian_version_number() {
+    source /etc/os-release
+    echo "$VERSION_ID"
 }
 
 get_boot_config_path() {
     if [ "$(is_raspian)" = true ]; then
-        local debian_version=$(get_debian_version)
+        local debian_version_number=$(get_debian_version_number)
 
-        if [ "$debian_version" = "bookworm" ]; then
+        # Bullseye and lower
+        if [ "$debian_version_number" -le 11 ]; then
+            echo "/boot/config.txt"
+        # Bookworm and higher
+        elif [ "$debian_version_number" -ge 12 ]; then
             echo "/boot/firmware/config.txt"
         else
-            echo "/boot/config.txt"
+            echo "unknown"
         fi
     else
         echo "unknown"

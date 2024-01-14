@@ -7,7 +7,7 @@ The installation script works for the most common set of HiFiBerry boards but al
 Run the following command to install any HiFiBerry board. Make sure you reboot your device afterwards.
 
 ```
-cd; cd ~/RPi-Jukebox-RFID/installation/components && chmod +x setup_hifiberry.sh
+cd ~/RPi-Jukebox-RFID/installation/components && chmod +x setup_hifiberry.sh
 ./setup_hifiberry.sh
 ```
 
@@ -17,7 +17,7 @@ If you know you HifiBerry Board identifier, you can run the script as a 1-liner 
 ./setup_hifiberry.sh enable hifiberry-dac
 ```
 
-If you like to disable your HiFiberry Sound card and enable onboard sound, run the folliwing command
+If you like to disable your HiFiberry Sound card and enable onboard sound, run the following command
 
 
 ```
