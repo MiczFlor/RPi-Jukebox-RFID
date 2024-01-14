@@ -48,9 +48,11 @@ Contributors have played a bigger role over time to keep Phoniebox on the edge o
 We want to keep it as easy as possible to contribute changes that get things working in your environment.
 There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
 
-Development for Version 3 is done on the git branch `future3/develop`. How to move to that branch, see below.
-
-For bug fixes and improvements just open an issue or PR as described below. If you plan to port a feature from Version 2.X or implement a new feature, it is advisable to contact us first. In this case, also open an issue describing what you are planning to do. We will just check that nobody else is already on the subject. We are looking forward to your work. Check the current [feature list](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html) for available features and work in progress.
+For bug fixes and improvements just open an issue or PR as described below. 
+If you plan to port a feature from Version 2.X or implement a new feature, it is advisable to contact us first. 
+In this case, also open an issue describing what you are planning to do. 
+We will just check that nobody else is already on the subject. 
+We are looking forward to your work. Check the current [feature list](documentation/developers/status.md) for available features and work in progress.
 
 ## Getting Started
 
@@ -60,31 +62,21 @@ For bug fixes and improvements just open an issue or PR as described below. If y
     Version 2 will continue to live for quite a while.
   * Clearly describe the issue including steps to reproduce when it is a bug
   * Make sure you fill in the earliest version that you know has the issue
-* By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
-
-~~~bash
-cd ~/RPi-Jukebox-RFID
-git checkout future3/develop
-git fetch origin
-git reset --hard origin/future3/develop
-git pull
-~~~
 
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github).
-And, ideally pull requests use the "running code" on the `future3/develop` branch of your Phoniebox.
+And ideally pull requests use the "running code" of your Phoniebox.
 Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
 ## Making Changes
 
+* Create a fork of this repository
 * Create a topic branch from where you want to base your work.
-  * This is usually the master branch or the develop branch.
-  * Only target release branches if you are certain your fix must be on that
+  * This is usually the `future3/develop` branch.
+  * Only target the `future3/main` branch if you are certain your fix must be on that
     branch.
-  * To quickly create a topic branch based on master, run `git checkout -b
-    fix/master/my_contribution master`. Please avoid working directly on the
-    `master` branch.
 * Make commits of logical and atomic units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
+* See also the [documentation for developers](documentation/developers/README.md)
 
 ## Making Trivial Changes
 
@@ -168,8 +160,8 @@ The original contributor will be notified of the revert.
 
 ## Guidelines
 
-* Phoniebox runs on Raspian **Buster**. Therefore, all Python code should work at least with **Python 3.7**.
-* For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
+* Phoniebox runs on Raspberry Pi OS. 
+* Minimum python version is currently **Python 3.9**.
 
 ## Additional Resources
 
