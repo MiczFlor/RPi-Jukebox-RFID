@@ -126,10 +126,25 @@ class MPDBackend(BackendPlayer):
         """
         self._run_cmd(self.client.clear)
 
+    def play_single(self, uri):
+        pass
+
+    def play_album(self, albumartist, album):
+        pass
 
     def toggle(self):
         """Toggle between playback / pause"""
         return self._run_cmd(self.client.pause)
+
+    def shuffle(self):
+        pass
+
+    def repeat(self):
+        pass
+
+    def seek(self):
+        pass
+
 
     def pause(self):
         """Pause playback if playing
@@ -266,6 +281,21 @@ class MPDBackend(BackendPlayer):
         if not p:
             raise ValueError(f"Cannot decode album and/or album artist from URI: '{uri}'")
         return self.get_album_tracks(album_artist=p.group(4), album=p.group(3))
+
+    def get_single_coverart(self, song_url):
+        pass
+
+    def get_album_coverart(self):
+        pass
+
+    def list_dirs(self):
+        pass
+
+    def get_song_by_url(self, song_url):
+        pass
+
+    def get_folder_content(self):
+        pass
 
     # ----------------------------------
     # Get podcasts / livestreams
