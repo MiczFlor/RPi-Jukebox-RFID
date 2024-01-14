@@ -45,14 +45,17 @@ as local, temporary scratch areas.
 
 Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
-We want to keep it as easy as possible to contribute changes that get things working in your environment.
-There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
+Our goal is to make it simple for you to contribute changes that improve functionality in your specific environment. 
+To achieve this, we have a set of guidelines that we kindly request contributors to adhere to. 
+These guidelines help us maintain a streamlined process and stay on top of incoming contributions.
 
-For bug fixes and improvements just open an issue or PR as described below. 
-If you plan to port a feature from Version 2.X or implement a new feature, it is advisable to contact us first. 
-In this case, also open an issue describing what you are planning to do. 
-We will just check that nobody else is already on the subject. 
-We are looking forward to your work. Check the current [feature list](documentation/developers/status.md) for available features and work in progress.
+To report bug fixes and improvements, please follow the steps outlined below:
+1. For bug fixes and minor improvements, simply open a new issue or pull request (PR).
+2. If you intend to port a feature from Version 2.x to future3 or wish to implement a new feature, we recommend reaching out to us beforehand.
+   - In such cases, please create an issue outlining your plans and intentions.
+   - We will ensure that there are no ongoing efforts on the same topic.
+
+We eagerly await your contributions! You can review the current [feature list](documentation/developers/status.md) to check for available features and ongoing work.
 
 ## Getting Started
 
