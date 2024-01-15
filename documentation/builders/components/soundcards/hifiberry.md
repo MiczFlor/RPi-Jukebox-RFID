@@ -13,7 +13,7 @@ cd ~/RPi-Jukebox-RFID/installation/components
 
 If you know you HifiBerry Board identifier, you can run the script as a 1-liner as well
 
-```
+```bash
 ./setup_hifiberry.sh enable hifiberry-dac
 ```
 
