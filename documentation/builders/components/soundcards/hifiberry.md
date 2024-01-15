@@ -6,7 +6,7 @@ The installation script works for the most common set of HiFiBerry boards but al
 
 Run the following command to install any HiFiBerry board. Make sure you reboot your device afterwards.
 
-```
+```bash
 cd ~/RPi-Jukebox-RFID/installation/components
 ./setup_hifiberry.sh
 ```
