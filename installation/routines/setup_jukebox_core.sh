@@ -8,14 +8,6 @@ JUKEBOX_ZMQ_VERSION="4.3.5"
 JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
-_show_slow_hardware_message() {
-  print_c "  --------------------------------------------------------------------
-  | Your hardware is a little slower so this step will take a while. |
-  | Go watch a movie but don't let your computer go to sleep for the |
-  | SSH connection to remain intact.                                 |
-  --------------------------------------------------------------------"
-}
-
 # Functions
 _jukebox_core_install_os_dependencies() {
   print_lc "  Install Jukebox OS dependencies"
@@ -86,11 +78,6 @@ _jukebox_core_build_and_install_pyzmq() {
   print_lc "  Install pyzmq with libzmq-drafts to support WebSockets"
 
   if ! pip list | grep -F pyzmq >> /dev/null; then
-
-    if [[ $(uname -m) == "armv6l" ]]; then
-      _show_slow_hardware_message
-    fi
-
     mkdir -p "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
     if [ "$BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE" = true ] ; then
       _jukebox_core_build_libzmq_with_drafts

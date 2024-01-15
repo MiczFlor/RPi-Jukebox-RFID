@@ -2,6 +2,17 @@
 
 ### Helpers
 
+show_slow_hardware_message() {
+    if [[ $(uname -m) == "armv6l" ]]; then
+        print_c "--------------------------------------------------------------------
+| Your hardware is a little slower so this will take a while.      |
+| Go watch a movie but don't let your computer go to sleep for the |
+| SSH connection to remain intact.                                 |
+--------------------------------------------------------------------
+"
+    fi
+}
+
 # $1->start, $2->end
 calc_runtime_and_print() {
   runtime=$(($2-$1))
