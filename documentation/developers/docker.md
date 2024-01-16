@@ -15,7 +15,7 @@ need to adapt some of those commands to your needs.
 ## Prerequisites
 
 1. Install required software: Docker, Compose and pulseaudio
-    * Check installations guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
+    * Check installation guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
 
 2. Pull the Jukebox repository:
 
@@ -30,7 +30,7 @@ need to adapt some of those commands to your needs.
     $ cp ./resources/default-settings/jukebox.default.yaml ./shared/settings/jukebox.yaml
     ```
 
-    * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
+    * Override/Merge the values from the following [Override file](../../docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
 4. Change directory into the `./shared/audiofolders`
@@ -159,7 +159,7 @@ Read these threads for details: [thread 1](https://unix.stackexchange.com/questi
 
 The Dockerfile is defined to start all Phoniebox related services.
 
-Open <http://localhost:3000> in your browser to see the web application.
+Open <http://localhost:3000> in your browser to see the Web App.
 
 While the `webapp` container does not require a reload while working on
 it (hot-reload is enabled), you will have to restart your `jukebox`

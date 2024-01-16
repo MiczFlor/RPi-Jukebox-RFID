@@ -103,7 +103,8 @@ def jukebox_is_service():
 def is_any_jukebox_service_active():
     """Check if a Jukebox service is running
 
-    .. note:: Does not have the be the current app, that is running as a service!
+    > [!NOTE]
+    > Does not have the be the current app, that is running as a service!
     """
     ret = subprocess.run(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,

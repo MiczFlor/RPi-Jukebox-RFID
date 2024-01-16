@@ -6,7 +6,7 @@ There are a few things that are specifically not integrated yet: playing streams
 
 In the following is the currently implemented feature list in more detail. It also shows some of the shortcomings. However, the list is _not complete in terms of planned features_, but probably _reflects more of where work is currently being put into_.
 
-**For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue or join us in the chat room. You may pick topics marked as open below, but also any other topic missing in the list below. As mentioned, that list is not complete in terms of open features. Check the [Contribution guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/CONTRIBUTING.md).
+**For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue or join us in the chat room. You may pick topics marked as open below, but also any other topic missing in the list below. As mentioned, that list is not complete in terms of open features. Check the [Contribution guide](../../CONTRIBUTING.md).
 
 Topics marked _in progress_ are already in the process of implementation by community members.
 

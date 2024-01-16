@@ -48,7 +48,7 @@ class ReaderClass(ReaderBaseClass):
     All the required interfaces are implemented there.
 
     Put your code into these functions (see below for more information)
-      - __init__
+      - `__init__`
       - read_card
       - cleanup
       - stop
@@ -101,10 +101,11 @@ class ReaderClass(ReaderBaseClass):
 
         This function is called before cleanup is called.
 
-        .. note: This is usually called from a different thread than the reader's thread! And this is the reason for the
-            two-step exit strategy. This function works across threads to indicate to the reader that is should stop attempt
-            to read a card. Once called, the function read_card will not be called again. When the reader thread exits
-            cleanup is called from the reader thread itself.
+        > [!NOTE]
+        > This is usually called from a different thread than the reader's thread! And this is the reason for the
+        > two-step exit strategy. This function works across threads to indicate to the reader that is should stop attempt
+        > to read a card. Once called, the function read_card will not be called again. When the reader thread exits
+        > cleanup is called from the reader thread itself.
 
         """
         self._keep_running = False
