@@ -28,6 +28,8 @@ The OnOff SHIM comes with a 12-PIN header which needs soldering. If you want to 
 | GPLCLK0        | 7         | 7                | GPIO4        |
 | GPIO17         | 11        | 11               | GPIO17       |
 
+* More information can be found here: https://pinout.xyz/pinout/onoff_shim
+
 ## Assembly options
 
 ![](https://cdn.review-images.pimoroni.com/upload-b6276a310ccfbeae93a2d13ec19ab83b-1617096824.jpg?width=640)
