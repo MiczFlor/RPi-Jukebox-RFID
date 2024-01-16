@@ -10,7 +10,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 2. Download the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) and run it
 3. Click on "Raspberry Pi Device" and select "No filtering"
-4. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. `future3` does not support 64bit kernels (`aarch64`).
+4. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. *64-bit is currently not supported.* For Pi 4 and newer also check [this](#workaround-for-64-bit-kernels-pi-4-and-newer).
 5. Select your Micro SD card (your card will be formatted)
 6. After you click `Next`, a prompt will ask you if you like to customize the OS settings
     * Click `Edit Settings`
@@ -99,6 +99,15 @@ If you need Wifi, add the information now
 * select `1 - System Options`
 * select `1 - Wireless LAN`
 * enter Wifi information
+</details>
+
+#### Workaround for 64-bit Kernels (Pi 4 and newer)
+<details>
+
+The installation process checks if a 32-bit OS is running, as 64-bit is currently not supported.
+This check also fails if the kernel is running in 64-bit mode. This is the default for Raspberry Pi models 4 and newer.
+
+To be able to run the installation, you have to switch to the 32-bit mode by modifying the `config.txt` ([check for the correct location as it has changed since bookworm](https://www.raspberrypi.com/documentation/computers/config_txt.html)) and add/change the line `arm_64bit=0`. Reboot before you proceed.
 </details>
 
 ## Install Phoniebox software
