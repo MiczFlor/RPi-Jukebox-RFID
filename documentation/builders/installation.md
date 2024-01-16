@@ -26,11 +26,11 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 8. Confirm the next warning about erasing the SD card with `Yes`
 9. Wait for the imaging process to be finished (it'll take a few minutes)
 
+
+### Pre-boot preparation
 <details>
 
 <summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
-
-### Pre-boot preparation
 
 You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to proceed with the next steps.
 
