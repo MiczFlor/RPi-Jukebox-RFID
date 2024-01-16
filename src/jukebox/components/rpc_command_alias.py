@@ -1,7 +1,7 @@
 """
 This file provides definitions for RPC command aliases
 
-See :ref:`userguide/rpc_commands`
+See [RPC Commands](../../builders/rpc-commands.md)
 """
 
 # --------------------------------------------------------------
