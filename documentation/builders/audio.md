@@ -64,9 +64,7 @@ Bluetooth setup consists of three steps
 To pair and connect, follow these steps. This will be a one-time setup.
 
 ```bash
-sudo bluetoothctl
-
-$ bluetoothctl
+$ sudo bluetoothctl
 Agent registered
 [CHG] Controller B8:27:EB:44:C4:33 Pairable: yes
 #### Put your headset into pairing mode
