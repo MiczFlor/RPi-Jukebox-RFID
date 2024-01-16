@@ -14,6 +14,12 @@
 * [Card Database](./card-database.md)
 * [Troubleshooting](./troubleshooting.md)
 
+## Components
+* [Power](./components/power/)
+    * [OnOff SHIM for safe power on/off](./components/power/onoff-shim.md)
+* [Soundcards](./components/soundcards/)
+    * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
+
 ## Advanced
 
 * [Bluetooth (and audio buttons)](./bluetooth-audio-buttons.md)

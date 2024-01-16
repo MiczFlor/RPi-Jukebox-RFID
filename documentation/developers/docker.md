@@ -15,7 +15,7 @@ need to adapt some of those commands to your needs.
 ## Prerequisites
 
 1. Install required software: Docker, Compose and pulseaudio
-    * Check installations guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
+    * Check installation guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
 
 2. Pull the Jukebox repository:
 
