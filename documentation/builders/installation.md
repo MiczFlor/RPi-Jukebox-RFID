@@ -85,9 +85,9 @@ With Bookworm the network settings have changed. Now "NetworkManager" is used in
 This breaks breaks network related features like "Static IP", "Wifi Setup" and "Autohotspot".
 Before running the installation, the network config has to be changed via raspi-config, to use the "old" dhcpcd network settings.
 
-> [!IMPORTANT]
-> If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless network.
-> So make sure you perform the following steps in a local terminal with a connected monitor and keyboard.
+:warning:
+If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless network.
+So make sure you perform the following steps in a local terminal with a connected monitor and keyboard.
 
 Change network config
 * run `sudo raspi-config`
