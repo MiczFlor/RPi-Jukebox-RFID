@@ -77,6 +77,30 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 </details>
 
+### Pre-install preparation / workarounds
+
+#### Workaround for network related features on Bookworm
+<details>
+With Bookworm the network settings have changed. Now "NetworkManager" is used instead of "dhcpcd".
+This breaks breaks network related features like "Static IP", "Wifi Setup" and "Autohotspot".
+Before running the installation, the network config has to be changed via raspi-config, to use the "old" dhcpcd network settings.
+
+> [!IMPORTANT]
+> If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless network.
+> So make sure you perform the following steps in a local terminal with a connected monitor and keyboard.
+
+Change network config
+* run `sudo raspi-config`
+* select `6 - Advanced Options`
+* select `AA - Network Config`
+* select `dhcpcd`
+
+If you need Wifi, add the information now
+* select `1 - System Options`
+* select `1 - Wireless LAN`
+* enter Wifi information
+</details>
+
 ## Install Phoniebox software
 
 Choose a version, run the corresponding install command in your SSH terminal and follow the instructions.
