@@ -30,18 +30,18 @@ example_usage() {
 
 enable_hifiberry() {
     echo "Enabling HiFiBerry board..."
-    grep -qxF "dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" | sudo tee -a "$boot_config_path" > /dev/null
+    grep -qxF "^dtoverlay=$1" "$boot_config_path" || echo "dtoverlay=$1" | sudo tee -a "$boot_config_path" > /dev/null
     ./../options/onboard_sound.sh disable
 }
 
 disable_hifiberry() {
     echo "Removing existing HiFiBerry configuration..."
-    sudo sed -i '/dtoverlay=hifiberry-/d' "$boot_config_path"
+    sudo sed -i '/^dtoverlay=hifiberry-/d' "$boot_config_path"
     ./../options/onboard_sound.sh enable
 }
 
 check_existing_hifiberry() {
-    existing_config=$(grep 'dtoverlay=hifiberry-' "$boot_config_path")
+    existing_config=$(grep '^dtoverlay=hifiberry-' "$boot_config_path")
     if [ ! -z "$existing_config" ]; then
         if [ "$1" = "silent" ]; then
             disable_hifiberry
