@@ -5,7 +5,7 @@
 # TO ACTIVATE: cp .githooks/post-merge .git/hooks/.
 #
 # Checks:
-# - Changes to web app
+# - Changes to Web App
 # - Changes to web dependency
 # - Changes to python requirements
 #
@@ -20,7 +20,7 @@ warn_npm_dependency() {
   echo "************************************************************"
   echo "ATTENTION: npm dependencies have changed since last pull!"
   echo ""
-  echo "To update dependencies and rebuilt WebApp run:"
+  echo "To update dependencies and rebuilt Web App run:"
   echo "$ cd src/webapp && ./run_rebuild.sh -u"
   echo "************************************************************"
   echo -e "\n"
@@ -31,7 +31,7 @@ warn_webapp() {
   echo "************************************************************"
   echo "ATTENTION: Web App sources have changed since last pull!"
   echo ""
-  echo "To rebuilt the WebApp run:"
+  echo "To rebuilt the Web App run:"
   echo "$ cd src/webapp && ./run_rebuild.sh"
   echo "************************************************************"
   echo -e "\n"

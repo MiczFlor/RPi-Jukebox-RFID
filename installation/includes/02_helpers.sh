@@ -2,6 +2,17 @@
 
 ### Helpers
 
+show_slow_hardware_message() {
+    if [[ $(uname -m) == "armv6l" ]]; then
+        print_c "--------------------------------------------------------------------
+| Your hardware is a little slower so this will take a while.      |
+| Go watch a movie but don't let your computer go to sleep for the |
+| SSH connection to remain intact.                                 |
+--------------------------------------------------------------------
+"
+    fi
+}
+
 # Get key by item number of associated array
 get_key_by_item_number() {
     local -n array="$1"
