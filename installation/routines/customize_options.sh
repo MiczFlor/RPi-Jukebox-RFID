@@ -216,6 +216,7 @@ _option_kiosk_mode() {
         print_c "
 Due to limited resources the kiosk mode is not supported
 on Raspberry Pi 1 or Zero 1 ('ARMv6' models).
+Kiosk mode will be disabled.
 
 Press enter to continue."
         read
