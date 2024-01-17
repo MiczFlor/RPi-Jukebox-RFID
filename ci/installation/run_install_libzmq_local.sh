@@ -17,6 +17,7 @@ export BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=true
 # n - use static ip
 # n - deactivate ipv6
 # n - setup autohotspot
+# - -   change default configuration (only with autohotspot = y)
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)

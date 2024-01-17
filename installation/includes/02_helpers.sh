@@ -119,6 +119,12 @@ download_from_url() {
     return $?
 }
 
+get_string_length() {
+    local string="$1"
+    # "-n" option is needed otherwise an additional linebreak char is added by echo
+    echo -n ${string} | wc -m
+}
+
 ### Verify helpers
 print_verify_installation() {
     log "\n
