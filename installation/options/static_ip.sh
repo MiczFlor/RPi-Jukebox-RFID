@@ -5,7 +5,7 @@
 source ../includes/02_helpers.sh
 
 if [ -z "$1" ] || { [ "$1" != "enable" ] && [ "$1" != "disable" ]; }; then
-    print_lc "Error: Invalid or no statusument provided.
+    print_lc "Error: Invalid or no status provided.
 Usage: ./static_ip.sh <status> <ipaddress>[optional]
        where <status> can be 'enable' or 'disable'"
     exit 1
