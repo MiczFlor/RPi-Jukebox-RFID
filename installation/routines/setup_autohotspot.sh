@@ -3,27 +3,31 @@
 # inspired by
 # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-
+AUTOHOTSPOT_INTERFACES_CONF_FILE="/etc/network/interfaces"
 AUTOHOTSPOT_HOSTAPD_CONF_FILE="/etc/hostapd/hostapd.conf"
 AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE="/etc/default/hostapd"
 AUTOHOTSPOT_DNSMASQ_CONF_FILE="/etc/dnsmasq.conf"
-AUTOHOTSPOT_DHCPD_CONF_FILE="/etc/dhcpcd.conf"
+AUTOHOTSPOT_DHCPCD_CONF_FILE="/etc/dhcpcd.conf"
+AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT="nohook wpa_supplicant"
 
 AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
+AUTOHOTSPOT_SERVICE="autohotspot.service"
+AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
+
 
 _get_interface() {
     # interfaces may vary
     WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
-    WIFI_REGION=$(iw reg get | grep country |  head -n 1 | awk '{ print $2}' | cut -d: -f1)
+    #WIFI_REGION=$(iw reg get | grep country |  head -n 1 | awk '{ print $2}' | cut -d: -f1)
 
     # fix for CI runs on docker
     if [ "${CI_RUNNING}" == "true" ]; then
         if [ -z "${WIFI_INTERFACE}" ]; then
             WIFI_INTERFACE="CI TEST INTERFACE"
         fi
-        if [ -z "${WIFI_REGION}" ]; then
-            WIFI_REGION="CI TEST REGION"
-        fi
+        # if [ -z "${WIFI_REGION}" ]; then
+        #     WIFI_REGION="CI TEST REGION"
+        # fi
     fi
 }
 
@@ -33,50 +37,143 @@ _install_packages() {
     # disable services. We want to start them manually
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
+    sudo systemctl stop hostapd
+    sudo systemctl unmask dnsmasq
     sudo systemctl disable dnsmasq
+    sudo systemctl stop dnsmasq
 }
 
-_configure_hostapd() {
-    local HOSTAPD_CUSTOM_FILE="${INSTALLATION_PATH}"/resources/autohotspot/hostapd.conf
-
-    sed -i "s/WIFI_INTERFACE/${WIFI_INTERFACE}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sed -i "s/AUTOHOTSPOT_PASSWORD/${AUTOHOTSPOT_PASSWORD}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sed -i "s/WIFI_REGION/${WIFI_REGION}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sudo cp "${HOSTAPD_CUSTOM_FILE}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-
-    sudo sed -i "s@^#DAEMON_CONF=.*@DAEMON_CONF=\"${AUTOHOTSPOT_HOSTAPD_CONF_FILE}\"@g" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+_get_last_ip_segment() {
+    local ip="$1"
+    echo $ip | cut -d'.' -f1-3
 }
 
-_configure_dnsmasq() {
-    sudo tee -a "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}" <<-EOF
-#AutoHotspot Config
-#stop DNSmasq from using resolv.conf
-no-resolv
-#Interface to use
-interface=${WIFI_INTERFACE}
-bind-interfaces
-dhcp-range=10.0.0.50,10.0.0.150,12h
-EOF
+_config_file_backup() {
+    # create flag file or copy present conf to orig file
+    # to correctly handling future deactivation of autohotspot
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ ! -f "${config_file}" ]; then
+        sudo touch "${config_flag_file}"
+    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
+        sudo cp "${config_file}" "${config_orig_file}"
+    fi
 }
 
-_other_configuration() {
-    sudo mv /etc/network/interfaces /etc/network/interfaces.bak
-    sudo touch /etc/network/interfaces
-    echo nohook wpa_supplicant | sudo tee -a "${AUTOHOTSPOT_DHCPD_CONF_FILE}"
+_config_file_revert() {
+    # revert config files to original (remove if it wasn't existing before)
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ -f "${config_flag_file}" ]; then
+        sudo rm "${config_flag_file}" "${config_file}"
+    elif [ -f "${config_orig_file}" ]; then
+        sudo mv "${config_orig_file}" "${config_file}"
+    fi
 }
 
-_install_service_and_timer() {
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.service /etc/systemd/system/autohotspot.service
-    sudo systemctl enable autohotspot.service
+_install_autohotspot() {
+    # configure interface conf
+    _config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    sudo rm "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    sudo touch "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
-    local cron_autohotspot_file="/etc/cron.d/autohotspot"
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.timer "${cron_autohotspot_file}"
-    sudo sed -i "s|%%USER%%|${CURRENT_USER}|g" "${cron_autohotspot_file}"
-}
 
-_install_autohotspot_script() {
+    # configure DNS
+    _config_file_backup "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+
+    local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
+    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/dnsmasq.conf "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    #sudo chown root:root "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    #sudo chmod 644 "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+
+
+    # configure hostapd conf
+    _config_file_backup "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+
+    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/hostapd.conf "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%AUTOHOTSPOT_SSID%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%AUTOHOTSPOT_COUNTRYCODE%|${AUTOHOTSPOT_COUNTRYCODE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    #sudo chown root:root "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    #sudo chmod 644 "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+
+
+    # configure hostapd daemon
+    _config_file_backup "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+
+    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/hostapd "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    sudo sed -i "s|%HOSTAPD_CONF%|${AUTOHOTSPOT_HOSTAPD_CONF_FILE}|g" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    #sudo chown root:root "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    #sudo chmod 644 "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+
+
+    # configure dhcpcd conf
+    _config_file_backup "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    if [ ! -f "${AUTOHOTSPOT_DHCPCD_CONF_FILE}" ]; then
+        sudo touch "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+        sudo chown root:netdev "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+        sudo chmod 664 "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    fi
+
+    if [[ ! $(grep -w "${AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT}" ${AUTOHOTSPOT_DHCPCD_CONF_FILE}) ]]; then
+        sudo bash -c "echo ${AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT} >> ${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    fi
+
+    # create service to trigger hotspot
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
+
+    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
+    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
+    #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
+    #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
+
+    sudo systemctl enable "${AUTOHOTSPOT_SERVICE}"
+
+    # create crontab entry
+    local crontab_user=$(crontab -l 2>/dev/null)
+    if [[ -z "${crontab_user}" || ! $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
+        (echo "${crontab_user}"; echo "*/5 * * * * sudo ${AUTOHOTSPOT_TARGET_PATH} 2>&1 | logger -t autohotspot") | crontab -
+        (echo "${crontab_user}"; echo "@reboot sudo ${AUTOHOTSPOT_TARGET_PATH} 2>&1 | logger -t autohotspot") | crontab -
+    fi
+}
+
+
+_uninstall_autohotspot() {
+    # clear autohotspot configurations made from past installation
+
+    # stop services and clear services
+    if systemctl list-unit-files "${AUTOHOTSPOT_SERVICE}" >/dev/null 2>&1 ; then
+        sudo systemctl stop hostapd
+        sudo systemctl stop dnsmasq
+        sudo systemctl stop "${AUTOHOTSPOT_SERVICE}"
+        sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
+        sudo rm "${AUTOHOTSPOT_SERVICE_PATH}"
+    fi
+
+    # remove crontab entry and script
+    local crontab_user=$(crontab -l 2>/dev/null)
+    if [[ ! -z "${crontab_user}" && $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
+        echo "${crontab_user}" | sed "s|^.*\s${AUTOHOTSPOT_TARGET_PATH}\s.*$||g" | crontab -
+    fi
+
+    if [ -f "${AUTOHOTSPOT_TARGET_PATH}" ]; then
+        sudo rm "${AUTOHOTSPOT_TARGET_PATH}"
+    fi
+
+    # remove config files
+    _config_file_revert "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    _config_file_revert "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    _config_file_revert "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    _config_file_revert "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 }
 
 
@@ -89,26 +186,43 @@ _autohotspot_check() {
     verify_service_enablement dnsmasq.service disabled
     verify_service_enablement autohotspot.service enabled
 
-    verify_files_exists "/etc/cron.d/autohotspot"
-    verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_files_exists "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
-    verify_file_contains_string "${WIFI_INTERFACE}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    verify_file_contains_string "${AUTOHOTSPOT_PASSWORD}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    verify_file_contains_string "${WIFI_REGION}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    verify_file_contains_string "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
-
+    local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
+    verify_files_exists "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
     verify_file_contains_string "${WIFI_INTERFACE}" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
-    verify_file_contains_string "nohook wpa_supplicant" "${AUTOHOTSPOT_DHCPD_CONF_FILE}"
+    verify_file_contains_string "dhcp-range=${ip_without_last_segment}" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+
+    verify_files_exists "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    verify_file_contains_string "interface=${WIFI_INTERFACE}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    verify_file_contains_string "ssid=${AUTOHOTSPOT_SSID}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    verify_file_contains_string "wpa_passphrase=${AUTOHOTSPOT_PASSWORD}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    verify_file_contains_string "country_code=${AUTOHOTSPOT_COUNTRYCODE}" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+
+    verify_files_exists "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    verify_file_contains_string "DAEMON_CONF=\"${AUTOHOTSPOT_HOSTAPD_CONF_FILE}\"" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+
+    verify_files_exists "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    verify_file_contains_string "${AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT}" "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+
+    verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "wifidev=\"${WIFI_INTERFACE}\"" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "hotspot_ip=${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}"
+
+    verify_files_exists "${AUTOHOTSPOT_SERVICE_PATH}"
+    verify_file_contains_string "ExecStart=${AUTOHOTSPOT_TARGET_PATH}" "${AUTOHOTSPOT_SERVICE_PATH}"
+
+    local crontab_user=$(crontab -l 2>/dev/null)
+    if [[ ! $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
+        exit_on_error "ERROR: crontab for user not installed"
+    fi
 }
 
 _run_setup_autohotspot() {
     _install_packages
     _get_interface
-    _configure_hostapd
-    _configure_dnsmasq
-    _other_configuration
-    _install_autohotspot_script
-    _install_service_and_timer
+    _uninstall_autohotspot
+    _install_autohotspot
     _autohotspot_check
 }
 
