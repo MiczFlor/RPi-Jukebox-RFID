@@ -220,7 +220,7 @@ _autohotspot_check() {
     fi
 }
 
-_run_setup_autohotspot() {
+_run_setup_autohotspot_dhcpcd() {
     _install_packages
     _get_interface
     _uninstall_autohotspot
@@ -230,6 +230,6 @@ _run_setup_autohotspot() {
 
 setup_autohotspot() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
-        run_with_log_frame _run_setup_autohotspot "Install AutoHotspot"
+        run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot"
     fi
 }
