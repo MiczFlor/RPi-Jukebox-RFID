@@ -36,6 +36,7 @@ $ ./run_rebuild.sh -u
 
 There is no update path coming from Version 2.x of the Jukebox.
 You need to do a fresh install of Version 3 on a fresh Raspberry Pi OS image.
+See [Installing Phoniebox future3](./installation.md).
 
 > [!IMPORTANT]
 > Do start with a fresh SD card image!
