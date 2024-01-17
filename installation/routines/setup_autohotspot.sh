@@ -85,8 +85,8 @@ _install_autohotspot() {
 
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/dnsmasq.conf "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
-    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    sudo sed -i "s|%%IP_WITHOUT_LAST_SEGMENT%%|${ip_without_last_segment}|g" "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
     #sudo chown root:root "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
     #sudo chmod 644 "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
 
@@ -95,10 +95,10 @@ _install_autohotspot() {
     _config_file_backup "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
 
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/hostapd.conf "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    sudo sed -i "s|%AUTOHOTSPOT_SSID%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    sudo sed -i "s|%AUTOHOTSPOT_COUNTRYCODE%|${AUTOHOTSPOT_COUNTRYCODE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%%AUTOHOTSPOT_SSID%%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%%AUTOHOTSPOT_PASSWORD%%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    sudo sed -i "s|%%AUTOHOTSPOT_COUNTRYCODE%%|${AUTOHOTSPOT_COUNTRYCODE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
     #sudo chown root:root "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
     #sudo chmod 644 "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
 
@@ -107,7 +107,7 @@ _install_autohotspot() {
     _config_file_backup "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
 
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/hostapd "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
-    sudo sed -i "s|%HOSTAPD_CONF%|${AUTOHOTSPOT_HOSTAPD_CONF_FILE}|g" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    sudo sed -i "s|%%HOSTAPD_CONF%%|${AUTOHOTSPOT_HOSTAPD_CONF_FILE}|g" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
     #sudo chown root:root "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
     #sudo chmod 644 "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
 
@@ -126,12 +126,12 @@ _install_autohotspot() {
 
     # create service to trigger hotspot
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot "${AUTOHOTSPOT_TARGET_PATH}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
-    sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_IP%%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
 
     sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
-    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_SCRIPT%%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
     #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
     #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
 

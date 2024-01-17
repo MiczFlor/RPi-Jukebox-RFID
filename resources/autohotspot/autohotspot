@@ -23,9 +23,9 @@ fi
 NO_SSID='NoSSid'
 ssidChk="$NO_SSID"
 
-wifidev="%WIFI_INTERFACE%" #device name to use.
+wifidev="%%WIFI_INTERFACE%%" #device name to use.
 #use the command: iw dev ,to see wifi interface name
-hotspot_ip=%AUTOHOTSPOT_IP%
+hotspot_ip=%%AUTOHOTSPOT_IP%%
 
 IFSdef=$IFS
 cnt=0
