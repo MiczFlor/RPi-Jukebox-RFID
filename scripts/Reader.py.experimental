@@ -50,9 +50,11 @@ class UsbReader(object):
 
 
 class Mfrc522Reader(object):
-    def __init__(self):
+    def __init__(self, mode_legacy=True):
         import pirc522
         self.device = pirc522.RFID()
+        self.mode_legacy = mode_legacy
+        self.readCard = self.readCard_legacy if self.mode_legacy else self.readCard_normal
 
     def readCard_legacy(self):
         # Scan for cards
@@ -70,7 +72,7 @@ class Mfrc522Reader(object):
         logger.debug("No Device ID found.")
         return None
 
-    def readCard(self):
+    def readCard_normal(self):
         # Scan for cards
         uid = self.device.read_id(as_number=True)
         if not uid:
@@ -199,9 +201,11 @@ class Reader(object):
         else:
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read().rstrip().split(';', 1)[0]
+            with open(path + '/../settings/Mode_Legacy', 'r') as f:
+                mode_legacy = f.read().rstrip().split(';', 1)[0] == 'ON'
 
             if device_name == 'MFRC522':
-                self.reader = Mfrc522Reader()
+                self.reader = Mfrc522Reader(mode_legacy)
             elif device_name == 'RDM6300':
                 # The Rdm6300Reader supports 2 Additional Number Formats which can bee choosen by an optional parameter dictionary:
                 # {'numberformat':'card_id_float'} or {'numberformat':'card_id_dec'}
