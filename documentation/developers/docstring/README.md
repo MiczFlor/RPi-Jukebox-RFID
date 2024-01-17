@@ -1245,7 +1245,7 @@ This means must also run as user process, as described in
 ## Misc
 
 PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration
+with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration
 in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
 If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!

@@ -35,7 +35,7 @@ $ ./run_rebuild.sh -u
 ## Migration Path from Version 2
 
 There is no update path coming from Version 2.x of the Jukebox.
-You need to do a fresh install of Version 3 on a fresh Raspian Bullseye image.
+You need to do a fresh install of Version 3 on a fresh Raspberry Pi OS image.
 
 > [!IMPORTANT]
 > Do start with a fresh SD card image!
