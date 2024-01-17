@@ -228,7 +228,7 @@ _run_setup_autohotspot_dhcpcd() {
     _autohotspot_check
 }
 
-setup_autohotspot() {
+setup_autohotspot_dhcpcd() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
         run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot"
     fi
