@@ -3,35 +3,13 @@
 # inspired by
 # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-AUTOHOTSPOT_INTERFACES_CONF_FILE="/etc/network/interfaces"
 AUTOHOTSPOT_HOSTAPD_CONF_FILE="/etc/hostapd/hostapd.conf"
 AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE="/etc/default/hostapd"
 AUTOHOTSPOT_DNSMASQ_CONF_FILE="/etc/dnsmasq.conf"
 AUTOHOTSPOT_DHCPCD_CONF_FILE="/etc/dhcpcd.conf"
 AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT="nohook wpa_supplicant"
 
-AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
-AUTOHOTSPOT_SERVICE="autohotspot.service"
-AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
-
 AUTOHOTSPOT_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/dhcpcd"
-
-
-_get_interface() {
-    # interfaces may vary
-    WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
-    #WIFI_REGION=$(iw reg get | grep country |  head -n 1 | awk '{ print $2}' | cut -d: -f1)
-
-    # fix for CI runs on docker
-    if [ "${CI_RUNNING}" == "true" ]; then
-        if [ -z "${WIFI_INTERFACE}" ]; then
-            WIFI_INTERFACE="CI TEST INTERFACE"
-        fi
-        # if [ -z "${WIFI_REGION}" ]; then
-        #     WIFI_REGION="CI TEST REGION"
-        # fi
-    fi
-}
 
 _install_packages() {
     sudo apt-get -y install hostapd dnsmasq iw
@@ -43,36 +21,6 @@ _install_packages() {
     sudo systemctl unmask dnsmasq
     sudo systemctl disable dnsmasq
     sudo systemctl stop dnsmasq
-}
-
-_get_last_ip_segment() {
-    local ip="$1"
-    echo $ip | cut -d'.' -f1-3
-}
-
-_config_file_backup() {
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
-    local config_file="$1"
-    local config_flag_file="${config_file}.remove"
-    local config_orig_file="${config_file}.orig"
-    if [ ! -f "${config_file}" ]; then
-        sudo touch "${config_flag_file}"
-    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
-        sudo cp "${config_file}" "${config_orig_file}"
-    fi
-}
-
-_config_file_revert() {
-    # revert config files to original (remove if it wasn't existing before)
-    local config_file="$1"
-    local config_flag_file="${config_file}.remove"
-    local config_orig_file="${config_file}.orig"
-    if [ -f "${config_flag_file}" ]; then
-        sudo rm "${config_flag_file}" "${config_file}"
-    elif [ -f "${config_orig_file}" ]; then
-        sudo mv "${config_orig_file}" "${config_file}"
-    fi
 }
 
 _install_autohotspot() {
@@ -186,7 +134,7 @@ _autohotspot_check() {
 
     verify_service_enablement hostapd.service disabled
     verify_service_enablement dnsmasq.service disabled
-    verify_service_enablement autohotspot.service enabled
+    verify_service_enablement "${AUTOHOTSPOT_SERVICE}" enabled
 
     verify_files_exists "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
@@ -226,10 +174,4 @@ _run_setup_autohotspot_dhcpcd() {
     _uninstall_autohotspot
     _install_autohotspot
     _autohotspot_check
-}
-
-setup_autohotspot_dhcpcd() {
-    if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
-        run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot"
-    fi
 }
