@@ -16,7 +16,7 @@ _install_autohotspot_NetworkManager() {
 
     # create service to trigger hotspot
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
-    sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/accesspopup "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SSID%%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_PASSWORD%%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_TARGET_PATH}"
