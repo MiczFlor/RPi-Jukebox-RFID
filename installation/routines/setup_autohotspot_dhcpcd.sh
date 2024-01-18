@@ -11,7 +11,7 @@ AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT="nohook wpa_supplicant"
 
 AUTOHOTSPOT_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/dhcpcd"
 
-_install_packages() {
+_install_packages_dhcpcd() {
     sudo apt-get -y install hostapd dnsmasq iw
 
     # disable services. We want to start them manually
@@ -23,7 +23,7 @@ _install_packages() {
     sudo systemctl stop dnsmasq
 }
 
-_install_autohotspot() {
+_install_autohotspot_dhcpcd() {
     # configure interface conf
     _config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo rm "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
@@ -96,7 +96,7 @@ _install_autohotspot() {
 }
 
 
-_uninstall_autohotspot() {
+_uninstall_autohotspot_dhcpcd() {
     # clear autohotspot configurations made from past installation
 
     # stop services and clear services
@@ -127,7 +127,7 @@ _uninstall_autohotspot() {
 }
 
 
-_autohotspot_check() {
+_autohotspot_check_dhcpcd() {
     print_verify_installation
 
     verify_apt_packages hostapd dnsmasq iw
@@ -169,9 +169,9 @@ _autohotspot_check() {
 }
 
 _run_setup_autohotspot_dhcpcd() {
-    _install_packages
+    _install_packages_dhcpcd
     _get_interface
-    _uninstall_autohotspot
-    _install_autohotspot
-    _autohotspot_check
+    _uninstall_autohotspot_dhcpcd
+    _install_autohotspot_dhcpcd
+    _autohotspot_check_dhcpcd
 }

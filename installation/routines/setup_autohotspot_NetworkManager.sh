@@ -4,11 +4,11 @@ AUTOHOTSPOT_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/NetworkMa
 AUTOHOTSPOT_TIMER="autohotspot.timer"
 AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"
 
-_install_packages() {
+_install_packages_NetworkManager() {
     sudo apt-get -y install iw
 }
 
-_install_autohotspot() {
+_install_autohotspot_NetworkManager() {
     # configure interface conf
     _config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo rm "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
@@ -43,7 +43,7 @@ _install_autohotspot() {
     sudo systemctl start "${AUTOHOTSPOT_TIMER}"
 }
 
-_uninstall_autohotspot() {
+_uninstall_autohotspot_NetworkManager() {
     # clear autohotspot configurations made from past installation
 
     # stop services and clear services
@@ -64,7 +64,7 @@ _uninstall_autohotspot() {
     _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 }
 
-_autohotspot_check() {
+_autohotspot_check_NetworkManager() {
     print_verify_installation
 
     verify_apt_packages iw
@@ -91,11 +91,11 @@ _autohotspot_check() {
 }
 
 _run_setup_autohotspot_NetworkManager() {
-    _install_packages
+    _install_packages_NetworkManager
     _get_interface
-    _uninstall_autohotspot
-    _install_autohotspot
-    _autohotspot_check
+    _uninstall_autohotspot_NetworkManager
+    _install_autohotspot_NetworkManager
+    _autohotspot_check_NetworkManager
 }
 
 
