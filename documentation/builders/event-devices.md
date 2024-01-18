@@ -6,30 +6,47 @@ This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as we
 
 A specific usecase for this could be, if a Zero Delay Arcade USB Encoder is used to wire arcade buttons instead of using GPIO pins.
 
+These device interface support various kinds of input events, such as press, movements and potentially also outputs (eg. rumble, led lights, ...). Currently only the usage of button presses as input is supported.
+
 This functionality was previously implemented under the name of [USB buttons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/develop/components/controls/buttons_usb_encoder/README.md).
 
 The devices and their button mappings need to be mapped in the configuration file.
 
 ## Configuration
 
-To configure event devices, first add the plugin as the last entry to the module list:
+To configure event devices, first add the plugin as an entry to the module list of your main configuration file ``shared/settings/jukebox.yaml``:
 
 ``` yaml
 modules:
   named:
-    event_devices: controls.event_devices # Add as last entry
+    event_devices: controls.event_devices
 ```
 
-Then add the following section to the configuration:
+And add the following section with the plugin specific configuration:
+``` yaml
+evdev:
+  enabled: true
+  config_file: ../../shared/settings/evdev.yaml
+```
+
+The actual configuration itself is stored in a separate file. In this case in ``../../shared/settings/evdev.yaml``.
+
+The configuration is structured akin to the configuration of the [GPIO devices](./gpio.md).
+
+In contrast to `gpio`, multiple devices (eg arcade controllser, keyboards, joysticks, mice, ...) are supported, each with their own `input_devices` (=buttons). `output_devices` or actions other than `on_press` are currently not yet supported.
 
 ``` yaml
-event_devices:
-  devices: # list of devices to listen for
-    {device nickname}: # config for a specific device
-      device_name: {device_name} # name of the evdev
-      exact: False/True # optional to require exact match
-      mapping:
-        {key-code}: # evdev event id
+devices: # list of devices to listen for
+  {device nickname}: # config for a specific device
+    device_name: {device_name} # name of the device
+    exact: False/True # optional to require exact match. Otherwise it is sufficient that a part of the name matches
+    input_devices: # list of buttons to listen for for this device
+      {button nickname}:
+        type: Button
+        kwargs:
+          key_code: {key-code}: # evdev event id
+        actions:
+          on_press: # Currently only the on_press action is supported
             {rpc_command_definition} # eg `alias: toggle`
 ```
 The `{device nickname}` is only for your own orientation and can be choosen freely.
@@ -95,40 +112,9 @@ Look for entries like `No callback registered for button ...`.
 
 ### Specifying the `{rpc_command_definition}`
 
-Each key looks like `{key-code}: {rpc_command_definition}`.
 The RPC command follows the regular RPC command rules as defined in the [following documentation](./rpc-commands.md).
 
 
 ## Full example config
 
-Here is a complete configuration example for a USB Joystick controller:
-
-``` yaml
-event_devices:
-  devices:
-    joystick:
-      device_name: DragonRise Inc.   Generic   USB
-      exact: false
-      mapping:
-        299:
-          alias: toggle
-        298:
-          alias: next_song
-        297:
-          alias: prev_song
-        296:
-          alias: change_volume
-          args: 5
-        295:
-          alias: change_volume
-          args: -5
-        # Button to set defined output volume
-        291:
-          package: volume
-          plugin: ctrl
-          method: set_volume
-          args: [18]
-        # Button to shutdown
-        292:
-          alias: shutdown
-```
+A complete configuration example for a USB Joystick controller can be found in the [examples](../../resources/default-settings/evdev.example.yaml).
