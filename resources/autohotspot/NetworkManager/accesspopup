@@ -8,7 +8,7 @@
 #Developed on a Raspberry Pi PiOS Bookworm for use with Network Manager
 
 #Device Names
-wdev0=%%WIFI_INTERFACE%% #wifi device that AP will work on
+wdev0='%%WIFI_INTERFACE%%' #wifi device that AP will work on
 
 #AP setup
 ap_profile_name='AccessPopup'

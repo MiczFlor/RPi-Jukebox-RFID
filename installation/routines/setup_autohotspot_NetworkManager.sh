@@ -75,17 +75,17 @@ _autohotspot_check_NetworkManager() {
 
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
     verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
-    verify_file_contains_string "wdev0=\"${WIFI_INTERFACE}\"" "${AUTOHOTSPOT_TARGET_PATH}"
-    verify_file_contains_string "ap_ssid=${AUTOHOTSPOT_SSID}" "${AUTOHOTSPOT_TARGET_PATH}"
-    verify_file_contains_string "ap_pw=${AUTOHOTSPOT_PASSWORD}" "${AUTOHOTSPOT_TARGET_PATH}"
-    verify_file_contains_string "ap_ip=${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}"
-    verify_file_contains_string "ap_gate=${ip_without_last_segment}" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "wdev0='${WIFI_INTERFACE}'" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "ap_ssid='${AUTOHOTSPOT_SSID}'" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "ap_pw='${AUTOHOTSPOT_PASSWORD}'" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "ap_ip='${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}" #intentional "open end"
+    verify_file_contains_string "ap_gate='${ip_without_last_segment}" "${AUTOHOTSPOT_TARGET_PATH}" #intentional "open end"
 
     verify_files_exists "${AUTOHOTSPOT_SERVICE_PATH}"
     verify_file_contains_string "ExecStart=${AUTOHOTSPOT_TARGET_PATH}" "${AUTOHOTSPOT_SERVICE_PATH}"
 
     verify_files_exists "${AUTOHOTSPOT_TIMER_PATH}"
-    verify_file_contains_string "ExecStart=${AUTOHOTSPOT_SERVICE_PATH}" "${AUTOHOTSPOT_TIMER_PATH}"
+    verify_file_contains_string "Unit=${AUTOHOTSPOT_SERVICE_PATH}" "${AUTOHOTSPOT_TIMER_PATH}"
 }
 
 _run_setup_autohotspot_NetworkManager() {
