@@ -201,8 +201,11 @@ class Reader(object):
         else:
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read().rstrip().split(';', 1)[0]
-            with open(path + '/../settings/Mode_Legacy', 'r') as f:
-                mode_legacy = f.read().rstrip().split(';', 1)[0] == 'ON'
+            try:
+                with open(path + '/../settings/Mode_Legacy', 'r') as f:
+                    mode_legacy = f.read().rstrip().split(';', 1)[0] == 'ON'
+            except FileNotFoundError:
+                mode_legacy = True
 
             if device_name == 'MFRC522':
                 self.reader = Mfrc522Reader(mode_legacy)
