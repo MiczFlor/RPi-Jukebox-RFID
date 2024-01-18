@@ -73,12 +73,18 @@ _get_last_ip_segment() {
 
 setup_autohotspot() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
-        if [[ $(_is_NetworkManager_enabled) == true ]]; then
+        # fix for CI runs on docker
+        if [ "${CI_RUNNING}" == "true" ]; then
             run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot NetworkManager"
-        elif [[ $(_is_dhcpcd_enabled) == true ]]; then
             run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot dhcpcd"
         else
-            exit_on_error "ERROR: No network service available"
+            if [[ $(_is_NetworkManager_enabled) == true ]]; then
+                run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot NetworkManager"
+            elif [[ $(_is_dhcpcd_enabled) == true ]]; then
+                run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot dhcpcd"
+            else
+                exit_on_error "ERROR: No network service available"
+            fi
         fi
     fi
 }
