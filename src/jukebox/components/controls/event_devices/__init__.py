@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 from typing import Callable
+from typing import Tuple
 
 import jukebox.cfghandler
 import jukebox.plugs as plugin
@@ -33,6 +34,14 @@ listener_cnt = 0
 IS_ENABLED: bool = False
 #: The path of the config file the event device configuration was loaded from
 CONFIG_FILE: str
+
+# Constants
+_TYPE_BUTTON = 'Button'
+_ACTION_ON_PRESS = 'on_press'
+
+_SUPPORTED_TYPES = [_TYPE_BUTTON]
+_SUPPORTED_ACTIONS = {_TYPE_BUTTON: _ACTION_ON_PRESS}
+
 
 @plugin.register
 def activate(
@@ -97,9 +106,8 @@ def initialize():
     global IS_ENABLED
     global CONFIG_FILE
     IS_ENABLED = False
-    # TODO: chagnge to https://github.com/votti/RPi-Jukebox-RFID/blob/38b4cd4617c5efdabf1ff3e4a513a89e518f8eb2/src/jukebox/components/gpio/gpioz/plugin/__init__.py
     enable = cfg_main.setndefault('evdev', 'enable', value=False)
-    CONFIG_FILE = cfg_main.setndefault('evdev', 'config_file', value='../../shared/settings/gpioz.yaml')
+    CONFIG_FILE = cfg_main.setndefault('evdev', 'config_file', value='../../shared/settings/evdev.yaml')
     if not enable:
         return
     try:
@@ -116,16 +124,7 @@ def initialize():
             default={},
         ).items():
             logger.debug("activate %s", name)
-            button_mapping = config.get("mapping", default={})
-            button_callbacks: dict[int, Callable] = {}
-            for key, action_request in button_mapping.items():
-                button_callbacks[key] = jukebox.utils.bind_rpc_command(
-                    action_request,
-                    dereference=False,
-                    logger=logger,
-                )
-            device_name = config.get("device_name")
-            exact = config.get("exact", default=False)
+            device_name, exact, button_callbacks = parse_device_config(config)
             logger.debug(
                 f'Call activate with: "{device_name}" and exact: {exact}',
             )
@@ -134,6 +133,77 @@ def initialize():
                 button_callbacks=button_callbacks,
                 exact=exact,
             )
+
+
+def parse_device_config(config: dict) -> Tuple[str, bool, dict[int, Callable]]:
+    """Parse the device configuration from the config file
+
+    :param config: The configuration of the device
+    :type config: dict
+    :return: The parsed device configuration
+    :rtype: Tuple[str, bool, dict[int, Callable]]
+    """
+    device_name = config.get("device_name")
+    exact = config.get("exact", default=False)
+    input_devices = config.get("input_devices", default={})
+    # Raise warning if not used config present
+    if 'output_devices' in config:
+        logger.warning(
+            "Output devices are not yet supported for event devices",
+        )
+
+    # Parse input devices and convert them to button mappings.
+    # Due to the current implementation of the Event Device Listener,
+    # only the 'on_press' action is supported.
+    button_mapping = _input_devices_to_key_mapping(input_devices)
+    button_callbacks: dict[int, Callable] = {}
+    for key, action_request in button_mapping.items():
+        button_callbacks[key] = jukebox.utils.bind_rpc_command(
+            action_request,
+            dereference=False,
+            logger=logger,
+        )
+    return device_name, exact, button_callbacks
+
+
+def _input_devices_to_key_mapping(input_devices: dict) -> dict:
+    """Convert input devices to key mapping
+
+    Currently this only supports 'button' input devices with the 'on_press' action.
+
+    :param input_devices: The input devices
+    :type input_devices: dict
+    :return: The mapping of key_code to action
+    :rtype: dict
+    """
+    mapping = {}
+    for nickname, input_device in input_devices.items():
+        input_type = input_devices.get('type', default=_TYPE_BUTTON)
+        if input_type not in _SUPPORTED_TYPES:
+            logger.warning(
+                f"Input '{nickname}' device type '{input_type}' is not supported",
+            )
+            continue
+
+        key_code = input_device.get('kwargs', {}).get('key_code')
+        if key_code is None:
+            logger.warning(
+                f"Input '{nickname}' has no key_code and cannot be mapped.",
+            )
+            continue
+
+        actions = input_device.get('actions', default={})
+
+        for action_name, action in actions.items():
+            if action_name not in _SUPPORTED_ACTIONS[_TYPE_BUTTON]:
+                logger.warning(
+                    f"Input '{nickname}' has unsupported action '{action_name}'.\n"
+                    f"Currently supported actions: {_SUPPORTED_ACTIONS}",
+                )
+            if action_name == _ACTION_ON_PRESS:
+                mapping[key_code] = action
+
+    return mapping
 
 
 @plugin.atexit

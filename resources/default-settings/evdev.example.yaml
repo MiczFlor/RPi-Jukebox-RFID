@@ -6,28 +6,28 @@ devices: # A list of evdev devices each containing one or multiple input/output 
       TogglePlayback:
         type: Button
         kwargs:
-          event_id: 299
+          key_code: 299
         actions:
           on_press:
             alias: toggle
       NextSong:
         type: Button
         kwargs:
-          event_id: 298
+          key_code: 298
         actions:
           on_press:
             alias: next_song
       PrevSong:
         type: Button
         kwargs:
-          event_id: 297
+          key_code: 297
         actions:
           on_press:
             alias: prev_song
       VolumeUp:
         type: Button
         kwargs:
-          event_id: 296
+          key_code: 296
         actions:
           on_press:
             alias: change_volume
@@ -35,7 +35,7 @@ devices: # A list of evdev devices each containing one or multiple input/output 
       VolumeDown:
         type: Button
         kwargs:
-          event_id: 295
+          key_code: 295
         actions:
           on_press:
             alias: change_volume
@@ -43,7 +43,7 @@ devices: # A list of evdev devices each containing one or multiple input/output 
       VolumeReset:
         type: Button
         kwargs:
-          event_id: 291
+          key_code: 291
         actions:
           on_press:
             package: volume
@@ -53,7 +53,7 @@ devices: # A list of evdev devices each containing one or multiple input/output 
       Shutdown:
         type: Button
         kwargs:
-          event_id: 292
+          key_code: 292
         actions:
           on_press:
             alias: shutdown
