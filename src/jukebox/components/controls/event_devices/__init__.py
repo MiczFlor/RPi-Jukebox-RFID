@@ -113,7 +113,7 @@ def initialize():
     try:
         jukebox.cfghandler.load_yaml(cfg_evdev, CONFIG_FILE)
     except Exception as e:
-        logger.error(f"Disable GPIOZ due to error loading GPIOZ config file. {e.__class__.__name__}: {e}")
+        logger.error(f"Disable Event Devices due to error loading evdev config file. {e.__class__.__name__}: {e}")
         return
 
     IS_ENABLED = True
