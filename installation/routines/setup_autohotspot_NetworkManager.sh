@@ -22,6 +22,8 @@ _install_autohotspot_NetworkManager() {
     sudo sed -i "s|%%AUTOHOTSPOT_PASSWORD%%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_IP%%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%IP_WITHOUT_LAST_SEGMENT%%|${ip_without_last_segment}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_TIMER_NAME%%|${AUTOHOTSPOT_TIMER}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
 
     sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
@@ -80,6 +82,8 @@ _autohotspot_check_NetworkManager() {
     verify_file_contains_string "ap_pw='${AUTOHOTSPOT_PASSWORD}'" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "ap_ip='${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}" #intentional "open end"
     verify_file_contains_string "ap_gate='${ip_without_last_segment}" "${AUTOHOTSPOT_TARGET_PATH}" #intentional "open end"
+    verify_file_contains_string "timer_service_name='${AUTOHOTSPOT_TIMER}'" "${AUTOHOTSPOT_TARGET_PATH}"
+    
 
     verify_files_exists "${AUTOHOTSPOT_SERVICE_PATH}"
     verify_file_contains_string "ExecStart=${AUTOHOTSPOT_TARGET_PATH}" "${AUTOHOTSPOT_SERVICE_PATH}"
