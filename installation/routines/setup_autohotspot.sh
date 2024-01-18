@@ -3,24 +3,12 @@ AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
 AUTOHOTSPOT_SERVICE="autohotspot.service"
 AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
 
-_is_service_enabled() {
-    local service="$1"
-	local option="${2:+$2 }" # optional, dont't quote in next call!
-    local actual_state=$(systemctl is-enabled ${option}${service})
-
-	if [[ "$actual_state" == "enabled" ]]; then
-		echo true
-	else
-		echo false
-	fi
-}
-
 _is_dhcpcd_enabled() {
-	echo $(_is_service_enabled "dhcpcd.service")
+	echo $(is_service_enabled "dhcpcd.service")
 }
 
 _is_NetworkManager_enabled() {
-	echo $(_is_service_enabled "NetworkManager.service")
+	echo $(is_service_enabled "NetworkManager.service")
 }
 
 

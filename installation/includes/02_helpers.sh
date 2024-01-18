@@ -125,6 +125,19 @@ get_string_length() {
     echo -n ${string} | wc -m
 }
 
+is_service_enabled() {
+    local service="$1"
+	local option="${2:+$2 }" # optional, dont't quote in next call!
+    local actual_state=$(systemctl is-enabled ${option}${service})
+
+	if [[ "$actual_state" == "enabled" ]]; then
+		echo true
+	else
+		echo false
+	fi
+}
+
+
 ### Verify helpers
 print_verify_installation() {
     log "\n
