@@ -208,25 +208,39 @@ Would you like to install the Web App? [Y/n]"
 }
 
 _option_kiosk_mode() {
-  # ENABLE_KIOSK_MODE
-  clear_c
-  print_c "----------------------- KIOSK MODE ----------------------
+    # ENABLE_KIOSK_MODE
+    clear_c
+    print_c "----------------------- KIOSK MODE ----------------------"
+    if [[ $(get_architecture) == "armv6" ]]; then
 
+        print_c "
+Due to limited resources the kiosk mode is not supported
+on Raspberry Pi 1 or Zero 1 ('ARMv6' models).
+Kiosk mode will not be installed.
+
+Press enter to continue."
+        read
+        ENABLE_KIOSK_MODE=false
+    else
+
+        print_c "
 If you have a screen attached to your RPi,
 this will launch the Web App right after boot.
 It will only install the necessary xserver dependencies
 and not the entire RPi desktop environment.
 
 Would you like to enable the Kiosk Mode? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      ENABLE_KIOSK_MODE=true
-      ;;
-    *)
-      ;;
-  esac
-  log "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
+        read -r response
+        case "$response" in
+            [yY][eE][sS]|[yY])
+            ENABLE_KIOSK_MODE=true
+            ;;
+            *)
+            ;;
+        esac
+    fi
+
+    log "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
 }
 
 _options_update_raspi_os() {
