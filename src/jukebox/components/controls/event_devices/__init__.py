@@ -4,7 +4,7 @@ Plugin to register event_devices (ie USB controllers, keyboards etc) in a
 
 This effectively does:
 
-    * parse the configured event devices from the jukebox.yaml
+    * parse the configured event devices from the evdev.yaml
     * setup listen threads
 
 """
@@ -19,7 +19,8 @@ import jukebox.utils
 from components.controls.common.evdev_listener import EvDevKeyListener
 
 logger = logging.getLogger("jb.EventDevice")
-cfg = jukebox.cfghandler.get_handler("jukebox")
+cfg_main = jukebox.cfghandler.get_handler("jukebox")
+cfg_evdev = jukebox.cfghandler.get_handler("eventdevices")
 
 # Keep track of all active key event listener threads
 # Removal of dead listener threads is done in lazy fashion:
@@ -28,6 +29,10 @@ listener: list[EvDevKeyListener] = []
 # Running count of all created listener threads for unique thread naming IDs
 listener_cnt = 0
 
+#: Indicates that the module is enabled and loaded w/o errors
+IS_ENABLED: bool = False
+#: The path of the config file the event device configuration was loaded from
+CONFIG_FILE: str
 
 @plugin.register
 def activate(
@@ -87,32 +92,48 @@ def initialize():
     """Initialize event device button listener from config
 
     Initializes event buttons from the main configuration file.
-    Please see :ref:`userguide/event_devices:Event Devices` for a specification of the format.
+    Please see the documentation `builders/event-devices.md` for a specification of the format.
     """
-    for name, config in cfg.getn(
-        "event_devices",
-        "devices",
-        default={},
-    ).items():
-        logger.debug("activate %s", name)
-        button_mapping = config.get("mapping", default={})
-        button_callbacks: dict[int, Callable] = {}
-        for key, action_request in button_mapping.items():
-            button_callbacks[key] = jukebox.utils.bind_rpc_command(
-                action_request,
-                dereference=False,
-                logger=logger,
+    global IS_ENABLED
+    global CONFIG_FILE
+    IS_ENABLED = False
+    # TODO: chagnge to https://github.com/votti/RPi-Jukebox-RFID/blob/38b4cd4617c5efdabf1ff3e4a513a89e518f8eb2/src/jukebox/components/gpio/gpioz/plugin/__init__.py
+    enable = cfg_main.setndefault('evdev', 'enable', value=False)
+    CONFIG_FILE = cfg_main.setndefault('evdev', 'config_file', value='../../shared/settings/gpioz.yaml')
+    if not enable:
+        return
+    try:
+        jukebox.cfghandler.load_yaml(cfg_evdev, CONFIG_FILE)
+    except Exception as e:
+        logger.error(f"Disable GPIOZ due to error loading GPIOZ config file. {e.__class__.__name__}: {e}")
+        return
+
+    IS_ENABLED = True
+
+    with cfg_evdev:
+        for name, config in cfg_evdev.getn(
+            "devices",
+            default={},
+        ).items():
+            logger.debug("activate %s", name)
+            button_mapping = config.get("mapping", default={})
+            button_callbacks: dict[int, Callable] = {}
+            for key, action_request in button_mapping.items():
+                button_callbacks[key] = jukebox.utils.bind_rpc_command(
+                    action_request,
+                    dereference=False,
+                    logger=logger,
+                )
+            device_name = config.get("device_name")
+            exact = config.get("exact", default=False)
+            logger.debug(
+                f'Call activate with: "{device_name}" and exact: {exact}',
             )
-        device_name = config.get("device_name")
-        exact = config.get("exact", default=False)
-        logger.debug(
-            f'Call activate with: "{device_name}" and exact: {exact}',
-        )
-        activate(
-            device_name,
-            button_callbacks=button_callbacks,
-            exact=exact,
-        )
+            activate(
+                device_name,
+                button_callbacks=button_callbacks,
+                exact=exact,
+            )
 
 
 @plugin.atexit
