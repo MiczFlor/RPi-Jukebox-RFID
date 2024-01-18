@@ -1,8 +1,8 @@
 
 
-AUTOHOTSPOT_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/NetworkManager"
 AUTOHOTSPOT_TIMER="autohotspot.timer"
 AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"
+AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/NetworkManager"
 
 _install_packages_NetworkManager() {
     sudo apt-get -y install iw
@@ -16,7 +16,7 @@ _install_autohotspot_NetworkManager() {
 
     # create service to trigger hotspot
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
-    sudo cp "${AUTOHOTSPOT_RESOURCES_PATH}"/accesspopup "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/accesspopup "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SSID%%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_PASSWORD%%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_TARGET_PATH}"
@@ -24,12 +24,12 @@ _install_autohotspot_NetworkManager() {
     sudo sed -i "s|%%IP_WITHOUT_LAST_SEGMENT%%|${ip_without_last_segment}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
 
-    sudo cp "${AUTOHOTSPOT_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
+    sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SCRIPT%%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
     #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
     #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
 
-    sudo cp "${AUTOHOTSPOT_RESOURCES_PATH}"/autohotspot.timer "${AUTOHOTSPOT_TIMER_PATH}"
+    sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot.timer "${AUTOHOTSPOT_TIMER_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SERVICE%%|${AUTOHOTSPOT_SERVICE_PATH}|g" "${AUTOHOTSPOT_TIMER_PATH}"
     #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
     #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
@@ -69,8 +69,6 @@ _autohotspot_check_NetworkManager() {
 
     verify_apt_packages iw
 
-    verify_service_enablement hostapd.service disabled
-    verify_service_enablement dnsmasq.service disabled
     verify_service_enablement "${AUTOHOTSPOT_SERVICE}" enabled
 
     verify_files_exists "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
