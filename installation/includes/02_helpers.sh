@@ -127,14 +127,14 @@ get_string_length() {
 
 is_service_enabled() {
     local service="$1"
-	local option="${2:+$2 }" # optional, dont't quote in next call!
+    local option="${2:+$2 }" # optional, dont't quote in next call!
     local actual_state=$(systemctl is-enabled ${option}${service})
 
-	if [[ "$actual_state" == "enabled" ]]; then
-		echo true
-	else
-		echo false
-	fi
+    if [[ "$actual_state" == "enabled" ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 
@@ -266,7 +266,7 @@ verify_file_contains_string_once() {
 verify_service_state() {
     local service="$1"
     local desired_state="$2"
-	local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="${3:+$3 }" # optional, dont't quote in next call!
     log "  Verify service '${option}${service}' is '${desired_state}'"
 
     if [[ -z "${service}" || -z "${desired_state}" ]]; then

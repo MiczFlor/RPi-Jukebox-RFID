@@ -4,11 +4,11 @@ AUTOHOTSPOT_SERVICE="autohotspot.service"
 AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
 
 _is_dhcpcd_enabled() {
-	echo $(is_service_enabled "dhcpcd.service")
+    echo $(is_service_enabled "dhcpcd.service")
 }
 
 _is_NetworkManager_enabled() {
-	echo $(is_service_enabled "NetworkManager.service")
+    echo $(is_service_enabled "NetworkManager.service")
 }
 
 
