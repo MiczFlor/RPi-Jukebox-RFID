@@ -1,4 +1,4 @@
-
+#!/usr/bin/env bash
 
 AUTOHOTSPOT_TIMER="autohotspot.timer"
 AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"

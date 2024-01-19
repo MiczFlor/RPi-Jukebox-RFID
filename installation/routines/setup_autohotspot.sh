@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 AUTOHOTSPOT_INTERFACES_CONF_FILE="/etc/network/interfaces"
 AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
 AUTOHOTSPOT_SERVICE="autohotspot.service"
