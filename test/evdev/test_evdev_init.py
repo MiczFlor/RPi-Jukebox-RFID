@@ -1,17 +1,26 @@
+""" Tests for the evdev __init__ module
+"""
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
-# Patching the plugin decorators
+# Before importing the module, the jukebox.plugs decorators need to be patched
+# to not try to register the plugins
 import jukebox.plugs as plugin
+
 
 def dummy_decorator(fkt):
     return fkt
+
 
 plugin.register = dummy_decorator
 plugin.initialize = dummy_decorator
 plugin.atexit = dummy_decorator
 
-from components.controls.event_devices import _input_devices_to_key_mapping
+
+# Import uses the patched decorators
+from components.controls.event_devices import _input_devices_to_key_mapping  # noqa: E402
+from components.controls.event_devices import parse_device_config  # noqa: E402
+
 
 class TestInputDevicesToKeyMapping(unittest.TestCase):
     def test_mapping_with_supported_input_type_and_key_code(self):
@@ -111,6 +120,60 @@ class TestInputDevicesToKeyMapping(unittest.TestCase):
         mapping = _input_devices_to_key_mapping(input_devices)
 
         self.assertEqual(mapping, {})
+
+
+class TestParseDeviceConfig(unittest.TestCase):
+    @patch('components.controls.event_devices.jukebox.utils.bind_rpc_command')
+    def test_parse_device_config(self, bind_rpc_command_mock):
+        config = {
+            "device_name": "Test Device",
+            "exact": True,
+            "input_devices": {
+                'device1': {
+                    'type': 'Button',
+                    'kwargs': {'key_code': 123},
+                    'actions': {
+                        'on_press': 'action1'
+                    }
+                }
+            }
+        }
+
+        device_name, exact, button_callbacks = parse_device_config(config)
+        self.assertEqual(device_name, "Test Device")
+        self.assertEqual(exact, True)
+        self.assertEqual(button_callbacks, {
+            123: bind_rpc_command_mock.return_value,
+        })
+
+    def test_parse_device_config_missing_input_devices(self):
+        config = {
+            "device_name": "Test Device",
+            "exact": True
+        }
+        device_name, exact, button_callbacks = parse_device_config(config)
+        self.assertEqual(device_name, "Test Device")
+        self.assertEqual(exact, True)
+        self.assertEqual(button_callbacks, {})
+
+    def test_parse_device_config_missing_device_name(self):
+        config = {
+            "exact": True,
+            "input_devices": {}
+        }
+        self.assertRaises(ValueError, parse_device_config, config)
+
+    def test_parse_device_config_missing_exact(self):
+        """Test that the default value for exact is False"""
+        config = {
+            "device_name": "Test Device",
+            "input_devices": {}
+        }
+        device_name, exact, button_callbacks = parse_device_config(config)
+        self.assertEqual(device_name, "Test Device")
+        self.assertEqual(exact, False)
+        self.assertEqual(button_callbacks, {})
+
 
 if __name__ == '__main__':
     unittest.main()
