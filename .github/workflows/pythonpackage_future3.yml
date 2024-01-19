@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libasound2-dev pulseaudio libzmq3-dev
+        sudo apt-get install -y libasound2-dev pulseaudio
         python3 -m pip install --upgrade pip
         pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
@@ -39,8 +39,6 @@ jobs:
         pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
-        ZMQ_DRAFT_API=1 ZMQPREFIX="/usr/local" pip3 install --no-binary=:all: --break-system-packages pyzmq
-
     - name: Run pytest with coverage
       run: |
         ./run_pytest.sh --cov --cov-report xml --cov-config=.coveragerc
