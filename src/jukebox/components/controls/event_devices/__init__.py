@@ -144,8 +144,8 @@ def parse_device_config(config: dict) -> Tuple[str, bool, dict[int, Callable]]:
     :rtype: Tuple[str, bool, dict[int, Callable]]
     """
     device_name = config.get("device_name")
-    exact = config.get("exact", default=False)
-    input_devices = config.get("input_devices", default={})
+    exact = config.get("exact")
+    input_devices = config.get("input_devices")
     # Raise warning if not used config present
     if 'output_devices' in config:
         logger.warning(
@@ -177,22 +177,22 @@ def _input_devices_to_key_mapping(input_devices: dict) -> dict:
     :rtype: dict
     """
     mapping = {}
-    for nickname, input_device in input_devices.items():
-        input_type = input_devices.get('type', default=_TYPE_BUTTON)
+    for nickname, device in input_devices.items():
+        input_type = device.get('type')
         if input_type not in _SUPPORTED_TYPES:
             logger.warning(
                 f"Input '{nickname}' device type '{input_type}' is not supported",
             )
             continue
 
-        key_code = input_device.get('kwargs', {}).get('key_code')
+        key_code = device.get('kwargs', {}).get('key_code')
         if key_code is None:
             logger.warning(
                 f"Input '{nickname}' has no key_code and cannot be mapped.",
             )
             continue
 
-        actions = input_device.get('actions', default={})
+        actions = device.get('actions')
 
         for action_name, action in actions.items():
             if action_name not in _SUPPORTED_ACTIONS[_TYPE_BUTTON]:
