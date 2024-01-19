@@ -1,7 +1,9 @@
 """ Tests for the evdev __init__ module
 """
+import sys
 import unittest
 from unittest.mock import patch
+from unittest.mock import MagicMock
 
 # Before importing the module, the jukebox.plugs decorators need to be patched
 # to not try to register the plugins
@@ -16,6 +18,10 @@ plugin.register = dummy_decorator
 plugin.initialize = dummy_decorator
 plugin.atexit = dummy_decorator
 
+# Mock the jukebox.publishing module to prevent issues with zmq
+# which is currently hard to install(see issue #2050)
+# and not installed properly for CI
+sys.modules['jukebox.publishing'] = MagicMock()
 
 # Import uses the patched decorators
 from components.controls.event_devices import _input_devices_to_key_mapping  # noqa: E402
