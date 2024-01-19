@@ -124,7 +124,12 @@ def initialize():
             default={},
         ).items():
             logger.debug("activate %s", name)
-            device_name, exact, button_callbacks = parse_device_config(config)
+            try:
+                device_name, exact, button_callbacks = parse_device_config(config)
+            except Exception as e:
+                logger.error(f"Error parsing event device config for '{name}'. {e.__class__.__name__}: {e}")
+                continue
+
             logger.debug(
                 f'Call activate with: "{device_name}" and exact: {exact}',
             )
@@ -144,8 +149,10 @@ def parse_device_config(config: dict) -> Tuple[str, bool, dict[int, Callable]]:
     :rtype: Tuple[str, bool, dict[int, Callable]]
     """
     device_name = config.get("device_name")
-    exact = config.get("exact")
-    input_devices = config.get("input_devices")
+    if device_name is None:
+        raise ValueError("'device_name' is required but missing")
+    exact = bool(config.get("exact", False))
+    input_devices = config.get("input_devices", {})
     # Raise warning if not used config present
     if 'output_devices' in config:
         logger.warning(
