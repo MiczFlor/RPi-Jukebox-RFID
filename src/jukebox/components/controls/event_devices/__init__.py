@@ -72,7 +72,7 @@ def activate(
     listener = list(filter(lambda x: x.is_alive(), listener))
     # Check that there is no running thread for this device already
     for thread in listener:
-        if thread.device_request == device_name and thread.is_alive():
+        if thread.device_name_request == device_name and thread.is_alive():
             logger.debug(
                 "Event device listener thread already active for '%s'",
                 device_name,
