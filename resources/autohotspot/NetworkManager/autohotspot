@@ -11,7 +11,7 @@
 wdev0='%%WIFI_INTERFACE%%' #wifi device that AP will work on
 
 #AP setup
-ap_profile_name='AccessPopup'
+ap_profile_name='Phoniebox_Access_Point'
 ap_ssid='%%AUTOHOTSPOT_SSID%%'
 ap_pw='%%AUTOHOTSPOT_PASSWORD%%'
 ap_ip='%%AUTOHOTSPOT_IP%%/24'
@@ -30,22 +30,32 @@ NO_SSID='NoSSid'
 
 profiles=() #Currently Available Profiles
 active="" #The active connection
-active_ap=n #is the active profile an AP y/n
+active_ap=false #is the active profile an AP y/n
 nw_profile=() #saved NW Profiles
 ap_profile=() #The saved AP profiles
 ssidChk=("$NO_SSID")
-
+force_hotspot=false
 
 #Function is NM installed and running
-if systemctl -all list-unit-files NetworkManager.service | grep "could not be found" >/dev/null 2>&1 ;then
-    if systemctl -all list-unit-files dhcpcd.service | grep "(running)" >/dev/null 2>&1 ;then
-        echo "This script is not compatible with the network setup."
-        echo "Please use the dhcpcd version"
+check_prerequisite() {
+    if systemctl -all list-unit-files NetworkManager.service | grep "could not be found" >/dev/null 2>&1 ;then
+        if systemctl -all list-unit-files dhcpcd.service | grep "(running)" >/dev/null 2>&1 ;then
+            echo "This script is not compatible with the network setup."
+            echo "Please use the dhcpcd version"
+        else
+            echo "Network Manager is not managing the Wifi on this device"
+            echo "Unable to continue."
+        fi
+        exit 1
     else
-        echo "Network Manager is not managing the Wifi on this device, unable to continue"
+        local isnm="$( systemctl status NetworkManager | grep '(running)' )"
+        if echo "$isnm" | grep -v "(running)" ;then  >/dev/null 2>&1; #NM not running
+            echo "Network Manager is required but is not the active system network service"
+            echo "Unable to continue."
+            exit 1
+        fi
     fi
-    exit
-fi
+}
 
 #Function get all wifi profiles
 saved_profiles()
@@ -90,14 +100,14 @@ active_wifi()
 #Function is the current Connection an AP
 is_active_ap()
 {
-    active_ap="n"
+    active_ap=false
     if [ ! -z "$active" ] ; then
         mode="$(nmcli con show "$active" | grep 'wireless.mode')"
         readarray -d ':' -t mode < <(printf "%s" "$mode")
         if [ ! -z mode ]; then
             mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
             if [ "$mode2" = "ap" ]; then
-                active_ap="y"
+                active_ap=true
             fi
         fi
     fi
@@ -106,6 +116,10 @@ is_active_ap()
 #Function IW SSID scan
 nearby_ssids_iw()
 {
+    if [ ${#nw_profile[@]} -eq 0 ]; then #only scan if NW profiles exists#
+        return
+    fi
+
     #Check to see what SSID's and MAC addresses are in range
     iwer=0
     i=0; j=0
@@ -204,7 +218,6 @@ wifi_is_off()
 start_ap()
 {
     ex=0
-    saved_profiles #get list of ap profiles
     for i in "${ap_profile[@]}"
     do
         if [[ $i == "$ap_profile_name}" ]]; then
@@ -219,7 +232,7 @@ start_ap()
     sleep 3 #give time for ap to be setup
     active_wifi
     is_active_ap
-    if [ "$active_ap" == 'y' ]; then
+    if [ "$active_ap" = true ]; then
         echo "Access Point started"
         curip="$(nmcli -t con show $active | grep IP4.ADDRESS)"
         readarray -d ':' -t ipid < <(printf "%s" "$curip")
@@ -227,16 +240,15 @@ start_ap()
         if [ ! -z $showip ]; then
             echo "AP on IP Address ${showip::-3}"
         fi
-    elif [ "$active_ap" == 'n' ]; then
+    else
         echo "AP failed to be created."
     fi
 }
 
+#Activate NW profile
 start_nw()
 {
-    echo "NW Profiles are ${nw_profile[@]}"
-    is_active_ap
-    if [ "$active_ap" = "y" ]; then
+    if [ "$active_ap" = true ]; then
         echo "The active profile is $active. Shutting down"
         nmcli con down "$active" >/dev/null 2>&1
     fi
@@ -266,30 +278,6 @@ start_nw()
     fi
 }
 
-start_nw_any()
-{
-    echo "start_nw_any"
-    echo "NW Profiles are ${nw_profile[@]}"
-    is_active_ap
-    if [ "$active_ap" = "y" ]; then
-        echo "The active profile is $active. Shutting down"
-        nmcli con down "$active"
-    fi
-    con="$(nmcli connection up ifname $wdev0)"
-    if ( echo "$con" | grep 'Connection successfully activated' ) ; then
-        echo "start_nw_any: Connection was good"
-    else
-        echo "start_nw_any: Connection was bad"
-    fi
-    active_wifi
-    if [ ! -z "$active" ] ;then
-        echo "start_nw_any: Valid connection made with ${nw_profile[$c]}"
-    fi
-    if [ -z "$active" ] ;then
-        echo "start_nw_any: Network Connection not made. Error handeling"
-    fi
-}
-
 #Function Create AP profile
 ap_new_profile()
 {
@@ -300,30 +288,12 @@ ap_new_profile()
 }
 
 #Main
-echo "RaspberryConnect.com - AccessPopup: Automated Access Point."
-isnm="$( systemctl status NetworkManager | grep '(running)' )"
-if echo "$isnm" | grep -v "(running)" ;then  >/dev/null 2>&1; #NM not running
-	echo "Network Manager is required but is not the active system network service"
-	echo "Unable to continue."
-	exit 1
-fi
-active_wifi
-is_active_ap
-echo "The active profile is $active"
-echo ""
-saved_profiles #get list of saved profile
+check_prerequisite
 
 while getopts "ah" opt; do
     case $opt in
         a )
-            if [ "$active_ap" = "n" ]; then
-                systemctl stop "$timer_service_name"
-                start_ap
-                exit
-            else
-                echo "Access Point $active is already running"
-                exit
-            fi
+            force_hotspot=true
             ;;
         h )
             sc="$(basename $0)"
@@ -342,29 +312,42 @@ while getopts "ah" opt; do
     esac
 done
 
+active_wifi
+is_active_ap
+echo "The active profile is $active"
+echo ""
+saved_profiles #get list of saved profile
+
+if [ "$force_hotspot" = true ]; then
+    if [ ! "$active_ap" = true ]; then
+        systemctl stop "$timer_service_name"
+        start_ap
+    elif [ ! "$active" = "$ap_profile_name" ]; then #Other AP is running, swap to this one
+        nmcli con down "$active"
+        start_ap
+    else
+        echo "Access Point $active is already running"
+    fi
+    exit
+fi
+
 if [ ! -z "$active" ]; then #Active Profile Yes
-    # "Is the current connection an AP"
-    is_active_ap
-    if [ "$active_ap" = "y" ]; then #Yes it's an AP profile
-        if [ ${#nw_profile[@]} -gt 0 ]; then #only scan if NW profiles exists#
-            nearby_ssids_iw #scan for nearby SSID's
-        fi
-        if [ ! "${ssidChk[0]}" = "$NO_SSID" ]; then #know ssid in range
+    if [ "$active_ap" = true ]; then #Yes it's an AP profile
+        nearby_ssids_iw #scan for nearby SSID's
+        if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #known ssid in range
             start_nw
+        elif [ ! "$active" = "$ap_profile_name" ]; then #Other AP is running, swap to this one
+            nmcli con down "$active"
+            start_ap
         fi
     fi
 else #no active profile
-    if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #know ssid in range
+    nearby_ssids_iw #scan for nearby SSID's
+    if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #known ssid in range
         start_nw
-    elif [ "${ssidChk[0]}" = "$NO_SSID" ]; then
+    else
         start_ap
     fi
-fi
-is_active_ap
-#Other AP is running, swap to this one
-if [ "$active_ap" = "y" ] && [ ! "$active" = "$ap_profile_name" ]; then
-    nmcli con down "$active"
-    start_ap
 fi
 
 #check if timer is active. Will have been disabled if arg -a used.
@@ -373,6 +356,8 @@ if [ -z "$tup" ];then
     systemctl start "$timer_service_name"
 fi
 
+active_wifi
+is_active_ap
 echo "The Wifi profile in use is: $active"
 echo -e "Is this an local access point? $active_ap\n"
 
