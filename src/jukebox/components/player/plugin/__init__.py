@@ -17,6 +17,7 @@ from components.player.core.player_content import PlayerData
 
 logger = logging.getLogger('jb.player')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+cfg_player = jukebox.cfghandler.get_handler('player')
 
 # Background event loop in a separate thread to be used by backends as needed for asyncio tasks
 event_loop: asyncio.AbstractEventLoop
@@ -57,6 +58,8 @@ def initialize():
     global event_loop
     global player_arbiter
     global player_status
+
+    jukebox.cfghandler.load_yaml(cfg_player, '../../shared/settings/player.yaml')
     # Create the event loop and start it in a background task
     # the event loop can be shared across different backends (if the backends require a async event loop)
     event_loop = asyncio.new_event_loop()
