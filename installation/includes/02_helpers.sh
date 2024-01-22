@@ -88,22 +88,30 @@ get_debian_version_number() {
     echo "$VERSION_ID"
 }
 
-get_boot_config_path() {
+get_boot_path() {
     if [ "$(is_raspian)" = true ]; then
         local debian_version_number=$(get_debian_version_number)
 
         # Bullseye and lower
         if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/config.txt"
+            echo "/boot/$1"
         # Bookworm and higher
         elif [ "$debian_version_number" -ge 12 ]; then
-            echo "/boot/firmware/config.txt"
+            echo "/boot/firmware/$1"
         else
             echo "unknown"
         fi
     else
         echo "unknown"
     fi
+}
+
+get_boot_config_path() {
+    get_boot_path "config.txt"
+}
+
+get_boot_cmdline_path() {
+    get_boot_path "cmdline.txt"
 }
 
 validate_url() {
