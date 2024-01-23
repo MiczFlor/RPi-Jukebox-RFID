@@ -65,7 +65,7 @@ saved_profiles()
     n="$(nmcli -t -f TYPE,NAME,AUTOCONNECT-PRIORITY con show)" #Capture Output
     n="$(awk 1 ORS=':' <(echo "$n"))" #Replaces LF with : Delimeter
     readarray -d ':' -t profiles < <(printf "%s" "$n") #Change to array output
-    if [ ! -z profiles ]; then
+    if [ ! -z "$profiles" ]; then
         for (( c=0; c<=${#profiles[@]}; c+=3 )) #array of profiles
         do
             if [ ! -z "${profiles[$c+1]}" ] ; then
@@ -82,15 +82,15 @@ saved_profiles()
             fi
         done
     fi
-    }
+}
 
 #Function what is the current active wifi
 active_wifi()
 {
-    act="$(nmcli -t -f TYPE,NAME,DEVICE,TYPE con show --active | grep "$wdev0")" #List of active devices
+    act="$(nmcli -t -f TYPE,NAME,DEVICE con show --active | grep "$wdev0")" #List of active devices
     act="$(awk 1 ORS=':' <(echo "$act"))" #Replaces LF with : Delimeter
     readarray -d ':' -t active_name < <(printf "%s" "$act") #Change to array output
-    if [ ! -z active ]; then
+    if [ ! -z "$active_name" ]; then
         active="${active_name[1]}"
     else
         active=""
@@ -104,7 +104,7 @@ is_active_ap()
     if [ ! -z "$active" ] ; then
         mode="$(nmcli con show "$active" | grep 'wireless.mode')"
         readarray -d ':' -t mode < <(printf "%s" "$mode")
-        if [ ! -z mode ]; then
+        if [ ! -z "$mode" ]; then
             mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
             if [ "$mode2" = "ap" ]; then
                 active_ap=true
