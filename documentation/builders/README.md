@@ -25,6 +25,7 @@
 
 * [Bluetooth (and audio buttons)](./bluetooth-audio-buttons.md)
 * [Auto Hotspot](./autohotspot.md)
+* [Samba](./samba.md)
 * [Concepts](./concepts.md)
 * [System](./system.md)
 * [RPC Commands](./rpc-commands.md)
