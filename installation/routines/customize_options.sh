@@ -263,37 +263,6 @@ Would you like to update the operating system? [Y/n]"
   log "UPDATE_RASPI_OS=${UPDATE_RASPI_OS}"
 }
 
-_option_disable_onboard_audio() {
-  # Disable BCM on-chip audio (typically Headphones)
-  # not needed when external sound card is sued
-  clear_c
-  print_c "--------------------- ON-CHIP AUDIO ---------------------
-
-If you are using an external sound card (e.g. USB,
-HifiBerry, PirateAudio, etc), we recommend to disable
-the on-chip audio. It will make the ALSA sound
-configuration easier.
-If you are planning to only use Bluetooth speakers,
-leave the on-chip audio enabled!
-(This will touch your boot configuration in
-${RPI_BOOT_CONFIG_FILE}.
-We will do our best not to mess anything up. However,
-a backup copy will be written to
-${DISABLE_ONBOARD_AUDIO_BACKUP} )
-
-Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      DISABLE_ONBOARD_AUDIO=true
-      ;;
-    *)
-      ;;
-  esac
-  log "DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO}"
-
-}
-
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" && "$GIT_BRANCH" != "${GIT_BRANCH_DEVELOP}" ]] || [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]] || [[ "$CI_RUNNING" == "true" ]] ; then
@@ -335,7 +304,6 @@ _run_customize_options() {
   _option_static_ip   # Optional: Not required for installation
   _option_autohotspot # Optional: Not required for installation
   _option_bluetooth   # Optional: Not required for installation
-  _option_disable_onboard_audio # Optional: Should be merged with other audio installations, like HifiBerry
   _option_mpd         # !!Required, without options
   _option_rfid_reader # !!Required, with options
   _option_samba       # !!Required, without options
