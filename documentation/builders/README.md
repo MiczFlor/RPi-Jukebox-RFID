@@ -9,7 +9,6 @@
 ## Configuration
 
 * [Audio](./audio.md)
-* [RFID](./rfid.md)
 * [GPIO Recipes](./gpio.md)
 * [Card Database](./card-database.md)
 * [Troubleshooting](./troubleshooting.md)
@@ -19,6 +18,8 @@
     * [OnOff SHIM for safe power on/off](./components/power/onoff-shim.md)
 * [Soundcards](./components/soundcards/)
     * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
+* [Synchronisation](./components/synchronisation/)
+    * [RFID Cards](./components/synchronisation/rfidcards.md)
 
 ## Advanced
 
