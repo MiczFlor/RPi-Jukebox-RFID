@@ -62,16 +62,18 @@ saved_profiles()
 {
     ap_profile=()
     nw_profile=()
-    n="$(nmcli -t -f TYPE,NAME,AUTOCONNECT-PRIORITY con show)" #Capture Output
+    local n="$(nmcli -t -f TYPE,NAME,AUTOCONNECT-PRIORITY con show)" #Capture Output
     n="$(awk 1 ORS=':' <(echo "$n"))" #Replaces LF with : Delimeter
+    local profiles=()
     readarray -d ':' -t profiles < <(printf "%s" "$n") #Change to array output
     if [ ! -z "$profiles" ]; then
         for (( c=0; c<=${#profiles[@]}; c+=3 )) #array of profiles
         do
             if [ ! -z "${profiles[$c+1]}" ] ; then
-                mode="$(nmcli con show "${profiles[$c+1]}" | grep 'wireless.mode')" #show mode infurstructure, AP
-                readarray -d ':' -t mode < <(printf "%s" "$mode")
-                mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
+                local conn="$(nmcli con show "${profiles[$c+1]}" | grep 'wireless.mode')" #show mode infurstructure, AP
+                local mode=()
+                readarray -d ':' -t mode < <(printf "%s" "$conn")
+                local mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
                 if [ "$mode2" = "ap" ]; then
                     ap_profile+=("${profiles[$c+1]}")
                     echo "AP Profile: ${profiles[$c+1]}"
@@ -87,8 +89,9 @@ saved_profiles()
 #Function what is the current active wifi
 active_wifi()
 {
-    act="$(nmcli -t -f TYPE,NAME,DEVICE con show --active | grep "$wdev0")" #List of active devices
+    local act="$(nmcli -t -f TYPE,NAME,DEVICE con show --active | grep "$wdev0")" #List of active devices
     act="$(awk 1 ORS=':' <(echo "$act"))" #Replaces LF with : Delimeter
+    local active_name=()
     readarray -d ':' -t active_name < <(printf "%s" "$act") #Change to array output
     if [ ! -z "$active_name" ]; then
         active="${active_name[1]}"
@@ -102,10 +105,10 @@ is_active_ap()
 {
     active_ap=false
     if [ ! -z "$active" ] ; then
-        mode="$(nmcli con show "$active" | grep 'wireless.mode')"
+        local mode="$(nmcli con show "$active" | grep 'wireless.mode')"
         readarray -d ':' -t mode < <(printf "%s" "$mode")
         if [ ! -z "$mode" ]; then
-            mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
+            local mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
             if [ "$mode2" = "ap" ]; then
                 active_ap=true
             fi
@@ -121,8 +124,8 @@ nearby_ssids_iw()
     fi
 
     #Check to see what SSID's and MAC addresses are in range
-    iwer=0
-    i=0; j=0
+    local iwer=0
+    local i=0; j=0
     until [ $i -eq 1 ] #wait for wifi if busy, usb wifi is slower.
     do
         ssidreply=$((iw dev "$wdev0" scan ap-force | egrep "^BSS|SSID:") 2>&1) >/dev/null 2>&1
@@ -167,23 +170,19 @@ nearby_ssids_iw()
     done
 
     ssidChk=()
-    for (( c=0; c<=${#profiles[@]}; c+=3 ))
+    for profile in "${nw_profile[@]}"
     do
-        if [ ! -z "${profiles[$c+1]}" ] ;then
-            if  [ ! "${profiles[$c+1]}" = "lo" ] && [ ! "${profiles[$c+1]:0:7}" = "Wired c" ] ;then
-                echo "Assesing profile: ${profiles[$c+1]} with $ssidreply"
-                idssid=$(nmcli -t con show "${profiles[$c+1]}" | grep "wireless.ssid")
-                if (echo "$ssidreply" | grep -F -- "${idssid:21}" ) >/dev/null 2>&1
-                then
-                    #Valid SSid found, passing to script
-                    echo "Valid SSID Detected, assesing Wifi status"
-                    ssidChk+="${profiles[$c+1]}"
-                fi
-            fi
+        echo "Assessing profile: ${profile}"
+        local idssid=$(nmcli -t con show "${profile}" | grep "wireless.ssid")
+        if (echo "$ssidreply" | grep -F -- "${idssid:21}" ) >/dev/null 2>&1
+        then
+            echo "Valid SSID detected, assesing Wifi status"
+            ssidChk+="${profile}"
         fi
     done
 
     if [ "${#ssidChk[@]}" -eq 0 ]; then
+        echo "No Valid SSID detected"
         ssidChk+="$NO_SSID"
     fi
     if [ "${ssidChk[0]}" = "$NO_SSID" ] && [ $iwer -ne 0 ] ; then
@@ -205,7 +204,7 @@ nearby_ssids_iw()
 #If wifi is disable in NM, enable if allowed
 wifi_is_off()
 {
-    w="$(nmcli -t -f WIFI radio)"
+    local w="$(nmcli -t -f WIFI radio)"
     echo "Status of wifi is $w"
     if [[ $w = 'disabled' ]] && [[ $re_enable_wifi = 'y' ]] ; then
         nmcli radio wifi on
@@ -217,7 +216,7 @@ wifi_is_off()
 #Activate AP profile
 start_ap()
 {
-    ex=0
+    local ex=0
     for i in "${ap_profile[@]}"
     do
         if [[ $i == "$ap_profile_name}" ]]; then
@@ -234,9 +233,9 @@ start_ap()
     is_active_ap
     if [ "$active_ap" = true ]; then
         echo "Access Point started"
-        curip="$(nmcli -t con show $active | grep IP4.ADDRESS)"
+        local curip="$(nmcli -t con show $active | grep IP4.ADDRESS)"
         readarray -d ':' -t ipid < <(printf "%s" "$curip")
-        showip="$(echo "${ipid[1]}" | sed 's/[[:blank:]]//g')"
+        local showip="$(echo "${ipid[1]}" | sed 's/[[:blank:]]//g')"
         if [ ! -z $showip ]; then
             echo "AP on IP Address ${showip::-3}"
         fi
@@ -252,7 +251,8 @@ start_nw()
         echo "The active profile is $active. Shutting down"
         nmcli con down "$active" >/dev/null 2>&1
     fi
-    f=0
+
+    local active_nw=""
     for i in "${nw_profile[@]}"
     do
         echo "Checking: $i"
@@ -260,19 +260,21 @@ start_nw()
         if ( echo "$con" | grep 'Connection successfully activated' ) >/dev/null 2>&1; then
             echo "Connection was good"
             active_wifi
+            active_nw="$active"
         elif ( echo "$con" | grep 'Connection activation failed' ) >/dev/null 2>&1; then
             echo "Unable to make a connection. Check the password is ok for the ssid ${nw_profile[$c]}"
-            active=""
+            active_nw=""
         else
             echo "Unable to confirm the connection status"
-            active=""
+            active_nw=""
         fi
-        if [ ! -z "$active" ] ;then
+        if [ ! -z "$active_nw" ] ;then
             echo "A valid connection has been made with $i"
             break
         fi
     done
-    if [ -z "$active" ] ;then
+
+    if [ -z "$active_nw" ] ;then
         echo "A network connection has not been made with any known ssid. Activating access point"
         start_ap
     fi
