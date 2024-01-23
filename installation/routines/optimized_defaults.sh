@@ -27,7 +27,6 @@ _run_optimized_defaults() {
 
     _optimize_static_ip
     _optimize_ipv6_arp
-    _optimize_check
 }
 
 optimized_defaults() {
