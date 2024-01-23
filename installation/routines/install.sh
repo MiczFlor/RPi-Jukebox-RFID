@@ -13,7 +13,7 @@ install() {
   setup_jukebox_webapp
   setup_kiosk_mode
   setup_rfid_reader
-  optimize_boot_time
+  optimized_defaults
   setup_autohotspot
   cleanup
 }

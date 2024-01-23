@@ -40,7 +40,7 @@ _optimize_handle_boot_logs() {
   fi
 }
 
-_run_optimize_boot_time() {
+_run_optimized_defaults() {
     _optimize_disable_irrelevant_services
     _optimize_handle_bluetooth
     _optimize_static_ip
@@ -50,6 +50,6 @@ _run_optimize_boot_time() {
     _optimize_check
 }
 
-optimize_boot_time() {
-    run_with_log_frame _run_optimize_boot_time "Optimize boot time"
+optimized_defaults() {
+    run_with_log_frame _run_optimized_defaults "Optimize boot time"
 }
