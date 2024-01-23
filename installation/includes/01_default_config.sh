@@ -17,8 +17,6 @@ ENABLE_RFID_READER=true
 ENABLE_SAMBA=true
 ENABLE_WEBAPP=true
 ENABLE_KIOSK_MODE=false
-DISABLE_ONBOARD_AUDIO=false
-DISABLE_ONBOARD_AUDIO_BACKUP="${RPI_BOOT_CONFIG_FILE}.backup.audio_on_$(date +%d.%m.%y_%H.%M.%S)"
 # Always try to use GIT with SSH first, and on failure drop down to HTTPS
 GIT_USE_SSH=${GIT_USE_SSH:-"true"}
 
