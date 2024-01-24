@@ -19,6 +19,17 @@ _optimize_ipv6_arp() {
 }
 
 _run_optimized_defaults() {
+    # Source: https://raspberrypi.stackexchange.com/a/66939
+    # Autologin
+    log "Enable Autologin for user"
+    sudo raspi-config nonint do_boot_behaviour B2
+    # Wait for network at boot
+    # log "Enable 'Wait for network at boot'"
+    # sudo raspi-config nonint do_boot_wait 1
+    # power management of wifi: switch off to avoid disconnecting
+    log "Disable Wifi power management to avoid disconnecting"
+    sudo iwconfig wlan0 power off
+
     ./../options/systemctl_services.sh disable
     ./../options/bluetooth.sh disable
     ./../options/boot_screen.sh disable

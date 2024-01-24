@@ -3,7 +3,6 @@ install() {
   customize_options
   clear_c
   show_slow_hardware_message
-  set_raspi_config
   update_raspi_os
   init_git_repo_from_tardir
   setup_jukebox_core
