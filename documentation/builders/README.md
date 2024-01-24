@@ -25,7 +25,12 @@
 * [Soundcards](./components/soundcards/)
     * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
 * [RFID Readers](./../developers/rfid/README.md)
-  
+
+## Web Application
+
+* Music
+    * [Playlists, Livestreams and Podcasts](./webapp/playlists-livestreams-podcasts.md)
+
 ## Advanced
 * [Troubleshooting](./troubleshooting.md)
 * [Concepts](./concepts.md)
