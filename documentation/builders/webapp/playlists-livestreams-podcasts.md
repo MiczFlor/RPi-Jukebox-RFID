@@ -16,7 +16,7 @@ An .m3u playlist is a simple text document with each song file listed on a separ
 2. Open a new text file
 3. [Optional] Start by adding a comment line to provide a description or notes about the playlist.
 4. On the following lines, list the file paths or URLs of the media files you want to include in the playlist, one per line. They must refer to true files paths on your Phoniebox. They can be relative or absolute paths.
-5. Save the file with the .m3u extension (e.g., my_playlist.m3u).
+5. Save the file with the .m3u extensionm, e.g. `my_playlist.m3u`.
 
 ```
 #EXTM3U
@@ -43,9 +43,9 @@ Based on the note above, we suggest to use m3u playlists like this, especially i
 
 In the Phoniebox Web App, .m3u playlists do not show up as individual files. In order to assign a playlist to a card, do the following:
 
-1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders)
-2. In the Web App, open Cards tab and click the "+" button to add a new card
-3. As a Jukebox action, select "Play music", then select "Select music"
+1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
+2. In the Web App, open Cards tab and click the "+" button to add a new card.
+3. As a Jukebox action, select "Play music", then select "Select music".
 4. Next (in your your Library view), select the Folder view in the top right corner.
 5. Browse to the folder you created (representing your playlist) and click on it.
 
@@ -53,5 +53,12 @@ You are essentially assigning a folder (just like any other conventional folder)
 
 ## Livestreams
 
+In order to play radio livestreams on your Phoniebox, you use playlists to register your livestream and make it accessible.
+
+1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
+2. When creating the playlist file, make sure it ends with `*-livestream.txt` instead of `*.m3u`.
+3. Add links to your livestreams just like you would with songs in .m3u playlists
+
+You can now assign livestreams to cards [following the example](#assiging-a-m3u-playlist-to-a-card) of playlists.
 
 ## Podcasts
