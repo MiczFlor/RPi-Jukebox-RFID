@@ -35,6 +35,6 @@ case "$choice" in
 esac
 
 printf "Restarting phoniebox-rfid-reader service...\n"
-sudo systemctl start phoniebox-rfid-reader.service
+sudo systemctl restart phoniebox-rfid-reader.service
 
 printf "Done.\n"
