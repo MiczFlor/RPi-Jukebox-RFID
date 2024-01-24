@@ -28,6 +28,12 @@ printf "MFRC522" > "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chown pi:www-data "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chmod 644 "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 
+read -p "Use backward-compatible card ID (not suggested for new installations) (y/n)? " choice
+case "$choice" in
+  y|Y ) printf "OFF" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
+  * ) printf "ON" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
+esac
+
 printf "Restarting phoniebox-rfid-reader service...\n"
 sudo systemctl start phoniebox-rfid-reader.service
 
