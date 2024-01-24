@@ -1,6 +1,6 @@
 # Development Environment
 
-You have 3 development options. Each option has its pros and cons. To interact with GPIO or other hardware, it's required to develop directly on a Raspberry Pi. For general development of Python code (Jukebox) or JavaScript (Webapp), we recommend Docker. Developing on your local machine (Linux, Mac, Windows) works as well and requires all dependencies to be installed locally.
+You have 3 development options. Each option has its pros and cons. To interact with GPIO or other hardware, it's required to develop directly on a Raspberry Pi. For general development of Python code (Jukebox) or JavaScript (Web App), we recommend Docker. Developing on your local machine (Linux, Mac, Windows) works as well and requires all dependencies to be installed locally.
 
 - [Development Environment](#development-environment)
   - [Develop in Docker](#develop-in-docker)
@@ -15,35 +15,15 @@ There is a complete [Docker setup](./docker.md).
 
 ## Develop on Raspberry Pi
 
-The full setup is running on the RPi and you access files via SSH. Pretty easy to set up as you simply do a normal install and switch to the `future3/develop` branch.
+The full setup is running on the RPi and you access files via SSH.
 
 ### Steps to install
 
-We recommend to use at least a Pi 3 or Pi Zero 2 for development. This hardware won\'t be needed in production, but it can be slow while developing.
+We recommend to use at least a Pi 3 or Pi Zero 2 for development. While this hardware won\'t be needed in production, it comes in helpful while developing.
 
-1. Install the latest Pi OS on a SD card.
-2. Boot up your Raspberry Pi.
-3. [Install](../builders/installation.md) the Jukebox software as if you were building a Phoniebox. You can install from your own fork and feature branch you wish which can be changed later as well. The original repository will be set as `upstream`.
-4. Once the installation has successfully ran, reboot your Pi.
-5. Due to some resource constraints, the Webapp does not build the latest changes and instead consumes the latest official release. To change that, you  need to install NodeJS and build the Webapp locally.
-6. Install NodeJS using the existing installer
-
-    ``` bash
-    cd ~/RPi-Jukebox-RFID/installation/routines; \
-    source setup_jukebox_webapp.sh; \
-    _jukebox_webapp_install_node
-    ```
-
-7. To free up RAM, reboot your Pi.
-8. Build the Webapp using the existing build command. If the build fails, you might have forgotten to reboot.
-
-    ``` bash
-    cd ~/RPi-Jukebox-RFID/src/webapp; \
-    ./run_rebuild.sh -u
-    ```
-
-9. The Webapp should now be updated.
-10. To continuously update Webapp, pull the latest changes from your repository and rerun the command above.
+1. Follow the [installation preperation](../builders/installation.md#install-raspberry-pi-os-lite) steps
+1. [Install](../builders/installation.md#development) your feature/fork branch of the Jukebox software. The official repository will be set as `upstream`.
+1. If neccessary [build the Web App](./webapp.md) locally
 
 ## Develop on local machine
 

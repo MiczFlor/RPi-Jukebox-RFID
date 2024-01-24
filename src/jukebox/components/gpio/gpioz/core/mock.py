@@ -19,7 +19,8 @@ def patch_mock_outputs_with_callback():
     This targets to represent the state in the TK GUI.
     Other output devices cannot be represented in the GUI and are silently ignored.
 
-    ..note:: Only for developing purposes!"""
+    > [!NOTE]
+    > Only for developing purposes!"""
     gpiozero.LED._write_orig = gpiozero.LED._write
     gpiozero.LED._write = rewrite
     gpiozero.LED.on_change_callback = None

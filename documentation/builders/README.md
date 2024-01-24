@@ -6,18 +6,28 @@
 * [Update](./update.md)
 * [Configuring Phoniebox](./configuration.md)
 
-## Configuration
+## Features
 
-* [Audio](./audio.md)
-* [RFID](./rfid.md)
+* Audio
+    * [Audio Output](./audio.md)
+    * [Bluetooth audio buttons](./bluetooth-audio-buttons.md)
 * [GPIO Recipes](./gpio.md)
 * [Card Database](./card-database.md)
-* [Troubleshooting](./troubleshooting.md)
-
-## Advanced
-
-* [Bluetooth (and audio buttons)](./bluetooth-audio-buttons.md)
+    * [RFID Cards synchronisation](./components/synchronisation/rfidcards.md)
 * [Auto Hotspot](./autohotspot.md)
+* File Management
+    * [Network share / Samba](./samba.md)
+
+## Hardware Components
+
+* [Power](./components/power/)
+    * [OnOff SHIM for safe power on/off](./components/power/onoff-shim.md)
+* [Soundcards](./components/soundcards/)
+    * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
+* [RFID Readers](./../developers/rfid/README.md)
+  
+## Advanced
+* [Troubleshooting](./troubleshooting.md)
 * [Concepts](./concepts.md)
 * [System](./system.md)
 * [RPC Commands](./rpc-commands.md)

@@ -24,7 +24,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - setup rfid reader
 # y - setup samba
 # y - setup webapp
-# - - install node (forced WebApp Download)
+# - - build webapp (skipped due to forced webapp Download)
 # n - setup kiosk mode
 # n - reboot
 
