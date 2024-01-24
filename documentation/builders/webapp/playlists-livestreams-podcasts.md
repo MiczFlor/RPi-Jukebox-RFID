@@ -3,7 +3,7 @@
 By default, the Phoniebox represents music based on its metadata like album name, artist or song name. The hierarchy and order of songs is determined by their original definition. If you prefer a specific list of songs to be played, you can use playlists (files ending with `*.m3u`). Phoniebox also supports livestreams and podcasts (if connected to the internet) through playlists.
 
 ## Playlists
-If you like the Phoniebox to play songs in the pre-defined order, you can use `m3u` playlists.
+If you like the Phoniebox to play songs in the pre-defined order, you can use .m3u playlists.
 
 An .m3u playlist is a plain text file that contains a list of file paths or URLs to multimedia files. Each entry in the playlist represents a single song, and they are listed in the order in which they should be played.
 
@@ -34,10 +34,20 @@ The Phoniebox Web App handles the playlists in a way that it allows you to brows
 
 Based on the note above, we suggest to use m3u playlists like this, especially if you like to manage multiple playlists.
 
-1. In the `audiofolder` directory (or any sub-directory), create a new folder.
+1. In the `audiofolders` directory (or any sub-directory), create a new folder.
 2. In this new folder, copy your .m3u playlist. Make sure the links to the respective songs are correct.
 3. Open the Web App. Under Library, select the Folder view and browse to the new folder you created.
 4. You should now be able to browse and play the content of the playlist.
+
+#### Example folder structure
+
+```
+* audiofolders
+  * wake-up-songs
+    playlist.m3u
+  * lullabies-sleep-well
+    playlist.m3u
+```
 
 ### Assiging a .m3u playlist to a card
 
@@ -55,10 +65,75 @@ You are essentially assigning a folder (just like any other conventional folder)
 
 In order to play radio livestreams on your Phoniebox, you use playlists to register your livestream and make it accessible.
 
+### Using livestream.txt playlist in Phoniebox
+
 1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
-2. When creating the playlist file, make sure it ends with `*-livestream.txt` instead of `*.m3u`.
+2. When creating the playlist file, make sure it ends with `livestream.txt` instead of `*.m3u`.
 3. Add links to your livestreams just like you would with songs in .m3u playlists
 
 You can now assign livestreams to cards [following the example](#assiging-a-m3u-playlist-to-a-card) of playlists.
 
+#### Example folder structure
+
+```
+* audiofolders
+  * wdr-kids
+    livestream.txt
+  * energy
+    livestream.txt
+  * classic
+    livestream.txt
+```
+
+#### Example of livestream.txt
+
+```txt
+https://wdr-diemaus-live.icecastssl.wdr.de/wdr/diemaus/live/mp3/128/stream.mp3
+http://channels.webradio.antenne.de/hits-fuer-kids
+```
+
 ## Podcasts
+
+Just like you add livestreams to the Phoniebox, you can also add indivdual Podcasts or entire Podcast feeds to the Phoniebox.
+
+You have 3 options to play Podcasts
+
+1. Create a playlist and reference individual direct links to Podcast episodes (just like livestreams)
+2. Provide a Podcast RSS feed
+3. Download the MP3 and add them like normal songs to your Phoniebox. This makes them available offline.
+
+We will explain options 1 and 2 more closely.
+
+### Using podcast.txt playlist in Phoniebox
+
+1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
+2. When creating the playlist file, make sure it ends with `podcasts.txt` instead of `*.m3u`.
+3. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
+4. As an alternative, you can provide a single RSS feed (XML). Phoniebox will expand the file and refer to all episodes listed within this file
+
+```
+* audiofolders
+  * die-maus
+    podcast.txt
+  * miras-welt
+    podcast.txt
+  * kakadu
+    livestream.txt
+```
+
+#### Example of podcast.txt for individual episodes
+
+```txt
+https://podcastb11277.podigee.io/94-ich-ware-gerne-beliebt-wie-geht-das
+https://podcastb11277.podigee.io/91-wieso-kann-ich-nicht-den-ganzen-tag-fernsehen
+```
+
+#### Example of podcast.txt for RSS feeds (XML)
+
+```txt
+https://kinder.wdr.de/radio/diemaus/audio/diemaus-60/diemaus-60-106.podcast
+```
+
+```txt
+http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml
+```
