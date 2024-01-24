@@ -1,4 +1,4 @@
-# Syncronisation RFID Cards
+# Synchronisation RFID Cards
 
 This component handles the synchronisation of RFID cards (audiofolder
 and card database entries).
