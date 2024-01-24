@@ -303,7 +303,6 @@ _run_customize_options() {
   _option_ipv6        # Optional: Not required for installation
   _option_static_ip   # Optional: Not required for installation
   _option_autohotspot # Optional: Not required for installation
-  _option_bluetooth   # Optional: Not required for installation
   _option_mpd         # !!Required, without options
   _option_rfid_reader # !!Required, with options
   _option_samba       # !!Required, without options
