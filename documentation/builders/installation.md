@@ -10,7 +10,9 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 2. Download the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) and run it
 3. Click on "Raspberry Pi Device" and select "No filtering"
-4. Select **Raspberry Pi OS Lite (32-bit)** (without desktop environment) as the operating system. `future3` does not support 64bit kernels (`aarch64`).
+4. As operating system select **Raspberry Pi OS (other)** and then **Raspberry Pi OS Lite (Legacy, 32-bit)** (no desktop environment). *64-bit is currently not supported*.
+    * Bookworm support is partly broken, see [here](#workaround-for-network-related-features-on-bookworm).
+    * For Pi 4 and newer also check [this](#workaround-for-64-bit-kernels-pi-4-and-newer).
 5. Select your Micro SD card (your card will be formatted)
 6. After you click `Next`, a prompt will ask you if you like to customize the OS settings
     * Click `Edit Settings`
@@ -26,11 +28,11 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 8. Confirm the next warning about erasing the SD card with `Yes`
 9. Wait for the imaging process to be finished (it'll take a few minutes)
 
+
+### Pre-boot preparation
 <details>
 
 <summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
-
-### Pre-boot preparation
 
 You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to proceed with the next steps.
 
@@ -75,6 +77,42 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 9. Login into your Raspberry Pi
    If `raspberrypi.local` does not work, find out your Raspberry Pi's IP address from your router.
 
+</details>
+
+### Pre-install preparation / workarounds
+
+#### Workaround for network related features on Bookworm
+<details>
+With Bookworm the network settings have changed. Now "NetworkManager" is used instead of "dhcpcd".
+This breaks breaks network related features like "Static IP", "Wifi Setup" and "Autohotspot".
+Before running the installation, the network config has to be changed via raspi-config, to use the "old" dhcpcd network settings.
+
+:warning:
+If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless connection.
+So make sure you use a wired connection or perform the following steps in a local terminal with a connected monitor and keyboard.
+
+Change network config
+* run `sudo raspi-config`
+* select `6 - Advanced Options`
+* select `AA - Network Config`
+* select `dhcpcd`
+
+If you need Wifi, add the information now
+* select `1 - System Options`
+* select `1 - Wireless LAN`
+* enter Wifi information
+</details>
+
+#### Workaround for 64-bit Kernels (Pi 4 and newer)
+<details>
+
+The installation process checks if a 32-bit OS is running, as 64-bit is currently not supported.
+This check also fails if the kernel is running in 64-bit mode. This is the default for Raspberry Pi models 4 and newer.
+
+To be able to run the installation, you have to switch to the 32-bit mode by modifying the `config.txt` and add/change the line `arm_64bit=0`. 
+Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, the location changed to `/boot/firmware/` ([see here](https://www.raspberrypi.com/documentation/computers/config_txt.html)).
+
+Reboot before you proceed.
 </details>
 
 ## Install Phoniebox software

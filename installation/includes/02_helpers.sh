@@ -75,7 +75,7 @@ get_architecture() {
     echo $arch
 }
 
-is_raspian() {
+is_raspbian() {
     if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
         echo true
     else
@@ -89,7 +89,7 @@ get_debian_version_number() {
 }
 
 get_boot_config_path() {
-    if [ "$(is_raspian)" = true ]; then
+    if [ "$(is_raspbian)" = true ]; then
         local debian_version_number=$(get_debian_version_number)
 
         # Bullseye and lower

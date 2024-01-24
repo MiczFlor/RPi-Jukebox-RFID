@@ -7,11 +7,7 @@ The majority of configuration options is only available by editing the config fi
 *when the service is not running!*
 Don't fear (overly), they contain commentaries.
 
-For several aspects we have [configuration tools](../developers/coreapps.md#configuration-tools) and detailed guides:
-
-* [Audio Configuration](./audio.md#audio-configuration)
-* [RFID Reader Configuration](../developers/rfid/basics.md#reader-configuration)
-* [GPIO Recipes](./gpio.md)
+For several aspects we have [configuration tools](../developers/coreapps.md#configuration-tools) and [detailed guides](./README.md#features).
 
 Even after running the tools, certain aspects can only be changed by modifying the configuration files directly.
 

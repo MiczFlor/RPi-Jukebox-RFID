@@ -1,6 +1,4 @@
-# RFID
-
-## Syncronisation RFID Cards
+# Synchronisation RFID Cards
 
 This component handles the synchronisation of RFID cards (audiofolder
 and card database entries).
@@ -15,7 +13,7 @@ RFID card to the command. For the \"RFID scan sync\" feature, activate
 the option in the configuration or bind a RFID card to the command for
 dynamic activation or deactivation.
 
-### Synchronisation
+## Synchronisation
 
 The synchronisation will be FROM a server TO the Phoniebox, overriding
 existing files. A local configuration will be lost after the
@@ -26,7 +24,7 @@ To access the files on the server, 2 modes are supported: SSH or MOUNT.
 Please make sure you have the correct access rights to the source and
 use key-based authentication for SSH.
 
-#### RFID scan sync
+### RFID scan sync
 
 If the feature \"RFID scan sync\" is activated, there will be a check on
 every RFID scan against the server if a matching card entry and audiofolder is available. If so, changes will be synced. The playback
@@ -40,7 +38,7 @@ deleted on remote. This is also true for changed card entries (the old
 audiofolder / -files will remain). To remove not existing items us a
 \"sync-all\".
 
-### Configuration
+## Configuration
 
 Set the corresponding setting in `shared\settings\jukebox.yaml` to
 activate this feature.
