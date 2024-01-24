@@ -201,10 +201,10 @@ class Reader(object):
         else:
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read().rstrip().split(';', 1)[0]
-            try:
+            if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
                 with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
                     readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
-            except FileNotFoundError:
+            else:
                 readmode_uid = False
 
             if device_name == 'MFRC522':
