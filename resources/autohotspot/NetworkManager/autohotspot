@@ -162,10 +162,10 @@ nearby_ssids_iw()
 
 check_device()
 {
+    echo "Device availability check"
     local j=0
     while [ true ] #wait for wifi if busy, usb wifi is slower.
     do
-        echo "Device availability check: try $j"
         if [ $j -ge 5 ]; then
             echo "No wifi device '$wdev0' connected"
             exit 1
@@ -296,8 +296,7 @@ done
 saved_profiles #get list of saved profile
 active_wifi
 is_active_ap
-echo "The active profile is $active"
-echo ""
+echo -e "The active profile is $active\n"
 
 if [ "$force_hotspot" = true ]; then
     if [ ! "$active_ap" = true ]; then
@@ -338,5 +337,5 @@ fi
 
 active_wifi
 is_active_ap
-echo "The Wifi profile in use is: $active"
-echo -e "Is this an local access point? $active_ap\n"
+echo -e "\nThe Wifi profile in use is: $active"
+echo -e "Is this a local access point? $active_ap\n"
