@@ -105,14 +105,13 @@ is_active_ap()
 {
     active_ap=false
     if [ ! -z "$active" ] ; then
-        local mode="$(nmcli con show "$active" | grep 'wireless.mode')"
-        readarray -d ':' -t mode < <(printf "%s" "$mode")
-        if [ ! -z "$mode" ]; then
-            local mode2="$(echo "${mode[1]}" | sed 's/[[:blank:]]//g')"
-            if [ "$mode2" = "ap" ]; then
+        for i in "${ap_profile[@]}"
+        do
+            if [[ $i == "$active" ]]; then
                 active_ap=true
+                break
             fi
-        fi
+        done
     fi
 }
 
@@ -198,7 +197,7 @@ start_ap()
     local ex=0
     for i in "${ap_profile[@]}"
     do
-        if [[ $i == "$ap_profile_name}" ]]; then
+        if [[ $i == "$ap_profile_name" ]]; then
             ex=1 #known saved AP profile is available
             break
         fi
@@ -262,10 +261,10 @@ start_nw()
 #Function Create AP profile
 ap_new_profile()
 {
-    #Create a AP profile
+    echo "Create a AP profile ${ap_profile_name}"
     nmcli device wifi hotspot ifname $wdev0 con-name "$ap_profile_name" ssid "$ap_ssid" band bg password "$ap_pw" >/dev/null 2>&1
     nmcli con mod "$ap_profile_name" ipv4.method shared ipv4.addr "$ap_ip" ipv4.gateway "$ap_gate" >/dev/null 2>&1
-    ap_profile+="$ap_profile_name"
+    ap_profile+=("$ap_profile_name")
 }
 
 #Main
@@ -294,11 +293,11 @@ while getopts "ah" opt; do
     esac
 done
 
+saved_profiles #get list of saved profile
 active_wifi
 is_active_ap
 echo "The active profile is $active"
 echo ""
-saved_profiles #get list of saved profile
 
 if [ "$force_hotspot" = true ]; then
     if [ ! "$active_ap" = true ]; then
