@@ -7,6 +7,9 @@
 #Script to automatically switch to an Access Point when no Wifi connection is available
 #Developed on a Raspberry Pi PiOS Bookworm for use with Network Manager
 
+#Additions where made for the Phoniebox project
+#https://github.com/MiczFlor/RPi-Jukebox-RFID
+
 #Device Names
 wdev0='%%WIFI_INTERFACE%%' #wifi device that AP will work on
 
