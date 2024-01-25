@@ -161,6 +161,7 @@ _autohotspot_check_dhcpcd() {
 }
 
 _run_setup_autohotspot_dhcpcd() {
+    log "Install AutoHotspot dhcpcd"
     _install_packages_dhcpcd
     _get_interface
     _uninstall_autohotspot_dhcpcd

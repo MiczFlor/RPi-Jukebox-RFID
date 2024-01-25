@@ -155,7 +155,7 @@ nearby_ssids_iw()
         local idssid=$(nmcli -t con show "${profile}" | grep "wireless.ssid")
         if (echo "$ssidreply" | grep -F -- "${idssid:21}" ) >/dev/null 2>&1
         then
-            echo "Valid SSID detected, assesing Wifi status"
+            echo "Valid SSID detected, assessing Wifi status"
             ssidChk+="${profile}"
         fi
     done

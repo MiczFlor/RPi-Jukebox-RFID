@@ -87,6 +87,7 @@ _autohotspot_check_NetworkManager() {
 }
 
 _run_setup_autohotspot_NetworkManager() {
+    log "Install AutoHotspot NetworkManager"
     _install_packages_NetworkManager
     _get_interface
     _uninstall_autohotspot_NetworkManager

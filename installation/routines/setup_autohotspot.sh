@@ -52,12 +52,12 @@ setup_autohotspot() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
         local installed=false
         if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
-            run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot dhcpcd"
+            run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot"
             installed=true
         fi
 
         if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
-            run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot NetworkManager"
+            run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot"
             installed=true
         fi
 
