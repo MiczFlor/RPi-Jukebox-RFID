@@ -49,7 +49,7 @@ Based on the note above, we suggest to use m3u playlists like this, especially i
     playlist.m3u
 ```
 
-### Assiging a .m3u playlist to a card
+### Assigning a .m3u playlist to a card
 
 In the Phoniebox Web App, .m3u playlists do not show up as individual files. In order to assign a playlist to a card, do the following:
 
@@ -94,7 +94,7 @@ http://channels.webradio.antenne.de/hits-fuer-kids
 
 ## Podcasts
 
-Just like you add livestreams to the Phoniebox, you can also add indivdual Podcasts or entire Podcast feeds to the Phoniebox.
+Just like you add livestreams to the Phoniebox, you can also add individual Podcasts or entire Podcast feeds to the Phoniebox.
 
 You have 3 options to play Podcasts
 
@@ -109,7 +109,7 @@ We will explain options 1 and 2 more closely.
 1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
 2. When creating the playlist file, make sure it ends with `podcasts.txt` instead of `*.m3u`.
 3. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
-4. As an alternative, you can provide a single RSS feed (XML). Phoniebox will expand the file and refer to all episodes listed within this file
+4. As an alternative, you can provide a single RSS feed (XML). Phoniebox will expand the file and refer to all episodes listed within this file.
 
 ```
 * audiofolders
