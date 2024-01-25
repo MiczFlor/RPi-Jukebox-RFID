@@ -57,6 +57,10 @@ When enabled, this service spins up a WiFi hotspot
 when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 
+Note:
+Static IP configuration cannot be enabled with
+WiFi hotspot and will be disabled, if selected before.
+
 Do you want to enable an Autohotspot? [y/N]"
     read -r response
     case "$response" in
@@ -119,11 +123,7 @@ Do you want to change this values? [y/N]"
             esac
         done
 
-
         if [ "$ENABLE_STATIC_IP" = true ]; then
-            print_c "
-Static IP cannot be enabled with WiFi hotspot.
-Disabling static IP configuration."
             ENABLE_STATIC_IP=false
             echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
         fi
