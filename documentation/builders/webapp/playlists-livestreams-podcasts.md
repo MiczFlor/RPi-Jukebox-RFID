@@ -42,11 +42,11 @@ Based on the note above, we suggest to use m3u playlists like this, especially i
 #### Example folder structure
 
 ```
-* audiofolders
-  * wake-up-songs
-    playlist.m3u
-  * lullabies-sleep-well
-    playlist.m3u
+└── audiofolders
+    ├── wake-up-songs
+    │   └── playlist.m3u
+    └── lullabies-sleep-well
+        └── playlist.m3u
 ```
 
 ### Assigning a .m3u playlist to a card
@@ -76,13 +76,13 @@ You can now assign livestreams to cards [following the example](#assiging-a-m3u-
 #### Example folder structure and playlist names
 
 ```
-* audiofolders
-  * wdr-kids
-    wdr-kids-livestream.txt
-  * energy
-    cool-livestream.txt
-  * classic
-    livestream.txt
+└── audiofolders
+    ├── wdr-kids
+    │   └── wdr-kids-livestream.txt
+    ├── energy
+    │   └── cool-livestream.txt
+    └── classic
+        └── livestream.txt
 ```
 
 #### Example of livestream.txt
@@ -114,13 +114,13 @@ We will explain options 1 and 2 more closely.
 #### Example folder structure and playlist names
 
 ```
-* audiofolders
-  * die-maus
-    die-maus-podcast.txt
-  * miras-welt
-    cool-podcast.txt
-  * kakadu
-    podcast.txt
+└── audiofolders
+    ├── die-maus
+    │   └── die-maus-podcast.txt
+    ├── miras-welt
+    │   └── cool-podcast.txt
+    └── kakadu
+        └── podcast.txt
 ```
 
 #### Example of podcast.txt for individual episodes
