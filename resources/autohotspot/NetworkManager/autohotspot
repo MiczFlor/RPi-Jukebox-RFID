@@ -19,9 +19,12 @@ ap_gate='%%IP_WITHOUT_LAST_SEGMENT%%.254'
 
 timer_service_name='%%AUTOHOTSPOT_TIMER_NAME%%'
 
-#If wifi is disbaled in Network Manager, then enable it automaticaly.
+#If wifi is disabled in Network Manager, then enable it automatically.
 #if set to 'false' then wifi will stay off and no AccessPoint will be generated or Network Connection will be available.
 re_enable_wifi=false
+
+#If true, check if timer is active. Will have been disabled if arg -a used.
+re_enable_timer=false
 
 #*************************************
 #*****No user editable lines below****
@@ -271,10 +274,13 @@ ap_new_profile()
 check_prerequisite
 check_device
 
-while getopts "ah" opt; do
+while getopts "aht" opt; do
     case $opt in
         a )
             force_hotspot=true
+            ;;
+        t )
+            re_enable_timer=true
             ;;
         h )
             sc="$(basename $0)"
@@ -328,10 +334,13 @@ else
         fi
     fi
 
-    #check if timer is active. Will have been disabled if arg -a used.
-    tup="$(systemctl list-timers | grep '${timer_service_name}')"
-    if [ -z "$tup" ];then
-        systemctl start "$timer_service_name"
+    if [[ $re_enable_timer = true ]] ; then
+        #check if timer is active. Will have been disabled if arg -a used.
+        tup="$(systemctl list-timers | grep '${timer_service_name}')"
+        if [ -z "$tup" ];then
+            systemctl start "$timer_service_name"
+            echo "Reactivated timer"
+        fi
     fi
 fi
 
