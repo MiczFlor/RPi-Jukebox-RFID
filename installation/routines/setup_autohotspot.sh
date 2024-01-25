@@ -5,28 +5,15 @@ AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
 AUTOHOTSPOT_SERVICE="autohotspot.service"
 AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
 
-_is_dhcpcd_enabled() {
-    echo $(is_service_enabled "dhcpcd.service")
-}
-
-_is_NetworkManager_enabled() {
-    echo $(is_service_enabled "NetworkManager.service")
-}
-
-
 _get_interface() {
     # interfaces may vary
     WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
-    #WIFI_REGION=$(iw reg get | grep country |  head -n 1 | awk '{ print $2}' | cut -d: -f1)
 
     # fix for CI runs on docker
     if [ "${CI_RUNNING}" == "true" ]; then
         if [ -z "${WIFI_INTERFACE}" ]; then
             WIFI_INTERFACE="CI TEST INTERFACE"
         fi
-        # if [ -z "${WIFI_REGION}" ]; then
-        #     WIFI_REGION="CI TEST REGION"
-        # fi
     fi
 }
 
@@ -64,12 +51,12 @@ _get_last_ip_segment() {
 setup_autohotspot() {
     if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
         local installed=false
-        if [[ $(_is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
             run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot dhcpcd"
             installed=true
         fi
 
-        if [[ $(_is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
             run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot NetworkManager"
             installed=true
         fi

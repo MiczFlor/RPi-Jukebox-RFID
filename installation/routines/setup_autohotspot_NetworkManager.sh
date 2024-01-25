@@ -27,13 +27,9 @@ _install_autohotspot_NetworkManager() {
 
     sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SCRIPT%%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
-    #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
-    #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
 
     sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot.timer "${AUTOHOTSPOT_TIMER_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SERVICE%%|${AUTOHOTSPOT_SERVICE}|g" "${AUTOHOTSPOT_TIMER_PATH}"
-    #sudo chown root:root "${AUTOHOTSPOT_SERVICE_PATH}"
-    #sudo chmod 644 "${AUTOHOTSPOT_SERVICE_PATH}"
 
 
     sudo systemctl unmask "${AUTOHOTSPOT_SERVICE}"

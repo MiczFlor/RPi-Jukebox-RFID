@@ -137,6 +137,15 @@ is_service_enabled() {
     fi
 }
 
+is_dhcpcd_enabled() {
+    echo $(is_service_enabled "dhcpcd.service")
+}
+
+is_NetworkManager_enabled() {
+    echo $(is_service_enabled "NetworkManager.service")
+}
+
+
 
 ### Verify helpers
 print_verify_installation() {
