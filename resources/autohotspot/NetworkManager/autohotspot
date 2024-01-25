@@ -20,8 +20,8 @@ ap_gate='%%IP_WITHOUT_LAST_SEGMENT%%.254'
 timer_service_name='%%AUTOHOTSPOT_TIMER_NAME%%'
 
 #If wifi is disbaled in Network Manager, then enable it automaticaly.
-#if set to 'n' then wifi will stay off and no AccessPoint will be generated or Network Connection will be available.
-re_enable_wifi='y'
+#if set to 'false' then wifi will stay off and no AccessPoint will be generated or Network Connection will be available.
+re_enable_wifi=false
 
 #*************************************
 #*****No user editable lines below****
@@ -137,7 +137,7 @@ nearby_ssids_iw()
             ssidreply=""
             i=1
         elif echo "$ssidreply" | grep "No such device (-19)" >/dev/null 2>&1; then
-            echo "No Device Reported, try " $j
+            echo "No Device Reported, abort"
             j=$((j + 6)) #stop further checks
             iwer=19
         elif echo "$ssidreply" | grep "Network is down (-100)" >/dev/null 2>&1 ; then
@@ -206,9 +206,9 @@ wifi_is_off()
 {
     local w="$(nmcli -t -f WIFI radio)"
     echo "Status of wifi is $w"
-    if [[ $w = 'disabled' ]] && [[ $re_enable_wifi = 'y' ]] ; then
+    if [[ $w = 'disabled' ]] && [[ $re_enable_wifi = true ]] ; then
         nmcli radio wifi on
-        echo "Wifi has ben re-activated"
+        echo "Wifi has been re-activated"
         sleep 10 #delay to allow wifi to initialise
     fi
 }
