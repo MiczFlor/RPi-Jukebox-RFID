@@ -99,18 +99,18 @@ Just like you add livestreams to the Jukebox, you can also add individual Podcas
 
 You have 3 options to play Podcasts
 
-1. Create a playlist and reference individual direct links to Podcast episodes (just like livestreams)
-2. Provide a Podcast RSS feed
-3. Download the MP3 and add them like normal songs to your Jukebox. This makes them available offline.
+1. Create a playlist and reference individual direct URLs to Podcast episodes (just like [livestreams](#livestreams))
+1. Provide a Podcast RSS feed
+1. Download the MP3 and add them like normal songs to your Jukebox. This also makes them available offline.
 
 We will explain options 1 and 2 more closely.
 
 ### Using podcast.txt playlist in Jukebox
 
 1. [Follow the steps above](#using-m3u-playlist-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
-2. When creating the playlist file, make sure it ends with `podcasts.txt` instead of `*.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
-3. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
-4. As an alternative, you can provide a single RSS feed (XML). Jukebox will expand the file and refer to all episodes listed within this file.
+1. When creating the playlist file, make sure it's called or at least ends with `podcasts.txt` instead of `.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
+1. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
+1. As an alternative, you can provide a single RSS feed (XML). Jukebox will expand the file and refer to all episodes listed within this file.
 
 #### Example folder structure and playlist names
 
