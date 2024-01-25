@@ -57,7 +57,7 @@ When enabled, this service spins up a WiFi hotspot
 when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 
-Do you want to enable an Autohotpot? [y/N]"
+Do you want to enable an Autohotspot? [y/N]"
     read -r response
     case "$response" in
         [yY][eE][sS]|[yY])
@@ -75,8 +75,8 @@ Do you want to enable an Autohotpot? [y/N]"
 --- Current configuration for Autohotpot
 SSID              : $AUTOHOTSPOT_SSID
 Password          : $AUTOHOTSPOT_PASSWORD
-IP                : $AUTOHOTSPOT_IP
 WiFi Country Code : $AUTOHOTSPOT_COUNTRYCODE
+IP                : $AUTOHOTSPOT_IP
 Do you want to change this values? [y/N]"
             read -r response_autohotspot
             case "$response_autohotspot" in
@@ -99,13 +99,6 @@ Do you want to change this values? [y/N]"
                         response_pw_length=$(get_string_length ${response_pw})
                     done
 
-                    local response_ip=""
-                    while [[ ! "$response_ip" =~ ^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])\.){3}((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9]))$ ]]
-                    do
-                        print_c "Please type the hotspot static IP (e.g. 10.0.0.5, 192.168.1.199):"
-                        read -r response_ip
-                    done
-
                     local response_country_code=""
                     local response_country_code_length=0
                     while [[ $response_country_code_length -ne 2 ]]
@@ -118,7 +111,6 @@ Do you want to change this values? [y/N]"
 
                     AUTOHOTSPOT_SSID="${response_ssid}"
                     AUTOHOTSPOT_PASSWORD="${response_pw}"
-                    AUTOHOTSPOT_IP="${response_ip}"
                     AUTOHOTSPOT_COUNTRYCODE="${response_country_code}"
                     ;;
                 *)
@@ -141,8 +133,8 @@ Disabling static IP configuration."
     if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
         echo "AUTOHOTSPOT_SSID=${AUTOHOTSPOT_SSID}"
         echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
-        echo "AUTOHOTSPOT_IP=${AUTOHOTSPOT_IP}"
         echo "AUTOHOTSPOT_COUNTRYCODE=${AUTOHOTSPOT_COUNTRYCODE}"
+        echo "AUTOHOTSPOT_IP=${AUTOHOTSPOT_IP}"
     fi
 }
 
