@@ -124,48 +124,22 @@ nearby_ssids_iw()
     fi
 
     #Check to see what SSID's and MAC addresses are in range
-    local iwer=0
+    echo "SSID availability check"
     local i=0; j=0
-    until [ $i -eq 1 ] #wait for wifi if busy, usb wifi is slower.
+    while [ $i -eq 0 ]
     do
-        ssidreply=$((iw dev "$wdev0" scan ap-force | egrep "^BSS|SSID:") 2>&1) >/dev/null 2>&1
-        #echo "SSid's in range: " $ssidreply
-        printf '%s\n' "${ssidreply[@]}"
-        #echo "Device Available Check try " $j
-        if (($j >= 6)); then #if busy 6 times goto hotspot
-            echo "Device busy or unavailable"
+        local scanreply=$(iw dev "$wdev0" scan ap-force 2>&1)
+        local ssidreply=$(echo "$scanreply" | egrep "^BSS|SSID:")
+        if [ $j -ge 5 ]; then
             ssidreply=""
             i=1
-        elif echo "$ssidreply" | grep "No such device (-19)" >/dev/null 2>&1; then
-            echo "No Device Reported, abort"
-            j=$((j + 6)) #stop further checks
-            iwer=19
-        elif echo "$ssidreply" | grep "Network is down (-100)" >/dev/null 2>&1 ; then
-            echo "Network Not available, trying again" $j
-            wifi_is_off #check if wifi can be switched back on
-            j=$((j + 1))
-            iwer=100
-            sleep 2
-        elif echo "$ssidreply" | grep "Read-only file system (-30)" >/dev/null 2>&1 ; then
-            echo "Temporary Read only file system, trying again"
+        elif [ -z "$ssidreply" ] ; then
+            echo "Error scan SSID's, try $j: $scanreply"
             j=$((j + 1))
             sleep 2
-        elif echo "$ssidreply" | grep "Invalid exchange (-52)" >/dev/null 2>&1 ; then
-            echo "Temporary unavailable, trying again"
-            j=$((j + 1))
-            sleep 2
-        elif echo "$ssidreply" | grep "temporarily unavailable (-11)" >/dev/null 2>&1 ; then
-            echo "Temporary unavailable, trying again"
-            j=$((j + 1))
-            sleep 2
-        elif echo "$ssidreply" | grep -v "resource busy (-16)"  >/dev/null 2>&1 ; then
-            echo "Device Available, checking SSid Results"
+        else
+            #success
             i=1
-            iwer=0
-        else #see if device not busy in 2 seconds
-            echo "Device unavailable, checking again, try " $j
-            j=$((j + 1))
-            sleep 2
         fi
     done
 
@@ -185,32 +159,37 @@ nearby_ssids_iw()
         echo "No Valid SSID detected"
         ssidChk+="$NO_SSID"
     fi
-    if [ "${ssidChk[0]}" = "$NO_SSID" ] && [ $iwer -ne 0 ] ; then
-        echo -e "\nNETWORK ISSUE:"
-        echo "Unable to scan for local wifi networks because"
-        if [ $iwer -eq 100 ] ;then
-            echo -e "Wifi has been disabled in Network Manager\n"
-            exit
-        elif [ $iwer -eq 19 ] ;then
-            echo "the device $wdev0 does not exists"
-            echo -e "the variable entry for wdev0 in this script needs to be changed to the wifi device of your system\n"
-            exit
-        else
-            echo -e "there is a temporary network issue. Unable to scan for local networks at the momment\nan access point will be used\n"
-        fi
-    fi
 }
 
-#If wifi is disable in NM, enable if allowed
-wifi_is_off()
+check_device()
 {
-    local w="$(nmcli -t -f WIFI radio)"
-    echo "Status of wifi is $w"
-    if [[ $w = 'disabled' ]] && [[ $re_enable_wifi = true ]] ; then
-        nmcli radio wifi on
-        echo "Wifi has been re-activated"
-        sleep 10 #delay to allow wifi to initialise
-    fi
+    local j=0
+    while [ true ] #wait for wifi if busy, usb wifi is slower.
+    do
+        echo "Device availability check: try $j"
+        if [ $j -ge 5 ]; then
+            echo "No wifi device '$wdev0' connected"
+            exit 1
+        elif (nmcli device show "$wdev0" 2>&1 >/dev/null) ; then
+            echo "Wifi device '$wdev0' available"
+            if (rfkill list wifi -rno HARD,SOFT | grep -i "unblocked.*unblocked") >/dev/null 2>&1 ; then
+                return
+            else
+                if [[ $re_enable_wifi = true ]] ; then
+                    nmcli radio wifi on
+                    echo "Wifi has been re-activated"
+                    sleep 10 #delay to allow wifi to initialise
+                    return
+                else
+                    echo "Wifi is deactivated"
+                    exit 0
+                fi
+            fi
+        else
+            j=$((j + 1))
+            sleep 2
+        fi
+    done
 }
 
 #Activate AP profile
@@ -291,6 +270,7 @@ ap_new_profile()
 
 #Main
 check_prerequisite
+check_device
 
 while getopts "ah" opt; do
     case $opt in
@@ -362,4 +342,3 @@ active_wifi
 is_active_ap
 echo "The Wifi profile in use is: $active"
 echo -e "Is this an local access point? $active_ap\n"
-
