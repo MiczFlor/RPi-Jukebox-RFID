@@ -68,19 +68,19 @@ In order to play radio livestreams on your Phoniebox, you use playlists to regis
 ### Using livestream.txt playlist in Phoniebox
 
 1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
-2. When creating the playlist file, make sure it ends with `livestream.txt` instead of `*.m3u`.
+2. When creating the playlist file, make sure it call or at least ends with `livestream.txt` instead of `*.m3u` (Examples: `awesome-livestream.txt`, `livestream.txt`).
 3. Add links to your livestreams just like you would with songs in .m3u playlists
 
 You can now assign livestreams to cards [following the example](#assiging-a-m3u-playlist-to-a-card) of playlists.
 
-#### Example folder structure
+#### Example folder structure and playlist names
 
 ```
 * audiofolders
   * wdr-kids
-    livestream.txt
+    wdr-kids-livestream.txt
   * energy
-    livestream.txt
+    cool-livestream.txt
   * classic
     livestream.txt
 ```
@@ -107,18 +107,20 @@ We will explain options 1 and 2 more closely.
 ### Using podcast.txt playlist in Phoniebox
 
 1. [Follow the steps above](#using-m3u-playlist-in-phoniebox) to add a playlist to your Phoniebox (make sure you have created individual folders).
-2. When creating the playlist file, make sure it ends with `podcasts.txt` instead of `*.m3u`.
+2. When creating the playlist file, make sure it ends with `podcasts.txt` instead of `*.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
 3. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
 4. As an alternative, you can provide a single RSS feed (XML). Phoniebox will expand the file and refer to all episodes listed within this file.
+
+#### Example folder structure and playlist names
 
 ```
 * audiofolders
   * die-maus
-    podcast.txt
+    die-maus-podcast.txt
   * miras-welt
-    podcast.txt
+    cool-podcast.txt
   * kakadu
-    livestream.txt
+    podcast.txt
 ```
 
 #### Example of podcast.txt for individual episodes
