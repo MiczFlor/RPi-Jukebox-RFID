@@ -310,32 +310,31 @@ if [ "$force_hotspot" = true ]; then
     else
         echo "Access Point $active is already running"
     fi
-    exit
-fi
-
-if [ ! -z "$active" ]; then #Active Profile Yes
-    if [ "$active_ap" = true ]; then #Yes it's an AP profile
+else
+    if [ ! -z "$active" ]; then #Active Profile Yes
+        if [ "$active_ap" = true ]; then #Yes it's an AP profile
+            nearby_ssids_iw #scan for nearby SSID's
+            if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #known ssid in range
+                start_nw
+            elif [ ! "$active" = "$ap_profile_name" ]; then #Other AP is running, swap to this one
+                nmcli con down "$active"
+                start_ap
+            fi
+        fi
+    else #no active profile
         nearby_ssids_iw #scan for nearby SSID's
         if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #known ssid in range
             start_nw
-        elif [ ! "$active" = "$ap_profile_name" ]; then #Other AP is running, swap to this one
-            nmcli con down "$active"
+        else
             start_ap
         fi
     fi
-else #no active profile
-    nearby_ssids_iw #scan for nearby SSID's
-    if [ "${ssidChk[0]}" != "$NO_SSID" ]; then #known ssid in range
-        start_nw
-    else
-        start_ap
-    fi
-fi
 
-#check if timer is active. Will have been disabled if arg -a used.
-tup="$(systemctl list-timers | grep '${timer_service_name}')"
-if [ -z "$tup" ];then
-    systemctl start "$timer_service_name"
+    #check if timer is active. Will have been disabled if arg -a used.
+    tup="$(systemctl list-timers | grep '${timer_service_name}')"
+    if [ -z "$tup" ];then
+        systemctl start "$timer_service_name"
+    fi
 fi
 
 active_wifi
