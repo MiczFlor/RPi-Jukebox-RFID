@@ -9,7 +9,7 @@ AUTOHOTSPOT_DNSMASQ_CONF_FILE="/etc/dnsmasq.conf"
 AUTOHOTSPOT_DHCPCD_CONF_FILE="/etc/dhcpcd.conf"
 AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT="nohook wpa_supplicant"
 
-AUTOHOTSPOT_SERVICE_DAEMON="autohotspot-daemon@.service" # the '@' is no mistake and important to allow passing parameter!
+AUTOHOTSPOT_SERVICE_DAEMON="autohotspot-daemon.service"
 AUTOHOTSPOT_SERVICE_DAEMON_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE_DAEMON}"
 
 AUTOHOTSPOT_DHCPCD_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/dhcpcd"
@@ -75,9 +75,11 @@ _install_autohotspot_dhcpcd() {
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_IP%%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_SERVICE_DAEMON%%|${AUTOHOTSPOT_SERVICE_DAEMON}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
 
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot-daemon.service "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
+    sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
 
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SCRIPT%%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
@@ -85,6 +87,7 @@ _install_autohotspot_dhcpcd() {
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot.timer "${AUTOHOTSPOT_TIMER_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SERVICE%%|${AUTOHOTSPOT_SERVICE}|g" "${AUTOHOTSPOT_TIMER_PATH}"
 
+    sudo systemctl enable "${AUTOHOTSPOT_SERVICE_DAEMON}"
     sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
     sudo systemctl enable "${AUTOHOTSPOT_TIMER}"
 }
@@ -107,8 +110,10 @@ _uninstall_autohotspot_dhcpcd() {
         sudo systemctl disable "${AUTOHOTSPOT_TIMER}"
         sudo systemctl stop "${AUTOHOTSPOT_SERVICE}"
         sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
+        sudo systemctl disable "${AUTOHOTSPOT_SERVICE_DAEMON}"
         sudo rm "${AUTOHOTSPOT_SERVICE_PATH}"
         sudo rm "${AUTOHOTSPOT_TIMER_PATH}"
+        sudo rm "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
     fi
 
     if [ -f "${AUTOHOTSPOT_TARGET_PATH}" ]; then
@@ -131,6 +136,7 @@ _autohotspot_check_dhcpcd() {
 
     verify_service_enablement hostapd.service disabled
     verify_service_enablement dnsmasq.service disabled
+    verify_service_enablement "${AUTOHOTSPOT_SERVICE_DAEMON}" enabled
     verify_service_enablement "${AUTOHOTSPOT_SERVICE}" disabled
     verify_service_enablement "${AUTOHOTSPOT_TIMER}" enabled
 
@@ -156,8 +162,11 @@ _autohotspot_check_dhcpcd() {
     verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "wifidev=\"${WIFI_INTERFACE}\"" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "hotspot_ip=${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "daemon_service=\"${AUTOHOTSPOT_SERVICE_DAEMON}\"" "${AUTOHOTSPOT_TARGET_PATH}"
+
 
     verify_files_exists "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
+    verify_file_contains_string "\-i \"${WIFI_INTERFACE}\"" "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
 
     verify_files_exists "${AUTOHOTSPOT_SERVICE_PATH}"
     verify_file_contains_string "ExecStart=${AUTOHOTSPOT_TARGET_PATH}" "${AUTOHOTSPOT_SERVICE_PATH}"

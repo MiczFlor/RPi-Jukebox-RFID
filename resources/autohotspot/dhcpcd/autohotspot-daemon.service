@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=wpa_supplicant -i "%i" -c /etc/wpa_supplicant/wpa_supplicant.conf
+ExecStart=wpa_supplicant -i "%%WIFI_INTERFACE%%" -c /etc/wpa_supplicant/wpa_supplicant.conf
 
 [Install]
 WantedBy=multi-user.target
