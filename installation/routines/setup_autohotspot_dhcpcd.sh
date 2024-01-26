@@ -9,6 +9,9 @@ AUTOHOTSPOT_DNSMASQ_CONF_FILE="/etc/dnsmasq.conf"
 AUTOHOTSPOT_DHCPCD_CONF_FILE="/etc/dhcpcd.conf"
 AUTOHOTSPOT_DHCPCD_CONF_NOHOOK_WPA_SUPPLICANT="nohook wpa_supplicant"
 
+AUTOHOTSPOT_SERVICE_DAEMON="autohotspot-daemon@.service" # the '@' is no mistake and important to allow passing parameter!
+AUTOHOTSPOT_SERVICE_DAEMON_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE_DAEMON}"
+
 AUTOHOTSPOT_DHCPCD_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/dhcpcd"
 
 _install_packages_dhcpcd() {
@@ -74,36 +77,38 @@ _install_autohotspot_dhcpcd() {
     sudo sed -i "s|%%AUTOHOTSPOT_IP%%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo chmod +x "${AUTOHOTSPOT_TARGET_PATH}"
 
+    sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot-daemon.service "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
+
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot.service "${AUTOHOTSPOT_SERVICE_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SCRIPT%%|${AUTOHOTSPOT_TARGET_PATH}|g" "${AUTOHOTSPOT_SERVICE_PATH}"
 
-    sudo systemctl enable "${AUTOHOTSPOT_SERVICE}"
+    sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/autohotspot.timer "${AUTOHOTSPOT_TIMER_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_SERVICE%%|${AUTOHOTSPOT_SERVICE}|g" "${AUTOHOTSPOT_TIMER_PATH}"
 
-    # create crontab entry
-    local crontab_user=$(crontab -l 2>/dev/null)
-    if [[ -z "${crontab_user}" || ! $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
-        (echo "${crontab_user}"; echo "*/5 * * * * sudo ${AUTOHOTSPOT_TARGET_PATH} 2>&1 | logger -t autohotspot") | crontab -
-        (echo "${crontab_user}"; echo "@reboot sudo ${AUTOHOTSPOT_TARGET_PATH} 2>&1 | logger -t autohotspot") | crontab -
-    fi
+    sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
+    sudo systemctl enable "${AUTOHOTSPOT_TIMER}"
 }
 
 
 _uninstall_autohotspot_dhcpcd() {
     # clear autohotspot configurations made from past installation
 
-    # stop services and clear services
+    # remove old crontab entries from previous versions
+    local cron_autohotspot_file="/etc/cron.d/autohotspot"
+    if [ -f "${cron_autohotspot_file}" ]; then
+        sudo rm -f "${cron_autohotspot_file}"
+    fi
+
+    # stop and clear services
     if systemctl list-unit-files "${AUTOHOTSPOT_SERVICE}" >/dev/null 2>&1 ; then
         sudo systemctl stop hostapd
         sudo systemctl stop dnsmasq
+        sudo systemctl stop "${AUTOHOTSPOT_TIMER}"
+        sudo systemctl disable "${AUTOHOTSPOT_TIMER}"
         sudo systemctl stop "${AUTOHOTSPOT_SERVICE}"
         sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
         sudo rm "${AUTOHOTSPOT_SERVICE_PATH}"
-    fi
-
-    # remove crontab entry and script
-    local crontab_user=$(crontab -l 2>/dev/null)
-    if [[ ! -z "${crontab_user}" && $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
-        echo "${crontab_user}" | sed "s|^.*\s${AUTOHOTSPOT_TARGET_PATH}\s.*$||g" | crontab -
+        sudo rm "${AUTOHOTSPOT_TIMER_PATH}"
     fi
 
     if [ -f "${AUTOHOTSPOT_TARGET_PATH}" ]; then
@@ -126,7 +131,8 @@ _autohotspot_check_dhcpcd() {
 
     verify_service_enablement hostapd.service disabled
     verify_service_enablement dnsmasq.service disabled
-    verify_service_enablement "${AUTOHOTSPOT_SERVICE}" enabled
+    verify_service_enablement "${AUTOHOTSPOT_SERVICE}" disabled
+    verify_service_enablement "${AUTOHOTSPOT_TIMER}" enabled
 
     verify_files_exists "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
@@ -151,13 +157,13 @@ _autohotspot_check_dhcpcd() {
     verify_file_contains_string "wifidev=\"${WIFI_INTERFACE}\"" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "hotspot_ip=${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}"
 
+    verify_files_exists "${AUTOHOTSPOT_SERVICE_DAEMON_PATH}"
+
     verify_files_exists "${AUTOHOTSPOT_SERVICE_PATH}"
     verify_file_contains_string "ExecStart=${AUTOHOTSPOT_TARGET_PATH}" "${AUTOHOTSPOT_SERVICE_PATH}"
 
-    local crontab_user=$(crontab -l 2>/dev/null)
-    if [[ ! $(echo "${crontab_user}" | grep -w "${AUTOHOTSPOT_TARGET_PATH}") ]]; then
-        exit_on_error "ERROR: crontab for user not installed"
-    fi
+    verify_files_exists "${AUTOHOTSPOT_TIMER_PATH}"
+    verify_file_contains_string "Unit=${AUTOHOTSPOT_SERVICE}" "${AUTOHOTSPOT_TIMER_PATH}"
 }
 
 _run_setup_autohotspot_dhcpcd() {

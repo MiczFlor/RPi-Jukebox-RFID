@@ -1,10 +1,10 @@
 [Unit]
-Description=Automatically generates an wifi hotspot when a valid ssid is not in range
+Description=Automatically generates an wifi hotspot when a valid SSID is not in range
 After=multi-user.target
+Requires=network-online.target
 
 [Service]
-Type=oneshot
-RemainAfterExit=yes
+Type=simple
 ExecStart=%%AUTOHOTSPOT_SCRIPT%%
 
 [Install]

@@ -4,6 +4,8 @@ AUTOHOTSPOT_INTERFACES_CONF_FILE="/etc/network/interfaces"
 AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
 AUTOHOTSPOT_SERVICE="autohotspot.service"
 AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
+AUTOHOTSPOT_TIMER="autohotspot.timer"
+AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"
 
 _get_interface() {
     # interfaces may vary

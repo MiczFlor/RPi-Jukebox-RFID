@@ -14,7 +14,7 @@
 wdev0='%%WIFI_INTERFACE%%' #wifi device that AP will work on
 
 #AP setup
-ap_profile_name='Phoniebox_Access_Point'
+ap_profile_name='%%AUTOHOTSPOT_PROFILE%%'
 ap_ssid='%%AUTOHOTSPOT_SSID%%'
 ap_pw='%%AUTOHOTSPOT_PASSWORD%%'
 ap_ip='%%AUTOHOTSPOT_IP%%/24'

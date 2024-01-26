@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-AUTOHOTSPOT_TIMER="autohotspot.timer"
-AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"
 AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/NetworkManager"
+AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH="/etc/NetworkManager/system-connections"
 
 _install_packages_NetworkManager() {
     sudo apt-get -y install iw
@@ -18,6 +17,7 @@ _install_autohotspot_NetworkManager() {
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
     sudo cp "${AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH}"/autohotspot "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
+    sudo sed -i "s|%%AUTOHOTSPOT_PROFILE%%|${AUTOHOTSPOT_PROFILE}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_SSID%%|${AUTOHOTSPOT_SSID}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_PASSWORD%%|${AUTOHOTSPOT_PASSWORD}|g" "${AUTOHOTSPOT_TARGET_PATH}"
     sudo sed -i "s|%%AUTOHOTSPOT_IP%%|${AUTOHOTSPOT_IP}|g" "${AUTOHOTSPOT_TARGET_PATH}"
@@ -34,10 +34,8 @@ _install_autohotspot_NetworkManager() {
 
     sudo systemctl unmask "${AUTOHOTSPOT_SERVICE}"
     sudo systemctl unmask "${AUTOHOTSPOT_TIMER}"
-    sudo systemctl enable "${AUTOHOTSPOT_SERVICE}"
+    sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
     sudo systemctl enable "${AUTOHOTSPOT_TIMER}"
-
-    sudo systemctl start "${AUTOHOTSPOT_TIMER}"
 }
 
 _uninstall_autohotspot_NetworkManager() {
@@ -45,10 +43,10 @@ _uninstall_autohotspot_NetworkManager() {
 
     # stop services and clear services
     if systemctl list-unit-files "${AUTOHOTSPOT_SERVICE}" >/dev/null 2>&1 ; then
-        sudo systemctl stop "${AUTOHOTSPOT_SERVICE}"
         sudo systemctl stop "${AUTOHOTSPOT_TIMER}"
-        sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
         sudo systemctl disable "${AUTOHOTSPOT_TIMER}"
+        sudo systemctl stop "${AUTOHOTSPOT_SERVICE}"
+        sudo systemctl disable "${AUTOHOTSPOT_SERVICE}"
         sudo rm "${AUTOHOTSPOT_SERVICE_PATH}"
         sudo rm "${AUTOHOTSPOT_TIMER_PATH}"
     fi
@@ -56,6 +54,8 @@ _uninstall_autohotspot_NetworkManager() {
     if [ -f "${AUTOHOTSPOT_TARGET_PATH}" ]; then
         sudo rm "${AUTOHOTSPOT_TARGET_PATH}"
     fi
+
+    sudo rm -f "${AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH}/${AUTOHOTSPOT_PROFILE}"
 
     # remove config files
     _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
@@ -66,13 +66,15 @@ _autohotspot_check_NetworkManager() {
 
     verify_apt_packages iw
 
-    verify_service_enablement "${AUTOHOTSPOT_SERVICE}" enabled
+    verify_service_enablement "${AUTOHOTSPOT_SERVICE}" disabled
+    verify_service_enablement "${AUTOHOTSPOT_TIMER}" enabled
 
     verify_files_exists "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
     verify_files_exists "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "wdev0='${WIFI_INTERFACE}'" "${AUTOHOTSPOT_TARGET_PATH}"
+    verify_file_contains_string "ap_profile_name='${AUTOHOTSPOT_PROFILE}'" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "ap_ssid='${AUTOHOTSPOT_SSID}'" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "ap_pw='${AUTOHOTSPOT_PASSWORD}'" "${AUTOHOTSPOT_TARGET_PATH}"
     verify_file_contains_string "ap_ip='${AUTOHOTSPOT_IP}" "${AUTOHOTSPOT_TARGET_PATH}" #intentional "open end"
@@ -94,5 +96,3 @@ _run_setup_autohotspot_NetworkManager() {
     _install_autohotspot_NetworkManager
     _autohotspot_check_NetworkManager
 }
-
-

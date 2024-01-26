@@ -86,7 +86,7 @@ CheckWifiUp()
 }
 
 InitWPA() {
-    wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+    systemctl restart autohotspot-daemon@"$wifidev".service
 }
 
 CheckServices()
