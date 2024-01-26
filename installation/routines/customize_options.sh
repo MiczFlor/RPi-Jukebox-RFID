@@ -72,6 +72,11 @@ Do you want to enable an Autohotspot? [y/N]"
     esac
 
     if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+        #add hostname to default SSID to prevent collision
+        local local_hostname=$(hostname)
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID}_${local_hostname}"
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID:0:32}"
+
         local response_autohotspot
         while [[ $response_autohotspot != "n" ]]
         do
