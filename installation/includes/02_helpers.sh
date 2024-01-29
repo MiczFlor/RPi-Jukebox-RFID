@@ -88,22 +88,31 @@ get_debian_version_number() {
     echo "$VERSION_ID"
 }
 
-get_boot_config_path() {
+_get_boot_file_path() {
+    local filename="$1"
     if [ "$(is_raspian)" = true ]; then
         local debian_version_number=$(get_debian_version_number)
 
         # Bullseye and lower
         if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/config.txt"
+            echo "/boot/${filename}"
         # Bookworm and higher
         elif [ "$debian_version_number" -ge 12 ]; then
-            echo "/boot/firmware/config.txt"
+            echo "/boot/firmware/${filename}"
         else
             echo "unknown"
         fi
     else
         echo "unknown"
     fi
+}
+
+get_boot_config_path() {
+    echo $(_get_boot_file_path "config.txt")
+}
+
+get_boot_cmdline_path() {
+    echo $(_get_boot_file_path "cmdline.txt")
 }
 
 validate_url() {
@@ -248,7 +257,7 @@ verify_file_contains_string() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    if [[ ! $(grep -iw "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     fi
     log "  CHECK"
@@ -263,7 +272,7 @@ verify_file_contains_string_once() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local file_contains_string_count=$(grep -oiw "${string}" "${file}" | wc -l)
+    local file_contains_string_count=$(sudo grep -oiw "${string}" "${file}" | wc -l)
     if [ "$file_contains_string_count" -lt 1 ]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     elif [ "$file_contains_string_count" -gt 1 ]; then

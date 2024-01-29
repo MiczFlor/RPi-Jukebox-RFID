@@ -308,11 +308,10 @@ the on-chip audio. It will make the ALSA sound
 configuration easier.
 If you are planning to only use Bluetooth speakers,
 leave the on-chip audio enabled!
-(This will touch your boot configuration in
-${RPI_BOOT_CONFIG_FILE}.
+(This will touch your boot configuration file.
 We will do our best not to mess anything up. However,
-a backup copy will be written to
-${DISABLE_ONBOARD_AUDIO_BACKUP} )
+a backup copy will be written. Please check the install
+log after for further details.)
 
 Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
   read -r response

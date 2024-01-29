@@ -29,7 +29,7 @@ _optimize_disable_irrelevant_services() {
 _add_options_to_cmdline() {
     local options="$1"
 
-    local cmdlineFile="${RPI_BOOT_CMDLINE_FILE}"
+    local cmdlineFile=$(get_boot_cmdline_path)
     if [ ! -s "${cmdlineFile}" ];then
         sudo tee "${cmdlineFile}" <<-EOF
 ${options}
@@ -94,12 +94,13 @@ _optimize_ipv6_arp() {
 
 # TODO: Allow both Enable and Disable
 _optimize_handle_boot_screen() {
+  local configFile=$(get_boot_config_path)
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
     log "  Disable RPi rainbow screen"
-    if grep -q "${OPTIMIZE_BOOT_CONF_HEADER}" "$RPI_BOOT_CONFIG_FILE"; then
+    if grep -q "${OPTIMIZE_BOOT_CONF_HEADER}" "$configFile"; then
       log "    Skipping. Already set up!"
     else
-      sudo tee -a $RPI_BOOT_CONFIG_FILE <<-EOF
+      sudo tee -a $configFile <<-EOF
 
 ${OPTIMIZE_BOOT_CONF_HEADER}
 disable_splash=1
@@ -144,6 +145,10 @@ _optimize_static_ip_NetworkManager() {
 _optimize_check() {
     print_verify_installation
 
+    local cmdlineFile=$(get_boot_cmdline_path)
+    local configFile=$(get_boot_config_path)
+
+
     verify_optional_service_enablement keyboard-setup.service disabled
     verify_optional_service_enablement triggerhappy.service disabled
     verify_optional_service_enablement triggerhappy.socket disabled
@@ -175,16 +180,16 @@ _optimize_check() {
         fi
     fi
     if [ "$DISABLE_IPv6" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}" "${RPI_BOOT_CMDLINE_FILE}"
+        verify_file_contains_string_once "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}" "${cmdlineFile}"
     fi
     if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${RPI_BOOT_CONFIG_FILE}"
+        verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${configFile}"
     fi
 
     if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
         for option in $OPTIMIZE_BOOT_CMDLINE_OPTIONS
         do
-            verify_file_contains_string_once $option "${RPI_BOOT_CMDLINE_FILE}"
+            verify_file_contains_string_once $option "${cmdlineFile}"
         done
     fi
 }
