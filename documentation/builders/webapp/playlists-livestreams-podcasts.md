@@ -20,8 +20,8 @@ A .m3u playlist is a simple text document with each song file listed on a separa
 
 ```
 # Absolute
-/root/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Kindergartenlieder/08 - Pitsch, patsch, Pinguin.mp3
-/root/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Spiel- Und Bewegungslieder/12 - Das rote Pferd.mp3
+/home/<username>/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Kindergartenlieder/08 - Pitsch, patsch, Pinguin.mp3
+/home/<username>/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Spiel- Und Bewegungslieder/12 - Das rote Pferd.mp3
 # Relative
 Bibi und Tina/bibi-tina-jetzt-in-echt-kinofilm-soundtrack/bibi-tina-jetzt-in-echt-kinofilm-soundtrack-7-ordinary-girl.mp3
 ```
@@ -54,10 +54,10 @@ Based on the note above, we suggest to use m3u playlists like this, especially i
 
 In the Jukebox Web App, .m3u playlists do not show up as individual files. In order to assign a playlist to a card, do the following:
 
-1. [Follow the steps above](#using-m3u-playlist-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
-1. In the Web App, open `Cards` tab and click the `+` button to add a new card.
+1. [Follow the steps above](#using-m3u-playlists-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
+1. Open the `Cards` tab in the Web App and click on the `+` button to add a new card.
 1. As a Jukebox action, select "Play music", then select "Select music".
-1. Next (in your your `Library` view), select the `Folder` view in the top right corner.
+1. In the `Library` view, select the `Folder` view located in the top right corner.
 1. Browse to the folder you created (representing your playlist) and click on it.
 
 You are essentially assigning a folder (just like any other conventional folder) to your card representing the content of your playlist.
@@ -68,11 +68,11 @@ In order to play radio livestreams on your Jukebox, you use playlists to registe
 
 ### Using livestream.txt playlist in Jukebox
 
-1. [Follow the steps above](#using-m3u-playlist-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
+1. [Follow the steps above](#using-m3u-playlists-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
 1. When creating the playlist file, make sure it's called or at least ends with `livestream.txt` instead of `.m3u` (Examples: `awesome-livestream.txt`, `livestream.txt`).
 1. Add URLs of your livestreams just like you would add songs in `.m3u` playlists.
 
-You can now assign livestreams to cards [following the example](#assiging-a-m3u-playlist-to-a-card) of playlists.
+You can now assign livestreams to cards [following the example](#assigning-a-m3u-playlist-to-a-card) of playlists.
 
 #### Example folder structure and playlist names
 
@@ -107,7 +107,7 @@ We will explain options 1 and 2 more closely.
 
 ### Using podcast.txt playlist in Jukebox
 
-1. [Follow the steps above](#using-m3u-playlist-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
+1. [Follow the steps above](#using-m3u-playlists-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
 1. When creating the playlist file, make sure it's called or at least ends with `podcasts.txt` instead of `.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
 1. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
 1. As an alternative, you can provide a single RSS feed (XML). Jukebox will expand the file and refer to all episodes listed within this file.
