@@ -29,13 +29,14 @@ $ git pull
 $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
 
 $ cd src/webapp
-$ ./run_rebuild.sh
+$ ./run_rebuild.sh -u
 ```
 
 ## Migration Path from Version 2
 
 There is no update path coming from Version 2.x of the Jukebox.
-You need to do a fresh install of Version 3 on a fresh Raspian Bullseye image.
+You need to do a fresh install of Version 3 on a fresh Raspberry Pi OS image.
+See [Installing Phoniebox future3](./installation.md).
 
 > [!IMPORTANT]
 > Do start with a fresh SD card image!

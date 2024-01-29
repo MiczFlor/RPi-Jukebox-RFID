@@ -1,7 +1,6 @@
 """
-##############
-Logger
-##############
+## Logger
+
 We use a hierarchical Logger structure based on pythons logging module. It can be finely configured with a yaml file.
 
 The top-level logger is called 'jb' (to make it short). In any module you may simple create a child-logger at any hierarchy
@@ -9,25 +8,27 @@ level below 'jb'. It will inherit settings from it's parent logger unless otherw
 Hierarchy separator is the '.'. If the logger already exits, getLogger will return a reference to the same, else it will be
 created on the spot.
 
-:Example: How to get logger and log away at your heart's content:
+Example: How to get logger and log away at your heart's content:
+
     >>> import logging
     >>> logger = logging.getLogger('jb.awesome_module')
     >>> logger.info('Started general awesomeness aura')
 
-Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module::
-``
-loggers:
-  jb:
-    level: WARNING
-    handlers: [console, debug_file_handler, error_file_handler]
-    propagate: no
-  jb.awesome_module:
-    level: DEBUG
-``
+Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for jb.awesome_module:
 
-.. note::
-The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes sense)
-There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
+    loggers:
+      jb:
+        level: WARNING
+        handlers: [console, debug_file_handler, error_file_handler]
+        propagate: no
+      jb.awesome_module:
+        level: DEBUG
+
+
+> [!NOTE]
+> The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes
+> sense).
+> There can be multiple loggers per module, e.g. for special classes, to further control the amount of log output
 """
 import sys
 import logging
@@ -80,21 +81,22 @@ class ColorFilter(logging.Filter):
 
 
 class PubStream:
-    """"
+    """
     Stream handler wrapper around the publisher for logging.StreamHandler
 
     Allows logging to send all log information (based on logging configuration)
     to the Publisher.
 
-    ATTENTION: This can lead to recursions!
+    > [!CAUTION]
+    > This can lead to recursions!
+    > Recursions come up when
+    > * Publish.send / PublishServer.send also emits logs, which cause a another send, which emits a log,
+    > which causes a send, .....
+    > * Publisher initialization emits logs, which need a Publisher instance to send logs
 
-    Recursions come up when
-    (a) Publish.send / PublishServer.send also emits logs, which cause a another send, which emits a log,
-        which causes a send, .....
-    (b) Publisher initialization emits logs, which need a Publisher instance to send logs
-
-    IMPORTANT: To avoid endless recursions: The creation of a Publisher MUST NOT generate any log messages! Nor any of the
-    functions in the send-function stack!
+    > [!IMPORTANT]
+    > To avoid endless recursions: The creation of a Publisher MUST NOT generate any log messages! Nor any of the
+    > functions in the send-function stack!
     """
     def __init__(self):
         self._topic = 'core.logger'

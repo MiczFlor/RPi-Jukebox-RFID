@@ -49,10 +49,8 @@ def _filter_by_device_name(all_devices: List[evdev.InputDevice],
 def find_device(device_name: str, exact_name: bool = True, mandatory_keys: Optional[Set[int]] = None) -> str:
     """Find an input device with device_name and mandatory keys.
 
-    Raises
-
-        #. FileNotFoundError, if no device is found.
-        #. AttributeError, if device does not have the mandatory keys
+    :raise FileNotFoundError: if no device is found.
+    :raise AttributeError: if device does not have the mandatory key
 
     If multiple devices match, the first match is returned
 

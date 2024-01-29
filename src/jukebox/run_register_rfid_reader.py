@@ -3,10 +3,11 @@
 Setup tool to configure the RFID Readers.
 
 Run this once to register and configure the RFID readers with the Jukebox. Can be re-run at any time to change
-the settings. For more information see :ref:`rfid/rfid:RFID Readers`.
+the settings. For more information see [RFID Readers](../rfid/README.md).
 
-.. note:: This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
-    Any manual modifications to the settings will have to be re-applied
+> [!NOTE]
+> This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
+> Any manual modifications to the settings will have to be re-applied
 
 """
 import os

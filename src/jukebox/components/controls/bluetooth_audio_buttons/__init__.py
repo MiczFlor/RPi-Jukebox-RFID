@@ -4,9 +4,9 @@ when a bluetooth sound device (headphone, speakers) connects
 
 This effectively does:
 
-    * register a callback with components.volume to get notified when a new sound card connects
-    * if that is a bluetooth device, try opening an input device with similar name using
-    * button listeners are run each in its own thread
+* register a callback with components.volume to get notified when a new sound card connects
+* if that is a bluetooth device, try opening an input device with similar name using
+* button listeners are run each in its own thread
 
 """
 import logging

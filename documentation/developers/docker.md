@@ -15,7 +15,7 @@ need to adapt some of those commands to your needs.
 ## Prerequisites
 
 1. Install required software: Docker, Compose and pulseaudio
-    * Check installations guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
+    * Check installation guide for [Mac](#mac), [Windows](#windows) or [Linux](#linux)
 
 2. Pull the Jukebox repository:
 
@@ -30,7 +30,7 @@ need to adapt some of those commands to your needs.
     $ cp ./resources/default-settings/jukebox.default.yaml ./shared/settings/jukebox.yaml
     ```
 
-    * Override/Merge the values from the following [Override file](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
+    * Override/Merge the values from the following [Override file](../../docker/config/jukebox.overrides.yaml) in your `jukebox.yaml`.
     * **\[Currently required\]** Update all relative paths (`../..`) in to `/home/pi/RPi-Jukebox-RFID`.
 
 4. Change directory into the `./shared/audiofolders`
@@ -47,7 +47,20 @@ They can be run individually or in combination. To do that, we use
 ### Mac
 
 1. [Install Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
-2. [Install pulseaudio](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712) (Other references: [[1]](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html), [[2]](https://stackoverflow.com/a/50939994/1062438))
+2. Install pulseaudio
+    1. Use Homebrew to install
+    ```
+    $ brew install pulseaudio
+    ```
+    2. Enable pulseaudio network capabilities. In an editor, open `/opt/homebrew/Cellar/pulseaudio/16.1/etc/pulse/default.pa` (you might need to adapt this path to your own system settings). Uncomment the following line.
+    ```
+    load-module module-native-protocol-tcp
+    ```
+    3. Restart the pulseaudio service
+    ```
+    $ brew services restart pulseaudio
+    ```
+    4. If you have trouble with your audio, try these resources to troubleshoot: [[1]](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712), [[2]](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html), [[3]](https://stackoverflow.com/a/50939994/1062438)
 
 > [!NOTE]
 > In order for Pulseaudio to work properly with Docker on your Mac, you need to start Pulseaudio in a specific way. Otherwise MPD will throw an exception. See [Pulseaudio issues on Mac](#pulseaudio-issue-on-mac) for more info.
@@ -146,7 +159,7 @@ Read these threads for details: [thread 1](https://unix.stackexchange.com/questi
 
 The Dockerfile is defined to start all Phoniebox related services.
 
-Open <http://localhost:3000> in your browser to see the web application.
+Open <http://localhost:3000> in your browser to see the Web App.
 
 While the `webapp` container does not require a reload while working on
 it (hot-reload is enabled), you will have to restart your `jukebox`

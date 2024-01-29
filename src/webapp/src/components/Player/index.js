@@ -24,7 +24,7 @@ const Player = () => {
       if (result) {
         setCoverImage(`/cover-cache/${result}`);
         setBackgroundImage([
-          'linear-gradient(to bottom, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 1))',
+          'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
           `url(/cover-cache/${result})`
         ].join(','));
       };

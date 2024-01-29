@@ -4,7 +4,7 @@
 # Used e.g. for tests on Docker
 
 # Objective:
-# Test for the WebApp (build locally) and dependent features path.
+# Test for the Web App (build locally) and dependent features path.
 
 SOURCE="${BASH_SOURCE[0]}"
 SCRIPT_DIR="$(dirname "$SOURCE")"
@@ -23,7 +23,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
-# y - install node
+# y - build webapp
 # y - setup kiosk mode
 # n - reboot
 

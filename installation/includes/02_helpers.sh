@@ -2,6 +2,32 @@
 
 ### Helpers
 
+show_slow_hardware_message() {
+    if [[ $(uname -m) == "armv6l" ]]; then
+        print_c "--------------------------------------------------------------------
+| Your hardware is a little slower so this will take a while.      |
+| Go watch a movie but don't let your computer go to sleep for the |
+| SSH connection to remain intact.                                 |
+--------------------------------------------------------------------
+"
+    fi
+}
+
+# Get key by item number of associated array
+get_key_by_item_number() {
+    local -n array="$1"
+    local item_number="$2"
+    local count=0
+
+    for key in "${!array[@]}"; do
+        ((count++))
+        if [ "$count" -eq "$item_number" ]; then
+            echo "$key"
+            return
+        fi
+    done
+}
+
 # $1->start, $2->end
 calc_runtime_and_print() {
   runtime=$(($2-$1))
@@ -35,18 +61,49 @@ run_with_log_frame() {
 }
 
 get_architecture() {
-  local arch=""
-  if [ "$(uname -m)" = "armv7l" ]; then
-    arch="armv7"
-  elif [ "$(uname -m)" = "armv6l" ]; then
-    arch="armv6"
-  elif [ "$(uname -m)" = "aarch64" ]; then
-    arch="arm64"
-  else
-    arch="$(uname -m)"
-  fi
+    local arch=""
+    if [ "$(uname -m)" = "armv7l" ]; then
+        arch="armv7"
+    elif [ "$(uname -m)" = "armv6l" ]; then
+        arch="armv6"
+    elif [ "$(uname -m)" = "aarch64" ]; then
+        arch="arm64"
+    else
+        arch="$(uname -m)"
+    fi
 
-  echo $arch
+    echo $arch
+}
+
+is_raspbian() {
+    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+get_debian_version_number() {
+    source /etc/os-release
+    echo "$VERSION_ID"
+}
+
+get_boot_config_path() {
+    if [ "$(is_raspbian)" = true ]; then
+        local debian_version_number=$(get_debian_version_number)
+
+        # Bullseye and lower
+        if [ "$debian_version_number" -le 11 ]; then
+            echo "/boot/config.txt"
+        # Bookworm and higher
+        elif [ "$debian_version_number" -ge 12 ]; then
+            echo "/boot/firmware/config.txt"
+        else
+            echo "unknown"
+        fi
+    else
+        echo "unknown"
+    fi
 }
 
 validate_url() {
