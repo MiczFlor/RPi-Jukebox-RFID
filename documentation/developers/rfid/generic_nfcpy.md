@@ -13,5 +13,24 @@ driver, and thus cannot be used with the [genericusb](genericusb.md) module.
 
 # Configuration
 
-By setting `rfid > readers > generic_nfcpy > config > device_path` you can override the
-device location. For possible values see the `path` parameter in this [nfcpy documentation](https://nfcpy.readthedocs.io/en/latest/modules/clf.html#nfc.clf.ContactlessFrontend.open)
+The installation script will scan for compatible devices and will assist in configuration. 
+By setting `rfid > readers > generic_nfcpy > config > device_path` in `shared/settings/rfid.yaml` you can override the
+device location. By specifying an explicit device location it is possible to use multiple readers compatible with NFCpy.
+
+Example configuration for a usb-device with vendor ID 072f and product ID 2200:
+```yaml
+rfid:
+  readers:
+    read_00:
+      module: generic_nfcpy
+      config:
+        device_path: usb:072f:2200
+      same_id_delay: 1.0
+      log_ignored_cards: false
+      place_not_swipe:
+        enabled: false
+        card_removal_action:
+          alias: pause
+```
+
+For possible values see the `path` parameter in this [nfcpy documentation](https://nfcpy.readthedocs.io/en/latest/modules/clf.html#nfc.clf.ContactlessFrontend.open)
