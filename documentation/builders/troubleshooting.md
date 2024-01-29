@@ -29,7 +29,8 @@ The logs are also available via the Web Server:
 http://ip.of.your.box/logs
 ```
 
-> [!IMPORTANT] Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
+> [!IMPORTANT]
+> Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
 
 ## The long answer: A few more details
 
