@@ -16,6 +16,13 @@ question() {
 printf "Please make sure that the RC522 reader is wired up correctly to the GPIO ports before continuing...\n"
 question "Continue"
 
+printf "Use backward-compatible card ID (not suggested for new installations)?\n"
+read -p "(y/n) " choice
+case "$choice" in
+  y|Y ) printf "OFF" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
+  * ) printf "ON" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
+esac
+
 printf "Installing Python requirements for RC522...\n"
 sudo python3 -m pip install --upgrade --force-reinstall -q -r "${JUKEBOX_HOME_DIR}"/components/rfid-reader/RC522/requirements.txt
 
@@ -27,12 +34,6 @@ cp "${JUKEBOX_HOME_DIR}"/scripts/Reader.py.experimental "${JUKEBOX_HOME_DIR}"/sc
 printf "MFRC522" > "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chown pi:www-data "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
 sudo chmod 644 "${JUKEBOX_HOME_DIR}"/scripts/deviceName.txt
-
-read -p "Use backward-compatible card ID (not suggested for new installations) (y/n)? " choice
-case "$choice" in
-  y|Y ) printf "OFF" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
-  * ) printf "ON" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
-esac
 
 printf "Restarting phoniebox-rfid-reader service...\n"
 sudo systemctl restart phoniebox-rfid-reader.service
