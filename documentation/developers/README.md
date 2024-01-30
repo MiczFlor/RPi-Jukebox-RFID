@@ -9,7 +9,7 @@
 
 * [Jukebox Apps](./coreapps.md)
 * [Web App](./webapp.md)
-* [RFID Readers](./rfid)
+* [RFID Readers](./rfid/README.md)
 * [Docstring API Docs (from py files)](./docstring/README.md)
 * [Plugin Reference](./docstring/README.md#jukeboxplugs)
 * [Feature Status](./status.md)
