@@ -196,12 +196,12 @@ _optimize_check() {
 
 _run_optimize_boot_time() {
     _optimize_disable_irrelevant_services
+    _optimize_handle_boot_screen
+    _optimize_handle_boot_logs
     _optimize_handle_bluetooth
     _optimize_static_ip
     _optimize_static_ip_NetworkManager
     _optimize_ipv6_arp
-    _optimize_handle_boot_screen
-    _optimize_handle_boot_logs
     _optimize_check
 }
 

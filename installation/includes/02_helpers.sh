@@ -137,7 +137,7 @@ get_string_length() {
 is_service_enabled() {
     local service="$1"
     local option="${2:+$2 }" # optional, dont't quote in next call!
-    local actual_state=$(systemctl is-enabled ${option}${service})
+    local actual_state=$(systemctl is-enabled ${option}${service} 2>/dev/null)
 
     if [[ "$actual_state" == "enabled" ]]; then
         echo true

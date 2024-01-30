@@ -55,7 +55,7 @@ _uninstall_autohotspot_NetworkManager() {
         sudo rm "${AUTOHOTSPOT_TARGET_PATH}"
     fi
 
-    sudo rm -f "${AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH}/${AUTOHOTSPOT_PROFILE}"
+    sudo rm -f "${AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH}/${AUTOHOTSPOT_PROFILE}*"
 
     # remove config files
     _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
