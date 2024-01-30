@@ -11,7 +11,6 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 2. Download the [Raspberry Pi Imager](https://www.raspberrypi.com/software/) and run it
 3. Click on "Raspberry Pi Device" and select "No filtering"
 4. As operating system select **Raspberry Pi OS (other)** and then **Raspberry Pi OS Lite (Legacy, 32-bit)** (no desktop environment). *64-bit is currently not supported*.
-    * Bookworm support is partly broken, see [here](#workaround-for-network-related-features-on-bookworm).
     * For Pi 4 and newer also check [this](#workaround-for-64-bit-kernels-pi-4-and-newer).
 5. Select your Micro SD card (your card will be formatted)
 6. After you click `Next`, a prompt will ask you if you like to customize the OS settings
@@ -81,11 +80,11 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 ### Pre-install preparation / workarounds
 
-#### Workaround for network related features on Bookworm
+#### Network management since Bookworm
 <details>
-With Bookworm the network settings have changed. Now "NetworkManager" is used instead of "dhcpcd".
-This breaks breaks network related features like "Static IP", "Wifi Setup" and "Autohotspot".
-Before running the installation, the network config has to be changed via raspi-config, to use the "old" dhcpcd network settings.
+With Bookworm the network management has changed. Now "NetworkManager" is used instead of "dhcpcd".
+Both ways are supported in the installation, but "NetworkManager" is recommended as it's simpler to setup and use. 
+For Bullseye this can also be activated, though it's a manual process before running the installation.
 
 :warning:
 If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless connection.
@@ -95,7 +94,7 @@ Change network config
 * run `sudo raspi-config`
 * select `6 - Advanced Options`
 * select `AA - Network Config`
-* select `dhcpcd`
+* select `NetworkManager`
 
 If you need Wifi, add the information now
 * select `1 - System Options`
