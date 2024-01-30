@@ -28,13 +28,13 @@ _install_packages_dhcpcd() {
 
 _install_autohotspot_dhcpcd() {
     # configure interface conf
-    _config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo rm "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo touch "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
 
     # configure DNS
-    _config_file_backup "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
 
     local ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOT_IP)
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/dnsmasq.conf "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
@@ -43,7 +43,7 @@ _install_autohotspot_dhcpcd() {
 
 
     # configure hostapd conf
-    _config_file_backup "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
 
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/hostapd.conf "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
     sudo sed -i "s|%%WIFI_INTERFACE%%|${WIFI_INTERFACE}|g" "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
@@ -53,14 +53,14 @@ _install_autohotspot_dhcpcd() {
 
 
     # configure hostapd daemon
-    _config_file_backup "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
 
     sudo cp "${AUTOHOTSPOT_DHCPCD_RESOURCES_PATH}"/hostapd "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
     sudo sed -i "s|%%HOSTAPD_CONF%%|${AUTOHOTSPOT_HOSTAPD_CONF_FILE}|g" "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
 
 
     # configure dhcpcd conf
-    _config_file_backup "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
     if [ ! -f "${AUTOHOTSPOT_DHCPCD_CONF_FILE}" ]; then
         sudo touch "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
         sudo chown root:netdev "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
@@ -121,11 +121,11 @@ _uninstall_autohotspot_dhcpcd() {
     fi
 
     # remove config files
-    _config_file_revert "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
-    _config_file_revert "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
-    _config_file_revert "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
-    _config_file_revert "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
-    _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_DNSMASQ_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_HOSTAPD_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_HOSTAPD_DAEMON_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_DHCPCD_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 }
 
 

@@ -19,30 +19,6 @@ _get_interface() {
     fi
 }
 
-_config_file_backup() {
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
-    local config_file="$1"
-    local config_flag_file="${config_file}.remove"
-    local config_orig_file="${config_file}.orig"
-    if [ ! -f "${config_file}" ]; then
-        sudo touch "${config_flag_file}"
-    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
-        sudo cp "${config_file}" "${config_orig_file}"
-    fi
-}
-
-_config_file_revert() {
-    # revert config files to original (remove if it wasn't existing before)
-    local config_file="$1"
-    local config_flag_file="${config_file}.remove"
-    local config_orig_file="${config_file}.orig"
-    if [ -f "${config_flag_file}" ]; then
-        sudo rm "${config_flag_file}" "${config_file}"
-    elif [ -f "${config_orig_file}" ]; then
-        sudo mv "${config_orig_file}" "${config_file}"
-    fi
-}
 
 _get_last_ip_segment() {
     local ip="$1"

@@ -9,7 +9,7 @@ _install_packages_NetworkManager() {
 
 _install_autohotspot_NetworkManager() {
     # configure interface conf
-    _config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo rm "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
     sudo touch "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 
@@ -58,7 +58,7 @@ _uninstall_autohotspot_NetworkManager() {
     sudo rm -f "${AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH}/${AUTOHOTSPOT_PROFILE}*"
 
     # remove config files
-    _config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
+    config_file_revert "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
 }
 
 _autohotspot_check_NetworkManager() {

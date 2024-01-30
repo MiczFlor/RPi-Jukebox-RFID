@@ -154,7 +154,30 @@ is_NetworkManager_enabled() {
     echo $(is_service_enabled "NetworkManager.service")
 }
 
+# create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
+# to correctly handling de-/activation of corresponding feature
+config_file_backup() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ ! -f "${config_file}" ]; then
+        sudo touch "${config_flag_file}"
+    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
+        sudo cp "${config_file}" "${config_orig_file}"
+    fi
+}
 
+# revert config files backed up with `config_file_backup`
+config_file_revert() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ -f "${config_flag_file}" ]; then
+        sudo rm "${config_flag_file}" "${config_file}"
+    elif [ -f "${config_orig_file}" ]; then
+        sudo mv "${config_orig_file}" "${config_file}"
+    fi
+}
 
 ### Verify helpers
 print_verify_installation() {
