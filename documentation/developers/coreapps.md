@@ -33,7 +33,7 @@ Will also setup equalizer and mono down mixer in the pulseaudio config file. Run
 
 ### RFID Reader
 
-**Scriptname:** [run_register_rfid_reader.py](../../src/jukebox/run_register_rfid_reader.py)
+**Scriptname:** [setup_rfid_reader.sh](../../installation/components/setup_rfid_reader.sh)
 
 Setup tool to configure the RFID Readers.
 
