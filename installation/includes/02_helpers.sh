@@ -134,12 +134,25 @@ get_string_length() {
     echo -n ${string} | wc -m
 }
 
+_get_service_enablement() {
+    local service="$1"
+    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
+
+    if [[ -z "${service}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+
+    echo "$actual_enablement"
+}
+
 is_service_enabled() {
     local service="$1"
-    local option="${2:+$2 }" # optional, dont't quote in next call!
-    local actual_state=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+    local option="$2"
+    local actual_enablement=$(_get_service_enablement $service $option)
 
-    if [[ "$actual_state" == "enabled" ]]; then
+    if [[ "$actual_enablement" == "enabled" ]]; then
         echo true
     else
         echo false
@@ -324,14 +337,14 @@ verify_service_state() {
 verify_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service})
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
@@ -341,14 +354,14 @@ verify_service_enablement() {
 verify_optional_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service}) 2>/dev/null
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ -z "${actual_enablement}" ]]; then
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then
