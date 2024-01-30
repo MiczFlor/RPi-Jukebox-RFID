@@ -280,6 +280,14 @@ class PlayerMPD:
             pass
         publishing.get_publisher().send('playerstatus', self.mpd_status)
 
+    # MPD can play absolute paths but can find songs in its database only by relative path
+    # This function aims to prepare the song_url accordingly
+    def harmonize_mpd_url(self, song_url):
+        _music_library_path_absolute = os.path.expanduser(components.player.get_music_library_path())
+        song_url = song_url.replace(f'{_music_library_path_absolute}/', '')
+
+        return song_url
+
     @plugs.tag
     def get_player_type_and_version(self):
         with self.mpd_lock:
@@ -667,10 +675,7 @@ class PlayerMPD:
 
     @plugs.tag
     def get_song_by_url(self, song_url):
-        # MPD can play absolute paths but can find songs in its database only by relative path
-        # In certain situations, `song_url` can be an absolute path. Then, it will be trimed to be relative
-        _music_library_path_absolute = os.path.expanduser(components.player.get_music_library_path())
-        song_url = song_url.replace(f'{_music_library_path_absolute}/', '')
+        song_url = self.harmonize_mpd_url(song_url)
 
         with self.mpd_lock:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
