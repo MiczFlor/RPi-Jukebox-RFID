@@ -110,6 +110,16 @@ fi
 SECONDSWIPEPAUSECONTROLS=`cat $PATHDATA/../settings/Second_Swipe_Pause_Controls`
 
 ##############################################
+# RFID reader rc522 readmode UID
+# 1. create a default if file does not exist
+if [ ! -f $PATHDATA/../settings/Rfidreader_Rc522_Readmode_UID ]; then
+    echo "OFF" > $PATHDATA/../settings/Rfidreader_Rc522_Readmode_UID
+    chmod 777 $PATHDATA/../settings/Rfidreader_Rc522_Readmode_UID
+fi
+# 2. then|or read value from file
+RFIDREADERRC522READMODEUID=`cat $PATHDATA/../settings/Rfidreader_Rc522_Readmode_UID`
+
+##############################################
 # Audio_iFace_Name
 # 1. create a default if file does not exist
 if [ ! -f $PATHDATA/../settings/Audio_iFace_Name ]; then
@@ -332,6 +342,7 @@ CMDSEEKBACK=`grep 'CMDSEEKBACK' $PATHDATA/../settings/rfid_trigger_play.conf|tai
 # SECONDSWIPE
 # SECONDSWIPEPAUSE
 # SECONDSWIPEPAUSECONTROLS
+# RFIDREADERRC522READMODEUID
 # AUDIOIFACENAME
 # AUDIOIFACEACTIVE
 # VOLUMEMANAGER
@@ -369,6 +380,7 @@ echo "SWIPEORPLACE=\"${SWIPEORPLACE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPE=\"${SECONDSWIPE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSE=\"${SECONDSWIPEPAUSE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "SECONDSWIPEPAUSECONTROLS=\"${SECONDSWIPEPAUSECONTROLS}\"" >> "${PATHDATA}/../settings/global.conf"
+echo "RFIDREADERRC522READMODEUID=\"${RFIDREADERRC522READMODEUID}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACENAME=\"${AUDIOIFACENAME}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "AUDIOIFACEACTIVE=\"${AUDIOIFACEACTIVE}\"" >> "${PATHDATA}/../settings/global.conf"
 echo "VOLUMEMANAGER=\"${VOLUMEMANAGER}\"" >> "${PATHDATA}/../settings/global.conf"
