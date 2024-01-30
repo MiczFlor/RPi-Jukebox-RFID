@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+CURRENT_USER="${SUDO_USER:-$(whoami)}"
+
 modprobe_file="/etc/modprobe.d/disable_driver_jukebox_nfcpy.conf"
 
 
@@ -40,5 +42,5 @@ done
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
-sudo gpasswd -a pi dialout
-sudo gpasswd -a pi tty
+sudo gpasswd -a $CURRENT_USER dialout
+sudo gpasswd -a $CURRENT_USER tty

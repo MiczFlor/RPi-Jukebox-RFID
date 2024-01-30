@@ -55,8 +55,7 @@ def query_customization() -> dict:
     print("\nChoose RFID device from USB device list:\n")
     logger.debug(f"USB devices: {[x['name'] for x in devices]}")
     if len(devices) == 0:
-        if len(devices) == 0:
-            logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
+        logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
         return {'device_path': None}
 
     for idx, dev in enumerate(devices):
