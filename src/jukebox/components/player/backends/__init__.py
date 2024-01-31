@@ -74,5 +74,12 @@ class BackendPlayer(ABC):
         pass
 
     @abstractmethod
-    def get_folder_content(self):
+    def get_folder_content(self, folder):
+        """
+        Get the folder content as content list with meta-information. Depth is always 1.
+
+        Call repeatedly to descend in hierarchy
+
+        :param folder: Folder path relative to music library path
+        """
         pass

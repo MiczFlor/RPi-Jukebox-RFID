@@ -269,6 +269,7 @@ class PlaylistCollector:
         """
         self.playlist = []
         self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        logger.debug(self._folder)
         try:
             content = self._get_directory_content(self._folder)
         except NotADirectoryError as e:
@@ -278,10 +279,10 @@ class PlaylistCollector:
         else:
             logger.debug(f"Playlist Content: {content}")
             for m in content:
-                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path, 'uri': m.uri})
+                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.uri})
 
     def _parse_nonrecusive(self, path='.'):
-        return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
+        return [x.uri for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
 
     def _parse_recursive(self, path='.'):
         # This can certainly be optimized, as os.walk is called on all

@@ -188,8 +188,8 @@ class PlayerCtrl:
         return self._active.get_song_by_url(song_url)
 
     @plugin.tag
-    def get_folder_content(self):
-        return self._active.get_folder_content()
+    def get_folder_content(self, folder):
+        return self._active.get_folder_content(folder)
 
 
     def _save_state(self):
