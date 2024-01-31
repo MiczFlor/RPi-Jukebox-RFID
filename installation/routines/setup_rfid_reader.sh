@@ -3,7 +3,7 @@
 _run_setup_rfid_reader() {
     local script="./../components/setup_rfid_reader.sh"
     sudo chmod +x "$script"
-    run_and_print_lc $script"
+    run_and_print_lc "$script"
 }
 
 setup_rfid_reader() {
