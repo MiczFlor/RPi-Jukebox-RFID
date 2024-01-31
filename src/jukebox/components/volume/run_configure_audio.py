@@ -5,7 +5,7 @@ Setup tool to register the PulseAudio sinks as primary and secondary audio outpu
 Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
 Run this once after installation. Can be re-run at any time to change the settings.
-For more information see [Audio Configuration](../../builders/audio.md#audio-configuration).
+For more information see [Audio Configuration](../../../../builders/audio.md#audio-configuration).
 """
 import os
 import argparse
@@ -290,7 +290,7 @@ def configure_pa_switch_on_connect(pulse_cfg_file_content):
 
 def query_create_default_pa_config(script_path, config_file_path):
     default_config_path = os.path.normpath(os.path.join(script_path,
-                                                        '../../resources/default-settings/pulseaudio.default.pa'))
+                                                        '../../../../resources/default-settings/pulseaudio.default.pa'))
     print(f"\n*** PulseAudio configuration file does not exist: '{config_file_path}'.")
     print(f"    RPI-Jukebox-RFID's default is: '{default_config_path}'.\n")
     query = pyil.input_yesno("Create new config file from RPi-Jukebox-RFID default?",
@@ -401,7 +401,7 @@ def goodbye(pulse_config: PaConfigClass):
 def main():
     # Get absolute path of this script
     script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../shared/settings/jukebox.yaml'))
+    default_cfg_jukebox = os.path.abspath(os.path.join(script_path, '../../../../shared/settings/jukebox.yaml'))
     default_cfg_pulse = os.path.abspath(os.path.expanduser('~/.config/pulse/default.pa'))
 
     argparser = argparse.ArgumentParser(description='The Jukebox audio configuration tool')
