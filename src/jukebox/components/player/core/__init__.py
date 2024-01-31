@@ -117,6 +117,10 @@ class PlayerCtrl:
         self._active.play_album(albumartist, album)
 
     @plugin.tag
+    def play_folder(self, folder, recursive):
+        self._active.play_folder(folder, recursive)
+
+    @plugin.tag
     def toggle(self):
         self._active.toggle()
 
@@ -164,8 +168,6 @@ class PlayerCtrl:
             list_of_all_dirs.append(bkend.list_dirs())
         return list_of_all_dirs
 
-
-
     @plugin.tag
     def list_albums(self):
         """
@@ -187,10 +189,10 @@ class PlayerCtrl:
     def get_song_by_url(self, song_url):
         return self._active.get_song_by_url(song_url)
 
+    # ToDo: make it iterate through all player, so that the whole content is displayed
     @plugin.tag
     def get_folder_content(self, folder):
         return self._active.get_folder_content(folder)
-
 
     def _save_state(self):
         # Get the backend to save the state of the current playlist to the URI's config file

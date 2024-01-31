@@ -25,6 +25,17 @@ class BackendPlayer(ABC):
     @abstractmethod
     def play_album(self, albumartist, album):
         pass
+
+    @abstractmethod
+    def play_folder(self, folder: str, recursive: bool):
+        """
+        Playback a music folder.
+
+        :param folder: Folder path relative to music library path
+        :param recursive: Add folder recursively
+        """
+        pass
+
     @abstractmethod
     def toggle(self):
         pass

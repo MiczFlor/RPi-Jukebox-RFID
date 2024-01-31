@@ -20,7 +20,13 @@ cfg = jukebox.cfghandler.get_handler('player')
 
 
 def sanitize(path: str):
-    return os.path.normpath(path).lstrip('./')
+    """
+    Trim path to enable MPD to search in database
+
+    :param path: File or folder path
+    """
+    _music_library_path_absolute = os.path.expanduser(get_music_library_path())
+    return os.path.normpath(path).lstrip('./').replace(f'{_music_library_path_absolute}/', '')
 
 
 class MPDBackend(BackendPlayer):
@@ -57,6 +63,7 @@ class MPDBackend(BackendPlayer):
         return await afunc(*args, **kwargs)
 
     def _run_cmd(self, afunc, *args, **kwargs):
+        logger.debug(f"executing command {afunc.__name__} with params {args} {kwargs}")
         return asyncio.run_coroutine_threadsafe(self._run_cmd_async(afunc, *args, **kwargs), self.loop).result()
 
     # -----------------------------------------------------
@@ -127,7 +134,7 @@ class MPDBackend(BackendPlayer):
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
         """
-        self._run_cmd(self.client.clear)
+        self.play_uri(f"mpd:folder:{folder}", recursive=recursive)
 
     def play_single(self, uri):
         pass
@@ -147,7 +154,6 @@ class MPDBackend(BackendPlayer):
 
     def seek(self):
         pass
-
 
     def pause(self):
         """Pause playback if playing
@@ -352,7 +358,7 @@ class MPDBackend(BackendPlayer):
         pass
 
 
-#ToDo: refactor code
+# ToDo: refactor code
 def _get_music_library_path(conf_file):
     """Parse the music directory from the mpd.conf file"""
     pattern = re.compile(r'^\s*music_directory\s*"(.*)"', re.I)
