@@ -25,7 +25,7 @@ See [Best practice procedure](../builders/configuration.md#best-practice-procedu
 
 ### Audio
 
-**Scriptname:** [run_configure_audio.sh](../../installation/components/run_configure_audio.sh)
+**Scriptname:** [setup_audio_sink.sh](../../installation/components/setup_audio_sink.sh)
 
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
