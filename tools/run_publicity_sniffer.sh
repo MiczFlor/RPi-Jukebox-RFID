@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Runner script for jukebox to ensure
+# Runner script for sniffer tool to ensure
 # - independent from working directory
 
 # Change working directory to location of script

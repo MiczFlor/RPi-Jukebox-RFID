@@ -46,20 +46,20 @@ Run this once to register and configure the RFID readers with the Jukebox. Can b
 
 ### RPC
 
-**Scriptname:** [run_rpc_tool.py](../../src/jukebox/run_rpc_tool.py)
+**Scriptname:** [run_rpc_tool.sh](../../tools/run_rpc_tool.sh)
 
 Command Line Interface to the Jukebox RPC Server.
 
-A command line tool for sending RPC commands to the running jukebox app. This uses the same interface as the WebUI. Can be used for additional control or for debugging. Use `./run_rpc_tool.py` to start the tool in interactive mode.
+A command line tool for sending RPC commands to the running jukebox app. This uses the same interface as the WebUI. Can be used for additional control or for debugging. Use `./run_rpc_tool.sh` to start the tool in interactive mode.
 
 The tool features auto-completion and command history.
 
 The list of available commands is fetched from the running Jukebox service.
 
-The tool can also be used to send commands directly, when passing a `-c` argument, e.g. `./run_rpc_tool.py -c host.shutdown`.
+The tool can also be used to send commands directly, when passing a `-c` argument, e.g. `./run_rpc_tool.sh -c host.shutdown`.
 
 ### Publicity Sniffer
 
-**Scriptname:** [run_publicity_sniffer.py](../../src/jukebox/run_publicity_sniffer.py)
+**Scriptname:** [run_publicity_sniffer.sh](../../tools/run_publicity_sniffer.sh)
 
 A command line tool that monitors all messages being sent out from the Jukebox via the publishing interface. Received messages are printed in the console. Mainly used for debugging.
