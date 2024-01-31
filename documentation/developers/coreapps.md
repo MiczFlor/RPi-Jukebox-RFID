@@ -10,7 +10,7 @@ $ ./<scriptname> -h
 
 ## Jukebox Core
 
-**Scriptname:** [run_jukebox.py](../../src/jukebox/run_jukebox.py)
+**Scriptname:** [run_jukebox.sh](../../run_jukebox.sh)
 
 This is the main app and starts the Jukebox Core.
 
