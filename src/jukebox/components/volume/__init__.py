@@ -603,7 +603,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
             logger.error(f"Configured sink '{pulse_sink_name}' not available sinks '{all_sinks}!\n"
                          f"Using default sink '{default_sink_name}' as fallback\n"
                          f"Things like audio sink toggle and volume limit will not work as expected!\n"
-                         f"Please run audio config tool: ./run_configure_audio.py")
+                         f"Please run audio config tool: ./installation/components/run_configure_audio.sh")
 
         sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
         key = 'secondary'

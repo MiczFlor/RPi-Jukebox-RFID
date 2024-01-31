@@ -25,7 +25,7 @@ See [Best practice procedure](../builders/configuration.md#best-practice-procedu
 
 ### Audio
 
-**Scriptname:** [run_configure_audio.py](../../src/jukebox/run_configure_audio.py)
+**Scriptname:** [run_configure_audio.sh](../../installation/components/run_configure_audio.sh)
 
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
