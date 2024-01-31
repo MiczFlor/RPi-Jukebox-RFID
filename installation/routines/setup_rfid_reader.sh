@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 _run_setup_rfid_reader() {
-    local script="./../components/setup_rfid_reader.sh"
+    local script="${INSTALLATION_PATH}"/installation/components/setup_rfid_reader.sh
     sudo chmod +x "$script"
     run_and_print_lc "$script"
 }
