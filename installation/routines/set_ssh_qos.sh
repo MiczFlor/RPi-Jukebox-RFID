@@ -9,7 +9,3 @@ set_ssh_qos() {
         echo -e "IPQoS 0x00 0x00\n" | sudo tee -a /etc/ssh/ssh_config
     fi
 }
-
-setup_login_message() {
-    cp -f "${INSTALLATION_PATH}/resources/system/99-rpi-jukebox-rfid-welcome" "/etc/update-motd.d/"
-}
