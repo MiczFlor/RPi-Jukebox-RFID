@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo "
+#########################################################
+   ___  __ ______  _  __________ ____   __  _  _
+  / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ )
+ / ___/ _  / /_/ /    // // _/   ) _ ((  O ))  (
+/_/  /_//_/\____/_/|_/___/____/ (____/ \__/(_/\_)
+future3
+
+If you want to run a python script from the project
+activate the venv before with `source .venv/bin/activate`
+See also https://github.com/MiczFlor/RPi-Jukebox-RFID/
+blob/future3/main/documentation/developers/python.md
+
+#########################################################"
