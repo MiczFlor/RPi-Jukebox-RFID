@@ -33,5 +33,5 @@ set_raspi_config() {
 }
 
 setup_login_message() {
-    cp -f "${INSTALLATION_PATH}/resources/system/99-rpi-jukebox-rfid-welcome" "/etc/update-motd.d/99-rpi-jukebox-rfid-welcome"
+    sudo cp -f "${INSTALLATION_PATH}/resources/system/99-rpi-jukebox-rfid-welcome" "/etc/update-motd.d/99-rpi-jukebox-rfid-welcome"
 }
