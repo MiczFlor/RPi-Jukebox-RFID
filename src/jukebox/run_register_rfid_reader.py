@@ -34,7 +34,7 @@ logger.addHandler(logconsole)
 def main():
     # The default config file relative to this files location and independent of working directory
     script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
-    cfg_file_default = os.path.abspath(os.path.join(script_path, '/../../../../../shared/settings/rfid.yaml'))
+    cfg_file_default = os.path.abspath(os.path.join(script_path, '../../shared/settings/rfid.yaml'))
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--force",
