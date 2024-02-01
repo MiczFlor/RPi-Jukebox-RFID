@@ -22,6 +22,10 @@ cfg = jukebox.cfghandler.get_handler('rfid')
 
 
 def query_customization() -> dict:
+    # filter all log records from nfc.clf
+    logger = logging.getLogger('nfc.clf')
+    logger.filter = lambda record: 0
+
     possible_device_ids = [
         "usb:054c:02e1",
         "usb:054c:06c1",
@@ -45,7 +49,7 @@ def query_customization() -> dict:
 
     # find tty device
     matching_files = glob.glob("/dev/ttyUSB[0-9]*")
-    matching_files += glob.glob("/dev/ttyACM[0-9]*")
+    matching_files += glob.glob("/dev/ttyAMA[0-9]*")
     for file_path in matching_files:
         for device_id in (f'{file_path}:pn532', f'{file_path}:arygon'):
             if clf.open(device_id):
@@ -55,7 +59,7 @@ def query_customization() -> dict:
     print("\nChoose RFID device from USB device list:\n")
     logger.debug(f"USB devices: {[x['name'] for x in devices]}")
     if len(devices) == 0:
-        logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run register_reader.py")
+        logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run reader registration")
         return {'device_path': None}
 
     for idx, dev in enumerate(devices):

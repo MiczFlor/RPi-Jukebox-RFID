@@ -4,7 +4,9 @@ CURRENT_USER="${SUDO_USER:-$(whoami)}"
 
 modprobe_file="/etc/modprobe.d/disable_driver_jukebox_nfcpy.conf"
 
-
+if [ -e "$modprobe_file" ]; then
+    sudo rm -f "$modprobe_file"
+fi
 if lsmod | grep "pn533_usb"; then
     sudo rmmod pn533_usb 2>/dev/null
     sudo sh -c "echo 'install pn533_usb /bin/true' >> $modprobe_file"
@@ -31,16 +33,20 @@ valid_device_ids=(
     "04e6:5593"
 )
 
+if [ -e "$udev_file" ]; then
+    sudo rm -f "$udev_file"
+fi
 for dev in $usb_devices; do
     if echo ${valid_device_ids[@]} | grep -woq $dev; then
         #$dev is in valid id array
         VID="${dev%%:*}"
         PID="${dev#*:}"
-        sudo sh -c "echo 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"$VID\", ATTRS{idProduct}==\"$PID\", MODE=\"0666\"' >> $udev_file"
+        sudo sh -c "echo 'SUBSYSTEM==\"usb\", ATTRS{idVendor}==\"$VID\", ATTRS{idProduct}==\"$PID\", GROUP=\"plugdev\"' >> $udev_file"
     fi
 done
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 
+sudo gpasswd -a $CURRENT_USER plugdev
 sudo gpasswd -a $CURRENT_USER dialout
 sudo gpasswd -a $CURRENT_USER tty
