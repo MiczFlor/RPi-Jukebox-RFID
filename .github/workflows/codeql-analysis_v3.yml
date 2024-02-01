@@ -44,7 +44,7 @@ jobs:
     - name: Install dependencies
       run: |
         # Install necessary packages
-        sudo apt-get install libasound2-dev pulseaudio python3-venv
+        sudo apt-get install libasound2-dev pulseaudio
         python3 -m venv .venv
         source ".venv/bin/activate"
 
