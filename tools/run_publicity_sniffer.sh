@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Runner script for sniffer tool to ensure
+# Runner script to ensure
 # - correct venv activation
 # - independent from working directory
 
