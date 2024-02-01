@@ -11,6 +11,6 @@ future3
 If you want to run a python script from the project
 activate the venv before with `source .venv/bin/activate`
 See also https://github.com/MiczFlor/RPi-Jukebox-RFID/
-blob/future3/main/documentation/developers/pyhton.md
+blob/future3/main/documentation/developers/python.md
 
 #########################################################"
