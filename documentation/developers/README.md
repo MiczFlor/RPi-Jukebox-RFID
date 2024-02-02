@@ -3,7 +3,7 @@
 ## Getting started
 
 * [Development Environment](./development-environment.md)
-* [Python Development Notes](pyhton.md)
+* [Python Development Notes](python.md)
 
 ## Reference
 
