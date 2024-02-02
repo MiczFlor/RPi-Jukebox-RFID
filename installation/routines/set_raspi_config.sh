@@ -31,7 +31,3 @@ _run_set_raspi_config() {
 set_raspi_config() {
     run_with_log_frame _run_set_raspi_config "Set default raspi-config"
 }
-
-setup_login_message() {
-    sudo cp -f "${INSTALLATION_PATH}/resources/system/99-rpi-jukebox-rfid-welcome" "/etc/update-motd.d/99-rpi-jukebox-rfid-welcome"
-}
