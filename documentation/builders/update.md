@@ -2,34 +2,14 @@
 
 ## Updating your Jukebox Version 3
 
-### Update from v3.2.1 and prior
+### Update from v3.5.0 and prior
 
-As there are some significant changes in the installation, a new setup on a fresh image is required.
+As there are some significant changes in the Jukebox installation, no updates can be performed with the installer.
+Please backup your './shared' folder and changed files and run a new installation on a fresh image.
+Restore your old files after the new installation was succefull and check if new mandatory settings have been added.
 
-### General
-
-Things on Version 3 are moving fast and you may want to keep up with recent changes. Since we are in Alpha Release stage,
-a fair number of fixes are expected to be committed in the near future.
-
-You will need to do three things to update your version from develop (or the next release candidate version)
-
-1. Pull the newest code base from Github
-2. Check for new entries in the configuration
-3. Re-build the WebUI
-
-```bash
-# Switch to develop (if desired)
-$ git checkout future3/develop
-
-# Get latest code
-$ git pull
-
-# Check if new (mandatory) options appeared in jukebox.yaml
-# with your favourite diff tool and merge them
+``` bash
 $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
-
-$ cd src/webapp
-$ ./run_rebuild.sh -u
 ```
 
 ## Migration Path from Version 2
