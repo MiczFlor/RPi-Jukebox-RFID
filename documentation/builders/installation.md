@@ -82,13 +82,13 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 
 #### Network management since Bookworm
 <details>
-With Bookworm the network management has changed. Now "NetworkManager" is used instead of "dhcpcd".
-Both ways are supported in the installation, but "NetworkManager" is recommended as it's simpler to setup and use. 
-For Bullseye this can also be activated, though it's a manual process before running the installation.
+With Bookworm, network management has changed. Now, "NetworkManager" is used instead of "dhcpcd". 
+Both methods are supported during installation, but "NetworkManager" is recommended as it is simpler to set up and use.
+For Bullseye, this can also be activated, though it requires a manual process before running the installation.
 
 :warning:
-If the settings are changed, your network will reset and Wifi will not be configured, so you lose ssh access via wireless connection.
-So make sure you use a wired connection or perform the following steps in a local terminal with a connected monitor and keyboard.
+If the settings are changed, your network will reset, and WiFi will not be configured, causing you to lose SSH access via wireless connection.
+Therefore, make sure you use a wired connection or perform the following steps in a local terminal with a connected monitor and keyboard.
 
 Change network config
 * run `sudo raspi-config`
