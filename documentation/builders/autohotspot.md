@@ -1,15 +1,15 @@
 # Auto-Hotspot
 
-The Auto-Hotspot function allows the Jukebox to switch its connection between a known WiFi and an automatically generated hotspot so that you can still access via SSH or Web App.
+The Auto-Hotspot function enables the Jukebox to switch its connection between a known WiFi network and an automatically generated hotspot, allowing access via SSH or Web App.
 
 > [!IMPORTANT]
-> Please configure the WiFi connection to your home access point before enabling these feature!
+> Please configure the WiFi connection to your home access point before enabling this feature!
 
 ## How to connect
 
-When the Jukebox is not able to connect to a known WiFi it will automatically create a hotspot.
-You will be able to connect to this hotspot using the password set in the installation.
-After that you can access the Web App or connect via ssh like before using the IP from the configuration.
+When the Jukebox cannot connect to a known WiFi, it will automatically create a hotspot. 
+You can connect to this hotspot using the password set during installation.
+Afterwards, you can access the Web App or connect via SSH as before, using the IP from the configuration.
 
 The default configuration is
 ``` text
@@ -24,16 +24,16 @@ The default configuration is
 Auto-Hotspot can be enabled or disabled using the Web App or RPC Commands.
 
 > [!NOTE]
-> Disabling will run the wifi check again and keep the last connection state until reboot.
+> Disabling the Auto-Hotspot will run the WiFi check again and maintain the last connection state until reboot.
 
 > [!IMPORTANT]
-> If you disable this feature you will loose access to the Jukebox, if you are not near a known WiFi after reboot!
+> If you disable this feature, you will lose access to the Jukebox if you are not near a known WiFi after reboot!
 
 ## Troubleshooting
 
 ### AutoHotspot functionality is not working
 
-Check the autohotspot service status
+Check the `autohotspot.service` status
 ``` bash
 sudo systemctl status autohotspot.service
 ```
@@ -43,17 +43,16 @@ and logs
 sudo journalctl -u autohotspot.service -n 50
 ```
 
-### Phoniebox is not connecting to the known WiFi
+### Jukebox is not connecting to the known WiFi
 
-The script will fall back to the hotspot so you still have some type of
-connection.
+The script will fall back to the hotspot, ensuring you still have some type of connection.
 
-Check your wifi configuration.
+Check your WiFi configuration.
 
-### You need to add a new wifi network to the Raspberry Pi
+### You need to add a new WiFi network to the Raspberry Pi
 
 #### Using the command line
-Connect to the hotspot and open a terminal. Use the [raspi-config](https://www.raspberrypi.com/documentation/computers/configuration.html#wireless-lan) tool and add the new wifi.
+Connect to the hotspot and open a terminal. Use the [raspi-config](https://www.raspberrypi.com/documentation/computers/configuration.html#wireless-lan) tool to add the new WiFi.
 
 ## Resources
 
