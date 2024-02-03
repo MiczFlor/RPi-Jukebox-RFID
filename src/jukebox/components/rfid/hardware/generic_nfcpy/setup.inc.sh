@@ -14,24 +14,14 @@ fi
 
 if lsmod | grep "port100"; then
     sudo rmmod port100 2>/dev/null
-    sudo sh -c "echo 'install v /bin/true' >> $modprobe_file"
+    sudo sh -c "echo 'install port100 /bin/true' >> $modprobe_file"
 fi
 
 udev_file="/etc/udev/rules.d/50-usb-nfc-rule.rules"
 
 usb_devices=$(lsusb | sed -e 's/.*ID \([a-f0-9]\+:[a-f0-9]\+\).*/\1/g')
 
-valid_device_ids=(
-    "054c:02e1"
-    "054c:06c1"
-    "054c:06c3"
-    "054c:0193"
-    "04cc:0531"
-    "04cc:2533"
-    "072f:2200"
-    "04e6:5591"
-    "04e6:5593"
-)
+valid_device_ids=($(python -c "import nfc.clf.device; [print('%04x:%04x' % x) for x in nfc.clf.device.usb_device_map.keys()]"))
 
 if [ -e "$udev_file" ]; then
     sudo rm -f "$udev_file"

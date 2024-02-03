@@ -4,6 +4,7 @@ import logging
 import nfc
 import glob
 from nfc.clf import RemoteTarget
+import nfc.clf.device
 
 # Import the ReaderBaseClass for common API. Leave as this line as it is!
 from components.rfid import ReaderBaseClass
@@ -23,26 +24,15 @@ cfg = jukebox.cfghandler.get_handler('rfid')
 
 def query_customization() -> dict:
     # filter all log records from nfc.clf
-    logger = logging.getLogger('nfc.clf')
-    logger.filter = lambda record: 0
-
-    possible_device_ids = [
-        "usb:054c:02e1",
-        "usb:054c:06c1",
-        "usb:054c:06c3",
-        "usb:054c:0193",
-        "usb:04cc:0531",
-        "usb:072f:2200",
-        "usb:04e6:5591",
-        "usb:04e6:5593",
-        "usb:04cc:2533",
-    ]
+    loggerNfcClf = logging.getLogger('nfc.clf')
+    loggerNfcClf.filter = lambda record: 0
 
     devices = []
     clf = nfc.ContactlessFrontend()
 
     # find usb devices
-    for device_id in possible_device_ids:
+    for vid_pid_pair in nfc.clf.device.usb_device_map.keys():
+        device_id = "usb:%04x:%04x" % vid_pid_pair
         if clf.open(device_id):
             devices.append({'id': device_id, 'vendor': clf.device.vendor_name, 'name': clf.device.product_name})
             clf.close()
@@ -51,7 +41,8 @@ def query_customization() -> dict:
     matching_files = glob.glob("/dev/ttyUSB[0-9]*")
     matching_files += glob.glob("/dev/ttyAMA[0-9]*")
     for file_path in matching_files:
-        for device_id in (f'{file_path}:pn532', f'{file_path}:arygon'):
+        for driver in nfc.clf.device.tty_driver_list:
+            device_id = f'{file_path}:{driver}'
             if clf.open(device_id):
                 devices.append({'id': device_id, 'vendor': clf.device.vendor_name, 'name': clf.device.product_name})
                 clf.close()
@@ -87,6 +78,9 @@ class ReaderClass(ReaderBaseClass):
         with cfg:
             # Get a reference to the actual reader-specific config
             config = cfg.getn('rfid', 'readers', reader_cfg_key, 'config', default=None)
+            if config is None:
+                self._logger.error("Configuration may not be empty!!")
+                raise KeyError("configuration may not be empty!!")
 
         device_path = config.setdefault('device_path', None)
         self.clf = nfc.ContactlessFrontend()
