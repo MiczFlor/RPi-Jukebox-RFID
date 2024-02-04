@@ -8,6 +8,7 @@
   * [RDM6300 Reader](rdm6300.md)
   * [MFRC522 SPI Reader](mfrc522_spi.md)
   * [PN532 I2C Reader](pn532_i2c.md)
+  * [NFCpy for USB Readers without HID](generic_nfcpy.md)
   * [Mock Reader](mock_reader.md)
   * [Template Reader](template_reader.md)
   
