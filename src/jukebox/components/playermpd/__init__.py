@@ -157,9 +157,7 @@ class PlayerMPD:
         self.decode_2nd_swipe_option()
 
         self.mpd_client = mpd.MPDClient()
-
-        coverart_cache_path = cfg.getn('webapp', 'coverart_cache_path')
-        self.coverart_cache_manager = CoverartCacheManager(os.path.expanduser(coverart_cache_path))
+        self.coverart_cache_manager = CoverartCacheManager()
 
         # The timeout refer to the low-level socket time-out
         # If these are too short and the response is not fast enough (due to the PI being busy),
