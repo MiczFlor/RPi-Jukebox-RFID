@@ -10,8 +10,8 @@ After=network.target sound.target mpd.service pulseaudio.service
 Requires=mpd.service pulseaudio.service
 
 [Service]
-WorkingDirectory=%%INSTALLATION_PATH%%/src/jukebox
-ExecStart=/bin/bash -c 'source %%INSTALLATION_PATH%%/.venv/bin/activate && python run_jukebox.py'
+WorkingDirectory=%%INSTALLATION_PATH%%
+ExecStart=/bin/bash -c '%%INSTALLATION_PATH%%/run_jukebox.sh'
 StandardOutput=inherit
 StandardError=inherit
 Restart=always

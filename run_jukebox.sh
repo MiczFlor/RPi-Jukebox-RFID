@@ -12,8 +12,5 @@ cd "$PROJECT_ROOT" || { echo "Could not change directory"; exit 1; }
 
 source .venv/bin/activate || { echo "ERROR: Failed to activate virtual environment for python"; exit 1; }
 
-# Run pydoc-markdown
-# make sure, directory exists
-mkdir -p ./documentation/developers/docstring
-# expects pydoc-markdown.yml at working dir
-pydoc-markdown
+cd src/jukebox || { echo "Could not change directory"; exit 1; }
+python run_jukebox.py $@
