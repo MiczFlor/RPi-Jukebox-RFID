@@ -6,7 +6,7 @@
 
 As there are some significant changes in the Jukebox installation, no updates can be performed with the installer.
 Please backup your './shared' folder and changed files and run a new installation on a fresh image.
-Restore your old files after the new installation was succefull and check if new mandatory settings have been added.
+Restore your old files after the new installation was successful and check if new mandatory settings have been added.
 
 ``` bash
 $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
