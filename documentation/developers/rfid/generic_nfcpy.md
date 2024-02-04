@@ -4,7 +4,7 @@ This module is based on the user space NFC reader library [nfcpy](https://nfcpy.
 The link above also contains a list of [supported devices](https://nfcpy.readthedocs.io/en/latest/overview.html#supported-devices).
 
 The goal of this module is to handle USB NFC devices, that don't have a HID-keyboard
-driver, and thus cannot be used with the [genericusb](genericusb.md) module. 
+driver, and thus cannot be used with the [genericusb](genericusb.md) module. Also some serial devices are supported.
 
 > [!NOTE]
 > Since nfcpy is a user-space library, it is required to supress the kernel from loading its driver.
