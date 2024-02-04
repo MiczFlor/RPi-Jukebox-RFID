@@ -33,6 +33,7 @@ using the alias option:
 ```
 
 > [!NOTE]
+>
 > * Remember card ids must be strings! So, quote them!
 > * *args* must be
 a **list** of arguments to be passed! Even if ony a single argument is
@@ -44,7 +45,7 @@ not always work.
 In addition to the RPC commands, these options may be specified for
 every card
 
-#### ignore_card_removal_action: true \| false (default: false)
+### ignore_card_removal_action: true \| false (default: false)
 
 Only applies when using a place-capable reader and *place_not_swipe* is *true*. This option is ignored otherwise, so it does not hurt.
 
@@ -58,7 +59,7 @@ timer
     ignore_card_removal_action: true
 ```
 
-#### ignore_same_id_delay: true \| false (default: false)
+### ignore_same_id_delay: true \| false (default: false)
 
 Override the `same_id_delay` parameter from the reader configuration
 for this card. If true, the `same_id_delay` for this card is treated

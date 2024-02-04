@@ -86,9 +86,9 @@ Check install log for details:"
   exit 1
 }
 
-# Check if current distro is a 32 bit version
-# Support for 64 bit Distros has not been checked (or precisely: is known not to work)
-# All RaspianOS versions report as machine "armv6l" or "armv7l", if 32 bit (even the ARMv8 cores!)
+# Check if current distro is a 32-bit version
+# Support for 64-bit Distros has not been checked (or precisely: is known not to work)
+# All Raspberry Pi OS versions report as machine "armv6l" or "armv7l", if 32-bit (even the ARMv8 cores!)
 _check_os_type() {
   local os_type=$(uname -m)
 
@@ -97,10 +97,22 @@ _check_os_type() {
   if [[ $os_type == "armv7l" || $os_type == "armv6l" ]]; then
     print_lc "  ... OK!\n"
   else
-    print_lc "ERROR: Only 32 bit operating systems supported. Please use a 32bit version of RaspianOS!"
-    print_lc "You can fix this problem for 64bit kernels: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041"
+    print_lc "ERROR: Only 32-bit operating systems are supported. Please use a 32-bit version of Raspberry Pi OS!"
+    print_lc "For Pi 4 models or newer running a 64-bit kernels, also see this: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041"
     exit 1
   fi
+}
+
+_check_existing_installation() {
+    if [[ -e "${INSTALLATION_PATH}" ]]; then
+        print_lc "
+############## EXISTING INSTALLATION FOUND ##############
+Rerunning the installer over an existing installation is
+currently not supported (overwrites settings, etc).
+Please backup your 'shared' folder and manually changed
+files and run the installation on a fresh image."
+        exit 1
+    fi
 }
 
 _download_jukebox_source() {
@@ -122,7 +134,7 @@ _download_jukebox_source() {
   if [[ -z "${GIT_HASH}" ]]; then
     exit_on_error "ERROR: Couldn't determine git hash from download."
   fi
-  mv "$git_repo_download" "$GIT_REPO_NAME"
+  mv "$git_repo_download" "$GIT_REPO_NAME" || exit_on_error "ERROR: Can't overwrite existing installation."
   log "\nDONE: Downloading Phoniebox software from Github"
   log "#########################################################"
 }
@@ -130,11 +142,11 @@ _download_jukebox_source() {
 _load_sources() {
     # Load / Source dependencies
     for i in "${INSTALLATION_PATH}"/installation/includes/*; do
-    source "$i"
+        source "$i" || exit_on_error
     done
 
     for j in "${INSTALLATION_PATH}"/installation/routines/*; do
-    source "$j"
+        source "$j" || exit_on_error
     done
 }
 
@@ -143,6 +155,7 @@ _setup_logging
 
 ### CHECK PREREQUISITE
 _check_os_type
+_check_existing_installation
 
 ### RUN INSTALLATION
 log "Current User: $CURRENT_USER"

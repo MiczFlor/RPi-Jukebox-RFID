@@ -21,5 +21,7 @@ extend-exclude =
     scratch*,
     # Ignore dirs and files that have not been ported yet
     */jukebox/NvManager.py
-    # ignore GitHub Codespaces
+    # ignore Python venv's
     .venv/*
+    # ignore node modules
+    */node_modules/*

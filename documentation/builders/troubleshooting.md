@@ -25,11 +25,12 @@ shutdown of the service.
 
 The logs are also available via the Web Server:
 
-```
+```text
 http://ip.of.your.box/logs
 ```
 
-> [!IMPORTANT] Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
+> [!IMPORTANT]
+> Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
 
 ## The long answer: A few more details
 
@@ -58,17 +59,15 @@ shared/logs/errors.log : Only Errors and Warnings
 For debugging, it is usually very helpful to observe the apps output directly
 on the console log.
 
-``` bash
+```bash
 # Make sure the Jukebox service is stopped:
 $ systemctl --user stop jukebox-daemon
 
 # Start the Jukebox in debug mode:
-$ cd src/jukebox
-
 # with default logger:
-$ ./run_jukebox.py
+$ ./run_jukebox.sh
 # or with custom logger configuration:
-$ ./run_jukebox.py --logger path/to/custom/logger.yaml
+$ ./run_jukebox.sh --logger path/to/custom/logger.yaml
 ```
 
 ### Fallback configuration
@@ -77,9 +76,8 @@ It is possible to start the Jukebox with a catch-all debug enabler with a logger
 Attention: This only emits messages to the console and does not write to the log files!
 This is more a fallback features:
 
-``` bash
-$ cd src/jukebox
-$ ./run_jukebox.py -vv
+```bash
+$ ./run_jukebox.sh -vv
 ```
 
 ### Extreme cases
@@ -94,6 +92,6 @@ gone pear-shaped. Services are restarted automatically when they fail.
 
 Things are just not behaving as expected? Time to check the system logs:
 
-``` bash
+```bash
 $ journalctl --user -b -u jukebox-daemon
 ```

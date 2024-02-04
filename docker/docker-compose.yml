@@ -41,6 +41,7 @@ services:
     tty: true
     volumes:
       - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
+      - ../src/webapp/public/cover-cache:/root/RPi-Jukebox-RFID/src/webapp/build/cover-cache
       - ../shared:/root/RPi-Jukebox-RFID/shared
       - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
     command: python run_jukebox.py

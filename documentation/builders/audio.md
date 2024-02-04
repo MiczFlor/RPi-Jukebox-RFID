@@ -86,6 +86,7 @@ Pairing successful
 ....
 [PowerLocus Buddy]# exit
 ```
+If `bluetoothctl` has trouble to execute due to permission issue, try `sudo bluetoothctl`.
 
 Wait for a few seconds and then with `$ pactl list sinks short`, check wether the Bluetooth device shows up as an output.
 Its name usually looks like this: `bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink`.
@@ -105,7 +106,7 @@ Directly edit `jukebox.yaml` following the steps: [Best practice procedure](conf
 
 The optional processing stages *Equalizer* and *Mono down mix* are realized by PulseAudio plugins. The processing chain is
 
-```
+```text
 player --> mono mix --> equalizer --> hardware sink
 ```
 

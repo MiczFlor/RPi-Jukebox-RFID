@@ -1,5 +1,5 @@
 # IMPORTANT:
-# Always use relative path from settingsfile `../../`, but do not use relative paths with `~/`.
+# Always use relative path from folder `src/jukebox` (`../../`), but do not use relative paths with `~/`.
 # Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox
@@ -20,7 +20,6 @@ modules:
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
   others:
-  - music_cover_art
   - misc
 pulse:
   # Reset system volume to this level after start. (Comment out disables and volume is not changed)
@@ -146,3 +145,5 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+webapp:
+  coverart_cache_path: ../../src/webapp/build/cover-cache

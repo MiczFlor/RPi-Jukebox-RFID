@@ -17,15 +17,15 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - use static ip
 # n - deactivate ipv6
 # y - setup autohotspot
-# n -   use custom password
+# n -   change default configuration
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
 # n - setup rfid reader
 # y - setup samba
 # y - setup webapp
+# - - build webapp (skipped due to forced webapp Download)
 # n - setup kiosk mode
-# - - install node (forced WebApp Download)
 # n - reboot
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y

@@ -2,6 +2,32 @@
 
 ### Helpers
 
+show_slow_hardware_message() {
+    if [[ $(uname -m) == "armv6l" ]]; then
+        print_c "--------------------------------------------------------------------
+| Your hardware is a little slower so this will take a while.      |
+| Go watch a movie but don't let your computer go to sleep for the |
+| SSH connection to remain intact.                                 |
+--------------------------------------------------------------------
+"
+    fi
+}
+
+# Get key by item number of associated array
+get_key_by_item_number() {
+    local -n array="$1"
+    local item_number="$2"
+    local count=0
+
+    for key in "${!array[@]}"; do
+        ((count++))
+        if [ "$count" -eq "$item_number" ]; then
+            echo "$key"
+            return
+        fi
+    done
+}
+
 # $1->start, $2->end
 calc_runtime_and_print() {
   runtime=$(($2-$1))
@@ -35,36 +61,135 @@ run_with_log_frame() {
 }
 
 get_architecture() {
-  local arch=""
-  if [ "$(uname -m)" = "armv7l" ]; then
-    arch="armv7"
-  elif [ "$(uname -m)" = "armv6l" ]; then
-    arch="armv6"
-  elif [ "$(uname -m)" = "aarch64" ]; then
-    arch="arm64"
-  else
-    arch="$(uname -m)"
-  fi
+    local arch=""
+    if [ "$(uname -m)" = "armv7l" ]; then
+        arch="armv7"
+    elif [ "$(uname -m)" = "armv6l" ]; then
+        arch="armv6"
+    elif [ "$(uname -m)" = "aarch64" ]; then
+        arch="arm64"
+    else
+        arch="$(uname -m)"
+    fi
 
-  echo $arch
+    echo $arch
 }
 
-get_version_string() {
-  local python_file="$1"
-  local version_major
-  local version_minor
-  local version_patch
+is_raspbian() {
+    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
 
-  version_major=$(grep 'VERSION_MAJOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
-  version_minor=$(grep 'VERSION_MINOR\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
-  version_patch=$(grep 'VERSION_PATCH\s*=\s*[0-9]*' "${python_file}" | awk -F= '{print $2}' | tr -d ' ')
+get_debian_version_number() {
+    source /etc/os-release
+    echo "$VERSION_ID"
+}
 
-  if [ -n "$version_major" ] && [ -n "$version_minor" ] && [ -n "$version_patch" ]; then
-    local version_string="${version_major}.${version_minor}.${version_patch}"
-    echo ${version_string}
-  else
-    exit_on_error "ERROR: Unable to extract version information from ${python_file}"
-  fi
+_get_boot_file_path() {
+    local filename="$1"
+    if [ "$(is_raspbian)" = true ]; then
+        local debian_version_number=$(get_debian_version_number)
+
+        # Bullseye and lower
+        if [ "$debian_version_number" -le 11 ]; then
+            echo "/boot/${filename}"
+        # Bookworm and higher
+        elif [ "$debian_version_number" -ge 12 ]; then
+            echo "/boot/firmware/${filename}"
+        else
+            echo "unknown"
+        fi
+    else
+        echo "unknown"
+    fi
+}
+
+get_boot_config_path() {
+    echo $(_get_boot_file_path "config.txt")
+}
+
+get_boot_cmdline_path() {
+    echo $(_get_boot_file_path "cmdline.txt")
+}
+
+validate_url() {
+    local url=$1
+    wget --spider ${url} >/dev/null 2>&1
+    return $?
+}
+
+download_from_url() {
+    local url=$1
+    local output_filename=$2
+    wget --quiet ${url} -O ${output_filename} || exit_on_error "Download failed"
+    return $?
+}
+
+get_string_length() {
+    local string="$1"
+    # "-n" option is needed otherwise an additional linebreak char is added by echo
+    echo -n ${string} | wc -m
+}
+
+_get_service_enablement() {
+    local service="$1"
+    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
+
+    if [[ -z "${service}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+
+    echo "$actual_enablement"
+}
+
+is_service_enabled() {
+    local service="$1"
+    local option="$2"
+    local actual_enablement=$(_get_service_enablement $service $option)
+
+    if [[ "$actual_enablement" == "enabled" ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+is_dhcpcd_enabled() {
+    echo $(is_service_enabled "dhcpcd.service")
+}
+
+is_NetworkManager_enabled() {
+    echo $(is_service_enabled "NetworkManager.service")
+}
+
+# create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
+# to correctly handling de-/activation of corresponding feature
+config_file_backup() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ ! -f "${config_file}" ]; then
+        sudo touch "${config_flag_file}"
+    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
+        sudo cp "${config_file}" "${config_orig_file}"
+    fi
+}
+
+# revert config files backed up with `config_file_backup`
+config_file_revert() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ -f "${config_flag_file}" ]; then
+        sudo rm "${config_flag_file}" "${config_file}"
+    elif [ -f "${config_orig_file}" ]; then
+        sudo mv "${config_orig_file}" "${config_file}"
+    fi
 }
 
 ### Verify helpers
@@ -168,7 +293,7 @@ verify_file_contains_string() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    if [[ ! $(grep -iw "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     fi
     log "  CHECK"
@@ -183,7 +308,7 @@ verify_file_contains_string_once() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local file_contains_string_count=$(grep -oiw "${string}" "${file}" | wc -l)
+    local file_contains_string_count=$(sudo grep -oiw "${string}" "${file}" | wc -l)
     if [ "$file_contains_string_count" -lt 1 ]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     elif [ "$file_contains_string_count" -gt 1 ]; then
@@ -195,7 +320,7 @@ verify_file_contains_string_once() {
 verify_service_state() {
     local service="$1"
     local desired_state="$2"
-	local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="${3:+$3 }" # optional, dont't quote in next call!
     log "  Verify service '${option}${service}' is '${desired_state}'"
 
     if [[ -z "${service}" || -z "${desired_state}" ]]; then
@@ -212,14 +337,14 @@ verify_service_state() {
 verify_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service})
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
@@ -229,14 +354,14 @@ verify_service_enablement() {
 verify_optional_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service}) 2>/dev/null
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ -z "${actual_enablement}" ]]; then
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then

@@ -31,6 +31,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libasound2-dev pulseaudio
+        python3 -m venv .venv
+        source ".venv/bin/activate"
+
         python3 -m pip install --upgrade pip
         pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
@@ -39,9 +42,9 @@ jobs:
         pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
-    - name: Run pytest
+    - name: Run pytest with coverage
       run: |
-        ./run_pytest.sh --cov --cov-report xml
+        ./run_pytest.sh --cov --cov-report xml --cov-config=.coveragerc
     - name: Report to Coveralls (parallel)
       uses: coverallsapp/github-action@v2
       with:
@@ -51,7 +54,6 @@ jobs:
         parallel: true
     - name: Lint with flake8
       run: |
-        pip3 install flake8
         # Stop the build if linting fails
         ./run_flake8.sh
 

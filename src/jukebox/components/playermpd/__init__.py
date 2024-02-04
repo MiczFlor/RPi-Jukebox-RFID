@@ -56,8 +56,9 @@ sudo -u mpd speaker-test -t wav -c 2
 """  # noqa: E501
 # Warum ist "Second Swipe" im Player und nicht im RFID Reader?
 # Second swipe ist abhängig vom Player State - nicht vom RFID state.
-# Beispiel: RFID triggered Folder1, Webapp triggered Folder2, RFID Folder1: Dann muss das 2. Mal Folder1 auch als "first swipe"
-# gewertet werden. Wenn der RFID das basierend auf IDs macht, kann der nicht  unterscheiden und glaubt es ist 2. Swipe.
+# Beispiel: RFID triggered Folder1, Web App triggered Folder2, RFID Folder1:
+# Dann muss das 2. Mal Folder1 auch als "first swipe" gewertet werden.
+# Wenn der RFID das basierend auf IDs macht, kann der nicht  unterscheiden und glaubt es ist 2. Swipe.
 # Beispiel 2: Jemand hat RFID Reader (oder 1x RFID und 1x Barcode Scanner oder so) angeschlossen. Liest zuerst Karte mit
 # Reader 1 und dann mit Reader 2: Reader 2 weiß nicht, was bei Reader 1 passiert ist und denkt es ist 1. swipe.
 # Beispiel 3: RFID trigered Folder1, Playlist läuft durch und hat schon gestoppt, dann wird die Karte wieder vorgehalten.
@@ -68,7 +69,7 @@ sudo -u mpd speaker-test -t wav -c 2
 #
 # In der aktuellen Implementierung weiß der Player (der second "swipe" dekodiert) überhaupt nichts vom RFID.
 # Im Prinzip gibt es zwei "Play" Funktionen: (1) play always from start und (2) play with toggle action.
-# Die Webapp ruft immer (1) auf und die RFID immer (2). Jetzt kann man sogar für einige Karten sagen
+# Die Web App ruft immer (1) auf und die RFID immer (2). Jetzt kann man sogar für einige Karten sagen
 # immer (1) - also kein Second Swipe und für andere (2).
 # Sollte der Reader das Swcond swipe dekodieren, muss aber der Reader den Status des Player kennen.
 # Das ist allerdings ein Problem. In Version 2 ist das nicht aufgefallen,
@@ -76,7 +77,7 @@ sudo -u mpd speaker-test -t wav -c 2
 #
 # Beispiel: Second swipe bei anderen Funktionen, hier: WiFi on/off.
 # Was die Karte Action tut ist ein Toggle. Der Toggle hängt vom Wifi State ab, den der RFID Kartenleser nicht kennt.
-# Den kann der Leser auch nicht tracken. Der State kann ja auch über die WebApp oder Kommandozeile geändert werden.
+# Den kann der Leser auch nicht tracken. Der State kann ja auch über die Web App oder Kommandozeile geändert werden.
 # Toggle (und 2nd Swipe generell) ist immer vom Status des Zielsystems abhängig und kann damit nur vom Zielsystem geändert
 # werden. Bei Wifi also braucht man 3 Funktionen: on / off / toggle. Toggle ist dann first swipe / second swipe
 
@@ -86,6 +87,7 @@ import threading
 import logging
 import time
 import functools
+from slugify import slugify
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -97,6 +99,7 @@ import misc
 
 from jukebox.NvManager import nv_manager
 from .playcontentcallback import PlayContentCallbacks, PlayCardState
+from .coverart_cache_manager import CoverartCacheManager
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -154,6 +157,8 @@ class PlayerMPD:
         self.decode_2nd_swipe_option()
 
         self.mpd_client = mpd.MPDClient()
+        self.coverart_cache_manager = CoverartCacheManager()
+
         # The timeout refer to the low-level socket time-out
         # If these are too short and the response is not fast enough (due to the PI being busy),
         # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket
@@ -273,6 +278,14 @@ class PlayerMPD:
             pass
         publishing.get_publisher().send('playerstatus', self.mpd_status)
 
+    # MPD can play absolute paths but can find songs in its database only by relative path
+    # This function aims to prepare the song_url accordingly
+    def harmonize_mpd_url(self, song_url):
+        _music_library_path_absolute = os.path.expanduser(components.player.get_music_library_path())
+        song_url = song_url.replace(f'{_music_library_path_absolute}/', '')
+
+        return song_url
+
     @plugs.tag
     def get_player_type_and_version(self):
         with self.mpd_lock:
@@ -330,11 +343,6 @@ class PlayerMPD:
             self.mpd_client.seekcur(new_time)
 
     @plugs.tag
-    def shuffle(self, random):
-        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
-        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
-
-    @plugs.tag
     def rewind(self):
         """
         Re-start current playlist from first track
@@ -357,7 +365,6 @@ class PlayerMPD:
     @plugs.tag
     def toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
-        logger.debug("Toggle")
         with self.mpd_lock:
             self.mpd_client.pause()
 
@@ -366,14 +373,34 @@ class PlayerMPD:
         """
         Re-start playing the last-played folder unless playlist is still playing
 
-        .. note:: To me this seems much like the behaviour of play,
-            but we keep it as it is specifically implemented in box 2.X"""
+        > [!NOTE]
+        > To me this seems much like the behaviour of play,
+        > but we keep it as it is specifically implemented in box 2.X"""
         with self.mpd_lock:
             if self.mpd_status['state'] == 'stop':
                 self.play_folder(self.music_player_status['player_status']['last_played_folder'])
 
+    # Shuffle
+    def _shuffle(self, random):
+        # As long as we don't work with waiting lists (aka playlist), this implementation is ok!
+        self.mpd_retry_with_mutex(self.mpd_client.random, 1 if random else 0)
+
     @plugs.tag
-    def repeatmode(self, mode):
+    def shuffle(self, option='toggle'):
+        if option == 'toggle':
+            if self.mpd_status['random'] == '0':
+                self._shuffle(1)
+            else:
+                self._shuffle(0)
+        elif option == 'enable':
+            self._shuffle(1)
+        elif option == 'disable':
+            self._shuffle(0)
+        else:
+            logger.error(f"'{option}' does not exist for 'shuffle'")
+
+    # Repeat
+    def _repeatmode(self, mode):
         if mode == 'repeat':
             repeat = 1
             single = 0
@@ -387,6 +414,34 @@ class PlayerMPD:
         with self.mpd_lock:
             self.mpd_client.repeat(repeat)
             self.mpd_client.single(single)
+
+    @plugs.tag
+    def repeat(self, option='toggle'):
+        if option == 'toggle':
+            if self.mpd_status['repeat'] == '0':
+                self._repeatmode('repeat')
+            elif self.mpd_status['repeat'] == '1' and self.mpd_status['single'] == '0':
+                self._repeatmode('single')
+            else:
+                self._repeatmode(None)
+        elif option == 'toggle_repeat':
+            if self.mpd_status['repeat'] == '0':
+                self._repeatmode('repeat')
+            else:
+                self._repeatmode(None)
+        elif option == 'toggle_repeat_single':
+            if self.mpd_status['single'] == '0':
+                self._repeatmode('single')
+            else:
+                self._repeatmode(None)
+        elif option == 'enable_repeat':
+            self._repeatmode('repeat')
+        elif option == 'enable_repeat_single':
+            self._repeatmode('single')
+        elif option == 'disable':
+            self._repeatmode(None)
+        else:
+            logger.error(f"'{option}' does not exist for 'repeat'")
 
     @plugs.tag
     def get_current_song(self, param):
@@ -463,6 +518,49 @@ class PlayerMPD:
             play_card_callbacks.run_callbacks(folder, PlayCardState.firstSwipe)
 
             self.play_folder(folder, recursive)
+
+    @plugs.tag
+    def get_single_coverart(self, song_url):
+        """
+        Saves the album art image to a cache and returns the filename.
+        """
+        base_filename = slugify(song_url)
+
+        try:
+            metadata_list = self.mpd_client.listallinfo(song_url)
+            metadata = {}
+            if metadata_list:
+                metadata = metadata_list[0]
+
+            if 'albumartist' in metadata and 'album' in metadata:
+                base_filename = slugify(f"{metadata['albumartist']}-{metadata['album']}")
+
+            cache_filename = self.coverart_cache_manager.find_file_by_hash(base_filename)
+
+            if cache_filename:
+                return cache_filename
+
+            # Cache file does not exist
+            # Fetch cover art binary
+            album_art_data = self.mpd_client.readpicture(song_url)
+
+            # Save to cache
+            cache_filename = self.coverart_cache_manager.save_to_cache(base_filename, album_art_data)
+
+            return cache_filename
+
+        except mpd.base.CommandError as e:
+            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+        except Exception as e:
+            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+
+        return ""
+
+    @plugs.tag
+    def get_album_coverart(self, albumartist: str, album: str):
+        song_list = self.list_songs_by_artist_and_album(albumartist, album)
+
+        return self.get_single_coverart(song_list[0]['file'])
 
     @plugs.tag
     def get_folder_content(self, folder: str):
@@ -562,23 +660,20 @@ class PlayerMPD:
     @plugs.tag
     def list_albums(self):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
+            album_list = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
 
-        return albums
+        return album_list
 
     @plugs.tag
-    def list_song_by_artist_and_album(self, albumartist, album):
+    def list_songs_by_artist_and_album(self, albumartist, album):
         with self.mpd_lock:
-            albums = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
+            song_list = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
 
-        return albums
+        return song_list
 
     @plugs.tag
     def get_song_by_url(self, song_url):
-        # MPD can play absolute paths but can find songs in its database only by relative path
-        # In certain situations, `song_url` can be an absolute path. Then, it will be trimed to be relative
-        _music_library_path_absolute = os.path.expanduser(components.player.get_music_library_path())
-        song_url = song_url.replace(f'{_music_library_path_absolute}/', '')
+        song_url = self.harmonize_mpd_url(song_url)
 
         with self.mpd_lock:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)

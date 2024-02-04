@@ -4,7 +4,7 @@
 # Used e.g. for tests on Docker
 
 # Objective:
-# Test for the WebApp (build locally) and dependent features path.
+# Test for the Web App (build locally) and dependent features path.
 
 SOURCE="${BASH_SOURCE[0]}"
 SCRIPT_DIR="$(dirname "$SOURCE")"
@@ -17,14 +17,15 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # n - use static ip
 # n - deactivate ipv6
 # n - setup autohotspot
+# - -   change default configuration (only with autohotspot = y)
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
+# y - build webapp
 # y - setup kiosk mode
-# y - install node
 # n - reboot
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y

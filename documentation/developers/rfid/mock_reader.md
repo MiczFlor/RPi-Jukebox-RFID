@@ -17,10 +17,10 @@ If you [mock the GPIO pins](../../../src/jukebox/components/gpio/gpioz/README.rs
 > Replacing the TK lib in Anaconda's environment with the system `libtk`.
 > However, this depends on an exact version match of the `libtk`.
 >
->``` bash
->cd /path/to/anaconda3/envs/rpi/lib
->mv ./libtk8.6.so ./libtk8.6.so.bak
->ln -s /usr/lib/x86_64-linux-gnu/libtk8.6.so libtk8.6.so
->```
+> ``` bash
+> cd /path/to/anaconda3/envs/rpi/lib
+> mv ./libtk8.6.so ./libtk8.6.so.bak
+> ln -s /usr/lib/x86_64-linux-gnu/libtk8.6.so libtk8.6.so
+> ```
 >
->An alternative is to simply use Python's `venv` module to create a virtual environment. This uses your systems Python version and thus will work with your system `libtk`. It might not be the RPi's Python version - but that should not matter in most cases.
+> An alternative is to simply use Python's `venv` module to create a virtual environment. This uses your systems Python version and thus will work with your system `libtk`. It might not be the RPi's Python version - but that should not matter in most cases.

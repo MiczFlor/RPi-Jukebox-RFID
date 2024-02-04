@@ -6,7 +6,7 @@ There are a few things that are specifically not integrated yet: playing streams
 
 In the following is the currently implemented feature list in more detail. It also shows some of the shortcomings. However, the list is _not complete in terms of planned features_, but probably _reflects more of where work is currently being put into_.
 
-**For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue or join us in the chat room. You may pick topics marked as open below, but also any other topic missing in the list below. As mentioned, that list is not complete in terms of open features. Check the [Contribution guide](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/CONTRIBUTING.md).
+**For new contributors:** If you want to port a feature from version 2.X or implement a new feature, contact us. Open an issue or join us in the chat room. You may pick topics marked as open below, but also any other topic missing in the list below. As mentioned, that list is not complete in terms of open features. Check the [Contribution guide](../../CONTRIBUTING.md).
 
 Topics marked _in progress_ are already in the process of implementation by community members.
 
@@ -107,10 +107,9 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [ ] Folder configuration (_in progress_)
   - [ ] [Reference](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour)
   - [ ] Resume: Save and restore position (how interact with shuffle?)
-  - [ ] Single: Enable mpc single
-  - [ ] Shuffle: Enable mpc random (not shuffle)
-    - Rename to random, as this is mpc random
-  - [ ] Loop: Loop playlist
+  - [ ] Repeat Playlist
+  - [ ] Repeat Song
+  - [ ] Shuffle
 
 ### MPD Player
 
@@ -227,7 +226,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
   - [x] Enable/Disable Auto-Hotspot
 - [x] `run_npm_build` script
   - [x] Must consider `export NODE_OPTIONS=--max-old-space-size=512`
-- [ ] Upload audio files via WebUI https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138
+- [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
 
 ## Installation Procedure
 
