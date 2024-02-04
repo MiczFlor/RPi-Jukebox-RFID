@@ -11,11 +11,13 @@ SCRIPT_DIR="$(dirname "$SOURCE")"
 LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
 LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
+
 # Run installation (in interactive mode)
 # y - start setup
 # y - use static ip
 # y - deactivate ipv6
 # n - setup autohotspot
+# - -   change default configuration (only with autohotspot = y)
 # y - deactivate bluetooth
 # y - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
