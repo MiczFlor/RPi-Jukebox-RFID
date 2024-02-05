@@ -29,9 +29,6 @@ on:
         - 'packages*.txt'
         - 'requirements*.txt'
 
-permissions:
-  actions: write
-
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
