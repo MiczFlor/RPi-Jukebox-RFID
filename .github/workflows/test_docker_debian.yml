@@ -41,8 +41,6 @@ jobs:
 
   # Build container and run tests
   run:
-    permissions:
-      actions: write
     name: ${{ matrix.debian_codename }}
     strategy:
       fail-fast: false

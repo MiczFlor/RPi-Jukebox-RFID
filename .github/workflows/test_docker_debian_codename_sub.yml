@@ -170,8 +170,6 @@ jobs:
 
   # cleanup after test execution
   cleanup:
-    permissions:
-      actions: write
     # run only if tests didn't fail: keep the artifact to make job reruns possible
     if: ${{ !failure() }}
     needs: [build, test]
