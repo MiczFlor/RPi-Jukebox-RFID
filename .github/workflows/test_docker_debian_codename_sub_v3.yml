@@ -177,15 +177,15 @@ jobs:
         args: |
           ./${{ matrix.test_script }}
 
-  # cleanup after test execution
-  cleanup:
-    # run only if tests didn't fail: keep the artifact to make job reruns possible
-    if: ${{ !failure() }}
-    needs: [build, test]
-    runs-on: ${{ inputs.runs_on }}
-
-    steps:
-        - name: Artifact Delete Docker Image
-          uses: geekyeggo/delete-artifact@v4
-          with:
-            name: ${{ needs.build.outputs.image_file_name }}
+  ## cleanup after test execution
+  #cleanup:
+  #  # run only if tests didn't fail: keep the artifact to make job reruns possible
+  #  if: ${{ !failure() }}
+  #  needs: [build, test]
+  #  runs-on: ${{ inputs.runs_on }}
+  #
+  #  steps:
+  #      - name: Artifact Delete Docker Image
+  #        uses: geekyeggo/delete-artifact@v4
+  #        with:
+  #          name: ${{ needs.build.outputs.image_file_name }}
