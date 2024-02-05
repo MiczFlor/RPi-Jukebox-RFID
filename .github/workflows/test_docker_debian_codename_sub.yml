@@ -182,5 +182,3 @@ jobs:
           uses: geekyeggo/delete-artifact@v4
           with:
             name: ${{ needs.build.outputs.image_file_name }}
-            # Ignore failes. On PRs no write persmissions are granted.
-            failOnError: false
