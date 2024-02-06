@@ -146,8 +146,9 @@ jobs:
         username: ['pi']
         test_script: ['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']
         include:
-          - test_script: 'run_installation_tests.sh'
-            username: 'hans'
+          - username: 'hans'
+            test_script: 'run_installation_tests.sh'
+
 
     steps:
     - name: Set up QEMU
