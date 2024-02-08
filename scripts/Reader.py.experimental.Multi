@@ -158,7 +158,6 @@ class Pn532Reader:
 
 class Reader(object):
     def __init__(self):
-        self.reader = self
         self.devs = list()
         path = os.path.dirname(os.path.realpath(__file__))
         if not os.path.isfile(path + '/deviceName.txt'):
