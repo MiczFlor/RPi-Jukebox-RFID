@@ -50,11 +50,15 @@ class UsbReader(object):
 
 
 class Mfrc522Reader(object):
-    def __init__(self, readmode_uid=False):
+    def __init__(self):
         import pirc522
         self.device = pirc522.RFID()
-        self.readmode_uid = readmode_uid
-        self._read_function = self._readCard_normal if self.readmode_uid else self._readCard_legacy
+        path = os.path.dirname(os.path.realpath(__file__))
+        readmode_uid = False
+        if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
+            with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
+                readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
+        self._read_function = self._readCard_normal if readmode_uid else self._readCard_legacy
 
     def _readCard_legacy(self):
         # Scan for cards
@@ -207,12 +211,7 @@ class Reader(object):
                 device_name = f.read().rstrip().split(';', 1)[0]
 
             if device_name == 'MFRC522':
-                if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
-                    with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
-                        readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
-                else:
-                    readmode_uid = False
-                self.reader = Mfrc522Reader(readmode_uid)
+                self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
                 # The Rdm6300Reader supports 2 Additional Number Formats which can bee choosen by an optional parameter dictionary:
                 # {'numberformat':'card_id_float'} or {'numberformat':'card_id_dec'}
