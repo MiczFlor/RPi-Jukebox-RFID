@@ -97,7 +97,8 @@ kwargs:
     recursive: True
 ```
 
-> [!IMPORTANT] *args* must be a **list** of arguments to be passed! Even if only a single argument is passed.
+> [!IMPORTANT]
+> *args* must be a **list** of arguments to be passed! Even if only a single argument is passed.
 > So, use *args: [value]*. We try catch mis-uses but that might not always work.
 
 You will find some more examples the configuration of the [Card Database](card-database.md)

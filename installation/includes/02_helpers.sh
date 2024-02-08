@@ -75,7 +75,7 @@ get_architecture() {
     echo $arch
 }
 
-is_raspian() {
+is_raspbian() {
     if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
         echo true
     else
@@ -88,16 +88,17 @@ get_debian_version_number() {
     echo "$VERSION_ID"
 }
 
-get_boot_path() {
-    if [ "$(is_raspian)" = true ]; then
+_get_boot_file_path() {
+    local filename="$1"
+    if [ "$(is_raspbian)" = true ]; then
         local debian_version_number=$(get_debian_version_number)
 
         # Bullseye and lower
         if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/$1"
+            echo "/boot/${filename}"
         # Bookworm and higher
         elif [ "$debian_version_number" -ge 12 ]; then
-            echo "/boot/firmware/$1"
+            echo "/boot/firmware/${filename}"
         else
             echo "unknown"
         fi
@@ -107,11 +108,11 @@ get_boot_path() {
 }
 
 get_boot_config_path() {
-    get_boot_path "config.txt"
+    echo $(_get_boot_file_path "config.txt")
 }
 
 get_boot_cmdline_path() {
-    get_boot_path "cmdline.txt"
+    echo $(_get_boot_file_path "cmdline.txt")
 }
 
 validate_url() {
@@ -228,7 +229,7 @@ verify_file_contains_string() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    if [[ ! $(grep -iw "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     fi
     log "  CHECK"
@@ -258,7 +259,7 @@ verify_file_contains_string_once() {
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local file_contains_string_count=$(grep -oiw "${string}" "${file}" | wc -l)
+    local file_contains_string_count=$(sudo grep -oiw "${string}" "${file}" | wc -l)
     if [ "$file_contains_string_count" -lt 1 ]; then
         exit_on_error "ERROR: '${string}' not found in '${file}'"
     elif [ "$file_contains_string_count" -gt 1 ]; then
@@ -270,7 +271,7 @@ verify_file_contains_string_once() {
 verify_service_state() {
     local service="$1"
     local desired_state="$2"
-	local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="${3:+$3 }" # optional, dont't quote in next call!
     log "  Verify service '${option}${service}' is '${desired_state}'"
 
     if [[ -z "${service}" || -z "${desired_state}" ]]; then
@@ -287,14 +288,14 @@ verify_service_state() {
 verify_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service})
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
@@ -304,14 +305,14 @@ verify_service_enablement() {
 verify_optional_service_enablement() {
     local service="$1"
     local desired_enablement="$2"
-    local option="${3:+$3 }" # optional, dont't quote in next call!
+    local option="$3"
     log "  Verify service ${option}${service} is ${desired_enablement}"
 
     if [[ -z "${service}" || -z "${desired_enablement}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    local actual_enablement=$(systemctl is-enabled ${option}${service}) 2>/dev/null
+    local actual_enablement=$(_get_service_enablement $service $option)
     if [[ -z "${actual_enablement}" ]]; then
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then

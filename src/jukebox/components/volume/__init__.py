@@ -33,7 +33,7 @@ This means must also run as user process, as described in
 ## Misc
 
 PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration
+with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration
 in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
 If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!
@@ -603,7 +603,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
             logger.error(f"Configured sink '{pulse_sink_name}' not available sinks '{all_sinks}!\n"
                          f"Using default sink '{default_sink_name}' as fallback\n"
                          f"Things like audio sink toggle and volume limit will not work as expected!\n"
-                         f"Please run audio config tool: ./run_configure_audio.py")
+                         f"Please run audio config tool: ./installation/components/setup_configure_audio.sh")
 
         sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
         key = 'secondary'
@@ -635,7 +635,7 @@ def finalize():
     global pulse_control
     # Set default output and start-up volume
     # Note: PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-    # with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration.
+    # with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration.
     # So, we shouldn't need to worry about it. Still, set output and startup volume close to each other
     # to minimize bluetooth connection in between
     global pulse_control

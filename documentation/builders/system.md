@@ -10,7 +10,8 @@ The system consists of
 4. [Web App](system.md#web-app-ui) as User Interface (UI) for a web browser
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
-> [!NOTE] The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
+> [!NOTE]
+> The default install puts everything into the users home folder `~/RPi-Jukebox-RFID`.
 > Another folder might work, but is certainly not tested.
 
 ## Music Player Daemon (MPD)
@@ -34,7 +35,8 @@ $ systemctl --user start mpd
 $ systemctl --user stop mpd
 ```
 
-> [!IMPORTANT] Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
+> [!IMPORTANT]
+> Never start or enable the system-wide MPD service with `sudo systemctl start mpd`!
 
 To check if MPD is running or has issues, use
 

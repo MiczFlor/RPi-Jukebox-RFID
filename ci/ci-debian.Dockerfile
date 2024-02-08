@@ -8,8 +8,8 @@ ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
 ENV CI_RUNNING=true
 
 # create RPi configs to test installation
-RUN touch /boot/config.txt
-RUN echo "logo.nologo" > /boot/cmdline.txt
+RUN mkdir -p /boot && touch /boot/config.txt && echo "logo.nologo" > /boot/cmdline.txt
+RUN mkdir -p /boot/firmware && touch /boot/firmware/config.txt && echo "logo.nologo" > /boot/firmware/cmdline.txt
 
 RUN echo "--- install packages (1) ---" \
   && apt-get update \

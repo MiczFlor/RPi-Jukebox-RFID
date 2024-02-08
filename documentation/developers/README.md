@@ -3,13 +3,13 @@
 ## Getting started
 
 * [Development Environment](./development-environment.md)
-* [Python Development Notes](pyhton.md)
+* [Python Development Notes](python.md)
 
 ## Reference
 
 * [Jukebox Apps](./coreapps.md)
 * [Web App](./webapp.md)
-* [RFID Readers](./rfid)
+* [RFID Readers](./rfid/README.md)
 * [Docstring API Docs (from py files)](./docstring/README.md)
 * [Plugin Reference](./docstring/README.md#jukeboxplugs)
 * [Feature Status](./status.md)

@@ -49,51 +49,98 @@ Do you want to disable IPv6? [Y/n]"
 }
 
 _option_autohotspot() {
-  # ENABLE_AUTOHOTSPOT
-  clear_c
-  print_c "---------------------- AUTOHOTSPOT ----------------------
+    # ENABLE_AUTOHOTSPOT
+    clear_c
+    print_c "---------------------- AUTOHOTSPOT ----------------------
 
 When enabled, this service spins up a WiFi hotspot
 when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 
-Do you want to enable an Autohotpot? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      ENABLE_AUTOHOTSPOT=true
-      ;;
-    *)
-      ;;
-  esac
+Note:
+Static IP configuration cannot be enabled with
+WiFi hotspot and will be disabled, if selected before.
 
-  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
-      print_c "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] "
-      read -r response_pw_q
-      case "$response_pw_q" in
+Do you want to enable an Autohotspot? [y/N]"
+    read -r response
+    case "$response" in
         [yY][eE][sS]|[yY])
-          while [ $(echo ${response_pw}|wc -m) -lt 8 ]
-          do
-              print_c "Please type the new password (at least 8 character)."
-              read -r response_pw
-          done
-          AUTOHOTSPOT_PASSWORD="${response_pw}"
-          ;;
+            ENABLE_AUTOHOTSPOT=true
+            ;;
         *)
-          ;;
-      esac
+            ;;
+    esac
 
-      if [ "$ENABLE_STATIC_IP" = true ]; then
-        print_c "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
-        ENABLE_STATIC_IP=false
-        log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
-      fi
-  fi
+    if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+        #add hostname to default SSID to prevent collision
+        local local_hostname=$(hostname)
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID}_${local_hostname}"
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID:0:32}"
 
-  log "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
-  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
-    log "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
-  fi
+        local response_autohotspot
+        while [[ $response_autohotspot != "n" ]]
+        do
+            print_c "
+--- Current configuration for Autohotpot
+SSID              : $AUTOHOTSPOT_SSID
+Password          : $AUTOHOTSPOT_PASSWORD
+WiFi Country Code : $AUTOHOTSPOT_COUNTRYCODE
+IP                : $AUTOHOTSPOT_IP
+Do you want to change this values? [y/N]"
+            read -r response_autohotspot
+            case "$response_autohotspot" in
+                [yY][eE][sS]|[yY])
+                    local response_ssid=""
+                    local response_ssid_length=0
+                    while [[ $response_ssid_length -lt 1 || $response_ssid_length -gt 32 ]]
+                    do
+                        print_c "Please type the hotspot ssid (must be between 1 and 32 characters long):"
+                        read -r response_ssid
+                        response_ssid_length=$(get_string_length ${response_ssid})
+                    done
+
+                    local response_pw=""
+                    local response_pw_length=0
+                    while [[ $response_pw_length -lt 8 || $response_pw_length -gt 63 ]]
+                    do
+                        print_c "Please type the new password (must be between 8 and 63 characters long):"
+                        read -r response_pw
+                        response_pw_length=$(get_string_length ${response_pw})
+                    done
+
+                    local response_country_code=""
+                    local response_country_code_length=0
+                    while [[ $response_country_code_length -ne 2 ]]
+                    do
+                        print_c "Please type the WiFi country code (e.g. DE, GB, CZ or US):"
+                        read -r response_country_code
+                        response_country_code="${response_country_code^^}" # to Uppercase
+                        response_country_code_length=$(get_string_length ${response_country_code})
+                    done
+
+                    AUTOHOTSPOT_SSID="${response_ssid}"
+                    AUTOHOTSPOT_PASSWORD="${response_pw}"
+                    AUTOHOTSPOT_COUNTRYCODE="${response_country_code}"
+                    ;;
+                *)
+                    response_autohotspot=n
+                    ;;
+            esac
+        done
+
+        if [ "$ENABLE_STATIC_IP" = true ]; then
+            ENABLE_STATIC_IP=false
+            echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+        fi
+    fi
+
+    echo "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
+    if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+        echo "AUTOHOTSPOT_SSID=${AUTOHOTSPOT_SSID}"
+        echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
+        echo "AUTOHOTSPOT_COUNTRYCODE=${AUTOHOTSPOT_COUNTRYCODE}"
+        echo "AUTOHOTSPOT_IP=${AUTOHOTSPOT_IP}"
+    fi
 }
 
 _option_bluetooth() {

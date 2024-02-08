@@ -9,33 +9,20 @@ Usage: ./ipv6.sh <arg>
 fi
 
 arg="$1"
-
-DHCP_CONF_PATH="/etc/dhcpcd.conf"
-START_MARKER="## Jukebox IPV6 Config Start"
-END_MARKER="## Jukebox IPV6 Config End"
+cmdlineFile=$(get_boot_cmdline_path)
+OPTIONS_IPV6="ipv6.disable=1"
 
 if [ "$arg" = "enable" ]; then
     print_lc "Enabling IPv6..."
-    sed -i "/$START_MARKER/,/$END_MARKER/d" "$DHCP_CONF_PATH"
+    _remove_options_to_cmdline "${OPTIONS_IPV6}" # TODO implement _remove_options_to_cmdline
 elif [ "$arg" = "disable" ]; then
     print_lc "Disabling IPv6..."
-    cp "$DHCP_CONF_PATH" "${DHCP_CONF_PATH}.bak"
-
-    # Only disable if it is enabled
-    if ! grep -q "${START_MARKER}" "$DHCP_CONF_PATH"; then
-        sudo tee -a $DHCP_CONF_PATH <<-EOF
-${START_MARKER}
-noarp
-ipv4only
-noipv6
-${END_MARKER}
-EOF
-    fi
+    _add_options_to_cmdline "${OPTIONS_IPV6}"
 fi
 
 # Test
 if [ "$arg" = "enable" ]; then
-    verify_file_does_not_contain_string "${START_MARKER}" "${DHCP_CONF_PATH}"
+    verify_file_does_not_contain_string "${OPTIONS_IPV6}" "${cmdlineFile}"
 elif [ "$arg" = "disable" ]; then
-    verify_file_contains_string_once "${START_MARKER}" "${DHCP_CONF_PATH}"
+    verify_file_contains_string_once "${OPTIONS_IPV6}" "${cmdlineFile}"
 fi

@@ -104,6 +104,7 @@ Pairing successful
 ....
 [PowerLocus Buddy]# exit
 ```
+If `bluetoothctl` has trouble to execute due to permission issue, try `sudo bluetoothctl`.
 
 Wait for a few seconds and then with `$ pactl list sinks short`, check wether the Bluetooth device shows up as an output.
 Its name usually looks like this: `bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink`.

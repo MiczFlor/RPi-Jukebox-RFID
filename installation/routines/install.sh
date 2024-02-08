@@ -13,5 +13,6 @@ install() {
   setup_rfid_reader
   optimized_defaults
   setup_autohotspot
+  setup_postinstall
   cleanup
 }

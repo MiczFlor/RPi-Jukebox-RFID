@@ -2,8 +2,7 @@
 
 ## Enabling GPIO
 
-The GPIO module needs to be enabled in your main configuration file ``shared/settings/jukebox.yaml``. Look for the
-this entry and modify it accordingly:
+The GPIO module needs to be enabled in your main configuration file ``shared/settings/jukebox.yaml``. Look for this entry and modify it accordingly:
 
 ```yml
 gpioz:
