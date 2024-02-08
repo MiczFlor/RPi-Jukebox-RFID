@@ -205,13 +205,13 @@ class Reader(object):
         else:
             with open(path + '/deviceName.txt', 'r') as f:
                 device_name = f.read().rstrip().split(';', 1)[0]
-            if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
-                with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
-                    readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
-            else:
-                readmode_uid = False
 
             if device_name == 'MFRC522':
+                if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
+                    with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
+                        readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
+                else:
+                    readmode_uid = False
                 self.reader = Mfrc522Reader(readmode_uid)
             elif device_name == 'RDM6300':
                 # The Rdm6300Reader supports 2 Additional Number Formats which can bee choosen by an optional parameter dictionary:
