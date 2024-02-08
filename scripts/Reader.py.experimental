@@ -58,7 +58,6 @@ class Mfrc522Reader(object):
 
     def readCard_legacy(self):
         # Scan for cards
-        self.device.wait_for_tag()
         (error, tag_type) = self.device.request()
 
         if not error:
@@ -82,6 +81,11 @@ class Mfrc522Reader(object):
         logger.info("Card detected.")
         logger.info(card_id)
         return card_id
+
+    def readCard(self):
+        # Scan for cards
+        self.device.wait_for_tag()
+        return self._read_function()
 
     @staticmethod
     def cleanup():
