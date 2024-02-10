@@ -29,10 +29,8 @@ def get_devices():
 
 
 class Reader:
-    reader = None
 
     def __init__(self):
-        self.reader = self
         path = os.path.dirname(os.path.realpath(__file__))
         self.keys = "X^1234567890XXXXqwertzuiopXXXXasdfghjklXXXXXyxcvbnmXXXXXXXXXXXXXXXXXXXXXXX"
         if not os.path.isfile(path + '/deviceName.txt'):

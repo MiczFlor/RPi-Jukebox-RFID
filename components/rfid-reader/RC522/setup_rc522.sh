@@ -17,7 +17,7 @@ printf "Please make sure that the RC522 reader is wired up correctly to the GPIO
 question "Continue"
 
 printf "Use backward-compatible card ID (not suggested for new installations)?\n"
-read -p "(y/n) " choice
+read -p "(y/N) " choice
 case "$choice" in
   y|Y ) printf "OFF" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
   * ) printf "ON" > "${JUKEBOX_HOME_DIR}"/settings/Rfidreader_Rc522_Readmode_UID;;
