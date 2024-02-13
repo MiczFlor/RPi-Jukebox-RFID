@@ -4,8 +4,7 @@
     "type": "project",
     "require-dev": {
         "phpunit/phpunit": "^11",
-        "php-mock/php-mock-phpunit": "^2.6",
-        "doctrine/instantiator": "^1.5.0"
+        "php-mock/php-mock-phpunit": "^2.6"
     },
     "license": "MIT",
     "authors": [
