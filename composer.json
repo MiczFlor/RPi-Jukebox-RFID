@@ -5,7 +5,8 @@
     "require-dev": {
         "phpunit/phpunit": "^9",
         "php-mock/php-mock-phpunit": "^2.6",
-        "mpyw/phpunit-patch-serializable-comparison": "^0.0.2"
+        "mpyw/phpunit-patch-serializable-comparison": "^0.0.2",
+        "doctrine/instantiator": "^1.5.0"
     },
     "license": "MIT",
     "authors": [
