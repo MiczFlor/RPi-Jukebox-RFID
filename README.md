@@ -50,11 +50,11 @@ While Version 3 is still under development, it is becoming a lot more stable! Al
 If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
 * ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v3&expanded=true)**
-* 🚀 **[Install Jukebox Version 3 Beta](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/builders/installation.md)**
+* 🚀 **[Install Jukebox Version 3](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/builders/installation.md)**
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
-* ☑️ [Feature Status](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/status.md)
-* 📖 [Documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/README.md)
-* 👩‍💻 [Development](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/developers/README.md)
+* ☑️ [Feature Status](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/developers/status.md)
+* 📖 [Documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/README.md)
+* 👩‍💻 [Development](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/developers/README.md)
 * 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/main), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/future3/develop)
 
 ---

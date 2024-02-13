@@ -24,10 +24,11 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y use gpio
 # y RFID registration
 # 2 use RC522 reader
-# yes, reader is connected
+# y, reader is connected
+# y, use legacy readermode
 # n No reboot
 
-./../install-jukebox.sh <<< $'y\nn\n\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
+./../install-jukebox.sh <<< $'y\nn\n\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\ny\nn\n'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

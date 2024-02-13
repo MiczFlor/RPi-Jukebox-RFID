@@ -53,10 +53,15 @@ class Mfrc522Reader(object):
     def __init__(self):
         import pirc522
         self.device = pirc522.RFID()
+        path = os.path.dirname(os.path.realpath(__file__))
+        readmode_uid = False
+        if os.path.isfile(path + '/../settings/Rfidreader_Rc522_Readmode_UID'):
+            with open(path + '/../settings/Rfidreader_Rc522_Readmode_UID', 'r') as f:
+                readmode_uid = f.read().rstrip().split(';', 1)[0] == 'ON'
+        self._read_function = self._readCard_normal if readmode_uid else self._readCard_legacy
 
-    def readCard(self):
+    def _readCard_legacy(self):
         # Scan for cards
-        self.device.wait_for_tag()
         (error, tag_type) = self.device.request()
 
         if not error:
@@ -69,6 +74,22 @@ class Mfrc522Reader(object):
                 return card_id
         logger.debug("No Device ID found.")
         return None
+
+    def _readCard_normal(self):
+        # Scan for cards
+        uid = self.device.read_id(as_number=True)
+        if not uid:
+            logger.debug("No Device ID found.")
+            return None
+        card_id = str(uid)
+        logger.info("Card detected.")
+        logger.info(card_id)
+        return card_id
+
+    def readCard(self):
+        # Scan for cards
+        self.device.wait_for_tag()
+        return self._read_function()
 
     @staticmethod
     def cleanup():
@@ -203,3 +224,6 @@ class Reader(object):
                     self.reader = UsbReader(device)
                 except IndexError:
                     sys.exit('Could not find the device %s.\n Make sure it is connected' % device_name)
+
+    def readCard(self):
+        return self.reader.readCard()
