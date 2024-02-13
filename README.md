@@ -12,7 +12,6 @@
 [![Gitter chat](https://badges.gitter.im/join_chat.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 [![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 
-
 ## Introduction
 
 Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. It also features GPIO buttons control support.
@@ -39,7 +38,7 @@ If you want to be featured on next years calendar, please make sure to add your 
 
 ### 🔥 Version 3 is coming
 
-The goal for Version 3 was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/documentation/README.md).
+The goal for Version 3 was to tidy up the codebase, focus on a single programming language for the core (Python), establish a solid plugin system and build a responsive web client. [Read on here if you want to learn about more reasons](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/README.md).
 
 #### 👋 Looking for adopters, testers and contributors
 
@@ -66,11 +65,11 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 Check out the following references.
 
- * ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
- * 🚀 **[Install Jukebox Version 2](#quick-install-version-2)**
- * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2C+needs+triage&projects=&template=bug_template.md&title=%F0%9F%90%9B+%7C+BUG+SUMMARY)
- * ☑️ [Features](#features-version-2)
- * 📖 [Documentation](#documentation)
+* ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
+* 🚀 **[Install Jukebox Version 2](#quick-install-version-2)**
+* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2C+needs+triage&projects=&template=bug_template.md&title=%F0%9F%90%9B+%7C+BUG+SUMMARY)
+* ☑️ [Features](#features-version-2)
+* 📖 [Documentation](#documentation)
 
 #### Features Version 2
 
