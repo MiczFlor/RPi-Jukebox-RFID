@@ -16,7 +16,6 @@ tests=0
 failed_tests=0
 
 # Tool functions
-
 _get_service_enablement() {
     local service="$1"
     local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
@@ -41,6 +40,14 @@ is_service_enabled() {
     else
         echo false
     fi
+}
+
+is_dhcpcd_enabled() {
+    echo $(is_service_enabled "dhcpcd.service")
+}
+
+is_NetworkManager_enabled() {
+    echo $(is_service_enabled "NetworkManager.service")
 }
 
 check_chmod_chown() {
