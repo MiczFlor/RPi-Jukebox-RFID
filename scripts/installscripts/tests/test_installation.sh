@@ -264,7 +264,9 @@ verify_autohotspot_settings() {
             check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_script}"
             check_file_contains_string "hotspot_ip=${AUTOHOTSPOTip}" "${autohotspot_script}"
             check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
-            check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+
+            check_file_exists "${autohotspot_service_daemon_path}"
+            check_file_contains_string "\-i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
 
             check_file_exists "${autohotspot_service_path}"
             check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
