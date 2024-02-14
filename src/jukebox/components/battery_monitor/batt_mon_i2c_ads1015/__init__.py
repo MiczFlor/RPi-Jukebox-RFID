@@ -37,7 +37,7 @@ batt_mon = None
 class battmon_ads1015(BatteryMonitorBase.BattmonBase):
     """Battery Monitor based on a ADS1015
 
-    See [Batter Monitor documentation](../../builders/components/power/batterymonitor.md)
+    See [Battery Monitor documentation](../../builders/components/power/batterymonitor.md)
     """
 
     def __init__(self, cfg):
