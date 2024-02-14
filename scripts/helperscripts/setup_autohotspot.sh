@@ -66,7 +66,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     fi
 
     ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
-    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/dnsmasq.conf.stretch-default2-Hotspot.sample "${dnsmasq_conf}"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/dnsmasq.conf "${dnsmasq_conf}"
     sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${dnsmasq_conf}"
     sudo chown root:root "${dnsmasq_conf}"
     sudo chmod 644 "${dnsmasq_conf}"
@@ -80,7 +80,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
         sudo cp "${hostapd_conf}" "${hostapd_conf}.orig"
     fi
 
-    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/hostapd.conf.stretch-default2-Hotspot.sample "${hostapd_conf}"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd.conf "${hostapd_conf}"
     sudo sed -i "s|%AUTOHOTSPOTssid%|${AUTOHOTSPOTssid}|g" "${hostapd_conf}"
     sudo sed -i "s|%AUTOHOTSPOTpass%|${AUTOHOTSPOTpass}|g" "${hostapd_conf}"
     sudo sed -i "s|%AUTOHOTSPOTcountryCode%|${AUTOHOTSPOTcountryCode}|g" "${hostapd_conf}"
@@ -96,7 +96,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
         sudo cp "${hostapd_deamon}" "${hostapd_deamon}.orig"
     fi
 
-    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/hostapd.stretch-default2-Hotspot.sample "${hostapd_deamon}"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd "${hostapd_deamon}"
     sudo sed -i "s|%HOSTAPD_CONF%|${hostapd_conf}|g" "${hostapd_deamon}"
     sudo chown root:root "${hostapd_deamon}"
     sudo chmod 644 "${hostapd_deamon}"
@@ -118,11 +118,11 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     fi
 
     # create service to trigger hotspot
-    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot.sh.stretch-default2-Hotspot.sample "${autohotspot_script}"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot "${autohotspot_script}"
     sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
     sudo chmod +x "${autohotspot_script}"
 
-    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot.service.stretch-default2-Hotspot.sample "${autohotspot_service_path}"
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot.service "${autohotspot_service_path}"
     sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service_path}"
     sudo chown root:root "${autohotspot_service_path}"
     sudo chmod 644 "${autohotspot_service_path}"
