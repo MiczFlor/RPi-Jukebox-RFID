@@ -17,6 +17,32 @@ failed_tests=0
 
 # Tool functions
 
+_get_service_enablement() {
+    local service="$1"
+    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
+
+    if [[ -z "${service}" ]]; then
+        echo "ERROR: at least one parameter value is missing!"
+        exit 1
+    fi
+
+    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+
+    echo "$actual_enablement"
+}
+
+is_service_enabled() {
+    local service="$1"
+    local option="$2"
+    local actual_enablement=$(_get_service_enablement $service $option)
+
+    if [[ "$actual_enablement" == "enabled" ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
 check_chmod_chown() {
     local mod_expected=$1
     local user_expected=$2
@@ -185,40 +211,55 @@ verify_autohotspot_settings() {
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
         printf "\nTESTING autohotspot settings...\n\n"
 
-        local autohotspot_service="autohotspot.service"
+        local systemd_dir="/etc/systemd/system"
+
         local autohotspot_script="/usr/bin/autohotspot"
+        local autohotspot_service_daemon="autohotspot-daemon.service"
+        local autohotspot_service_daemon_path="${systemd_dir}/${autohotspot_service_daemon}"
+        local autohotspot_service="autohotspot.service"
+        local autohotspot_service_path="${systemd_dir}/${autohotspot_service}"
+        local autohotspot_timer="autohotspot.timer"
+        local autohotspot_timer_path="${systemd_dir}/${autohotspot_timer}"
 
-        local dnsmasq_conf=/etc/dnsmasq.conf
-        local hostapd_conf=/etc/hostapd/hostapd.conf
-        local hostapd_deamon=/etc/default/hostapd
-        local dhcpcd_conf=/etc/dhcpcd.conf
+        local autohotspot_wifi_interface=wlan0
 
-        check_file_contains_string "${AUTOHOTSPOTip}" "${autohotspot_script}"
-        local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
-        check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
-        check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
-        check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
-        check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
-        check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
-        check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
-        check_file_contains_string "ExecStart=${AUTOHOTSPOT_SCRIPT}" "/etc/systemd/system/${autohotspot_service}"
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
 
-        local crontab_user=$(crontab -l 2>/dev/null)
-        if [[ ! $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
-            echo "  ERROR: crontab for user not installed"
-            ((failed_tests++))
+            local dnsmasq_conf=/etc/dnsmasq.conf
+            local hostapd_conf=/etc/hostapd/hostapd.conf
+            local hostapd_deamon=/etc/default/hostapd
+            local dhcpcd_conf=/etc/dhcpcd.conf
+
+
+            local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+            check_file_contains_string "interface=${autohotspot_wifi_interface}" "${dnsmasq_conf}"
+            check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
+            check_file_contains_string "interface=${autohotspot_wifi_interface}" "${hostapd_conf}"
+            check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
+            check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
+            check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
+            check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
+            check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
+
+            check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_script}"
+            check_file_contains_string "hotspot_ip=${AUTOHOTSPOTip}" "${autohotspot_script}"
+            check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
+            check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+            check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
+            check_file_contains_string "Unit=${autohotspot_service}" "${autohotspot_timer_path}"
+
+            # check owner and permissions
+            check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
+            check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+            check_chmod_chown 644 root root "${systemd_dir}" "${autohotspot_service_daemon} ${autohotspot_service} ${autohotspot_timer}"
+
+            # check the services state
+            check_service_enablement "${autohotspot_service_daemon}" enabled
+            check_service_enablement "${autohotspot_service}" disabled
+            check_service_enablement "${autohotspot_timer}" enabled
+            check_service_enablement hostapd disabled
+            check_service_enablement dnsmasq disabled
         fi
-        ((tests++))
-
-        # check owner and permissions
-        check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
-        check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
-        check_chmod_chown 644 root root "/etc/systemd/system" "${autohotspot_service}"
-
-        # check that the services are activ
-        check_service_enablement "${autohotspot_service}" enabled
-        check_service_enablement hostapd disabled
-        check_service_enablement dnsmasq disabled
     fi
 }
 
@@ -239,7 +280,7 @@ verify_apt_packages() {
     local packages=$(call_with_args_from_file "${jukebox_dir}"/packages.txt echo)
     local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
     local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
-    local packages_autohotspot=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
+    local packages_autohotspot_dhcpcd=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot_dhcpcd.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -249,7 +290,9 @@ verify_apt_packages() {
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
-        packages="${packages} ${packages_autohotspot}"
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+            packages="${packages} ${packages_autohotspot_dhcpcd}"
+        fi
     fi
 
     # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
