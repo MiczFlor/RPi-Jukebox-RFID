@@ -27,27 +27,7 @@ If you make a mistake at the first install you can "remap" the buttons:
 
 ### Possible Button Mappings
 
-* 'BluetoothToggle': Turn bluetooth on or off
-* 'PlayerNext': Play Next
-* 'PlayerPause': Pause
-* 'PlayerPauseForce': Force Pause?
-* 'PlayerPrev': Previous track
-* 'PlayerRandomCard': Activate (play?) random card?
-* 'PlayerRandomFolder': Play random folder
-* 'PlayerRandomTrack': Play random track
-* 'PlayerSeekBack': Seek backwards on playing track (x seconds)
-* 'PlayerSeekFarBack': Seek backwards on playing track (x seconds)
-* 'PlayerSeekFarFwd': Seek forwards on playing track (x seconds)
-* 'PlayerSeekFwd': Seek forwards on playing track (x seconds)
-* 'PlayerStop': Stop playing
-* 'RecordPlayLatest': Play latest recording
-* 'RecordStart': Start recording
-* 'RecordStop': Stop recording
-* 'Shutdown': Shut down the Phoniebox
-* 'ToggleWifi': Turn Wifi on or off
-* 'Vol0': Volume mute?
-* 'VolD': Volume down
-* 'VolU': Volume up
+See the [GPIO documentation](../../gpio_control/README.md#functions) for possible mapping function and args.
 
 ## Schematics
 
