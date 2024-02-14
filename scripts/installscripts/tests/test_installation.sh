@@ -463,18 +463,20 @@ verify_spotify_config() {
 }
 
 verify_mpd_config() {
-    local mpd_conf="/etc/mpd.conf"
+    if [[ "$MPDconfig" == "YES" ]]; then
+        local mpd_conf="/etc/mpd.conf"
 
-    printf "\nTESTING mpd config...\n\n"
+        printf "\nTESTING mpd config...\n\n"
 
-    check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
-    check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
+        check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
+        check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
 
-    check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
+        check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
 
-    # check that mpd service is enabled, when Spotify support is not installed
-    if [[ "${SPOTinstall}" == "NO" ]]; then
-        check_service_enablement mpd enabled
+        # check that mpd service is enabled, when Spotify support is not installed
+        if [[ "${SPOTinstall}" == "NO" ]]; then
+            check_service_enablement mpd enabled
+        fi
     fi
 }
 
