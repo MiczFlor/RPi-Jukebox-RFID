@@ -26,6 +26,31 @@ call_with_args_from_file () {
     sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
+# create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
+# to correctly handling de-/activation of corresponding feature
+config_file_backup() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ ! -f "${config_file}" ]; then
+        sudo touch "${config_flag_file}"
+    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
+        sudo cp "${config_file}" "${config_orig_file}"
+    fi
+}
+
+# revert config files backed up with `config_file_backup`
+config_file_revert() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ -f "${config_flag_file}" ]; then
+        sudo rm "${config_flag_file}" "${config_file}"
+    elif [ -f "${config_orig_file}" ]; then
+        sudo mv "${config_orig_file}" "${config_file}"
+    fi
+}
+
 apt_get="sudo apt-get -qq --yes"
 
 systemd_dir="/etc/systemd/system"
@@ -38,6 +63,7 @@ autohotspot_service_path="${systemd_dir}/${autohotspot_service}"
 autohotspot_timer="autohotspot.timer"
 autohotspot_timer_path="${systemd_dir}/${autohotspot_timer}"
 
+interfaces_conf_file="/etc/network/interfaces"
 dnsmasq_conf=/etc/dnsmasq.conf
 hostapd_conf=/etc/hostapd/hostapd.conf
 hostapd_deamon=/etc/default/hostapd
@@ -62,14 +88,13 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo systemctl disable dnsmasq
     sudo systemctl stop dnsmasq
 
+    # configure interface conf
+    config_file_backup "${interfaces_conf_file}"
+    sudo rm "${interfaces_conf_file}"
+    sudo touch "${interfaces_conf_file}"
+
     # configure DNS
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
-    if [ ! -f "${dnsmasq_conf}" ]; then
-        sudo touch "${dnsmasq_conf}.remove"
-    elif [ ! -f "${dnsmasq_conf}.orig" ] && [ ! -f "${dnsmasq_conf}.remove" ]; then
-        sudo cp "${dnsmasq_conf}" "${dnsmasq_conf}.orig"
-    fi
+    config_file_backup "${dnsmasq_conf}"
 
     ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/dnsmasq.conf "${dnsmasq_conf}"
@@ -79,13 +104,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo chmod 644 "${dnsmasq_conf}"
 
     # configure hostapd conf
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
-    if [ ! -f "${hostapd_conf}" ]; then
-        sudo touch "${hostapd_conf}.remove"
-    elif [ ! -f "${hostapd_conf}.orig" ] && [ ! -f "${hostapd_conf}.remove" ]; then
-        sudo cp "${hostapd_conf}" "${hostapd_conf}.orig"
-    fi
+    config_file_backup "${hostapd_conf}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd.conf "${hostapd_conf}"
     sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${hostapd_conf}"
@@ -96,13 +115,7 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo chmod 644 "${hostapd_conf}"
 
     # configure hostapd daemon
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
-    if [ ! -f "${hostapd_deamon}" ]; then
-        sudo touch "${hostapd_deamon}.remove"
-    elif [ ! -f "${hostapd_deamon}.orig" ] && [ ! -f "${hostapd_deamon}.remove" ]; then
-        sudo cp "${hostapd_deamon}" "${hostapd_deamon}.orig"
-    fi
+    config_file_backup "${hostapd_deamon}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd "${hostapd_deamon}"
     sudo sed -i "s|%HOSTAPD_CONF%|${hostapd_conf}|g" "${hostapd_deamon}"
@@ -110,15 +123,11 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo chmod 644 "${hostapd_deamon}"
 
     # configure dhcpcd conf
-    # create flag file or copy present conf to orig file
-    # to correctly handling future deactivation of autohotspot
+    config_file_backup "${dhcpcd_conf}"
     if [ ! -f "${dhcpcd_conf}" ]; then
-        sudo touch "${dhcpcd_conf}.remove"
         sudo touch "${dhcpcd_conf}"
         sudo chown root:netdev "${dhcpcd_conf}"
         sudo chmod 664 "${dhcpcd_conf}"
-    elif [ ! -f "${dhcpcd_conf}.orig" ] && [ ! -f "${dhcpcd_conf}.remove" ]; then
-        sudo cp "${dhcpcd_conf}" "${dhcpcd_conf}.orig"
     fi
 
     if [[ ! $(grep -w "${dhcpcd_conf_nohook_wpa_supplicant}" ${dhcpcd_conf}) ]]; then
@@ -179,24 +188,9 @@ else
     fi
 
     # remove config files
-    if [ -f "${dnsmasq_conf}.remove" ]; then
-        sudo rm "${dnsmasq_conf}.remove" "${dnsmasq_conf}"
-    elif [ -f "${dnsmasq_conf}.orig" ]; then
-        sudo mv "${dnsmasq_conf}.orig" "${dnsmasq_conf}"
-    fi
-    if [ -f "${hostapd_conf}.remove" ]; then
-        sudo rm "${hostapd_conf}.remove" "${hostapd_conf}"
-    elif [ -f "${hostapd_conf}.orig" ]; then
-        sudo mv "${hostapd_conf}.orig" "${hostapd_conf}"
-    fi
-    if [ -f "${hostapd_deamon}.remove" ]; then
-        sudo rm "${hostapd_deamon}.remove" "${hostapd_deamon}"
-    elif [ -f "${hostapd_deamon}.orig" ]; then
-        sudo mv "${hostapd_deamon}.orig" "${hostapd_deamon}"
-    fi
-    if [ -f "${dhcpcd_conf}.remove" ]; then
-        sudo rm "${dhcpcd_conf}.remove" "${dhcpcd_conf}"
-    elif [ -f "${dhcpcd_conf}.orig" ]; then
-        sudo mv "${dhcpcd_conf}.orig" "${dhcpcd_conf}"
-    fi
+    config_file_revert "${dnsmasq_conf}"
+    config_file_revert "${hostapd_conf}"
+    config_file_revert "${hostapd_deamon}"
+    config_file_revert "${dhcpcd_conf}"
+    config_file_revert "${interfaces_conf_file}"
 fi
