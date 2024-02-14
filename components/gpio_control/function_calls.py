@@ -12,6 +12,8 @@ class phoniebox_function_calls:
         playout_control_relative_path = "../../scripts/playout_controls.sh"
         function_calls_absolute_path = str(pathlib.Path(__file__).parent.absolute())
         self.playout_control = os.path.abspath(os.path.join(function_calls_absolute_path, playout_control_relative_path))
+        rfid_trigger_relative_path = "../../scripts/rfid_trigger_play.sh"
+        self.rfid_trigger = os.path.abspath(os.path.join(function_calls_absolute_path, rfid_trigger_relative_path))
 
     def functionCallShutdown(self, *args):
         function_call("{command} -c=shutdown".format(command=self.playout_control), shell=True)
@@ -86,6 +88,12 @@ class phoniebox_function_calls:
 
     def functionCallBluetoothToggle(self, *args):
         function_call("{command} -c=bluetoothtoggle -v=toggle".format(command=self.playout_control), shell=True)
+
+    def functionCallTriggerPlayCardId(self, cardid):
+        function_call("{command} --cardid={value}".format(command=self.rfid_trigger, value = cardid), shell=True)
+
+    def functionCallTriggerPlayFolder(self, folder):
+        function_call("{command} --folder={value}".format(command=self.rfid_trigger, value = folder), shell=True)
 
     def getFunctionCall(self, functionName):
         self.logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))

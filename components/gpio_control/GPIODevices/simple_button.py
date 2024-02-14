@@ -122,7 +122,7 @@ class SimpleButton:
 
     @when_pressed.setter
     def when_pressed(self, func):
-        logger.info('{}: set when_pressed')
+        logger.info('{}: set when_pressed'.format(self.name))
         self._action = func
 
         GPIO.remove_event_detect(self.pin)
@@ -184,4 +184,6 @@ if __name__ == "__main__":
     pin = int(input())
     func = lambda *args: print('FunctionCall with {}'.format(args))
     btn = SimpleButton(pin=pin, action=func, hold_mode='Repeat')
+
+    print('running')
     pause()

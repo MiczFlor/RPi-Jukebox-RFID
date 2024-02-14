@@ -23,10 +23,11 @@ class gpio_control():
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
 
-    def getFunctionCall(self, function_name):
+    def getFunctionCall(self, function_name, function_args=None):
         try:
             if function_name != 'None':
-                return getattr(self.function_calls, function_name)
+                functionCall=getattr(self.function_calls, function_name)
+                return (lambda *args: functionCall(*args, function_args))
         except AttributeError:
             self.logger.error('Could not find FunctionCall {function_name}'.format(function_name=function_name))
         return lambda *args: None
@@ -36,12 +37,13 @@ class gpio_control():
         device_type = config.get('Type')
         if device_type == 'TwoButtonControl':
             self.logger.info('adding TwoButtonControl')
+            self.getFunctionCall(config.get('functionCall1'))
             return TwoButtonControl(
                 config.getint('Pin1'),
                 config.getint('Pin2'),
-                self.getFunctionCall(config.get('functionCall1')),
-                self.getFunctionCall(config.get('functionCall2')),
-                functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons')),
+                self.getFunctionCall(config.get('functionCall1'), config.get('functionCall1Args', fallback=None)),
+                self.getFunctionCall(config.get('functionCall2'), config.get('functionCall2Args', fallback=None)),
+                functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons'), config.get('functionCallTwoButtonsArgs', fallback=None)),
                 pull_up_down=config.get('pull_up_down', fallback='pull_up'),
                 hold_mode=config.get('hold_mode', fallback=None),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
@@ -51,8 +53,8 @@ class gpio_control():
                 name=deviceName)
         elif device_type in ('Button', 'SimpleButton'):
             return SimpleButton(config.getint('Pin'),
-                                action=self.getFunctionCall(config.get('functionCall')),
-                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None')),
+                                action=self.getFunctionCall(config.get('functionCall'), config.get('functionCallArgs', fallback=None)),
+                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None'), config.get('functionCall2Args', fallback=None)),
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
                                 antibouncehack=config.getboolean('antibouncehack', fallback=False),
@@ -75,7 +77,7 @@ class gpio_control():
                     name=deviceName)
         elif device_type == 'ShutdownButton':
             return ShutdownButton(pin=config.getint('Pin'),
-                                  action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown')),
+                                  action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown'), config.get('functionCallArgs', fallback=None)),
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
                                   antibouncehack=config.getboolean('antibouncehack', fallback=False),

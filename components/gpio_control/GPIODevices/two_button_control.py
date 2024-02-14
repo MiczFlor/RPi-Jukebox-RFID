@@ -3,6 +3,7 @@ try:
 except ImportError:
     from .simple_button import SimpleButton, print_edge_key, print_pull_up_down
 from RPi import GPIO
+from signal import pause
 import logging
 logger = logging.getLogger(__name__)
 
@@ -129,5 +130,4 @@ if __name__ == "__main__":
     two_btn_control = TwoButtonControl(pin1, pin2, func1, func2, func3)
 
     print('running')
-    while True:
-        pass
+    pause()
