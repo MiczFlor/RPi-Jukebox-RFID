@@ -295,17 +295,17 @@ _uninstall_autohotspot_NetworkManager() {
 
 
 if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
-    if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+    if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
         _install_autohotspot_dhcpcd
     fi
-    if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+    if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
          _install_autohotspot_NetworkManager
     fi
 else
-    if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+    if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
         _uninstall_autohotspot_dhcpcd
     fi
-    if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+    if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
         _uninstall_autohotspot_NetworkManager
     fi
 fi

@@ -243,7 +243,7 @@ verify_autohotspot_settings() {
         local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
         local autohotspot_profile="Phoniebox_Hotspot"
 
-        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
             local dnsmasq_conf=/etc/dnsmasq.conf
             local hostapd_conf=/etc/hostapd/hostapd.conf
             local hostapd_deamon=/etc/default/hostapd
@@ -287,7 +287,7 @@ verify_autohotspot_settings() {
             check_service_enablement dnsmasq disabled
         fi
 
-        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
             check_file_exists "${interfaces_conf_file}"
 
             check_file_exists "${autohotspot_script}"
@@ -340,10 +340,10 @@ verify_apt_packages() {
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
-        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
             packages="${packages} ${packages_autohotspot_dhcpcd}"
         fi
-        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
             packages="${packages} ${packages_autohotspot_NetworkManager}"
         fi
     fi
