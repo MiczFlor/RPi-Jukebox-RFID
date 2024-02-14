@@ -68,6 +68,16 @@ check_chmod_chown() {
     done
 }
 
+check_file_exists() {
+    local file="$1"
+
+    if [[ ! -f "${file}" ]]; then
+        echo "  ERROR: '${file}' does not exists or is not a file!"
+        ((failed_tests++))
+    fi
+    ((tests++))
+}
+
 check_file_contains_string() {
     local string="$1"
     local file="$2"
@@ -219,6 +229,7 @@ verify_autohotspot_settings() {
         printf "\nTESTING autohotspot settings...\n\n"
 
         local systemd_dir="/etc/systemd/system"
+        local interfaces_conf_file="/etc/network/interfaces"
 
         local autohotspot_script="/usr/bin/autohotspot"
         local autohotspot_service_daemon="autohotspot-daemon.service"
@@ -229,16 +240,17 @@ verify_autohotspot_settings() {
         local autohotspot_timer_path="${systemd_dir}/${autohotspot_timer}"
 
         local autohotspot_wifi_interface=wlan0
+        local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
+        local autohotspot_profile="Phoniebox_Hotspot"
 
         if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
-
             local dnsmasq_conf=/etc/dnsmasq.conf
             local hostapd_conf=/etc/hostapd/hostapd.conf
             local hostapd_deamon=/etc/default/hostapd
             local dhcpcd_conf=/etc/dhcpcd.conf
 
+            check_file_exists "${interfaces_conf_file}"
 
-            local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
             check_file_contains_string "interface=${autohotspot_wifi_interface}" "${dnsmasq_conf}"
             check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
             check_file_contains_string "interface=${autohotspot_wifi_interface}" "${hostapd_conf}"
@@ -248,11 +260,16 @@ verify_autohotspot_settings() {
             check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
             check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
 
+            check_file_exists "${autohotspot_script}"
             check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_script}"
             check_file_contains_string "hotspot_ip=${AUTOHOTSPOTip}" "${autohotspot_script}"
             check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
             check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+
+            check_file_exists "${autohotspot_service_path}"
             check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
+
+            check_file_exists "${autohotspot_timer_path}"
             check_file_contains_string "Unit=${autohotspot_service}" "${autohotspot_timer_path}"
 
             # check owner and permissions
@@ -266,6 +283,29 @@ verify_autohotspot_settings() {
             check_service_enablement "${autohotspot_timer}" enabled
             check_service_enablement hostapd disabled
             check_service_enablement dnsmasq disabled
+        fi
+
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+            check_file_exists "${interfaces_conf_file}"
+
+            check_file_exists "${autohotspot_script}"
+            check_file_contains_string "wdev0='${autohotspot_wifi_interface}'" "${autohotspot_script}"
+            check_file_contains_string "ap_profile_name='${autohotspot_profile}'" "${autohotspot_script}"
+            check_file_contains_string "ap_ssid='${AUTOHOTSPOTssid}'" "${autohotspot_script}"
+            check_file_contains_string "ap_pw='${AUTOHOTSPOTpass}'" "${autohotspot_script}"
+            check_file_contains_string "ap_ip='${AUTOHOTSPOTip}" "${autohotspot_script}" #intentional "open end"
+            check_file_contains_string "ap_gate='${ip_without_last_segment}" "${autohotspot_script}" #intentional "open end"
+            check_file_contains_string "timer_service_name='${autohotspot_timer}'" "${autohotspot_script}"
+
+            check_file_exists "${autohotspot_service_path}"
+            check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
+
+            check_file_exists "${autohotspot_timer_path}"
+            check_file_contains_string "Unit=${autohotspot_service}" "${autohotspot_timer_path}"
+
+            # check the services state
+            check_service_enablement "${autohotspot_service}" disabled
+            check_service_enablement "${autohotspot_timer}" enabled
         fi
     fi
 }
@@ -288,6 +328,7 @@ verify_apt_packages() {
     local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
     local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
     local packages_autohotspot_dhcpcd=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot_dhcpcd.txt echo)
+    local packages_autohotspot_NetworkManager=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot_NetworkManager.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -299,6 +340,9 @@ verify_apt_packages() {
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
         if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
             packages="${packages} ${packages_autohotspot_dhcpcd}"
+        fi
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+            packages="${packages} ${packages_autohotspot_NetworkManager}"
         fi
     fi
 

@@ -26,6 +26,11 @@ call_with_args_from_file () {
     sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
+_get_last_ip_segment() {
+    local ip="$1"
+    echo $ip | cut -d'.' -f1-3
+}
+
 _get_service_enablement() {
     local service="$1"
     local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
@@ -54,6 +59,10 @@ is_service_enabled() {
 
 is_dhcpcd_enabled() {
     echo $(is_service_enabled "dhcpcd.service")
+}
+
+is_NetworkManager_enabled() {
+    echo $(is_service_enabled "NetworkManager.service")
 }
 
 # create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
@@ -99,8 +108,11 @@ hostapd_conf=/etc/hostapd/hostapd.conf
 hostapd_deamon=/etc/default/hostapd
 dhcpcd_conf=/etc/dhcpcd.conf
 dhcpcd_conf_nohook_wpa_supplicant="nohook wpa_supplicant"
+networkManager_connections_path="/etc/NetworkManager/system-connections"
 
 wifi_interface=wlan0
+ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOTip)
+autohotspot_profile="Phoniebox_Hotspot"
 
 _install_autohotspot_dhcpcd() {
     # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
@@ -122,7 +134,6 @@ _install_autohotspot_dhcpcd() {
     # configure DNS
     config_file_backup "${dnsmasq_conf}"
 
-    ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/dnsmasq.conf "${dnsmasq_conf}"
     sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${dnsmasq_conf}"
     sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${dnsmasq_conf}"
@@ -222,12 +233,79 @@ _uninstall_autohotspot_dhcpcd() {
     config_file_revert "${interfaces_conf_file}"
 }
 
+_install_autohotspot_NetworkManager() {
+    # required packages
+    call_with_args_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot_NetworkManager.txt ${apt_get} install
+
+    # configure interface conf
+    config_file_backup "${interfaces_conf_file}"
+    sudo rm "${interfaces_conf_file}"
+    sudo touch "${interfaces_conf_file}"
+
+    # create service to trigger hotspot
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot "${autohotspot_script}"
+    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_PROFILE%|${autohotspot_profile}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_SSID%|${AUTOHOTSPOTssid}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|${AUTOHOTSPOTpass}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
+    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_TIMER_NAME%|${AUTOHOTSPOT_TIMER}|g" "${autohotspot_script}"
+    sudo chmod +x "${autohotspot_script}"
+
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot.service "${autohotspot_service_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service_path}"
+    sudo chown root:root "${autohotspot_service_path}"
+    sudo chmod 644 "${autohotspot_service_path}"
+
+    sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot.timer "${autohotspot_timer_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SERVICE%|${autohotspot_service}|g" "${autohotspot_timer_path}"
+    sudo chown root:root "${autohotspot_timer_path}"
+    sudo chmod 644 "${autohotspot_timer_path}"
+
+
+    sudo systemctl unmask "${autohotspot_service}"
+    sudo systemctl unmask "${autohotspot_timer}"
+    sudo systemctl disable "${autohotspot_service}"
+    sudo systemctl enable "${autohotspot_timer}"
+}
+
+_uninstall_autohotspot_NetworkManager() {
+    # clear autohotspot configurations made from past installation
+
+    # stop services and clear services
+    if systemctl list-unit-files "${autohotspot_service}" >/dev/null 2>&1 ; then
+        sudo systemctl stop "${autohotspot_timer}"
+        sudo systemctl disable "${autohotspot_timer}"
+        sudo systemctl stop "${autohotspot_service}"
+        sudo systemctl disable "${autohotspot_service}"
+        sudo rm "${autohotspot_service_path}"
+        sudo rm "${autohotspot_timer_path}"
+    fi
+
+    if [ -f "${autohotspot_script}" ]; then
+        sudo rm "${autohotspot_script}"
+    fi
+
+    sudo rm -f "${networkManager_connections_path}/${autohotspot_profile}*"
+
+    # remove config files
+    config_file_revert "${interfaces_conf_file}"
+}
+
+
 if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
         _install_autohotspot_dhcpcd
     fi
+    if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+         _install_autohotspot_NetworkManager
+    fi
 else
     if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
         _uninstall_autohotspot_dhcpcd
+    fi
+    if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        _uninstall_autohotspot_NetworkManager
     fi
 fi
