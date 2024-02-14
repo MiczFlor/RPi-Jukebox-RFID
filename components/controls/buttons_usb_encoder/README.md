@@ -27,7 +27,7 @@ If you make a mistake at the first install you can "remap" the buttons:
 
 ### Possible Button Mappings
 
-See the [GPIO documentation](../../gpio_control/README.md#functions) for possible mapping function and args.
+See the [GPIO documentation](../../gpio_control/README.md#functions) for possible mappings of functions and args.
 
 ## Schematics
 
