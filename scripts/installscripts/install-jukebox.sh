@@ -1355,6 +1355,7 @@ autohotspot() {
     if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
         local setup_script="${jukebox_dir}/scripts/helperscripts/setup_autohotspot.sh"
         sudo chmod +x "${setup_script}"
+        "${setup_script}" "${jukebox_dir}" "NO" # Uninstall present old versions first
         "${setup_script}" "${jukebox_dir}" "${AUTOHOTSPOTconfig}" "${AUTOHOTSPOTssid}" "${AUTOHOTSPOTcountryCode}" "${AUTOHOTSPOTpass}" "${AUTOHOTSPOTip}"
     fi
 }
