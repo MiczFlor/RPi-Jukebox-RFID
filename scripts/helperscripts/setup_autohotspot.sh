@@ -26,6 +26,36 @@ call_with_args_from_file () {
     sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
+_get_service_enablement() {
+    local service="$1"
+    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
+
+    if [[ -z "${service}" ]]; then
+        echo "ERROR: at least one parameter value is missing!"
+        exit 1
+    fi
+
+    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+
+    echo "$actual_enablement"
+}
+
+is_service_enabled() {
+    local service="$1"
+    local option="$2"
+    local actual_enablement=$(_get_service_enablement $service $option)
+
+    if [[ "$actual_enablement" == "enabled" ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+is_dhcpcd_enabled() {
+    echo $(is_service_enabled "dhcpcd.service")
+}
+
 # create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
 # to correctly handling de-/activation of corresponding feature
 config_file_backup() {
@@ -72,15 +102,11 @@ dhcpcd_conf_nohook_wpa_supplicant="nohook wpa_supplicant"
 
 wifi_interface=wlan0
 
-if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
-
+_install_autohotspot_dhcpcd() {
     # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
 
-    # power management of wifi: switch off to avoid disconnecting
-    sudo iwconfig "$wifi_interface" power off
-
     # required packages
-    call_with_args_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot.txt ${apt_get} install
+    call_with_args_from_file "${JUKEBOX_HOME_DIR}"/packages-autohotspot_dhcpcd.txt ${apt_get} install
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
     sudo systemctl stop hostapd
@@ -159,8 +185,9 @@ if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
     sudo systemctl enable "${autohotspot_service_daemon}"
     sudo systemctl disable "${autohotspot_service}"
     sudo systemctl enable "${autohotspot_timer}"
+}
 
-else
+_uninstall_autohotspot_dhcpcd() {
     # clear autohotspot configurations made from past installation
 
     # remove crontab entry and script from old version installations
@@ -193,4 +220,14 @@ else
     config_file_revert "${hostapd_deamon}"
     config_file_revert "${dhcpcd_conf}"
     config_file_revert "${interfaces_conf_file}"
+}
+
+if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
+    if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        _install_autohotspot_dhcpcd
+    fi
+else
+    if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+        _uninstall_autohotspot_dhcpcd
+    fi
 fi
