@@ -22,7 +22,7 @@ class phoniebox_function_calls:
         if steps is None:
             function_call("{command} -c=volumeup".format(command=self.playout_control), shell=True)
         else:
-            function_call("{command} -c=volumeup -v={steps}".format(steps=steps,
+            function_call("{command} -c=volumeup -v={value}".format(value=steps,
                 command=self.playout_control),
                     shell=True)
 
@@ -30,7 +30,7 @@ class phoniebox_function_calls:
         if steps is None:
             function_call("{command} -c=volumedown".format(command=self.playout_control), shell=True)
         else:
-            function_call("{command} -c=volumedown -v={steps}".format(steps=steps,
+            function_call("{command} -c=volumedown -v={value}".format(value=steps,
                 command=self.playout_control),
                     shell=True)
 
@@ -65,25 +65,25 @@ class phoniebox_function_calls:
         function_call("{command} -c=playerstop".format(command=self.playout_control),
                 shell=True)
 
-    def functionCallPlayerSeekFwd(self, steps=None):
-        if steps is None:
-            steps = 10
-        function_call("{command} -c=playerseek -v=+{steps}".format(command=self.playout_control, steps=steps), shell=True)
+    def functionCallPlayerSeekFwd(self, seconds=None):
+        if seconds is None:
+            seconds = 10
+        function_call("{command} -c=playerseek -v=+{value}".format(command=self.playout_control, value=seconds), shell=True)
 
-    def functionCallPlayerSeekBack(self, steps=None):
-        if steps is None:
-            steps = 10
-        function_call("{command} -c=playerseek -v=-{steps}".format(command=self.playout_control, steps=steps), shell=True)
+    def functionCallPlayerSeekBack(self, seconds=None):
+        if seconds is None:
+            seconds = 10
+        function_call("{command} -c=playerseek -v=-{value}".format(command=self.playout_control, value=seconds), shell=True)
 
-    def functionCallPlayerSeekFarFwd(self, steps=None):
-        if steps is None:
-            steps = 60
-        function_call("{command} -c=playerseek -v=+{steps}".format(command=self.playout_control, steps=steps), shell=True)
+    def functionCallPlayerSeekFarFwd(self, seconds=None):
+        if seconds is None:
+            seconds = 60
+        function_call("{command} -c=playerseek -v=+{value}".format(command=self.playout_control, value=seconds), shell=True)
 
-    def functionCallPlayerSeekFarBack(self, steps=None):
-        if steps is None:
-            steps = 60
-        function_call("{command} -c=playerseek -v=-{steps}".format(command=self.playout_control, steps=steps), shell=True)
+    def functionCallPlayerSeekFarBack(self, seconds=None):
+        if seconds is None:
+            seconds = 60
+        function_call("{command} -c=playerseek -v=-{value}".format(command=self.playout_control, value=seconds), shell=True)
 
     def functionCallPlayerRandomTrack(self, *args):
         function_call("{command} -c=randomtrack".format(command=self.playout_control), shell=True)
@@ -97,7 +97,7 @@ class phoniebox_function_calls:
     def functionCallBluetoothToggle(self, mode=None):
         if mode is None:
             mode = 'toggle'
-        function_call("{command} -c=bluetoothtoggle -v={mode}".format(command=self.playout_control, mode=mode), shell=True)
+        function_call("{command} -c=bluetoothtoggle -v={value}".format(command=self.playout_control, value=mode), shell=True)
 
     def functionCallTriggerPlayCardId(self, cardid):
         function_call("{command} --cardid={value}".format(command=self.rfid_trigger, value = cardid), shell=True)
