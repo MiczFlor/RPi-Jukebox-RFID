@@ -103,7 +103,7 @@ class phoniebox_function_calls:
         function_call("{command} --cardid={value}".format(command=self.rfid_trigger, value = cardid), shell=True)
 
     def functionCallTriggerPlayFolder(self, folder):
-        function_call("{command} --folder={value}".format(command=self.rfid_trigger, value = folder), shell=True)
+        function_call("{command} --dir={value}".format(command=self.rfid_trigger, value = folder), shell=True)
 
     def getFunctionCall(self, functionName):
         self.logger.error('Get FunctionCall: {} {}'.format(functionName, functionName in locals()))
