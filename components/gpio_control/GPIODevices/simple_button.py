@@ -1,5 +1,4 @@
 import time
-from signal import pause
 import logging
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
@@ -178,12 +177,13 @@ class SimpleButton:
             self.name, self.pin, print_edge_key(self.edge), self.hold_mode, self.hold_time, self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down)
         )
 
+# Uncomment for manual tests
+# if __name__ == "__main__":
+#     from signal import pause
+#     print('please enter pin no to test')
+#     pin = int(input())
+#     func = lambda *args: print('FunctionCall with {}'.format(args))
+#     btn = SimpleButton(pin=pin, action=func, hold_mode='Repeat')
 
-if __name__ == "__main__":
-    print('please enter pin no to test')
-    pin = int(input())
-    func = lambda *args: print('FunctionCall with {}'.format(args))
-    btn = SimpleButton(pin=pin, action=func, hold_mode='Repeat')
-
-    print('running')
-    pause()
+#     print('running')
+#     pause()
