@@ -257,9 +257,9 @@ This behaves like a card scan, so you must link a folder to the id (on first pre
 
 ```bash
 [TriggerPlayCard1]
-enabled: True
+enabled: False
 Type: Button
-Pin: 21
+Pin: 4
 pull_up_down: pull_up
 functionCall: functionCallTriggerPlayCardId
 functionCallArgs: 1
@@ -268,13 +268,13 @@ functionCallArgs: 1
 You can also directly link a folder to the button with `functionCallTriggerPlayFolder`. Supply the `folder` as `functionCallArgs`.
 
 ```bash
-[TriggerPlayFolder]
-enabled: True
+[TriggerPlayFolderSomeRelativeFolderName]
+enabled: False
 Type: Button
-Pin: 21
+Pin: 4
 pull_up_down: pull_up
 functionCall: functionCallTriggerPlayFolder
-functionCallArgs: /home/pi/RPi-Jukebox-RFID/shared/audiofolders/myMusicFolderToPlay
+functionCallArgs: someRelativeFolderName
 ```
 
 ### Functions<a name="doc_funcs"></a>
@@ -282,8 +282,8 @@ functionCallArgs: /home/pi/RPi-Jukebox-RFID/shared/audiofolders/myMusicFolderToP
 The available functions are defined/implemented in `components/gpio_control/function_calls.py`:
 
 * **functionCallShutdown**: System shutdown
-* **functionCallVolU**: Volume up (steps as optional argument)
-* **functionCallVolD**: Volume down (steps as optional argument)
+* **functionCallVolU**: Volume up (custom steps as optional argument)
+* **functionCallVolD**: Volume down (custom steps as optional argument)
 * **functionCallVol0**: Mute
 * **functionCallPlayerNext**: Next track
 * **functionCallPlayerPrev**: Previous track
@@ -301,6 +301,7 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallPlayerRandomTrack**: Jumps to random track (within current playlist)
 * **functionCallPlayerRandomCard**: Activate a random card
 * **functionCallPlayerRandomFolder**: Play a random folder
+* **functionCallBluetoothToggle**: Switches to the audio device (e.g. speaker, bluetooth headphones), default 'toogle' (mode as optional argument)
 * **functionCallTriggerPlayCardId**: Trigger play for cardid given as argument
 * **functionCallTriggerPlayFolder**: Trigger play for folder given as argument
 
