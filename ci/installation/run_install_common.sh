@@ -17,7 +17,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - use static ip
 # n - deactivate ipv6
 # y - setup autohotspot
-# n -   use custom password
+# n -   change default configuration
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)

@@ -103,6 +103,18 @@ _check_os_type() {
   fi
 }
 
+_check_existing_installation() {
+    if [[ -e "${INSTALLATION_PATH}" ]]; then
+        print_lc "
+############## EXISTING INSTALLATION FOUND ##############
+Rerunning the installer over an existing installation is
+currently not supported (overwrites settings, etc).
+Please backup your 'shared' folder and manually changed
+files and run the installation on a fresh image."
+        exit 1
+    fi
+}
+
 _download_jukebox_source() {
   log "#########################################################"
   print_c "Downloading Phoniebox software from Github ..."
@@ -122,7 +134,7 @@ _download_jukebox_source() {
   if [[ -z "${GIT_HASH}" ]]; then
     exit_on_error "ERROR: Couldn't determine git hash from download."
   fi
-  mv "$git_repo_download" "$GIT_REPO_NAME"
+  mv "$git_repo_download" "$GIT_REPO_NAME" || exit_on_error "ERROR: Can't overwrite existing installation."
   log "\nDONE: Downloading Phoniebox software from Github"
   log "#########################################################"
 }
@@ -143,6 +155,7 @@ _setup_logging
 
 ### CHECK PREREQUISITE
 _check_os_type
+_check_existing_installation
 
 ### RUN INSTALLATION
 log "Current User: $CURRENT_USER"

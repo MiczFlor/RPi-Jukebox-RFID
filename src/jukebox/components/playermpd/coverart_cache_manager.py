@@ -1,9 +1,13 @@
 import os
+import jukebox.cfghandler
+
+cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class CoverartCacheManager:
-    def __init__(self, cache_folder_path):
-        self.cache_folder_path = cache_folder_path
+    def __init__(self):
+        coverart_cache_path = cfg.setndefault('webapp', 'coverart_cache_path', value='../../src/webapp/build/cover-cache')
+        self.cache_folder_path = os.path.expanduser(coverart_cache_path)
 
     def find_file_by_hash(self, hash_value):
         for filename in os.listdir(self.cache_folder_path):

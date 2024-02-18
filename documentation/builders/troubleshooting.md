@@ -64,12 +64,10 @@ on the console log.
 $ systemctl --user stop jukebox-daemon
 
 # Start the Jukebox in debug mode:
-$ cd src/jukebox
-
 # with default logger:
-$ ./run_jukebox.py
+$ ./run_jukebox.sh
 # or with custom logger configuration:
-$ ./run_jukebox.py --logger path/to/custom/logger.yaml
+$ ./run_jukebox.sh --logger path/to/custom/logger.yaml
 ```
 
 ### Fallback configuration
@@ -79,8 +77,7 @@ Attention: This only emits messages to the console and does not write to the log
 This is more a fallback features:
 
 ```bash
-$ cd src/jukebox
-$ ./run_jukebox.py -vv
+$ ./run_jukebox.sh -vv
 ```
 
 ### Extreme cases
