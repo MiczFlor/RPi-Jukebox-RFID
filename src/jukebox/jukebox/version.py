@@ -1,7 +1,7 @@
 
 VERSION_MAJOR = 3
 VERSION_MINOR = 5
-VERSION_PATCH = 1
+VERSION_PATCH = 2
 VERSION_EXTRA = ""
 
 # build a version string in compliance with the SemVer specification
