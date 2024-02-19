@@ -31,6 +31,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libasound2-dev pulseaudio
+        python3 -m venv .venv
+        source ".venv/bin/activate"
+
         python3 -m pip install --upgrade pip
         pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
@@ -51,7 +54,6 @@ jobs:
         parallel: true
     - name: Lint with flake8
       run: |
-        pip3 install flake8
         # Stop the build if linting fails
         ./run_flake8.sh
 

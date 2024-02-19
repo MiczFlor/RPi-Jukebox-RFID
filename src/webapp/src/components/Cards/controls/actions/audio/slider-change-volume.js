@@ -37,12 +37,12 @@ const SliderChangeVolume = ({
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
       <Grid item xs={12}>
         <Typography>
-          {t('cards.controls.actions.volume.title')}
+          {t('cards.controls.actions.audio.volume.title')}
         </Typography>
         <Stack spacing={2} direction="row" alignItems="center">
           <Remove />
           <Slider
-            aria-label={t('cards.controls.actions.volume.title')}
+            aria-label={t('cards.controls.actions.audio.volume.title')}
             value={step || 0}
             marks={marks}
             step={1}

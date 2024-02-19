@@ -147,5 +147,5 @@ load-module module-filter-apply
 #set-default-source input
 
 ### Configuration by Jukebox's Tool may come below
-# Run ./run_configure_audio.py for configuration
+# Run ./installation/components/setup_configure_audio.sh for configuration
 

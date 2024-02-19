@@ -5,7 +5,7 @@ Setup tool to register the PulseAudio sinks as primary and secondary audio outpu
 Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
 Run this once after installation. Can be re-run at any time to change the settings.
-For more information see :ref:`userguide/audio:Audio Configuration`.
+For more information see [Audio Configuration](../../builders/audio.md#audio-configuration).
 """
 import os
 import argparse

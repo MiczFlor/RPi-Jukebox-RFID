@@ -12,7 +12,7 @@ The core app is centered around a plugin concept. This serves three purposes:
 
 ## Remote Procedure Call Server (RPC)
 
-The Remote Procedure Call (RPC) server allows remotely triggering actions (e.g., from the Webapp) within the Jukebox core application. Only Python functions registered by the plugin interface can be called. This simplifies external APIs and lets us focus on the relevant user functions.
+The Remote Procedure Call (RPC) server allows remotely triggering actions (e.g., from the Web App) within the Jukebox core application. Only Python functions registered by the plugin interface can be called. This simplifies external APIs and lets us focus on the relevant user functions.
 
 Why should you care? Because we use the same protocol when triggering actions from other inputs like a card swipe, a GPIO button press, etc. How that works is described in [RPC Commands](rpc-commands.md).
 
