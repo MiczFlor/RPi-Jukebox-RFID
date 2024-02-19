@@ -65,7 +65,7 @@ WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
 RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
-RUN pip install --no-cache-dir --pre --no-binary pyzmq pyzmq
+RUN pip install --no-cache-dir --no-binary pyzmq pyzmq
 
 EXPOSE 5555 5556
 
