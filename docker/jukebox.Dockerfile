@@ -49,7 +49,7 @@ RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     tar -xzf libzmq.tar.gz -C ${ZMQ_PREFIX}; \
     rm -f libzmq.tar.gz;
 
-RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install pyzmq --pre pyzmq
+RUN export ZMQ_PREFIX=${ZMQ_PREFIX} && export ZMQ_DRAFT_API=1 && pip install pyzmq pyzmq
 
 EXPOSE 5555 5556
 
