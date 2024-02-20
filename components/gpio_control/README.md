@@ -19,20 +19,20 @@ Up to now the following input devices are implemented:
 
 * **Button**:
    A simple button with optional long-press actions like hold and repeat functionality or delayed action.
-   Its main parameters are: `Pin` (use GPIO number here) and `functionCall`. For additional options, see [extended documentation below](#doc_button).
+   Its main parameters are: `Pin` (use GPIO number here) and `functionCall`. For additional options, see [extended documentation below](#button).
 
 * **ShutdownButton**:
-   A specialized implementation for a shutdown button with integrated (but optional) LED support. It initializes a shutdown if the button is pressed more than `time_pressed` seconds and a (optional) LED on GPIO `led_pin` is flashing until that time is reached. For additional information, see [extended documentation below](#doc_sdbutton).
+   A specialized implementation for a shutdown button with integrated (but optional) LED support. It initializes a shutdown if the button is pressed more than `time_pressed` seconds and a (optional) LED on GPIO `led_pin` is flashing until that time is reached. For additional information, see [extended documentation below](#shutdownbutton).
 
 * **RotaryEncoder**:
     Control of a rotary encoder, for example KY040, see also in [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume).
-    It can be configured using `pinUp` and `PiNDown` (use GPIO numbers here), `functionCallUp`, `functionCallDown`, and `timeBase` see [extended documentation below](#doc_rotary).
+    It can be configured using `pinUp` and `PiNDown` (use GPIO numbers here), `functionCallUp`, `functionCallDown`, and `timeBase` see [extended documentation below](#rotaryencoder).
 
 * **TwoButtonControl**:
-    This Device uses two Buttons and implements a third action if both buttons are pressed together. See [extended documentation below](#doc_twobutton).
+    This Device uses two Buttons and implements a third action if both buttons are pressed together. See [extended documentation below](#twobuttoncontrol).
 
 * **StatusLED**:
-    A LED which will light up once the Phoniebox has fully booted up and is ready to be used. For additional information, see [extended documentation below](#doc_sled).
+    A LED which will light up once the Phoniebox has fully booted up and is ready to be used. For additional information, see [extended documentation below](#statusled).
 
 Each section needs to be activated by setting `enabled: True`.
 
@@ -42,7 +42,7 @@ Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/ex
 
 This section provides some extended documentation and guideline. Especially some exemplary configurations are introduced showing how these controls can be set up in the configuration file `~/RPi-Jukebox-RFID/settings/gpio_settings.ini`.
 
-### Button<a name="doc_button"></a>
+### Button
 
 At the most basic level, a button can be created using an `ini` entry like this:
 
@@ -56,7 +56,7 @@ functionCall: functionCallPlayerPause
 
 * **enabled**: This needs to be `True` for the button to work.
 * **Pin**: GPIO number
-* **functionCall**: Primary function that you want to be called on a button press. See  [function documentation below](#doc_funcs).
+* **functionCall**: Primary function that you want to be called on a button press. See  [function documentation below](#functions).
 
 However, a button has more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
 
@@ -88,7 +88,7 @@ However, a button has more parameters than these. In the following comprehensive
 
 Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
-### ShutdownButton<a name="doc_sdbutton"></a>
+### ShutdownButton
 
 An extended ShutdownButton can be created using an `ini` entry like these:
 
@@ -113,7 +113,7 @@ Again, there are more parameters than these. In the following comprehensive list
 
 * **hold_time**: This parameter controls how many seconds (default: `3.0`) the button has to be hold until shutdown will be initiated.
 * **iteration_time**: This parameter determines the flashing speed of the LED indicator. Default value is `0.2` seconds.
-* **functionCall**: While the default action is `functionCallShutdown`, you might use this button type even with other functions than system shutdown (again, see [function documentation below](#doc_funcs) for a list of available functions).
+* **functionCall**: While the default action is `functionCallShutdown`, you might use this button type even with other functions than system shutdown (again, see [function documentation below](#functions) for a list of available functions).
 
 Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**, **functionCallArgs**
 
@@ -129,7 +129,7 @@ hold_time: 3.0
 functionCall: functionCallShutdown
 ```
 
-### TwoButtonControl<a name="doc_twobutton"></a>
+### TwoButtonControl
 
 A TwoButtonControl can be created using an `ini` entry like this:
 
@@ -165,9 +165,9 @@ In this example, the volume will be in-/decreased step-wise using intervals of 0
 
 Function arguments can also be passed to this control with the settings **functionCall1Args**, **functionCall2Args**, **functionCallTwoButtonsArgs**
 
-Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**
+Furthermore, the following settings can be used as described for the [regular buttons](#button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**
 
-### RotaryEncoder<a name="doc_rotary"></a>
+### RotaryEncoder
 
 A RotaryEncoder can be created using an `ini` entry like this:
 
@@ -185,7 +185,7 @@ functionCall2: functionCallVolD
 Pin1 and FunctionCall1 correspond to rotary direction "up", while Pin2 and FunctionCall2 correspond to "down".
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
 
-### StatusLED<a name="doc_sled"></a>
+### StatusLED
 
 A StatusLED can be created using an `ini` entry like this:
 
@@ -249,7 +249,7 @@ functionCall2Args: 30
 ```
 
 In this example, a short press initiates a short jump forward by customized 5 seconds (functionCallPlayerSeekFwd) while holding the button will cause further, longer jumps. In this case it will cause a jump of customized 30 seconds forward (functionCallPlayerSeekFarFwd) every 5 seconds.
-For jumping backwards, this can be done equivalently (see [function list below](#doc_funcs)).
+For jumping backwards, this can be done equivalently (see [function list below](#functions)).
 
 #### Use Buttons to start playlists
 To use GPIO-Pins to play music, you can emulate a card scan with the function `functionCallTriggerPlayCardId`. Supply the `cardid` as `functionCallArgs`.
@@ -277,7 +277,7 @@ functionCall: functionCallTriggerPlayFolder
 functionCallArgs: someRelativeFolderName
 ```
 
-### Functions<a name="doc_funcs"></a>
+### Functions
 
 The available functions are defined/implemented in `components/gpio_control/function_calls.py`:
 
@@ -305,7 +305,7 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallTriggerPlayCardId**: Trigger play for cardid given as argument
 * **functionCallTriggerPlayFolder**: Trigger play for folder given as argument
 
-### Troubleshooting<a name="doc_trouble"></a>
+### Troubleshooting
 
 If you encounter bouncing effects with your buttons like unrequested/double actions after releasing a button, you can try to set `antibouncehack` to True:
 
