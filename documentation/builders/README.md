@@ -26,6 +26,7 @@
 * [Soundcards](./components/soundcards/)
   * [HiFiBerry Boards](./components/soundcards/hifiberry.md)
 * [RFID Readers](./../developers/rfid/README.md)
+* [Event devices (USB and other buttons)](./event-devices.md)
 
 ## Web Application
 
