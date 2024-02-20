@@ -291,6 +291,20 @@ $ docker run -it --rm \
     --name jukebox jukebox
 ```
 
+## Testing EVDEV devices in Linux
+To test the [event device capabilities](../builders/event-devices.md) in docker, the device needs to be made available to the container.
+
+### Linux
+Mount the device into the container by configuring the appropriate device in a `devices` section of the `jukebox` service in the docker compose file. For example:
+
+```yaml
+  jukebox:
+    ...
+    devices:
+      - /dev/input/event3:/dev/input/event3
+```
+
+
 ### Resources
 
 #### Mac
