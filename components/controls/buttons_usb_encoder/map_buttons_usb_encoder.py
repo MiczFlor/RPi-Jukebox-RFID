@@ -21,7 +21,7 @@ try:
     print("During the next step you can map your buttons to one of the following available functions:")
     print(list(map(lambda function_name: function_name.replace("functionCall", ""), functions)))
     print("")
-    if input('Ready to continue? (y/N)') != 'y':
+    if input('Ready to continue? (Y/n)') == 'n':
         sys.exit("Aborted mapping buttons to functions")
 
     for function_name in functions:
