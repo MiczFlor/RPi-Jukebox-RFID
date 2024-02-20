@@ -60,7 +60,7 @@ functionCall: functionCallPlayerPause
 
 However, a button has more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
 
-* **functionCallArgs**: Primary function arguments, defaults to `None`. Arguments are ignored if `functionCall` does not take any.
+* **functionCallArgs**: Arguments for primary function, defaults to `None`. Arguments are ignored, if `functionCall` does not take any.
 * **hold_mode**: Specifies what shall happen if the button is held pressed for longer than `hold_time`:
   * `None` (Default): Nothing special will happen.
   * `Repeat`: The configured `functionCall` is repeated after each `hold_time` interval.
@@ -74,7 +74,7 @@ However, a button has more parameters than these. In the following comprehensive
   
 * **hold_time**: Reference time for this buttons `hold_mode` feature in seconds. Default is `0.3`. This setting is ignored if `hold_mode` is unset or `None`
 * **functionCall2**: Secondary function, default is `None`. This setting is ignored unless `hold_mode` is set to `SecondFunc` or `SecondFuncRepeat`.
-* **functionCall2Args**: Secondary function arguments, default is `None`. Arguments are ignored if `functionCall2` does not take any.
+* **functionCall2Args**: Arguments for secondary function, default is `None`. Arguments are ignored, if `functionCall2` does not take any.
 * **pull_up_down**: Configures the internal Pull up/down resistors. Valid settings:
   * `pull_up` (Default). Internal pull-up resistors are activated. Use this if you attached a button to `GND` to the GPIO pin without any external pull-up resistor.
   * `pull_down`. Use this if you need the internal pull-down resistor activated.
@@ -253,7 +253,7 @@ For jumping backwards, this can be done equivalently (see [function list below](
 
 #### Use Buttons to start playlists
 To use GPIO-Pins to play music, you can emulate a card scan with the function `functionCallTriggerPlayCardId`. Supply the `cardid` as `functionCallArgs`.
-This behaves like a card scan, so you must link a folder to the id (on first press it will show up in the WebUi as new card).
+This behaves like a card scan, so you must link a folder to the id (on first press it will show up in the Web App as new card).
 
 ```bash
 [TriggerPlayCard1]
@@ -301,7 +301,7 @@ The available functions are defined/implemented in `components/gpio_control/func
 * **functionCallPlayerRandomTrack**: Jumps to random track (within current playlist)
 * **functionCallPlayerRandomCard**: Activate a random card
 * **functionCallPlayerRandomFolder**: Play a random folder
-* **functionCallBluetoothToggle**: Switches to the audio device (e.g. speaker, bluetooth headphones), default 'toogle' (mode as optional argument)
+* **functionCallBluetoothToggle**: Switches to the audio device (e.g. speaker, bluetooth headphones), default 'toggle' (mode as optional argument)
 * **functionCallTriggerPlayCardId**: Trigger play for cardid given as argument
 * **functionCallTriggerPlayFolder**: Trigger play for folder given as argument
 
