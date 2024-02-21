@@ -39,7 +39,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --filename=*.py,*.py.*
     - name: Test with pytest
       run: |
-        pytest --cov --cov-config=.coveragerc --cov-report xml
+        pytest --cov --cov-config=.coveragerc --cov-report xml --cov-report html:coverage_html
     - name: Report to Coveralls (parallel)
       uses: coverallsapp/github-action@v2
       with:
@@ -47,6 +47,12 @@ jobs:
         file: coverage.xml
         format: cobertura
         parallel: true
+    - name: Artifact Upload coverage html
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage_html_${{ matrix.python-version }}
+        path: coverage_html
+        retention-days: 5
 
   finish:
     needs: build
