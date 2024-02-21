@@ -1,5 +1,7 @@
+import sys
+import os
 from mock import MagicMock, patch
-
+sys.path.append(os.path.abspath('components/gpio_control'))
 
 MockRPi = MagicMock()
 modules = {
