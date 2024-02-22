@@ -545,8 +545,8 @@ config_audio_interface() {
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
 # The default RPi audio interface is '${default_audio_interface}'.
-# But this does not work for every setup. Here a list of
-# available iFace names:
+# But this does not work for every setup.
+# Here a list of available iFace names:
 
 ${audio_interfaces}
 "
