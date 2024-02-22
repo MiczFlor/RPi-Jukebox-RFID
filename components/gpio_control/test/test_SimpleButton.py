@@ -1,10 +1,8 @@
-from mock import patch, MagicMock
 import pytest
+from mock import MagicMock, patch
+from ..GPIODevices.simple_button import SimpleButton, GPIO
 
-import RPi.GPIO as GPIO
-from ..GPIODevices.simple_button import SimpleButton
 
-pin = 1
 mockedAction = MagicMock()
 
 
@@ -12,7 +10,7 @@ mockedAction = MagicMock()
 def simple_button():
     mockedAction.reset_mock()
 
-    return SimpleButton(pin, action=mockedAction, name='TestButton',
+    return SimpleButton(pin=1, action=mockedAction, name='TestButton',
                         bouncetime=500, edge=GPIO.FALLING)
 
 
@@ -20,7 +18,7 @@ class TestButton:
     mockedFunction = MagicMock()
 
     def test_init(self):
-        SimpleButton(pin, action=self.mockedFunction, name='TestButton',
+        SimpleButton(pin=1, action=self.mockedFunction, name='TestButton',
                      bouncetime=500, edge=GPIO.FALLING)
 
     def test_callback(self, simple_button):

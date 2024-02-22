@@ -1,38 +1,35 @@
-import mock
 import pytest
 from mock import MagicMock
-
-from ..GPIODevices import two_button_control
-from ..GPIODevices.two_button_control import functionCallTwoButtons, TwoButtonControl
+from ..GPIODevices.two_button_control import functionCallTwoButtons, TwoButtonControl, GPIO
 
 
 @pytest.fixture
 def btn1Mock():
-    _mock=mock.MagicMock()
+    _mock=MagicMock()
     _mock.pin=1
     return _mock
 
 
 @pytest.fixture
 def btn2Mock():
-    _mock=mock.MagicMock()
+    _mock=MagicMock()
     _mock.pin=2
     return _mock
 
 
 @pytest.fixture
 def functionCall1Mock():
-    return mock.MagicMock()
+    return MagicMock()
 
 
 @pytest.fixture
 def functionCall2Mock():
-    return mock.MagicMock()
+    return MagicMock()
 
 
 @pytest.fixture
 def functionCallBothPressedMock():
-    return mock.MagicMock()
+    return MagicMock()
 
 
 def test_functionCallTwoButtonsOnlyBtn1Pressed(btn1Mock,
@@ -195,7 +192,7 @@ class TestTwoButtonControl:
     def test_btn1_pressed(self, two_button_controller):
         pinA = two_button_controller.bcmPin1
         pinB = two_button_controller.bcmPin2
-        two_button_control.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: True}[pin]
+        GPIO.input.side_effect = lambda pin: {pinA: False, pinB: True}[pin]
         two_button_controller.action()
         mockedFunction1.assert_called_once()
         mockedFunction2.assert_not_called()
@@ -206,7 +203,7 @@ class TestTwoButtonControl:
     def test_btn2_pressed(self, two_button_controller):
         pinA = two_button_controller.bcmPin1
         pinB = two_button_controller.bcmPin2
-        two_button_control.GPIO.input.side_effect = lambda pin: {pinA: True, pinB: False}[pin]
+        GPIO.input.side_effect = lambda pin: {pinA: True, pinB: False}[pin]
         two_button_controller.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_called_once()
@@ -217,7 +214,7 @@ class TestTwoButtonControl:
     def test_btn1_and_btn2_pressed(self, two_button_controller):
         pinA = two_button_controller.bcmPin1
         pinB = two_button_controller.bcmPin2
-        two_button_control.GPIO.input.side_effect = lambda pin: {pinA: False, pinB: False}[pin]
+        GPIO.input.side_effect = lambda pin: {pinA: False, pinB: False}[pin]
         two_button_controller.action()
         mockedFunction1.assert_not_called()
         mockedFunction2.assert_not_called()
