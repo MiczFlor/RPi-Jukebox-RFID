@@ -535,23 +535,30 @@ config_audio_interface() {
 
     clear
 
+    local amixer_scontrols=$(sudo amixer scontrols)
+    local audio_interfaces=$(echo "${amixer_scontrols}" | sed "s|.*'\(.*\)'.*|\1|g")
+    local first_audio_interface=$(echo "${audio_interfaces}" | head -1)
+    local default_audio_interface="${first_audio_interface:-PCM}"
+
     echo "#####################################################
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# The default RPi audio interface is 'Headphone'.
-# But this does not work for every setup. Here a list of
-# available iFace names:
+# The default RPi audio interface is '${default_audio_interface}'.
+# But this does not work for every setup.
+# Here a list of available iFace names:
+
+${audio_interfaces}
 "
-    amixer scontrols
+
     echo " "
-    read -rp "Use Headphone as iFace? [Y/n] " response
+    read -rp "Use '${default_audio_interface}' as iFace? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             read -rp "Type the iFace name you want to use:" AUDIOiFace
             ;;
         *)
-            AUDIOiFace="Headphone"
+            AUDIOiFace="${default_audio_interface}"
             ;;
     esac
     # append variables to config file

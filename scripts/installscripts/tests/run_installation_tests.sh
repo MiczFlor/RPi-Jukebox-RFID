@@ -18,7 +18,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n dont configure wifi
 # y configure autohotspot
 # y use autohotspot default config
-# y Headphone as iface
+# y use default audio iface
 # n no spotify
 # y configure mpd
 # y audio default location
