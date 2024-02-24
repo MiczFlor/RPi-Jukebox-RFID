@@ -69,6 +69,7 @@ class ShutdownButton(SimpleButton):
                 self.set_led(GPIO.LOW)
 
     def __repr__(self):
-        return '<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
-            self.name, self.pin, self.hold_time, self.iteration_time, self.led_pin, print_edge_key(self.edge), self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down)
-        )
+        return ('<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},'
+                'bouncetime={},antibouncehack={},pull_up_down={})>').format(
+            self.name, self.pin, self.hold_time, self.iteration_time, self.led_pin, print_edge_key(self.edge),
+            self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down))

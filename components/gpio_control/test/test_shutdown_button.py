@@ -11,6 +11,7 @@ def shutdown_button():
     mocked_function.reset_mock()
     return ShutdownButton(pin=1, action=mocked_function, led_pin=5)
 
+
 class TestShutDownButton():
 
     @patch('time.sleep', mock_time)
@@ -56,6 +57,8 @@ class TestShutDownButton():
         mocked_function.assert_called_once_with(shutdown_button.pin)
 
     def test_repr(self):
-        button = ShutdownButton(name='test_repr', pin=1, hold_time=2.5, iteration_time=.8, led_pin=5, edge='rising', bouncetime=200, antibouncehack=True, pull_up_down='pull_down')
-        expected = "<ShutdownButton-test_repr(pin=1,hold_time=2.5,iteration_time=0.8,led_pin=5,edge=rising,bouncetime=200,antibouncehack=True,pull_up_down=pull_down)>"
+        button = ShutdownButton(name='test_repr', pin=1, hold_time=2.5, iteration_time=.8, led_pin=5, edge='rising',
+                                bouncetime=200, antibouncehack=True, pull_up_down='pull_down')
+        expected = ('<ShutdownButton-test_repr(pin=1,hold_time=2.5,iteration_time=0.8,led_pin=5,edge=rising,'
+                    'bouncetime=200,antibouncehack=True,pull_up_down=pull_down)>')
         assert repr(button) == expected

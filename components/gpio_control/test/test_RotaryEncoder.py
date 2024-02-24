@@ -45,7 +45,6 @@ class TestRotaryEncoder:
         assert repr(rotaryEncoder) == expected
 
     def test_start_stop(self, rotaryEncoder):
-        calls = GPIO.add_event_detect.call_count
         assert rotaryEncoder.is_active is True
         GPIO.remove_event_detect.assert_not_called()
         rotaryEncoder.stop()

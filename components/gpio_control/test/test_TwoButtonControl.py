@@ -5,15 +5,15 @@ from ..GPIODevices.two_button_control import functionCallTwoButtons, TwoButtonCo
 
 @pytest.fixture
 def btn1Mock():
-    _mock=MagicMock()
-    _mock.pin=1
+    _mock = MagicMock()
+    _mock.pin = 1
     return _mock
 
 
 @pytest.fixture
 def btn2Mock():
-    _mock=MagicMock()
-    _mock.pin=2
+    _mock = MagicMock()
+    _mock.pin = 2
     return _mock
 
 
@@ -223,5 +223,6 @@ class TestTwoButtonControl:
         assert mockedFunction3.call_count == 2
 
     def test_repr(self, two_button_controller):
-        expected = "<TwoBtnControl-TwoButtonControl(1, 2,two_buttons_action=True,hold_mode=None,hold_time=0.3,edge=falling,bouncetime=500,antibouncehack=False,pull_up_down=pull_up)>"
+        expected = ('<TwoBtnControl-TwoButtonControl(1, 2,two_buttons_action=True,hold_mode=None,hold_time=0.3,'
+                    'edge=falling,bouncetime=500,antibouncehack=False,pull_up_down=pull_up)>')
         assert repr(two_button_controller) == expected

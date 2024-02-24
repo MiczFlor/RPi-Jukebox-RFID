@@ -73,7 +73,8 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
 
 class SimpleButton:
     def __init__(self, pin, action=lambda *args: None, action2=lambda *args: None, name=None,
-                 bouncetime=500, antibouncehack=False, edge='falling', hold_time=.3, hold_mode=None, pull_up_down='pull_up'):
+                 bouncetime=500, antibouncehack=False, edge='falling',
+                 hold_time=.3, hold_mode=None, pull_up_down='pull_up'):
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_mode = hold_mode
@@ -126,7 +127,8 @@ class SimpleButton:
 
         GPIO.remove_event_detect(self.pin)
         logger.info('add new action')
-        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler, bouncetime=self.bouncetime)
+        GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
+                              bouncetime=self.bouncetime)
 
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
@@ -173,9 +175,10 @@ class SimpleButton:
         return GPIO.input(self.pin)
 
     def __repr__(self):
-        return '<SimpleButton-{}(pin={},edge={},hold_mode={},hold_time={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
-            self.name, self.pin, print_edge_key(self.edge), self.hold_mode, self.hold_time, self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down)
-        )
+        return ('<SimpleButton-{}(pin={},edge={},hold_mode={},hold_time={},'
+                'bouncetime={},antibouncehack={},pull_up_down={})>').format(
+            self.name, self.pin, print_edge_key(self.edge), self.hold_mode, self.hold_time,
+            self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down))
 
 # Uncomment for manual tests
 # if __name__ == "__main__":

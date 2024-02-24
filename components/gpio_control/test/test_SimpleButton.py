@@ -1,5 +1,5 @@
 import pytest
-from mock import MagicMock, patch
+from mock import MagicMock
 from ..GPIODevices.simple_button import SimpleButton, GPIO
 
 
@@ -63,6 +63,8 @@ class TestButton:
         assert mockedAction.call_count - calls == 4
 
     def test_repr(self):
-        button = SimpleButton(name='test_repr', pin=1, edge='rising', hold_mode=None, hold_time=2.5, bouncetime=500, antibouncehack=True, pull_up_down='pull_down')
-        expected = "<SimpleButton-test_repr(pin=1,edge=rising,hold_mode=None,hold_time=2.5,bouncetime=500,antibouncehack=True,pull_up_down=pull_down)>"
+        button = SimpleButton(name='test_repr', pin=1, edge='rising', hold_mode=None, hold_time=2.5,
+                              bouncetime=500, antibouncehack=True, pull_up_down='pull_down')
+        expected = ('<SimpleButton-test_repr(pin=1,edge=rising,hold_mode=None,hold_time=2.5,bouncetime=500,'
+                    'antibouncehack=True,pull_up_down=pull_down)>')
         assert repr(button) == expected

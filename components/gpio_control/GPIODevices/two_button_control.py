@@ -111,12 +111,12 @@ class TwoButtonControl:
 
     def __repr__(self):
         two_btns_action = self.functionCallTwoBtns is not None
-        return '<TwoBtnControl-{}({}, {},two_buttons_action={},hold_mode={},hold_time={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+        return ('<TwoBtnControl-{}({}, {},two_buttons_action={},hold_mode={},hold_time={},edge={},'
+                'bouncetime={},antibouncehack={},pull_up_down={})>').format(
             self.name, self.bcmPin1, self.bcmPin2, two_btns_action,
             self.hold_mode, self.hold_time, print_edge_key(self.edge),
             self.bouncetime, self.antibouncehack,
-            print_pull_up_down(self.pull_up_down)
-        )
+            print_pull_up_down(self.pull_up_down))
 
 
 # Uncomment for manual tests
