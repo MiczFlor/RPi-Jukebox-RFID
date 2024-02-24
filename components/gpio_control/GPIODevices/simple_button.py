@@ -59,7 +59,8 @@ def checkGpioStaysInState(holdingTime, gpioChannel, gpioHoldingState):
     while True:
         time.sleep(0.1)
         currentState = GPIO.input(gpioChannel)
-        if holdingTime < (time.perf_counter() - startTime):
+        endTime = time.perf_counter() - startTime
+        if holdingTime < endTime:
             break
         # Return if state does not match holding state
         if (gpioHoldingState != currentState):
@@ -75,14 +76,15 @@ class SimpleButton:
     def __init__(self, pin, action=lambda *args: None, action2=lambda *args: None, name=None,
                  bouncetime=500, antibouncehack=False, edge='falling',
                  hold_time=.3, hold_mode=None, pull_up_down='pull_up'):
+        self.pin = pin
+        self.name = name
         self.edge = parse_edge_key(edge)
         self.hold_time = hold_time
         self.hold_mode = hold_mode
+        # TODO is pull_up always true a bug?
         self.pull_up = True
         self.pull_up_down = parse_pull_up_down(pull_up_down)
 
-        self.pin = pin
-        self.name = name
         self.bouncetime = bouncetime
         self.antibouncehack = antibouncehack
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=self.pull_up_down)
@@ -130,6 +132,7 @@ class SimpleButton:
         GPIO.add_event_detect(self.pin, edge=self.edge, callback=self.callbackFunctionHandler,
                               bouncetime=self.bouncetime)
 
+    @DeprecationWarning
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
