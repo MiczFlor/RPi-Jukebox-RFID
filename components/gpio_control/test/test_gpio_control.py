@@ -34,9 +34,11 @@ def func_test_generateDevice_type(gpio_control_class, name, configArray, type):
     config = configparser.ConfigParser()
     config[name] = configArray
     with patch.object(type, '__init__', return_value=None) as mock_init:
-        device = gpio_control_class.generate_device(config[name], name)
-        assert isinstance(device, type) is True
-        return mock_init
+        with patch.object(type, '__del__', return_value=None, create=True):
+            device = gpio_control_class.generate_device(config[name], name)
+            assert isinstance(device, type) is True
+            del device
+            return mock_init
 
 
 class TestGPIOControl:
