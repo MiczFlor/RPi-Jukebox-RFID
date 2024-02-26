@@ -3,16 +3,16 @@ import configparser
 import os
 import logging
 
-from GPIODevices import (RotaryEncoder,
+from signal import pause
+from RPi import GPIO
+from .GPIODevices import (RotaryEncoder,
                          TwoButtonControl,
                          ShutdownButton,
                          SimpleButton,
                          LED,
                          StatusLED)
-import function_calls
-from signal import pause
-from RPi import GPIO
-from config_compatibility import ConfigCompatibilityChecks
+from . import function_calls
+from .config_compatibility import ConfigCompatibilityChecks
 
 
 class gpio_control():
@@ -28,9 +28,9 @@ class gpio_control():
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
 
-    def getFunctionCall(self, function_name, function_args=None):
+    def getFunctionCall(self, function_name, function_args):
         try:
-            if function_name != 'None':
+            if function_name is not None and function_name != 'None':
                 functionCall = getattr(self.function_calls, function_name)
                 return (lambda *args: functionCall(*args, function_args))
         except AttributeError:
@@ -41,8 +41,6 @@ class gpio_control():
         print(deviceName)
         device_type = config.get('Type')
         if device_type == 'TwoButtonControl':
-            self.logger.info('adding TwoButtonControl')
-            self.getFunctionCall(config.get('functionCall1'))
             return TwoButtonControl(
                 config.getint('Pin1'),
                 config.getint('Pin2'),
@@ -79,8 +77,8 @@ class gpio_control():
         elif device_type == 'RotaryEncoder':
             return RotaryEncoder(config.getint('Pin1'),
                     config.getint('Pin2'),
-                    self.getFunctionCall(config.get('functionCall1')),
-                    self.getFunctionCall(config.get('functionCall2')),
+                    self.getFunctionCall(config.get('functionCall1'), None),
+                    self.getFunctionCall(config.get('functionCall2'), None),
                     config.getfloat('timeBase', fallback=0.1),
                     name=deviceName)
         elif device_type == 'ShutdownButton':
