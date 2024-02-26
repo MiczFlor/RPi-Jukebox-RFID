@@ -17,7 +17,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y confirm interactive
 # n dont configure wifi
 # n dont configure autohotspot
-# y PCM as iface
+# y use default audio iface
 # n no spotify
 # y configure mpd
 # y audio default location
