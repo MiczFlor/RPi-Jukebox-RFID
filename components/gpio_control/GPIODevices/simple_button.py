@@ -173,6 +173,7 @@ class SimpleButton:
 
     @property
     def is_pressed(self):
+        # TODO should this be 'if pull_up_down == GPIO.PUD_UP'? pull_up is always true!
         if self.pull_up:
             return not GPIO.input(self.pin)
         return GPIO.input(self.pin)
