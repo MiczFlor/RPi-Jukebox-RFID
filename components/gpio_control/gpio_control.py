@@ -132,8 +132,8 @@ if __name__ == "__main__":
     ConfigCompatibilityChecks(config, config_path)
 
     phoniebox_function_calls = function_calls.phoniebox_function_calls()
-    gpio_controler = gpio_control(phoniebox_function_calls)
+    gpio_control_class = gpio_control(phoniebox_function_calls)
 
-    devices = gpio_controler.get_all_devices(config)
-    gpio_controler.print_all_devices()
-    gpio_controler.gpio_loop()
+    devices = gpio_control_class.get_all_devices(config)
+    gpio_control_class.print_all_devices()
+    gpio_control_class.gpio_loop()
