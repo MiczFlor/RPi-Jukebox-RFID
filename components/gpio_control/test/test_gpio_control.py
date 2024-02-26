@@ -89,6 +89,12 @@ class TestGPIOControl:
         mock_init = func_test_generateDevice_type(gpio_controler, name, configArray, StatusLED)
         mock_init.assert_called_once_with(5, name=name)
 
+    def test_generateDevice_MPDStatusLED(self, gpio_controler):
+        name = 'TEST_MPDStatusLED'
+        configArray = {'Type': 'MPDStatusLED', 'Pin': '5'}
+        mock_init = func_test_generateDevice_type(gpio_controler, name, configArray, StatusLED)
+        mock_init.assert_called_once_with(5, name=name)
+
     def test_generateDevice_LED_default(self, gpio_controler):
         name = 'TEST_LED'
         configArray = {'Type': LED.__name__, 'Pin': '5', }
@@ -129,6 +135,29 @@ class TestGPIOControl:
     def test_generateDevice_SimpleButton(self, gpio_controler):
         name = 'TEST_SimpleButton'
         configArray = {'Type': SimpleButton.__name__, 'Pin': '5',
+                        'functionCall': 'test_funcCall1', 'functionCallArgs': 'test_funcCall1Args',
+                        'functionCall2': 'test_funcCall2', 'functionCall2Args': 'test_funcCall2Args',
+                        'bouncetime': 299, 'antibouncehack': 'True', 'edge': 'test_edge',
+                        'hold_mode': 'test_holdmode', 'hold_time': 1.3, 'pull_up_down': 'test_pull_up_down'}
+        mock_init = func_test_generateDevice_type(gpio_controler, name, configArray, SimpleButton)
+        mock_init.assert_called_once_with(5, action="test_funcCall1-test_funcCall1Args",
+                                            action2="test_funcCall2-test_funcCall2Args", name=name, bouncetime=299,
+                                            antibouncehack=True, edge='test_edge', hold_mode='test_holdmode',
+                                            hold_time=1.3, pull_up_down='test_pull_up_down')
+
+    def test_generateDevice_Button_default(self, gpio_controler):
+        name = 'TEST_Button'
+        configArray = {'Type': 'Button', 'Pin': '5',
+                        'functionCall': 'test_funcCall1'}
+        mock_init = func_test_generateDevice_type(gpio_controler, name, configArray, SimpleButton)
+        mock_init.assert_called_once_with(5, action="test_funcCall1-None",
+                                            action2="None-None", name=name, bouncetime=500,
+                                            antibouncehack=False, edge='falling', hold_mode=None,
+                                            hold_time=0.3, pull_up_down='pull_up')
+
+    def test_generateDevice_Button(self, gpio_controler):
+        name = 'TEST_Button'
+        configArray = {'Type': 'Button', 'Pin': '5',
                         'functionCall': 'test_funcCall1', 'functionCallArgs': 'test_funcCall1Args',
                         'functionCall2': 'test_funcCall2', 'functionCall2Args': 'test_funcCall2Args',
                         'bouncetime': 299, 'antibouncehack': 'True', 'edge': 'test_edge',
