@@ -5,17 +5,17 @@ import logging
 
 from signal import pause
 from RPi import GPIO
-from .GPIODevices import (RotaryEncoder,
+from GPIODevices import (RotaryEncoder,
                          TwoButtonControl,
                          ShutdownButton,
                          SimpleButton,
                          LED,
                          StatusLED)
-from . import function_calls
-from .config_compatibility import ConfigCompatibilityChecks
+from function_calls import phoniebox_function_calls
+from config_compatibility import ConfigCompatibilityChecks
 
 
-class gpio_control():
+class GPIOControl():
 
     def __init__(self, function_calls):
         self.devices = []
@@ -131,8 +131,8 @@ if __name__ == "__main__":
 
     ConfigCompatibilityChecks(config, config_path)
 
-    phoniebox_function_calls = function_calls.phoniebox_function_calls()
-    gpio_control_class = gpio_control(phoniebox_function_calls)
+    _phoniebox_function_calls = phoniebox_function_calls()
+    gpio_control_class = GPIOControl(_phoniebox_function_calls)
 
     devices = gpio_control_class.get_all_devices(config)
     gpio_control_class.print_all_devices()

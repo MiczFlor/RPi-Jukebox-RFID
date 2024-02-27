@@ -1,7 +1,12 @@
 import pytest
 from mock import patch, call
-from ..gpio_control import gpio_control
-from ..GPIODevices import StatusLED, LED, RotaryEncoder, SimpleButton, ShutdownButton, TwoButtonControl
+from gpio_control import GPIOControl
+from GPIODevices import (StatusLED,
+                                                 LED,
+                                                 RotaryEncoder,
+                                                 SimpleButton,
+                                                 ShutdownButton,
+                                                 TwoButtonControl)
 
 import configparser
 
@@ -20,7 +25,7 @@ def gpio_control_class():
         def funcTestWithParameter(self, param1):
             return f"funcTestWithParameter({param1})"
 
-    _gpio_control_class = gpio_control(MockFunctionCalls)  # function_calls will be mocked
+    _gpio_control_class = GPIOControl(MockFunctionCalls)  # function_calls will be mocked
     return _gpio_control_class
 
 
@@ -29,7 +34,7 @@ def mock_gpio_control_getFunctionCall(self, func_name, func_args):
     return str(func_name) + '-' + str(func_args)
 
 
-@patch.object(gpio_control, 'getFunctionCall', mock_gpio_control_getFunctionCall)
+@patch.object(GPIOControl, 'getFunctionCall', mock_gpio_control_getFunctionCall)
 def func_test_generateDevice_type(gpio_control_class, name, configArray, type):
     config = configparser.ConfigParser()
     config[name] = configArray

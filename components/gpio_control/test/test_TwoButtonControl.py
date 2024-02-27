@@ -1,6 +1,6 @@
 import pytest
 from mock import MagicMock
-from ..GPIODevices.two_button_control import functionCallTwoButtons, TwoButtonControl, GPIO
+from GPIODevices.two_button_control import functionCallTwoButtons, TwoButtonControl, GPIO
 
 
 @pytest.fixture

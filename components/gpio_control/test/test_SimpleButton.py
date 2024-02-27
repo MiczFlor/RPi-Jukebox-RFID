@@ -1,6 +1,6 @@
 import pytest
 from mock import MagicMock
-from ..GPIODevices.simple_button import SimpleButton, GPIO
+from GPIODevices.simple_button import SimpleButton, GPIO
 
 
 mockedAction = MagicMock()

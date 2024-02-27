@@ -1,6 +1,6 @@
 import pytest
 from mock import patch, call
-from ..GPIODevices.led import LED, StatusLED, GPIO
+from GPIODevices.led import LED, StatusLED, GPIO
 
 
 @pytest.fixture
@@ -47,7 +47,7 @@ class TestLED:
 
     def test_statusled_init_default(self):
         GPIO.reset_mock()
-        with patch('components.gpio_control.GPIODevices.led.system') as mock_system:
+        with patch('GPIODevices.led.system') as mock_system:
             with patch('time.sleep'):
                 mock_system.side_effect = [False]
                 _led = StatusLED(pin=1)
@@ -60,7 +60,7 @@ class TestLED:
 
     def test_statusled_init(self):
         GPIO.reset_mock()
-        with patch('components.gpio_control.GPIODevices.led.system') as mock_system:
+        with patch('GPIODevices.led.system') as mock_system:
             with patch('time.sleep'):
                 mock_system.side_effect = [True, False, False]
                 _led = StatusLED(pin=2, name='TestStatusLED')
