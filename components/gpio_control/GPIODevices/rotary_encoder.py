@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# rotary volume knob
-
 import RPi.GPIO as GPIO
 from timeit import default_timer as timer
 import ctypes

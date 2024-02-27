@@ -31,9 +31,6 @@ def rotaryEncoder(functionCallIncr, functionCallDecr):
                          name='MockedGPIOInteraction')
 
 
-#
-# @patch("RPi", autospec=True)
-# @patch("RPi.GPIO", autospec=True)
 class TestRotaryEncoder:
 
     def test_init(self, functionCallIncr, functionCallDecr):

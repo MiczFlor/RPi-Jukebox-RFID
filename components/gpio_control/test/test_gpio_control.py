@@ -10,9 +10,6 @@ from GPIODevices import (StatusLED,
 
 import configparser
 
-# import logging
-# logging.basicConfig(level='DEBUG')
-
 
 @pytest.fixture
 def gpio_control_class():
@@ -219,7 +216,8 @@ class TestGPIOControl:
                         'pull_up_down': 'test_pull_up_down', 'hold_mode': 'test_holdmode', 'hold_time': 1.3,
                         'bouncetime': 299, 'edge': 'test_edge', 'antibouncehack': 'True'}
         mock_init = func_test_generateDevice_type(gpio_control_class, name, configArray, TwoButtonControl)
-        mock_init.assert_called_once_with(5, 6, "test_funcCall1-test_funcCall1Args", "test_funcCall2-test_funcCall2Args",
+        mock_init.assert_called_once_with(5, 6,
+                                          "test_funcCall1-test_funcCall1Args", "test_funcCall2-test_funcCall2Args",
                                           functionCallTwoBtns="test_funcCallTwoButtons-test_funcCallTwoButtonsArgs",
                                           pull_up_down='test_pull_up_down', hold_mode='test_holdmode', hold_time=1.3,
                                           bouncetime=299, edge='test_edge', antibouncehack=True, name=name)
