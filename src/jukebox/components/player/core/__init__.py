@@ -15,7 +15,6 @@ player.mpd.get_album(...)
 player.mpd.get_...(...)
 
 """
-
 import logging
 from typing import Dict, Callable, Optional, Any
 
@@ -175,15 +174,17 @@ class PlayerCtrl:
         """
         album_list = []
         for name, bkend in self._backends.items():
-            album_list.append(bkend.get_albums())
+            album_list.extend(bkend.get_albums())
 
         return album_list
 
     @plugin.tag
-    def list_song_by_artist_and_album(self, artist, albumname):
+    def list_songs_by_artist_and_album(self, albumartist, album):
         for name, bkend in self._backends.items():
-            s_item = filter(lambda album: album['artist'] == artist and album['albumname'] == albumname, bkend.get_albums())
-        return s_item if s_item else None
+            t_list = bkend.get_album_tracks(albumartist, album)
+            if t_list:
+                return t_list
+        return None
 
     @plugin.tag
     def get_song_by_url(self, song_url):
