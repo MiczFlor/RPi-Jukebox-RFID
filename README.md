@@ -49,8 +49,9 @@ While Version 3 is still under development, it is becoming a lot more stable! Al
 If you seek the adventure, your support will be more then welcome. Before contributing, check out the following references.
 
 * ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v3&expanded=true)**
-* 🚀 **[Install Jukebox Version 3](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/builders/installation.md)**
-* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=future3%2C+bug%2C+needs+triage&template=future3.md&title=ISSUE+SUMMARY+on+future3)
+* 🎵 **[Install Jukebox Version 3](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/builders/installation.md)**
+* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2Cfuture3%2Cneeds+triage&projects=&template=bug_v3.yaml&title=%F0%9F%90%9B+%7C+)
+* 🚀 [Propose a feature](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=enhancement%2Cfuture3&projects=&template=feature_v3.yaml&title=%F0%9F%9A%80+%7C+)
 * ☑️ [Feature Status](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/developers/status.md)
 * 📖 [Documentation](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/README.md)
 * 👩‍💻 [Development](https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/developers/README.md)
@@ -58,7 +59,7 @@ If you seek the adventure, your support will be more then welcome. Before contri
 
 ---
 
-### 🎵 Version 2
+### 🎶 Version 2
 
 > [!NOTE]
 > Version 3 is becoming mature and will soon be the new default of Phoniebox. Therefore Version 2 is slowly going into a maintenance mode and no new features will be added to this version.
@@ -66,8 +67,8 @@ If you seek the adventure, your support will be more then welcome. Before contri
 Check out the following references.
 
 * ⭐ **[Releases](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases?q=v2&expanded=true)**
-* 🚀 **[Install Jukebox Version 2](#quick-install-version-2)**
-* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2C+needs+triage&projects=&template=bug_template.md&title=%F0%9F%90%9B+%7C+BUG+SUMMARY)
+* 🎵 **[Install Jukebox Version 2](#quick-install-version-2)**
+* 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2Clegacy_v2%2Cneeds+triage&projects=&template=bug_v2.yaml&title=%F0%9F%90%9B+%7C+)
 * ☑️ [Features](#features-version-2)
 * 📖 [Documentation](#documentation)
 
