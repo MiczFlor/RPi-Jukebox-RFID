@@ -40,6 +40,7 @@ interface ${CURRENT_INTERFACE}
 static ip_address=${ipaddress}/24
 static routers=${CURRENT_GATEWAY}
 static domain_name_servers=${CURRENT_GATEWAY}
+noarp
 ${END_MARKER}
 EOF
 }

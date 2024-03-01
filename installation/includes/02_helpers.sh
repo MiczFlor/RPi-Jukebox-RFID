@@ -128,6 +128,36 @@ download_from_url() {
     return $?
 }
 
+_add_options_to_cmdline() {
+    local options="$1"
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+    if [ ! -s "${cmdlineFile}" ];then
+        sudo tee "${cmdlineFile}" <<-EOF
+${options}
+EOF
+    else
+        for option in $options
+        do
+            if ! grep -qiw "$option" "${cmdlineFile}" ; then
+                sudo sed -i "s/$/ $option/" "${cmdlineFile}"
+            fi
+        done
+    fi
+}
+
+_remove_options_from_cmdline() {
+    local options="$1"
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+
+    if [ -s "${cmdlineFile}" ]; then
+        for option in $options; do
+            sudo sed -i "/$option/d" "${cmdlineFile}"
+        done
+    fi
+}
+
 ### Verify helpers
 print_verify_installation() {
     log "\n
