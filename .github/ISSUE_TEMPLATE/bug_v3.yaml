@@ -27,7 +27,7 @@ body:
       description: |
         What branch did you install from?
         See the "settings" page in the Web App or the "src/jukebox/jukebox/version.py" file.
-      placeholder: e.g. "main" or "develop"
+      placeholder: e.g. "future3/main" or "future3/develop"
     validations:
       required: true
 
