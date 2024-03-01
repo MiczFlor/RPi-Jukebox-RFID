@@ -1,8 +1,6 @@
 import pytest
 from mock import MagicMock
-
-from ..GPIODevices.rotary_encoder import RotaryEncoder
-from RPi import GPIO
+from GPIODevices.rotary_encoder import RotaryEncoder, GPIO
 
 
 pinA = 1
@@ -33,9 +31,6 @@ def rotaryEncoder(functionCallIncr, functionCallDecr):
                          name='MockedGPIOInteraction')
 
 
-#
-# @patch("RPi", autospec=True)
-# @patch("RPi.GPIO", autospec=True)
 class TestRotaryEncoder:
 
     def test_init(self, functionCallIncr, functionCallDecr):
@@ -47,7 +42,6 @@ class TestRotaryEncoder:
         assert repr(rotaryEncoder) == expected
 
     def test_start_stop(self, rotaryEncoder):
-        calls = GPIO.add_event_detect.call_count
         assert rotaryEncoder.is_active is True
         GPIO.remove_event_detect.assert_not_called()
         rotaryEncoder.stop()
