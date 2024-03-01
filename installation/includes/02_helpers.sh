@@ -158,6 +158,16 @@ _remove_options_from_cmdline() {
     fi
 }
 
+is_package_installed() {
+  local package_name=$1
+
+  if apt list --installed 2>/dev/null | grep -q "$package_name"; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
 ### Verify helpers
 print_verify_installation() {
     log "\n
