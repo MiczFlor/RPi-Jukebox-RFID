@@ -1,7 +1,7 @@
-name: 🐛 Bug Report v2
-description: Use this template to report bugs for version 2.
+name: 🐛 Bug Report v3
+description: Use this template to report bugs for version 3.
 title: "🐛 | "
-labels: ["bug", "legacy_v2", "needs triage"]
+labels: ["bug", "future3", "needs triage"]
 body:
   - type: markdown
     attributes:
@@ -15,8 +15,8 @@ body:
       label: Version
       description: |
         What version do you use?
-        See the "info" page in the Web App or the "settings/version" file.
-      placeholder: e.g. "2.5.0" or "2.6.0-alpha"
+        See the "settings" page in the Web App or the "src/jukebox/jukebox/version.py" file.
+      placeholder: e.g. "3.5.0" or "3.6.0-alpha"
     validations:
       required: true
 
@@ -26,8 +26,8 @@ body:
       label: Branch
       description: |
         What branch did you install from?
-        See the "info" page in the Web App or the "settings/version" file.
-      placeholder: e.g. "master" or "develop"
+        See the "settings" page in the Web App or the "src/jukebox/jukebox/version.py" file.
+      placeholder: e.g. "main" or "develop"
     validations:
       required: true
 
@@ -75,8 +75,9 @@ body:
       label: Logs
       description: |
         Please provide the logs after the problem occured.
-        `tail -n 200 /var/log/syslog` (<= Bullseye) or `journalctl -n 200`  (>= Bookworm)
-      render: shell
+        `~/RPi-Jukebox-RFID/shared/logs/app.log` -> General Jukebox app logs
+        `~/RPi-Jukebox-RFID/shared/logs/error.log` -> General Jukebox error logs
+        `~/INSTALL-XXXXXXXXX.log` -> The logfile being generated when installing the Jukebox code
 
   - type: textarea
     id: config
@@ -84,7 +85,7 @@ body:
       label: Configuration
       description: |
         Please provide the configuration if its related to the problem
-        e.g. "mpd.conf", "gpio_settings.ini", ...
+        e.g. "mpd.conf", "jukebox.yaml", ...
 
   - type: textarea
     id: more
