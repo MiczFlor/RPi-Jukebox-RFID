@@ -128,6 +128,70 @@ download_from_url() {
     return $?
 }
 
+get_string_length() {
+    local string="$1"
+    # "-n" option is needed otherwise an additional linebreak char is added by echo
+    echo -n ${string} | wc -m
+}
+
+_get_service_enablement() {
+    local service="$1"
+    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
+
+    if [[ -z "${service}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
+
+    echo "$actual_enablement"
+}
+
+is_service_enabled() {
+    local service="$1"
+    local option="$2"
+    local actual_enablement=$(_get_service_enablement $service $option)
+
+    if [[ "$actual_enablement" == "enabled" ]]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+is_dhcpcd_enabled() {
+    echo $(is_service_enabled "dhcpcd.service")
+}
+
+is_NetworkManager_enabled() {
+    echo $(is_service_enabled "NetworkManager.service")
+}
+
+# create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
+# to correctly handling de-/activation of corresponding feature
+config_file_backup() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ ! -f "${config_file}" ]; then
+        sudo touch "${config_flag_file}"
+    elif [ ! -f "${config_orig_file}" ] && [ ! -f "${config_flag_file}" ]; then
+        sudo cp "${config_file}" "${config_orig_file}"
+    fi
+}
+
+# revert config files backed up with `config_file_backup`
+config_file_revert() {
+    local config_file="$1"
+    local config_flag_file="${config_file}.remove"
+    local config_orig_file="${config_file}.orig"
+    if [ -f "${config_flag_file}" ]; then
+        sudo rm "${config_flag_file}" "${config_file}"
+    elif [ -f "${config_orig_file}" ]; then
+        sudo mv "${config_orig_file}" "${config_file}"
+    fi
+}
+
 _add_options_to_cmdline() {
     local options="$1"
 
