@@ -75,9 +75,11 @@ body:
       label: Logs
       description: |
         Please provide the logs after the problem occured.
-        `~/RPi-Jukebox-RFID/shared/logs/app.log` -> General Jukebox app logs
-        `~/RPi-Jukebox-RFID/shared/logs/error.log` -> General Jukebox error logs
         `~/INSTALL-XXXXXXXXX.log` -> The logfile being generated when installing the Jukebox code
+        and
+        `~/RPi-Jukebox-RFID/shared/logs/*.log` -> General Jukebox app and error logs
+        General Jukebox logs can also be found at `http://ip.of.your.box/logs/*.log`
+
 
   - type: textarea
     id: config
