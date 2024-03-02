@@ -75,8 +75,13 @@ body:
       label: Logs
       description: |
         Please provide the logs after the problem occured.
-        `tail -n 200 /var/log/syslog` (<= Bullseye) or `journalctl -n 200`  (>= Bookworm)
-      render: shell
+        * `/home/pi/phoniebox_logs/install-jukebox.sh_*.log` -> Installation log
+        * `tail -n 200 /var/log/syslog` (<= Bullseye) or `journalctl -n 200` (>= Bookworm) -> General system log
+
+        You might also want to run the analytics script:
+        * `/home/pi/RPi-Jukebox-RFID/scripts/helperscripts/Analytics_AfterInstallScript.sh`
+
+        Note: The logs may contain some personal information, You want to erase before sharing.
 
   - type: textarea
     id: config
