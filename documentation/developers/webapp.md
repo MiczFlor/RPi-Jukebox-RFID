@@ -19,7 +19,7 @@ sudo apt-get -y update && sudo apt-get -y install nodejs
 
 The Web App is a React application based on [Create React App](https://create-react-app.dev/). To start a development server, run the following command:
 
-```
+```bash
 cd ~/RPi-Jukebox-RFID/src/webapp
 npm install # Just the first time or when dependencies change
 npm start
@@ -37,7 +37,7 @@ cd ~/RPi-Jukebox-RFID/src/webapp; \
 
 After a successfull build you might need to restart the web server.
 
-```
+```bash
 sudo systemctl restart nginx.service
 ```
 
@@ -71,6 +71,7 @@ Use the [provided script](#build-the-web-app) to rebuild the Web App. It sets th
 If you need to run the commands manually, make sure to have enough memory available (min. 512 MB). The following commands might help.
 
 Set the swapsize to 512 MB (and deactivate swapfactor). Adapt accordingly if you have a SD Card with small capacity.
+
 ```bash
 sudo dphys-swapfile swapoff
 sudo sed -i "s|.*CONF_SWAPSIZE=.*|CONF_SWAPSIZE=512|g" /etc/dphys-swapfile 
@@ -80,6 +81,7 @@ sudo dphys-swapfile swapon
 ```
 
 Set Node's maximum amount of memory. Memory must be available.
+
 ``` bash
 export NODE_OPTIONS=--max-old-space-size=512
 npm run build
@@ -105,7 +107,6 @@ Node tried to allocate more memory than available on the system.
 
 See [JavaScript heap out of memory](#javascript-heap-out-of-memory)
 
-
 ### Client network socket disconnected
 
 ``` {.bash emphasize-lines="8,9"}
@@ -122,12 +123,12 @@ npm ERR! network 'proxy' config is set properly.  See: 'npm help config'
 
 #### Reason
 
-The network connection is too slow or has issues. 
-This tends to happen on `armv6l` devices where building takes significantly more time due to limited resources. 
+The network connection is too slow or has issues.
+This tends to happen on `armv6l` devices where building takes significantly more time due to limited resources.
 
 #### Solution
 
-Try to use an ethernet connection. A reboot and/or running the script multiple times might also help ([Build produces EOF errors](#build-produces-eof-errors) might occur). 
+Try to use an ethernet connection. A reboot and/or running the script multiple times might also help ([Build produces EOF errors](#build-produces-eof-errors) might occur).
 
 If the error still persists, try to raise the timeout for npm package resolution.
 
@@ -144,6 +145,7 @@ A previous run failed during installation and left a package corrupted.
 #### Solution
 
 Remove the mode packages and rerun again the script.
+
 ``` {.bash emphasize-lines="8,9"}
 rm -rf node_modules
 ```

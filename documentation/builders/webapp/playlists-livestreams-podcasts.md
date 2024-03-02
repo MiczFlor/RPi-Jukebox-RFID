@@ -3,11 +3,13 @@
 By default, the Jukebox represents music based on its metadata like album name, artist or song name. The hierarchy and order of songs is determined by their original definition, e.g. order of songs within an album. If you prefer a specific list of songs to be played, you can use playlists (files ending with `*.m3u`). Jukebox also supports livestreams and podcasts (if connected to the internet) through playlists.
 
 ## Playlists
+
 If you like the Jukebox to play songs in a pre-defined order, you can use .m3u playlists.
 
 A .m3u playlist is a plain text file that contains a list of file paths or URLs to multimedia files. Each entry in the playlist represents a single song, and they are listed in the order in which they should be played.
 
 ### Structure of a .m3u playlist
+
 A .m3u playlist is a simple text document with each song file listed on a separate line. Each entry is optionally preceded by a comment line that starts with a '#' symbol. The actual file paths or URLs of the media files come after the comment.
 
 ### Creating a .m3u playlist
@@ -18,7 +20,7 @@ A .m3u playlist is a simple text document with each song file listed on a separa
 1. On the following lines, list the file paths or URLs of the media files you want to include in the playlist, one per line. They must refer to true files paths on your Jukebox. They can be relative or absolute paths.
 1. Save the file with the .m3u extension, e.g. `my_playlist.m3u`.
 
-```
+```text
 # Absolute
 /home/<username>/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Kindergartenlieder/08 - Pitsch, patsch, Pinguin.mp3
 /home/<username>/RPi-Jukebox-RFID/shared/audiofolders/Simone Sommerland/Die 30 besten Spiel- Und Bewegungslieder/12 - Das rote Pferd.mp3
@@ -42,7 +44,7 @@ Based on the note above, we suggest to use m3u playlists like this, especially i
 
 #### Example folder structure
 
-```
+```text
 └── audiofolders
     ├── wake-up-songs
     │   └── playlist.m3u
@@ -114,7 +116,7 @@ We will explain options 1 and 2 more closely.
 
 #### Example folder structure and playlist names
 
-```
+```text
 └── audiofolders
     ├── die-maus
     │   └── die-maus-podcast.txt
