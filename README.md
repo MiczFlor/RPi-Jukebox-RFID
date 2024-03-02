@@ -147,20 +147,6 @@ There is a growing section of [troubleshooting](https://github.com/MiczFlor/RPi-
 * Everything seems to work, but I hear nothing when swiping a card.
 * I would like to use two cards / IDs to do the same thing.
 
-### Reporting Bugs
-
-To make maintenance easier for everyone, please run the following script and post the results when reporting a bug.
-(Note: the results contain some personal information like IP or SSID.
-You might want to erase some of it before sharing with the bug report.)
-
-~~~bash
-/home/pi/RPi-Jukebox-RFID/scripts/helperscripts/Analytics_AfterInstallScript.sh 
-~~~
-
-Just copy this line and paste it into your terminal on the pi.
-
-If you find something that doesn't work. And you tried and tried again, but it still doesn't work, please report your issue in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-
 ## Hardware aka Shopping List
 
 Here is a list of equipment needed. You can find a lot second hand online (save money and the planet). The links below lead to Amazon, not at all because I want to support them, but because their PartnerNet program helps to support the Phoniebox maintenance (a little bit...).
