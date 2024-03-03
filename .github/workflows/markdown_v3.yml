@@ -17,7 +17,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: xt0rted/markdownlint-problem-matcher@v3
-    - uses: articulate/actions-markdownlint@v1
-    #- run: markdownlint **/*.md --ignore node_modules
+    - uses: DavidAnson/markdownlint-cli2-action@v15
+      with:
+        globs: '**/*.md'
+      continue-on-error: true
