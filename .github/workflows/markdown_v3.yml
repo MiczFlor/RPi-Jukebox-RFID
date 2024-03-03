@@ -24,6 +24,6 @@ jobs:
           README.md
           CODE_OF_CONDUCT.md
           CONTRIBUTING.md
-          documentation/*.md
-          installation/*.md
+          documentation/**/*.md
+          installation/**/*.md
       continue-on-error: true
