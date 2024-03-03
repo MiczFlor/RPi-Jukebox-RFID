@@ -7,7 +7,6 @@ However, this is low-complexity and has zero dependencies
 from misc.simplecolors import Colors
 
 
-
 def input_int(prompt, blank=None, min=None, max=None,
               prompt_color=None, prompt_hint=False) -> int:
     """
