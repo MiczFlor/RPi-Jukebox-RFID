@@ -20,5 +20,10 @@ jobs:
     - uses: actions/checkout@v4
     - uses: DavidAnson/markdownlint-cli2-action@v15
       with:
-        globs: '**/*.md'
+        globs: |
+          README.md
+          CODE_OF_CONDUCT.md
+          CONTRIBUTING.md
+          documentation/*.md
+          installation/*.md
       continue-on-error: true
