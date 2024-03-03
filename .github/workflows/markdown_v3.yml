@@ -1,0 +1,22 @@
+name: Markdown Linting
+
+on:
+  push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '**.md'
+  pull_request:
+    branches:
+        - 'future3/**'
+    paths:
+        - '**.md'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: xt0rted/markdownlint-problem-matcher@v3
+    - run: markdownlint **/*.md --ignore node_modules
