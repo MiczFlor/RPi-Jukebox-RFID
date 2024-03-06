@@ -27,7 +27,7 @@ jobs:
         node-version: '12'
 
     - name: Lint Markdown files
-      uses: igorshubovych/markdownlint-cli@v0.39
+      uses: igorshubovych/markdownlint-cli@master
       with:
         config: .markdownlint.json
         #ignore: node_modules/
