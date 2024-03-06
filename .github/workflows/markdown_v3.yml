@@ -30,7 +30,7 @@ jobs:
       uses: igorshubovych/markdownlint-cli@v0.28.1
       with:
         config: .markdownlint.json
-        ignore: node_modules
+        ignore: node_modules/
 
 
     #steps:
