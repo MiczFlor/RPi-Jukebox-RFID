@@ -27,9 +27,17 @@ jobs:
         node-version: '12'
 
     - name: Lint Markdown files
-      uses: igorshubovych/markdownlint-cli@master
+      uses: nosborn/github-action-markdown-cli@v3.3.0
       with:
         config: .markdownlint.json
+        ignore: node_modules
+
+
+
+    #- name: Lint Markdown files
+      #uses: igorshubovych/markdownlint-cli@master
+      #with:
+        #config: .markdownlint.json
         #ignore: node_modules/
 
 
