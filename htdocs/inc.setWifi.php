@@ -1,35 +1,5 @@
 <?php
 
-$network_confs_shell = shell_exec("sudo bash -c 'source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh && get_all_wireless_networks'");
-$network_confs = explode(' ',$network_confs_shell);
-/*
-* get the lines we need
-*/
-$networks = array();
-$priorities = array();
-foreach($network_confs as $line){
-    unset($temp_ssid);
-    unset($temp_pass);
-    unset($temp_prio);
-
-    $network_conf = explode(':',$line);
-    $temp_ssid = $network_conf[0];
-    $temp_pass = $network_conf[1];
-    $temp_prio = $network_conf[2];
-
-    if(isset($temp_ssid) && $temp_ssid != "") {
-        if(isset($temp_pass)) {
-            $networks[$temp_ssid] = $temp_pass;
-        }
-        if(isset($temp_prio)) {
-            $priorities[$temp_ssid] = $temp_prio;
-        }
-    }
-}
-unset($temp_ssid);
-unset($temp_pass);
-unset($temp_prio);
-
 $active_essid = trim(exec("iwconfig wlan0 | grep ESSID | cut -d ':' -f 2"),'"');
 /*
 * Now we need to check if we need to create a new wpa_supplicant.conf
@@ -72,6 +42,37 @@ if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
     $exec .= "END\n";
     exec("sudo bash -c '". $exec . "'");
 }
+
+$network_confs_shell = shell_exec("sudo bash -c 'source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh && get_all_wireless_networks'");
+$network_confs = explode(' ',$network_confs_shell);
+/*
+* get the lines we need
+*/
+$networks = array();
+$priorities = array();
+foreach($network_confs as $line){
+    unset($temp_ssid);
+    unset($temp_pass);
+    unset($temp_prio);
+
+    $network_conf = explode(':',$line);
+    $temp_ssid = $network_conf[0];
+    $temp_pass = $network_conf[1];
+    $temp_prio = $network_conf[2];
+
+    if(isset($temp_ssid) && $temp_ssid != "") {
+        if(isset($temp_pass)) {
+            $networks[$temp_ssid] = $temp_pass;
+        }
+        if(isset($temp_prio)) {
+            $priorities[$temp_ssid] = $temp_prio;
+        }
+    }
+}
+unset($temp_ssid);
+unset($temp_pass);
+unset($temp_prio);
+
 ?>
 
 <form name='volume' method='post' action='<?php print $_SERVER['PHP_SELF']; ?>'>
