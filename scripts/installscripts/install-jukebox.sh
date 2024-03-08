@@ -40,6 +40,8 @@ JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
 printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
+WIFI_INTERFACE="wlan0"
+
 INTERACTIVE=true
 
 usage() {
@@ -924,7 +926,7 @@ install_main() {
     . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
-    sudo iwconfig wlan0 power off
+    sudo iwconfig "$WIFI_INTERFACE" power off
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -1177,6 +1179,7 @@ install_main() {
 
 wifi_settings() {
     local jukebox_dir="$1"
+    local wifiExtDNS="8.8.8.8"
 
     ###############################
     # WiFi settings (SSID password)
@@ -1188,39 +1191,35 @@ wifi_settings() {
     # $WIFIip
     # $WIFIipRouter
     if [ "${WIFIconfig}" == "YES" ]; then
+        echo "Setting up wifi..."
 
-        # DHCP configuration settings
-        local dhcpcd_conf="/etc/dhcpcd.conf"
-        echo "Setting ${dhcpcd_conf}..."
-        #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
-        # Change IP for router and Phoniebox
-        sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
-        sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
-        # Change user:group and access mod
-        sudo chown root:netdev "${dhcpcd_conf}"
-        sudo chmod 664 "${dhcpcd_conf}"
+        # add network with high priority
+        add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
 
-        # WiFi SSID & Password
-        local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
-        echo "Setting ${wpa_supplicant_conf}..."
-        # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
-        sudo chown root:netdev "${wpa_supplicant_conf}"
-        sudo chmod 664 "${wpa_supplicant_conf}"
+        echo "Setting up static ip..."
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            # DHCP configuration settings
+            local dhcpcd_conf="/etc/dhcpcd.conf"
+            echo "Setting ${dhcpcd_conf}..."
+            #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
+            sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
+            # Change IP for router and Phoniebox
+            sudo sed -i 's/%WIFIinterface%/'"$WIFI_INTERFACE"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIipExtDNS%/'"$wifiExtDNS"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
+            # Change user:group and access mod
+            sudo chown root:netdev "${dhcpcd_conf}"
+            sudo chmod 664 "${dhcpcd_conf}"
+        fi
+
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            sudo nmcli connection modify "$WIFIssid" ipv4.method manual ipv4.address "$WIFIip"/24 ipv4.gateway "$WIFIipRouter" ipv4.dns "$WIFIipRouter $wifiExtDNS"
+        fi
     fi
-
-    # start DHCP
-    echo "Starting dhcpcd service..."
-    sudo service dhcpcd start
-    sudo systemctl enable dhcpcd
-
-# / WiFi settings (SSID password)
-###############################
+    # / WiFi settings (SSID password)
+    ###############################
 }
 
 existing_assets() {
@@ -1468,6 +1467,9 @@ main() {
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
+
+    source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
+
     wifi_settings "${JUKEBOX_HOME_DIR}"
     autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"

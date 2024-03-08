@@ -31,40 +31,6 @@ _get_last_ip_segment() {
     echo $ip | cut -d'.' -f1-3
 }
 
-_get_service_enablement() {
-    local service="$1"
-    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
-
-    if [[ -z "${service}" ]]; then
-        echo "ERROR: at least one parameter value is missing!"
-        exit 1
-    fi
-
-    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
-
-    echo "$actual_enablement"
-}
-
-is_service_enabled() {
-    local service="$1"
-    local option="$2"
-    local actual_enablement=$(_get_service_enablement $service $option)
-
-    if [[ "$actual_enablement" == "enabled" ]]; then
-        echo true
-    else
-        echo false
-    fi
-}
-
-is_dhcpcd_enabled() {
-    echo $(is_service_enabled "dhcpcd.service")
-}
-
-is_NetworkManager_enabled() {
-    echo $(is_service_enabled "NetworkManager.service")
-}
-
 # create flag file if files does no exist (*.remove) or copy present conf to backup file (*.orig)
 # to correctly handling de-/activation of corresponding feature
 config_file_backup() {
@@ -113,6 +79,8 @@ networkManager_connections_path="/etc/NetworkManager/system-connections"
 wifi_interface=wlan0
 ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOTip)
 autohotspot_profile="Phoniebox_Hotspot"
+
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
 
 _install_autohotspot_dhcpcd() {
     # adapted from https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
