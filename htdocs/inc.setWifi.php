@@ -42,7 +42,7 @@ if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
 /*
 * get all configured wifis
 */
-$network_confs_shell = shell_exec("sudo bash -c 'source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh && get_all_wireless_networks'");
+$network_confs_shell = shell_exec("sudo bash -c 'source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh && get_wireless_networks'");
 $network_confs = explode(' ',$network_confs_shell);
 
 $networks = array();
@@ -50,17 +50,25 @@ foreach($network_confs as $line){
     unset($temp_ssid);
     unset($temp_pass);
     unset($temp_prio);
+	unset($temp_active);
 
     $network_conf = explode(':',$line);
     $temp_ssid = trim($network_conf[0]);
     $temp_pass = trim($network_conf[1]);
     $temp_prio = trim($network_conf[2]);
+	$temp_active = isset($active_essid) && $temp_ssid == $active_essid;
 
     if(isset($temp_ssid) && $temp_ssid != "" && isset($temp_pass) && $temp_pass != "") {
 		if(!isset($temp_prio) || !is_numeric($temp_prio)) {
 			$temp_prio = 0;
 		}
-        $networks[] = array($temp_ssid, $temp_pass, $temp_prio);
+        $temp_entry = array($temp_ssid => [ $temp_pass, $temp_prio, $temp_active ]);
+        # use different methods to have the same behavior: the data of the first appearance are kept, following will be ignored
+        if($temp_active) {
+            $networks = array_merge($temp_entry, $networks);
+        } else {
+            $networks = $networks + $temp_entry;
+        }
     }
 }
 unset($temp_ssid);
@@ -89,12 +97,12 @@ unset($temp_prio);
 ?>
         <ul class="list-group">
 <?php
-    $network_count = count($networks);
-    foreach ( $networks as $WIFIindex => $WIFIconf ) {
-        $WIFIssid = $WIFIconf[0];
-        $WIFIpass = $WIFIconf[1];
-        $WIFIprio = $WIFIconf[2];
-		$WIFIactive = isset($active_essid) && $WIFIssid == $active_essid;
+    $network_index = 0;
+    foreach ( $networks as $WIFIssid => $WIFIconf ) {
+        $WIFIpass = $WIFIconf[0];
+        $WIFIprio = $WIFIconf[1];
+		$WIFIactive = $WIFIconf[2];
+        $WIFIindex = $network_index++;
 ?>
             <li class="list-group-item">
                 <div class="row">
@@ -146,27 +154,27 @@ unset($temp_prio);
                 <div class="row">
                     <!-- Text input-->
                     <div class="form-group">
-                      <label class="col-md-4 control-label" for="WIFIssid_<?php print $network_count; ?>"><?php print $lang['globalSSID']; ?></label>
+                      <label class="col-md-4 control-label" for="WIFIssid_<?php print $network_index; ?>"><?php print $lang['globalSSID']; ?></label>
                       <div class="col-md-6">
-                          <input value="" id="WIFIssid_<?php print $network_count; ?>" name="WIFIssid_<?php print $network_count; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text">
+                          <input value="" id="WIFIssid_<?php print $network_index; ?>" name="WIFIssid_<?php print $network_index; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text">
                           <span class="help-block"><?php print $lang['settingsWifiSsidHelp']; ?></span>
                       </div>
                     </div>
 
                     <!-- Text input-->
                     <div class="form-group">
-                      <label class="col-md-4 control-label" for="WIFIpass_<?php print $network_count; ?>"><?php print $lang['globalPassword']; ?></label>
+                      <label class="col-md-4 control-label" for="WIFIpass_<?php print $network_index; ?>"><?php print $lang['globalPassword']; ?></label>
                       <div class="col-md-6">
-                          <input value="" id="WIFIpass_<?php print $network_count; ?>" name="WIFIpass_<?php print $network_count; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63">
+                          <input value="" id="WIFIpass_<?php print $network_index; ?>" name="WIFIpass_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63">
                           <span class="help-block"><?php print $lang['settingsWifiPassHelp']; ?></span>
                       </div>
                     </div>
 
                     <!-- Text input-->
                     <div class="form-group">
-                      <label class="col-md-4 control-label" for="WIFIprio_<?php print $network_count; ?>"><?php print $lang['globalPriority']; ?></label>
+                      <label class="col-md-4 control-label" for="WIFIprio_<?php print $network_index; ?>"><?php print $lang['globalPriority']; ?></label>
                       <div class="col-md-6">
-                          <input value="0" id="WIFIprio_<?php print $network_count; ?>" name="WIFIprio_<?php print $network_count; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100">
+                          <input value="0" id="WIFIprio_<?php print $network_index; ?>" name="WIFIprio_<?php print $network_index; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100">
                           <span class="help-block"><?php print $lang['settingsWifiPrioHelp']; ?></span>
                       </div>
                     </div>

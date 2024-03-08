@@ -39,8 +39,8 @@ clear_wireless_networks() {
     fi
 
     if [[ $(is_NetworkManager_enabled) == true ]]; then
-        nmcli -g NAME,TYPE,ACTIVE connection show | grep  "^.*:.*:no$" | grep -F "wireless" | cut -d : -f 1 | \
-            while read name; do sudo nmcli connection delete "$name"; done
+        nmcli -g UUID,TYPE,ACTIVE connection show | grep  "^.*:.*:no$" | grep -F "wireless" | cut -d : -f 1 | \
+            while read uuid; do sudo nmcli connection delete "$uuid"; done
     fi
 }
 
@@ -73,7 +73,7 @@ add_wireless_network() {
 }
 
 # gets the configured wireless networks. Returns an array with the format "ssid:pass:prio ssid:pass:prio".
-get_all_wireless_networks() {
+get_wireless_networks() {
     networks=()
 
     if [[ $(is_dhcpcd_enabled) == true ]]; then
@@ -91,7 +91,7 @@ get_all_wireless_networks() {
     fi
 
     if [[ $(is_NetworkManager_enabled) == true ]]; then
-        local network_profiles=$(nmcli -g NAME,TYPE connection show | grep -F "wireless" | cut -d : -f 1)
+        local network_profiles=$(nmcli -g UUID,TYPE connection show | grep -F "wireless" | cut -d : -f 1)
 
         for network_profile in $network_profiles
         do
