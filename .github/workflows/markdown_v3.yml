@@ -31,7 +31,7 @@ jobs:
       with:
         files: .
         dot: false
-        ignore_path: node_modules
+        #ignore_path: node_modules
 
 
 
