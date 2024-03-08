@@ -69,3 +69,36 @@ add_wireless_network() {
     fi
 }
 
+# gets the configured wireless networks. Returns an array with the format "ssid:pass:prio ssid:pass:prio".
+get_all_wireless_networks() {
+    networks=()
+
+    if [[ $(is_dhcpcd_enabled) == true ]]; then
+        local network_profiles=$(wpa_cli -i wlan0 list_network | sed '1d' | cut -f 1)
+
+        for n in $network_profiles
+        do
+            local ssid=$(wpa_cli -i wlan0 get_network $n ssid | grep -v "FAIL" | tr -d '"')
+            local pass=$(wpa_cli -i wlan0 get_network $n psk | grep -v "FAIL")
+            local prio=$(wpa_cli -i wlan0 get_network $n priority | grep -v "FAIL")
+
+            networks+=("$ssid":"$pass":"$prio")
+        done
+    fi
+
+    if [[ $(is_NetworkManager_enabled) == true ]]; then
+        local network_profiles=$(nmcli -g NAME,TYPE connection show | grep -F "wireless" | cut -d : -f 1)
+
+        for n in $network_profiles
+        do
+            local result=$(nmcli -t -f 802-11-wireless.ssid,802-11-wireless-security.psk,connection.autoconnect-priority con show $n)
+            local ssid=$(echo "$result" | grep -F "802-11-wireless.ssid" | cut -d : -f 2)
+            local pass=$(echo "$result" | grep -F "802-11-wireless-security.psk" | cut -d : -f 2)
+            local prio=$(echo "$result" | grep -F "connection.autoconnect-priority" | cut -d : -f 2)
+
+            networks+=("$ssid":"$pass":"$prio")
+        done
+    fi
+
+    echo "${networks[@]}"
+}

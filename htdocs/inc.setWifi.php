@@ -1,45 +1,23 @@
 <?php
-/*
-* read ssid and password from /etc/wpa_supplicant/wpa_supplicant.conf
-*/
-$wpaconf = file_get_contents("/etc/wpa_supplicant/wpa_supplicant.conf");
+
+$network_confs_shell = shell_exec("sudo bash -c 'source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh && get_all_wireless_networks'");
+$network_confs = explode(' ',$network_confs_shell);
 /*
 * get the lines we need
 */
 $networks = array();
 $priorities = array();
-unset($temp_ssid);
-unset($temp_pass);
-unset($temp_prio);
-foreach(preg_split("/((\r?\n)|(\r\n?))/", $wpaconf) as $line){
-    unset($temp);
+foreach($network_confs as $line){
+    unset($temp_ssid);
+    unset($temp_pass);
+    unset($temp_prio);
 
-    $line = trim($line);
-    if(substr($line, 0, 7) == "network") {
-        unset($temp_ssid);
-        unset($temp_pass);
-        unset($temp_prio);
-        continue;
-    }
+    $network_conf = explode(':',$line);
+    $temp_ssid = $network_conf[0];
+    $temp_pass = $network_conf[1];
+    $temp_prio = $network_conf[2];
 
-    $temp = explode("=", $line);
-
-    if(count($temp) != 2) {
-        continue;
-    }
-
-    $key = trim($temp[0]);
-    $value = trim(trim($temp[1]), '"');
-
-    if($key == "ssid") {
-        $temp_ssid = $value;
-    } else if($key == "psk") {
-        $temp_pass = $value;
-    } else if($key == "priority") {
-        $temp_prio = $value;
-    }
-
-    if(isset($temp_ssid)) {
+    if(isset($temp_ssid) && $temp_ssid != "") {
         if(isset($temp_pass)) {
             $networks[$temp_ssid] = $temp_pass;
         }
@@ -52,12 +30,7 @@ unset($temp_ssid);
 unset($temp_pass);
 unset($temp_prio);
 
-
-
-unset($exec);
-$exec="iwconfig wlan0 | grep ESSID | cut -d ':' -f 2";
-$active_essid = trim(exec($exec),'"');
-
+$active_essid = trim(exec("iwconfig wlan0 | grep ESSID | cut -d ':' -f 2"),'"');
 /*
 * Now we need to check if we need to create a new wpa_supplicant.conf
 */
@@ -90,19 +63,14 @@ if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
 
     // make multiline bash
     $exec  = "bash -e <<'END'\n";
-    $exec .= "echo 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=DE\n\n' | sudo tee /etc/wpa_supplicant/wpa_supplicant.conf\n";
+    $exec .= "source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh\n";
+    $exec .= "clear_wireless_networks\n";
     foreach ( $networks as $WIFIssid => $WIFIpass ) {
         $WIFIprio = $priorities[$WIFIssid];
-        if (strlen($WIFIpass) < 64) {
-            $WIFIpass = trim(exec("wpa_passphrase '".$WIFIssid."' '".$WIFIpass."' | grep -v -F '#psk' | grep -F 'psk' | cut -d= -f2"));
-        }
-        $exec .= "echo 'network={\n\tssid=\"".$WIFIssid."\"\n\tpsk=".$WIFIpass."\n\tpriority=".$WIFIprio."\n}' | sudo tee -a /etc/wpa_supplicant/wpa_supplicant.conf\n";
+        $exec .= "add_wireless_network wlan0 ".$WIFIssid." ".$WIFIpass." ".$WIFIprio."\n";
     }
-
-    $exec .= "sudo chown root:netdev /etc/wpa_supplicant/wpa_supplicant.conf\n";
-    $exec .= "sudo chmod 664 /etc/wpa_supplicant/wpa_supplicant.conf\n";
     $exec .= "END\n";
-    exec($exec);
+    exec("sudo bash -c '". $exec . "'");
 }
 ?>
 
