@@ -57,6 +57,9 @@ foreach($network_confs as $line){
     $temp_prio = trim($network_conf[2]);
 
     if(isset($temp_ssid) && $temp_ssid != "" && isset($temp_pass) && $temp_pass != "") {
+		if(!isset($temp_prio) || !is_numeric($temp_prio)) {
+			$temp_prio = 0;
+		}
         $networks[] = array($temp_ssid, $temp_pass, $temp_prio);
     }
 }
@@ -91,6 +94,7 @@ unset($temp_prio);
         $WIFIssid = $WIFIconf[0];
         $WIFIpass = $WIFIconf[1];
         $WIFIprio = $WIFIconf[2];
+		$WIFIactive = isset($active_essid) && $WIFIssid == $active_essid;
 ?>
             <li class="list-group-item">
                 <div class="row">
@@ -98,7 +102,7 @@ unset($temp_prio);
                     <!-- Text input-->
                     <div class="form-group">
                         <label class="col-md-4 control-label" for="WIFIssid_<?php print $WIFIindex; ?>"><?php
-                            if(isset($WIFIssid) && isset($active_essid) && $WIFIssid == $active_essid) {
+                            if($WIFIactive) {
                                 print $lang['globalSSID']."*";
                             } else {
                                 print $lang['globalSSID'];
@@ -106,10 +110,8 @@ unset($temp_prio);
                         ?></label>
                         <div class="col-md-6">
                             <input value="<?php
-                                if(isset($WIFIssid) && $WIFIssid != "") {
-                                    print $WIFIssid;
-                                }
-                            ?>" id="WIFIssid_<?php print $WIFIindex; ?>" name="WIFIssid_<?php print $WIFIindex; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text">
+								print $WIFIssid;
+                            ?>" id="WIFIssid_<?php print $WIFIindex; ?>" name="WIFIssid_<?php print $WIFIindex; ?>" placeholder="<?php print $lang['settingsWifiSsidPlaceholder']; ?>" class="form-control input-md" type="text" <?php print $WIFIactive ? "readonly" : ""; ?>>
                             <span class="help-block"></span>
                         </div>
                     </div>
@@ -119,10 +121,8 @@ unset($temp_prio);
                         <label class="col-md-4 control-label" for="WIFIpass_<?php print $WIFIindex; ?>"><?php print $lang['globalPassword']; ?></label>
                         <div class="col-md-6">
                             <input value="<?php
-                                if(isset($WIFIpass) && $WIFIpass != "") {
-                                    print $WIFIpass;
-                                }
-                            ?>" id="WIFIpass_<?php print $WIFIindex; ?>" name="WIFIpass_<?php print $WIFIindex; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63">
+								print $WIFIpass;
+                            ?>" id="WIFIpass_<?php print $WIFIindex; ?>" name="WIFIpass_<?php print $WIFIindex; ?>" placeholder="" class="form-control input-md" type="password" minlength="8" maxlength="63" <?php print $WIFIactive ? "readonly" : ""; ?>>
                             <span class="help-block"></span>
                         </div>
                     </div>
@@ -132,12 +132,8 @@ unset($temp_prio);
                       <label class="col-md-4 control-label" for="WIFIprio_<?php print $WIFIindex; ?>"><?php print $lang['globalPriority']; ?></label>
                       <div class="col-md-6">
                           <input value="<?php
-                              if(isset($WIFIprio) && $WIFIprio != "") {
-                                  print $WIFIprio;
-                              } else {
-                                  print 0;
-                              }
-                          ?>" id="WIFIprio_<?php print $WIFIindex; ?>" name="WIFIprio_<?php print $WIFIindex; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100">
+							  print $WIFIprio;
+                          ?>" id="WIFIprio_<?php print $WIFIindex; ?>" name="WIFIprio_<?php print $WIFIindex; ?>" placeholder="" class="form-control input-md" type="number" min="0" max="100" <?php print $WIFIactive ? "readonly" : ""; ?>>
                           <span class="help-block"></span>
                       </div>
                     </div>

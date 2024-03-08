@@ -35,11 +35,11 @@ is_NetworkManager_enabled() {
 WPA_CONF="/etc/wpa_supplicant/wpa_supplicant.conf"
 clear_wireless_networks() {
     if [[ $(is_dhcpcd_enabled) == true ]]; then
-        sudo sed -i '/^network={/,/^}/ d' $WPA_CONF
+        sudo sed -i -e '/^[[:space:]]*$/d' -e '/^network={/,/^}/d' $WPA_CONF
     fi
 
     if [[ $(is_NetworkManager_enabled) == true ]]; then
-        nmcli -g NAME,TYPE connection show | grep -F "wireless" | cut -d : -f 1 | \
+        nmcli -g NAME,TYPE,ACTIVE connection show | grep  "^.*:.*:no$" | grep -F "wireless" | cut -d : -f 1 | \
             while read name; do sudo nmcli connection delete "$name"; done
     fi
 }
@@ -49,14 +49,17 @@ add_wireless_network() {
     local ssid="$2"
     local pass="$3"
     local prio="$4"
+
+    if [[ "${#pass}" -lt 64 ]]; then
+        pass=$(wpa_passphrase "$ssid" "$pass" | grep -vF '#psk' | grep -F "psk=" | cut -d = -f 2)
+    fi
+
     if [[ $(is_dhcpcd_enabled) == true ]]; then
         if ! sudo cat "$WPA_CONF" | grep -qF "ssid=\"${ssid}\"" ; then
-            local wpa_network=$(wpa_passphrase $ssid $pass)
-            if echo "$wpa_network" | grep -qF 'network='; then
-                wpa_network=$(echo "$wpa_network" | grep -v -F '#psk' | sed "/^}/i\\\tpriority=${prio}" )
+            local wpa_network_with_dummy_psk=$(wpa_passphrase "$ssid" "dummypsk")
+            if echo "$wpa_network_with_dummy_psk" | grep -qF 'network='; then
+                local wpa_network=$(echo "$wpa_network_with_dummy_psk" | sed -e '/#psk/d' -e "s/psk=.*$/psk=${pass}/" -e "/^}/i\\\tpriority=${prio}" )
                 sudo bash -c "echo '${wpa_network}' >> $WPA_CONF"
-            else
-                echo "Error while adding network config."
             fi
         fi
     fi
@@ -64,7 +67,7 @@ add_wireless_network() {
     if [[ $(is_NetworkManager_enabled) == true ]]; then
         if ! nmcli -g NAME,TYPE connection show | grep -F "wireless" | grep -qwF "$ssid"; then
             sudo nmcli connection add type wifi con-name "$ssid" ifname "$interface" autoconnect yes mode infrastructure ssid "$ssid"
-            sudo nmcli connection modify "$ssid" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$pass" conn.autoconnect-p "$prio"
+		    sudo nmcli connection modify "$ssid" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$pass" conn.autoconnect-p "$prio"
         fi
     fi
 }
@@ -74,13 +77,14 @@ get_all_wireless_networks() {
     networks=()
 
     if [[ $(is_dhcpcd_enabled) == true ]]; then
-        local network_profiles=$(wpa_cli -i wlan0 list_network | sed '1d' | cut -f 1)
-
-        for n in $network_profiles
+        local wpa_networks=$(sudo sed '/^network={/,/^}/!d' $WPA_CONF)
+        local wpa_networks_perline=$(echo "${wpa_networks//$'\n'/\\n}" | sed -e 's/[[:space:]]//g' -e 's/\\nnetwork=/\nnetwork=/g')
+        for wpa_network in $wpa_networks_perline
         do
-            local ssid=$(wpa_cli -i wlan0 get_network $n ssid | grep -v "FAIL" | tr -d '"')
-            local pass=$(wpa_cli -i wlan0 get_network $n psk | grep -v "FAIL")
-            local prio=$(wpa_cli -i wlan0 get_network $n priority | grep -v "FAIL")
+            local wpa_network_multiline="${wpa_network//\\n/$'\n'}"
+            local ssid=$(echo "$wpa_network_multiline" | grep -F "ssid=" | cut -d = -f 2 | tr -d '"')
+            local pass=$(echo "$wpa_network_multiline" | grep -F "psk=" | cut -d = -f 2)
+            local prio=$(echo "$wpa_network_multiline" | grep -F "priority=" | cut -d = -f 2)
 
             networks+=("$ssid":"$pass":"$prio")
         done
@@ -89,9 +93,9 @@ get_all_wireless_networks() {
     if [[ $(is_NetworkManager_enabled) == true ]]; then
         local network_profiles=$(nmcli -g NAME,TYPE connection show | grep -F "wireless" | cut -d : -f 1)
 
-        for n in $network_profiles
+        for network_profile in $network_profiles
         do
-            local result=$(nmcli -t -f 802-11-wireless.ssid,802-11-wireless-security.psk,connection.autoconnect-priority con show $n)
+            local result=$(sudo nmcli --show-secrets -t -f 802-11-wireless.ssid,802-11-wireless-security.psk,connection.autoconnect-priority con show $network_profile)
             local ssid=$(echo "$result" | grep -F "802-11-wireless.ssid" | cut -d : -f 2)
             local pass=$(echo "$result" | grep -F "802-11-wireless-security.psk" | cut -d : -f 2)
             local prio=$(echo "$result" | grep -F "connection.autoconnect-priority" | cut -d : -f 2)
