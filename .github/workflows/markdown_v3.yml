@@ -30,7 +30,7 @@ jobs:
       uses: nosborn/github-action-markdown-cli@v3.3.0
       with:
         files: .
-        dot: true
+        dot: false
         ignore_files: documentation/developers/docstring/*
 
 
