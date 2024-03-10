@@ -1200,7 +1200,6 @@ wifi_settings() {
         if [[ $(is_dhcpcd_enabled) == true ]]; then
             # DHCP configuration settings
             local dhcpcd_conf="/etc/dhcpcd.conf"
-            echo "Setting ${dhcpcd_conf}..."
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
             # Change IP for router and Phoniebox
