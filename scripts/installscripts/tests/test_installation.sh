@@ -43,11 +43,19 @@ is_service_enabled() {
 }
 
 is_dhcpcd_enabled() {
-    echo $(is_service_enabled "dhcpcd.service")
+    if [[ $(is_service_enabled "dhcpcd.service") == true || "${CI_TEST_DHCPCD}" == true ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 is_NetworkManager_enabled() {
-    echo $(is_service_enabled "NetworkManager.service")
+    if [[ $(is_service_enabled "NetworkManager.service") == true || "${CI_TEST_NETWORKMANAGER}" == true ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 check_chmod_chown() {
@@ -202,26 +210,42 @@ verify_conf_file() {
 }
 
 verify_wifi_settings() {
-    local dhcpcd_conf="/etc/dhcpcd.conf"
-    local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
-    printf "\nTESTING WiFi settings...\n"
+    if [[ "$WIFIconfig" == "YES" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            printf "\nTESTING WiFi settings (dhcpcd)...\n"
+            local dhcpcd_conf="/etc/dhcpcd.conf"
+            local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
 
-    # check conf files
-    check_file_contains_string "static ip_address=${WIFIip}/24" "${dhcpcd_conf}"
-    check_file_contains_string "static routers=${WIFIipRouter}" "${dhcpcd_conf}"
-    check_file_contains_string "static domain_name_servers=8.8.8.8 ${WIFIipRouter}" "${dhcpcd_conf}"
+            # check conf files
+            check_file_contains_string "static ip_address=${WIFIip}/24" "${dhcpcd_conf}"
+            check_file_contains_string "static routers=${WIFIipRouter}" "${dhcpcd_conf}"
+            check_file_contains_string "static domain_name_servers=${WIFIipRouter} 8.8.8.8" "${dhcpcd_conf}"
 
-    check_file_contains_string "country=${WIFIcountryCode}" "${wpa_supplicant_conf}"
-    check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
-    check_file_contains_string "psk=\"${WIFIpass}\"" "${wpa_supplicant_conf}"
+            check_file_contains_string "country=${WIFIcountryCode}" "${wpa_supplicant_conf}"
+            check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
+            check_file_contains_string "psk=\"${WIFIpass}\"" "${wpa_supplicant_conf}"
+            check_file_contains_string "priority=\"99\"" "${wpa_supplicant_conf}"
 
-    # check owner and permissions
-    check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
-    check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
+            # check owner and permissions
+            check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+            check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
 
-    # check that dhcpcd service is enabled and started
-    check_service_state dhcpcd active
-    check_service_enablement dhcpcd enabled
+            # check that dhcpcd service is enabled and started
+            check_service_state dhcpcd active
+            check_service_enablement dhcpcd enabled
+        fi
+
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            printf "\nTESTING WiFi settings (NetworkManager)...\n"
+            local active_profile_path="/etc/NetworkManager/system-connections/${WIFIssid}.nmconnection"
+
+            check_file_exists "${active_profile_path}"
+            check_file_contains_string "${WIFIssid}" "${active_profile_path}"
+            check_file_contains_string "${WIFIpass}" "${active_profile_path}"
+            check_file_contains_string "${WIFIip}" "${active_profile_path}"
+            check_file_contains_string "${WIFIipRouter}" "${active_profile_path}"
+        fi
+    fi
 }
 
 verify_autohotspot_settings() {
@@ -243,7 +267,7 @@ verify_autohotspot_settings() {
         local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
         local autohotspot_profile="Phoniebox_Hotspot"
 
-        if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
             local dnsmasq_conf=/etc/dnsmasq.conf
             local hostapd_conf=/etc/hostapd/hostapd.conf
             local hostapd_deamon=/etc/default/hostapd
@@ -287,7 +311,7 @@ verify_autohotspot_settings() {
             check_service_enablement dnsmasq disabled
         fi
 
-        if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
             check_file_exists "${interfaces_conf_file}"
 
             check_file_exists "${autohotspot_script}"
@@ -340,10 +364,10 @@ verify_apt_packages() {
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
-        if [[ $(is_dhcpcd_enabled) == true || "${CI_TEST_DHCPCD}" == "true" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
             packages="${packages} ${packages_autohotspot_dhcpcd}"
         fi
-        if [[ $(is_NetworkManager_enabled) == true || "${CI_TEST_NETWORKMANAGER}" == "true" ]]; then
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
             packages="${packages} ${packages_autohotspot_NetworkManager}"
         fi
     fi
@@ -503,9 +527,7 @@ main() {
     printf "\nTesting installation:\n"
     verify_installation_exitcode
     verify_conf_file
-    if [[ "$WIFIconfig" == "YES" ]]; then
-        verify_wifi_settings
-    fi
+    verify_wifi_settings
     verify_apt_packages "${JUKEBOX_HOME_DIR}"
     verify_pip_packages "${JUKEBOX_HOME_DIR}"
     verify_samba_config

@@ -25,11 +25,19 @@ is_service_enabled() {
 }
 
 is_dhcpcd_enabled() {
-    echo $(is_service_enabled "dhcpcd.service")
+    if [[ $(is_service_enabled "dhcpcd.service") == true || "${CI_TEST_DHCPCD}" == true ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 is_NetworkManager_enabled() {
-    echo $(is_service_enabled "NetworkManager.service")
+    if [[ $(is_service_enabled "NetworkManager.service") == true || "${CI_TEST_NETWORKMANAGER}" == true ]]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 WPA_CONF="/etc/wpa_supplicant/wpa_supplicant.conf"

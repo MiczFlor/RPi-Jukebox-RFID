@@ -17,8 +17,8 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y confirm interactive mode
 # y configure wifi
 # y use wifi data (extra ENTER)
-# y configure autohotspot
-# y use autohotspot default config (extra ENTER)
+# n configure autohotspot
+# - use autohotspot default config (extra ENTER)
 # y use default audio iface (extra ENTER)
 # n spotify (extra ENTER)
 # n configure mpd (extra ENTER)
@@ -27,8 +27,8 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y start installation
 # n RFID registration
 # n reboot
-CI_TEST_DHCPCD="false"
-CI_TEST_NETWORKMANAGER="true"
+CI_TEST_DHCPCD="true"
+CI_TEST_NETWORKMANAGER="false"
 ./../install-jukebox.sh <<< "y
 y
 TestWifi
@@ -38,8 +38,7 @@ TestWifiPW
 192.168.100.1
 y
 
-y
-y
+n
 
 y
 
