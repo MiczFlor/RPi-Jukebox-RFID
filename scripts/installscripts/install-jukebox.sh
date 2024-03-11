@@ -1193,11 +1193,11 @@ wifi_settings() {
     if [ "${WIFIconfig}" == "YES" ]; then
         echo "Setting up wifi..."
 
-        # add network with high priority
-        add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
-
-        echo "Setting up static ip..."
         if [[ $(is_dhcpcd_enabled) == true ]]; then
+            echo "... for dhcpcd"
+            # add network with high priority
+            add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
+
             # DHCP configuration settings
             local dhcpcd_conf="/etc/dhcpcd.conf"
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
@@ -1214,6 +1214,10 @@ wifi_settings() {
         fi
 
         if [[ $(is_NetworkManager_enabled) == true ]]; then
+            echo "... for NetworkManager"
+            # add network with high priority
+            add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
+
             sudo nmcli connection modify "$WIFIssid" ipv4.method manual ipv4.address "$WIFIip"/24 ipv4.gateway "$WIFIipRouter" ipv4.dns "$WIFIipRouter $wifiExtDNS"
         fi
     fi
