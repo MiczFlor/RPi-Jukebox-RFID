@@ -13,7 +13,7 @@ import jukebox.playlistgenerator as playlistgenerator
 
 from mpd.asyncio import MPDClient
 from components.player.backends import BackendPlayer
-
+from jukebox import publishing
 
 logger = logging.getLogger('jb.mpd')
 cfg = jukebox.cfghandler.get_handler('player')
@@ -26,7 +26,7 @@ def sanitize(path: str):
     :param path: File or folder path
     """
     _music_library_path_absolute = os.path.expanduser(get_music_library_path())
-    return os.path.normpath(path).lstrip('./').replace(f'{_music_library_path_absolute}/', '')
+    return os.path.normpath(path).replace(f'{_music_library_path_absolute}/', '')
 
 
 class MPDBackend(BackendPlayer):
@@ -94,6 +94,7 @@ class MPDBackend(BackendPlayer):
             # logger.debug(f"MPD: New Status: {s.result()}")
             print(f"MPD: New Status: {type(s)} // {s}")
             # Now, do something with it ...
+            publishing.get_publisher().send('playerstatus', s)
 
     async def _status(self):
         return await self.client.status()
@@ -104,6 +105,8 @@ class MPDBackend(BackendPlayer):
         f = asyncio.run_coroutine_threadsafe(self._status(), self.loop).result()
         print(f"Status: {f}")
         # Put it into unified structure and notify global player control
+        # ToDo: propagate to core player
+        publishing.get_publisher().send('playerstatus', f)
 
     # -----------------------------------------------------
     # Stuff that controls current playback (i.e. moves around in the current playlist, termed "the queue")
