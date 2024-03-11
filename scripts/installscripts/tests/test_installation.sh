@@ -527,9 +527,9 @@ main() {
     printf "\nTesting installation:\n"
     verify_installation_exitcode
     verify_conf_file
-    verify_wifi_settings
     verify_apt_packages "${JUKEBOX_HOME_DIR}"
     verify_pip_packages "${JUKEBOX_HOME_DIR}"
+    verify_wifi_settings
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
