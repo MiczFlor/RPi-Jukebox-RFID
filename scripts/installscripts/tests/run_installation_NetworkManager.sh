@@ -27,8 +27,8 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y start installation
 # n RFID registration
 # n reboot
-CI_TEST_DHCPCD="false"
-CI_TEST_NETWORKMANAGER="true"
+export CI_TEST_DHCPCD="false"
+export CI_TEST_NETWORKMANAGER="true"
 ./../install-jukebox.sh <<< "y
 y
 TestWifi
