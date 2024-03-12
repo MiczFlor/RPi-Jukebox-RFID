@@ -144,7 +144,7 @@ jobs:
       fail-fast: false
       matrix:
         username: ['pi']
-        test_script: ['run_installation_classic.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh', 'run_installation_dhcpcd_staticip.sh', 'run_installation_dhcpcd_autohotspot.sh', 'run_installation_NetworkManager.sh']
+        test_script: ['run_installation_classic.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh', 'run_installation_staticip_dhcpcd.sh', 'run_installation_autohotspot_dhcpcd.sh', 'run_installation_autohotspot_NetworkManager.sh']
         include:
           - username: 'hans'
             test_script: 'run_installation_classic.sh'
