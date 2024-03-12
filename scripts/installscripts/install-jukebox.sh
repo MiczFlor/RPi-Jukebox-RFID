@@ -1197,7 +1197,6 @@ wifi_settings() {
             echo "... for dhcpcd"
 
             local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
-            echo "Setting ${wpa_supplicant_conf}..."
             # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
             sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
