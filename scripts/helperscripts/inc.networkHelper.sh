@@ -52,15 +52,22 @@ clear_wireless_networks() {
     fi
 }
 
+_get_passphrase_for_config() {
+    local ssid="$1"
+    local pass="$2"
+    if [[ "${#pass}" -lt 64 ]]; then
+        pass=$(wpa_passphrase "$ssid" "$pass" | grep -vF '#psk' | grep -F "psk=" | cut -d = -f 2)
+    fi
+    echo $pass
+}
+
 add_wireless_network() {
     local interface="$1"
     local ssid="$2"
     local pass="$3"
     local prio="$4"
 
-    if [[ "${#pass}" -lt 64 ]]; then
-        pass=$(wpa_passphrase "$ssid" "$pass" | grep -vF '#psk' | grep -F "psk=" | cut -d = -f 2)
-    fi
+    pass=$(_get_passphrase_for_config "$ssid" "$pass")
 
     if [[ $(is_dhcpcd_enabled) == true ]]; then
         if ! sudo cat "$WPA_CONF" | grep -qF "ssid=\"${ssid}\"" ; then

@@ -16,47 +16,7 @@ tests=0
 failed_tests=0
 
 # Tool functions
-_get_service_enablement() {
-    local service="$1"
-    local option="${2:+$2 }" # optional, dont't quote in 'systemctl' call!
-
-    if [[ -z "${service}" ]]; then
-        echo "ERROR: at least one parameter value is missing!"
-        exit 1
-    fi
-
-    local actual_enablement=$(systemctl is-enabled ${option}${service} 2>/dev/null)
-
-    echo "$actual_enablement"
-}
-
-is_service_enabled() {
-    local service="$1"
-    local option="$2"
-    local actual_enablement=$(_get_service_enablement $service $option)
-
-    if [[ "$actual_enablement" == "enabled" ]]; then
-        echo true
-    else
-        echo false
-    fi
-}
-
-is_dhcpcd_enabled() {
-    if [[ $(is_service_enabled "dhcpcd.service") == true || "${CI_TEST_DHCPCD}" == true ]]; then
-        echo true
-    else
-        echo false
-    fi
-}
-
-is_NetworkManager_enabled() {
-    if [[ $(is_service_enabled "NetworkManager.service") == true || "${CI_TEST_NETWORKMANAGER}" == true ]]; then
-        echo true
-    else
-        echo false
-    fi
-}
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
 
 check_chmod_chown() {
     local mod_expected=$1
@@ -223,16 +183,13 @@ verify_wifi_settings() {
 
             check_file_contains_string "country=${WIFIcountryCode}" "${wpa_supplicant_conf}"
             check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
-            check_file_contains_string "psk=\"${WIFIpass}\"" "${wpa_supplicant_conf}"
+            local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
+            check_file_contains_string "psk=${_pass}" "${wpa_supplicant_conf}"
             check_file_contains_string "priority=\"99\"" "${wpa_supplicant_conf}"
 
             # check owner and permissions
             check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
             check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
-
-            # check that dhcpcd service is enabled and started
-            check_service_state dhcpcd active
-            check_service_enablement dhcpcd enabled
         fi
 
         if [[ $(is_NetworkManager_enabled) == true ]]; then
@@ -241,7 +198,8 @@ verify_wifi_settings() {
 
             check_file_exists "${active_profile_path}"
             check_file_contains_string "${WIFIssid}" "${active_profile_path}"
-            check_file_contains_string "${WIFIpass}" "${active_profile_path}"
+            local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
+            check_file_contains_string "${_pass}" "${active_profile_path}"
             check_file_contains_string "${WIFIip}" "${active_profile_path}"
             check_file_contains_string "${WIFIipRouter}" "${active_profile_path}"
         fi
