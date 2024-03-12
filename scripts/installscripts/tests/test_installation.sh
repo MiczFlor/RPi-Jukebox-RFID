@@ -185,7 +185,7 @@ verify_wifi_settings() {
             check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
             local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
             check_file_contains_string "psk=${_pass}" "${wpa_supplicant_conf}"
-            check_file_contains_string "priority=\"99\"" "${wpa_supplicant_conf}"
+            check_file_contains_string "priority=99" "${wpa_supplicant_conf}"
 
             # check owner and permissions
             check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
@@ -197,11 +197,13 @@ verify_wifi_settings() {
             local active_profile_path="/etc/NetworkManager/system-connections/${WIFIssid}.nmconnection"
 
             check_file_exists "${active_profile_path}"
-            check_file_contains_string "${WIFIssid}" "${active_profile_path}"
+            check_file_contains_string "ssid=${WIFIssid}" "${active_profile_path}"
             local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
-            check_file_contains_string "${_pass}" "${active_profile_path}"
-            check_file_contains_string "${WIFIip}" "${active_profile_path}"
-            check_file_contains_string "${WIFIipRouter}" "${active_profile_path}"
+            check_file_contains_string "psk=${_pass}" "${active_profile_path}"
+            check_file_contains_string "address1=${WIFIip}" "${active_profile_path}"
+            check_file_contains_string "gateway=${WIFIipRouter}" "${active_profile_path}"
+            check_file_contains_string "dns=${WIFIipRouter}" "${active_profile_path}"
+            check_file_contains_string "autoconnect-priority=99" "${active_profile_path}"
         fi
     fi
 }

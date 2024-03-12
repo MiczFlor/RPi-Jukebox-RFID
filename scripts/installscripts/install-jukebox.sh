@@ -1195,6 +1195,15 @@ wifi_settings() {
 
         if [[ $(is_dhcpcd_enabled) == true ]]; then
             echo "... for dhcpcd"
+
+            local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
+            echo "Setting ${wpa_supplicant_conf}..."
+            # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
+            sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
+            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
+            sudo chown root:netdev "${wpa_supplicant_conf}"
+            sudo chmod 664 "${wpa_supplicant_conf}"
+
             # add network with high priority
             add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
 
