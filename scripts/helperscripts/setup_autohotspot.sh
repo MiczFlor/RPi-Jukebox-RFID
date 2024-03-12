@@ -218,7 +218,7 @@ _install_autohotspot_NetworkManager() {
     sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|${AUTOHOTSPOTpass}|g" "${autohotspot_script}"
     sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
     sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_TIMER_NAME%|${AUTOHOTSPOT_TIMER}|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_TIMER_NAME%|${autohotspot_timer}|g" "${autohotspot_script}"
     sudo chmod +x "${autohotspot_script}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot.service "${autohotspot_service_path}"
