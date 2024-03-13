@@ -183,18 +183,10 @@ config_wifi() {
 # to assign to your Phoniebox.
 # (Note: can be done manually later, if you are unsure.)
 "
-read -rp "Do you want to configure your WiFi? [Y/n] " response
+read -rp "Do you want to configure your WiFi? [y/N] " response
 echo ""
 case "$response" in
-    [nN][oO]|[nN])
-        WIFIconfig=NO
-        echo "You want to configure WiFi later."
-        # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
-        # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
-        ;;
-    *)
+    [yY][eE][sS]|[yY])
         WIFIconfig=YES
         #Ask for SSID
         read -rp "* Type SSID name: " WIFIssid
@@ -232,6 +224,14 @@ case "$response" in
                 } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
+        ;;
+    *)
+        WIFIconfig=NO
+        echo "You want to configure WiFi later."
+        # append variables to config file
+        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        # make a fallback for WiFi Country Code, because we need that even without WiFi config
+        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
