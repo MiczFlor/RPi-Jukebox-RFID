@@ -21,26 +21,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    #- name: Set up Node.js
-      #uses: actions/setup-node@v1
-      #with:
-        #node-version: '12'
-
-    #- name: Lint Markdown files
-      #uses: nosborn/github-action-markdown-cli@v3.3.0
-      #with:
-        #files: .
-        #dot: false
-        #ignore_files: documentation/developers/docstring/*
-
-
-    #- name: Lint Markdown files
-      #uses: igorshubovych/markdownlint-cli@master
-      #with:
-        #config: .markdownlint.json
-        #ignore: node_modules/
-
-    - uses: DavidAnson/markdownlint-cli2-action@v15
+    - name: Linting markdown
+      uses: DavidAnson/markdownlint-cli2-action@v15
       with:
         globs: |
           README.md
