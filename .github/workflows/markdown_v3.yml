@@ -49,4 +49,4 @@ jobs:
           documentation/**/*.md
           installation/**/*.md
           !documentation/developers/docstring/*
-        continue-on-error: true
+      continue-on-error: true
