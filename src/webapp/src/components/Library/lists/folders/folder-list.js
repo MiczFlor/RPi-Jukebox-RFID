@@ -23,9 +23,8 @@ const FolderList = ({
 
   const getParentDir = (dir) => {
     const decodedDir = decodeURIComponent(dir);
-    console.log(decodedDir)
 
-    if (decodedDir == ROOT_DIR) return undefined;
+    if (decodedDir === ROOT_DIR) return undefined;
 
     const parentDir = dropLast(1, decodedDir.split('/')).join('/') || ROOT_DIR;
     return parentDir;
@@ -36,9 +35,7 @@ const FolderList = ({
   return (
     <List sx={{ width: '100%' }}>
       {parentDir &&
-        <FolderListItemBack
-        dir={parentDir}
-        />
+        <FolderListItemBack dir={parentDir} />
       }
       {folders.length === 0 &&
         <ListItem sx={{ justifyContent: 'center' }}>
