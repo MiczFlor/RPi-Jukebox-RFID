@@ -62,7 +62,6 @@ import collections
 import logging
 import threading
 import time
-import traceback
 
 import pulsectl
 import jukebox.cfghandler
@@ -628,6 +627,8 @@ def initialize():
     pulse_monitor.start()
 
     pulse_control = PulseVolumeControl(parse_config())
+    plugin.register(pulse_control, package="volume", name="ctrl", replace=True)
+    plugin.register(pulse_monitor, package="volume", name="mon", replace=True)
 
 
 @plugin.finalize
@@ -645,7 +646,6 @@ def finalize():
         pulse_control.set_volume(startup_volume)
     else:
         pulse_control.publish_volume()
-    plugin.register(pulse_control, package="volume", name="ctrl", replace=True)
 
 
 @plugin.atexit
