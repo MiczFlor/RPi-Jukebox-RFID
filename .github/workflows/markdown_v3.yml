@@ -19,19 +19,19 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12'
+    #- name: Set up Node.js
+      #uses: actions/setup-node@v1
+      #with:
+        #node-version: '12'
 
-    - name: Lint Markdown files
-      uses: nosborn/github-action-markdown-cli@v3.3.0
-      with:
-        files: .
-        dot: false
-        ignore_files: documentation/developers/docstring/*
+    #- name: Lint Markdown files
+      #uses: nosborn/github-action-markdown-cli@v3.3.0
+      #with:
+        #files: .
+        #dot: false
+        #ignore_files: documentation/developers/docstring/*
 
 
     #- name: Lint Markdown files
@@ -40,15 +40,13 @@ jobs:
         #config: .markdownlint.json
         #ignore: node_modules/
 
-
-    #steps:
-    #- uses: actions/checkout@v4
-    #- uses: DavidAnson/markdownlint-cli2-action@v15
-      #with:
-        #globs: |
-          #README.md
-          #CODE_OF_CONDUCT.md
-          #CONTRIBUTING.md
-          #documentation/**/*.md
-          #installation/**/*.md
-      #continue-on-error: true
+    - uses: DavidAnson/markdownlint-cli2-action@v15
+      with:
+        globs: |
+          README.md
+          CODE_OF_CONDUCT.md
+          CONTRIBUTING.md
+          documentation/**/*.md
+          installation/**/*.md
+          !documentation/developers/docstring/*
+        continue-on-error: true
