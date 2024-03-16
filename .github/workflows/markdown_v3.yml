@@ -24,6 +24,7 @@ jobs:
     - name: Linting markdown
       uses: DavidAnson/markdownlint-cli2-action@v15
       with:
+        config: .markdownlint-cli2.yaml
         globs: |
           README.md
           CODE_OF_CONDUCT.md
