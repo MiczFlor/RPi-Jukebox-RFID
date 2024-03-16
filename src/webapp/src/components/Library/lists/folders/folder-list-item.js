@@ -13,7 +13,6 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import request from '../../../../utils/request';
 import FolderLink from './folder-link';
 import FolderTypeAvatar from './folder-type-avatar';
-import { DEFAULT_AUDIO_DIR } from '../../../../config';
 
 const FolderListItem = ({
   folder,
@@ -21,12 +20,12 @@ const FolderListItem = ({
   registerMusicToCard,
 }) => {
   const { t } = useTranslation();
-  const { type, name, path } = folder;
+  const { type, name, relpath } = folder;
 
   const playItem = () => {
     switch(type) {
-      case 'directory': return request('play_folder', { folder: path, recursive: true });
-      case 'file': return request('play_single', { song_url: path.replace(`${DEFAULT_AUDIO_DIR}/`, '') });
+      case 'directory': return request('play_folder', { folder: relpath, recursive: true });
+      case 'file': return request('play_single', { song_url: relpath });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;
@@ -35,8 +34,8 @@ const FolderListItem = ({
 
   const registerItemToCard = () => {
     switch(type) {
-      case 'directory': return registerMusicToCard('play_folder', { folder: path, recursive: true });
-      case 'file': return registerMusicToCard('play_single', { song_url: path.replace(`${DEFAULT_AUDIO_DIR}/`, '') });
+      case 'directory': return registerMusicToCard('play_folder', { folder: relpath, recursive: true });
+      case 'file': return registerMusicToCard('play_single', { song_url: relpath });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;
@@ -50,7 +49,7 @@ const FolderListItem = ({
         type === 'directory'
           ? <IconButton
               component={FolderLink}
-              data={{ dir: path }}
+              data={{ dir: relpath }}
               edge="end"
               aria-label={t('library.folders.show-folder-content')}
             >

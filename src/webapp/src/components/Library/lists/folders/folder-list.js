@@ -1,12 +1,17 @@
 import React, { memo } from 'react';
 import { dropLast } from "ramda";
+import { useTranslation } from 'react-i18next';
 
-import { List } from '@mui/material';
+import {
+  List,
+  ListItem,
+  Typography,
+} from '@mui/material';
 
 import FolderListItem from './folder-list-item';
 import FolderListItemBack from './folder-list-item-back';
 
-import { ROOT_DIRS } from '../../../../config';
+import { ROOT_DIR } from '../../../../config';
 
 const FolderList = ({
   dir,
@@ -14,13 +19,14 @@ const FolderList = ({
   isSelecting,
   registerMusicToCard,
 }) => {
+  const { t } = useTranslation();
+
   const getParentDir = (dir) => {
-    // TODO: ROOT_DIRS should be removed after paths are relative
     const decodedDir = decodeURIComponent(dir);
 
-    if (ROOT_DIRS.includes(decodedDir)) return undefined;
+    if (decodedDir === ROOT_DIR) return undefined;
 
-    const parentDir = dropLast(1, decodedDir.split('/')).join('/');
+    const parentDir = dropLast(1, decodedDir.split('/')).join('/') || ROOT_DIR;
     return parentDir;
   }
 
@@ -29,11 +35,14 @@ const FolderList = ({
   return (
     <List sx={{ width: '100%' }}>
       {parentDir &&
-        <FolderListItemBack
-          dir={parentDir}
-        />
+        <FolderListItemBack dir={parentDir} />
       }
-      {folders.map((folder, key) =>
+      {folders.length === 0 &&
+        <ListItem sx={{ justifyContent: 'center' }}>
+          <Typography>{t('library.folders.empty-folder')}</Typography>
+        </ListItem>
+      }
+      {folders.length > 0 && folders.map((folder, key) =>
         <FolderListItem
           key={key}
           folder={folder}
