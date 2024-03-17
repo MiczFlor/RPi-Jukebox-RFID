@@ -20,7 +20,7 @@ fix: false
 
 # Define glob expressions to use (only valid at root)
 globs:
-  - "**/*.md"
+  - "**.md"
 
 # Define glob expressions to ignore
 ignores:
