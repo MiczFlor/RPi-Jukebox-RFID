@@ -5,6 +5,8 @@
 # rules, see https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
 config:
   line-length: false
+  # ignore dollar signs
+  commands-show-output: false
 
 # Include a custom rule package
 #customRules:
@@ -18,9 +20,7 @@ fix: false
 
 # Define glob expressions to use (only valid at root)
 globs:
-  - "*.md"
-  - "documentation/**/*.md"
-  - "installation/**/*.md"
+  - "**/*.md"
 
 # Define glob expressions to ignore
 ignores:
