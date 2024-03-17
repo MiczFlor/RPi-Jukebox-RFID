@@ -78,7 +78,7 @@ You can now assign livestreams to cards [following the example](#assigning-a-m3u
 
 #### Example folder structure and playlist names
 
-```
+```text
 └── audiofolders
     ├── wdr-kids
     │   └── wdr-kids-livestream.txt
