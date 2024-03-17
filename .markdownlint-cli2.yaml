@@ -7,6 +7,7 @@ config:
   line-length: false
   # ignore dollar signs
   commands-show-output: false
+  no-trailing-punctuation: false
 
 # Include a custom rule package
 #customRules:
