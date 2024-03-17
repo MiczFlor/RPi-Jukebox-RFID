@@ -29,6 +29,7 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 
 ### Pre-boot preparation
 
+<!-- markdownlint-disable MD033 -->
 <details>
 
 <summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
@@ -118,6 +119,7 @@ Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, th
 
 Reboot before you proceed.
 </details>
+<!-- markdownlint-restore -->
 
 ## Install Phoniebox software
 
