@@ -24,7 +24,9 @@ globs:
 
 # Define glob expressions to ignore
 ignores:
+  - ".github/**"
   - "documentation/developers/docstring/*"
+  - "src/**"
 
 # Use a plugin to recognize math
 #markdownItPlugins:
