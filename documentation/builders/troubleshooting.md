@@ -47,10 +47,10 @@ The default logging config does 2 things:
 
 1. It writes 2 log files:
 
-```bash
-shared/logs/app.log    : Complete Debug Messages
-shared/logs/errors.log : Only Errors and Warnings
-```
+    ```bash
+    shared/logs/app.log    : Complete Debug Messages
+    shared/logs/errors.log : Only Errors and Warnings
+    ```
 
 2. Prints logging messages to the console. If run as a service, only error messages are emitted to console to avoid spamming the system log files.
 

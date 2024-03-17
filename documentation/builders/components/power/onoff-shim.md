@@ -32,4 +32,4 @@ The OnOff SHIM comes with a 12-PIN header which needs soldering. If you want to 
 
 ## Assembly options
 
-![](https://cdn.review-images.pimoroni.com/upload-b6276a310ccfbeae93a2d13ec19ab83b-1617096824.jpg?width=640)
+![OnOffShim soldered on a Raspbverry Pi](https://cdn.review-images.pimoroni.com/upload-b6276a310ccfbeae93a2d13ec19ab83b-1617096824.jpg?width=640)

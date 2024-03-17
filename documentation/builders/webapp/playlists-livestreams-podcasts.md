@@ -76,7 +76,7 @@ In order to play radio livestreams on your Jukebox, you use playlists to registe
 
 You can now assign livestreams to cards [following the example](#assigning-a-m3u-playlist-to-a-card) of playlists.
 
-#### Example folder structure and playlist names
+#### Example folder structure and playlist names for livestreams
 
 ```text
 └── audiofolders
@@ -114,7 +114,7 @@ We will explain options 1 and 2 more closely.
 1. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
 1. As an alternative, you can provide a single RSS feed (XML). Jukebox will expand the file and refer to all episodes listed within this file.
 
-#### Example folder structure and playlist names
+#### Example folder structure and playlist names for podcasts
 
 ```text
 └── audiofolders
