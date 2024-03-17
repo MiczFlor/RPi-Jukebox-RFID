@@ -24,8 +24,7 @@ The default configuration is
 
 Auto-Hotspot can be enabled or disabled using the Web App or RPC Commands.
 
-> [!NOTE]
-> Disabling the Auto-Hotspot will run the WiFi check again and maintain the last connection state until reboot.
+Disabling the Auto-Hotspot will run the WiFi check again and maintain the last connection state until reboot.
 
 > [!IMPORTANT]
 > If you disable this feature, you will lose access to the Jukebox if you are not near a known WiFi after reboot!
