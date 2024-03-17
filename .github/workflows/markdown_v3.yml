@@ -26,9 +26,7 @@ jobs:
       with:
         config: .markdownlint-cli2.yaml
         globs: |
-          README.md
-          CODE_OF_CONDUCT.md
-          CONTRIBUTING.md
+          *.md
           documentation/**/*.md
           installation/**/*.md
           !documentation/developers/docstring/*
