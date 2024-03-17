@@ -25,7 +25,6 @@ globs:
 
 # Define glob expressions to ignore
 ignores:
-  - ".github/**"
   - "documentation/developers/docstring/*"
   - "src/**"
 
