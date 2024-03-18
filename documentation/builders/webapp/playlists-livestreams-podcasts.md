@@ -110,7 +110,7 @@ We will explain options 1 and 2 more closely.
 ### Using podcast.txt playlist in Jukebox
 
 1. [Follow the steps above](#using-m3u-playlists-in-jukebox) to add a playlist to your Jukebox (make sure you have created individual folders).
-1. When creating the playlist file, make sure it's called or at least ends with `podcasts.txt` instead of `.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
+1. When creating the playlist file, make sure it's called or at least ends with `podcast.txt` instead of `.m3u`. (Examples: `awesome-podcast.txt`, `podcast.txt`).
 1. Add links to your individual podcast episodes just like you would with songs in .m3u playlists
 1. As an alternative, you can provide a single RSS feed (XML). Jukebox will expand the file and refer to all episodes listed within this file.
 
