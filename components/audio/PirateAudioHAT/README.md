@@ -17,9 +17,9 @@ NOTE: changes to the installation should find their way into the script `setup_p
 
 1. Connect Pirate Audio Hat to your Raspberry Pi
 2. Install Phoniebox (develop branch!)
-3. Stop and disable the GPIO button service:
-   `sudo systemctl stop phoniebox-gpio-buttons.service`
-   `sudo systemctl disable phoniebox-gpio-buttons.service`
+3. Stop and disable the GPIO control service:
+   `sudo systemctl stop phoniebox-gpio-control.service`
+   `sudo systemctl disable phoniebox-gpio-control.service`
 4. Add the following two lines to `config.txt`.
     (Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, the location changed to `/boot/firmware/`, [see here](https://www.raspberrypi.com/documentation/computers/config_txt.html)).
    `gpio=25=op,dh`

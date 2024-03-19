@@ -18,10 +18,10 @@ question() {
 printf "Please make sure that the Pirate Audio HAT is connected...\n"
 question "Continue"
 
-printf "Stopping and disabling GPIO button service...\n"
+printf "Stopping and disabling GPIO control service...\n"
 #TODO this might not be necessary
-sudo systemctl stop phoniebox-gpio-buttons.service
-sudo systemctl disable phoniebox-gpio-buttons.service
+sudo systemctl stop phoniebox-gpio-control.service
+sudo systemctl disable phoniebox-gpio-control.service
 
 boot_config_path=$(get_boot_config_path)
 boot_config_path_backup="${boot_config_path}.bak"
