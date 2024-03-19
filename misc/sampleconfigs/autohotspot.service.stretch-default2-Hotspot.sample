@@ -1,9 +1,0 @@
-[Unit]
-Description=Automatically generates an internet Hotspot when a valid ssid is not in range
-After=multi-user.target
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=%AUTOHOTSPOT_SCRIPT%
-[Install]
-WantedBy=multi-user.target

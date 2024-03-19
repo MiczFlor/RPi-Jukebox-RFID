@@ -15,17 +15,40 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 
 # Run installation (in interactive mode)
 # y confirm interactive
-# n dont configure wifi
-# n dont configure autohotspot
-# y use default audio iface
-# y spotify with myuser, mypassword, myclient_id, myclient_secret
-# y configure mpd
-# y audio default location
-# y config gpio
-# n no RFID registration
-# n No reboot
+# n configure wifi (extra ENTER)
+# n configure autohotspot (extra ENTER)
+# y use default audio iface (extra ENTER)
+# y spotify with myuser, mypassword, myclient_id, myclient_secret (extra ENTER)
+# y configure mpd (extra ENTER)
+# y audio default location (extra ENTER)
+# y config gpio (extra ENTER)
+# y start installation
+# n RFID registration
+# n reboot
 
-./../install-jukebox.sh <<< $'y\nn\n\nn\n\ny\n\ny\nmyuser\nmypassword\nmyclient_id\nmyclient_secret\n\ny\n\ny\n\ny\n\ny\nn\nn\n'
+./../install-jukebox.sh <<< "y
+n
+
+n
+
+y
+
+y
+myuser
+mypassword
+myclient_id
+myclient_secret
+
+y
+
+y
+
+y
+
+y
+n
+n
+"
 INSTALLATION_EXITCODE=$?
 
 # Test installation
