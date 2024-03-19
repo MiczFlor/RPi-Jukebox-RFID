@@ -3,6 +3,8 @@
 HOME_DIR="/home/pi"
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.systemHelper.sh
+
 question() {
     local question=$1
     read -p "${question} (y/n)? " choice
@@ -21,17 +23,19 @@ printf "Stopping and disabling GPIO button service...\n"
 sudo systemctl stop phoniebox-gpio-buttons.service
 sudo systemctl disable phoniebox-gpio-buttons.service
 
-printf "Adding settings to /boot/config.txt...\n"
-if [[ ! -f /boot/config.txt.bak ]]; then
-    sudo cp /boot/config.txt /boot/config.txt.bak
+boot_config_path=$(get_boot_config_path)
+boot_config_path_backup="${boot_config_path}.bak"
+printf "Adding settings to ${boot_config_path}...\n"
+if [[ ! -f "${boot_config_path_backup}" ]]; then
+    sudo cp "${boot_config_path}" "${boot_config_path_backup}"
 fi
 
 # Only add the two lines, if they do not exist already
-if ! sudo grep -qe "gpio=25=op,dh" /boot/config.txt; then
-    echo "gpio=25=op,dh" | sudo tee -a /boot/config.txt > /dev/null
+if ! sudo grep -qe "gpio=25=op,dh" "${boot_config_path}"; then
+    echo "gpio=25=op,dh" | sudo tee -a "${boot_config_path}" > /dev/null
 fi
-if ! sudo grep -qe "dtoverlay=hifiberry-dac" /boot/config.txt; then
-    echo "dtoverlay=hifiberry-dac" | sudo tee -a /boot/config.txt > /dev/null
+if ! sudo grep -qe "dtoverlay=hifiberry-dac" "${boot_config_path}"; then
+    echo "dtoverlay=hifiberry-dac" | sudo tee -a "${boot_config_path}" > /dev/null
 fi
 
 printf "Adding settings to /etc/asound.conf...\n"
