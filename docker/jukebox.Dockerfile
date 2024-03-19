@@ -42,14 +42,14 @@ RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 ENV ZMQ_TMP_DIR libzmq
 ENV ZMQ_VERSION 4.3.5
-ENV ZMQ_PREFIX /usr/local
+ENV ZMQ_PREFIX ${VIRTUAL_ENV}
+ENV ZMQ_DRAFT_API 1
 
 RUN [ "$(uname -m)" = "aarch64" ] && ARCH="arm64" || ARCH="$(uname -m)"; \
     wget https://github.com/pabera/libzmq/releases/download/v${ZMQ_VERSION}/libzmq5-${ARCH}-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
     tar -xzf libzmq.tar.gz -C ${ZMQ_PREFIX}; \
     rm -f libzmq.tar.gz;
 
-RUN export ZMQ_PREFIX=${PREFIX} && export ZMQ_DRAFT_API=1
 RUN pip install -v --no-binary pyzmq pyzmq
 
 EXPOSE 5555 5556
