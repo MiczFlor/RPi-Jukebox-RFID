@@ -1,89 +1,16 @@
 # How to setup a Pimoroni PirateAudio HAT
 
-These instructions are for the following Pimoroni PirateAudio HATs:
+> [!NOTE]
+> The display of the HATs currently only work with the 'spotify' edition, not with 'classic'!
+> See [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1109)
 
-<https://shop.pimoroni.com/?q=pirate+audio>
+These instructions are for the [Pimoroni PirateAudio HATs](https://shop.pimoroni.com/collections/audio?q=pirate%20audio)
 
-The PirateAudio HATs use the same DAC as the hifiberry, so some of the instructions
-from <https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Details> can be applied as well.
+## Installation
 
-The `setup_pirateAudioHAT.sh` script can be used to set it up to work with Phoniebox.
+Run the `setup_pirateAudioHAT.sh` script to set it up to work with Phoniebox.
 
-## Install steps in writing
+## Troubleshooting
 
-(Discussions regarding *Pirate Audio HAT* should take place in the same thread where the below instructions were taken from: [#950](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/950)
-
-NOTE: changes to the installation should find their way into the script `setup_pirateAudioHAT.sh`. Please create pull requests *after* having tested your changes. :)
-
-1. Connect Pirate Audio Hat to your Raspberry Pi
-2. Install Phoniebox (develop branch!)
-3. Stop and disable the GPIO control service:
-   `sudo systemctl stop phoniebox-gpio-control.service`
-   `sudo systemctl disable phoniebox-gpio-control.service`
-4. Add the following two lines to `config.txt`.
-    (Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, the location changed to `/boot/firmware/`, [see here](https://www.raspberrypi.com/documentation/computers/config_txt.html)).
-   `gpio=25=op,dh`
-   `dtoverlay=hifiberry-dac`
-5. Add settings to /etc/asound.conf (create it, if it does not exist yet)
-
-   ```bash
-   pcm.hifiberry {
-        type            softvol
-        slave.pcm       "plughw:CARD=sndrpihifiberry,DEV=0"
-        control.name    "Master"
-        control.card    1
-    }
-    pcm.!default {
-        type            plug
-        slave.pcm       "hifiberry"
-    }
-    ctl.!default {
-        type            hw
-        card            1
-    }
-    ```
-
-6. Add the following section to /etc/mpd.conf
-
-   ```bash
-   audio_output {
-            enabled         "yes"
-            type            "alsa"
-            name            "HiFiBerry DAC+ Lite"
-            device          "hifiberry"
-            auto_resample   "no"
-            auto_channels   "no"
-            auto_format     "no"
-            dop             "no"
-    }
-    ```
-
-7. Set mixer_control name in /etc/mpd.conf
-    `mixer_control      "Master"`
-8. Enable SPI
-    `sudo raspi-config nonint do_spi 0`
-9. Install Python dependencies
-    `sudo apt-get install python3-pil python3-numpy`
-10. Install Mopidy plugins
-    `sudo pip3 install Mopidy-PiDi pidi-display-pil pidi-display-st7789 mopidy-raspberry-gpio`
-11. Add the following sections to /etc/mopidy/mopidy.conf:
-  
-    ```bash
-    [raspberry-gpio]
-    enabled = true
-    bcm5 = play_pause,active_low,150
-    bcm6 = volume_down,active_low,150
-    bcm16 = next,active_low,150
-    bcm20 = volume_up,active_low,150
-    bcm24 = volume_up,active_low,150
-    
-    [pidi]
-    enabled = true
-    display = st7789
-    ```
-
-    **Attention:** Early revisions of PirateAudio HAT used bcm20 for Volume up, later revisions use bcm24. see also <https://github.com/pimoroni/pirate-audio/issues/63#issuecomment-916860634>
-
-12. Enable access for modipy user
-    `sudo usermod -a -G spi,i2c,gpio,video mopidy`
-13. Reboot Raspberry Pi
+The PirateAudio HATs use the same DAC as the HiFiBerry, so some of the instructions
+from [HiFiBerry Soundcard Details](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/HiFiBerry-Soundcard-Details) can be applied as well.
