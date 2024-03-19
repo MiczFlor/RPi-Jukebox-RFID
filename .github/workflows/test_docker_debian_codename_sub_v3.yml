@@ -189,3 +189,4 @@ jobs:
          uses: geekyeggo/delete-artifact@v5
          with:
            name: ${{ needs.build.outputs.image_file_name }}
+           failOnError: false
