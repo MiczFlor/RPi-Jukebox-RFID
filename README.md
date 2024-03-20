@@ -27,11 +27,11 @@ For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is
 
 ## The Phoniebox Calendar 2024 is here
 
-Another bunch of wonderful designs! 2024 is the sixth Phoniebox calendar. If you are interested, you can see the [2019 to 2023 calendars in the docs folder](docs). Download [the printable PDF of 2024 here](https://drive.google.com/file/d/1IX03wabELmhx6YbUtYOFlpDe-Dd7kTx0/).
+Another bunch of wonderful designs! 2024 is the sixth Phoniebox calendar.
+
+To share your design or see all previous calendars and other designs visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
 
 ![The 2024 Phoniebox Calendar](docs/2024-Phoniebox-Calendar.jpg "The 2024 Phoniebox Calendar")
-
-If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2115).
 
 ## Install Phoniebox
 
@@ -247,7 +247,7 @@ The **web app** runs on any device and is mobile optimised. It provides:
 | --- | --- | --- | --- | --- | --- |
 | ![Caption](docs/img/gallery/Steph-20171215_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Elsa-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/hailogugo-20171222-h90-01.jpg "Caption") |
 
-**See more innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY) or visit and share the project's homepage at [phoniebox.de](https://phoniebox.de/). There is also an [english Phoniebox page](https://phoniebox.de/index-en.html).**
+See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
 
 ## Sustainability
 
