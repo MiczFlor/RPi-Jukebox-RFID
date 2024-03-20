@@ -8,7 +8,7 @@ To ensure a consistent documentation we lint markdown files.
 
 We use [markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2) for linting.
 
-`.markdownlint-cli2.yaml` configures linting consistently for the Github Action, the pre-commit hook, manual linting and the integrated linter of Visual Studio Code.
+`.markdownlint-cli2.yaml` configures linting consistently for the Github Action, the pre-commit hook, manual linting and the [markdownlint extension](https://github.com/DavidAnson/vscode-markdownlint) for Visual Studio Code.
 
 You can start a manual check, if you call `run_markdownlint.sh`.
 
@@ -18,12 +18,18 @@ After creating a PR or pushing to the repo a Github Action triggers the linter, 
 
 ### Ignoring Rules
 
-A few rules are globally disabled in `.markdownlint-cli2.yaml` (see section `config`).
-
-If you want to disable a rule for a specific section of a markdown file you can add `<!-- markdownlint-disable MD010 -->` and at the end of the section `<!-- markdownlint-restore -->`.
-
 > [!NOTE]
 > Please use disabling rules with caution and always try to fix the violation first.
+
+A few rules are globally disabled in `.markdownlint-cli2.yaml` (see section `config`).
+
+If you want to disable a rule for a specific section of a markdown file you can use
+
+```markdown
+<!-- markdownlint-disable MD010 -->
+section where MD010 should be ignored 
+<!-- markdownlint-restore -->
+```
 
 ### References
 
