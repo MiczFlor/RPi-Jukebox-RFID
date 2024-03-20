@@ -34,7 +34,7 @@ First, SSH into your Phoniebox.
 cd ~/RPi-Jukebox-RFID/
 ```
 
-Second, get the latest version from Github. Depending on how sufficient you are with Git, you can also checkout a specific branch or version.
+Second, get the latest version from Github. Depending on your proficiency with Git, you can also checkout a specific branch or version.
 Be aware, in case you have made changes to the software, stash them to keep them safe.
 
 1. Backup Local Changes (Optional):
