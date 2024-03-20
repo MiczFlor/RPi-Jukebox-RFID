@@ -16,7 +16,7 @@ If markdown files are changed and the pre-commit hook is enabled, `run_markdownl
 
 After creating a PR or pushing to the repo a Github Action triggers the linter, if markdown files are changed (see `.github/workflows/markdown_v3.yml`).
 
-### Ignoring Rules
+### Disabling Rules
 
 > [!NOTE]
 > Please use disabling rules with caution and always try to fix the violation first.
