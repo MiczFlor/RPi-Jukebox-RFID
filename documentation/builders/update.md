@@ -17,14 +17,14 @@ $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.y
 > [!CAUTION]
 > For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version. Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure.
 
-If you only want to update a few recent comments, this following explanation outlines the steps to do so
+If you only want to update a few recent commits, this following explanation outlines the steps to do so
 
 Typically, 4 steps need to be considered
 
 1. Backup Local Changes (Optional)
 1. Pull the latest version from Github
-1. Replace the Web App with the most recent built
-1. Optional: Update the config files if required.
+1. Replace the Web App with the most recent build
+1. Optional: Update the config files
 
 ### Fetch the most recent version from Github
 
@@ -35,7 +35,7 @@ cd ~/RPi-Jukebox-RFID/
 ```
 
 Second, get the latest version from Github. Depending on how sufficient you are with Git, you can also checkout a specific branch or version.
-Be awere, in case you have made changes to the software, stash them to keep them safe.
+Be aware, in case you have made changes to the software, stash them to keep them safe.
 
 1. Backup Local Changes (Optional):
     - Stash your local changes:
