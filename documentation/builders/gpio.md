@@ -112,7 +112,7 @@ A button to shutdown the Jukebox if it is pressed for more than 3 seconds. Note 
 
 ```yml
 input_devices:
-  IncreaseVolume:
+  Shutdown:
     type: LongPressButton
     kwargs:
       pin: 3
