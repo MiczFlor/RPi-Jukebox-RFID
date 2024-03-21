@@ -9,8 +9,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/MiczFlor/RPi-Jukebox-RFID/badge.svg?branch=develop)](https://coveralls.io/github/MiczFlor/RPi-Jukebox-RFID?branch=develop)
 
-[![Gitter chat](https://badges.gitter.im/join_chat.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
-[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
+[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:matrix.org)
 
 ## Introduction
 
@@ -117,7 +116,7 @@ Check out the following references.
 
 * Please ask **general questions** in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions)
 * **Bugs and enhancements** should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-* We got ourselves a gitter community; **chat us up** at [Gitter/Matrix](https://matrix.to/#/#phoniebox_community:gitter.im)
+* Want to discuss with others? Check out our [Matrix community](https://matrix.to/#/#phoniebox_community:matrix.org)
 
 ## Documentation
 
