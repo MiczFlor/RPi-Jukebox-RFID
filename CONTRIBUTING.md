@@ -45,15 +45,16 @@ as local, temporary scratch areas.
 
 Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
-Our goal is to make it simple for you to contribute changes that improve functionality in your specific environment. 
-To achieve this, we have a set of guidelines that we kindly request contributors to adhere to. 
+Our goal is to make it simple for you to contribute changes that improve functionality in your specific environment.
+To achieve this, we have a set of guidelines that we kindly request contributors to adhere to.
 These guidelines help us maintain a streamlined process and stay on top of incoming contributions.
 
 To report bug fixes and improvements, please follow the steps outlined below:
+
 1. For bug fixes and minor improvements, simply open a new issue or pull request (PR).
 2. If you intend to port a feature from Version 2.x to future3 or wish to implement a new feature, we recommend reaching out to us beforehand.
-   - In such cases, please create an issue outlining your plans and intentions.
-   - We will ensure that there are no ongoing efforts on the same topic.
+   * In such cases, please create an issue outlining your plans and intentions.
+   * We will ensure that there are no ongoing efforts on the same topic.
 
 We eagerly await your contributions! You can review the current [feature list](documentation/developers/status.md) to check for available features and ongoing work.
 
@@ -108,7 +109,7 @@ Run the checks below on the code. Fix those issues! Or you are running in delays
 We provide git hooks for those checks for convenience. To activate
 
 ~~~bash
-cp .githooks/pre-commit` .git/hooks/.
+cp .githooks/pre-commit .git/hooks/.
 ~~~
 
 ### Python Code
@@ -152,7 +153,7 @@ to detect in advance.
 
 If the code change results in a test failure, we will make our best effort to
 correct the error. If a fix cannot be determined and committed within 24 hours
-of its discovery, the commit(s) responsible _may_ be reverted, at the
+of its discovery, the commit(s) responsible *may* be reverted, at the
 discretion of the committer and Phonie maintainers.
 The original contributor will be notified of the revert.
 
@@ -163,7 +164,7 @@ The original contributor will be notified of the revert.
 
 ## Guidelines
 
-* Phoniebox runs on Raspberry Pi OS. 
+* Phoniebox runs on Raspberry Pi OS.
 * Minimum python version is currently **Python 3.9**.
 
 ## Additional Resources

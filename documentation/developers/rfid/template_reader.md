@@ -1,9 +1,8 @@
 
 # Template Reader
 
-*Template for creating and integrating a new RFID Reader*
-
 > [!NOTE]
+> Template for creating and integrating a new RFID Reader.
 > For developers only
 
 This template provides the skeleton API for a new Reader. If you follow
