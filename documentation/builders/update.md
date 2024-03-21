@@ -103,7 +103,7 @@ Revert to Backup If Needed:
     cd ~/RPi-Jukebox-RFID/src/webapp
     rm -rf build
     mv build-backup build
-        ```
+    ```
 
 ## Migration Path from Version 2
 
