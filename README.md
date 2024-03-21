@@ -70,6 +70,7 @@ Check out the following references.
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2Clegacy_v2%2Cneeds+triage&projects=&template=bug_v2.yaml&title=%F0%9F%90%9B+%7C+)
 * ☑️ [Features](#features-version-2)
 * 📖 [Documentation](#documentation)
+* 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop)
 
 #### Features Version 2
 
