@@ -76,7 +76,6 @@ Be aware, in case you have made changes to the software, stash them to keep them
         rm -rf webapp-build-latest.tar.gz
         ```
 
-
 1. Reboot the Phoniebox:
 
    ```bash
@@ -86,24 +85,24 @@ Be aware, in case you have made changes to the software, stash them to keep them
 1. Verify the version of your Phoniebox in the settings tab.
 
 Revert to Backup If Needed:
-   - Checkout the backup branch:
+- Checkout the backup branch:
 
-        ```bash
-        git checkout backup-before-pull
-        ```
+    ```bash
+    git checkout backup-before-pull
+    ```
 
-   - Reapply stashed changes (if any):
+- Reapply stashed changes (if any):
 
-        ```bash
-        git stash pop
-        ```
+    ```bash
+    git stash pop
+    ```
 
-   - Revert Web App:
+- Revert Web App:
 
-        ```bash
-        cd ~/RPi-Jukebox-RFID/src/webapp
-        rm -rf build
-        mv build-backup build
+    ```bash
+    cd ~/RPi-Jukebox-RFID/src/webapp
+    rm -rf build
+    mv build-backup build
         ```
 
 ## Migration Path from Version 2
