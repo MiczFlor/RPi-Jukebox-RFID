@@ -25,13 +25,13 @@ We are working to provide an integrated solution.
 For Version 2 there is a possible fix to reactivate spotify with a manual installation described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983).
 For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is laying the groundwork. Help is greatly appreciated.
 
-## The Phoniebox Calendar 2024 is here
+## The new Phoniebox Calendar is here
 
-Another bunch of wonderful designs! 2024 is the sixth Phoniebox calendar.
+Another bunch of wonderful designs!
 
-To share your design or see all previous calendars and other designs visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
+To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
 
-![The 2024 Phoniebox Calendar](docs/2024-Phoniebox-Calendar.jpg "The 2024 Phoniebox Calendar")
+![The Phoniebox Calendar](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/calendar/latest-Phoniebox-Calendar.jpg "The Phoniebox Calendar")
 
 ## Install Phoniebox
 
@@ -243,11 +243,15 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 ### Phoniebox Gallery
 
-|  |  |   |   |   |   |
-| --- | --- | --- | --- | --- | --- |
-| ![Caption](docs/img/gallery/Steph-20171215_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Elsa-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/hailogugo-20171222-h90-01.jpg "Caption") |
-
 See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
+
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Steph-20171215_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Elsa-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
+
 
 ## Sustainability
 
