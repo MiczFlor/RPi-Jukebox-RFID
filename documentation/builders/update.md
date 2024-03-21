@@ -85,6 +85,7 @@ Be aware, in case you have made changes to the software, stash them to keep them
 1. Verify the version of your Phoniebox in the settings tab.
 
 Revert to Backup If Needed:
+
 - Checkout the backup branch:
 
     ```bash
