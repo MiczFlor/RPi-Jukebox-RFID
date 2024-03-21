@@ -3,7 +3,7 @@
 ## Install Raspberry Pi OS Lite
 
 > [!IMPORTANT]
->  All Raspberry Pi models are supported. For sufficient performance, **we recommend Pi 2, 3 or Zero 2** (`ARMv7` models). Because Pi 1 or Zero 1 (`ARMv6` models) have limited resources, they are slower (during installation and start up procedure) and might require a bit more work! Pi 4 and 5 are an excess ;-)
+> All Raspberry Pi models are supported. For sufficient performance, **we recommend Pi 2, 3 or Zero 2** (`ARMv7` models). Because Pi 1 or Zero 1 (`ARMv6` models) have limited resources, they are slower (during installation and start up procedure) and might require a bit more work! Pi 4 and 5 are an excess ;-)
 
 Before you can install the Phoniebox software, you need to prepare your Raspberry Pi.
 
@@ -27,8 +27,9 @@ Before you can install the Phoniebox software, you need to prepare your Raspberr
 8. Confirm the next warning about erasing the SD card with `Yes`
 9. Wait for the imaging process to be finished (it'll take a few minutes)
 
-
 ### Pre-boot preparation
+
+<!-- markdownlint-disable MD033 -->
 <details>
 
 <summary>In case you forgot to customize the OS settings, follow these instructions after RPi OS has been written to the SD card.</summary>
@@ -81,8 +82,9 @@ You will need a terminal, like PuTTY for Windows or the Terminal app for Mac to 
 ### Pre-install preparation / workarounds
 
 #### Network management since Bookworm
+
 <details>
-With Bookworm, network management has changed. Now, "NetworkManager" is used instead of "dhcpcd". 
+With Bookworm, network management has changed. Now, "NetworkManager" is used instead of "dhcpcd".
 Both methods are supported during installation, but "NetworkManager" is recommended as it is simpler to set up and use.
 For Bullseye, this can also be activated, though it requires a manual process before running the installation.
 
@@ -91,32 +93,38 @@ If the settings are changed, your network will reset, and WiFi will not be confi
 Therefore, make sure you use a wired connection or perform the following steps in a local terminal with a connected monitor and keyboard.
 
 Change network config
+
 * run `sudo raspi-config`
 * select `6 - Advanced Options`
 * select `AA - Network Config`
 * select `NetworkManager`
 
 If you need Wifi, add the information now
+
 * select `1 - System Options`
 * select `1 - Wireless LAN`
 * enter Wifi information
+
 </details>
 
 #### Workaround for 64-bit Kernels (Pi 4 and newer)
+
 <details>
 
 The installation process checks if a 32-bit OS is running, as 64-bit is currently not supported.
 This check also fails if the kernel is running in 64-bit mode. This is the default for Raspberry Pi models 4 and newer.
 
-To be able to run the installation, you have to switch to the 32-bit mode by modifying the `config.txt` and add/change the line `arm_64bit=0`. 
+To be able to run the installation, you have to switch to the 32-bit mode by modifying the `config.txt` and add/change the line `arm_64bit=0`.
 Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, the location changed to `/boot/firmware/` ([see here](https://www.raspberrypi.com/documentation/computers/config_txt.html)).
 
 Reboot before you proceed.
 </details>
+<!-- markdownlint-restore -->
 
 ## Install Phoniebox software
 
 Choose a version, run the corresponding install command in your SSH terminal and follow the instructions.
+
 * [Stable Release](#stable-release)
 * [Pre-Release](#pre-release)
 * [Development](#development)
@@ -127,6 +135,7 @@ After a successful installation, [configure your Phoniebox](configuration.md).
 > Depending on your hardware, this installation might last around 60 minutes (usually it's faster, 20-30 min). It updates OS packages, installs Phoniebox dependencies and applies settings. Be patient and don't let your computer go to sleep. It might disconnect your SSH connection causing the interruption of the installation process. Consider starting the installation in a terminal multiplexer like 'screen' or 'tmux' to avoid this.
 
 ### Stable Release
+
 This will install the latest **stable release** from the *future3/main* branch.
 
 ```bash
@@ -134,6 +143,7 @@ cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID
 ```
 
 ### Pre-Release
+
 This will install the latest **pre-release** from the *future3/develop* branch.
 
 ```bash
@@ -141,6 +151,7 @@ cd; GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.
 ```
 
 ### Development
+
 You can also install a specific branch and/or a fork repository. Update the variables to refer to your desired location. (The URL must not necessarily be updated, unless you have actually updated the file being downloaded.)
 
 > [!IMPORTANT]
@@ -155,9 +166,9 @@ cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://ra
 > If you install another branch or from a fork repository, the Web App needs to be built locally. This is part of the installation process. See the the developers [Web App](../developers/webapp.md) documentation for further details.
 
 ### Logs
+
 To follow the installation closely, use this command in another terminal.
 
 ```bash
 cd; tail -f INSTALL-<fullname>.log
 ```
-

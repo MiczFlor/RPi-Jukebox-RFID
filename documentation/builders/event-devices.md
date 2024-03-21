@@ -1,6 +1,7 @@
 # Event devices
 
 ## Background
+
 Event devices are generic input devices that are exposed in `/dev/input`.
 This includes USB peripherals (Keyboards, Controllers, Joysticks or Mouse) as well as potentially bluetooth devices.
 
@@ -23,6 +24,7 @@ modules:
 ```
 
 And add the following section with the plugin specific configuration:
+
 ``` yaml
 evdev:
   enabled: true
@@ -49,6 +51,7 @@ devices: # list of devices to listen for
           on_press: # Currently only the on_press action is supported
             {rpc_command_definition} # eg `alias: toggle`
 ```
+
 The `{device nickname}` is only for your own orientation and can be choosen freely.
 For each device you need to figure out the `{device_name}` and the `{event_id}` corresponding to key strokes, as indicated in the sections below.
 
@@ -65,7 +68,7 @@ for device in devices:
 
 The output could be in the style of:
 
-```
+```text
 /dev/input/event1    Dell Dell USB Keyboard   usb-0000:00:12.1-2/input0
 /dev/input/event0    Dell USB Optical Mouse   usb-0000:00:12.0-2/input0
 ```
@@ -96,8 +99,10 @@ for event in dev.read_loop():
   if event.type == ecodes.EV_KEY:
     print(categorize(event))
 ```
+
 The output could be of the form:
-```
+
+```text
 device /dev/input/event1, name "DragonRise Inc.   Generic   USB  Joystick  ", phys "usb-3f980000.usb-1.2/input0"
 key event at 1672569673.124168, 297 (BTN_BASE4), down
 key event at 1672569673.385170, 297 (BTN_BASE4), up
@@ -113,7 +118,6 @@ Look for entries like `No callback registered for button ...`.
 ### Specifying the `{rpc_command_definition}`
 
 The RPC command follows the regular RPC command rules as defined in the [following documentation](./rpc-commands.md).
-
 
 ## Full example config
 

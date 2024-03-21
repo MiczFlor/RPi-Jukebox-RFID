@@ -49,17 +49,23 @@ They can be run individually or in combination. To do that, we use
 1. [Install Docker & Compose (Mac)](https://docs.docker.com/docker-for-mac/install/)
 2. Install pulseaudio
     1. Use Homebrew to install
-    ```
-    $ brew install pulseaudio
-    ```
-    2. Enable pulseaudio network capabilities. In an editor, open `/opt/homebrew/Cellar/pulseaudio/16.1/etc/pulse/default.pa` (you might need to adapt this path to your own system settings). Uncomment the following line.
-    ```
-    load-module module-native-protocol-tcp
-    ```
+
+        ```bash
+        $ brew install pulseaudio
+        ```
+
+    2. Enable pulseaudio network capabilities. In an editor, open `/opt/homebrew/Cellar/pulseaudio/16.1/etc/pulse/default.pa` (you might need to adapt this path to your own system settings). Uncomment the following line:
+
+        ```text
+        load-module module-native-protocol-tcp
+        ```
+
     3. Restart the pulseaudio service
-    ```
-    $ brew services restart pulseaudio
-    ```
+
+        ```bash
+        $ brew services restart pulseaudio
+        ```
+
     4. If you have trouble with your audio, try these resources to troubleshoot: [[1]](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712), [[2]](https://devops.datenkollektiv.de/running-a-docker-soundbox-on-mac.html), [[3]](https://stackoverflow.com/a/50939994/1062438)
 
 > [!NOTE]
@@ -189,7 +195,7 @@ details.
 
 If you notice the following exception while running MPD in Docker, it refers to a incorrect setup of your Mac host Pulseaudio.
 
-```
+```text
 mpd      | ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
 mpd      | exception: Failed to read mixer for 'Global ALSA->Pulse stream': failed to attach to pulse: Connection refused
 ```
@@ -197,23 +203,26 @@ mpd      | exception: Failed to read mixer for 'Global ALSA->Pulse stream': fail
 To fix the issue, try the following.
 
 1. Stop your Pulseaudio service
-    ```
+
+    ```bash
     brew service stop pulseaudio
     ```
+
 2. Start Pulseaudio with this command
-    ```
+
+    ```bash
     pulseaudio --load=module-native-protocol-tcp --exit-idle-time=-1 --daemon
     ```
+
 3. Check if daemon is working
-    ```
+
+    ```bash
     pulseaudio --check -v
     ```
 
 Everything else should have been set up properly as a [prerequisite](#mac)
 
 * [Source](https://gist.github.com/seongyongkim/b7d630a03e74c7ab1c6b53473b592712)
-
-
 
 #### Other error messages
 
@@ -265,11 +274,10 @@ jukebox    | 319:server.py          - jb.pub.server        - host.timer.cputemp 
 
 If you encounter the following error, refer to [Pulseaudio issues on Mac](#pulseaudio-issue-on-mac).
 
-```
+```text
 jukebox  | 21.12.2023 08:50:09 -  629:plugs.py           - jb.plugin            - MainThread      - ERROR    - Ignoring failed package load finalizer: 'volume.finalize()'
 jukebox  | 21.12.2023 08:50:09 -  630:plugs.py           - jb.plugin            - MainThread      - ERROR    - Reason: NameError: name 'pulse_control' is not defined
 ```
-
 
 ## Appendix
 
@@ -291,10 +299,10 @@ $ docker run -it --rm \
     --name jukebox jukebox
 ```
 
-## Testing EVDEV devices in Linux
+## Testing ``evdev`` devices in Linux
+
 To test the [event device capabilities](../builders/event-devices.md) in docker, the device needs to be made available to the container.
 
-### Linux
 Mount the device into the container by configuring the appropriate device in a `devices` section of the `jukebox` service in the docker compose file. For example:
 
 ```yaml
@@ -304,9 +312,9 @@ Mount the device into the container by configuring the appropriate device in a `
       - /dev/input/event3:/dev/input/event3
 ```
 
-
 ### Resources
 
+<!-- markdownlint-disable MD024 -->
 #### Mac
 
 * <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
@@ -319,6 +327,8 @@ Mount the device into the container by configuring the appropriate device in a `
 * <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
 * <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
 * <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
+
+<!-- markdownlint-restore -->
 
 #### Audio
 
