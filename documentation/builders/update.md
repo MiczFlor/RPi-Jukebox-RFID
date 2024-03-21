@@ -15,7 +15,7 @@ $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.y
 ## Manually upgrade to the latest version
 
 > [!CAUTION]
-> This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version. Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
+> This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version (The Upgrade Feature will come in the future [#2304](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2304)). Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
 
 If you only want to update a few recent commits, this following explanation outlines the steps to do so
 
