@@ -15,7 +15,7 @@ $ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.y
 ## Manually upgrade to the latest version
 
 > [!CAUTION]
-> For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version. Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure.
+> This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version. Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
 
 If you only want to update a few recent commits, this following explanation outlines the steps to do so
 
@@ -44,9 +44,10 @@ Be aware, in case you have made changes to the software, stash them to keep them
         git stash push -m "Backup before pull"
         ```
 
-    - Create a Backup Branch:
+    - Create a Backup Branch (and potentially delete it in case it already exists):
 
         ```bash
+        git branch -D backup-before-pull
         git branch backup-before-pull
         ```
 
@@ -61,6 +62,7 @@ Be aware, in case you have made changes to the software, stash them to keep them
 
     ```bash
     cd ~/RPi-Jukebox-RFID/src/webapp
+    rm -rf build-backup
     mv build build-backup
     ```
 
@@ -99,7 +101,7 @@ Revert to Backup If Needed:
    - Revert Web App:
 
         ```bash
-        ccd ~/RPi-Jukebox-RFID/src/webapp
+        cd ~/RPi-Jukebox-RFID/src/webapp
         rm -rf build
         mv build-backup build
         ```
