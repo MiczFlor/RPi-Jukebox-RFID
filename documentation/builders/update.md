@@ -60,21 +60,21 @@ Be aware, in case you have made changes to the software, stash them to keep them
 1. Update Web App:
     1. Backup the current webapp build
 
-    ```bash
-    cd ~/RPi-Jukebox-RFID/src/webapp
-    rm -rf build-backup
-    mv build build-backup
-    ```
+        ```bash
+        cd ~/RPi-Jukebox-RFID/src/webapp
+        rm -rf build-backup
+        mv build build-backup
+        ```
 
     1. Go to the [Github Release page](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases) find the latest `Pre-release` release (typically Alpha).
     1. Under "Assets", find the latest Web App release called "webapp-build-latest.tar.gz" and copy the URL.
     1. On your Phoniebox, download the file and extract the archive. Afterwards, delete the archive
 
-    ```bash
-    wget {URL}
-    tar -xzf webapp-build-latest.tar.gz
-    rm -rf webapp-build-latest.tar.gz
-    ```
+        ```bash
+        wget {URL}
+        tar -xzf webapp-build-latest.tar.gz
+        rm -rf webapp-build-latest.tar.gz
+        ```
 
 
 1. Reboot the Phoniebox:
