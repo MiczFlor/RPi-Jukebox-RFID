@@ -5,6 +5,7 @@ SYSTEMD_USR_PATH="/usr/lib/systemd/user"
 VIRTUAL_ENV="${INSTALLATION_PATH}/.venv"
 # Do not change this directory! It must match MPDs expectation where to find the user configuration
 MPD_CONF_PATH="${HOME}/.config/mpd/mpd.conf"
+WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
 # The default upstream user, release branch, and develop branch
 # These are used to prepare the repo for developers
