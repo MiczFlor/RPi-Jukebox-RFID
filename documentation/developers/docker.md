@@ -289,7 +289,7 @@ run `mpd` or `webapp`.
 The following command can be run on a Mac.
 
 ``` bash
-$ docker build -f docker/jukebox.Dockerfile -t jukebox .
+$ docker build -f docker/Dockerfile.jukebox -t jukebox .
 $ docker run -it --rm \
     -v $(PWD)/src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox \
     -v $(PWD)/shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders \
