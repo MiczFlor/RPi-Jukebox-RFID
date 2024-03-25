@@ -18,3 +18,8 @@ RUN mkdir -p ${ZMQ_PREFIX}; \
 
 # Cleanup unnecessary files
 RUN rm -rf /zeromq-${ZMQ_VERSION} libzmq.tar.gz
+
+# Create final image with only the libzmq build fragments
+FROM scratch
+ENV ZMQ_PREFIX /opt/libzmq
+COPY --from=0 ${ZMQ_PREFIX} ${ZMQ_PREFIX}
