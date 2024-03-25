@@ -9,8 +9,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/MiczFlor/RPi-Jukebox-RFID/badge.svg?branch=develop)](https://coveralls.io/github/MiczFlor/RPi-Jukebox-RFID?branch=develop)
 
-[![Gitter chat](https://badges.gitter.im/join_chat.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
-[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
+[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:matrix.org)
 
 ## Introduction
 
@@ -26,13 +25,13 @@ We are working to provide an integrated solution.
 For Version 2 there is a possible fix to reactivate spotify with a manual installation described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983).
 For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is laying the groundwork. Help is greatly appreciated.
 
-## The Phoniebox Calendar 2024 is here
+## The new Phoniebox Calendar is here
 
-Another bunch of wonderful designs! 2024 is the sixth Phoniebox calendar. If you are interested, you can see the [2019 to 2023 calendars in the docs folder](docs). Download [the printable PDF of 2024 here](https://drive.google.com/file/d/1IX03wabELmhx6YbUtYOFlpDe-Dd7kTx0/).
+Another bunch of wonderful designs!
 
-![The 2024 Phoniebox Calendar](docs/2024-Phoniebox-Calendar.jpg "The 2024 Phoniebox Calendar")
+To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
 
-If you want to be featured on next years calendar, please make sure to add your Phoniebox pics to the [design thread here on github](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2115).
+![The Phoniebox Calendar](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/calendar/latest-Phoniebox-Calendar.jpg "The Phoniebox Calendar")
 
 ## Install Phoniebox
 
@@ -71,6 +70,7 @@ Check out the following references.
 * 🐛 [Report a bug](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/new?assignees=&labels=bug%2Clegacy_v2%2Cneeds+triage&projects=&template=bug_v2.yaml&title=%F0%9F%90%9B+%7C+)
 * ☑️ [Features](#features-version-2)
 * 📖 [Documentation](#documentation)
+* 🦄 Code: [Release Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/master), [Development Branch](https://github.com/MiczFlor/RPi-Jukebox-RFID/tree/develop)
 
 #### Features Version 2
 
@@ -117,7 +117,7 @@ Check out the following references.
 
 * Please ask **general questions** in [Discussions](https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions)
 * **Bugs and enhancements** should still be in [Issues](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
-* We got ourselves a gitter community; **chat us up** at [Gitter/Matrix](https://matrix.to/#/#phoniebox_community:gitter.im)
+* Want to discuss with others? Check out our [Matrix community](https://matrix.to/#/#phoniebox_community:matrix.org)
 
 ## Documentation
 
@@ -209,7 +209,7 @@ or donate via [PayPal](https://www.paypal.com) to <micz.flor@web.de> using the *
 
 ### Videos and Screenshots
 
-<a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="docs/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>
+<a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>
 
 See the Phoniebox code in action, watch this video and read the blog post from [iphone-ticker.de](https://www.iphone-ticker.de/wochenend-projekt-kontaktlose-musikbox-fuer-kinder-123063/)
 
@@ -232,7 +232,7 @@ A new video screencast about
 * Connect to your Phoniebox via your wifi network or run the Phoniebox like an access point and connect directly without a router.
 * **Bonus:** control the Phoniebox from your phone or computer via a web app.
 
-![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](docs/img/web-app-iphone-screens.jpg "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
+![The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/web-app-iphone-screens.jpg "The web app allows you to change the volume level, list and play audio files and folders, stop the player and shut down the RPi gracefully.")
 
 The **web app** runs on any device and is mobile optimised. It provides:
 
@@ -244,11 +244,15 @@ The **web app** runs on any device and is mobile optimised. It provides:
 
 ### Phoniebox Gallery
 
-|  |  |   |   |   |   |
-| --- | --- | --- | --- | --- | --- |
-| ![Caption](docs/img/gallery/Steph-20171215_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Elsa-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/UlliH-20171210_h90-01.jpg "Caption") | ![Caption](docs/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg "Caption") | ![Caption](docs/img/gallery/hailogugo-20171222-h90-01.jpg "Caption") |
+See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
 
-**See more innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY) or visit and share the project's homepage at [phoniebox.de](https://phoniebox.de/). There is also an [english Phoniebox page](https://phoniebox.de/index-en.html).**
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Steph-20171215_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Elsa-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
+
 
 ## Sustainability
 
