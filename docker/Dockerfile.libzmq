@@ -14,7 +14,7 @@ RUN mkdir -p ${ZMQ_PREFIX}; \
     tar -xzf libzmq.tar.gz; \
     cd zeromq-${ZMQ_VERSION}; \
     ./configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
-    make && make install
+    make -j$(nproc) && make install
 
 # Cleanup unnecessary files
 RUN rm -rf /zeromq-${ZMQ_VERSION} libzmq.tar.gz
