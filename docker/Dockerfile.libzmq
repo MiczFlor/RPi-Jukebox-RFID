@@ -6,10 +6,11 @@ RUN apt-get update && apt-get install -y \
 
 # Define environment variables for libzmq
 ENV ZMQ_VERSION 4.3.5
-ENV ZMQ_PREFIX /usr/local
+ENV ZMQ_PREFIX /opt/libzmq
 
 # Download, compile, and install libzmq
-RUN wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+RUN mkdir -p ${ZMQ_PREFIX}; \
+    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
     tar -xzf libzmq.tar.gz; \
     cd zeromq-${ZMQ_VERSION}; \
     ./configure --prefix=${ZMQ_PREFIX} --enable-drafts; \

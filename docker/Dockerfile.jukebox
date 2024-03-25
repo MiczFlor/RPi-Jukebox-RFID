@@ -41,9 +41,9 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 # Install pyzmq Python dependency separately
-ENV ZMQ_PREFIX ${VIRTUAL_ENV}
+ENV ZMQ_PREFIX /opt/libzmq
 ENV ZMQ_DRAFT_API 1
-COPY --from=libzmq /usr/local ${ZMQ_PREFIX}
+COPY --from=libzmq ${ZMQ_PREFIX} ${ZMQ_PREFIX}
 RUN pip install -v pyzmq --no-binary pyzmq
 
 EXPOSE 5555 5556
