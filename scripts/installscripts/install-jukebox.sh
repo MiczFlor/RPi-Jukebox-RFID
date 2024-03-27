@@ -1072,7 +1072,7 @@ install_main() {
     local mpd_conf="/etc/mpd.conf"
     # MPD configuration
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
     # Change vars to match install config
     sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
