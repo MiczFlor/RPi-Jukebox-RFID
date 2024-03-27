@@ -635,36 +635,6 @@ config_spotify() {
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
-config_mpd() {
-    #####################################################
-    # Configure MPD
-
-    clear
-
-    echo "#####################################################
-#
-# CONFIGURE MPD
-#
-# MPD (Music Player Daemon) runs the audio output and must
-# be configured. Do it now, if you are unsure.
-# (Note: can be done manually later.)
-"
-    read -rp "Do you want to configure MPD? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            MPDconfig=NO
-            echo "You want to configure MPD later."
-            ;;
-        *)
-            MPDconfig=YES
-            echo "MPD will be set up with default values."
-            ;;
-    esac
-    # append variables to config file
-    echo "MPDconfig=\"$MPDconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
-    read -rp "Hit ENTER to proceed to the next step." INPUT
-}
-
 config_audio_folder() {
     local jukebox_dir="$1"
 
@@ -788,7 +758,6 @@ check_config_file() {
             check_variable "SPOTIclientsecret"
         fi
     fi
-    check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
     check_variable "GPIOconfig"
 
@@ -1060,6 +1029,7 @@ install_main() {
     sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
     sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
+
     # 2. install new ones - this is version > 1.1.8-beta
     RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
@@ -1097,33 +1067,31 @@ install_main() {
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
-    if [ "${MPDconfig}" == "YES" ]; then
-        local mpd_conf="/etc/mpd.conf"
 
-        echo "Configuring MPD..."
-        # MPD configuration
-        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
-        # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
-        sudo chown mpd:audio "${mpd_conf}"
-        sudo chmod 640 "${mpd_conf}"
+    echo "Configuring MPD..."
+    local mpd_conf="/etc/mpd.conf"
+    # MPD configuration
+    # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
+    # Change vars to match install config
+    sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+    sudo chown mpd:audio "${mpd_conf}"
+    sudo chmod 640 "${mpd_conf}"
 
-        # start mpd
-        echo "Starting mpd service..."
-        sudo service mpd restart
-        sudo systemctl enable mpd
-    fi
+    # start mpd
+    echo "Starting mpd service..."
+    sudo service mpd restart
+    sudo systemctl enable mpd
 
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Configuring Spotify support..."
         local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
         local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
-        echo "Configuring Spotify support..."
         sudo systemctl disable mpd
         sudo service mpd stop
         sudo systemctl enable mopidy
@@ -1470,7 +1438,6 @@ main() {
         config_autohotspot
         config_audio_interface
         config_spotify
-        config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
         config_gpio
     else

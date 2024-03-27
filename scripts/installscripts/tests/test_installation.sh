@@ -147,7 +147,6 @@ verify_conf_file() {
             check_variable "SPOTIclientsecret"
         fi
     fi
-    check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
     check_variable "GPIOconfig"
 
@@ -423,44 +422,44 @@ verify_systemd_services() {
 }
 
 verify_spotify_config() {
-    local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-    local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+    if [[ "${SPOTinstall}" == "YES" ]]; then
+        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
+        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
 
-    printf "\nTESTING spotify config...\n\n"
+        printf "\nTESTING spotify config...\n\n"
 
-    check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
-    check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
-    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
+        check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
+        check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
+        check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
+        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
+        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
-    check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
-    check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
-    check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
-    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
-    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
+        check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
+        check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
+        check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
+        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
+        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
 
-    # check that mopidy service is enabled
-    check_service_enablement mopidy enabled
-    # check that mpd service is disabled
-    check_service_enablement mpd disabled
+        # check that mopidy service is enabled
+        check_service_enablement mopidy enabled
+        # check that mpd service is disabled
+        check_service_enablement mpd disabled
+    fi
 }
 
 verify_mpd_config() {
-    if [[ "$MPDconfig" == "YES" ]]; then
-        local mpd_conf="/etc/mpd.conf"
+    local mpd_conf="/etc/mpd.conf"
 
-        printf "\nTESTING mpd config...\n\n"
+    printf "\nTESTING mpd config...\n\n"
 
-        check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
-        check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
+    check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
+    check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
 
-        check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
+    check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
 
-        # check that mpd service is enabled, when Spotify support is not installed
-        if [[ "${SPOTinstall}" == "NO" ]]; then
-            check_service_enablement mpd enabled
-        fi
+    # check that mpd service is enabled, when Spotify support is not installed
+    if [[ "${SPOTinstall}" == "NO" ]]; then
+        check_service_enablement mpd enabled
     fi
 }
 
@@ -493,10 +492,8 @@ main() {
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
-    if [[ "${SPOTinstall}" == "YES" ]]; then
-        verify_spotify_config
-    fi
     verify_mpd_config
+    verify_spotify_config
     verify_autohotspot_settings
     verify_folder_access "${JUKEBOX_HOME_DIR}"
 }
