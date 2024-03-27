@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # These are only dependencies that are required to get as close to the
 # Raspberry Pi environment as possible.
@@ -22,7 +22,7 @@ RUN usermod -aG pulse ${USER}
 RUN apt-get update && apt-get install -qq -y \
     --allow-downgrades --allow-remove-essential --allow-change-held-packages \
     g++ at wget \
-    espeak mpc mpg123 git ffmpeg spi-tools netcat \
+    espeak mpc mpg123 git ffmpeg spi-tools netcat-openbsd \
     python3 python3-venv python3-dev python3-mutagen
 
 # Copy in the source code using the correct permissions
