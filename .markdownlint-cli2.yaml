@@ -8,6 +8,11 @@ config:
   # ignore dollar signs
   commands-show-output: false
   no-trailing-punctuation: false
+  no-duplicate-heading:
+    siblings_only: true
+  # allow some tags we use for formatting
+  no-inline-html:
+    allowed_elements: [ "details", "summary" ]
 
 # Include a custom rule package
 #customRules:

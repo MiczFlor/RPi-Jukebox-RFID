@@ -43,8 +43,6 @@ sudo systemctl restart nginx.service
 
 ## Known Issues while building
 
-<!-- markdownlint-disable MD024 -->
-
 ### JavaScript heap out of memory
 
 While (re-) building the Web App, you get the following output:
@@ -151,4 +149,3 @@ Remove the mode packages and rerun again the script.
 ``` {.bash emphasize-lines="8,9"}
 rm -rf node_modules
 ```
-<!-- markdownlint-restore -->
