@@ -28,7 +28,7 @@ const LibraryLists = () => {
   const [cardId] = useState(searchParams.get('cardId'));
   const [musicFilter, setMusicFilter] = useState('');
 
-  const handleMusicFolder = (event) => {
+  const handleMusicFilter = (event) => {
     setMusicFilter(event.target.value);
   };
 
@@ -49,7 +49,7 @@ const LibraryLists = () => {
       {isSelecting && <SelectorHeader />}
       <Grid container sx={{ padding: '10px' }}>
         <LibraryHeader
-          handleMusicFolder={handleMusicFolder}
+          handleMusicFilter={handleMusicFilter}
           musicFilter={musicFilter}
         />
         <Grid

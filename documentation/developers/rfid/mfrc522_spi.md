@@ -57,7 +57,8 @@ If true all card read-outs will be logged, even when card is permanently on read
 
 The following pin-out is for the default SPI Bus 0 on Raspberry Pins.
 
-*MFRC522 default wiring (spi_bus=0, spi_ce=0)*
+### MFRC522 default wiring (spi_bus=0, spi_ce=0)
+
 |Pin Board Name  |Function  |RPI GPIO  |RPI Pin  |
 |----------------|----------|----------|---------|
 |SDA             |CE        |GPIO8     |24       |

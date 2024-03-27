@@ -9,6 +9,9 @@
 #   Note: This only checks the modified files
 # - docs build of if any python file is staged
 #   Note: This builds the entire documentation if a changed file goes into the documentation
+# - Markdownlint if any markdown file is staged
+#   Note: This checks all markdown files as configured in .markdownlint-cli2.yaml
+
 #
 # If there are problem with this script, commit may still be done with
 # git commit --no-verify
@@ -39,6 +42,20 @@ if [[ -n $PY_FILES ]]; then
 fi
 
 code=$(( flake8_code + doc_code ))
+
+# Pass all staged markdown files through markdownlint-cli2
+MD_FILES="$(git diff --diff-filter=d --staged --name-only -- **/*.md)"
+markdownlint_code=0
+if [[ -n $MD_FILES ]]; then
+  echo -e "\n**************************************************************"
+  echo "Modified Markdown files. Running markdownlint-cli2 ... "
+  echo -e "**************************************************************\n"
+  ./run_markdownlint.sh
+  markdownlint_code=$?
+  echo "Markdownlint-cli2 return code: $markdownlint_code"
+fi
+
+code=$(( flake8_code + doc_code + markdownlint_code))
 
 if [[ code -gt 0 ]]; then
   echo -e "\n**************************************************************"
