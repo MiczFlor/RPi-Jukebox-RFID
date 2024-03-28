@@ -376,7 +376,6 @@ Mount the device into the container by configuring the appropriate device in a `
 
 ### Resources
 
-<!-- markdownlint-disable MD024 -->
 #### Mac
 
 * <https://stackoverflow.com/questions/54702179/how-to-access-mac-os-x-microphone-inside-docker-container>
@@ -389,8 +388,6 @@ Mount the device into the container by configuring the appropriate device in a `
 * <https://arnav.jain.se/2020/enable-audio--video-in-docker-container/>
 * <https://x410.dev/cookbook/wsl/enabling-sound-in-wsl-ubuntu-let-it-sing/>
 * <https://research.wmz.ninja/articles/2017/11/setting-up-wsl-with-graphics-and-audio.html>
-
-<!-- markdownlint-restore -->
 
 #### Audio
 
