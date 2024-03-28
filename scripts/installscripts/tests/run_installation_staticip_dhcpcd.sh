@@ -21,7 +21,6 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # - use autohotspot default config (extra ENTER)
 # y use default audio iface (extra ENTER)
 # n spotify (extra ENTER)
-# n configure mpd (extra ENTER)
 # y audio default location (extra ENTER)
 # y config gpio (extra ENTER)
 # y start installation
@@ -41,8 +40,6 @@ y
 n
 
 y
-
-n
 
 n
 
