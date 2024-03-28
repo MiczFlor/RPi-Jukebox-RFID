@@ -8,7 +8,7 @@ services:
         - USER=root
         - HOME=/root
       context: ../
-      dockerfile: ./docker/mpd.Dockerfile
+      dockerfile: ./docker/Dockerfile.mpd
     container_name: mpd
     image: phoniebox/mpd
     environment:
@@ -26,7 +26,7 @@ services:
         - USER=root
         - HOME=/root
       context: ../
-      dockerfile: ./docker/jukebox.Dockerfile
+      dockerfile: ./docker/Dockerfile.jukebox
     container_name: jukebox
     image: phoniebox/jukebox
     depends_on:
@@ -49,7 +49,7 @@ services:
   webapp:
     build:
       context: ../
-      dockerfile: ./docker/webapp.Dockerfile
+      dockerfile: ./docker/Dockerfile.webapp
     container_name: webapp
     image: phoniebox/webapp
     depends_on:
