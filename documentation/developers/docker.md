@@ -1,5 +1,3 @@
-<!-- markdownlint-disable MD033 -->
-
 # Phoniebox Development Runbook for Docker environments
 
 This document describes how to set up a local development environment
