@@ -10,6 +10,7 @@ from threading import *
 
 import inotify.adapters
 import paho.mqtt.client as mqtt
+import paho.mqtt.enums as mqtt_enum
 
 # ----------------------------------------------------------
 #  Prerequisites
@@ -590,7 +591,7 @@ def fetchData():
 
 
 # create client instance
-client = mqtt.Client(config.get("mqttClientId"))
+client = mqtt.Client(callback_api_version=mqtt_enum.CallbackAPIVersion.VERSION1, client_id=config.get("mqttClientId"))
 
 # configure authentication
 if config.get("mqttUsername") and config.get("mqttPassword"):

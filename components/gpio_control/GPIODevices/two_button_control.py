@@ -111,23 +111,24 @@ class TwoButtonControl:
 
     def __repr__(self):
         two_btns_action = self.functionCallTwoBtns is not None
-        return '<TwoBtnControl-{}({}, {},two_buttons_action={},hold_mode={},hold_time={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
+        return ('<TwoBtnControl-{}({}, {},two_buttons_action={},hold_mode={},hold_time={},edge={},'
+                'bouncetime={},antibouncehack={},pull_up_down={})>').format(
             self.name, self.bcmPin1, self.bcmPin2, two_btns_action,
             self.hold_mode, self.hold_time, print_edge_key(self.edge),
             self.bouncetime, self.antibouncehack,
-            print_pull_up_down(self.pull_up_down)
-        )
+            print_pull_up_down(self.pull_up_down))
 
 
-if __name__ == "__main__":
-    logging.basicConfig(level='INFO')
-    pin1 = int(input('please enter first pin'))
-    pin2 = int(input('please enter second pin'))
-    func1 = lambda *args: print('Function Btn1 executed with {}'.format(args))
-    func2 = lambda *args: print('Function Btn2 executed with {}'.format(args))
-    func3 = lambda *args: print('Function BothBtns executed with {}'.format(args))
-    two_btn_control = TwoButtonControl(pin1, pin2, func1, func2, func3)
+# Uncomment for manual tests
+# if __name__ == "__main__":
+#     from signal import pause
+#     logging.basicConfig(level='INFO')
+#     pin1 = int(input('please enter first pin'))
+#     pin2 = int(input('please enter second pin'))
+#     func1 = lambda *args: print('Function Btn1 executed with {}'.format(args))
+#     func2 = lambda *args: print('Function Btn2 executed with {}'.format(args))
+#     func3 = lambda *args: print('Function BothBtns executed with {}'.format(args))
+#     two_btn_control = TwoButtonControl(pin1, pin2, func1, func2, func3)
 
-    print('running')
-    while True:
-        pass
+#     print('running')
+#     pause()

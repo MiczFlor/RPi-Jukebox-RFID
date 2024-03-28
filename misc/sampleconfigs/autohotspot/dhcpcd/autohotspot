@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #version 0.962-N/HS
 
 #You may share this script on the condition all references to RaspberryConnect.com
@@ -12,19 +12,25 @@
 #Additions where made for the Phoniebox project
 #https://github.com/MiczFlor/RPi-Jukebox-RFID
 
-if [ $# -gt 0 ] ; then
-    if [ $# -eq 1 ] && [ "$1" == "--force-hotspot" ]; then
-        FORCE_HOTSPOT=1
-    else
-        echo "ignoring unrecognized parameter: $*"
-    fi
-fi
+while getopts "a" opt; do
+    case $opt in
+        a )
+            FORCE_HOTSPOT=true
+            ;;
+        * )
+            echo "option not valid"
+            exit
+            ;;
+    esac
+done
 
 NO_SSID='NoSSid'
 ssidChk="$NO_SSID"
 
-wifidev="wlan0" #device name to use. Default is wlan0.
+wifidev="%WIFI_INTERFACE%" #device name to use.
 #use the command: iw dev ,to see wifi interface name
+hotspot_ip=%AUTOHOTSPOT_IP%
+daemon_service="%AUTOHOTSPOT_SERVICE_DAEMON%"
 
 IFSdef=$IFS
 cnt=0
@@ -50,7 +56,7 @@ CreateAdHocNetwork()
 {
     echo "Creating Hotspot"
     ip link set dev "$wifidev" down
-    ip a add %AUTOHOTSPOT_IP%/24 brd + dev "$wifidev"
+    ip a add "$hotspot_ip"/24 brd + dev "$wifidev"
     ip link set dev "$wifidev" up
     dhcpcd -k "$wifidev" >/dev/null 2>&1
     systemctl start dnsmasq
@@ -81,7 +87,7 @@ CheckWifiUp()
 }
 
 InitWPA() {
-    wpa_supplicant -B -i "$wifidev" -c /etc/wpa_supplicant/wpa_supplicant.conf >/dev/null 2>&1
+    systemctl restart "$daemon_service"
 }
 
 CheckServices()
@@ -108,28 +114,29 @@ CheckServices()
 
 CheckDevice()
 {
+    echo "Device availability check"
     local j=0
     while [ true ] #wait for wifi if busy, usb wifi is slower.
     do
-        echo "Device availability check: try $j"
+
         if [ $j -ge 5 ]; then
             #if no wifi device,ie usb wifi removed, activate wifi so when it is
             #reconnected wifi to a router will be available
-            echo "No wifi device connected"
+            echo "No wifi device '$wifidev' connected"
             InitWPA
             exit 1
         elif (iw dev "$wifidev" info 2>&1 >/dev/null) ; then
-            echo "wifi device available"
+            echo "Wifi device '$wifidev' available"
             if (rfkill list wifi -rno HARD,SOFT | grep -i "unblocked.*unblocked") >/dev/null 2>&1 ; then
                 local wifidev_up=$(ip link show "$wifidev" up)
                 if [ -z "$wifidev_up" ]; then
-                    echo "wifi is down. setting up"
+                    echo "Wifi is down. Setting up"
                     ip link set dev "$wifidev" up
                     sleep 2
                 fi
                 return
             else
-                echo "wifi is deactivated"
+                echo "Wifi is deactivated"
                 exit 0
             fi
         else
@@ -144,22 +151,21 @@ FindSSID()
     if [ -n "$FORCE_HOTSPOT" ]; then return; fi
 
     #Check to see what SSID's and MAC addresses are in range
+    echo "SSID availability check"
     local i=0; j=0
     while [ $i -eq 0 ]
     do
         scanreply=$(iw dev "$wifidev" scan ap-force 2>&1)
         ssidreply=$(echo "$scanreply" | egrep "^BSS|SSID:")
-        echo "SSID availability check: try $j"
         if [ $j -ge 5 ]; then
             ssidreply=""
             i=1
         elif [ -z "$ssidreply" ] ; then
-            echo "Error scan SSID's: $scanreply"
+            echo "Error scan SSID's, try $j: $scanreply"
             j=$((j + 1))
             sleep 2
         else
-            echo "SSID's in range:"
-            echo "$ssidreply"
+            #success
             i=1
         fi
     done
@@ -168,12 +174,15 @@ FindSSID()
     do
         if (echo "$ssidreply" | grep "$ssid") >/dev/null 2>&1
         then
-            #Valid SSid found, passing to script
-            echo "Valid SSID Detected, assesing Wifi status"
+            echo "Valid SSID detected, assessing Wifi status"
             ssidChk=$ssid
-            return 0
+            break
         fi
     done
+
+    if [ "$ssidChk" == "$NO_SSID" ]; then
+        echo "No Valid SSID detected"
+    fi
 }
 
 CheckSSID()

@@ -3,7 +3,7 @@
 # Install Phoniebox and test it
 # Used e.g. for tests on Docker
 
-# Objective: Test installation with script using a RC522 reader
+# Objective: Test installation with script using a simple configuration
 
 # Print current path
 echo $PWD
@@ -15,19 +15,34 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 
 # Run installation (in interactive mode)
 # y confirm interactive
-# n dont configure wifi
-# n dont configure autohotspot
-# y PCM as iface
-# n no spotify
-# y configure mpd
-# y audio default location
-# y use gpio
-# y RFID registration
-# 2 use RC522 reader
-# yes, reader is connected
-# n No reboot
+# n configure wifi (extra ENTER)
+# n configure autohotspot (extra ENTER)
+# - use autohotspot default config
+# y use default audio iface (extra ENTER)
+# n spotify (extra ENTER)
+# y audio default location (extra ENTER)
+# y config gpio (extra ENTER)
+# y start installation
+# n RFID registration
+# n reboot
 
-./../install-jukebox.sh <<< $'y\nn\n\nn\n\ny\n\nn\n\ny\n\ny\n\ny\n\ny\ny\n2\ny\nn\n'
+./../install-jukebox.sh <<< "y
+n
+
+n
+
+y
+
+n
+
+y
+
+y
+
+y
+n
+n
+"
 INSTALLATION_EXITCODE=$?
 
 # Test installation

@@ -85,14 +85,7 @@ while True:
         signal.alarm(1)
 
     # reading the card id
-    # NOTE: it's been reported that KKMOON Reader might need the following line altered.
-    # Instead of:
-    # cardid = reader.reader.readCard()
-    # change the line to:
-    # cardid = reader.readCard()
-    # See here for (German ;) details:
-    # https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/551
-    cardid = reader.reader.readCard()
+    cardid = reader.readCard()
 
     # disable the alarm after a successful read
     signal.alarm(0)

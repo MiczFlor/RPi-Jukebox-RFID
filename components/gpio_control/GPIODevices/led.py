@@ -13,9 +13,10 @@ class LED:
     def __init__(self, pin, initial_value=True, name='LED'):
         self.pin = pin
         self.name = name
+        self.initial_value = initial_value
         logger.debug('initialize {}(pin={}) to off'.format(self.name, self.pin))
         GPIO.setup(self.pin, GPIO.OUT)
-        GPIO.output(self.pin, initial_value)
+        GPIO.output(self.pin, self.initial_value)
 
     def on(self):
         logger.debug('Set Output of {}(pin={}) to on'.format(self.name, self.pin))

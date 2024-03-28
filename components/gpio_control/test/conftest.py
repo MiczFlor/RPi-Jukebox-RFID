@@ -1,5 +1,8 @@
+import sys
+import os
 from mock import MagicMock, patch
-
+# add absolute parent path, to harmonize imports with gpio_control.py __main__ usage for tests
+sys.path.insert(1, "/".join(os.path.abspath(__file__).split("/")[0:-2]))
 
 MockRPi = MagicMock()
 modules = {

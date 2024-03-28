@@ -40,6 +40,8 @@ JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
 printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
+WIFI_INTERFACE="wlan0"
+
 INTERACTIVE=true
 
 usage() {
@@ -181,18 +183,10 @@ config_wifi() {
 # to assign to your Phoniebox.
 # (Note: can be done manually later, if you are unsure.)
 "
-read -rp "Do you want to configure your WiFi? [Y/n] " response
+read -rp "Do you want to configure your WiFi? [y/N] " response
 echo ""
 case "$response" in
-    [nN][oO]|[nN])
-        WIFIconfig=NO
-        echo "You want to configure WiFi later."
-        # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
-        # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
-        ;;
-    *)
+    [yY][eE][sS]|[yY])
         WIFIconfig=YES
         #Ask for SSID
         read -rp "* Type SSID name: " WIFIssid
@@ -230,6 +224,14 @@ case "$response" in
                 } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
+        ;;
+    *)
+        WIFIconfig=NO
+        echo "You want to configure WiFi later."
+        # append variables to config file
+        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        # make a fallback for WiFi Country Code, because we need that even without WiFi config
+        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -535,23 +537,30 @@ config_audio_interface() {
 
     clear
 
+    local amixer_scontrols=$(sudo amixer scontrols)
+    local audio_interfaces=$(echo "${amixer_scontrols}" | sed "s|.*'\(.*\)'.*|\1|g")
+    local first_audio_interface=$(echo "${audio_interfaces}" | head -1)
+    local default_audio_interface="${first_audio_interface:-PCM}"
+
     echo "#####################################################
 #
 # CONFIGURE AUDIO INTERFACE (iFace)
 #
-# The default RPi audio interface is 'Headphone'.
-# But this does not work for every setup. Here a list of
-# available iFace names:
+# The default RPi audio interface is '${default_audio_interface}'.
+# But this does not work for every setup.
+# Here a list of available iFace names:
+
+${audio_interfaces}
 "
-    amixer scontrols
+
     echo " "
-    read -rp "Use Headphone as iFace? [Y/n] " response
+    read -rp "Use '${default_audio_interface}' as iFace? [Y/n] " response
     case "$response" in
         [nN][oO]|[nN])
             read -rp "Type the iFace name you want to use:" AUDIOiFace
             ;;
         *)
-            AUDIOiFace="Headphone"
+            AUDIOiFace="${default_audio_interface}"
             ;;
     esac
     # append variables to config file
@@ -583,13 +592,9 @@ config_spotify() {
 # * client_secret
 
 "
-    read -rp "Do you want to enable Spotify? [Y/n] " response
+    read -rp "Do you want to enable Spotify? [y/N] " response
     case "$response" in
-        [nN][oO]|[nN])
-            SPOTinstall=NO
-            echo "You don't want spotify support."
-            ;;
-        *)
+        [yY][eE][sS]|[yY])
             SPOTinstall=YES
             clear
             echo "#####################################################
@@ -614,6 +619,10 @@ config_spotify() {
             read -rp "Type your client_id: " SPOTIclientid
             read -rp "Type your client_secret: " SPOTIclientsecret
             ;;
+        *)
+            SPOTinstall=NO
+            echo "You don't want spotify support."
+            ;;
     esac
     # append variables to config file
     {
@@ -623,36 +632,6 @@ config_spotify() {
         echo "SPOTIclientid=\"$SPOTIclientid\"";
         echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
-    read -rp "Hit ENTER to proceed to the next step." INPUT
-}
-
-config_mpd() {
-    #####################################################
-    # Configure MPD
-
-    clear
-
-    echo "#####################################################
-#
-# CONFIGURE MPD
-#
-# MPD (Music Player Daemon) runs the audio output and must
-# be configured. Do it now, if you are unsure.
-# (Note: can be done manually later.)
-"
-    read -rp "Do you want to configure MPD? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            MPDconfig=NO
-            echo "You want to configure MPD later."
-            ;;
-        *)
-            MPDconfig=YES
-            echo "MPD will be set up with default values."
-            ;;
-    esac
-    # append variables to config file
-    echo "MPDconfig=\"$MPDconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
 
@@ -779,7 +758,6 @@ check_config_file() {
             check_variable "SPOTIclientsecret"
         fi
     fi
-    check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
     check_variable "GPIOconfig"
 
@@ -917,7 +895,7 @@ install_main() {
     . "${HOME_DIR}/PhonieboxInstall.conf"
 
     # power management of wifi: switch off to avoid disconnecting
-    sudo iwconfig wlan0 power off
+    sudo iwconfig "$WIFI_INTERFACE" power off
 
     # in the docker test env fiddling with resolv.conf causes issues, see https://stackoverflow.com/a/60576223
     if [ "$DOCKER_RUNNING" != "true" ]; then
@@ -1051,6 +1029,7 @@ install_main() {
     sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
     sudo rm "${systemd_dir}"/phoniebox-gpio-buttons.service
     echo "### Done with erasing old daemons. Stop ignoring errors!"
+
     # 2. install new ones - this is version > 1.1.8-beta
     RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
@@ -1088,33 +1067,31 @@ install_main() {
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
     cp "${jukebox_dir}"/misc/sampleconfigs/shutdownsound.mp3.sample "${jukebox_dir}"/shared/shutdownsound.mp3
 
-    if [ "${MPDconfig}" == "YES" ]; then
-        local mpd_conf="/etc/mpd.conf"
 
-        echo "Configuring MPD..."
-        # MPD configuration
-        # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.buster-default.sample ${mpd_conf}
-        # Change vars to match install config
-        sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
-        sudo chown mpd:audio "${mpd_conf}"
-        sudo chmod 640 "${mpd_conf}"
+    echo "Configuring MPD..."
+    local mpd_conf="/etc/mpd.conf"
+    # MPD configuration
+    # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
+    # Change vars to match install config
+    sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+    # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
+    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+    # Replace homedir; double quotes for variable expansion
+    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+    sudo chown mpd:audio "${mpd_conf}"
+    sudo chmod 640 "${mpd_conf}"
 
-        # start mpd
-        echo "Starting mpd service..."
-        sudo service mpd restart
-        sudo systemctl enable mpd
-    fi
+    # start mpd
+    echo "Starting mpd service..."
+    sudo service mpd restart
+    sudo systemctl enable mpd
 
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
+        echo "Configuring Spotify support..."
         local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
         local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
-        echo "Configuring Spotify support..."
         sudo systemctl disable mpd
         sudo service mpd stop
         sudo systemctl enable mopidy
@@ -1170,6 +1147,7 @@ install_main() {
 
 wifi_settings() {
     local jukebox_dir="$1"
+    local wifiExtDNS="8.8.8.8"
 
     ###############################
     # WiFi settings (SSID password)
@@ -1181,39 +1159,46 @@ wifi_settings() {
     # $WIFIip
     # $WIFIipRouter
     if [ "${WIFIconfig}" == "YES" ]; then
+        echo "Setting up wifi..."
 
-        # DHCP configuration settings
-        local dhcpcd_conf="/etc/dhcpcd.conf"
-        echo "Setting ${dhcpcd_conf}..."
-        #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
-        # Change IP for router and Phoniebox
-        sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
-        sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
-        # Change user:group and access mod
-        sudo chown root:netdev "${dhcpcd_conf}"
-        sudo chmod 664 "${dhcpcd_conf}"
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            echo "... for dhcpcd"
 
-        # WiFi SSID & Password
-        local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
-        echo "Setting ${wpa_supplicant_conf}..."
-        # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.buster-default.sample "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIssid%/'"$WIFIssid"'/' "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIpass%/'"$WIFIpass"'/' "${wpa_supplicant_conf}"
-        sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
-        sudo chown root:netdev "${wpa_supplicant_conf}"
-        sudo chmod 664 "${wpa_supplicant_conf}"
+            local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
+            # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
+            sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
+            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
+            sudo chown root:netdev "${wpa_supplicant_conf}"
+            sudo chmod 664 "${wpa_supplicant_conf}"
+
+            # add network with high priority
+            add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
+
+            # DHCP configuration settings
+            local dhcpcd_conf="/etc/dhcpcd.conf"
+            #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
+            sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
+            # Change IP for router and Phoniebox
+            sudo sed -i 's/%WIFIinterface%/'"$WIFI_INTERFACE"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIipExtDNS%/'"$wifiExtDNS"'/' "${dhcpcd_conf}"
+            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
+            # Change user:group and access mod
+            sudo chown root:netdev "${dhcpcd_conf}"
+            sudo chmod 664 "${dhcpcd_conf}"
+        fi
+
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            echo "... for NetworkManager"
+            # add network with high priority
+            add_wireless_network "$WIFI_INTERFACE" "$WIFIssid" "$WIFIpass" 99
+
+            sudo nmcli connection modify "$WIFIssid" ipv4.method manual ipv4.address "$WIFIip"/24 ipv4.gateway "$WIFIipRouter" ipv4.dns "$WIFIipRouter $wifiExtDNS"
+        fi
     fi
-
-    # start DHCP
-    echo "Starting dhcpcd service..."
-    sudo service dhcpcd start
-    sudo systemctl enable dhcpcd
-
-# / WiFi settings (SSID password)
-###############################
+    # / WiFi settings (SSID password)
+    ###############################
 }
 
 existing_assets() {
@@ -1355,6 +1340,7 @@ autohotspot() {
     if [ "${AUTOHOTSPOTconfig}" == "YES" ]; then
         local setup_script="${jukebox_dir}/scripts/helperscripts/setup_autohotspot.sh"
         sudo chmod +x "${setup_script}"
+        "${setup_script}" "${jukebox_dir}" "NO" # Uninstall present old versions first
         "${setup_script}" "${jukebox_dir}" "${AUTOHOTSPOTconfig}" "${AUTOHOTSPOTssid}" "${AUTOHOTSPOTcountryCode}" "${AUTOHOTSPOTpass}" "${AUTOHOTSPOTip}"
     fi
 }
@@ -1452,7 +1438,6 @@ main() {
         config_autohotspot
         config_audio_interface
         config_spotify
-        config_mpd
         config_audio_folder "${JUKEBOX_HOME_DIR}"
         config_gpio
     else
@@ -1460,6 +1445,9 @@ main() {
         check_config_file
     fi
     install_main "${JUKEBOX_HOME_DIR}"
+
+    source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
+
     wifi_settings "${JUKEBOX_HOME_DIR}"
     autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"

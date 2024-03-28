@@ -1,6 +1,7 @@
 # Contributing
 
-> 📝**NOTE:** This describes contributing for **version 2.x**. For Version 3 please see <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/develop/CONTRIBUTING.md>
+> [!NOTE]
+> This describes contributing for **version 2.x**. For Version 3 please see <https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/CONTRIBUTING.md>
 
 ## How to contribute
 

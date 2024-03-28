@@ -14,6 +14,9 @@ timeBase: 0.1 ;only for RotaryEncoder
 functionCall1: functionCallVolU
 functionCall2: functionCallVolD
 functionCallTwoButtons: functionCallVol0 ;only for TwoButtonControl
+;functionCall1Args: 1
+;functionCall2Args: 1
+;functionCallTwoButtonsArgs: x
 
 [PrevNextControl]
 enabled: False
@@ -68,6 +71,7 @@ pull_up_down: pull_up
 hold_time: 0.3
 hold_mode: Repeat
 functionCall: functionCallVolU
+;functionCallArgs: 1
 
 [VolumeDown]
 enabled: False
@@ -77,6 +81,7 @@ pull_up_down: pull_up
 hold_time: 0.3
 hold_mode: Repeat
 functionCall: functionCallVolD
+;functionCallArgs: 1
 
 [NextSong]
 enabled: False
@@ -98,6 +103,7 @@ Type:  Button
 Pin: 7
 pull_up_down: pull_up
 functionCall: functionCallPlayerSeekFwd
+;functionCallArgs: 10
 
 [Rewind]
 enabled: False
@@ -105,6 +111,7 @@ Type:  Button
 Pin: 8
 pull_up_down: pull_up
 functionCall: functionCallPlayerSeekBack
+;functionCallArgs: 10
 
 [Halt]
 enabled: False
@@ -119,3 +126,20 @@ Type: Button
 Pin: 21
 pull_up_down: pull_up
 functionCall: functionCallPlayerStop
+
+[TriggerPlayCard1]
+enabled: False
+Type: Button
+Pin: 4
+pull_up_down: pull_up
+functionCall: functionCallTriggerPlayCardId
+functionCallArgs: 1
+
+[TriggerPlayFolderSomeRelativeFolderName]
+enabled: False
+Type: Button
+Pin: 4
+pull_up_down: pull_up
+functionCall: functionCallTriggerPlayFolder
+functionCallArgs: someRelativeFolderName
+

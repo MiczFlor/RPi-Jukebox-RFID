@@ -1,0 +1,98 @@
+name: 🐛 Bug Report v2
+description: Use this template to report bugs for version 2.
+title: "🐛 | "
+labels: ["bug", "legacy_v2", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Please fill out the form to provide essential information to your problem.
+        This will help us to faster figure out the root cause.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: |
+        What version do you use?
+        See the "info" page in the Web App or the "settings/version" file.
+      placeholder: e.g. "2.5.0" or "2.6.0-alpha"
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: Branch
+      description: |
+        What branch did you install from?
+        See the "info" page in the Web App or the "settings/version" file.
+      placeholder: e.g. "master" or "develop"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: |
+        What Operation System and Version do you use?
+        See `cat /etc/os-release`
+      placeholder: e.g. "Raspberry Pi OS Bullseye lite - 32bit"
+    validations:
+      required: true
+
+  - type: input
+    id: pi-model
+    attributes:
+      label: Pi model
+      description: |
+        Which Raspberry Pi model do you use?
+      placeholder: e.g. "3 B+", "Zero 2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware
+      description: |
+        What's your hardware set up?
+        e.g. Rfid Reader, SoundCards, ...
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: |
+        What you did, what you expected and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Please provide the logs after the problem occured.
+        * `/home/pi/phoniebox_logs/install-jukebox.sh_*.log` -> Installation log
+        * `tail -n 200 /var/log/syslog` (<= Bullseye) or `journalctl -n 200` (>= Bookworm) -> General system log
+
+        You might also want to run the analytics script:
+        * `/home/pi/RPi-Jukebox-RFID/scripts/helperscripts/Analytics_AfterInstallScript.sh`
+
+        Note: The logs may contain some personal information, You want to erase before sharing.
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: |
+        Please provide the configuration if its related to the problem
+        e.g. "mpd.conf", "gpio_settings.ini", ...
+
+  - type: textarea
+    id: more
+    attributes:
+      label: More info
+      description: Anything more you want to share?

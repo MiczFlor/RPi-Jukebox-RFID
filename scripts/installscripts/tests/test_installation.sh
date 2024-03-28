@@ -16,6 +16,7 @@ tests=0
 failed_tests=0
 
 # Tool functions
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
 
 check_chmod_chown() {
     local mod_expected=$1
@@ -33,6 +34,16 @@ check_chmod_chown() {
         test ! "${user_expected}" == "${user_actual}" && echo "  ERROR: ${file} actual owner (${user_actual}) differs from expected (${user_expected})!"
         test ! "${group_expected}" == "${group_actual}" && echo "  ERROR: ${file} actual group (${group_actual}) differs from expected (${group_expected})!"
     done
+}
+
+check_file_exists() {
+    local file="$1"
+
+    if [[ ! -f "${file}" ]]; then
+        echo "  ERROR: '${file}' does not exists or is not a file!"
+        ((failed_tests++))
+    fi
+    ((tests++))
 }
 
 check_file_contains_string() {
@@ -136,7 +147,6 @@ verify_conf_file() {
             check_variable "SPOTIclientsecret"
         fi
     fi
-    check_variable "MPDconfig"
     check_variable "DIRaudioFolders"
     check_variable "GPIOconfig"
 
@@ -159,66 +169,129 @@ verify_conf_file() {
 }
 
 verify_wifi_settings() {
-    local dhcpcd_conf="/etc/dhcpcd.conf"
-    local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
-    printf "\nTESTING WiFi settings...\n"
+    if [[ "$WIFIconfig" == "YES" ]]; then
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            printf "\nTESTING WiFi settings (dhcpcd)...\n"
+            local dhcpcd_conf="/etc/dhcpcd.conf"
+            local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
 
-    # check conf files
-    check_file_contains_string "static ip_address=${WIFIip}/24" "${dhcpcd_conf}"
-    check_file_contains_string "static routers=${WIFIipRouter}" "${dhcpcd_conf}"
-    check_file_contains_string "static domain_name_servers=8.8.8.8 ${WIFIipRouter}" "${dhcpcd_conf}"
+            # check conf files
+            check_file_contains_string "static ip_address=${WIFIip}/24" "${dhcpcd_conf}"
+            check_file_contains_string "static routers=${WIFIipRouter}" "${dhcpcd_conf}"
+            check_file_contains_string "static domain_name_servers=${WIFIipRouter} 8.8.8.8" "${dhcpcd_conf}"
 
-    check_file_contains_string "country=${WIFIcountryCode}" "${wpa_supplicant_conf}"
-    check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
-    check_file_contains_string "psk=\"${WIFIpass}\"" "${wpa_supplicant_conf}"
+            check_file_contains_string "country=${WIFIcountryCode}" "${wpa_supplicant_conf}"
+            check_file_contains_string "ssid=\"${WIFIssid}\"" "${wpa_supplicant_conf}"
+            local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
+            check_file_contains_string "psk=${_pass}" "${wpa_supplicant_conf}"
+            check_file_contains_string "priority=99" "${wpa_supplicant_conf}"
 
-    # check owner and permissions
-    check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
-    check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
+            # check owner and permissions
+            check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+            check_chmod_chown 664 root netdev "/etc/wpa_supplicant" "wpa_supplicant.conf"
+        fi
 
-    # check that dhcpcd service is enabled and started
-    check_service_state dhcpcd active
-    check_service_enablement dhcpcd enabled
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            printf "\nTESTING WiFi settings (NetworkManager)...\n"
+            local active_profile_path="/etc/NetworkManager/system-connections/${WIFIssid}.nmconnection"
+
+            check_file_exists "${active_profile_path}"
+            check_file_contains_string "ssid=${WIFIssid}" "${active_profile_path}"
+            local _pass=$(_get_passphrase_for_config "$WIFIssid" "$WIFIpass")
+            check_file_contains_string "psk=${_pass}" "${active_profile_path}"
+            check_file_contains_string "address1=${WIFIip}" "${active_profile_path}"
+            check_file_contains_string "gateway=${WIFIipRouter}" "${active_profile_path}"
+            check_file_contains_string "dns=${WIFIipRouter}" "${active_profile_path}"
+            check_file_contains_string "autoconnect-priority=99" "${active_profile_path}"
+        fi
+    fi
 }
 
 verify_autohotspot_settings() {
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
         printf "\nTESTING autohotspot settings...\n\n"
 
-        local autohotspot_service="autohotspot.service"
+        local systemd_dir="/etc/systemd/system"
+        local interfaces_conf_file="/etc/network/interfaces"
+
         local autohotspot_script="/usr/bin/autohotspot"
+        local autohotspot_service_daemon="autohotspot-daemon.service"
+        local autohotspot_service_daemon_path="${systemd_dir}/${autohotspot_service_daemon}"
+        local autohotspot_service="autohotspot.service"
+        local autohotspot_service_path="${systemd_dir}/${autohotspot_service}"
+        local autohotspot_timer="autohotspot.timer"
+        local autohotspot_timer_path="${systemd_dir}/${autohotspot_timer}"
 
-        local dnsmasq_conf=/etc/dnsmasq.conf
-        local hostapd_conf=/etc/hostapd/hostapd.conf
-        local hostapd_deamon=/etc/default/hostapd
-        local dhcpcd_conf=/etc/dhcpcd.conf
-
-        check_file_contains_string "${AUTOHOTSPOTip}" "${autohotspot_script}"
+        local autohotspot_wifi_interface=wlan0
         local ip_without_last_segment=$(echo $AUTOHOTSPOTip | cut -d'.' -f1-3)
-        check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
-        check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
-        check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
-        check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
-        check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
-        check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
-        check_file_contains_string "ExecStart=${AUTOHOTSPOT_SCRIPT}" "/etc/systemd/system/${autohotspot_service}"
+        local autohotspot_profile="Phoniebox_Hotspot"
 
-        local crontab_user=$(crontab -l 2>/dev/null)
-        if [[ ! $(echo "${crontab_user}" | grep -w "${autohotspot_script}") ]]; then
-            echo "  ERROR: crontab for user not installed"
-            ((failed_tests++))
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            local dnsmasq_conf=/etc/dnsmasq.conf
+            local hostapd_conf=/etc/hostapd/hostapd.conf
+            local hostapd_deamon=/etc/default/hostapd
+            local dhcpcd_conf=/etc/dhcpcd.conf
+
+            check_file_exists "${interfaces_conf_file}"
+
+            check_file_contains_string "interface=${autohotspot_wifi_interface}" "${dnsmasq_conf}"
+            check_file_contains_string "dhcp-range=${ip_without_last_segment}.100,${ip_without_last_segment}.200,12h" "${dnsmasq_conf}"
+            check_file_contains_string "interface=${autohotspot_wifi_interface}" "${hostapd_conf}"
+            check_file_contains_string "ssid=${AUTOHOTSPOTssid}" "${hostapd_conf}"
+            check_file_contains_string "wpa_passphrase=${AUTOHOTSPOTpass}" "${hostapd_conf}"
+            check_file_contains_string "country_code=${AUTOHOTSPOTcountryCode}" "${hostapd_conf}"
+            check_file_contains_string "DAEMON_CONF=\"${hostapd_conf}\"" "${hostapd_deamon}"
+            check_file_contains_string "nohook wpa_supplicant" "${dhcpcd_conf}"
+
+            check_file_exists "${autohotspot_script}"
+            check_file_contains_string "wifidev=\"${autohotspot_wifi_interface}\"" "${autohotspot_script}"
+            check_file_contains_string "hotspot_ip=${AUTOHOTSPOTip}" "${autohotspot_script}"
+            check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
+
+            check_file_exists "${autohotspot_service_daemon_path}"
+            check_file_contains_string "\-i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+
+            check_file_exists "${autohotspot_service_path}"
+            check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
+
+            check_file_exists "${autohotspot_timer_path}"
+            check_file_contains_string "Unit=${autohotspot_service}" "${autohotspot_timer_path}"
+
+            # check owner and permissions
+            check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
+            check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
+            check_chmod_chown 644 root root "${systemd_dir}" "${autohotspot_service_daemon} ${autohotspot_service} ${autohotspot_timer}"
+
+            # check the services state
+            check_service_enablement "${autohotspot_service_daemon}" enabled
+            check_service_enablement "${autohotspot_service}" disabled
+            check_service_enablement "${autohotspot_timer}" enabled
+            check_service_enablement hostapd disabled
+            check_service_enablement dnsmasq disabled
         fi
-        ((tests++))
 
-        # check owner and permissions
-        check_chmod_chown 644 root root "/etc" "dnsmasq.conf hostapd/hostapd.conf default/hostapd"
-        check_chmod_chown 664 root netdev "/etc" "dhcpcd.conf"
-        check_chmod_chown 644 root root "/etc/systemd/system" "${autohotspot_service}"
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            check_file_exists "${interfaces_conf_file}"
 
-        # check that the services are activ
-        check_service_enablement "${autohotspot_service}" enabled
-        check_service_enablement hostapd disabled
-        check_service_enablement dnsmasq disabled
+            check_file_exists "${autohotspot_script}"
+            check_file_contains_string "wdev0='${autohotspot_wifi_interface}'" "${autohotspot_script}"
+            check_file_contains_string "ap_profile_name='${autohotspot_profile}'" "${autohotspot_script}"
+            check_file_contains_string "ap_ssid='${AUTOHOTSPOTssid}'" "${autohotspot_script}"
+            check_file_contains_string "ap_pw='${AUTOHOTSPOTpass}'" "${autohotspot_script}"
+            check_file_contains_string "ap_ip='${AUTOHOTSPOTip}" "${autohotspot_script}" #intentional "open end"
+            check_file_contains_string "ap_gate='${ip_without_last_segment}" "${autohotspot_script}" #intentional "open end"
+            check_file_contains_string "timer_service_name='${autohotspot_timer}'" "${autohotspot_script}"
+
+            check_file_exists "${autohotspot_service_path}"
+            check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
+
+            check_file_exists "${autohotspot_timer_path}"
+            check_file_contains_string "Unit=${autohotspot_service}" "${autohotspot_timer_path}"
+
+            # check the services state
+            check_service_enablement "${autohotspot_service}" disabled
+            check_service_enablement "${autohotspot_timer}" enabled
+        fi
     fi
 }
 
@@ -239,7 +312,8 @@ verify_apt_packages() {
     local packages=$(call_with_args_from_file "${jukebox_dir}"/packages.txt echo)
     local packages_raspberrypi=$(call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt echo)
     local packages_spotify=$(call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt echo)
-    local packages_autohotspot=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot.txt echo)
+    local packages_autohotspot_dhcpcd=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot_dhcpcd.txt echo)
+    local packages_autohotspot_NetworkManager=$(call_with_args_from_file "${jukebox_dir}"/packages-autohotspot_NetworkManager.txt echo)
 
     printf "\nTESTING installed packages...\n\n"
 
@@ -249,7 +323,12 @@ verify_apt_packages() {
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
-        packages="${packages} ${packages_autohotspot}"
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            packages="${packages} ${packages_autohotspot_dhcpcd}"
+        fi
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            packages="${packages} ${packages_autohotspot_NetworkManager}"
+        fi
     fi
 
     # check for raspberry pi packages only on raspberry pi's but not on test docker containers running on x86_64 machines
@@ -343,27 +422,29 @@ verify_systemd_services() {
 }
 
 verify_spotify_config() {
-    local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-    local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+    if [[ "${SPOTinstall}" == "YES" ]]; then
+        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
+        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
 
-    printf "\nTESTING spotify config...\n\n"
+        printf "\nTESTING spotify config...\n\n"
 
-    check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
-    check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
-    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
-    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
+        check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
+        check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
+        check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
+        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
+        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
-    check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
-    check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
-    check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
-    check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
-    check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
+        check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
+        check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
+        check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
+        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
+        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
 
-    # check that mopidy service is enabled
-    check_service_enablement mopidy enabled
-    # check that mpd service is disabled
-    check_service_enablement mpd disabled
+        # check that mopidy service is enabled
+        check_service_enablement mopidy enabled
+        # check that mpd service is disabled
+        check_service_enablement mpd disabled
+    fi
 }
 
 verify_mpd_config() {
@@ -405,18 +486,14 @@ main() {
     printf "\nTesting installation:\n"
     verify_installation_exitcode
     verify_conf_file
-    if [[ "$WIFIconfig" == "YES" ]]; then
-        verify_wifi_settings
-    fi
     verify_apt_packages "${JUKEBOX_HOME_DIR}"
     verify_pip_packages "${JUKEBOX_HOME_DIR}"
+    verify_wifi_settings
     verify_samba_config
     verify_webserver_config
     verify_systemd_services
-    if [[ "${SPOTinstall}" == "YES" ]]; then
-        verify_spotify_config
-    fi
     verify_mpd_config
+    verify_spotify_config
     verify_autohotspot_settings
     verify_folder_access "${JUKEBOX_HOME_DIR}"
 }

@@ -34,6 +34,17 @@ class ShutdownButton(SimpleButton):
             logger.debug('cannot set LED to {}: no LED pin defined'.format(status))
 
     def callbackFunctionHandler(self, *args):
+        if len(args) > 0 and args[0] == self.pin and not self.callback_with_pin_argument:
+            logger.debug('Remove pin argument by callbackFunctionHandler - args before: {}'.format(args))
+            args = args[1:]
+            logger.debug('args after: {}'.format(args))
+
+        if self.antibouncehack:
+            time.sleep(0.1)
+            inval = GPIO.input(self.pin)
+            if inval != GPIO.LOW:
+                return None
+
         if self.is_pressed:  # Should not be necessary, but handler gets called on rising edge too
             logger.debug('ShutdownButton pressed, ensuring long press for {} seconds, checking each {}s'.format(
                 self.hold_time, self.iteration_time
@@ -58,6 +69,7 @@ class ShutdownButton(SimpleButton):
                 self.set_led(GPIO.LOW)
 
     def __repr__(self):
-        return '<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},bouncetime={},antibouncehack={},pull_up_down={})>'.format(
-            self.name, self.pin, self.hold_time, self.iteration_time, self.led_pin, print_edge_key(self.edge), self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down)
-        )
+        return ('<ShutdownButton-{}(pin={},hold_time={},iteration_time={},led_pin={},edge={},'
+                'bouncetime={},antibouncehack={},pull_up_down={})>').format(
+            self.name, self.pin, self.hold_time, self.iteration_time, self.led_pin, print_edge_key(self.edge),
+            self.bouncetime, self.antibouncehack, print_pull_up_down(self.pull_up_down))

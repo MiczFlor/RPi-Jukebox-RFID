@@ -198,7 +198,7 @@ if(isset($messageSuccess) && $messageSuccess != "") {
               <option value="false"><?php print $lang['cardFormYTSelectDefault']; ?></option>
 <?php
 // read the subfolders of $Audio_Folders_Path
-$audiofolders = array_filter(glob($conf['scripts_abs'].'/userscripts/*'), 'is_file');
+$audiofolders = array_filter(glob($conf['scripts_abs'].'/userscripts/*.sh'), 'is_file');
 usort($audiofolders, 'strcasecmp');
 
 

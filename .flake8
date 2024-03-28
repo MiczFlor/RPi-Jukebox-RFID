@@ -5,3 +5,8 @@ ignore =
     E127,
     # continuation line under-indented for visual indent
     E128
+per-file-ignores =
+    # Only in __init__files ignore imported but unused
+    # Not necessary, if __all__ is declared in __init__ file
+    # https://www.python.org/dev/peps/pep-0008/#id48
+    __init__.py:F401

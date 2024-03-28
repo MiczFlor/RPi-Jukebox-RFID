@@ -12,10 +12,8 @@ from smartcard.util import *
 
 class Reader:
 
-    reader = None
-
     def __init__(self):
-        self.reader = self
+        pass
 
     def readCard(self):
 

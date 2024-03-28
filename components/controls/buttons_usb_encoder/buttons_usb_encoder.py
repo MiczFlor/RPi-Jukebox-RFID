@@ -25,8 +25,9 @@ try:
                     button_string = '-'.join(sorted(button_string))
                 try:
                     function_name = button_map[button_string]
+                    function_args = button_map[button_string + "_args"]
                     try:
-                        getattr(function_calls, function_name)()
+                        getattr(function_calls, function_name)(function_args)
                     except:
                         logger.warning(
                             "Function " + function_name + " not found in function_calls.py (mapped from button: " + button_string + ")")
