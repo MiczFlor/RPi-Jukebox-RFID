@@ -5,7 +5,6 @@ FROM debian:${DEBIAN_CODENAME}-slim as base
 ARG DEBIAN_CODENAME
 
 ENV DOCKER_RUNNING=true
-RUN touch /boot/cmdlinetxt
 
 RUN export DEBIAN_FRONTEND=noninteractive \
   && echo "--- install packages (1) ---" \
@@ -84,6 +83,7 @@ FROM test-user as test-code
 ARG GIT_BRANCH
 ARG GIT_URL
 
+ENV CI_RUNNING=true
 ENV GIT_BRANCH=$GIT_BRANCH GIT_URL=$GIT_URL
 
 COPY --chown=root:$TEST_USER_GROUP --chmod=770 packages.txt packages-raspberrypi.txt ./

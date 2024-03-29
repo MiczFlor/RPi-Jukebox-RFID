@@ -3,14 +3,19 @@ import configparser
 import os
 import logging
 
-from GPIODevices import *
-import function_calls
 from signal import pause
 from RPi import GPIO
+from GPIODevices import (RotaryEncoder,
+                         TwoButtonControl,
+                         ShutdownButton,
+                         SimpleButton,
+                         LED,
+                         StatusLED)
+from function_calls import phoniebox_function_calls
 from config_compatibility import ConfigCompatibilityChecks
 
 
-class gpio_control():
+class GPIOControl():
 
     def __init__(self, function_calls):
         self.devices = []
@@ -23,10 +28,11 @@ class gpio_control():
         self.logger.setLevel('INFO')
         self.logger.info('GPIO Started')
 
-    def getFunctionCall(self, function_name):
+    def getFunctionCall(self, function_name, function_args):
         try:
-            if function_name != 'None':
-                return getattr(self.function_calls, function_name)
+            if function_name is not None and function_name != 'None':
+                functionCall = getattr(self.function_calls, function_name)
+                return (lambda *args: functionCall(*args, function_args))
         except AttributeError:
             self.logger.error('Could not find FunctionCall {function_name}'.format(function_name=function_name))
         return lambda *args: None
@@ -35,13 +41,13 @@ class gpio_control():
         print(deviceName)
         device_type = config.get('Type')
         if device_type == 'TwoButtonControl':
-            self.logger.info('adding TwoButtonControl')
             return TwoButtonControl(
                 config.getint('Pin1'),
                 config.getint('Pin2'),
-                self.getFunctionCall(config.get('functionCall1')),
-                self.getFunctionCall(config.get('functionCall2')),
-                functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons')),
+                self.getFunctionCall(config.get('functionCall1'), config.get('functionCall1Args', fallback=None)),
+                self.getFunctionCall(config.get('functionCall2'), config.get('functionCall2Args', fallback=None)),
+                functionCallTwoBtns=self.getFunctionCall(config.get('functionCallTwoButtons'),
+                                                         config.get('functionCallTwoButtonsArgs', fallback=None)),
                 pull_up_down=config.get('pull_up_down', fallback='pull_up'),
                 hold_mode=config.get('hold_mode', fallback=None),
                 hold_time=config.getfloat('hold_time', fallback=0.3),
@@ -51,8 +57,10 @@ class gpio_control():
                 name=deviceName)
         elif device_type in ('Button', 'SimpleButton'):
             return SimpleButton(config.getint('Pin'),
-                                action=self.getFunctionCall(config.get('functionCall')),
-                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None')),
+                                action=self.getFunctionCall(config.get('functionCall'),
+                                                            config.get('functionCallArgs', fallback=None)),
+                                action2=self.getFunctionCall(config.get('functionCall2', fallback='None'),
+                                                             config.get('functionCall2Args', fallback=None)),
                                 name=deviceName,
                                 bouncetime=config.getint('bouncetime', fallback=500),
                                 antibouncehack=config.getboolean('antibouncehack', fallback=False),
@@ -69,13 +77,15 @@ class gpio_control():
         elif device_type == 'RotaryEncoder':
             return RotaryEncoder(config.getint('Pin1'),
                     config.getint('Pin2'),
-                    self.getFunctionCall(config.get('functionCall1')),
-                    self.getFunctionCall(config.get('functionCall2')),
+                    self.getFunctionCall(config.get('functionCall1'), None),
+                    self.getFunctionCall(config.get('functionCall2'), None),
                     config.getfloat('timeBase', fallback=0.1),
                     name=deviceName)
         elif device_type == 'ShutdownButton':
             return ShutdownButton(pin=config.getint('Pin'),
-                                  action=self.getFunctionCall(config.get('functionCall', fallback='functionCallShutdown')),
+                                  action=self.getFunctionCall(config.get('functionCall',
+                                                                         fallback='functionCallShutdown'),
+                                                              config.get('functionCallArgs', fallback=None)),
                                   name=deviceName,
                                   bouncetime=config.getint('bouncetime', fallback=500),
                                   antibouncehack=config.getboolean('antibouncehack', fallback=False),
@@ -121,9 +131,9 @@ if __name__ == "__main__":
 
     ConfigCompatibilityChecks(config, config_path)
 
-    phoniebox_function_calls = function_calls.phoniebox_function_calls()
-    gpio_controler = gpio_control(phoniebox_function_calls)
+    _phoniebox_function_calls = phoniebox_function_calls()
+    gpio_control_class = GPIOControl(_phoniebox_function_calls)
 
-    devices = gpio_controler.get_all_devices(config)
-    gpio_controler.print_all_devices()
-    gpio_controler.gpio_loop()
+    devices = gpio_control_class.get_all_devices(config)
+    gpio_control_class.print_all_devices()
+    gpio_control_class.gpio_loop()

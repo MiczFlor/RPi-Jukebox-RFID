@@ -148,7 +148,7 @@ CMDBLUETOOTHTOGGLE="1364237231134"
 
 Speakers and Headphones can have very different maximum volume levels. This sometimes leads to very strong volume level changes when switching between speakers and headphones. Restricting the maximum volume with the Phoniebox-integrated max-volume setting does no yield the desired effect, as this is a single setting and does not differentiate between different audio sinks.
 
-The solution is adding a `softvol` component to the /etc/asound.conf. You may already have one set up, if your soundcard does not have a hardware volume control. Then it is easy! The `softvol` copmonent adds a systemwide ALSA-based volume control for a hardware soundcard. You will need to give it a name, that does **not** exist! Check with `$ amixer scontrols` first, which names are already taken. Here, I have choosen *Master*. This will work even if your soundcard has a hardware volume control.
+The solution is adding a `softvol` component to the /etc/asound.conf. You may already have one set up, if your soundcard does not have a hardware volume control. Then it is easy! The `softvol` copmonent adds a systemwide ALSA-based volume control for a hardware soundcard. You will need to give it a name, that does **not** exist! Check with `$ sudo amixer scontrols` first, which names are already taken. Here, I have choosen *Master*. This will work even if your soundcard has a hardware volume control.
 
 The `softvol` component has a feature called *max_db*  to limit the maximum volume, which we are going to utilize here. With that we are limiting the maximum volume of the speakers systemwide and independent of MPD or other Phoniebox settings.
 
@@ -204,7 +204,7 @@ $ speaker-test -D hifiberry
 and changing the default volume control in another console
 
 ~~~bash
-$ alsamixer 
+$ sudo alsamixer 
 ~~~
 
 If you are experimenting with a softvol and want to get rid of it again - that is not an easy task. Most promising approach is to insert the SD-Card into a different Linux machine delete the file `/var/lib/alsa/asound.state`. This must be done from a different computer, as this file gets written during shutdown. More infos about the softvol may be found [here](https://alsa.opensrc.org/Softvol)

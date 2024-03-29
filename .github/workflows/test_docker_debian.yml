@@ -8,6 +8,7 @@ on:
     branches-ignore:
       - 'future3/**'
     paths:
+      - '.github/workflows/test_docker_debian*.yml'
       - 'ci/**'
       - 'misc/sampleconfigs/**'
       - 'scripts/helperscripts/setup_*'
@@ -19,8 +20,9 @@ on:
     # The branches below must be a subset of the branches above
     branches:
       - develop
-      - main
+      - master
     paths:
+      - '.github/workflows/test_docker_debian*.yml'
       - 'ci/**'
       - 'misc/sampleconfigs/**'
       - 'scripts/helperscripts/setup_*'
@@ -37,19 +39,48 @@ concurrency:
 
 jobs:
 
-  # Build container and run tests
-  run:
-    name: ${{ matrix.debian_codename }}
-    strategy:
-      fail-fast: false
-      matrix:
-        debian_codename: ['bookworm', 'bullseye', 'buster']
+  # Build container and run tests. Duplication of job intended for better visualization.
+  run_bookworm_armv7:
+    name: 'bookworm armv7'
     uses: ./.github/workflows/test_docker_debian_codename_sub.yml
     with:
-      runs_on: ubuntu-latest
+      debian_codename: 'bookworm'
       platform: linux/arm/v7
-      docker_image_name: rpi-jukebox-rfid
-      cache_scope: ${{ github.ref }}-test-debian
-      matrix_usernames: "['pi', 'hans']"
-      matrix_test_scripts: "['run_installation_tests.sh', 'run_installation_tests2.sh', 'run_installation_tests3.sh']"
-      debian_codename: ${{ matrix.debian_codename }}
+
+  # # can be activate on test branches
+  # run_bookworm_armv6:
+  #   name: 'bookworm armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+  #   with:
+  #     debian_codename: 'bookworm'
+  #     platform: linux/arm/v6
+
+  run_bullseye_armv7:
+    name: 'bullseye armv7'
+    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+    with:
+      debian_codename: 'bullseye'
+      platform: linux/arm/v7
+
+  # # can be activate on test branches, currently failing
+  # run_bullseye_armv6:
+  #   name: 'bullseye armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+  #   with:
+  #     debian_codename: 'bullseye'
+  #     platform: linux/arm/v6
+
+  run_buster_armv7:
+    name: 'buster armv7'
+    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+    with:
+      debian_codename: 'buster'
+      platform: linux/arm/v7
+
+  # # can be activate on test branches, currently failing
+  # run_buster_armv6:
+  #   name: 'buster armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+  #   with:
+  #     debian_codename: 'buster'
+  #     platform: linux/arm/v6

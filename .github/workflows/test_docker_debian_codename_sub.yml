@@ -3,36 +3,33 @@ name: Subworkflow Test Install Scripts Debian
 on:
     workflow_call:
       inputs:
-        runs_on:
+        debian_codename:
           required: true
           type: string
         platform:
           required: true
           type: string
-        debian_codename:
-          required: true
-          type: string
-        cache_scope:
-          required: true
-          type: string
         docker_image_name:
-          required: true
+          required: false
           type: string
-        matrix_usernames:
-          required: true
+          default: rpi-jukebox-rfid
+        cache_scope:
+          required: false
           type: string
-        matrix_test_scripts:
-          required: true
-          type: string
+          default: ${{ github.ref }}-test-debian
         local_registry_port:
           required: false
           type: number
           default: 5000
+        runs_on:
+          required: false
+          type: string
+          default: ubuntu-latest
 
 # let only one instance run the test so cache is not corrupted.
 # cancel already running instances as only the last run will be relevant
 concurrency:
-    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}-${{ inputs.platform }}
     cancel-in-progress: true
 
 jobs:
@@ -45,6 +42,7 @@ jobs:
         cache_key: ${{ steps.vars.outputs.cache_key }}
         image_file_name: ${{ steps.vars.outputs.image_file_name }}
         image_tag_name: ${{ steps.vars.outputs.image_tag_name }}
+        docker_run_options: ${{ steps.vars.outputs.docker_run_options }}
 
     # create local docker registry to use locally build images
     services:
@@ -60,7 +58,7 @@ jobs:
       uses: docker/setup-qemu-action@v3.0.0
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.0.0
+      uses: docker/setup-buildx-action@v3.1.0
       with:
         # network=host driver-opt needed to push to local registry
         driver-opts: network=host
@@ -71,15 +69,18 @@ jobs:
         DEBIAN_CODENAME: ${{ inputs.debian_codename }}
         DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
         CACHE_SCOPE: ${{ inputs.cache_scope }}
+        PLATFORM: ${{ inputs.platform }}
       run: |
-        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-test" >> $GITHUB_OUTPUT
-        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}.tar" >> $GITHUB_OUTPUT
-        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}" >> $GITHUB_OUTPUT
+        PLATFORM=${PLATFORM////_}
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-${PLATFORM}-test" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}" >> $GITHUB_OUTPUT
 
     - name: Set Output vars
       id: vars
       env:
         LOCAL_REGISTRY_PORT: ${{ inputs.local_registry_port }}
+        PLATFORM: ${{ inputs.platform }}
       run: |
         echo "image_tag_name=${{ steps.pre-vars.outputs.image_tag_name }}" >> $GITHUB_OUTPUT
         echo "image_tag_name_local_base=localhost:${{ env.LOCAL_REGISTRY_PORT }}/${{ steps.pre-vars.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
@@ -87,6 +88,9 @@ jobs:
         echo "image_file_path=./${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
         echo "cache_scope=${{ steps.pre-vars.outputs.cache_scope }}" >> $GITHUB_OUTPUT
         echo "cache_key=${{ steps.pre-vars.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+        if [ "${{ env.PLATFORM }}" == "linux/arm/v6" ] ; then
+            echo "docker_run_options=-e QEMU_CPU=arm1176" >> $GITHUB_OUTPUT
+        fi
 
     # Build base image for debian version name. Layers will be cached and image pushes to local registry
     - name: Build Image - Base
@@ -124,7 +128,7 @@ jobs:
           BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
 
     - name: Artifact Upload Docker Image
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.vars.outputs.image_file_name }}
         path: ${{ steps.vars.outputs.image_file_path }}
@@ -139,18 +143,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        username: ${{ fromJSON(inputs.matrix_usernames) }}
-        test_script: ${{ fromJSON(inputs.matrix_test_scripts) }}
+        username: ['pi']
+        test_script: ['run_installation_classic.sh', 'run_installation_rfid.sh', 'run_installation_spotify.sh', 'run_installation_staticip_dhcpcd.sh', 'run_installation_autohotspot_dhcpcd.sh', 'run_installation_autohotspot_NetworkManager.sh']
+        include:
+          - username: 'hans'
+            test_script: 'run_installation_classic.sh'
+
 
     steps:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3.0.0
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.0.0
+      uses: docker/setup-buildx-action@v3.1.0
 
     - name: Artifact Download Docker Image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ needs.build.outputs.image_file_name }}
 
@@ -163,7 +171,7 @@ jobs:
       uses: tj-actions/docker-run@v2
       with:
         image: ${{ needs.build.outputs.image_tag_name }}
-        options: --platform ${{inputs.platform }} --user ${{ matrix.username }}
+        options: ${{ needs.build.outputs.docker_run_options }} --platform ${{ inputs.platform }} --user ${{ matrix.username }} --init
         name: ${{ matrix.test_script }}
         args: |
           ./${{ matrix.test_script }}
@@ -174,9 +182,10 @@ jobs:
     if: ${{ !failure() }}
     needs: [build, test]
     runs-on: ${{ inputs.runs_on }}
-
+    
     steps:
-        - name: Artifact Delete Docker Image
-          uses: geekyeggo/delete-artifact@v2
-          with:
-            name: ${{ needs.build.outputs.image_file_name }}
+       - name: Artifact Delete Docker Image
+         uses: geekyeggo/delete-artifact@v5
+         with:
+           name: ${{ needs.build.outputs.image_file_name }}
+           failOnError: false
