@@ -99,7 +99,7 @@ import misc
 
 from jukebox.NvManager import nv_manager
 from .playcontentcallback import PlayContentCallbacks, PlayCardState
-from .coverart_cache_manager import CoverartCacheManager
+from .coverart_cache_manager import CoverartCacheManager, NO_CONTENT
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -539,6 +539,9 @@ class PlayerMPD:
 
             if cache_filename:
                 return cache_filename
+
+            if cache_filename is NO_CONTENT:
+                return ''
 
             # Cache file does not exist
             # Fetch cover art binary
