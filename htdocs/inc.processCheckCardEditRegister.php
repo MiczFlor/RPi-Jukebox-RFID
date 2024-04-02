@@ -278,8 +278,9 @@ if($post['delete'] == "delete") {
                 // link to existing audiofolder
                 $foldername = $Audio_Folders_Path."/".$post['audiofolder'];
             }
-            $exec = "cd '".$foldername."'; youtube-dl -f bestaudio --extract-audio --audio-format mp3 ".$post['YTstreamURL']." > ".$conf['shared_abs']."/youtube-dl.log; chmod 777 ".$foldername."/* 2>&1 &";
-            exec($exec);
+            $exec = "cd '".$foldername."'; yt-dlp --compat-options youtube-dl -f bestaudio --extract-audio --audio-format mp3 '".$post['YTstreamURL']."' >> ".$conf['shared_abs']."/youtube-download.log 2>&1; chmod 777 ".$foldername."/*;";
+			# Run command in background!
+            exec("{ ".$exec." } > /dev/null &");
             // success message
             $messageSuccess = $lang['cardRegisterDownloadingYT'];
         } 

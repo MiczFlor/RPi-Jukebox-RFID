@@ -130,7 +130,7 @@ $lang['cardRegisterErrorSuggestFolder'] = "A folder name for the stream needs to
 $lang['cardRegisterErrorConvertSpotifyURL'] = "URL Spotify incorrecte, elle a été convertie au bon format";
 $lang['cardRegisterStream2Card'] = "Le stream est lié à la carte.";
 $lang['cardRegisterFolder2Card'] = "Le dossier audio est désormais lié à une carte.";
-$lang['cardRegisterDownloadingYT'] = "<p>Piste YouTube en cours de téléchargement. Cela peut prendre plusieurs minutes. Log dans le fichier \"youtube-dl.log\".</p>";
+$lang['cardRegisterDownloadingYT'] = "<p>Piste YouTube en cours de téléchargement. Cela peut prendre plusieurs minutes. Log dans le fichier \"youtube-download.log\".</p>";
 $lang['cardRegisterSwipeUpdates'] = "Mise à jour automatique lors du passage d'une carte.";
 $lang['cardRegisterManualLinks'] = "<p>Vous pouvez lier manuellement une carte à un dossier. Explication dans la documentation <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connect' target='–blank'>connection à phoniebox</a> et <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>enregistrer une carte</a>.</p>";
 $lang['cardRegisterTriggerSuccess'] = "La carte est désormais lié à une commande :";
