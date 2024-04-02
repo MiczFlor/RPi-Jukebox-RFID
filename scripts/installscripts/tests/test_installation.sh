@@ -425,16 +425,9 @@ verify_systemd_services() {
 
 verify_spotify_config() {
     if [[ "${SPOTinstall}" == "YES" ]]; then
-        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        local mopidy_conf="/etc/mopidy/mopidy.conf"
 
         printf "\nTESTING spotify config...\n\n"
-
-        check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
-        check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
-        check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
-        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
-        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
         check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
         check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"

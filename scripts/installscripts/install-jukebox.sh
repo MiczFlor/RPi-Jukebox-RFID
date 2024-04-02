@@ -1095,8 +1095,7 @@ install_main() {
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
         echo "Configuring Spotify support..."
-        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        local mopidy_conf="/etc/mopidy/mopidy.conf"
         sudo systemctl disable mpd
         sudo service mpd stop
         sudo systemctl enable mopidy
@@ -1104,23 +1103,12 @@ install_main() {
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
-        mkdir -p "${HOME_DIR}"/.config/mopidy
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample "${etc_mopidy_conf}"
-        cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample "${mopidy_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${etc_mopidy_conf}"
-
-        sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
         # Replace homedir; double quotes for variable expansion
