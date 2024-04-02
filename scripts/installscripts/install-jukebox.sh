@@ -1075,6 +1075,8 @@ install_main() {
 
     echo "Configuring MPD..."
     local mpd_conf="/etc/mpd.conf"
+    sudo systemctl enable mpd
+    sudo systemctl stop mpd
     # MPD configuration
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
@@ -1087,18 +1089,15 @@ install_main() {
     sudo chown mpd:audio "${mpd_conf}"
     sudo chmod 640 "${mpd_conf}"
 
-    # start mpd
-    echo "Starting mpd service..."
-    sudo service mpd restart
-    sudo systemctl enable mpd
 
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
         echo "Configuring Spotify support..."
         local mopidy_conf="/etc/mopidy/mopidy.conf"
         sudo systemctl disable mpd
-        sudo service mpd stop
+        sudo systemctl stop mpd
         sudo systemctl enable mopidy
+        sudo systemctl stop mopidy
         # Install Config Files
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
@@ -1130,9 +1129,6 @@ install_main() {
     else
         echo "classic" > "${jukebox_dir}"/settings/edition
     fi
-
-    # update mpc / mpd DB
-    mpc update
 
     # / INSTALLATION
     #####################################################
