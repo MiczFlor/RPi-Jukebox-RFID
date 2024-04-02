@@ -320,6 +320,8 @@ verify_apt_packages() {
     # also check for spotify packages if it has been installed
     if [[ "${SPOTinstall}" == "YES" ]]; then
         packages="${packages} ${packages_spotify}"
+        # not yet available on apt.mopidy.com, so install manually
+        packages="${packages} gst-plugin-spotify"
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
