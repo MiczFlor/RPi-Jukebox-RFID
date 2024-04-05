@@ -13,8 +13,9 @@ case "$response" in
 esac
 echo "Proceeding and deleting."
 
-# these ones we MUST leave
-#sudo rm /etc/sudoers
+sudo rm /etc/sudoers.d/www-data
+sudo rm /etc/sudoers.d/mopidy
+
 #sudo rm /etc/samba/smb.conf
 
 # these ones we will leave
@@ -47,4 +48,3 @@ sudo rm /etc/mpd.conf
 sudo rm /etc/locale.gen
 sudo rm /etc/default/locale
 sudo rm /etc/mopidy/mopidy.conf
-sudo rm ~/.config/mopidy/mopidy.conf

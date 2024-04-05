@@ -801,7 +801,6 @@ web_server_config() {
     local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
     local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
     local php_ini="/etc/php/$(ls -1 /etc/php)/cgi/php.ini"
-    local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
     # make sure lighttp can access the home directory of the user
@@ -827,10 +826,10 @@ web_server_config() {
     sudo chmod 644 "${php_ini}"
 
     # SUDO users (adding web server here)
-    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/sudoers.buster-default.sample ${sudoers}
-    sudo chown root:root "${sudoers}"
-    sudo chmod 440 "${sudoers}"
+    local sudoers_wwwdata="/etc/sudoers.d/www-data"
+    echo "www-data ALL=(ALL) NOPASSWD: ALL" | sudo tee "${sudoers_wwwdata}" > /dev/null
+    sudo chown root:root "${sudoers_wwwdata}"
+    sudo chmod 440 "${sudoers_wwwdata}"
 }
 
 # Reads a textfile and pipes all lines as args to the given command.
@@ -969,6 +968,11 @@ install_main() {
 
         # Install necessary Python packages
         ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
+
+        local sudoers_mopidy="/etc/sudoers.d/mopidy"
+        echo "mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh" | sudo tee "${sudoers_mopidy}" > /dev/null
+        sudo chown root:root "${sudoers_mopidy}"
+        sudo chmod 440 "${sudoers_mopidy}"
     fi
 
     # Install more required packages

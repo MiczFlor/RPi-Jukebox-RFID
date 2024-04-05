@@ -411,7 +411,8 @@ verify_webserver_config() {
     check_chmod_chown 644 root root "/etc/lighttpd" "lighttpd.conf"
     check_chmod_chown 644 root root "/etc/lighttpd/conf-available" "15-fastcgi-php.conf"
     check_chmod_chown 644 root root "/etc/php/${phpver}/cgi" "php.ini"
-    check_chmod_chown 440 root root "/etc" "sudoers"
+    check_file_contains_string "www-data ALL=(ALL) NOPASSWD: ALL" "/etc/sudoers.d/www-data"
+    check_chmod_chown 440 root root "/etc/sudoers.d/" "www-data"
 
     # Bonus TODO: check that fastcgi and fastcgi-php mods are enabled
 }
@@ -439,6 +440,8 @@ verify_spotify_config() {
         check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
         check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
         check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
+        check_file_contains_string "mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh" "/etc/sudoers.d/mopidy"
+        check_chmod_chown 440 root root "/etc/sudoers.d/" "mopidy"
 
         # check that mopidy service is enabled
         check_service_enablement mopidy enabled
