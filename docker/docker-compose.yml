@@ -17,7 +17,7 @@ services:
     volumes:
       - ../shared/audiofolders:/root/RPi-Jukebox-RFID/shared/audiofolders
       - ../shared/playlists:/root/.config/mpd/playlists
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
 
   jukebox:
     build:
@@ -43,7 +43,7 @@ services:
       - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
       - ../src/webapp/public/cover-cache:/root/RPi-Jukebox-RFID/src/webapp/build/cover-cache
       - ../shared:/root/RPi-Jukebox-RFID/shared
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
     command: python run_jukebox.py
 
   webapp:
