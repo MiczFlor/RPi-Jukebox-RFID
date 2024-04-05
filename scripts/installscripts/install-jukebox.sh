@@ -970,7 +970,9 @@ install_main() {
         ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
 
         local sudoers_mopidy="/etc/sudoers.d/mopidy"
-        echo "mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh" | sudo tee "${sudoers_mopidy}" > /dev/null
+        # Include 'python' in the command to make testing later on easier. If this command fails it will not be included in the file.
+        local python_version=$(python -c 'import sys; print("python{}.{}".format(sys.version_info.major, sys.version_info.minor))')
+        echo "mopidy ALL=NOPASSWD: /usr/local/lib/${python_version}/dist-packages/mopidy_iris/system.sh" | sudo tee "${sudoers_mopidy}" > /dev/null
         sudo chown root:root "${sudoers_mopidy}"
         sudo chmod 440 "${sudoers_mopidy}"
     fi

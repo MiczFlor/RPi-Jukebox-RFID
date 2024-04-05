@@ -54,9 +54,15 @@ check_file_exists() {
 check_file_contains_string() {
     local string="$1"
     local file="$2"
+    local allowPartCheck="$3"
+
+    local grep_option="w"
+    if [ -v allowPartCheck ]; then
+        grep_option=""
+    fi
 
     # sudo is required for checking /etc/mopidy/mopidy.conf
-    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -i"${grep_option}" "${string}" "${file}") ]]; then
         echo "  ERROR: '${string}' not found in ${file}"
         ((failed_tests++))
     fi
@@ -440,7 +446,8 @@ verify_spotify_config() {
         check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
         check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
         check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
-        check_file_contains_string "mopidy ALL=NOPASSWD: /usr/local/lib/python2.7/dist-packages/mopidy_iris/system.sh" "/etc/sudoers.d/mopidy"
+        check_file_contains_string "mopidy ALL=NOPASSWD: /usr/local/lib/python" "/etc/sudoers.d/mopidy" allowPartCheck
+        check_file_contains_string "/dist-packages/mopidy_iris/system.sh" "/etc/sudoers.d/mopidy" allowPartCheck
         check_chmod_chown 440 root root "/etc/sudoers.d/" "mopidy"
 
         # check that mopidy service is enabled
