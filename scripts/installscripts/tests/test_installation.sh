@@ -27,12 +27,17 @@ check_chmod_chown() {
 
     for file in ${files};
     do
+        local fail=false
         mod_actual=$(stat --format '%a' "${dir}/${file}")
         user_actual=$(stat -c '%U' "${dir}/${file}")
         group_actual=$(stat -c '%G' "${dir}/${file}")
-        test ! "${mod_expected}" -eq "${mod_actual}" && echo "  ERROR: ${file} actual mod (${mod_actual}) differs from expected (${mod_expected})!"
-        test ! "${user_expected}" == "${user_actual}" && echo "  ERROR: ${file} actual owner (${user_actual}) differs from expected (${user_expected})!"
-        test ! "${group_expected}" == "${group_actual}" && echo "  ERROR: ${file} actual group (${group_actual}) differs from expected (${group_expected})!"
+        test ! "${mod_expected}" -eq "${mod_actual}" && echo "  ERROR: ${file} actual mod (${mod_actual}) differs from expected (${mod_expected})!" && fail=true
+        test ! "${user_expected}" == "${user_actual}" && echo "  ERROR: ${file} actual owner (${user_actual}) differs from expected (${user_expected})!" && fail=true
+        test ! "${group_expected}" == "${group_actual}" && echo "  ERROR: ${file} actual group (${group_actual}) differs from expected (${group_expected})!" && fail=true
+        if [ $fail == true ]; then
+            ((failed_tests++))
+        fi
+        ((tests++))
     done
 }
 
