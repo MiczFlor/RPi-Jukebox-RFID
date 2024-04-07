@@ -7,6 +7,7 @@ NOT_CACHED = None
 
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
+
 class CoverartCacheManager:
     def __init__(self):
         coverart_cache_path = cfg.setndefault('webapp', 'coverart_cache_path', value='../../src/webapp/build/cover-cache')
