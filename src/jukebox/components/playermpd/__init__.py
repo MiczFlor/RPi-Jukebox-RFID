@@ -524,40 +524,31 @@ class PlayerMPD:
         """
         Saves the album art image to a cache and returns the filename.
         """
-        base_filename = slugify(song_url)
+        metadata_list = self.mpd_client.listallinfo(song_url)
+        metadata = metadata_list[0] if metadata_list else {}
+
+        if 'albumartist' in metadata and 'album' in metadata:
+            base_filename = slugify(f"{metadata.get('albumartist', '')}-{metadata.get('album', '')}")
+        else:
+            base_filename = slugify(song_url)
+
+        cache_filename = self.coverart_cache_manager.find_file_by_hash(base_filename)
+
+        if cache_filename or cache_filename is NO_CONTENT:
+            return cache_filename or ''
 
         try:
-            metadata_list = self.mpd_client.listallinfo(song_url)
-            metadata = {}
-            if metadata_list:
-                metadata = metadata_list[0]
-
-            if 'albumartist' in metadata and 'album' in metadata:
-                base_filename = slugify(f"{metadata['albumartist']}-{metadata['album']}")
-
-            cache_filename = self.coverart_cache_manager.find_file_by_hash(base_filename)
-
-            if cache_filename:
-                return cache_filename
-
-            if cache_filename is NO_CONTENT:
-                return ''
-
-            # Cache file does not exist
             # Fetch cover art binary
             album_art_data = self.mpd_client.readpicture(song_url)
-
-            # Save to cache
-            cache_filename = self.coverart_cache_manager.save_to_cache(base_filename, album_art_data)
-
-            return cache_filename
+            # Save to cache and return the filename
+            return self.coverart_cache_manager.save_to_cache(base_filename, album_art_data)
 
         except mpd.base.CommandError as e:
-            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+            logger.error(f'{e.__class__.__qualname__}: {e} at uri {song_url}')
         except Exception as e:
-            logger.error(f"{e.__class__.__qualname__}: {e} at uri {song_url}")
+            logger.error(f'{e.__class__.__qualname__}: {e} at uri {song_url}')
 
-        return ""
+        return ''
 
     @plugs.tag
     def get_album_coverart(self, albumartist: str, album: str):
