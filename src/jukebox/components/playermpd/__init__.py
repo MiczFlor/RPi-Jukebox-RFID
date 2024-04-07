@@ -87,7 +87,6 @@ import threading
 import logging
 import time
 import functools
-from slugify import slugify
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
