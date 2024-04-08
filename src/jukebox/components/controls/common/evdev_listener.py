@@ -160,7 +160,7 @@ class EvDevKeyListener(threading.Thread):
                 self._connect()
             except FileNotFoundError as e:
                 # This error occurs, if opening the bluetooth input device fails
-                logger.debug(f"{e} (attempt: {idx+1}/{self.open_retry_cnt}). Retrying in {self.open_retry_delay}")
+                logger.debug(f"{e} (attempt: {idx + 1}/{self.open_retry_cnt}). Retrying in {self.open_retry_delay}")
                 time.sleep(self.open_retry_delay)
             except AttributeError as e:
                 # This error occurs, when the device can be found, but does not have the mandatory keys
