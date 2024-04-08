@@ -87,6 +87,7 @@ import threading
 import logging
 import time
 import functools
+from pathlib import Path
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -98,7 +99,7 @@ import misc
 
 from jukebox.NvManager import nv_manager
 from .playcontentcallback import PlayContentCallbacks, PlayCardState
-from .coverart_cache_manager import CoverartCacheManager, NO_CONTENT
+from .coverart_cache_manager import CoverartCacheManager
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -520,30 +521,24 @@ class PlayerMPD:
 
     @plugs.tag
     def get_single_coverart(self, song_url):
-        """
-        Saves the album art image to a cache and returns the filename.
-        """
-        cache_filename = self.coverart_cache_manager.find_file_by_hash(song_url)
+        mp3_file_path = Path(components.player.get_music_library_path(), song_url).expanduser()
+        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path)
 
-        if cache_filename or cache_filename is NO_CONTENT:
-            return cache_filename or ''
-
-        try:
-            album_art_data = self.mpd_client.readpicture(song_url)
-            return self.coverart_cache_manager.save_to_cache(song_url, album_art_data)
-
-        except mpd.base.CommandError as e:
-            logger.error(f'{e.__class__.__qualname__}: {e} at uri {song_url}')
-        except Exception as e:
-            logger.error(f'{e.__class__.__qualname__}: {e} at uri {song_url}')
-
-        return ''
+        return cache_filename
 
     @plugs.tag
     def get_album_coverart(self, albumartist: str, album: str):
         song_list = self.list_songs_by_artist_and_album(albumartist, album)
 
         return self.get_single_coverart(song_list[0]['file'])
+
+    @plugs.tag
+    def flush_coverart_cache(self):
+        """
+        Deletes the Cover Art Cach
+        """
+
+        return self.coverart_cache_manager.flush_cache()
 
     @plugs.tag
     def get_folder_content(self, folder: str):
