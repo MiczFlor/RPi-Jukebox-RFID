@@ -535,7 +535,7 @@ class PlayerMPD:
     @plugs.tag
     def flush_coverart_cache(self):
         """
-        Deletes the Cover Art Cach
+        Deletes the Cover Art Cache
         """
 
         return self.coverart_cache_manager.flush_cache()
