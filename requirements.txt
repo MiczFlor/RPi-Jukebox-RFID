@@ -10,11 +10,11 @@ wheel
 # Jukebox Core
 # For USB inputs (reader, buttons) and bluetooth buttons
 evdev
+mutagen
 pyalsaaudio
 pulsectl
 python-mpd2
 ruamel.yaml
-python-slugify
 # For playlistgenerator
 requests
 # For the publisher event reactor loop:
