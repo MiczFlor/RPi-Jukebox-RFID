@@ -350,7 +350,7 @@ class PlayerMPD:
         Note: Will not re-read folder config, but leave settings untouched"""
         logger.debug("Rewind")
         with self.mpd_lock:
-            self.mpd_client.play(1)
+            self.mpd_client.play(0)
 
     @plugs.tag
     def replay(self):
