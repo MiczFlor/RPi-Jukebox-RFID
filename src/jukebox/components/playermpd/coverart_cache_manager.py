@@ -50,7 +50,7 @@ class CoverartCacheManager:
         file_extension, data = self._extract_album_art(mp3_file_path)
 
         cache_filename = f"{cache_key}.{file_extension}"
-        full_path = self.cache_folder_path / cache_filename # Works due to Pathlib
+        full_path = self.cache_folder_path / cache_filename  # Works due to Pathlib
 
         with full_path.open('wb') as file:
             file.write(data)
