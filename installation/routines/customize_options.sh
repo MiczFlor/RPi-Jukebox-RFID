@@ -49,51 +49,98 @@ Do you want to disable IPv6? [Y/n]"
 }
 
 _option_autohotspot() {
-  # ENABLE_AUTOHOTSPOT
-  clear_c
-  print_c "---------------------- AUTOHOTSPOT ----------------------
+    # ENABLE_AUTOHOTSPOT
+    clear_c
+    print_c "---------------------- AUTOHOTSPOT ----------------------
 
 When enabled, this service spins up a WiFi hotspot
 when the Phoniebox is unable to connect to a known
 WiFi. This way you can still access it.
 
-Do you want to enable an Autohotpot? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      ENABLE_AUTOHOTSPOT=true
-      ;;
-    *)
-      ;;
-  esac
+Note:
+Static IP configuration cannot be enabled with
+WiFi hotspot and will be disabled, if selected before.
 
-  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
-      print_c "Do you want to set a custom Password? (default: ${AUTOHOTSPOT_PASSWORD}) [y/N] "
-      read -r response_pw_q
-      case "$response_pw_q" in
+Do you want to enable an Autohotspot? [y/N]"
+    read -r response
+    case "$response" in
         [yY][eE][sS]|[yY])
-          while [ $(echo ${response_pw}|wc -m) -lt 8 ]
-          do
-              print_c "Please type the new password (at least 8 character)."
-              read -r response_pw
-          done
-          AUTOHOTSPOT_PASSWORD="${response_pw}"
-          ;;
+            ENABLE_AUTOHOTSPOT=true
+            ;;
         *)
-          ;;
-      esac
+            ;;
+    esac
 
-      if [ "$ENABLE_STATIC_IP" = true ]; then
-        print_c "Wifi hotspot cannot be enabled with static IP. Disabling static IP configuration."
-        ENABLE_STATIC_IP=false
-        log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
-      fi
-  fi
+    if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+        #add hostname to default SSID to prevent collision
+        local local_hostname=$(hostname)
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID}_${local_hostname}"
+        AUTOHOTSPOT_SSID="${AUTOHOTSPOT_SSID:0:32}"
 
-  log "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
-  if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
-    log "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
-  fi
+        local response_autohotspot
+        while [[ $response_autohotspot != "n" ]]
+        do
+            print_c "
+--- Current configuration for Autohotpot
+SSID              : $AUTOHOTSPOT_SSID
+Password          : $AUTOHOTSPOT_PASSWORD
+WiFi Country Code : $AUTOHOTSPOT_COUNTRYCODE
+IP                : $AUTOHOTSPOT_IP
+Do you want to change this values? [y/N]"
+            read -r response_autohotspot
+            case "$response_autohotspot" in
+                [yY][eE][sS]|[yY])
+                    local response_ssid=""
+                    local response_ssid_length=0
+                    while [[ $response_ssid_length -lt 1 || $response_ssid_length -gt 32 ]]
+                    do
+                        print_c "Please type the hotspot ssid (must be between 1 and 32 characters long):"
+                        read -r response_ssid
+                        response_ssid_length=$(get_string_length ${response_ssid})
+                    done
+
+                    local response_pw=""
+                    local response_pw_length=0
+                    while [[ $response_pw_length -lt 8 || $response_pw_length -gt 63 ]]
+                    do
+                        print_c "Please type the new password (must be between 8 and 63 characters long):"
+                        read -r response_pw
+                        response_pw_length=$(get_string_length ${response_pw})
+                    done
+
+                    local response_country_code=""
+                    local response_country_code_length=0
+                    while [[ $response_country_code_length -ne 2 ]]
+                    do
+                        print_c "Please type the WiFi country code (e.g. DE, GB, CZ or US):"
+                        read -r response_country_code
+                        response_country_code="${response_country_code^^}" # to Uppercase
+                        response_country_code_length=$(get_string_length ${response_country_code})
+                    done
+
+                    AUTOHOTSPOT_SSID="${response_ssid}"
+                    AUTOHOTSPOT_PASSWORD="${response_pw}"
+                    AUTOHOTSPOT_COUNTRYCODE="${response_country_code}"
+                    ;;
+                *)
+                    response_autohotspot=n
+                    ;;
+            esac
+        done
+
+        if [ "$ENABLE_STATIC_IP" = true ]; then
+            ENABLE_STATIC_IP=false
+            echo "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
+        fi
+    fi
+
+    echo "ENABLE_AUTOHOTSPOT=${ENABLE_AUTOHOTSPOT}"
+    if [ "$ENABLE_AUTOHOTSPOT" = true ]; then
+        echo "AUTOHOTSPOT_SSID=${AUTOHOTSPOT_SSID}"
+        echo "AUTOHOTSPOT_PASSWORD=${AUTOHOTSPOT_PASSWORD}"
+        echo "AUTOHOTSPOT_COUNTRYCODE=${AUTOHOTSPOT_COUNTRYCODE}"
+        echo "AUTOHOTSPOT_IP=${AUTOHOTSPOT_IP}"
+    fi
 }
 
 _option_bluetooth() {
@@ -189,12 +236,12 @@ Do you want to install Samba? [Y/n]"
 _option_webapp() {
   # ENABLE_WEBAPP
   clear_c
-  print_c "------------------------ WEBAPP -------------------------
+  print_c "------------------------ WEB APP ------------------------
 
 This is only required if you want to use
 a graphical interface to manage your Phoniebox!
 
-Would you like to install the web application? [Y/n]"
+Would you like to install the Web App? [Y/n]"
   read -r response
   case "$response" in
     [nN][oO]|[nN])
@@ -208,25 +255,39 @@ Would you like to install the web application? [Y/n]"
 }
 
 _option_kiosk_mode() {
-  # ENABLE_KIOSK_MODE
-  clear_c
-  print_c "----------------------- KIOSK MODE ----------------------
+    # ENABLE_KIOSK_MODE
+    clear_c
+    print_c "----------------------- KIOSK MODE ----------------------"
+    if [[ $(get_architecture) == "armv6" ]]; then
 
+        print_c "
+Due to limited resources the kiosk mode is not supported
+on Raspberry Pi 1 or Zero 1 ('ARMv6' models).
+Kiosk mode will not be installed.
+
+Press enter to continue."
+        read
+        ENABLE_KIOSK_MODE=false
+    else
+
+        print_c "
 If you have a screen attached to your RPi,
-this will launch the web application right after boot.
+this will launch the Web App right after boot.
 It will only install the necessary xserver dependencies
 and not the entire RPi desktop environment.
 
 Would you like to enable the Kiosk Mode? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      ENABLE_KIOSK_MODE=true
-      ;;
-    *)
-      ;;
-  esac
-  log "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
+        read -r response
+        case "$response" in
+            [yY][eE][sS]|[yY])
+            ENABLE_KIOSK_MODE=true
+            ;;
+            *)
+            ;;
+        esac
+    fi
+
+    log "ENABLE_KIOSK_MODE=${ENABLE_KIOSK_MODE}"
 }
 
 _options_update_raspi_os() {
@@ -261,11 +322,10 @@ the on-chip audio. It will make the ALSA sound
 configuration easier.
 If you are planning to only use Bluetooth speakers,
 leave the on-chip audio enabled!
-(This will touch your boot configuration in
-${RPI_BOOT_CONFIG_FILE}.
+(This will touch your boot configuration file.
 We will do our best not to mess anything up. However,
-a backup copy will be written to
-${DISABLE_ONBOARD_AUDIO_BACKUP} )
+a backup copy will be written. Please check the install
+log after for further details.)
 
 Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
   read -r response
@@ -282,48 +342,38 @@ Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
 
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
-  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" || "$GIT_USER" != "$GIT_UPSTREAM_USER" || "$CI_RUNNING" == "true" ]]; then
-    ENABLE_INSTALL_NODE=true
+  if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" && "$GIT_BRANCH" != "${GIT_BRANCH_DEVELOP}" ]] || [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]] || [[ "$CI_RUNNING" == "true" ]] ; then
     # Unless ENABLE_WEBAPP_PROD_DOWNLOAD is forced to true by user override, do not download a potentially stale build
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=false
     fi
-    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" != true && "$ENABLE_WEBAPP_PROD_DOWNLOAD" != "release-only" ]]; then
       clear_c
-      print_c "--------------------- WEBAPP NODE ---------------------
+      print_c "--------------------- WEB APP BUILD ---------------------
 
-You are installing from an unofficial branch.
-Therefore a prebuilt web app is not available and
-you will have to build it locally.
+You are installing from a non-release branch
+and/or an unofficial repository.
+Therefore a pre-build Web App is not available
+and it needs to be built locally.
 This requires Node to be installed.
 
-You can choose to decline the Node installation and
-the lastest prebuilt version from the main repository
-will be installed. This can lead to incompatibilities.
+If you decline, the lastest pre-build version
+from the official repository will be installed.
+This can lead to incompatibilities.
 
-Do you want to install Node? [Y/n]"
+Do you want to build the Web App? [Y/n]"
       read -r response
       case "$response" in
         [nN][oO]|[nN])
-          ENABLE_INSTALL_NODE=false
-          ENABLE_WEBAPP_PROD_DOWNLOAD=true
-          ;;
+            ENABLE_WEBAPP_PROD_DOWNLOAD=true
+            ;;
         *)
-          # This message will be displayed at the end of the installation process
-          local tmp_fin_message="ATTENTION: You need to build the web app locally with
-           $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
-           This must be done after reboot, due to memory restrictions.
-           Read the documentation regarding local Web App builds!"
-          FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
-          ;;
+            ;;
       esac
     fi
   fi
 
-  log "ENABLE_INSTALL_NODE=${ENABLE_INSTALL_NODE}"
-  if [ "$ENABLE_INSTALL_NODE" != true ]; then
-    log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
-  fi
+  log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
 }
 
 _run_customize_options() {

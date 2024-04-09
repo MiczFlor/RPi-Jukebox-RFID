@@ -29,7 +29,8 @@ The logs are also available via the Web Server:
 http://ip.of.your.box/logs
 ```
 
-> [!IMPORTANT] Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
+> [!IMPORTANT]
+> Always check the time modification date or the beginning of the log file to ensure you are not looking at an old log file!
 
 ## The long answer: A few more details
 
@@ -46,10 +47,10 @@ The default logging config does 2 things:
 
 1. It writes 2 log files:
 
-```bash
-shared/logs/app.log    : Complete Debug Messages
-shared/logs/errors.log : Only Errors and Warnings
-```
+    ```bash
+    shared/logs/app.log    : Complete Debug Messages
+    shared/logs/errors.log : Only Errors and Warnings
+    ```
 
 2. Prints logging messages to the console. If run as a service, only error messages are emitted to console to avoid spamming the system log files.
 
@@ -63,12 +64,10 @@ on the console log.
 $ systemctl --user stop jukebox-daemon
 
 # Start the Jukebox in debug mode:
-$ cd src/jukebox
-
 # with default logger:
-$ ./run_jukebox.py
+$ ./run_jukebox.sh
 # or with custom logger configuration:
-$ ./run_jukebox.py --logger path/to/custom/logger.yaml
+$ ./run_jukebox.sh --logger path/to/custom/logger.yaml
 ```
 
 ### Fallback configuration
@@ -78,8 +77,7 @@ Attention: This only emits messages to the console and does not write to the log
 This is more a fallback features:
 
 ```bash
-$ cd src/jukebox
-$ ./run_jukebox.py -vv
+$ ./run_jukebox.sh -vv
 ```
 
 ### Extreme cases

@@ -138,8 +138,8 @@
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
-      "no-music": "Keine Musik vorhanden!",
-      "empty-folder": "Dieser Ordner ist leer!",
+      "no-music": "☝️ Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer! 🙈",
       "show-folder-content": "Zeige den Ordnerinhalt an",
       "back-button-label": "Zurück"
     },

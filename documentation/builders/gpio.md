@@ -2,8 +2,7 @@
 
 ## Enabling GPIO
 
-The GPIO module needs to be enabled in your main configuration file ``shared/settings/jukebox.yaml``. Look for the
-this entry and modify it accordingly:
+The GPIO module needs to be enabled in your main configuration file ``shared/settings/jukebox.yaml``. Look for this entry and modify it accordingly:
 
 ```yml
 gpioz:
@@ -113,7 +112,7 @@ A button to shutdown the Jukebox if it is pressed for more than 3 seconds. Note 
 
 ```yml
 input_devices:
-  IncreaseVolume:
+  Shutdown:
     type: LongPressButton
     kwargs:
       pin: 3

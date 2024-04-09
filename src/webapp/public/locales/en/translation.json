@@ -138,8 +138,8 @@
       "title": "Select an album, folder or song"
     },
     "folders": {
-      "no-music": "No music found!",
-      "empty-folder": "This folder is empty!",
+      "no-music": "☝️ No music found!",
+      "empty-folder": "This folder is empty! 🙈",
       "show-folder-content": "Show folder content",
       "back-button-label": "Back"
     },

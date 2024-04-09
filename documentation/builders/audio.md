@@ -24,6 +24,7 @@ to setup the configuration for the Jukebox Core App.
 
 Run the following steps in a console:
 
+<!-- markdownlint-disable MD010 -->
 ```bash
 # Check available PulseAudio sinks
 $ pactl list sinks short
@@ -45,6 +46,7 @@ $ paplay /usr/share/sounds/alsa/Front_Center.wav
 # This must also work when using an ALSA device
 $ aplay /usr/share/sounds/alsa/Front_Center.wav
 ```
+<!-- markdownlint-restore -->
 
 You can also try different PulseAudio sinks without setting the default sink. In this case the volume is the last used
 volume level for this sink:
@@ -86,6 +88,8 @@ Pairing successful
 ....
 [PowerLocus Buddy]# exit
 ```
+
+If `bluetoothctl` has trouble to execute due to permission issue, try `sudo bluetoothctl`.
 
 Wait for a few seconds and then with `$ pactl list sinks short`, check wether the Bluetooth device shows up as an output.
 Its name usually looks like this: `bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink`.

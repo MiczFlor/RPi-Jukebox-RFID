@@ -1,13 +1,13 @@
+# Contributor Covenant Code of Conduct
 
-Dear Phonieboxians,
-
-As the Phoniebox community is growing, somebody suggested a pull request with the below document. I was hesitant to include it right away, but at the same time I thought: it might be good to have some kind of document to formulate the foundation this project is built on. To tell you the truth, this document is not it. However, it is a start and I thought: why not open this in the spirit of open source, sharing and pull requests and see if and how you or you or you want to change or add parts of this very *standard and corporate* document. Like most of you, I also have a small kid and my time is scarce, I might find some time though to add a bit.
-
-All the best, Micz
+> [!NOTE]
+> Dear Phonieboxians,
+>
+> As the Phoniebox community is growing, somebody suggested a pull request with the below document. I was hesitant to include it right away, but at the same time I thought: it might be good to have some kind of document to formulate the foundation this project is built on. To tell you the truth, this document is not it. However, it is a start and I thought: why not open this in the spirit of open source, sharing and pull requests and see if and how you or you or you want to change or add parts of this very *standard and corporate* document. Like most of you, I also have a small kid and my time is scarce, I might find some time though to add a bit.
+>
+> All the best, Micz
 
 2018-08-21
-
-# Contributor Covenant Code of Conduct
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
 

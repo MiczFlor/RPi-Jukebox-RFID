@@ -1,0 +1,33 @@
+name: Test Build Web App v3
+
+on:
+  schedule:
+    # run at 18:00 every sunday
+    - cron: '0 18 * * 0'
+  push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '.github/workflows/test_build_webapp_v3.yml'
+        - '.github/actions/build-webapp/**'
+        - 'src/webapp/**'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+        - future3/develop
+        - future3/main
+    paths:
+        - '.github/workflows/test_build_webapp_v3.yml'
+        - '.github/actions/build-webapp/**'
+        - 'src/webapp/**'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Web App
+        uses: ./.github/actions/build-webapp

@@ -17,13 +17,15 @@ _run_set_raspi_config() {
 
   # On-board audio
   if [ "$DISABLE_ONBOARD_AUDIO" == true ]; then
+    local configFile=$(get_boot_config_path)
     log "  Disable on-chip BCM audio"
-    if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" "${RPI_BOOT_CONFIG_FILE}" ; then
-      log "    Backup ${RPI_BOOT_CONFIG_FILE} --> ${DISABLE_ONBOARD_AUDIO_BACKUP}"
-      sudo cp "${RPI_BOOT_CONFIG_FILE}" "${DISABLE_ONBOARD_AUDIO_BACKUP}"
-      sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "${RPI_BOOT_CONFIG_FILE}"
+    if grep -q -E "^dtparam=([^,]*,)*audio=(on|true|yes|1).*" "${configFile}" ; then
+      local configFile_backup="${configFile}.backup.audio_on_$(date +%d.%m.%y_%H.%M.%S)"
+      log "    Backup ${configFile} --> ${configFile_backup}"
+      sudo cp "${configFile}" "${configFile_backup}"
+      sudo sed -i "s/^\(dtparam=\([^,]*,\)*\)audio=\(on\|true\|yes\|1\)\(.*\)/\1audio=off\4/g" "${configFile}"
     else
-      log "    On board audio seems to be off already. Not touching ${RPI_BOOT_CONFIG_FILE}"
+      log "    On board audio seems to be off already. Not touching ${configFile}"
     fi
   fi
 }

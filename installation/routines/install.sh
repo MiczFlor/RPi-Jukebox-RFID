@@ -2,6 +2,7 @@ install() {
   clear_c
   customize_options
   clear_c
+  show_slow_hardware_message
   set_raspi_config
   set_ssh_qos
   update_raspi_os
@@ -14,5 +15,6 @@ install() {
   setup_rfid_reader
   optimize_boot_time
   setup_autohotspot
+  setup_postinstall
   cleanup
 }

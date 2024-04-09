@@ -49,10 +49,8 @@ def _filter_by_device_name(all_devices: List[evdev.InputDevice],
 def find_device(device_name: str, exact_name: bool = True, mandatory_keys: Optional[Set[int]] = None) -> str:
     """Find an input device with device_name and mandatory keys.
 
-    Raises
-
-        #. FileNotFoundError, if no device is found.
-        #. AttributeError, if device does not have the mandatory keys
+    :raise FileNotFoundError: if no device is found.
+    :raise AttributeError: if device does not have the mandatory key
 
     If multiple devices match, the first match is returned
 
@@ -162,7 +160,7 @@ class EvDevKeyListener(threading.Thread):
                 self._connect()
             except FileNotFoundError as e:
                 # This error occurs, if opening the bluetooth input device fails
-                logger.debug(f"{e} (attempt: {idx+1}/{self.open_retry_cnt}). Retrying in {self.open_retry_delay}")
+                logger.debug(f"{e} (attempt: {idx + 1}/{self.open_retry_cnt}). Retrying in {self.open_retry_delay}")
                 time.sleep(self.open_retry_delay)
             except AttributeError as e:
                 # This error occurs, when the device can be found, but does not have the mandatory keys

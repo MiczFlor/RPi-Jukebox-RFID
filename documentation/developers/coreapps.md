@@ -1,7 +1,6 @@
 # Jukebox Apps
 
-The Jukebox\'s core apps are located in `src/jukebox`. Run the following
-command to learn more about each app and its parameters:
+The Jukebox's core apps are located in `src/jukebox`. To learn more about each app and its parameters, run the following command:
 
 ``` bash
 $ cd src/jukebox
@@ -10,13 +9,13 @@ $ ./<scriptname> -h
 
 ## Jukebox Core
 
-**Scriptname:** [run_jukebox.py](../../src/jukebox/run_jukebox.py)
+**Scriptname:** [run_jukebox.sh](../../run_jukebox.sh)
 
-This is the main app and starts the Jukebox Core.
+This is the main app. It starts the Jukebox Core.
 
-Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart the service. For example after a configuration change. Not all configuration changes can be applied on-the-fly. See [Jukebox Configuration](../builders/configuration.md#jukebox-configuration).
+This runs as a service, which starts automatically after boot-up. At times, it may be necessary to restart the service, for example, after a configuration change. Not all configuration changes can be applied on-the-fly. See [Jukebox Configuration](../builders/configuration.md#jukebox-configuration).
 
-For debugging, it is usually desirable to run the Jukebox directly from the console rather than as service. This gives direct logging info in the console and allows changing command line parameters. See [Troubleshooting](../builders/troubleshooting.md).
+For debugging, it's best to run Jukebox directly from the console rather than as a service, as this provides direct logging information in the console and allows for changing command line parameters. See [Troubleshooting](../builders/troubleshooting.md).
 
 ## Configuration Tools
 
@@ -25,41 +24,39 @@ See [Best practice procedure](../builders/configuration.md#best-practice-procedu
 
 ### Audio
 
-**Scriptname:** [run_configure_audio.py](../../src/jukebox/run_configure_audio.py)
+**Scriptname:** [setup_configure_audio.sh](../../installation/components/setup_configure_audio.sh)
 
-Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
+A setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
-Will also setup equalizer and mono down mixer in the pulseaudio config file. Run this once after installation. Can be re-run at any time to change the settings. For more information see [Audio Configuration](../builders/audio.md).
+This will also set up an equalizer and mono downmixer in the PulseAudio configuration file. Run this once after installation. It can be re-run at any time to change the settings. For more information see [Audio Configuration](../builders/audio.md).
 
 ### RFID Reader
 
-**Scriptname:** [run_register_rfid_reader.py](../../src/jukebox/run_register_rfid_reader.py)
+**Scriptname:** [setup_rfid_reader.sh](../../installation/components/setup_rfid_reader.sh)
 
 Setup tool to configure the RFID Readers.
 
-Run this once to register and configure the RFID readers with the Jukebox. Can be re-run at any time to change the settings. For more information see [RFID Readers](./rfid/README.md).
+Run this once to register and configure the RFID readers with Jukebox. It can be re-run at any time to change the settings. For more information see [RFID Readers](./rfid/README.md).
 
 > [!NOTE]
-> This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user). Any manual modifications to the settings will have to be re-applied
+> This tool will always create a new configuration file, thereby overwriting the old one (after confirming with the user). Any manual modifications to the settings will need to be reapplied.
 
 ## Developer Tools
 
 ### RPC
 
-**Scriptname:** [run_rpc_tool.py](../../src/jukebox/run_rpc_tool.py)
+**Scriptname:** [run_rpc_tool.sh](../../tools/run_rpc_tool.sh)
 
 Command Line Interface to the Jukebox RPC Server.
 
-A command line tool for sending RPC commands to the running jukebox app. This uses the same interface as the WebUI. Can be used for additional control or for debugging. Use `./run_rpc_tool.py` to start the tool in interactive mode.
+A command-line tool for sending RPC commands to the running Jukebox app, utilizing the same interface as the Web App, provides additional control or debugging capabilities. Start the tool in interactive mode with `./run_rpc_tool.sh`.
 
-The tool features auto-completion and command history.
+Features include auto-completion and command history, with available commands fetched from the running Jukebox service.
 
-The list of available commands is fetched from the running Jukebox service.
-
-The tool can also be used to send commands directly, when passing a `-c` argument, e.g. `./run_rpc_tool.py -c host.shutdown`.
+For direct command execution, use the `-c` argument, e.g., `./run_rpc_tool.sh -c host.shutdown`.
 
 ### Publicity Sniffer
 
-**Scriptname:** [run_publicity_sniffer.py](../../src/jukebox/run_publicity_sniffer.py)
+**Scriptname:** [run_publicity_sniffer.sh](../../tools/run_publicity_sniffer.sh)
 
-A command line tool that monitors all messages being sent out from the Jukebox via the publishing interface. Received messages are printed in the console. Mainly used for debugging.
+This command-line tool monitors all messages sent from Jukebox through the publishing interface, printing received messages in the console. It is primarily used for debugging.

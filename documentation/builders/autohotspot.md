@@ -1,107 +1,66 @@
 # Auto-Hotspot
 
-The Auto-Hotspot function allows the Jukebox to switch between its
-connection between a known WiFi and an automatically generated hotspot
-so that you can still access via SSH or Webapp.
+The Auto-Hotspot function enables the Jukebox to switch its connection between a known WiFi network and an automatically generated hotspot, allowing access via SSH or Web App.
 
 > [!IMPORTANT]
-> Please configure the WiFi connection to your home access point before enabling these feature!
-
-To create a hotspot and allow clients to connect
-[hostapd](http://w1.fi/hostapd/) and [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html).
+> Please configure the WiFi connection to your home access point before enabling this feature!
 
 ## How to connect
 
-When the Jukebox is not able to connect to a known WiFi it will create a
-hotspot named `Phoniebox_Hotspot`. You will be able to connect to this
-hotspot using the given password in the installation or the default
-password: `PlayItLoud!`
+When the Jukebox cannot connect to a known WiFi, it will automatically create a hotspot.
+You can connect to this hotspot using the password set during installation.
+Afterwards, you can access the Web App or connect via SSH as before, using the IP from the configuration.
 
-### Webapp
+The default configuration is
 
-After connecting to the `Phoniebox_Hotspot` you are able to connect to
-the webapp accessing the website [10.0.0.5](http://10.0.0.5/).
-
-### ssh
-
-After connecting to the `Phoniebox_Hotspot` you are able to connect via
-ssh to your Jukebox
-
-``` bash
-ssh <username>@10.0.0.5
-```
-
-## Changing basic configuration of the hotspot
-
-The whole hotspot configuration can be found at
-`/etc/hostapd/hostapd.conf`.
-
-The following parameters are relevant:
-
-- `ssid` for the displayed hotspot name
-- `wpa_passphrase` for the password of the hotspot
-- `country_code` the country you are currently in
-
-``` bash
-$ cat /etc/hostapd/hostapd.conf
-
-#2.4GHz setup wifi 80211 b,g,n
-interface=wlan0
-driver=nl80211
-ssid=Phoniebox_Hotspot
-hw_mode=g
-channel=8
-wmm_enabled=0
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_passphrase==PlayItLoud!
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=CCMP TKIP
-rsn_pairwise=CCMP
-
-#80211n - Change GB to your WiFi country code
-country_code=DE
-ieee80211n=1
-ieee80211d=1
+``` text
+* SSID              : Phoniebox_Hotspot_<hostname>
+* Password          : PlayItLoud!
+* WiFi Country Code : DE
+* IP                : 10.0.0.1
 ```
 
 ## Disabling automatism
 
-Auto-Hotspot can be enabled or disabled using the Webapp.
+Auto-Hotspot can be enabled or disabled using the Web App or RPC Commands.
+
+Disabling the Auto-Hotspot will run the WiFi check again and maintain the last connection state until reboot.
 
 > [!IMPORTANT]
-> Disabling or enabling will keep the last state.
+> If you disable this feature, you will lose access to the Jukebox if you are not near a known WiFi after reboot!
 
 ## Troubleshooting
 
-### Phoniebox is not connecting to the known WiFi
-
-The script will fall back to the hotspot so you still have some type of
-connection.
-
-Check your password in `/etc/wpa_supplicant/wpa_supplicant.conf`.
-
 ### AutoHotspot functionality is not working
 
-You can check the output of the script by running the following script:
+Check the `autohotspot.service` status
 
 ``` bash
-$ sudo /usr/bin/autohotspot
+sudo systemctl status autohotspot.service
 ```
 
-### You need to add a new wifi network to the Raspberry Pi
+and logs
 
-Because it is in Auto-Hotspot mode, you won\'t be able to scan for new
-wifi signals.
+``` bash
+sudo journalctl -u autohotspot.service -n 50
+```
 
-You will need to add a new network to
-`/etc/wpa_supplicant/wpa_supplicant.conf` manually. Enter the following
-details replacing mySSID and myPassword with your details. If your WiFi
-has a hidden SSID then include the line `scan_ssid=1`.
+### Jukebox is not connecting to the known WiFi
+
+The script will fall back to the hotspot, ensuring you still have some type of connection.
+
+Check your WiFi configuration.
+
+### You need to add a new WiFi network to the Raspberry Pi
+
+#### Using the command line
+
+Connect to the hotspot and open a terminal. Use the [raspi-config](https://www.raspberrypi.com/documentation/computers/configuration.html#wireless-lan) tool to add the new WiFi.
 
 ## Resources
 
-[Raspberry Pi - Auto WiFi Hotspot Switch - Direct
-Connection](https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection)
+* [Raspberry Connect - Auto WiFi Hotspot Switch](https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection)
+* [Raspberry Pi - Configuring networking](https://www.raspberrypi.com/documentation/computers/configuration.html#using-the-command-line)
+* dhcpcd / wpa_supplicant
+  * [hostapd](http://w1.fi/hostapd/)
+  * [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html)

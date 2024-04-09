@@ -16,9 +16,11 @@ RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
     make && make install
 ```
 
+[libzmq details](./libzmq.md)
+
 ## Configuration
 
 In `jukebox.yaml` (and all other config files):
-Always use relative path from settingsfile `../../`, but do not use relative paths with `~/`.
+Always use relative path from folder `src/jukebox` (`../../`), but do not use relative paths with `~/`.
 
 **Sole** exception is in `playermpd.mpd_conf`.

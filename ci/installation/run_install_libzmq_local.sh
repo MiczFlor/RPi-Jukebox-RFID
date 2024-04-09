@@ -17,13 +17,14 @@ export BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=true
 # n - use static ip
 # n - deactivate ipv6
 # n - setup autohotspot
+# - -   change default configuration (only with autohotspot = y)
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
 # n - setup rfid reader
 # n - setup samba
 # n - setup webapp
-# - - install node (only with webapp = y)
+# - - build webapp (only with webapp = y)
 # - - setup kiosk mode (only with webapp = y)
 # n - reboot
 
