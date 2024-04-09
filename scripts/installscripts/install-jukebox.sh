@@ -785,7 +785,7 @@ samba_config() {
     echo "Configuring Samba..."
     # Samba configuration settings
     # -rw-r--r-- 1 root root 9416 Apr 30 09:02 /etc/samba/smb.conf
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/smb.conf.buster-default.sample ${smb_conf}
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/smb.conf-default.sample ${smb_conf}
     sudo chown root:root "${smb_conf}"
     sudo chmod 644 "${smb_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
@@ -807,7 +807,7 @@ web_server_config() {
     sudo chmod o+x ${HOME_DIR}
     # Web server configuration settings
     # -rw-r--r-- 1 root root 1040 Apr 30 09:19 /etc/lighttpd/lighttpd.conf
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf.buster-default.sample "${lighthttpd_conf}"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf-default.sample "${lighthttpd_conf}"
     sudo chown root:root "${lighthttpd_conf}"
     sudo chmod 644 "${lighthttpd_conf}"
     # double quotes for variable expansion
@@ -815,13 +815,13 @@ web_server_config() {
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/15-fastcgi-php.conf.buster-default.sample ${fastcgi_php_conf}
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/15-fastcgi-php.conf-default.sample ${fastcgi_php_conf}
     sudo chown root:root "${fastcgi_php_conf}"
     sudo chmod 644 "${fastcgi_php_conf}"
 
     # settings for php.ini to support upload
     # -rw-r--r-- 1 root root 70999 Jun 14 13:50 /etc/php/7.3/cgi/php.ini
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/php.ini.buster-default.sample ${php_ini}
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/php.ini-default.sample ${php_ini}
     sudo chown root:root "${php_ini}"
     sudo chmod 644 "${php_ini}"
 
@@ -1034,7 +1034,7 @@ install_main() {
     sudo systemctl disable phoniebox-rotary-encoder
     sudo systemctl disable phoniebox-gpio-buttons.service
     sudo rm "${systemd_dir}"/rfid-reader.service
-    sudo rm "${systemd_dir}"/startup-sound.service
+    sudo rm "${systemd_dir}"/phoniebox-startup-sound.service
     sudo rm "${systemd_dir}"/gpio-buttons.service
     sudo rm "${systemd_dir}"/idle-watchdog.service
     sudo rm "${systemd_dir}"/phoniebox-rotary-encoder.service
@@ -1043,14 +1043,12 @@ install_main() {
 
     # 2. install new ones - this is version > 1.1.8-beta
     RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service.stretch-default.sample "${RFID_READER_SERVICE}"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service-default.sample "${RFID_READER_SERVICE}"
     # Replace homedir; double quotes for variable expansion
     sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
 
-    #startup sound now part of phoniebox-startup-scripts
-    #sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-sound.service.stretch-default.sample "${systemd_dir}"/phoniebox-startup-sound.service
     STARTUP_SCRIPT_SERVICE="${systemd_dir}/phoniebox-startup-scripts.service"
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service.stretch-default.sample "${STARTUP_SCRIPT_SERVICE}"
+    sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service-default.sample "${STARTUP_SCRIPT_SERVICE}"
     # Replace homedir; double quotes for variable expansion
     sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
 
@@ -1071,8 +1069,6 @@ install_main() {
     # enable the services needed
     sudo systemctl enable phoniebox-idle-watchdog
     sudo systemctl enable phoniebox-rfid-reader
-    #startup sound is part of phoniebox-startup-scripts now
-    #sudo systemctl enable phoniebox-startup-sound
     sudo systemctl enable phoniebox-startup-scripts
     # copy mp3s for startup and shutdown sound to the right folder
     cp "${jukebox_dir}"/misc/sampleconfigs/startupsound.mp3.sample "${jukebox_dir}"/shared/startupsound.mp3
@@ -1172,7 +1168,7 @@ wifi_settings() {
             # DHCP configuration settings
             local dhcpcd_conf="/etc/dhcpcd.conf"
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
-            sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf.buster-default-noHotspot.sample "${dhcpcd_conf}"
+            sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf-default-noHotspot.sample "${dhcpcd_conf}"
             # Change IP for router and Phoniebox
             sudo sed -i 's/%WIFIinterface%/'"$WIFI_INTERFACE"'/' "${dhcpcd_conf}"
             sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
