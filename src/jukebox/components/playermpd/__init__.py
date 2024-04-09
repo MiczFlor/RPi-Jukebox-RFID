@@ -304,6 +304,10 @@ class PlayerMPD:
         self._db_wait_for_update(state)
         return state
 
+    # ---------------
+    # Player
+    # ---------------
+
     @plugs.tag
     def play(self):
         with self.mpd_lock:
@@ -465,13 +469,6 @@ class PlayerMPD:
         raise NotImplementedError
 
     @plugs.tag
-    def play_single(self, song_url):
-        with self.mpd_lock:
-            self.mpd_client.clear()
-            self.mpd_client.addid(song_url)
-            self.mpd_client.play()
-
-    @plugs.tag
     def resume(self):
         with self.mpd_lock:
             songpos = self.current_folder_status["CURRENTSONGPOS"]
@@ -520,38 +517,11 @@ class PlayerMPD:
             self.play_folder(folder, recursive)
 
     @plugs.tag
-    def get_single_coverart(self, song_url):
-        mp3_file_path = Path(components.player.get_music_library_path(), song_url).expanduser()
-        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path)
-
-        return cache_filename
-
-    @plugs.tag
-    def get_album_coverart(self, albumartist: str, album: str):
-        song_list = self.list_songs_by_artist_and_album(albumartist, album)
-
-        return self.get_single_coverart(song_list[0]['file'])
-
-    @plugs.tag
-    def flush_coverart_cache(self):
-        """
-        Deletes the Cover Art Cache
-        """
-
-        return self.coverart_cache_manager.flush_cache()
-
-    @plugs.tag
-    def get_folder_content(self, folder: str):
-        """
-        Get the folder content as content list with meta-information. Depth is always 1.
-
-        Call repeatedly to descend in hierarchy
-
-        :param folder: Folder path relative to music library path
-        """
-        plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
-        plc.get_directory_content(folder)
-        return plc.playlist
+    def play_single(self, song_url):
+        with self.mpd_lock:
+            self.mpd_client.clear()
+            self.mpd_client.addid(song_url)
+            self.mpd_client.play()
 
     @plugs.tag
     def play_folder(self, folder: str, recursive: bool = False) -> None:
@@ -605,6 +575,48 @@ class PlayerMPD:
             self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
             self.mpd_client.play()
 
+    # ---------------
+    # Cover Art
+    # ---------------
+
+    @plugs.tag
+    def get_single_coverart(self, song_url):
+        mp3_file_path = Path(components.player.get_music_library_path(), song_url).expanduser()
+        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path)
+
+        return cache_filename
+
+    @plugs.tag
+    def get_album_coverart(self, albumartist: str, album: str):
+        song_list = self.list_songs_by_artist_and_album(albumartist, album)
+
+        return self.get_single_coverart(song_list[0]['file'])
+
+    @plugs.tag
+    def flush_coverart_cache(self):
+        """
+        Deletes the Cover Art Cache
+        """
+
+        return self.coverart_cache_manager.flush_cache()
+
+    # ---------------
+    # Playlists
+    # ---------------
+
+    @plugs.tag
+    def get_folder_content(self, folder: str):
+        """
+        Get the folder content as content list with meta-information. Depth is always 1.
+
+        Call repeatedly to descend in hierarchy
+
+        :param folder: Folder path relative to music library path
+        """
+        plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+        plc.get_directory_content(folder)
+        return plc.playlist
+
     @plugs.tag
     def queue_load(self, folder):
         # There was something playing before -> stop and save state
@@ -657,6 +669,11 @@ class PlayerMPD:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
 
         return song
+
+
+    # ---------------
+    # Volume
+    # ---------------
 
     def get_volume(self):
         """
