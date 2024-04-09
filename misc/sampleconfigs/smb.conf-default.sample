@@ -4,7 +4,7 @@
 #
 # This is the main Samba configuration file. You should read the
 # smb.conf(5) manual page in order to understand the options listed
-# here. Samba has a huge number of configurable options most of which 
+# here. Samba has a huge number of configurable options most of which
 # are not shown in this example
 #
 # Some options that are often worth tuning have been included as
@@ -16,8 +16,8 @@
 #    enough to be mentioned here
 #
 # NOTE: Whenever you modify this file you should run the command
-# "testparm" to check that you have not made any basic syntactic 
-# errors. 
+# "testparm" to check that you have not made any basic syntactic
+# errors.
 
 #======================= Global Settings =======================
 
@@ -66,7 +66,7 @@
 # Server role. Defines in which mode Samba will operate. Possible
 # values are "standalone server", "member server", "classic primary
 # domain controller", "classic backup domain controller", "active
-# directory domain controller". 
+# directory domain controller".
 #
 # Most people will want "standalone server" or "member server".
 # Running as "active directory domain controller" will require first
@@ -101,7 +101,7 @@
 #
 # The following settings only takes effect if 'server role = primary
 # classic domain controller', 'server role = backup domain controller'
-# or 'domain logons' is set 
+# or 'domain logons' is set
 #
 
 # It specifies the location of the user's
@@ -130,13 +130,13 @@
 # password; please adapt to your needs
 ; add user script = /usr/sbin/adduser --quiet --disabled-password --gecos "" %u
 
-# This allows machine accounts to be created on the domain controller via the 
-# SAMR RPC pipe.  
+# This allows machine accounts to be created on the domain controller via the
+# SAMR RPC pipe.
 # The following assumes a "machines" group exists on the system
 ; add machine script  = /usr/sbin/useradd -g machines -c "%u machine account" -d /var/lib/samba -s /bin/false %u
 
 # This allows Unix groups to be created on the domain controller via the SAMR
-# RPC pipe.  
+# RPC pipe.
 ; add group script = /usr/sbin/addgroup --force-badname %g
 
 ############ Misc ############
@@ -220,7 +220,7 @@
    create mask=0777
    directory mask=0777
    public=no
-   
+
 # if the audiofiles are not in 'shared', we need this
 [phoniebox_audiofile]
    comment= Pi Jukebox

@@ -69,18 +69,3 @@ jobs:
   #   with:
   #     debian_codename: 'bullseye'
   #     platform: linux/arm/v6
-
-  run_buster_armv7:
-    name: 'buster armv7'
-    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
-    with:
-      debian_codename: 'buster'
-      platform: linux/arm/v7
-
-  # # can be activate on test branches, currently failing
-  # run_buster_armv6:
-  #   name: 'buster armv6'
-  #   uses: ./.github/workflows/test_docker_debian_codename_sub.yml
-  #   with:
-  #     debian_codename: 'buster'
-  #     platform: linux/arm/v6
