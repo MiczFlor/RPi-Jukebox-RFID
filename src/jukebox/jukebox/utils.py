@@ -197,9 +197,9 @@ def generate_cmd_alias_rst(stream):
     print(".. |--| unicode:: U+2014", file=stream)
     print(".. |->| unicode:: U+21d2\n", file=stream)
 
-    # 'play_card':
-    #    Executes   : player.ctrl.play_card()
-    #    Signature  : player.ctrl.play_card(folder=None)
+    # 'play_folder':
+    #    Executes   : player.ctrl.play_folder()
+    #    Signature  : player.ctrl.play_folder(folder=None)
     #    Description: Main entry point for trigger music playing from RFID reader
     for cmd, action in cmd_alias_definitions.items():
         try:

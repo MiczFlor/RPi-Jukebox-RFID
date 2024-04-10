@@ -512,16 +512,6 @@ class PlayerMPD:
 
             self.mpd_client.play()
 
-    @plugs.tag
-    def play_card(self, method: str, **kwargs):
-        allowed_methods = ['play_single', 'play_folder', 'play_album']
-
-        if method in allowed_methods:
-            method = getattr(self, method, None)
-            method(**kwargs)
-        else:
-            logger.debug(f"Method {method} is not allowed.")
-
     # ---------------
     # Cover Art
     # ---------------

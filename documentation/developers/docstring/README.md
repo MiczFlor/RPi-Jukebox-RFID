@@ -40,14 +40,12 @@
     * [replay](#components.playermpd.PlayerMPD.replay)
     * [toggle](#components.playermpd.PlayerMPD.toggle)
     * [replay\_if\_stopped](#components.playermpd.PlayerMPD.replay_if_stopped)
-    * [play\_card](#components.playermpd.PlayerMPD.play_card)
     * [get\_single\_coverart](#components.playermpd.PlayerMPD.get_single_coverart)
     * [get\_folder\_content](#components.playermpd.PlayerMPD.get_folder_content)
     * [play\_folder](#components.playermpd.PlayerMPD.play_folder)
     * [play\_album](#components.playermpd.PlayerMPD.play_album)
     * [get\_volume](#components.playermpd.PlayerMPD.get_volume)
     * [set\_volume](#components.playermpd.PlayerMPD.set_volume)
-  * [play\_card\_callbacks](#components.playermpd.play_card_callbacks)
 * [components.playermpd.coverart\_cache\_manager](#components.playermpd.coverart_cache_manager)
 * [components.rpc\_command\_alias](#components.rpc_command_alias)
 * [components.synchronisation.rfidcards](#components.synchronisation.rfidcards)
@@ -975,25 +973,6 @@ Re-start playing the last-played folder unless playlist is still playing
 > but we keep it as it is specifically implemented in box 2.X
 
 
-<a id="components.playermpd.PlayerMPD.play_card"></a>
-
-#### play\_card
-
-```python
-@plugs.tag
-def play_card(folder: str, recursive: bool = False)
-```
-
-Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
-
-Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
-accordingly.
-
-**Arguments**:
-
-- `folder`: Folder path relative to music library path
-- `recursive`: Add folder recursively
-
 <a id="components.playermpd.PlayerMPD.get_single_coverart"></a>
 
 #### get\_single\_coverart
@@ -1088,22 +1067,6 @@ Set the volume
 For volume control do not use directly, but use through the plugin 'volume',
 as the user may have configured a volume control manager other than MPD
 
-
-<a id="components.playermpd.play_card_callbacks"></a>
-
-#### play\_card\_callbacks
-
-Callback handler instance for play_card events.
-
-- is executed when play_card function is called
-States:
-- See :class:`PlayCardState`
-See :class:`PlayContentCallbacks`
-
-
-<a id="components.playermpd.coverart_cache_manager"></a>
-
-# components.playermpd.coverart\_cache\_manager
 
 <a id="components.rpc_command_alias"></a>
 
