@@ -33,8 +33,8 @@ n
 y
 
 y
-myuser
-mypassword
+abcdefghijklmnopqrstuvwxyzßäöüÄÖÜ1234567890
+!\"§$%&/()=?´\`²³{[]}\+*~#',;.:-_ @€^°
 myclient_id
 myclient_secret
 
