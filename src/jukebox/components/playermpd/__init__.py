@@ -41,12 +41,6 @@ Status storing:
 Internal status
   - last played folder: Needed to detect second swipe
 
-
-Saving {'player_status': {'last_played_folder': 'TraumfaengerStarkeLieder', 'CURRENTSONGPOS': '0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3'},
-'audio_folder_status':
-{'TraumfaengerStarkeLieder': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'stop', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'},
-'Giraffenaffen': {'ELAPSED': '1.0', 'CURRENTFILENAME': 'TraumfaengerStarkeLieder/01.mp3', 'CURRENTSONGPOS': '0', 'PLAYSTATUS': 'play', 'RESUME': 'OFF', 'SHUFFLE': 'OFF', 'LOOP': 'OFF', 'SINGLE': 'OFF'}}}
-
 References:
 https://github.com/Mic92/python-mpd2
 https://python-mpd2.readthedocs.io/en/latest/topics/commands.html
@@ -87,6 +81,7 @@ import threading
 import logging
 import time
 import functools
+from typing import Callable
 from pathlib import Path
 import components.player
 import jukebox.cfghandler
@@ -151,8 +146,7 @@ class PlayerMPD:
                                          'play': self.play,
                                          'skip': self.next,
                                          'rewind': self.rewind,
-                                         'replay': self.replay,
-                                         'replay_if_stopped': self.replay_if_stopped}
+                                         'replay': self.replay}
         self.second_swipe_action = None
         self.decode_2nd_swipe_option()
 
@@ -174,24 +168,24 @@ class PlayerMPD:
             self.music_player_status['audio_folder_status'] = {}
             self.music_player_status.save_to_json()
             self.current_folder_status = {}
-            self.music_player_status['player_status']['last_played_folder'] = ''
+            # self.music_player_status['player_status']['last_played_folder'] = ''
         else:
             last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
-            if last_played_folder:
-                # current_folder_status is a dict, but last_played_folder a str
-                self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
-                # Restore the playlist status in mpd
-                # But what about playback position?
-                self.mpd_client.clear()
-                #  This could fail and cause load fail of entire package:
-                # self.mpd_client.add(last_played_folder)
-                logger.info(f"Last Played Folder: {last_played_folder}")
+            # if last_played_folder:
+            #     # current_folder_status is a dict, but last_played_folder a str
+            #     self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
+            #     # Restore the playlist status in mpd
+            #     # But what about playback position?
+            #     self.mpd_client.clear()
+            #     #  This could fail and cause load fail of entire package:
+            #     # self.mpd_client.add(last_played_folder)
+            #     logger.info(f"Last Played Folder: {last_played_folder}")
 
         # Clear last folder played, as we actually did not play any folder yet
         # Needed for second swipe detection
         # TODO: This will loose the last_played_folder information is the box is started and closed with playing anything...
         # Change this to last_played_folder and shutdown_state (for restoring)
-        self.music_player_status['player_status']['last_played_folder'] = ''
+        # self.music_player_status['player_status']['last_played_folder'] = ''
 
         self.old_song = None
         self.mpd_status = {}
@@ -364,25 +358,14 @@ class PlayerMPD:
         Will reset settings to folder config"""
         logger.debug("Replay")
         with self.mpd_lock:
-            self.play_folder(self.music_player_status['player_status']['last_played_folder'])
+            # TODO: Restore from PlayPositionTracker and play
+            return
 
     @plugs.tag
     def toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         with self.mpd_lock:
             self.mpd_client.pause()
-
-    @plugs.tag
-    def replay_if_stopped(self):
-        """
-        Re-start playing the last-played folder unless playlist is still playing
-
-        > [!NOTE]
-        > To me this seems much like the behaviour of play,
-        > but we keep it as it is specifically implemented in box 2.X"""
-        with self.mpd_lock:
-            if self.mpd_status['state'] == 'stop':
-                self.play_folder(self.music_player_status['player_status']['last_played_folder'])
 
     # Shuffle
     def _shuffle(self, random):
@@ -479,6 +462,37 @@ class PlayerMPD:
     # ---------------
     # Play songs
     # ---------------
+
+    def call_with_second_swipe(self, identifier: str, action: Callable, **kwargs):
+        logger.debug(f"last_played_identifier = {self.music_player_status['player_status']['last_played_identifier']}")
+        with self.mpd_lock:
+            is_second_swipe = self.music_player_status['player_status']['last_played_identifier'] == identifier
+
+        if self.second_swipe_action is not None and is_second_swipe:
+            logger.debug('Calling second swipe action')
+            if 'folder' in kwargs:  # TODO: Legacy code from previous implementation. should be adapted
+                play_card_callbacks.run_callbacks(kwargs.get('folder'), PlayCardState.secondSwipe)
+            self.second_swipe_action()
+        else:
+            logger.debug('Calling first swipe action')
+            if 'folder' in kwargs:  # TODO: Legacy code from previous implementation. should be adapted
+                play_card_callbacks.run_callbacks(kwargs.get('folder'), PlayCardState.firstSwipe)
+            action(**kwargs)
+            self.music_player_status['player_status']['last_played_identifier'] = identifier
+
+    @plugs.tag
+    def play_card(self, identifier: str, **kwargs):
+        actions = {
+            'play_single': self.play_single,
+            'play_album': self.play_album,
+            'play_folder': self.play_folder
+        }
+
+        action = actions.get(identifier)
+        if action:
+            self.call_with_second_swipe(identifier, action, **kwargs)
+        else:
+            logger.error(f"Function '{identifier}' does not exist.")
 
     @plugs.tag
     def play_single(self, song_url: str):
