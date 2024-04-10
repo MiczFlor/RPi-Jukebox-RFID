@@ -94,6 +94,17 @@ log_close() {
     fi
 }
 
+escape_for_shell() {
+	local escaped="${1//\"/\\\"}"
+	escaped="${escaped//\`/\\\`}"
+	echo "$escaped"
+}
+
+escape_for_sed() {
+	local escaped=$(echo "$1" | sed -e 's/[\/&'\'']/\\&/g')
+	echo "$escaped"
+}
+
 checkPrerequisite() {
     #currently the user 'pi' is mandatory
     #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
@@ -627,8 +638,8 @@ config_spotify() {
     # append variables to config file
     {
         echo "SPOTinstall=\"$SPOTinstall\"";
-        echo "SPOTIuser=\"$SPOTIuser\"";
-        echo "SPOTIpass=\"$SPOTIpass\"";
+        echo "SPOTIuser=\"$(escape_for_shell "$SPOTIuser")\"";
+        echo "SPOTIpass=\"$(escape_for_shell "$SPOTIpass")\"";
         echo "SPOTIclientid=\"$SPOTIclientid\"";
         echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
@@ -1106,8 +1117,8 @@ install_main() {
         sudo locale-gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_username%/'"$(escape_for_sed "$SPOTIuser")"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_password%/'"$(escape_for_sed "$SPOTIpass")"'/' "${mopidy_conf}"
         sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
         sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash

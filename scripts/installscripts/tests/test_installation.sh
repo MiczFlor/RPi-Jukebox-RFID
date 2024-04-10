@@ -62,6 +62,24 @@ check_file_contains_string() {
     fi
 
     # sudo is required for checking /etc/mopidy/mopidy.conf
+    if [[ ! $(sudo grep -iF"${grep_option}" "${string}" "${file}") ]]; then
+        echo "  ERROR: '${string}' not found in ${file}"
+        ((failed_tests++))
+    fi
+    ((tests++))
+}
+
+check_file_contains_string_regex() {
+    local string="$1"
+    local file="$2"
+    local allowPartCheck="$3"
+
+    local grep_option="w"
+    if [ -v allowPartCheck ]; then
+        grep_option=""
+    fi
+
+    # sudo is required for checking /etc/mopidy/mopidy.conf
     if [[ ! $(sudo grep -i"${grep_option}" "${string}" "${file}") ]]; then
         echo "  ERROR: '${string}' not found in ${file}"
         ((failed_tests++))
@@ -260,7 +278,7 @@ verify_autohotspot_settings() {
             check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
 
             check_file_exists "${autohotspot_service_daemon_path}"
-            check_file_contains_string "\-i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+            check_file_contains_string "ExecStart=wpa_supplicant -i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
 
             check_file_exists "${autohotspot_service_path}"
             check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
@@ -462,8 +480,8 @@ verify_mpd_config() {
 
     printf "\nTESTING mpd config...\n\n"
 
-    check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
-    check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
+    check_file_contains_string_regex "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
+    check_file_contains_string_regex "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
 
     check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
 
