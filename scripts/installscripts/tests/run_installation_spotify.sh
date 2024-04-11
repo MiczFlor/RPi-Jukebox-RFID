@@ -36,7 +36,7 @@ y
 abc$defghijkl&mnopqrstuvwxyzßäöüÄÖÜ$1234567890
 !"§$%&/()=?´`²³{[]}\+*~#'\'',;.:-_ @€^°
 myclient_id
-myclient_secret
+myclient+SECRET/0123456789=
 
 y
 

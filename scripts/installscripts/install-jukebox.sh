@@ -641,8 +641,8 @@ config_spotify() {
         echo "SPOTinstall=\"$SPOTinstall\"";
         echo "SPOTIuser=\"$(escape_for_shell "$SPOTIuser")\"";
         echo "SPOTIpass=\"$(escape_for_shell "$SPOTIpass")\"";
-        echo "SPOTIclientid=\"$SPOTIclientid\"";
-        echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+        echo "SPOTIclientid=\"$(escape_for_shell "$SPOTIclientid")\"";
+        echo "SPOTIclientsecret=\"$(escape_for_shell "$SPOTIclientsecret")\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -1122,8 +1122,8 @@ install_main() {
         # Change vars to match install config
         sudo sed -i 's/%spotify_username%/'"$(escape_for_sed "$SPOTIuser")"'/' "${mopidy_conf}"
         sudo sed -i 's/%spotify_password%/'"$(escape_for_sed "$SPOTIpass")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_id%/'"$(escape_for_sed "$SPOTIclientid")"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_secret%/'"$(escape_for_sed "$SPOTIclientsecret")"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
         # Replace homedir; double quotes for variable expansion
