@@ -87,6 +87,7 @@ import threading
 import logging
 import time
 import functools
+from typing import Optional
 from pathlib import Path
 import components.player
 import jukebox.cfghandler
@@ -100,6 +101,7 @@ import misc
 from jukebox.NvManager import nv_manager
 from .playcontentcallback import PlayContentCallbacks, PlayCardState
 from .coverart_cache_manager import CoverartCacheManager
+from .resume_position_tracker import ResumePositionTracker
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -215,6 +217,8 @@ class PlayerMPD:
         # Change this to last_played_folder and shutdown_state (for restoring)
         self.music_player_status['player_status']['last_played_folder'] = ''
 
+        self.resume_position_tracker = ResumePositionTracker()
+
         self.old_song = None
         self.mpd_status = {}
         self.mpd_status_poll_interval = 0.25
@@ -292,6 +296,7 @@ class PlayerMPD:
             self.current_folder_status["LOOP"] = "OFF"
             self.current_folder_status["SINGLE"] = "OFF"
 
+        self.resume_position_tracker.handle_mpd_status(self.mpd_status)
         # Delete the volume key to avoid confusion
         # Volume is published via the 'volume' component!
         try:
@@ -330,11 +335,13 @@ class PlayerMPD:
     def play(self):
         with self.mpd_lock:
             self.mpd_client.play()
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def stop(self):
         with self.mpd_lock:
             self.mpd_client.stop()
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def pause(self, state: int = 1):
@@ -345,6 +352,7 @@ class PlayerMPD:
         """
         with self.mpd_lock:
             self.mpd_client.pause(state)
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def prev(self):
@@ -359,10 +367,12 @@ class PlayerMPD:
             # This shouldn't happen in reality, but we still catch
             # this error to avoid crashing the player thread:
             logger.warning('Failed to go to previous song, ignoring')
+        self.resume_position_tracker.flush()
 
     def _prev_in_stopped_state(self):
         with self.mpd_lock:
             self.mpd_client.play(max(0, int(self.mpd_status['pos']) - 1))
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def next(self):
@@ -384,6 +394,7 @@ class PlayerMPD:
             # This shouldn't happen in reality, but we still catch
             # this error to avoid crashing the player thread:
             logger.warning('Failed to go to next song, ignoring')
+        self.resume_position_tracker.flush()
 
     def _next_in_stopped_state(self):
         pos = int(self.mpd_status['pos']) + 1
@@ -391,11 +402,13 @@ class PlayerMPD:
             return self.end_of_playlist_next_action()
         with self.mpd_lock:
             self.mpd_client.play(pos)
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def seek(self, new_time):
         with self.mpd_lock:
             self.mpd_client.seekcur(new_time)
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def rewind(self):
@@ -406,6 +419,7 @@ class PlayerMPD:
         logger.debug("Rewind")
         with self.mpd_lock:
             self.mpd_client.play(0)
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def replay(self):
@@ -422,6 +436,7 @@ class PlayerMPD:
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         with self.mpd_lock:
             self.mpd_client.pause()
+        self.resume_position_tracker.flush()
 
     @plugs.tag
     def replay_if_stopped(self):
@@ -520,11 +535,34 @@ class PlayerMPD:
         raise NotImplementedError
 
     @plugs.tag
-    def play_single(self, song_url):
+    def play_single(self, song_url, resume=None):
+        play_target = ('single', song_url)
         with self.mpd_lock:
+            if self._play_or_pause_current(play_target):
+                return
             self.mpd_client.clear()
             self.mpd_client.addid(song_url)
+            self._mpd_resume_from_saved_position(play_target, resume)
             self.mpd_client.play()
+
+    def _play_or_pause_current(self, play_target):
+        if self.resume_position_tracker.is_current_play_target(play_target):
+            if self.mpd_status['state'] == 'play':
+                # Do nothing
+                return True
+            if self.mpd_status['state'] == 'pause':
+                logger.debug('Unpausing as the play target is identical')
+                self.mpd_client.play()
+                return True
+        return False
+
+    def _mpd_resume_from_saved_position(self, play_target, resume: Optional[bool]):
+        playlist_position = self.resume_position_tracker.get_playlist_position_by_play_target(play_target) or 0
+        seek_position = self.resume_position_tracker.get_seek_position_by_play_target(play_target) or 0
+        self.resume_position_tracker.set_current_play_target(play_target)
+        if resume or (resume is None and self.resume_position_tracker.resume_by_default):
+            logger.debug(f'Restoring saved position for {play_target}')
+            self.mpd_client.seek(playlist_position, seek_position)
 
     @plugs.tag
     def resume(self):
@@ -537,10 +575,13 @@ class PlayerMPD:
     @plugs.tag
     def play_card(self, folder: str, recursive: bool = False):
         """
-        Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
+        Deprecated (?) main entry point for trigger music playing from RFID reader.
+        Decodes second swipe options before playing folder content
 
         Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
         accordingly.
+
+        Note: The Web UI currently uses play_single/album/folder directly.
 
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
@@ -609,7 +650,7 @@ class PlayerMPD:
         return plc.playlist
 
     @plugs.tag
-    def play_folder(self, folder: str, recursive: bool = False) -> None:
+    def play_folder(self, folder: str, recursive: bool = False, resume: Optional[bool] = None) -> None:
         """
         Playback a music folder.
 
@@ -620,8 +661,11 @@ class PlayerMPD:
         :param recursive: Add folder recursively
         """
         # TODO: This changes the current state -> Need to save last state
+        play_target = ('folder', folder, recursive)
         with self.mpd_lock:
             logger.info(f"Play folder: '{folder}'")
+            if self._play_or_pause_current(play_target):
+                return
             self.mpd_client.clear()
 
             plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
@@ -641,10 +685,11 @@ class PlayerMPD:
             if self.current_folder_status is None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
 
+            self._mpd_resume_from_saved_position(play_target, resume)
             self.mpd_client.play()
 
     @plugs.tag
-    def play_album(self, albumartist: str, album: str):
+    def play_album(self, albumartist: str, album: str, resume: Optional[bool] = None):
         """
         Playback a album found in MPD database.
 
@@ -654,10 +699,14 @@ class PlayerMPD:
         :param albumartist: Artist of the Album provided by MPD database
         :param album: Album name provided by MPD database
         """
+        play_target = ('album', albumartist, album)
         with self.mpd_lock:
             logger.info(f"Play album: '{album}' by '{albumartist}")
+            if self._play_or_pause_current(play_target):
+                return
             self.mpd_client.clear()
             self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
+            self._mpd_resume_from_saved_position(play_target, resume)
             self.mpd_client.play()
 
     @plugs.tag
