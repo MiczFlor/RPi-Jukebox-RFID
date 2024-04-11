@@ -5,10 +5,13 @@ from jukebox.multitimer import (GenericTimerClass, GenericMultiTimerClass)
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
+from .idle_shutdown_timer import IdleShutdownTimer
 
 
 logger = logging.getLogger('jb.timers')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
 
 
 # ---------------------------------------------------------------------------
@@ -46,6 +49,7 @@ class VolumeFadeOutActionClass:
 timer_shutdown: GenericTimerClass
 timer_stop_player: GenericTimerClass
 timer_fade_volume: GenericMultiTimerClass
+timer_idle_shutdown: IdleShutdownTimer
 
 
 @plugin.finalize
@@ -77,6 +81,25 @@ def finalize():
     timer_fade_volume.__doc__ = "Timer step-wise volume fade out and shutdown"
     plugin.register(timer_fade_volume, name='timer_fade_volume', package=plugin.loaded_as(__name__))
 
+    global timer_idle_shutdown
+    timeout = cfg.setndefault('timers', 'idle_shutdown', 'timeout_sec', value=0)
+    try:
+        timeout = int(timeout)
+    except ValueError:
+        logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(timeout)}')
+        timeout = 0
+    if timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
+        logger.info('disabling idle shutdown timer; set '
+                    'timers.idle_shutdown.timeout_sec to at least '
+                    f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
+        timeout = 0
+    if not timeout:
+        timer_idle_shutdown = None
+    else:
+        timer_idle_shutdown = IdleShutdownTimer(timeout)
+        timer_idle_shutdown.__doc__ = 'Timer for automatic shutdown on idle'
+        timer_idle_shutdown.start()
+
     # The idle Timer does work in a little sneaky way
     # Idle is when there are no calls through the plugin module
     # Ahh, but also when music is playing this is not idle...
@@ -101,4 +124,9 @@ def atexit(**ignored_kwargs):
     timer_stop_player.cancel()
     global timer_fade_volume
     timer_fade_volume.cancel()
-    return [timer_shutdown.timer_thread, timer_stop_player.timer_thread, timer_fade_volume.timer_thread]
+    ret = [timer_shutdown.timer_thread, timer_stop_player.timer_thread, timer_fade_volume.timer_thread]
+    global timer_idle_shutdown
+    if timer_idle_shutdown is not None:
+        timer_idle_shutdown.cancel()
+        ret += [timer_idle_shutdown]
+    return ret
