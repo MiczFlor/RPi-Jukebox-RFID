@@ -974,9 +974,11 @@ install_main() {
         call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
         # not yet available on apt.mopidy.com, so install manually
-        wget -q https://github.com/kingosticks/gst-plugins-rs-build/releases/download/gst-plugin-spotify_0.12.2-1/gst-plugin-spotify_0.12.2-1_armhf.deb
-        ${apt_get} install ./gst-plugin-spotify_0.12.2-1_armhf.deb
-        sudo rm -f gst-plugin-spotify_0.12.2-1_armhf.deb
+        local arch=$(dpkg --print-architecture)
+        local gst_plugin_spotify_name="gst-plugin-spotify_0.12.2-1_${arch}.deb"
+        wget -q https://github.com/kingosticks/gst-plugins-rs-build/releases/download/gst-plugin-spotify_0.12.2-1/${gst_plugin_spotify_name}
+        ${apt_get} install ./${gst_plugin_spotify_name}
+        sudo rm -f ${gst_plugin_spotify_name}
 
         # Install necessary Python packages
         ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
