@@ -97,6 +97,7 @@ log_close() {
 escape_for_shell() {
 	local escaped="${1//\"/\\\"}"
 	escaped="${escaped//\`/\\\`}"
+    escaped="${escaped//\$/\\\$}"
 	echo "$escaped"
 }
 
