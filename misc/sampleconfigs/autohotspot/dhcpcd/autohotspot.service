@@ -1,7 +1,6 @@
 [Unit]
 Description=Automatically generates an wifi hotspot when a valid SSID is not in range
 After=multi-user.target
-Requires=network-online.target
 
 [Service]
 Type=simple
