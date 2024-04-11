@@ -169,8 +169,8 @@ class PlayerMPD:
             self.music_player_status.save_to_json()
             self.current_folder_status = {}
             # self.music_player_status['player_status']['last_played_folder'] = ''
-        else:
-            last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
+        # else:
+            # last_played_folder = self.music_player_status['player_status'].get('last_played_folder')
             # if last_played_folder:
             #     # current_folder_status is a dict, but last_played_folder a str
             #     self.current_folder_status = self.music_player_status['audio_folder_status'][last_played_folder]
@@ -620,7 +620,6 @@ class PlayerMPD:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
 
         return song
-
 
     # ---------------
     # Volume
