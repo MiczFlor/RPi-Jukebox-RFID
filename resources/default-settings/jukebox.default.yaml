@@ -87,6 +87,12 @@ playermpd:
     update_on_startup: true
     check_user_rights: true
   mpd_conf: ~/.config/mpd/mpd.conf
+  # Must be one of: 'none', 'stop', 'rewind':
+  end_of_playlist_next_action: none
+  # Must be one of: 'none', 'prev', 'rewind':
+  stopped_prev_action: prev
+  # Must be one of: 'none', 'next', 'rewind':
+  stopped_next_action: next
 rpc:
   tcp_port: 5555
   websocket_port: 5556
