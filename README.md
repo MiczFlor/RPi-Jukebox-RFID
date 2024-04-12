@@ -80,7 +80,7 @@ Check out the following references.
 * [**RFID** control](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#cardcontrol) for playout and controlling your Phoniebox (e.g. set [maximum volume with RFID](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/633) cards).
 * Support for various RFID readers, e.g.
   * USB
-  * [RC422](components/rfid-reader/RC522/README.md)
+  * [RC522](components/rfid-reader/RC522/README.md)
   * [PN532](components/rfid-reader/PN532/README.md)
   * PC/SC
   * also [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
