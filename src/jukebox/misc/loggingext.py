@@ -24,6 +24,7 @@ Example: YAML snippet, setting WARNING as default level everywhere and DEBUG for
       jb.awesome_module:
         level: DEBUG
 
+
 > [!NOTE]
 > The name (and hierarchy path) of the logger can be arbitrary and must not necessarily match the module name (still makes
 > sense).
