@@ -123,7 +123,7 @@ They can be run individually or in combination. To do that, we use
     load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
     ```
 
-1. Edit `$INSTALL_DIR/etc/pulse//etc/pulse/daemon.conf`, find the
+1. Edit `$INSTALL_DIR/etc/pulse/daemon.conf`, find the
     following line and change it to:
 
     ``` bash
