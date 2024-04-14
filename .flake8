@@ -13,4 +13,5 @@ per-file-ignores =
 count = True
 max-complexity = 10
 statistics = True
+show-source = True
 filename = *.py,*.py.*
