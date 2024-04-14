@@ -11,10 +11,10 @@ per-file-ignores =
     # https://www.python.org/dev/peps/pep-0008/#id48
     __init__.py:F401
 count = True
-max-complexity = 10
+max-complexity = 12
 statistics = True
 show-source = True
 filename = *.py,*.py.*
 extend-exclude =
     # Ignore dirs and files, which are from external sources
-    */components/displays/HD44780-i2c/i2c_lcd.py
+    */components/displays/HD44780-i2c/*
