@@ -99,7 +99,7 @@ _escape_for_shell() {
 }
 
 escape_for_sed() {
-	local escaped=$(echo "$1" | sed -e 's/[\/&'\'']/\\&/g')
+	local escaped=$(echo "$1" | sed -e 's/[\&'\''|]/\\&/g')
 	echo "$escaped"
 }
 
@@ -846,7 +846,7 @@ call_with_args_from_file () {
     local package_file="$1"
     shift
 
-    sed 's/#.*//g' ${package_file} | xargs "$@"
+    sed 's|#.*||g' ${package_file} | xargs "$@"
 }
 
 install_main() {
@@ -1088,7 +1088,7 @@ install_main() {
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
     # Change vars to match install config
-    sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+    sudo sed -i 's|%AUDIOiFace%|'"$AUDIOiFace"'|' "${mpd_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
     sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
     sudo chown mpd:audio "${mpd_conf}"
@@ -1109,10 +1109,10 @@ install_main() {
         sudo locale-gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$(escape_for_sed "$SPOTIuser")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$(escape_for_sed "$SPOTIpass")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$(escape_for_sed "$SPOTIclientid")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$(escape_for_sed "$SPOTIclientsecret")"'/' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_username%|'"$(escape_for_sed "$SPOTIuser")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_password%|'"$(escape_for_sed "$SPOTIpass")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_client_id%|'"$(escape_for_sed "$SPOTIclientid")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_client_secret%|'"$(escape_for_sed "$SPOTIclientsecret")"'|' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
     fi
@@ -1159,7 +1159,7 @@ wifi_settings() {
             local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
             # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
-            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$WIFIcountryCode"'|' "${wpa_supplicant_conf}"
             sudo chown root:netdev "${wpa_supplicant_conf}"
             sudo chmod 664 "${wpa_supplicant_conf}"
 
@@ -1171,11 +1171,11 @@ wifi_settings() {
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf-default-noHotspot.sample "${dhcpcd_conf}"
             # Change IP for router and Phoniebox
-            sudo sed -i 's/%WIFIinterface%/'"$WIFI_INTERFACE"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIipExtDNS%/'"$wifiExtDNS"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIinterface%|'"$WIFI_INTERFACE"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIip%|'"$WIFIip"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipRouter%|'"$WIFIipRouter"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipExtDNS%|'"$wifiExtDNS"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$WIFIcountryCode"'|' "${dhcpcd_conf}"
             # Change user:group and access mod
             sudo chown root:netdev "${dhcpcd_conf}"
             sudo chmod 664 "${dhcpcd_conf}"
@@ -1216,7 +1216,7 @@ existing_assets() {
                 # Additional error check: key should not start with a hash and not be empty.
                 if [ ! "${key:0:1}" == '#' ] && [ -n "$key" ]; then
                     # Replace the matching value in the newly created conf file
-                    sed -i 's/%'"$key"'%/'"$val"'/' "${jukebox_dir}"/settings/rfid_trigger_play.conf
+                    sed -i 's|%'"$key"'%|'"$val"'|' "${jukebox_dir}"/settings/rfid_trigger_play.conf
                 fi
             done <"${backup_dir}"/settings/rfid_trigger_play.conf
         fi
