@@ -930,6 +930,9 @@ install_main() {
     cd "${HOME_DIR}"
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
+    source "${jukebox_dir}"/scripts/helperscripts/inc.networkHelper.sh
+
+
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
         call_with_args_from_file "${jukebox_dir}"/packages-raspberrypi.txt ${apt_get} ${allow_downgrades} install
@@ -1133,6 +1136,9 @@ install_main() {
     else
         echo "classic" > "${jukebox_dir}"/settings/edition
     fi
+
+    wifi_settings "${jukebox_dir}"
+    autohotspot "${jukebox_dir}"
 
     # / INSTALLATION
     #####################################################
@@ -1458,10 +1464,6 @@ main() {
     fi
     install_main "${JUKEBOX_HOME_DIR}"
 
-    source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
-
-    wifi_settings "${JUKEBOX_HOME_DIR}"
-    autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
 
