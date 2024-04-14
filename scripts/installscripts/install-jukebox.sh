@@ -1354,80 +1354,101 @@ autohotspot() {
     fi
 }
 
-finish_installation() {
-    local jukebox_dir="$1"
+finished() {
     echo "
 #
 # INSTALLATION FINISHED
 #
 #####################################################
+
+Let the sounds begin.
+Find more information and documentation on the github account:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/
+
 "
+}
 
-    #####################################################
-    # Register external device(s)
+register_rfid_reader() {
+    local jukebox_dir="$1"
 
-    echo "If you are using an RFID reader, connect it to your RPi."
-    echo "(In case your RFID reader required soldering, consult the manual.)"
-    # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            ;;
-        *)
-            echo  'Please select the RFID reader you want to use'
-            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
-            select opt in "${options[@]}"; do
-                case $opt in
-                    "USB-Reader (e.g. Neuftech)")
-                        cd "${jukebox_dir}"/scripts/ || exit
-                        python3 RegisterDevice.py
-                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-                        break
-                        ;;
-                    "RC522")
-                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
-                        break
-                        ;;
-                    "PN532")
-                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
-                        break
-                        ;;
-                    "Manual configuration")
-                        echo "Please configure your reader manually."
-                        break
-                        ;;
-                    "Multiple RFID reader")
-                        cd "${jukebox_dir}"/scripts/ || exit
-                        sudo python3 RegisterDevice.py.Multi
-                        break
-                        ;;
-                    *)
-                        echo "This is not a number"
-                        ;;
-                esac
-            done
-    esac
+    echo ""
+    echo "-----------------------------------------------------"
+    echo "Register RFID reader"
+    echo "-----------------------------------------------------"
 
-    echo
-    echo "DONE. Let the sounds begin."
-    echo "Find more information and documentation on the github account:"
-    echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        echo "If you are using an RFID reader, connect it to your RPi."
+        echo "(In case your RFID reader required soldering, consult the manual.)"
+        # Use -e to display response of user in the logfile
+        read -e -r -p "Have you connected your RFID reader? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                echo  'Please select the RFID reader you want to use'
+                options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
+                select opt in "${options[@]}"; do
+                    case $opt in
+                        "USB-Reader (e.g. Neuftech)")
+                            cd "${jukebox_dir}"/scripts/ || exit
+                            python3 RegisterDevice.py
+                            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                            break
+                            ;;
+                        "RC522")
+                            bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                            break
+                            ;;
+                        "PN532")
+                            bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                            break
+                            ;;
+                        "Manual configuration")
+                            echo "Please configure your reader manually."
+                            break
+                            ;;
+                        "Multiple RFID reader")
+                            cd "${jukebox_dir}"/scripts/ || exit
+                            sudo python3 RegisterDevice.py.Multi
+                            break
+                            ;;
+                        *)
+                            echo "This is not a number"
+                            ;;
+                    esac
+                done
+        esac
+    else
+        echo "Skipping RFID reader setup..."
+        echo "For manual registration of an RFID reader type:"
+        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
+    fi
+}
 
-    echo "Reboot is needed to activate all settings"
-    # Use -e to display response of user in the logfile
-    read -e -r -p "Would you like to reboot now? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-        # Close logging
-        log_close
-            ;;
-        *)
-        # Close logging
-        log_close
-            sudo shutdown -r now
-            ;;
-    esac
+cleanup_and_reboot() {
+
+    echo ""
+    echo "-----------------------------------------------------"
+    echo "A reboot is required to activate all settings!"
+    local do_shutdown=false
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        # Use -e to display response of user in the logfile
+        read -e -r -p "Would you like to reboot now? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                do_shutdown=true
+                ;;
+        esac
+    fi
+
+    # Close logging
+    log_close
+    if [[ ${do_shutdown} == "true" ]]; then
+        sudo shutdown -r now
+    fi
 }
 
 ########
@@ -1467,15 +1488,10 @@ main() {
     sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
     sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
 
-    if [[ ${INTERACTIVE} == "true" ]]; then
-        finish_installation "${JUKEBOX_HOME_DIR}"
-    else
-        echo "Skipping USB device setup..."
-        echo "For manual registration of a USB card reader type:"
-        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
-        echo " "
-        echo "Reboot is required to activate all settings!"
-    fi
+    finished
+
+    register_rfid_reader "${JUKEBOX_HOME_DIR}"
+    cleanup_and_reboot
 }
 
 start=$(date +%s)
