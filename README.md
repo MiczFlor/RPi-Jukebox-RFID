@@ -15,16 +15,6 @@
 
 Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. It also features GPIO buttons control support.
 
-## Important Notice regarding Spotify Integration
-
-**Spotify has [disabled access to libspotify on May 16, 2022](https://developer.spotify.com/community/news/2022/04/12/libspotify-sunset/).**
-
-This means **Spotify in Phoniebox doesn't work at the moment**. For further information see [Spotify FAQ](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Spotify-FAQ)
-
-We are working to provide an integrated solution.
-For Version 2 there is a possible fix to reactivate spotify with a manual installation described [here](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1815#issuecomment-1666535983).
-For Version 3 [#2164](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2164) is laying the groundwork. Help is greatly appreciated.
-
 ## The new Phoniebox Calendar is here
 
 Another bunch of wonderful designs!

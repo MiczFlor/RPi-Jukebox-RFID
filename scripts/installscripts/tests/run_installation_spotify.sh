@@ -25,7 +25,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n RFID registration
 # n reboot
 
-./../install-jukebox.sh <<< "y
+./../install-jukebox.sh <<< 'y
 n
 
 n
@@ -33,10 +33,10 @@ n
 y
 
 y
-myuser
-mypassword
+abc$defghijkl&mnopqrstuvwxyzßäöüÄÖÜ$1234567890
+!"§$%&/()=?´`²³{[]}\+*~#'\'',;.:-_ @€^°
 myclient_id
-myclient_secret
+myclient+SECRET/0123456789=
 
 y
 
@@ -45,7 +45,7 @@ y
 y
 n
 n
-"
+'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

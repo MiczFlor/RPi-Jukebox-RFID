@@ -54,7 +54,12 @@ echo "${mpgvolume} is the mpg123 startup volume"
 
 #######################
 # re-scan music library
-mpc rescan 
+# if spotify edition is installed, update via mopidy as mpc update doesnt work
+if [ "$EDITION" == "plusSpotify" ]; then
+    sudo mopidyctl local scan > /dev/null 2>&1
+else
+    mpc rescan
+fi 
 
 #######################
 # read out wifi config?

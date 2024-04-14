@@ -32,8 +32,8 @@ ls -lh /etc/lighttpd/conf-available/15-fastcgi-php.conf
 echo "*** /etc/php/7.3/fpm/php.ini"
 ls -lh /etc/php/7.3/fpm/php.ini
 
-echo "*** /etc/sudoers"
-ls -lh /etc/sudoers
+echo "*** /etc/sudoers.d"
+ls -lh /etc/sudoers.d/
 
 echo "*** /etc/systemd/system/phoniebox*"
 ls -lh /etc/systemd/system/phoniebox-rfid-reader.service

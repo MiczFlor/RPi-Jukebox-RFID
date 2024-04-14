@@ -94,6 +94,18 @@ log_close() {
     fi
 }
 
+escape_for_shell() {
+	local escaped="${1//\"/\\\"}"
+	escaped="${escaped//\`/\\\`}"
+    escaped="${escaped//\$/\\\$}"
+	echo "$escaped"
+}
+
+escape_for_sed() {
+	local escaped=$(echo "$1" | sed -e 's/[\/&'\'']/\\&/g')
+	echo "$escaped"
+}
+
 checkPrerequisite() {
     #currently the user 'pi' is mandatory
     #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
@@ -627,10 +639,10 @@ config_spotify() {
     # append variables to config file
     {
         echo "SPOTinstall=\"$SPOTinstall\"";
-        echo "SPOTIuser=\"$SPOTIuser\"";
-        echo "SPOTIpass=\"$SPOTIpass\"";
-        echo "SPOTIclientid=\"$SPOTIclientid\"";
-        echo "SPOTIclientsecret=\"$SPOTIclientsecret\""
+        echo "SPOTIuser=\"$(escape_for_shell "$SPOTIuser")\"";
+        echo "SPOTIpass=\"$(escape_for_shell "$SPOTIpass")\"";
+        echo "SPOTIclientid=\"$(escape_for_shell "$SPOTIclientid")\"";
+        echo "SPOTIclientsecret=\"$(escape_for_shell "$SPOTIclientsecret")\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -801,7 +813,6 @@ web_server_config() {
     local lighthttpd_conf="/etc/lighttpd/lighttpd.conf"
     local fastcgi_php_conf="/etc/lighttpd/conf-available/15-fastcgi-php.conf"
     local php_ini="/etc/php/$(ls -1 /etc/php)/cgi/php.ini"
-    local sudoers="/etc/sudoers"
 
     echo "Configuring web server..."
     # make sure lighttp can access the home directory of the user
@@ -827,10 +838,10 @@ web_server_config() {
     sudo chmod 644 "${php_ini}"
 
     # SUDO users (adding web server here)
-    # -r--r----- 1 root root 703 Nov 17 21:08 /etc/sudoers
-    sudo cp "${jukebox_dir}"/misc/sampleconfigs/sudoers-default.sample ${sudoers}
-    sudo chown root:root "${sudoers}"
-    sudo chmod 440 "${sudoers}"
+    local sudoers_wwwdata="/etc/sudoers.d/www-data"
+    echo "www-data ALL=(ALL) NOPASSWD: ALL" | sudo tee "${sudoers_wwwdata}" > /dev/null
+    sudo chown root:root "${sudoers_wwwdata}"
+    sudo chmod 440 "${sudoers_wwwdata}"
 }
 
 # Reads a textfile and pipes all lines as args to the given command.
@@ -962,8 +973,22 @@ install_main() {
         ${apt_get} upgrade
         call_with_args_from_file "${jukebox_dir}"/packages-spotify.txt ${apt_get} ${allow_downgrades} install
 
+        # not yet available on apt.mopidy.com, so install manually
+        local arch=$(dpkg --print-architecture)
+        local gst_plugin_spotify_name="gst-plugin-spotify_0.12.2-1_${arch}.deb"
+        wget -q https://github.com/kingosticks/gst-plugins-rs-build/releases/download/gst-plugin-spotify_0.12.2-1/${gst_plugin_spotify_name}
+        ${apt_get} install ./${gst_plugin_spotify_name}
+        sudo rm -f ${gst_plugin_spotify_name}
+
         # Install necessary Python packages
         ${pip_install} -r "${jukebox_dir}"/requirements-spotify.txt
+
+        local sudoers_mopidy="/etc/sudoers.d/mopidy"
+        # Include 'python' in the command to make testing later on easier. If this command fails it will not be included in the file.
+        local python_version=$(python -c 'import sys; print("python{}.{}".format(sys.version_info.major, sys.version_info.minor))')
+        echo "mopidy ALL=NOPASSWD: /usr/local/lib/${python_version}/dist-packages/mopidy_iris/system.sh" | sudo tee "${sudoers_mopidy}" > /dev/null
+        sudo chown root:root "${sudoers_mopidy}"
+        sudo chmod 440 "${sudoers_mopidy}"
     fi
 
     # Install more required packages
@@ -1066,6 +1091,8 @@ install_main() {
 
     echo "Configuring MPD..."
     local mpd_conf="/etc/mpd.conf"
+    sudo systemctl enable mpd
+    sudo systemctl stop mpd
     # MPD configuration
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
@@ -1078,40 +1105,25 @@ install_main() {
     sudo chown mpd:audio "${mpd_conf}"
     sudo chmod 640 "${mpd_conf}"
 
-    # start mpd
-    echo "Starting mpd service..."
-    sudo service mpd restart
-    sudo systemctl enable mpd
 
     # Spotify config
     if [ "${SPOTinstall}" == "YES" ]; then
         echo "Configuring Spotify support..."
-        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        local mopidy_conf="/etc/mopidy/mopidy.conf"
         sudo systemctl disable mpd
-        sudo service mpd stop
+        sudo systemctl stop mpd
         sudo systemctl enable mopidy
+        sudo systemctl stop mopidy
         # Install Config Files
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.gen.sample /etc/locale.gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/locale.sample /etc/default/locale
         sudo locale-gen
-        mkdir -p "${HOME_DIR}"/.config/mopidy
-        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy-etc.sample "${etc_mopidy_conf}"
-        cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.sample "${mopidy_conf}"
+        sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${etc_mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${etc_mopidy_conf}"
-        # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${etc_mopidy_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${etc_mopidy_conf}"
-
-        sed -i 's/%spotify_username%/'"$SPOTIuser"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_password%/'"$SPOTIpass"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_id%/'"$SPOTIclientid"'/' "${mopidy_conf}"
-        sed -i 's/%spotify_client_secret%/'"$SPOTIclientsecret"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_username%/'"$(escape_for_sed "$SPOTIuser")"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_password%/'"$(escape_for_sed "$SPOTIpass")"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_id%/'"$(escape_for_sed "$SPOTIclientid")"'/' "${mopidy_conf}"
+        sudo sed -i 's/%spotify_client_secret%/'"$(escape_for_sed "$SPOTIclientsecret")"'/' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
         sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
         # Replace homedir; double quotes for variable expansion
@@ -1133,9 +1145,6 @@ install_main() {
     else
         echo "classic" > "${jukebox_dir}"/settings/edition
     fi
-
-    # update mpc / mpd DB
-    mpc update
 
     # / INSTALLATION
     #####################################################

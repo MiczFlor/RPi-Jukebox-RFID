@@ -1,6 +1,6 @@
 [Unit]
 Description=Daemon for regular network connection if no hotspot is created
-After=multi-user.target
+After=network.target
 
 [Service]
 Type=simple
