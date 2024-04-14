@@ -19,8 +19,6 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
-echo GIT_BRANCH $GIT_BRANCH
-echo GIT_URL $GIT_URL
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 
@@ -29,8 +27,7 @@ JOB="${SCRIPTNAME}"
 
 CURRENT_USER="${SUDO_USER:-$(whoami)}"
 HOME_DIR=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
-echo "Current User: $CURRENT_USER"
-echo "User home dir: $HOME_DIR"
+
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
@@ -38,7 +35,6 @@ JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 # Get the Raspberry Pi OS codename (e.g. buster, bullseye, ...)
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
-printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
 WIFI_INTERFACE="wlan0"
 
@@ -893,6 +889,14 @@ install_main() {
 
     # Start logging here
     log_open
+
+    echo "################################################"
+    echo "Interactive mode: ${INTERACTIVE}"
+    echo "GIT_BRANCH ${GIT_BRANCH}"
+    echo "GIT_URL ${GIT_URL}"
+    echo "Current User: ${CURRENT_USER}"
+    echo "User home dir: ${HOME_DIR}"
+    echo "Used Raspberry Pi OS: ${OS_CODENAME}"
 
     # Add conffile into logfile for better debugging
     echo "################################################"
