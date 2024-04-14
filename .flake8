@@ -17,4 +17,4 @@ show-source = True
 filename = *.py,*.py.*
 extend-exclude =
     # Ignore dirs and files, which are from external sources
-    */components/displays/HD44780-i2c/*
+    components/displays/HD44780-i2c/
