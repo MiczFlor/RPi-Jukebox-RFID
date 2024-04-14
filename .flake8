@@ -15,3 +15,6 @@ max-complexity = 10
 statistics = True
 show-source = True
 filename = *.py,*.py.*
+extend-exclude =
+    # Ignore dirs and files, which are from external sources
+    */components/displays/HD44780-i2c/i2c_lcd.py
