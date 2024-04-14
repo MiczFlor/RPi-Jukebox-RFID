@@ -98,6 +98,7 @@ _escape_for_shell() {
 	echo "$escaped"
 }
 
+# escape relevant chars for strings used in 'sed' commands. implies delimiter char '|'
 escape_for_sed() {
 	local escaped=$(echo "$1" | sed -e 's/[\&'\''|]/\\&/g')
 	echo "$escaped"
@@ -798,7 +799,7 @@ samba_config() {
     sudo chown root:root "${smb_conf}"
     sudo chmod 644 "${smb_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
+    sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${smb_conf}"
     # Samba: create user 'pi' with password 'raspberry'
     # ToDo: use current user with a default password
     (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
@@ -1088,9 +1089,9 @@ install_main() {
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
     # Change vars to match install config
-    sudo sed -i 's|%AUDIOiFace%|'"$AUDIOiFace"'|' "${mpd_conf}"
+    sudo sed -i 's|%AUDIOiFace%|'"$(escape_for_sed "$AUDIOiFace")"'|' "${mpd_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
+    sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${mpd_conf}"
     sudo chown mpd:audio "${mpd_conf}"
     sudo chmod 640 "${mpd_conf}"
 
@@ -1114,7 +1115,7 @@ install_main() {
         sudo sed -i 's|%spotify_client_id%|'"$(escape_for_sed "$SPOTIclientid")"'|' "${mopidy_conf}"
         sudo sed -i 's|%spotify_client_secret%|'"$(escape_for_sed "$SPOTIclientsecret")"'|' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
+        sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${mopidy_conf}"
     fi
 
     # GPIO-Control
@@ -1159,7 +1160,7 @@ wifi_settings() {
             local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
             # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
-            sudo sed -i 's|%WIFIcountryCode%|'"$WIFIcountryCode"'|' "${wpa_supplicant_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$(escape_for_sed "$WIFIcountryCode")"'|' "${wpa_supplicant_conf}"
             sudo chown root:netdev "${wpa_supplicant_conf}"
             sudo chmod 664 "${wpa_supplicant_conf}"
 
@@ -1171,11 +1172,11 @@ wifi_settings() {
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf-default-noHotspot.sample "${dhcpcd_conf}"
             # Change IP for router and Phoniebox
-            sudo sed -i 's|%WIFIinterface%|'"$WIFI_INTERFACE"'|' "${dhcpcd_conf}"
-            sudo sed -i 's|%WIFIip%|'"$WIFIip"'|' "${dhcpcd_conf}"
-            sudo sed -i 's|%WIFIipRouter%|'"$WIFIipRouter"'|' "${dhcpcd_conf}"
-            sudo sed -i 's|%WIFIipExtDNS%|'"$wifiExtDNS"'|' "${dhcpcd_conf}"
-            sudo sed -i 's|%WIFIcountryCode%|'"$WIFIcountryCode"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIinterface%|'"$(escape_for_sed "$WIFI_INTERFACE")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIip%|'"$(escape_for_sed "$WIFIip")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipRouter%|'"$(escape_for_sed "$WIFIipRouter")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipExtDNS%|'"$(escape_for_sed "$wifiExtDNS")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$(escape_for_sed "$WIFIcountryCode")"'|' "${dhcpcd_conf}"
             # Change user:group and access mod
             sudo chown root:netdev "${dhcpcd_conf}"
             sudo chmod 664 "${dhcpcd_conf}"
