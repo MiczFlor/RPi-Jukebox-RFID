@@ -11,10 +11,9 @@ if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
     $exec .= "source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh\n";
     $exec .= "clear_wireless_networks\n";
 
-    // Iterate through POST data
     foreach ($_POST as $post_key => $post_value) {
-        if (substr($post_key, 0, 9) == "WIFIssid_") {
-            $ssid_index = substr($post_key, 9);
+        if (substr(trim($post_key), 0, 9) == "WIFIssid_") {
+            $ssid_index = substr(trim($post_key), 9);
             $temp_ssid = trim($post_value);
             $temp_pass = isset($_POST["WIFIpass_".$ssid_index]) ? trim($_POST["WIFIpass_".$ssid_index]) : '';
             $temp_prio = isset($_POST["WIFIprio_".$ssid_index]) ? trim($_POST["WIFIprio_".$ssid_index]) : '0';
