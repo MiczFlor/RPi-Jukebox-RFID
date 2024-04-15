@@ -16,7 +16,6 @@ function execScript($command) {
 }
 
 function execScriptWithoutCheck($command) {
-    // Access global configuration
     global $debugLoggingConf;
 
     // Validate the command to prevent command injection
@@ -24,18 +23,12 @@ function execScriptWithoutCheck($command) {
         throw new InvalidArgumentException('Invalid command.');
     }
 
-    // Debug logging
     if ($debugLoggingConf['DEBUG_WebApp_API'] === "TRUE") {
-        $logMessage = "\n  # function execScriptWithoutCheck: " . $command;
-        $logFilePath = __DIR__ . '/../../logs/debug.log';
-        file_put_contents($logFilePath, $logMessage, FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # function execScriptWithoutCheck: " . $command, FILE_APPEND | LOCK_EX);
     }
 
-    // Construct the absolute path to the script
     $scriptDir = realpath(__DIR__ . '/../../scripts');
     $absoluteCommand = $scriptDir . '/' . escapeshellarg($command);
-
-    // Execute the command using sudo
     exec("sudo " . $absoluteCommand);
 }
 
