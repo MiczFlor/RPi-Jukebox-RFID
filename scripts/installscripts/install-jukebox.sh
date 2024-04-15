@@ -90,7 +90,8 @@ log_close() {
     fi
 }
 
-escape_for_shell() {
+# local function as it is needed before the repo is checked out!
+_escape_for_shell() {
 	local escaped="${1//\"/\\\"}"
 	escaped="${escaped//\`/\\\`}"
     escaped="${escaped//\$/\\\$}"
@@ -223,12 +224,12 @@ case "$response" in
             *)
                 # append variables to config file
                 {
-                    echo "WIFIconfig=\"$WIFIconfig\"";
-                    echo "WIFIcountryCode=\"$WIFIcountryCode\"";
-                    echo "WIFIssid=\"$WIFIssid\"";
-                    echo "WIFIpass=\"$WIFIpass\"";
-                    echo "WIFIip=\"$WIFIip\"";
-                    echo "WIFIipRouter=\"$WIFIipRouter\"";
+                    echo "WIFIconfig=\"$(_escape_for_shell "$WIFIconfig")\"";
+                    echo "WIFIcountryCode=\"$(_escape_for_shell "$WIFIcountryCode")\"";
+                    echo "WIFIssid=\"$(_escape_for_shell "$WIFIssid")\"";
+                    echo "WIFIpass=\"$(_escape_for_shell "$WIFIpass")\"";
+                    echo "WIFIip=\"$(_escape_for_shell "$WIFIip")\"";
+                    echo "WIFIipRouter=\"$(_escape_for_shell "$WIFIipRouter")\"";
                 } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
@@ -237,9 +238,9 @@ case "$response" in
         WIFIconfig=NO
         echo "You want to configure WiFi later."
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "WIFIconfig=\"$(_escape_for_shell "$WIFIconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=\"$(_escape_for_shell "DE")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -311,18 +312,18 @@ case "$response" in
         esac
         # append variables to config file
         {
-            echo "AUTOHOTSPOTconfig=\"$AUTOHOTSPOTconfig\"";
-            echo "AUTOHOTSPOTssid=\"$AUTOHOTSPOTssid\"";
-            echo "AUTOHOTSPOTcountryCode=\"$AUTOHOTSPOTcountryCode\"";
-            echo "AUTOHOTSPOTpass=\"$AUTOHOTSPOTpass\"";
-            echo "AUTOHOTSPOTip=\"$AUTOHOTSPOTip\"";
+            echo "AUTOHOTSPOTconfig=\"$(_escape_for_shell "$AUTOHOTSPOTconfig")\"";
+            echo "AUTOHOTSPOTssid=\"$(_escape_for_shell "$AUTOHOTSPOTssid")\"";
+            echo "AUTOHOTSPOTcountryCode=\"$(_escape_for_shell "$AUTOHOTSPOTcountryCode")\"";
+            echo "AUTOHOTSPOTpass=\"$(_escape_for_shell "$AUTOHOTSPOTpass")\"";
+            echo "AUTOHOTSPOTip=\"$(_escape_for_shell "$AUTOHOTSPOTip")\"";
         } >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
     *)
         AUTOHOTSPOTconfig=NO
         echo "You don't want to configure Autohotspot."
         # append variables to config file
-        echo "AUTOHOTSPOTconfig=$AUTOHOTSPOTconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "AUTOHOTSPOTconfig=\"$(_escape_for_shell "$AUTOHOTSPOTconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 
 esac
@@ -438,7 +439,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=\"$(_escape_for_shell "$EXISTINGuseRfidConf")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -450,7 +451,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=\"$(_escape_for_shell "$EXISTINGuseRfidLinks")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -462,7 +463,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=\"$(_escape_for_shell "$EXISTINGuseAudio")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -474,7 +475,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=\"$(_escape_for_shell "$EXISTINGuseSounds")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 if [ "$(printf '%s\n' "2.1" "$(cat ${local_home_dir}/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
@@ -496,7 +497,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     config_gpio
                 fi
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=\"$(_escape_for_shell "$EXISTINGuseGpio")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Button USB Encoder: use existing device and button mapping? [Y/n] " response
                 case "$response" in
@@ -508,7 +509,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseButtonUSBEncoder=\"$(_escape_for_shell "$EXISTINGuseButtonUSBEncoder")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -517,7 +518,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${local_home_dir}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=\"$(_escape_for_shell "$EXISTINGuse")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
     # Check if we found a Phoniebox install configuration earlier and ask if to run this now
     if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
@@ -572,7 +573,7 @@ ${audio_interfaces}
             ;;
     esac
     # append variables to config file
-    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "AUDIOiFace=\"$(_escape_for_shell "$AUDIOiFace")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your iFace is called '$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -634,11 +635,11 @@ config_spotify() {
     esac
     # append variables to config file
     {
-        echo "SPOTinstall=\"$SPOTinstall\"";
-        echo "SPOTIuser=\"$(escape_for_shell "$SPOTIuser")\"";
-        echo "SPOTIpass=\"$(escape_for_shell "$SPOTIpass")\"";
-        echo "SPOTIclientid=\"$(escape_for_shell "$SPOTIclientid")\"";
-        echo "SPOTIclientsecret=\"$(escape_for_shell "$SPOTIclientsecret")\""
+        echo "SPOTinstall=\"$(_escape_for_shell "$SPOTinstall")\"";
+        echo "SPOTIuser=\"$(_escape_for_shell "$SPOTIuser")\"";
+        echo "SPOTIpass=\"$(_escape_for_shell "$SPOTIpass")\"";
+        echo "SPOTIclientid=\"$(_escape_for_shell "$SPOTIclientid")\"";
+        echo "SPOTIclientsecret=\"$(_escape_for_shell "$SPOTIclientsecret")\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -678,7 +679,7 @@ config_audio_folder() {
             ;;
     esac
     # append variables to config file
-    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "DIRaudioFolders=\"$(_escape_for_shell "$DIRaudioFolders")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your audio folders live in this dir:"
     echo "${DIRaudioFolders}"
     read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -719,7 +720,7 @@ config_gpio() {
             ;;
     esac
     # append variables to config file
-    echo "GPIOconfig=\"$GPIOconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "GPIOconfig=\"$(_escape_for_shell "$GPIOconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo ""
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
