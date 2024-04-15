@@ -98,12 +98,6 @@ _escape_for_shell() {
 	echo "$escaped"
 }
 
-# escape relevant chars for strings used in 'sed' commands. implies delimiter char '|'
-escape_for_sed() {
-	local escaped=$(echo "$1" | sed -e 's/[\&'\''|]/\\&/g')
-	echo "$escaped"
-}
-
 checkPrerequisite() {
     #currently the user 'pi' is mandatory
     #https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/1785
@@ -838,18 +832,6 @@ web_server_config() {
     sudo chmod 440 "${sudoers_wwwdata}"
 }
 
-# Reads a textfile and pipes all lines as args to the given command.
-# Does filter out comments.
-# Arguments:
-#   1    : textfile to read
-#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
-call_with_args_from_file () {
-    local package_file="$1"
-    shift
-
-    sed 's|#.*||g' ${package_file} | xargs "$@"
-}
-
 install_main() {
     local jukebox_dir="$1"
     local apt_get="sudo apt-get -qq --yes"
@@ -930,6 +912,7 @@ install_main() {
     cd "${HOME_DIR}"
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
 
+    source "${jukebox_dir}"/scripts/helperscripts/inc.helper.sh
     source "${jukebox_dir}"/scripts/helperscripts/inc.networkHelper.sh
 
 

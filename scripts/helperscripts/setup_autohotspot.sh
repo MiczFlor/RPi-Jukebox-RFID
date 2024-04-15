@@ -14,18 +14,6 @@ if [[ "$#" -lt 2 || ( "${AUTOHOTSPOTconfig}" != "NO" && "${AUTOHOTSPOTconfig}" !
     exit 1
 fi
 
-# Reads a textfile and pipes all lines as args to the given command.
-# Does filter out comments.
-# Arguments:
-#   1    : textfile to read
-#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
-call_with_args_from_file () {
-    local package_file="$1"
-    shift
-
-    sed 's/#.*//g' ${package_file} | xargs "$@"
-}
-
 _get_last_ip_segment() {
     local ip="$1"
     echo $ip | cut -d'.' -f1-3
@@ -80,6 +68,7 @@ wifi_interface=wlan0
 ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOTip)
 autohotspot_profile="Phoniebox_Hotspot"
 
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.helper.sh
 source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
 
 _install_autohotspot_dhcpcd() {
