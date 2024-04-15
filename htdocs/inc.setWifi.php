@@ -6,7 +6,7 @@ $active_essid = trim(exec("iwconfig wlan0 | grep ESSID | cut -d ':' -f 2"),'"');
 */
 unset($exec);
 if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
-    // Initialize the command string
+    // make multiline bash
     $exec = "bash -e <<'END'\n";
     $exec .= "source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh\n";
     $exec .= "clear_wireless_networks\n";
@@ -28,9 +28,7 @@ if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
         }
     }
 
-    // End the command string
     $exec .= "END\n";
-    // Execute the command
     exec("sudo bash -c '".escapeshellcmd($exec)."'");
 }
 
