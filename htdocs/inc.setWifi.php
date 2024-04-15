@@ -6,37 +6,32 @@ $active_essid = trim(exec("iwconfig wlan0 | grep ESSID | cut -d ':' -f 2"),'"');
 */
 unset($exec);
 if(isset($_POST["submitWifi"]) && $_POST["submitWifi"] == "submit") {
-    // make multiline bash
-    $exec  = "bash -e <<'END'\n";
+    // Initialize the command string
+    $exec = "bash -e <<'END'\n";
     $exec .= "source ".$conf['scripts_abs']."/helperscripts/inc.networkHelper.sh\n";
     $exec .= "clear_wireless_networks\n";
 
-    $tempPOST = $_POST;
-    $_POST=array(); //clear
-    foreach ( $tempPOST as $post_key => $post_value ) {
-        unset($temp_ssid);
-        unset($temp_pass);
-        unset($temp_prio);
-        if ( substr(trim($post_key), 0, 9) == "WIFIssid_" ) {
+    // Iterate through POST data
+    foreach ($_POST as $post_key => $post_value) {
+        if (substr($post_key, 0, 9) == "WIFIssid_") {
+            $ssid_index = substr($post_key, 9);
             $temp_ssid = trim($post_value);
-            $post_key = "WIFIpass_".substr(trim($post_key), 9);
-            $post_value = $tempPOST[$post_key];
-            $temp_pass = trim($post_value);
-            $post_key = "WIFIprio_".substr(trim($post_key), 9);
-            $post_value = $tempPOST[$post_key];
-            $temp_prio = trim($post_value);
+            $temp_pass = isset($_POST["WIFIpass_".$ssid_index]) ? trim($_POST["WIFIpass_".$ssid_index]) : '';
+            $temp_prio = isset($_POST["WIFIprio_".$ssid_index]) ? trim($_POST["WIFIprio_".$ssid_index]) : '0';
 
-            if (isset($temp_ssid) && $temp_ssid != "" && isset($temp_pass) && strlen($temp_pass) >= 8) {
-                if(!isset($temp_prio) || !is_numeric($temp_prio)) {
-                    $temp_prio = 0;
-                }
-                $exec .= "add_wireless_network wlan0 ".$temp_ssid." ".$temp_pass." ".$temp_prio."\n";
+            // Validate SSID and password
+            if (!empty($temp_ssid) && strlen($temp_pass) >= 8) {
+                // Validate priority
+                $temp_prio = is_numeric($temp_prio) ? $temp_prio : '0';
+                $exec .= "add_wireless_network wlan0 '{$temp_ssid}' '{$temp_pass}' {$temp_prio}\n";
             }
         }
     }
 
+    // End the command string
     $exec .= "END\n";
-    exec("sudo bash -c '". $exec . "'");
+    // Execute the command
+    exec("sudo bash -c '".escapeshellcmd($exec)."'");
 }
 
 /*
