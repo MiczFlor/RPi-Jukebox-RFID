@@ -74,7 +74,7 @@ add_wireless_network() {
             local wpa_network_with_dummy_psk=$(wpa_passphrase "$ssid" "dummypsk")
             if echo "$wpa_network_with_dummy_psk" | grep -qF 'network='; then
                 local wpa_network=$(echo "$wpa_network_with_dummy_psk" | sed -e '/#psk/d' -e "s/psk=.*$/psk=${pass}/" -e "/^}/i\\\tpriority=${prio}" )
-                sudo bash -c "echo '${wpa_network}' >> $WPA_CONF"
+                echo "${wpa_network}" | sudo tee -a "$WPA_CONF" > /dev/null
             fi
         fi
     fi

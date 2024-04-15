@@ -125,7 +125,7 @@ _install_autohotspot_dhcpcd() {
     fi
 
     if [[ ! $(grep -w "${dhcpcd_conf_nohook_wpa_supplicant}" ${dhcpcd_conf}) ]]; then
-        sudo bash -c "echo ${dhcpcd_conf_nohook_wpa_supplicant} >> ${dhcpcd_conf}"
+        echo "${dhcpcd_conf_nohook_wpa_supplicant}" | sudo tee -a "${dhcpcd_conf}" > /dev/null
     fi
 
     # create service to trigger hotspot
