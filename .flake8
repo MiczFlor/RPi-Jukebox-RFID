@@ -1,10 +1,14 @@
 [flake8]
 max-line-length = 127
 ignore =
+    # continuation line over-indented for hanging indent
+    E126,
     # continuation line over-indented for visual indent
     E127,
     # continuation line under-indented for visual indent
-    E128
+    E128,
+    # line break before binary operator
+    W503
 per-file-ignores =
     # Only in __init__files ignore imported but unused
     # Not necessary, if __all__ is declared in __init__ file
