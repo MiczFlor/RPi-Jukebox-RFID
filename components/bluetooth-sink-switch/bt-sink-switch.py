@@ -49,11 +49,13 @@ def bt_check_mpc_err() -> None:
 
 def bt_switch(cmd, led_pin=None):
     """
-    Set/Toggle between regular speakers and headphone output. If no bluetooth device is connected, always defaults to mpc output 1
+    Set/Toggle between regular speakers and headphone output. If no bluetooth device is connected,
+    always defaults to mpc output 1
 
     To be precise: toggle between mpc output 1 and mpc output 2.
 
-    So, set up your /etc/mpd.conf correctly: first audio_output section should be speakers, second audio_output section should be headphones
+    So, set up your /etc/mpd.conf correctly: first audio_output section should be speakers,
+    second audio_output section should be headphones
     To set up bluetooth headphones, follow the wiki
     Short guide to connect bluetooth (without audio setup)
         sudo bluetoothctl
@@ -71,13 +73,16 @@ def bt_switch(cmd, led_pin=None):
       sudo apt install bluetooth
 
     Attention
-      The user to runs this script (precisly who runs bluetoothctl) needs proper access rights. Otherwise bluetoothctl will always return "no default controller found"
+      The user to runs this script (precisly who runs bluetoothctl) needs proper access rights.
+      Otherwise bluetoothctl will always return "no default controller found"
       The superuser and users of group "bluetooth" have these. You can check the policy here
         /etc/dbus-1/system.d/bluetooth.conf
       Best to check first if the user which later runs this script can execute bluetoothctl and get meaningful results
         sudo -u www-data bluetoothctl show
-        E.g. if you want to do bluetooth manipulation from the web interface, you will most likely need to add www-data to the group bluetooth
-             if you want to test this script from the command line, you will most likely need to add user pi (or whoever you are) to the group bluetooth or run it as superuser
+        E.g. if you want to do bluetooth manipulation from the web interface, you will most likely need to add www-data
+        to the group bluetooth
+             if you want to test this script from the command line, you will most likely need to add user pi
+             (or whoever you are) to the group bluetooth or run it as superuser
         sudo usermod -G bluetooth -a www-data
       Don't forget to reboot for group changes to take effect here
 
@@ -86,14 +91,17 @@ def bt_switch(cmd, led_pin=None):
       off = speakers, on = headphones
       LED blinks if no bluetooth device is connected and bluetooth sink is requested, before script default to output 1
 
-      A note for developers: This script is not persistent and only gets called (from various sources) when the output sink is changed/toggled and exits.
+      A note for developers: This script is not persistent and only gets called (from various sources)
+      when the output sink is changed/toggled and exits.
         This is done to make is callable from button press (gpio button handler), rfid card number, web interface
-        The LED state however should be persistent. With GPIOZero, the LED state gets reset at the end of the script. For that reason GPIO state is manipulated through shell commands
+        The LED state however should be persistent. With GPIOZero, the LED state gets reset at the end of the script.
+        For that reason GPIO state is manipulated through shell commands
 
     Parameters
     ----------
     :param cmd: string is "toggle" | "speakers" | "headphones"
-    :param led_pin: integer with GPIO pin number of LED to reflect output status. If None, LED support is disabled (and no GPIO pin is blocked)
+    :param led_pin: integer with GPIO pin number of LED to reflect output status. If None, LED support is disabled
+    (and no GPIO pin is blocked)
     """
     # Check for valid command
     if cmd != "toggle" and cmd != "speakers" and cmd != "headphones":
@@ -127,7 +135,8 @@ def bt_switch(cmd, led_pin=None):
     logger.debug(isSpeakerOn_console.stdout)
     isSpeakerOn = re.search(b"^Output 1.*enabled", isSpeakerOn_console.stdout)
 
-    # Figure out if a bluetooth device is connected (any device will do). Assume here that only speakers/headsets will be connected
+    # Figure out if a bluetooth device is connected (any device will do). Assume here that only speakers/headsets
+    # will be connected
     # -> No need for user to adapt MAC address
     # -> will actually support multiple speakers/headsets paired to the phoniebox
     # Alternative: Check for specific bluetooth device only with "bluetoothctl info MACADDRESS"

@@ -213,7 +213,8 @@ class Reader(object):
             if device_name == 'MFRC522':
                 self.reader = Mfrc522Reader()
             elif device_name == 'RDM6300':
-                # The Rdm6300Reader supports 2 Additional Number Formats which can bee choosen by an optional parameter dictionary:
+                # The Rdm6300Reader supports 2 Additional Number Formats which can be choosen
+                # by an optional parameter dictionary:
                 # {'numberformat':'card_id_float'} or {'numberformat':'card_id_dec'}
                 self.reader = Rdm6300Reader()
             elif device_name == 'PN532':
