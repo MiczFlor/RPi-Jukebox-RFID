@@ -29,7 +29,9 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
         album: album
       });
       if (result) {
-        setCoverImage(`/cover-cache/${result}`);
+        if(result !== 'CACHE_PENDING') {
+          setCoverImage(`/cover-cache/${result}`);
+        }
       };
     }
 

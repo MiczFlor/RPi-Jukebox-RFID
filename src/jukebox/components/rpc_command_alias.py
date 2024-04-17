@@ -75,6 +75,10 @@ cmd_alias_definitions = {
         'method': 'repeat',
         'note': 'Repeat',
         'ignore_card_removal_action': True},
+    'flush_coverart_cache': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'flush_coverart_cache'},
 
     # VOLUME
     'set_volume': {
