@@ -216,7 +216,7 @@ def get_led_pin_config(cfg_file):
         if cfg[section_name].getboolean('enabled', fallback=False):
             led_pin = cfg[section_name].getint('led_pin', fallback=None)
             if not led_pin:
-                logger.warning(f"Could not find 'led_pin' or could not read integer value")
+                logger.warning("Could not find 'led_pin' or could not read integer value")
             elif not 1 <= led_pin <= 27:
                 logger.warning(f"Ignoring out of range pin number: {led_pin}.")
                 led_pin = None
