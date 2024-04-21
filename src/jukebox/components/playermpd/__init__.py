@@ -156,6 +156,31 @@ class PlayerMPD:
         self.second_swipe_action = None
         self.decode_2nd_swipe_option()
 
+        self.end_of_playlist_next_action = utils.get_config_action(cfg,
+                                                                   'playermpd',
+                                                                   'end_of_playlist_next_action',
+                                                                   'none',
+                                                                   {'rewind': self.rewind,
+                                                                    'stop': self.stop,
+                                                                    'none': lambda: None},
+                                                                   logger)
+        self.stopped_prev_action = utils.get_config_action(cfg,
+                                                           'playermpd',
+                                                           'stopped_prev_action',
+                                                           'prev',
+                                                           {'rewind': self.rewind,
+                                                            'prev': self._prev_in_stopped_state,
+                                                            'none': lambda: None},
+                                                           logger)
+        self.stopped_next_action = utils.get_config_action(cfg,
+                                                          'playermpd',
+                                                          'stopped_next_action',
+                                                          'next',
+                                                          {'rewind': self.rewind,
+                                                           'next': self._next_in_stopped_state,
+                                                           'none': lambda: None},
+                                                          logger)
+
         self.mpd_client = mpd.MPDClient()
         self.coverart_cache_manager = CoverartCacheManager()
 
@@ -327,15 +352,48 @@ class PlayerMPD:
     @plugs.tag
     def prev(self):
         logger.debug("Prev")
+        if self.mpd_status['state'] == 'stop':
+            logger.debug('Player is stopped, calling stopped_prev_action')
+            return self.stopped_prev_action()
+        try:
+            with self.mpd_lock:
+                self.mpd_client.previous()
+        except mpd.base.CommandError:
+            # This shouldn't happen in reality, but we still catch
+            # this error to avoid crashing the player thread:
+            logger.warning('Failed to go to previous song, ignoring')
+
+    def _prev_in_stopped_state(self):
         with self.mpd_lock:
-            self.mpd_client.previous()
+            self.mpd_client.play(max(0, int(self.mpd_status['pos']) - 1))
 
     @plugs.tag
     def next(self):
         """Play next track in current playlist"""
         logger.debug("Next")
+        if self.mpd_status['state'] == 'stop':
+            logger.debug('Player is stopped, calling stopped_next_action')
+            return self.stopped_next_action()
+        playlist_len = int(self.mpd_status.get('playlistlength', -1))
+        current_pos = int(self.mpd_status.get('pos', 0))
+        if current_pos == playlist_len - 1:
+            logger.debug(f'next() called during last song ({current_pos}) of '
+                         f'playlist (len={playlist_len}), running end_of_playlist_next_action.')
+            return self.end_of_playlist_next_action()
+        try:
+            with self.mpd_lock:
+                self.mpd_client.next()
+        except mpd.base.CommandError:
+            # This shouldn't happen in reality, but we still catch
+            # this error to avoid crashing the player thread:
+            logger.warning('Failed to go to next song, ignoring')
+
+    def _next_in_stopped_state(self):
+        pos = int(self.mpd_status['pos']) + 1
+        if pos > int(self.mpd_status['playlistlength']) - 1:
+            return self.end_of_playlist_next_action()
         with self.mpd_lock:
-            self.mpd_client.next()
+            self.mpd_client.play(pos)
 
     @plugs.tag
     def seek(self, new_time):
