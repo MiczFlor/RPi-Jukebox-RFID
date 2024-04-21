@@ -49,7 +49,7 @@ class CoverartCacheManager:
         cache_key = self.generate_cache_key(base_filename)
 
         file_extension, data = self._extract_album_art(mp3_file_path)
-        if file_extension == NO_COVER_ART_EXTENSION: # Check if cover has been added as separate file in folder
+        if file_extension == NO_COVER_ART_EXTENSION:  # Check if cover has been added as separate file in folder
             file_extension, data = self._get_from_filesystem(mp3_file_path)
 
         cache_filename = f"{cache_key}.{file_extension}"
