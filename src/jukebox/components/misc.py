@@ -117,3 +117,9 @@ def get_app_settings():
     return {
         'show_covers': show_covers
     }
+
+@plugin.register
+def set_app_settings(settings = {}):
+    """Set configuration settings for the web app."""
+    for key, value in settings.items():
+        cfg.setn('webapp', key, value=value)

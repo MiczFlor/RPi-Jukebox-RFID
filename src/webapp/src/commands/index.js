@@ -257,6 +257,12 @@ const commands = {
     plugin: 'get_app_settings'
   },
 
+  setAppSettings: {
+    _package: 'misc',
+    plugin: 'set_app_settings',
+    argKeys: ['settings'],
+  },
+
   // Synchronisation
   'sync_rfidcards_all': {
     _package: 'sync_rfidcards',

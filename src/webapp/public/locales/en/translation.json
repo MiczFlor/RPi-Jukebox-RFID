@@ -219,6 +219,12 @@
       "why": "Why?",
       "control-label": "Auto Hotspot"
     },
+    "general": {
+      "title": "General Settings",
+      "show_covers": {
+        "title": "Show Cover Art"
+      }
+    },
     "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
