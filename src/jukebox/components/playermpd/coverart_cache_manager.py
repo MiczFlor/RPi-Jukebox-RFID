@@ -67,9 +67,9 @@ class CoverartCacheManager:
 
         for tag in audio_file.tags.values():
             if isinstance(tag, APIC):
-                mime_type = tag.mime
-                file_extension = 'jpg' if mime_type == 'image/jpeg' else mime_type.split('/')[-1]
-                return (file_extension, tag.data)
+                if tag.mime and tag.data:
+                    file_extension = 'jpg' if tag.mime == 'image/jpeg' else tag.mime.split('/')[-1]
+                    return (file_extension, tag.data)
 
         return (NO_COVER_ART_EXTENSION, b'')
 
