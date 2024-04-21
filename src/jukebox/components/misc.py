@@ -8,8 +8,10 @@ import jukebox
 import jukebox.plugs as plugin
 import jukebox.utils
 from jukebox.daemon import get_jukebox_daemon
+import jukebox.cfghandler
 
 logger = logging.getLogger('jb.misc')
+cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 @plugin.register
@@ -105,3 +107,13 @@ def empty_rpc_call(msg: str = ''):
     """
     if msg:
         logger.warning(msg)
+
+
+@plugin.register
+def get_app_settings():
+    """Return settings for web app stored in jukebox.yaml"""
+    show_covers = cfg.setndefault('webapp', 'show_covers', value=True)
+
+    return {
+        'show_covers': show_covers
+    }
