@@ -9,7 +9,6 @@ wheel
 
 # Jukebox Core
 # For USB inputs (reader, buttons) and bluetooth buttons
-cmake # To compile pyzmq>26 -> https://github.com/zeromq/pyzmq/issues/1976
 evdev
 mutagen
 pyalsaaudio
