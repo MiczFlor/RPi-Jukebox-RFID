@@ -1,18 +1,24 @@
 # RPi-Jukebox-RFID Version 3
 # Copyright (c) See file LICENSE in project root folder
 
-import time
 import os
 import re
 import logging
-import threading
+import jukebox.cfghandler
 import jukebox.plugs as plugin
+from jukebox.multitimer import (GenericEndlessTimerClass, GenericMultiTimerClass)
 
 
 logger = logging.getLogger('jb.timers.idle_shutdown_timer')
+cfg = jukebox.cfghandler.get_handler('jukebox')
+
 SSH_CHILD_RE = re.compile(r'sshd: [^/].*')
 PATHS = ['shared/settings',
          'shared/audiofolders']
+
+IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
+EXTEND_IDLE_TIMEOUT = 60
+IDLE_CHECK_INTERVAL = 10
 
 
 def get_seconds_since_boot():
@@ -25,70 +31,118 @@ def get_seconds_since_boot():
     return float(seconds_since_boot)
 
 
-class IdleShutdownTimer(threading.Thread):
-    """
-    Shuts down the system if no activity is detected.
-    The following activity is covered:
-        - playing music
-        - active SSH sessions
-        - changes of configs or audio content
+class IdleShutdownTimer:
+    def __init__(self, package: str, idle_timeout: int) -> None:
+        self.private_timer_idle_shutdown = None
+        self.private_timer_idle_check = None
+        self.idle_timeout = 0
+        self.package = package
+        self.idle_check_interval = IDLE_CHECK_INTERVAL
 
-    Note: This does not use one of the generic timers as there don't seem
-    to be any benefits here. The shutdown timer is kind of special in that it
-    is a timer which is expected *not* to fire most of the time, because some
-    activity would restart it. Using threading.Thread directly allows us to
-    keep using a single, persistent thread.
-    """
-    shutdown_after_seconds: int
-    last_activity: float = 0
+        try:
+            self.idle_timeout = int(idle_timeout)
+        except ValueError:
+            logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(idle_timeout)}')
+        if self.idle_timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
+            logger.info('disabling idle shutdown timer; set '
+                        'timers.idle_shutdown.timeout_sec to at least '
+                        f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
+            self.idle_timeout = 0
+
+        self.init_idle_shutdown()
+        plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
+
+        self.init_idle_check()
+        plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
+
+    # Using GenericMultiTimerClass instead of GenericTimerClass as it supports classes rather than functions
+    # Calling GenericMultiTimerClass with iterations=1 is the same as GenericTimerClass
+    def init_idle_shutdown(self):
+        self.private_timer_idle_shutdown = GenericMultiTimerClass(
+            name=f"{self.package}.private_timer_idle_shutdown",
+            iterations=1,
+            wait_seconds_per_iteration=self.idle_timeout,
+            callee=IdleShutdown
+        )
+        self.private_timer_idle_shutdown.__doc__ = "Timer to shutdown after system is idle for a given time"
+
+    # Regularly check if player has activity, if not private_timer_idle_check will start/cancel private_timer_idle_shutdown
+    def init_idle_check(self):
+        idle_check_timer_instance = IdleCheck()
+        self.private_timer_idle_check = GenericEndlessTimerClass(
+            name=f"{self.package}.private_timer_idle_check",
+            wait_seconds_per_iteration=self.idle_check_interval,
+            function=idle_check_timer_instance
+        )
+        self.private_timer_idle_check.__doc__ = 'Timer to check if system is idle'
+        if self.idle_timeout:
+            self.private_timer_idle_check.start()
+
+    @plugin.tag
+    def start(self, wait_seconds: int):
+        """Sets idle_shutdown timeout_sec stored in jukebox.yaml"""
+        cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=wait_seconds)
+        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'start')
+
+    @plugin.tag
+    def cancel(self):
+        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
+        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
+        cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=0)
+
+    @plugin.tag
+    def get_state(self):
+        """Return idle_shutdown timeout_sec stored in jukebox.yaml"""
+        idle_check_state = plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'get_state')
+        idle_shutdown_state = plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'get_state')
+
+        return {
+            'enabled': idle_check_state['enabled'],
+            'remaining_seconds': idle_shutdown_state['remaining_seconds'],
+            'wait_seconds': idle_shutdown_state['wait_seconds_per_iteration'],
+        }
+
+
+class IdleCheck:
+    def __init__(self) -> None:
+        self.last_player_status = plugin.call('player', 'ctrl', 'playerstatus')
+        logger.debug('Started IdleCheck with initial state: {}'.format(self.last_player_status))
+
+    # Run function
+    def __call__(self):
+        player_status = plugin.call('player', 'ctrl', 'playerstatus')
+
+        if self.last_player_status == player_status:
+            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'start')
+        else:
+            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
+
+        self.last_player_status = player_status.copy()
+        return self.last_player_status
+
+
+class IdleShutdown():
     files_num_entries: int = 0
     files_latest_mtime: float = 0
-    running: bool = True
-    last_player_status = None
-    SLEEP_INTERVAL_SECONDS: int = 10
 
-    def __init__(self, timeout_seconds):
-        super().__init__(name=__class__.__name__)
-        self.shutdown_after_seconds = timeout_seconds
+    def __init__(self, iterations) -> None:
         self.base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
-        self.record_activity()
-        logger.debug('Started IdleShutdownTimer')
 
-    def record_activity(self):
-        self.last_activity = get_seconds_since_boot()
-
-    def check(self):
-        if self.last_activity + self.shutdown_after_seconds > get_seconds_since_boot():
-            return
-        logger.info('No player activity, starting further checks')
+    def __call__(self, iteration):
+        logger.debug('Last checks before shutting down')
         if self._has_active_ssh_sessions():
-            logger.info('Active SSH sessions found, will not shutdown now')
-            self.record_activity()
+            logger.debug('Active SSH sessions found, will not shutdown now')
+            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'set_timeout', args=[int(EXTEND_IDLE_TIMEOUT)])
             return
-        if self._has_changed_files():
-            logger.info('Changes files found, will not shutdown now')
-            self.record_activity()
-            return
-        logger.info(f'No activity since {self.shutdown_after_seconds} seconds, shutting down')
+        # if self._has_changed_files():
+        #     logger.debug('Changes files found, will not shutdown now')
+        #     plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'set_timeout', args=[int(EXTEND_IDLE_TIMEOUT)])
+        #     return
+
+        logger.info(f'No activity, shutting down')
+        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
+        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
         plugin.call_ignore_errors('host', 'shutdown')
-
-    def run(self):
-        # We need this once as a baseline:
-        self._has_changed_files()
-        # We rely on playerstatus being sent in regular intervals. If this
-        # is no longer the case at some point, we would need an additional
-        # timer thread.
-        while self.running:
-            time.sleep(self.SLEEP_INTERVAL_SECONDS)
-            player_status = plugin.call('player', 'ctrl', 'playerstatus')
-            if player_status == self.last_player_status:
-                self.check()
-            else:
-                self.record_activity()
-            self.last_player_status = player_status.copy()
-
-    def cancel(self):
-        self.running = False
 
     @staticmethod
     def _has_active_ssh_sessions():

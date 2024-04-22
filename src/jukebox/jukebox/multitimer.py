@@ -4,8 +4,7 @@
 """Multitimer Module"""
 
 import threading
-from typing import (
-    Callable)
+from typing import Callable
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
@@ -114,7 +113,7 @@ class GenericTimerClass:
     def start(self, wait_seconds=None):
         """Start the timer (with default or new parameters)"""
         if self.is_alive():
-            logger.error(f"Timer '{self._name}' started! Ignoring start command.")
+            logger.info(f"Timer '{self._name}' started! Ignoring start command.")
             return
         if wait_seconds is not None:
             self._wait_seconds = wait_seconds
@@ -215,6 +214,7 @@ class GenericEndlessTimerClass(GenericTimerClass):
         # Negative iteration count causes endless looping
         self._iterations = -1
 
+    @plugin.tag
     def get_state(self):
         return {'enabled': self.is_alive(),
                 'wait_seconds_per_iteration': self.get_timeout(),
@@ -251,7 +251,13 @@ class GenericMultiTimerClass(GenericTimerClass):
 
     @plugin.tag
     def get_state(self):
+        remaining_seconds = max(
+            0,
+            self.get_timeout() - (int(time()) - self._start_time)
+        )
+
         return {'enabled': self.is_alive(),
                 'wait_seconds_per_iteration': self.get_timeout(),
+                'remaining_seconds': remaining_seconds,
                 'iterations': self._iterations,
                 'type': 'GenericMultiTimerClass'}

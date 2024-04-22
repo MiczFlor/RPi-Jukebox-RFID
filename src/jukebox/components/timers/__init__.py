@@ -1,17 +1,15 @@
 # RPi-Jukebox-RFID Version 3
 # Copyright (c) See file LICENSE in project root folder
 
-from jukebox.multitimer import (GenericTimerClass, GenericMultiTimerClass)
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
+from jukebox.multitimer import (GenericTimerClass, GenericMultiTimerClass)
 from .idle_shutdown_timer import IdleShutdownTimer
 
 
 logger = logging.getLogger('jb.timers')
 cfg = jukebox.cfghandler.get_handler('jukebox')
-
-IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
 
 
 # ---------------------------------------------------------------------------
@@ -54,9 +52,7 @@ timer_idle_shutdown: IdleShutdownTimer
 
 @plugin.finalize
 def finalize():
-    # TODO: Example with how to call the timers from RPC?
-
-    # Create the various timers with fitting doc for plugin reference
+    # Shutdown Timer
     global timer_shutdown
     timeout = cfg.setndefault('timers', 'shutdown', 'default_timeout_sec', value=60 * 60)
     timer_shutdown = GenericTimerClass(f"{plugin.loaded_as(__name__)}.timer_shutdown",
@@ -66,6 +62,7 @@ def finalize():
     # auto-registration would register it with that module. Manually set package to this plugin module
     plugin.register(timer_shutdown, name='timer_shutdown', package=plugin.loaded_as(__name__))
 
+    # Stop Playback Timer
     global timer_stop_player
     timeout = cfg.setndefault('timers', 'stop_player', 'default_timeout_sec', value=60 * 60)
     timer_stop_player = GenericTimerClass(f"{plugin.loaded_as(__name__)}.timer_stop_player",
@@ -73,6 +70,7 @@ def finalize():
     timer_stop_player.__doc__ = "Timer for automatic player stop"
     plugin.register(timer_stop_player, name='timer_stop_player', package=plugin.loaded_as(__name__))
 
+    # Volume Fade Timer
     global timer_fade_volume
     timeout = cfg.setndefault('timers', 'volume_fade_out', 'default_time_per_iteration_sec', value=15 * 60)
     steps = cfg.setndefault('timers', 'volume_fade_out', 'number_of_steps', value=10)
@@ -81,24 +79,11 @@ def finalize():
     timer_fade_volume.__doc__ = "Timer step-wise volume fade out and shutdown"
     plugin.register(timer_fade_volume, name='timer_fade_volume', package=plugin.loaded_as(__name__))
 
+    # Idle Timer
     global timer_idle_shutdown
-    timeout = cfg.setndefault('timers', 'idle_shutdown', 'timeout_sec', value=0)
-    try:
-        timeout = int(timeout)
-    except ValueError:
-        logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(timeout)}')
-        timeout = 0
-    if timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
-        logger.info('disabling idle shutdown timer; set '
-                    'timers.idle_shutdown.timeout_sec to at least '
-                    f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
-        timeout = 0
-    if not timeout:
-        timer_idle_shutdown = None
-    else:
-        timer_idle_shutdown = IdleShutdownTimer(timeout)
-        timer_idle_shutdown.__doc__ = 'Timer for automatic shutdown on idle'
-        timer_idle_shutdown.start()
+    idle_timeout = cfg.setndefault('timers', 'idle_shutdown', 'timeout_sec', value=0)
+    timer_idle_shutdown = IdleShutdownTimer(package=plugin.loaded_as(__name__), idle_timeout=idle_timeout)
+    plugin.register(timer_idle_shutdown, name='timer_idle_shutdown', package=plugin.loaded_as(__name__))
 
     # The idle Timer does work in a little sneaky way
     # Idle is when there are no calls through the plugin module
@@ -124,9 +109,15 @@ def atexit(**ignored_kwargs):
     timer_stop_player.cancel()
     global timer_fade_volume
     timer_fade_volume.cancel()
-    ret = [timer_shutdown.timer_thread, timer_stop_player.timer_thread, timer_fade_volume.timer_thread]
     global timer_idle_shutdown
-    if timer_idle_shutdown is not None:
-        timer_idle_shutdown.cancel()
-        ret += [timer_idle_shutdown]
+    timer_idle_shutdown.cancel()
+    global timer_idle_check
+    timer_idle_check.cancel()
+    ret = [
+        timer_shutdown.timer_thread,
+        timer_stop_player.timer_thread,
+        timer_fade_volume.timer_thread,
+        timer_idle_shutdown.timer_thread,
+        timer_idle_check.timer_thread
+    ]
     return ret
