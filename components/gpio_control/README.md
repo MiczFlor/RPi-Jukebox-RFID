@@ -180,7 +180,7 @@ functionCall1: functionCallVolU
 functionCall2: functionCallVolD
 ```
 
-* **enabled**: This needs to be `True` for the extended shutdown button to work.
+* **enabled**: This needs to be `True` for the rotary encoder to work.
 * **Pin1**: GPIO number corresponding to rotary direction "clockwise" ('CLK')
 * **Pin2**: GPIO number corresponding to rotary direction "counter clockwise" ('DT')
 * **functionCall1**: function called for every rotation step corresponding to rotary direction "clockwise". See below for passed arguments. See [function documentation below](#functions).
@@ -206,7 +206,7 @@ Note that the old configuration entries PinUp/PinDown and functionCallUp/functio
 
 
 ```bash
-[RotatrySeekingControl]
+[RotarySeekingControl]
 enabled: True
 Type: RotaryEncoder
 Pin1: 22
