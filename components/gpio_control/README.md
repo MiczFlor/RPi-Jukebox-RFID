@@ -26,7 +26,7 @@ Up to now the following input devices are implemented:
 
 * **RotaryEncoder**:
     Control of a rotary encoder, for example KY040, see also in [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume).
-    It can be configured using `pinUp` and `PiNDown` (use GPIO numbers here), `functionCallUp`, `functionCallDown`, and `timeBase` see [extended documentation below](#rotaryencoder).
+    It can be configured using `Pin1` and `Pin2` (use GPIO numbers here), `functionCall1`, `functionCall2` see [extended documentation below](#rotaryencoder).
 
 * **TwoButtonControl**:
     This Device uses two Buttons and implements a third action if both buttons are pressed together. See [extended documentation below](#twobuttoncontrol).
@@ -172,18 +172,46 @@ Furthermore, the following settings can be used as described for the [regular bu
 A RotaryEncoder can be created using an `ini` entry like this:
 
 ```bash
-[VolumeControl]
+[RotaryVolumeControl]
 enabled: True
 Type: RotaryEncoder
 Pin1: 7
 Pin2: 8
-timeBase: 0.02
+timeBase: 0.1
 functionCall1: functionCallVolU
 functionCall2: functionCallVolD
 ```
 
-Pin1 and FunctionCall1 correspond to rotary direction "up", while Pin2 and FunctionCall2 correspond to "down".
+* **enabled**: This needs to be `True` for the extended shutdown button to work.
+* **Pin1**: GPIO number corresponding to rotary direction "clockwise" ('CLK')
+* **Pin2**: GPIO number corresponding to rotary direction "counter clockwise" ('DT')
+* **functionCall1**: function called for every rotation step corresponding to rotary direction "clockwise". See below for passed arguments. See [function documentation below](#functions).
+* **functionCall2**: function called for every rotation step corresponding to rotary direction "counter clockwise". See below for passed arguments. See [function documentation below](#functions).
+* **timeBase**: Factor used for calculating the rotation value base on rotation speed, defaults to `0.1`. Use `0` for deactivating rotation speed influence.
+Example: 
+ * a single rotation step leads to the value 1 passed to the function. 
+ * steady rotation of two to or more steps, leads to the value 1 for the first call and the value 2 for all further calls.
+ * speeding up rotation of two to or more steps, leads to the value 1 for the first call, the value 2 for the second, the value 3 for the third and so on.
+* **functionCall1Args**: Arguments for `functionCall1`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
+* **functionCall2Args**: Arguments for `functionCall2`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
+
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
+
+
+```bash
+[RotatrySeekingControl]
+enabled: True
+Type: RotaryEncoder
+Pin1: 7
+Pin2: 8
+timeBase: 0.1
+functionCall1: functionCallPlayerSeekFwd
+functionCall1Args: 5
+functionCall2: functionCallPlayerSeekBack
+functionCall2Args: 5
+```
+
+In this example, the encoder will be used to seek for- and backwards by 5 seconds on every rotation step. The rotation value will **NOT** be used in this case as the function args are defined!
 
 ### StatusLED
 
