@@ -5,11 +5,10 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 
 question() {
     local question=$1
-    read -p "${question} (y/n)? " choice
+    read -p "${question} (Y/n)? " choice
     case "$choice" in
-      y|Y ) ;;
-      n|N ) exit 0;;
-      * ) echo "Error: invalid" ; question ${question};;
+      [nN][oO]|[nN]) exit 0;;
+      * ) ;;
     esac
 }
 

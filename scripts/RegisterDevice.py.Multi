@@ -17,7 +17,7 @@ def runCmd(cmd, wait=True):
 def setupPN532():
     answer = input('Please make sure that the PN532 reader is wired up correctly '
                    'to the GPIO ports before continuing...\n Continue?: [Y/n]')
-    if not answer or answer[0] != 'Y':
+    if answer and answer[0].lower() == 'n':
         return False
     print("Activating I2C interface...\n")
     runCmd("sudo raspi-config nonint do_i2c 0")
@@ -41,7 +41,7 @@ def setupPN532():
 def setupMFRC522():
     answer = input('Please make sure that the RC522 reader is wired up correctly '
                    'to the GPIO ports before continuing...\n Continue?: [Y/n]')
-    if not answer or answer[0] != 'Y':
+    if answer and answer[0].lower() == 'n':
         return False
     print("Installing Python requirements for RC522...\n")
     runCmd("sudo python3 -m pip install --upgrade --force-reinstall "
@@ -78,7 +78,7 @@ def configureDevices():
     addDevice()
     while True:
         answer = input('Do you want to add another device: [Y/n]')
-        if not answer or answer[0] != 'Y':
+        if answer and answer[0].lower() == 'n':
             break
         addDevice()
 
