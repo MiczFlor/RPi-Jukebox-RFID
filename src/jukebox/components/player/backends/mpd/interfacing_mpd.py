@@ -48,7 +48,7 @@ class MPDBackend(BackendPlayer):
         # TODO: If connect fails on first try this is non recoverable
         self.connect()
         # Start the status listener in an endless loop in the event loop
-        asyncio.run_coroutine_threadsafe(self._status_listener(), self.loop)
+        # asyncio.run_coroutine_threadsafe(self._status_listener(), self.loop)
 
     # ------------------------------------------------------------------------------------------------------
     # Bring calls to client functions from the synchronous part into the async domain
@@ -95,9 +95,10 @@ class MPDBackend(BackendPlayer):
             # logger.debug("MPD: Idle change in", subsystem)
             s = await self.client.status()
             # logger.debug(f"MPD: New Status: {s.result()}")
-            print(f"MPD: New Status: {type(s)} // {s}")
+            #print(f"MPD: New Status: {type(s)} // {s}")
             # Now, do something with it ...
             publishing.get_publisher().send('playerstatus', s)
+
 
     async def _status(self):
         return await self.client.status()
@@ -105,11 +106,17 @@ class MPDBackend(BackendPlayer):
     @plugin.tag
     def status(self):
         """Refresh the current MPD status (by a manual, sync trigger)"""
+        # Example
+        # Status: {'volume': '40', 'repeat': '0', 'random': '0', 'single': '0', 'consume': '0', 'partition': 'default',
+        # 'playlist': '94', 'playlistlength': '22', 'mixrampdb': '0.000000', 'state': 'play', 'song': '0',
+        # 'songid': '71', 'time': '1:126', 'elapsed': '1.108', 'bitrate': '96', 'duration': '125.988',
+        # 'audio': '44100:24:2', 'nextsong': '1', 'nextsongid': '72'}
         f = asyncio.run_coroutine_threadsafe(self._status(), self.loop).result()
-        print(f"Status: {f}")
+        # print(f"Status: {f}")
         # Put it into unified structure and notify global player control
         # ToDo: propagate to core player
-        publishing.get_publisher().send('playerstatus', f)
+        # publishing.get_publisher().send('playerstatus', f)
+        return f
 
     # -----------------------------------------------------
     # Stuff that controls current playback (i.e. moves around in the current playlist, termed "the queue")

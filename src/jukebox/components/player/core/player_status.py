@@ -1,7 +1,7 @@
 import logging
 
 import jukebox.plugs as plugin
-from jukebox import publishing
+from jukebox import publishing, multitimer
 
 logger = logging.getLogger('jb.player')
 
@@ -32,6 +32,9 @@ class PlayerStatus:
                 self._player_status[key] = value
 
         self.publish()
+
+    def get_value(self, key):
+        return self.STATUS.get(key)
 
     def publish(self):
         logger.debug(f'Published: {self._player_status}')

@@ -19,6 +19,8 @@ import logging
 from typing import Dict, Callable, Optional, Any
 
 import jukebox.plugs as plugin
+from components.player.core.player_status import PlayerStatus
+from jukebox import multitimer
 
 logger = logging.getLogger('jb.player')
 
@@ -29,12 +31,23 @@ class PlayerCtrl:
     def __init__(self):
         self._backends: Dict[str, Any] = {}
         self._active = None
+        self.player_status = None
+        self.status_poll_interval = 0.25
+        self.status_thread = multitimer.GenericEndlessTimerClass('player.timer_status',
+                                                                 self.status_poll_interval, self._status_poll)
+        self.status_thread.start()
+
+    def _status_poll(self):
+        ret_status = self._active.status()
+        if ret_status.get('state') == 'play':
+            self.player_status.update(playing=True, elapsed=ret_status.get('elapsed', '0.0'), duration=ret_status.get('duration', '0.0') )
 
     def register(self, name: str, backend):
         self._backends[name] = backend
         # For now simply default to first registered backend
         if self._active is None:
             self._active = self._backends.values().__iter__().__next__()
+            self.player_status.update(player=name)
 
     @plugin.tag
     def get_active(self):
@@ -64,6 +77,7 @@ class PlayerCtrl:
         if inst is None:
             raise KeyError(f"URI player type unknown: '{player_type}'. Available backends are: {self._backends.keys()}.")
         self._active = self._backends.get(player_type)
+        self.player_status.update(player=player_type)
         self._active.play_uri(uri, **kwargs)
 
     def _is_second_swipe(self):
@@ -106,22 +120,30 @@ class PlayerCtrl:
     @plugin.tag
     def play(self):
         self._active.play()
+        self.player_status.update(playing=True)
 
     @plugin.tag
     def play_single(self, uri):
         self.play_uri(uri)
+        self.player_status.update(playing=True)
 
     @plugin.tag
     def play_album(self, albumartist, album):
         self._active.play_album(albumartist, album)
+        self.player_status.update(playing=True)
 
     @plugin.tag
     def play_folder(self, folder, recursive):
         self._active.play_folder(folder, recursive)
+        self.player_status.update(playing=True)
 
     @plugin.tag
     def toggle(self):
         self._active.toggle()
+        if self.player_status.get_value('playing') is False:
+            self.player_status.update(playing=True)
+        else:
+            self.player_status.update(playing=False)
 
     @plugin.tag
     def shuffle(self, option='toggle'):
@@ -133,12 +155,14 @@ class PlayerCtrl:
     @plugin.tag
     def pause(self):
         self._active.pause()
+        self.player_status.update(playing=False)
 
     @plugin.tag
     def stop(self):
         # Save current state for resume functionality
         self._save_state()
         self._active.stop()
+        self.player_status.update(playing=False)
 
     @plugin.tag
     def get_queue(self):

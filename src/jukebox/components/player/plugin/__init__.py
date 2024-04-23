@@ -69,7 +69,7 @@ def initialize():
     player_arbiter = PlayerCtrl()
 
     player_status = PlayerStatus()
-    player_status.publish()
+    player_arbiter.player_status = player_status
 
     # ToDo: remove player_content
     # player_content = PlayerData()
