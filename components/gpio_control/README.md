@@ -24,19 +24,17 @@ Up to now the following input devices are implemented:
 * **ShutdownButton**:
    A specialized implementation for a shutdown button with integrated (but optional) LED support. It initializes a shutdown if the button is pressed more than `time_pressed` seconds and a (optional) LED on GPIO `led_pin` is flashing until that time is reached. For additional information, see [extended documentation below](#shutdownbutton).
 
-* **RotaryEncoder**:
-    Control of a rotary encoder, for example KY040, see also in [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume).
-    It can be configured using `Pin1` and `Pin2` (use GPIO numbers here), `functionCall1`, `functionCall2` see [extended documentation below](#rotaryencoder).
-
 * **TwoButtonControl**:
     This Device uses two Buttons and implements a third action if both buttons are pressed together. See [extended documentation below](#twobuttoncontrol).
+
+* **RotaryEncoder**:
+    Control of a rotary encoder, for example KY040.
+    It can be configured using `Pin1` and `Pin2` (use GPIO numbers here), `functionCall1`, `functionCall2` see [extended documentation below](#rotaryencoder).
 
 * **StatusLED**:
     A LED which will light up once the Phoniebox has fully booted up and is ready to be used. For additional information, see [extended documentation below](#statusled).
 
 Each section needs to be activated by setting `enabled: True`.
-
-Many example files are located in `~/RPi-Jukebox-RFID/components/gpio_control/example_configs/`.
 
 ## Extended documentation
 
@@ -175,8 +173,8 @@ A RotaryEncoder can be created using an `ini` entry like this:
 [RotaryVolumeControl]
 enabled: True
 Type: RotaryEncoder
-Pin1: 7
-Pin2: 8
+Pin1: 22
+Pin2: 23
 timeBase: 0.1
 functionCall1: functionCallVolU
 functionCall2: functionCallVolD
@@ -195,6 +193,15 @@ Example:
 * **functionCall1Args**: Arguments for `functionCall1`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
 * **functionCall2Args**: Arguments for `functionCall2`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
 
+To also use the push button of the encoder just a button definition:
+```bash
+[Mute]
+enabled: True
+Type: Button
+Pin: 27
+functionCall: functionCallVol0
+```
+
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
 
 
@@ -202,8 +209,8 @@ Note that the old configuration entries PinUp/PinDown and functionCallUp/functio
 [RotatrySeekingControl]
 enabled: True
 Type: RotaryEncoder
-Pin1: 7
-Pin2: 8
+Pin1: 22
+Pin2: 23
 timeBase: 0.1
 functionCall1: functionCallPlayerSeekFwd
 functionCall1Args: 5
@@ -212,6 +219,25 @@ functionCall2Args: 5
 ```
 
 In this example, the encoder will be used to seek for- and backwards by 5 seconds on every rotation step. The rotation value will **NOT** be used in this case as the function args are defined!
+
+
+#### Circuit diagram
+```
+  .---------------.                      .---------------.
+  |               |                      |               |
+  |           CLK |----------------------| GPIO 22       |
+  |               |                      |               |
+  |           DT  |----------------------| GPIO 23       |
+  |               |                      |               |
+  |           SW  |----------------------| GPIO 27       |
+  |               |                      |               |
+  |           +   |----------------------| 3.3V          |
+  |               |                      |               |
+  |           GND |----------------------| GND           |
+  |               |                      |               |
+  '---------------'                      '---------------'
+       KY-040                                Raspberry
+```
 
 ### StatusLED
 
