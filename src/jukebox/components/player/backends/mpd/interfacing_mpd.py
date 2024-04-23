@@ -5,6 +5,7 @@ import asyncio
 import logging
 import os.path
 import re
+from pathlib import Path
 from typing import Optional
 
 import jukebox.plugs as plugin
@@ -13,6 +14,7 @@ import jukebox.playlistgenerator as playlistgenerator
 
 from mpd.asyncio import MPDClient
 from components.player.backends import BackendPlayer
+from components.player.core.coverart_cache_manager import CoverartCacheManager
 from jukebox import publishing
 
 logger = logging.getLogger('jb.mpd')
@@ -36,6 +38,7 @@ class MPDBackend(BackendPlayer):
         self.loop = event_loop
         self.host = cfg.setndefault('playermpd', 'host', value='localhost')
         self.port = cfg.setndefault('playermpd', 'port', value='6600')
+        self.coverart_cache_manager = CoverartCacheManager()
         self._flavors = {'folder': self.get_files,
                          'file': self.get_track,
                          'album': self.get_album_from_uri,
@@ -295,7 +298,10 @@ class MPDBackend(BackendPlayer):
         return self.get_album_tracks(album_artist=p.group(4), album=p.group(3))
 
     def get_single_coverart(self, song_url):
-        pass
+        mp3_file_path = Path(get_music_library_path(), song_url).expanduser()
+        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path)
+
+        return cache_filename
 
     def get_album_coverart(self):
         pass
