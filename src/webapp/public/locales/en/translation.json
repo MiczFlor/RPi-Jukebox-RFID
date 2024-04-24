@@ -224,10 +224,19 @@
       "option-label-off": "Off",
       "title": "Timers",
       "stop-player": "Stop player",
-      "shutdown": "Shut Down",
+      "shutdown": "Shutdown",
       "fade-volume": "Fade volume",
-      "idle-shutdown": "Idle Shut Down",
-      "ended": "Done"
+      "idle-shutdown": "Idle shutdown",
+      "ended": "Done",
+      "set": "Set timer",
+      "cancel": "Cancel",
+      "paused": "Paused",
+      "dialog": {
+        "title": "Set {{value}} timer",
+        "description": "Choose the amount of minutes you want the action to be performed.",
+        "start": "Start timer",
+        "cancel": "Cancel"
+      }
     },
     "secondswipe": {
       "title": "Second Swipe",

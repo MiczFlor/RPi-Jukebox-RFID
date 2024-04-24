@@ -38,22 +38,25 @@ class IdleShutdownTimer:
         self.idle_timeout = 0
         self.package = package
         self.idle_check_interval = IDLE_CHECK_INTERVAL
-
-        try:
-            self.idle_timeout = int(idle_timeout)
-        except ValueError:
-            logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(idle_timeout)}')
-        if self.idle_timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
-            logger.info('disabling idle shutdown timer; set '
-                        'timers.idle_shutdown.timeout_sec to at least '
-                        f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
-            self.idle_timeout = 0
+        self.set_idle_timeout(idle_timeout)
 
         self.init_idle_shutdown()
         plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
 
         self.init_idle_check()
         plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
+
+    def set_idle_timeout(self, idle_timeout):
+        try:
+            self.idle_timeout = int(idle_timeout)
+        except ValueError:
+            logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(idle_timeout)}')
+
+        if self.idle_timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
+            logger.info('disabling idle shutdown timer; set '
+                        'timers.idle_shutdown.timeout_sec to at least '
+                        f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
+            self.idle_timeout = 0
 
     # Using GenericMultiTimerClass instead of GenericTimerClass as it supports classes rather than functions
     # Calling GenericMultiTimerClass with iterations=1 is the same as GenericTimerClass
@@ -86,18 +89,20 @@ class IdleShutdownTimer:
 
     @plugin.tag
     def cancel(self):
+        """Cancels all idle timers and disables idle shutdown in jukebox.yaml"""
         plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
         plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
         cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=0)
 
     @plugin.tag
     def get_state(self):
-        """Return idle_shutdown timeout_sec stored in jukebox.yaml"""
+        """Returns the current state of Idle Shutdown"""
         idle_check_state = plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'get_state')
         idle_shutdown_state = plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'get_state')
 
         return {
             'enabled': idle_check_state['enabled'],
+            'running': idle_shutdown_state['enabled'],
             'remaining_seconds': idle_shutdown_state['remaining_seconds'],
             'wait_seconds': idle_shutdown_state['wait_seconds_per_iteration'],
         }

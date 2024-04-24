@@ -227,7 +227,16 @@
       "shutdown": "Herunterfahren",
       "fade-volume": "Lautstärke ausblenden",
       "idle-shutdown": "Leerlaufabschaltung",
-      "ended": "Beendet"
+      "set": "Timer erstellen",
+      "cancel": "Abbrechen",
+      "paused": "Pausiert",
+      "ended": "Beendet",
+      "dialog": {
+        "title": "{{value}} Timer erstellen",
+        "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll.",
+        "start": "Timer starten",
+        "cancel": "Abbrechen"
+      }
     },
     "secondswipe": {
       "title": "Erneute Aktivierung (Second Swipe)",

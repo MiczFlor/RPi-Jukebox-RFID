@@ -4,20 +4,15 @@ import { useTranslation } from 'react-i18next';
 import {
   Box,
   Grid,
-  Switch,
   Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 
 import request from '../../../utils/request';
-import {
-  Countdown,
-  SliderTimer
-} from '../../general';
+import { Countdown } from '../../general';
+import SetTimerDialog from './set-timer-dialog';
 
 const Timer = ({ type }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   // Constants
   const pluginName = `timer_${type.replace('-', '_')}`;
@@ -28,14 +23,15 @@ const Timer = ({ type }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState({ enabled: false });
   const [waitSeconds, setWaitSeconds] = useState(0);
+  const [running, setRunning] = useState(true);
 
   // Requests
   const cancelTimer = async () => {
     await request(`${pluginName}.cancel`);
-    setStatus({ enabled: false });
+    setEnabled(false);
   };
 
-  const setTimer = async (event, wait_seconds) => {
+  const setTimer = async (wait_seconds) => {
     await cancelTimer();
 
     if (wait_seconds > 0) {
@@ -57,16 +53,13 @@ const Timer = ({ type }) => {
 
     setStatus(timerStatus);
     setEnabled(timerStatus?.enabled);
-    setWaitSeconds(timerStatus?.wait_seconds || 0);
+    if (timerStatus.running === undefined) {
+      setRunning(true);
+    }
+    else {
+      setRunning(timerStatus.running);
+    }
   }, [pluginName]);
-
-
-  // Event Handlers
-  const handleSwitch = (event) => {
-    setEnabled(event.target.checked);
-    setWaitSeconds(0); // Always start the slider at 0
-    cancelTimer();
-  }
 
   // Effects
   useEffect(() => {
@@ -85,31 +78,33 @@ const Timer = ({ type }) => {
           alignItems: 'center',
           marginLeft: '0',
         }}>
-          {status?.enabled &&
+          {enabled && running &&
             <Countdown
               seconds={status.remaining_seconds}
               onEnd={() => setEnabled(false)}
               stringEnded={t('settings.timers.ended')}
             />
           }
+          {enabled && !running &&
+            <Typography>
+              Paused
+            </Typography>
+          }
           {error &&
             <Typography>⚠️</Typography>
           }
-          <Switch
-            checked={enabled}
-            disabled={isLoading}
-            onChange={handleSwitch}
-          />
+          {!isLoading &&
+            <SetTimerDialog
+              type={type}
+              enabled={enabled}
+              setTimer={setTimer}
+              cancelTimer={cancelTimer}
+              waitSeconds={waitSeconds}
+              setWaitSeconds={setWaitSeconds}
+            />
+          }
         </Box>
       </Grid>
-      {enabled &&
-        <Grid item sx={{ padding: theme.spacing(1) }}>
-          <SliderTimer
-            value={waitSeconds}
-            onChangeCommitted={setTimer}
-          />
-        </Grid>
-      }
     </Grid>
   );
 };
