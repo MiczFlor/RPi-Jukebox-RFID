@@ -43,7 +43,8 @@ try:
 
                         button_map[button_string] = function_name
                         button_map[button_string + "_args"] = function_args
-                        print("Button '" + button_string + "' is now mapped to '" + function_name_short + "' with argument '" + str(function_args) + "'")
+                        print("Button '" + button_string + "' is now mapped to '" + function_name_short
+                              + "' with argument '" + str(function_args) + "'")
                         break
         except KeyboardInterrupt:
             continue
