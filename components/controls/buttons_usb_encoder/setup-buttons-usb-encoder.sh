@@ -6,11 +6,10 @@ BUTTONS_USB_ENCODER_DIR="${JUKEBOX_HOME_DIR}/components/controls/buttons_usb_enc
 
 question() {
     local question=$1
-    read -p "${question} (y/n)? " choice
+    read -p "${question} (Y/n)? " choice
     case "$choice" in
-      y|Y ) ;;
-      n|N ) exit 0;;
-      * ) echo "Error: invalid" ; question ${question};;
+      [nN][oO]|[nN]) exit 0;;
+      * ) ;;
     esac
 }
 
