@@ -222,7 +222,7 @@ In this example, the encoder will be used to seek for- and backwards by 5 second
 
 
 #### Circuit diagram
-```
+```text 
   .---------------.                      .---------------.
   |               |                      |               |
   |           CLK |----------------------| GPIO 22       |
