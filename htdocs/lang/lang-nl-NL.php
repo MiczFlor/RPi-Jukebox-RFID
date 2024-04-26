@@ -113,7 +113,7 @@ $lang['cardRegisterErrorSuggestFolder'] = "Er moet een mapnaam voor de stream wo
 $lang['cardRegisterErrorConvertSpotifyURL'] = "Verkeerde spotify url, geconverteerd naar het juiste formaat";
 $lang['cardRegisterStream2Card'] = "Stream is gekoppeld aan kaart-ID.";
 $lang['cardRegisterFolder2Card'] = "De audiomap is nu gekoppeld aan kaart-ID";
-$lang['cardRegisterDownloadingYT'] = "<p>YouTube-audio wordt gedownload. Dit kan een paar minuten duren. U kunt het logbestand 'youtube-dl.log' in de gedeelde map controleren.</p>";
+$lang['cardRegisterDownloadingYT'] = "<p>YouTube-audio wordt gedownload. Dit kan een paar minuten duren. U kunt het logbestand 'youtube-download.log' in de gedeelde map controleren.</p>";
 $lang['cardRegisterSwipeUpdates'] = "Dit wordt automatisch bijgewerkt terwijl je een RFID-kaart veegt.";
 $lang['cardRegisterManualLinks'] = "<p>U kunt kaarten ook handmatig met mappen verbinden. In de handleiding wordt uitgelegd hoe u <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#connect' target='–blank'>verbinding maakt met de phoniebox</a> en <a href='https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#registering-cards-manually-through-samba-without-the-web-app' target='_blank'>kaarten registreert</a>.</p>";
 

@@ -27,12 +27,17 @@ check_chmod_chown() {
 
     for file in ${files};
     do
+        local fail=false
         mod_actual=$(stat --format '%a' "${dir}/${file}")
         user_actual=$(stat -c '%U' "${dir}/${file}")
         group_actual=$(stat -c '%G' "${dir}/${file}")
-        test ! "${mod_expected}" -eq "${mod_actual}" && echo "  ERROR: ${file} actual mod (${mod_actual}) differs from expected (${mod_expected})!"
-        test ! "${user_expected}" == "${user_actual}" && echo "  ERROR: ${file} actual owner (${user_actual}) differs from expected (${user_expected})!"
-        test ! "${group_expected}" == "${group_actual}" && echo "  ERROR: ${file} actual group (${group_actual}) differs from expected (${group_expected})!"
+        test ! "${mod_expected}" -eq "${mod_actual}" && echo "  ERROR: ${file} actual mod (${mod_actual}) differs from expected (${mod_expected})!" && fail=true
+        test ! "${user_expected}" == "${user_actual}" && echo "  ERROR: ${file} actual owner (${user_actual}) differs from expected (${user_expected})!" && fail=true
+        test ! "${group_expected}" == "${group_actual}" && echo "  ERROR: ${file} actual group (${group_actual}) differs from expected (${group_expected})!" && fail=true
+        if [ $fail == true ]; then
+            ((failed_tests++))
+        fi
+        ((tests++))
     done
 }
 
@@ -49,9 +54,33 @@ check_file_exists() {
 check_file_contains_string() {
     local string="$1"
     local file="$2"
+    local allowPartCheck="$3"
+
+    local grep_option="w"
+    if [ -v allowPartCheck ]; then
+        grep_option=""
+    fi
 
     # sudo is required for checking /etc/mopidy/mopidy.conf
-    if [[ ! $(sudo grep -iw "${string}" "${file}") ]]; then
+    if [[ ! $(sudo grep -iF"${grep_option}" "${string}" "${file}") ]]; then
+        echo "  ERROR: '${string}' not found in ${file}"
+        ((failed_tests++))
+    fi
+    ((tests++))
+}
+
+check_file_contains_string_regex() {
+    local string="$1"
+    local file="$2"
+    local allowPartCheck="$3"
+
+    local grep_option="w"
+    if [ -v allowPartCheck ]; then
+        grep_option=""
+    fi
+
+    # sudo is required for checking /etc/mopidy/mopidy.conf
+    if [[ ! $(sudo grep -i"${grep_option}" "${string}" "${file}") ]]; then
         echo "  ERROR: '${string}' not found in ${file}"
         ((failed_tests++))
     fi
@@ -249,7 +278,7 @@ verify_autohotspot_settings() {
             check_file_contains_string "daemon_service=\"${autohotspot_service_daemon}\"" "${autohotspot_script}"
 
             check_file_exists "${autohotspot_service_daemon_path}"
-            check_file_contains_string "\-i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
+            check_file_contains_string "ExecStart=wpa_supplicant -i \"${autohotspot_wifi_interface}\"" "${autohotspot_service_daemon_path}"
 
             check_file_exists "${autohotspot_service_path}"
             check_file_contains_string "ExecStart=${autohotspot_script}" "${autohotspot_service_path}"
@@ -320,6 +349,8 @@ verify_apt_packages() {
     # also check for spotify packages if it has been installed
     if [[ "${SPOTinstall}" == "YES" ]]; then
         packages="${packages} ${packages_spotify}"
+        # not yet available on apt.mopidy.com, so install manually
+        packages="${packages} gst-plugin-spotify"
     fi
 
     if [[ "$AUTOHOTSPOTconfig" == "YES" ]]; then
@@ -404,7 +435,8 @@ verify_webserver_config() {
     check_chmod_chown 644 root root "/etc/lighttpd" "lighttpd.conf"
     check_chmod_chown 644 root root "/etc/lighttpd/conf-available" "15-fastcgi-php.conf"
     check_chmod_chown 644 root root "/etc/php/${phpver}/cgi" "php.ini"
-    check_chmod_chown 440 root root "/etc" "sudoers"
+    check_file_contains_string "www-data ALL=(ALL) NOPASSWD: ALL" "/etc/sudoers.d/www-data"
+    check_chmod_chown 440 root root "/etc/sudoers.d/" "www-data"
 
     # Bonus TODO: check that fastcgi and fastcgi-php mods are enabled
 }
@@ -423,22 +455,18 @@ verify_systemd_services() {
 
 verify_spotify_config() {
     if [[ "${SPOTinstall}" == "YES" ]]; then
-        local etc_mopidy_conf="/etc/mopidy/mopidy.conf"
-        local mopidy_conf="${HOME_DIR}/.config/mopidy/mopidy.conf"
+        local mopidy_conf="/etc/mopidy/mopidy.conf"
 
         printf "\nTESTING spotify config...\n\n"
-
-        check_file_contains_string "username = ${SPOTIuser}" "${etc_mopidy_conf}"
-        check_file_contains_string "password = ${SPOTIpass}" "${etc_mopidy_conf}"
-        check_file_contains_string "client_id = ${SPOTIclientid}" "${etc_mopidy_conf}"
-        check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${etc_mopidy_conf}"
-        check_file_contains_string "media_dir = ${DIRaudioFolders}" "${etc_mopidy_conf}"
 
         check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
         check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
         check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
         check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
         check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"
+        check_file_contains_string "mopidy ALL=NOPASSWD: /usr/local/lib/python" "/etc/sudoers.d/mopidy" allowPartCheck
+        check_file_contains_string "/dist-packages/mopidy_iris/system.sh" "/etc/sudoers.d/mopidy" allowPartCheck
+        check_chmod_chown 440 root root "/etc/sudoers.d/" "mopidy"
 
         # check that mopidy service is enabled
         check_service_enablement mopidy enabled
@@ -452,8 +480,8 @@ verify_mpd_config() {
 
     printf "\nTESTING mpd config...\n\n"
 
-    check_file_contains_string "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
-    check_file_contains_string "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
+    check_file_contains_string_regex "^[[:blank:]]\+mixer_control[[:blank:]]\+\"${AUDIOiFace}\"" "${mpd_conf}"
+    check_file_contains_string_regex "^music_directory[[:blank:]]\+\"${DIRaudioFolders}\"" "${mpd_conf}"
 
     check_chmod_chown 640 mpd audio "/etc" "mpd.conf"
 

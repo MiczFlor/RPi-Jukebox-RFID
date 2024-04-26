@@ -17,7 +17,8 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y confirm interactive mode
 # n configure wifi (extra ENTER)
 # y configure autohotspot
-# y use autohotspot default config (extra ENTER)
+# n use autohotspot default config
+#   y use custom data (extra ENTER)
 # y use default audio iface (extra ENTER)
 # n spotify (extra ENTER)
 # y audio default location (extra ENTER)
@@ -27,10 +28,15 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n reboot
 export CI_TEST_DHCPCD="false"
 export CI_TEST_NETWORKMANAGER="true"
-./../install-jukebox.sh <<< "y
+./../install-jukebox.sh <<< 'y
 n
 
 y
+n
+a!b"c§d$e%f&g/h(i)j=k?l´m`n²o³p{q[r]s}t\u+v*w~x#y'\''z01234
+DE
+ß,ä;ö.ü:Ä-Ö_Ü 1@2€3^4°5|6$7&8/9\0
+192.168.100.2
 y
 
 y
@@ -44,7 +50,7 @@ y
 y
 n
 n
-"
+'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

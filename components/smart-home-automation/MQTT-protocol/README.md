@@ -144,7 +144,7 @@ components/smart-home-automation/MQTT-protocol/
 ## Auto-Starting the daemon at bootup
 
 * The daemon is run by executing the script `daemon_mqtt_client.py` which will run in an endless loop.
-* There's a sample service file (`phoniebox-mqtt-client.service.stretch-default.sample`) that can be used to register the daemon to be run at bootup.
+* There's a sample service file (`phoniebox-mqtt-client.service-default.sample`) that can be used to register the daemon to be run at bootup.
 * It is currently not integrated into the one-line-install script so please run the following commands to do it manually.
 
 First step: copy files to destination locations:
@@ -152,7 +152,7 @@ First step: copy files to destination locations:
 ~~~bash
 # First copy the daemon script and service config file to the correct directory:
 sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/daemon_mqtt_client.py /home/pi/RPi-Jukebox-RFID/scripts/
-sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/phoniebox-mqtt-client.service.stretch-default.sample /etc/systemd/system/phoniebox-mqtt-client.service
+sudo cp /home/pi/RPi-Jukebox-RFID/components/smart-home-automation/MQTT-protocol/phoniebox-mqtt-client.service-default.sample /etc/systemd/system/phoniebox-mqtt-client.service
 # make sure the file exists
 touch /home/pi/RPi-Jukebox-RFID/settings/Latest_RFID
 ~~~

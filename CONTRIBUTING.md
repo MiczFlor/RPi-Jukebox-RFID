@@ -91,7 +91,7 @@ If the code change results in a test failure, we will make our best effort to co
 
 ### Guidelines
 
-* The oldest supported Raspberry Pi OS version is currently **Buster**. Therefore all Python code should work with **Python 3.7**.
+* All code has to run under the stable and legacy version of Raspberry Pi OS (please check if currently even an older version is still supported).
 * For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
 
 ### Additional Resources

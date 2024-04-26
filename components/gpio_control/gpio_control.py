@@ -32,7 +32,10 @@ class GPIOControl():
         try:
             if function_name is not None and function_name != 'None':
                 functionCall = getattr(self.function_calls, function_name)
-                return (lambda *args: functionCall(*args, function_args))
+                if function_args is not None and function_args != 'None':
+                    return (lambda *args: functionCall(function_args, *args))
+                else:
+                    return (lambda *args: functionCall(*args))
         except AttributeError:
             self.logger.error('Could not find FunctionCall {function_name}'.format(function_name=function_name))
         return lambda *args: None
@@ -77,8 +80,8 @@ class GPIOControl():
         elif device_type == 'RotaryEncoder':
             return RotaryEncoder(config.getint('Pin1'),
                     config.getint('Pin2'),
-                    self.getFunctionCall(config.get('functionCall1'), None),
-                    self.getFunctionCall(config.get('functionCall2'), None),
+                    self.getFunctionCall(config.get('functionCall1'), config.get('functionCall1Args', fallback=None)),
+                    self.getFunctionCall(config.get('functionCall2'), config.get('functionCall2Args', fallback=None)),
                     config.getfloat('timeBase', fallback=0.1),
                     name=deviceName)
         elif device_type == 'ShutdownButton':

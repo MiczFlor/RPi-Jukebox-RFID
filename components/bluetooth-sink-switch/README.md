@@ -16,7 +16,7 @@ If no bluetooth device is connected, the output defaults back to speakers. After
 
 ### Limitations
 
-This feature only works for the *Classic* Edition. Why? It relies on the mpd multiple output channels feature to switch between outputs. This is no available in mopidy, which is used in the Spotify Edition.
+This feature only works for the *Classic* Edition. Why? It relies on the mpd multiple output channels feature to switch between outputs. This is not available in mopidy, which is used in the Spotify Edition.
 
 ## Installation
 

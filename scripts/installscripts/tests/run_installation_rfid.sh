@@ -28,7 +28,7 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # y, use legacy readermode
 # n reboot
 
-./../install-jukebox.sh <<< "y
+./../install-jukebox.sh <<< 'y
 n
 
 n
@@ -47,7 +47,7 @@ y
 y
 y
 n
-"
+'
 INSTALLATION_EXITCODE=$?
 
 # Test installation
