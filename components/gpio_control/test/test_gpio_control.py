@@ -16,11 +16,11 @@ def gpio_control_class():
 
     class MockFunctionCalls:
 
-        def funcTestWithoutParameter(self, *args):
-            return "funcTestWithoutParameter"
+        def funcTestWithoutParameter(*args):
+            return "funcTestWithoutParameter()"
 
-        def funcTestWithParameter(self, param1):
-            return f"funcTestWithParameter({param1})"
+        def funcTestWithParameter(param1, *args):
+            return f"funcTestWithParameter({str(param1)})"
 
     _gpio_control_class = GPIOControl(MockFunctionCalls)  # function_calls will be mocked
     return _gpio_control_class
@@ -226,19 +226,44 @@ class TestGPIOControl:
 
     def test_getFunctionCall_None_None(self, gpio_control_class):
         result = gpio_control_class.getFunctionCall(None, None)
-        assert result(()) is None
+        assert result() is None
         result = gpio_control_class.getFunctionCall('None', None)
-        assert result(()) is None
+        assert result() is None
         result = gpio_control_class.getFunctionCall("nonExisting", None)
-        assert result(()) is None
+        assert result() is None
 
-    def test_getFunctionCall_withoutParam(self, gpio_control_class):
+    def test_getFunctionCall_funcWithoutArgs(self, gpio_control_class):
         result = gpio_control_class.getFunctionCall("funcTestWithoutParameter", None)
-        assert result(()) == "funcTestWithoutParameter"
+        assert result() == "funcTestWithoutParameter()"
 
-    def test_getFunctionCall_withParam(self, gpio_control_class):
-        result = gpio_control_class.getFunctionCall("funcTestWithParameter", "param1")
-        assert result(()) == "funcTestWithParameter(param1)"
+    def test_getFunctionCall_funcWithoutArgs_withParam(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithoutParameter", None)
+        assert result("param") == "funcTestWithoutParameter()"
+
+    def test_getFunctionCall_funcWithoutArgs_withFuncArgs(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithoutParameter", "funcArgs")
+        assert result() == "funcTestWithoutParameter()"
+
+    def test_getFunctionCallfuncWithoutArgs_withFuncArgsAndParam(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithoutParameter", "funcArgs")
+        assert result("param") == "funcTestWithoutParameter()"
+
+    def test_getFunctionCall_funcWithArgs_withoutFuncArgsAndParam(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithParameter", None)
+        with pytest.raises(TypeError):
+            result()
+
+    def test_getFunctionCall_funcWithArgs_withParam(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithParameter", None)
+        assert result("param") == "funcTestWithParameter(param)"
+
+    def test_getFunctionCall_funcWithArgs_withFuncArgs(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithParameter", "funcArgs")
+        assert result() == "funcTestWithParameter(funcArgs)"
+
+    def test_getFunctionCall_funcWithArgs_withFuncArgsAndParam(self, gpio_control_class):
+        result = gpio_control_class.getFunctionCall("funcTestWithParameter", "funcArgs")
+        assert result("param") == "funcTestWithParameter(funcArgs)"
 
     # ---------------
 
