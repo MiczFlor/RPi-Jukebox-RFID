@@ -136,3 +136,7 @@ sync_rfidcards:
   config_file: ../../shared/settings/sync_rfidcards.yaml
 webapp:
   coverart_cache_path: ../../src/webapp/build/cover-cache
+  # Load cover arts in Webapp. Change to false in case you have performance issue
+  # when handling a lot of music
+  # Defaults to true
+  show_covers: true

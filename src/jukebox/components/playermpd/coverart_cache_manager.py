@@ -47,7 +47,10 @@ class CoverartCacheManager:
     def _save_to_cache(self, mp3_file_path: str):
         base_filename = Path(mp3_file_path).stem
         cache_key = self.generate_cache_key(base_filename)
+
         file_extension, data = self._extract_album_art(mp3_file_path)
+        if file_extension == NO_COVER_ART_EXTENSION:  # Check if cover has been added as separate file in folder
+            file_extension, data = self._get_from_filesystem(mp3_file_path)
 
         cache_filename = f"{cache_key}.{file_extension}"
         full_path = self.cache_folder_path / cache_filename  # Works due to Pathlib
@@ -67,9 +70,23 @@ class CoverartCacheManager:
 
         for tag in audio_file.tags.values():
             if isinstance(tag, APIC):
-                mime_type = tag.mime
-                file_extension = 'jpg' if mime_type == 'image/jpeg' else mime_type.split('/')[-1]
-                return (file_extension, tag.data)
+                if tag.mime and tag.data:
+                    file_extension = 'jpg' if tag.mime == 'image/jpeg' else tag.mime.split('/')[-1]
+                    return (file_extension, tag.data)
+
+        return (NO_COVER_ART_EXTENSION, b'')
+
+    def _get_from_filesystem(self, mp3_file_path: str) -> tuple:
+        path = Path(mp3_file_path)
+        directory = path.parent
+        cover_files = list(directory.glob('Cover.*')) + list(directory.glob('cover.*'))
+
+        for file in cover_files:
+            if file.suffix.lower() in ['.jpg', '.jpeg', '.png']:
+                with file.open('rb') as img_file:
+                    data = img_file.read()
+                    file_extension = file.suffix[1:]  # Get extension without dot
+                    return (file_extension, data)
 
         return (NO_COVER_ART_EXTENSION, b'')
 

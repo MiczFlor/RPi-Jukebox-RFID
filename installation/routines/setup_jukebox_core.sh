@@ -86,7 +86,7 @@ _jukebox_core_build_and_install_pyzmq() {
     fi
 
     ZMQ_PREFIX="${JUKEBOX_ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
-      pip install -v pyzmq --no-binary pyzmq
+      pip install -v 'pyzmq<26' --no-binary pyzmq
   else
     print_lc "    Skipping. pyzmq already installed"
   fi
@@ -120,6 +120,20 @@ _jukebox_core_check() {
 
     local pip_modules=$(get_args_from_file "${INSTALLATION_PATH}/requirements.txt")
     verify_pip_modules pyzmq $pip_modules
+
+    log "  Verify ZMQ version '${JUKEBOX_ZMQ_VERSION}'"
+    local zmq_version=$(python -c 'import zmq; print(f"{zmq.zmq_version()}")')
+    if [[ "${zmq_version}" != "${JUKEBOX_ZMQ_VERSION}" ]]; then
+        exit_on_error "ERROR: ZMQ version '${zmq_version}' differs from expected '${JUKEBOX_ZMQ_VERSION}'!"
+    fi
+    log "  CHECK"
+
+    log "  Verify ZMQ has 'DRAFT-API' activated"
+    local zmq_hasDraftApi=$(python -c 'import zmq; print(f"{zmq.DRAFT_API}")')
+    if [[ "${zmq_hasDraftApi}" != "True" ]]; then
+        exit_on_error "ERROR: ZMQ has 'DRAFT-API' '${zmq_hasDraftApi}' differs from expected 'True'!"
+    fi
+    log "  CHECK"
 
     verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
 
