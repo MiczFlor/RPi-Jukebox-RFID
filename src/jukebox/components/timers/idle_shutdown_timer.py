@@ -38,13 +38,10 @@ class IdleShutdownTimer:
         self.idle_timeout = 0
         self.package = package
         self.idle_check_interval = IDLE_CHECK_INTERVAL
+
         self.set_idle_timeout(idle_timeout)
-
         self.init_idle_shutdown()
-        plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
-
         self.init_idle_check()
-        plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
 
     def set_idle_timeout(self, idle_timeout):
         try:
@@ -68,6 +65,7 @@ class IdleShutdownTimer:
             callee=IdleShutdown
         )
         self.private_timer_idle_shutdown.__doc__ = "Timer to shutdown after system is idle for a given time"
+        plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
 
     # Regularly check if player has activity, if not private_timer_idle_check will start/cancel private_timer_idle_shutdown
     def init_idle_check(self):
@@ -80,6 +78,8 @@ class IdleShutdownTimer:
         self.private_timer_idle_check.__doc__ = 'Timer to check if system is idle'
         if self.idle_timeout:
             self.private_timer_idle_check.start()
+
+        plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
 
     @plugin.tag
     def start(self, wait_seconds: int):
