@@ -95,10 +95,9 @@ class MPDBackend(BackendPlayer):
             # logger.debug("MPD: Idle change in", subsystem)
             s = await self.client.status()
             # logger.debug(f"MPD: New Status: {s.result()}")
-            #print(f"MPD: New Status: {type(s)} // {s}")
+            # print(f"MPD: New Status: {type(s)} // {s}")
             # Now, do something with it ...
             publishing.get_publisher().send('playerstatus', s)
-
 
     async def _status(self):
         return await self.client.status()

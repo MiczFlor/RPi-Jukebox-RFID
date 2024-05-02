@@ -1,7 +1,7 @@
 import logging
 
 import jukebox.plugs as plugin
-from jukebox import publishing, multitimer
+from jukebox import publishing
 
 logger = logging.getLogger('jb.player')
 

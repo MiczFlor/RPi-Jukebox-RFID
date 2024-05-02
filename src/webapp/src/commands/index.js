@@ -49,7 +49,7 @@ const commands = {
   },
   playerstatus: {
     _package: 'player',
-    plugin: 'playerstatus',
+    plugin: 'player_status',
     method: 'status'
   },
 

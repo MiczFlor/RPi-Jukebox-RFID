@@ -40,7 +40,8 @@ class PlayerCtrl:
     def _status_poll(self):
         ret_status = self._active.status()
         if ret_status.get('state') == 'play':
-            self.player_status.update(playing=True, elapsed=ret_status.get('elapsed', '0.0'), duration=ret_status.get('duration', '0.0') )
+            self.player_status.update(playing=True, elapsed=ret_status.get('elapsed', '0.0'),
+                                      duration=ret_status.get('duration', '0.0'))
 
     def register(self, name: str, backend):
         self._backends[name] = backend
