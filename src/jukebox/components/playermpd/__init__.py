@@ -656,7 +656,7 @@ class PlayerMPD:
                     try:
                         self.resume()
                     except mpd.base.CommandError as e:
-                        logger.exception("Failed to resume folder: %s", folder)
+                        logger.exception("Failed to resume folder: %s", folder, exc_info=e)
                         self.mpd_client.play()
                 else:
                     self.mpd_client.play()
