@@ -236,8 +236,9 @@ class ConfigHandler:
         """
         Check if the data has changed since the last load/store
 
-        .. note: This relies on the *__str__* representation of the underlying data structure
-            In case of ruamel, this ignores comments and only looks at the data
+        > [!NOTE]
+        > This relies on the *__str__* representation of the underlying data structure
+        > In case of ruamel, this ignores comments and only looks at the data
         """
         with self._lock:
             is_modified_value = self._hash != hashlib.md5(self._data.__str__().encode('utf8')).digest()

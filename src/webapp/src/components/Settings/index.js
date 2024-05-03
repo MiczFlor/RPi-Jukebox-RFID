@@ -2,9 +2,10 @@ import React from 'react';
 
 import { Grid } from '@mui/material';
 
-import SettingsAutoHotspot from './autohotspot';
-import SettingsSecondSwipe from './secondswipe';
 import SettingsAudio from './audio/index';
+import SettingsAutoHotspot from './autohotspot';
+import SettingsGeneral from './general';
+import SettingsSecondSwipe from './secondswipe';
 import SettingsStatus from './status/index';
 import SettingsTimers from './timers/index';
 import SystemControls from './systemcontrols';
@@ -27,6 +28,9 @@ const Settings = () => {
     >
       <Grid item>
         <SettingsStatus />
+      </Grid>
+      <Grid item>
+        <SettingsGeneral />
       </Grid>
       <Grid item>
         <SettingsTimers />

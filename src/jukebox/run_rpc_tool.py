@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Command Line Interface to the Jukebox RPC Server
 
@@ -11,7 +11,7 @@ The tool features auto-completion and command history.
 The list of available commands is fetched from the running Jukebox service.
 
 .. todo:
-    - kwargs support
+   - kwargs support
 
 """
 
@@ -309,6 +309,42 @@ def main(scr):
             scr.addstr(f"\n:: Response =\n{response}\n\n")
 
 
+def runcmd(cmd):
+    """
+    Just run a command.
+    Right now duplicates more or less main()
+    :todo remove duplication of code
+    """
+
+    # Split on whitespaces to separate cmd and arg list
+    dec = [v for v in cmd.strip().split(' ') if len(v) > 0]
+    if len(dec) == 0:
+        return
+    # Split cmd on '.' into package.plugin.method
+    # Remove duplicate '.' along the way
+    sl = [v for v in dec[0].split('.') if len(v) > 0]
+    fargs = [tonum(a) for a in dec[1:]]
+    response = None
+    method = None
+    if not (2 <= len(sl) <= 3):
+        print(":: Error = Ill-formatted command\n")
+        return
+    if len(sl) == 3:
+        method = sl[2]
+    try:
+        response = client.enque(sl[0], sl[1], method, args=fargs)
+    except zmq.error.Again:
+        print("\n\n" + '-' * 70 + "\n")
+        print("Could not reach RPC Server. Jukebox running? Correct Port?\n")
+        print('-' * 70 + "\n\n")
+        return
+    except Exception as e:
+        print(f":: Exception response =\n{e}\n")
+        return
+    else:
+        print(f"\n:: Response =\n{response}\n\n")
+
+
 if __name__ == '__main__':
     default_tcp = 5555
     default_ws = 5556
@@ -324,6 +360,9 @@ if __name__ == '__main__':
                             help=f"Use tcp protocol on PORT [default: {default_tcp}]",
                             nargs='?', const=default_tcp,
                             metavar="PORT", default=None)
+    port_group.add_argument("-c", "--command",
+                            help="Send command to Jukebox server",
+                            default=None)
     args = argparser.parse_args()
 
     if args.websocket is not None:
@@ -335,6 +374,10 @@ if __name__ == '__main__':
 
     client = rpc.RpcClient(url)
 
-    curses.wrapper(main)
+    if args.command is not None:
+        runcmd(args.command)
+        exit(0)
+    else:
+        curses.wrapper(main)
 
     print(">>> RPC Client exited!")

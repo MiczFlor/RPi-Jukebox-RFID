@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 A command line tool that monitors all messages being sent out from the
 Jukebox via the publishing interface.  Received messages are printed in the console.

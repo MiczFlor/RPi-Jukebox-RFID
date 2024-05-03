@@ -4,9 +4,9 @@ when a bluetooth sound device (headphone, speakers) connects
 
 This effectively does:
 
-    * register a callback with components.volume to get notified when a new sound card connects
-    * if that is a bluetooth device, try opening an input device with similar name using
-    * button listeners are run each in its own thread
+* register a callback with components.volume to get notified when a new sound card connects
+* if that is a bluetooth device, try opening an input device with similar name using
+* button listeners are run each in its own thread
 
 """
 import logging
@@ -49,8 +49,8 @@ def activate(device_name: str, exact: bool = True, open_initial_delay: float = 0
     # Do a bit of housekeeping: Delete dead threads
     listener = list(filter(lambda x: x.is_alive(), listener))
     # Check that there is no running thread for this device already
-    for ll in listener:
-        if ll.device_request == device_name and ll.is_alive():
+    for thread in listener:
+        if thread.device_request == device_name and thread.is_alive():
             logger.debug(f"Button listener thread already active for '{device_name}'")
             return
 

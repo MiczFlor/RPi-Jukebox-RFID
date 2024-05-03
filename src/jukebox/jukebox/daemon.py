@@ -230,13 +230,10 @@ class JukeBox:
 
         if self.write_artifacts:
             # This writes out
-            # rpc_command_reference.rst
             # rpc_command_reference.txt
-            # rpc_command_alias_reference.rst
             # rpc_command_alias_reference.txt
 
             artifacts_dir = '../../shared/artifacts/'
-            sphinx_dir = '../../docs/sphinx/userguide'
 
             try:
                 os.mkdir(artifacts_dir)
@@ -249,14 +246,6 @@ class JukeBox:
             # Write reference of command shortcuts
             with open(os.path.join(artifacts_dir, 'rpc_command_alias_reference.txt'), 'w') as stream:
                 jukebox.utils.generate_cmd_alias_reference(stream)
-
-            # Write RST files directly into Sphinx directory
-
-            with open(os.path.join(sphinx_dir, 'rpc_command_reference.rst'), 'w') as stream:
-                plugin.generate_help_rst(stream)
-
-            with open(os.path.join(sphinx_dir, 'rpc_command_alias_reference.rst'), 'w') as stream:
-                jukebox.utils.generate_cmd_alias_rst(stream)
 
         # Start the RPC Server
         self.rpc_server.run()

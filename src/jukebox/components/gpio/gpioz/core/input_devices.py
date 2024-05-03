@@ -9,7 +9,8 @@ their documentation.
 All callback handlers are replaced by GPIOZ callback handlers. These are usually configured
 by using the :func:`set_rpc_actions` each input device exhibits.
 
-For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Input devices`
+For examples how to use the devices from the configuration files, see
+[GPIO: Input Devices](../../builders/gpio.md#input-devices).
 """
 
 import functools
@@ -75,7 +76,7 @@ class NameMixin(ABC):
         Set all input device callbacks from :attr:`action_config`
 
         :param action_config: Dictionary with one
-            :ref:`RPC Command <userguide/rpc_commands:RPC commands>` definition entry for every device callback
+            [RPC Commands](../../builders/rpc-commands.md) definition entry for every device callback
         """
         pass
 
@@ -233,11 +234,11 @@ class LongPressButton(NameMixin, ButtonBase):
     """
     A Button that runs a single actions only when the button is pressed long enough
 
-    :param pull_up: See `Button`_
+    :param pull_up: See #Button
 
-    :param active_state: See `Button`_
+    :param active_state: See #Button
 
-    :param bounce_time: See `Button`_
+    :param bounce_time: See #Button
 
     :param hold_repeat: If :data:`True` repeat the :attr:`on_press` every :attr:`hold_time` seconds. Else only action
         is run only once independent of the length of time the button is pressed for.
@@ -291,11 +292,11 @@ class ShortLongPressButton(NameMixin, ButtonBase):
     event. Furthermore, if there is a long hold, only the long hold action is executed - the short press action is not run
     in this case!
 
-    :param pull_up: See `Button`_
+    :param pull_up: See #Button
 
-    :param active_state: See `Button`_
+    :param active_state: See #Button
 
-    :param bounce_time: See `Button`_
+    :param bounce_time: See #Button
 
     :param hold_time: The time in seconds to differentiate if it is a short or long press. If the button is released before
         this time, it is a short press. As soon as the button is held for :attr:`hold_time` it is a long press and the
@@ -304,9 +305,9 @@ class ShortLongPressButton(NameMixin, ButtonBase):
     :param hold_repeat: If :data:`True` repeat the long press action every :attr:`hold_time` seconds after first long press
         action
 
-    :param pin_factory: See `Button`_
+    :param pin_factory: See #Button
 
-    :param name: See `Button`_
+    :param name: See #Button
     """
     def __init__(
             self, pin=None, *, pull_up=True, active_state=None, bounce_time=None,
@@ -370,11 +371,11 @@ class RotaryEncoder(NameMixin):
     """
     A rotary encoder to run one of two actions depending on the rotation direction.
 
-    :param bounce_time: See `Button`_
+    :param bounce_time: See #Button
 
-    :param pin_factory: See `Button`_
+    :param pin_factory: See #Button
 
-    :param name: See `Button`_
+    :param name: See #Button
     """
     def __init__(self, a, b, *, bounce_time=None, pin_factory=None, name=None):
         super().__init__(name=name)
@@ -442,11 +443,11 @@ class TwinButton(NameMixin):
 
     It is not necessary to configure all actions.
 
-    :param pull_up: See `Button`_
+    :param pull_up: See #Button
 
-    :param active_state: See `Button`_
+    :param active_state: See #Button
 
-    :param bounce_time: See `Button`_
+    :param bounce_time: See #Button
 
     :param hold_time: The time in seconds to differentiate if it is a short or long press. If the button is released before
         this time, it is a short press. As soon as the button is held for :attr:`hold_time` it is a long press and the
@@ -455,9 +456,9 @@ class TwinButton(NameMixin):
     :param hold_repeat: If :data:`True` repeat the long press action every :attr:`hold_time` seconds after first long press
         action. A long dual press is never repeated independent of this setting
 
-    :param pin_factory: See `Button`_
+    :param pin_factory: See #Button
 
-    :param name: See `Button`_
+    :param name: See #Button
     """
 
     class StateVar(Enum):

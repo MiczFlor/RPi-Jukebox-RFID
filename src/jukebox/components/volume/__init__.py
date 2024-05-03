@@ -2,41 +2,41 @@
 # Copyright (c) See file LICENSE in project root folder
 """PulseAudio Volume Control Plugin Package
 
-Features
+## Features
 
-    * Volume Control
-    * Two outputs
-    * Watcher thread on volume / output change
+* Volume Control
+* Two outputs
+* Watcher thread on volume / output change
 
-Publishes
+## Publishes
 
-    * volume.level
-    * volume.sink
+* volume.level
+* volume.sink
 
-PulseAudio References
+## PulseAudio References
 
-https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/
+<https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/>
 
 Check fallback device (on device de-connect):
-$ pacmd list-sinks | grep -e 'name:' -e 'index'
+
+    $ pacmd list-sinks | grep -e 'name:' -e 'index'
 
 
-Integration
+## Integration
 
 Pulse Audio runs as a user process. Processes who want to communicate / stream to it
 must also run as a user process.
 
-This means must also run as user process, as described in :ref:`userguide/system:Music Player Daemon (MPD)`
+This means must also run as user process, as described in
+[Music Player Daemon](../../builders/system.md#music-player-daemon-mpd).
 
-Misc
+## Misc
 
 PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration
+with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration
 in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
 If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!
-
-.. code-block:: text
 
     ### Use hot-plugged devices like Bluetooth or USB automatically (LP: #1702794)
     ### not available on PI?
@@ -44,19 +44,19 @@ from the Jukebox. Remove it from the configuration!
     load-module module-switch-on-connect
     .endif
 
-Why PulseAudio?
+## Why PulseAudio?
 
 The audio configuration of the system is one of those topics,
 which has a myriad of options and possibilities. Every system is different and PulseAudio unifies these and
 makes our life easier. Besides, it is only option to support Bluetooth at the moment.
 
-Callbacks:
+## Callbacks:
 
 The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
 
-    #. :func:`add_on_connect_callback`
-    #. :func:`add_on_output_change_callbacks`
-    #. :func:`add_on_volume_change_callback`
+1. :func:`add_on_connect_callback`
+2. :func:`add_on_output_change_callbacks`
+3. :func:`add_on_volume_change_callback`
 """
 import collections
 import logging
@@ -116,10 +116,10 @@ class PulseMonitor(threading.Thread):
             .. py:function:: func(card_driver: str, device_name: str)
                 :noindex:
 
-                :param card_driver: The PulseAudio card driver module,
-                    e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
-                :param device_name: The sound card device name as reported
-                    in device properties
+            :param card_driver: The PulseAudio card driver module,
+                e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
+            :param device_name: The sound card device name as reported
+                in device properties
             """
             super().register(func)
 
@@ -140,7 +140,7 @@ class PulseMonitor(threading.Thread):
         # For the callback handler: We use the context lock only explicitly for registering new functions
         # When the callbacks are run, it happens from inside the pulse_monitor which an already acquired lock
         #: Callback handler instance for on_connect_callbacks events.
-        #: See :class:`PulseMonitor.SoundCardConnectCallbacks`
+        #: See #PulseMonitor.SoundCardConnectCallbacks
         self.on_connect_callbacks: PulseMonitor.SoundCardConnectCallbacks = PulseMonitor.SoundCardConnectCallbacks(
             'on_connect_callback', logger, context=self)
 
@@ -149,10 +149,11 @@ class PulseMonitor(threading.Thread):
         """Returns :data:`True` if the sound card shall be changed when a new card connects/disconnects. Setting this
         property changes the behavior.
 
-        .. note:: A new card is always assumed to be the secondary device from the audio configuration.
-            At the moment there is no check it actually is the configured device. This means any new
-            device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
-            system will be relatively stable once setup
+        > [!NOTE]
+        > A new card is always assumed to be the secondary device from the audio configuration.
+        > At the moment there is no check it actually is the configured device. This means any new
+        > device connection will initiate the toggle. This, however, is no real issue as the RPi's audio
+        > system will be relatively stable once setup
         """
         return self._toggle_on_connect
 
@@ -282,8 +283,6 @@ class PulseVolumeControl:
     When accessing the pulse library, it needs to be put into a special
     state. Which is ensured by the context manager
 
-    .. code-block: python
-
         with pulse_monitor as pulse ...
 
 
@@ -309,12 +308,12 @@ class PulseVolumeControl:
             .. py:function:: func(sink_name: str, alias: str, sink_index: int, error_state: int)
                 :noindex:
 
-                :param sink_name: PulseAudio's sink name
-                :param alias: The alias for :attr:`sink_name`
-                :param sink_index: The index of the sink in the configuration list
-                :param error_state: 1 if there was an attempt to change the output
-                   but an error occurred. Above parameters always give the now valid sink!
-                   If a sink change is successful, it is 0.
+            :param sink_name: PulseAudio's sink name
+            :param alias: The alias for :attr:`sink_name`
+            :param sink_index: The index of the sink in the configuration list
+            :param error_state: 1 if there was an attempt to change the output
+               but an error occurred. Above parameters always give the now valid sink!
+               If a sink change is successful, it is 0.
             """
             super().register(func)
 
@@ -338,9 +337,9 @@ class PulseVolumeControl:
             .. py:function:: func(volume: int, is_min: bool, is_max: bool)
                 :noindex:
 
-                :param volume: Volume level
-                :param is_min: 1, if volume level is minimum, else 0
-                :param is_max: 1, if volume level is maximum, else 0
+            :param volume: Volume level
+            :param is_min: 1, if volume level is minimum, else 0
+            :param is_max: 1, if volume level is maximum, else 0
             """
             super().register(func)
 
@@ -359,12 +358,12 @@ class PulseVolumeControl:
         # When the callbacks are run, it happens from inside the pulse_control which an already acquired lock
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See :class:`PulseVolumeControl.OutputChangeCallbackHandler`
+        #: See #PulseVolumeControl.OutputChangeCallbackHandler
         self.on_output_change_callbacks = PulseVolumeControl.OutputChangeCallbackHandler(
             'on_output_change_callbacks', logger, context=pulse_monitor)
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See :class:`PulseVolumeControl.OutputVolumeCallbackHandler`
+        #: See #PulseVolumeControl.OutputVolumeCallbackHandler
         self.on_volume_change_callbacks = PulseVolumeControl.OutputVolumeCallbackHandler(
             'on_volume_change_callbacks', logger, context=pulse_monitor)
 
@@ -425,7 +424,7 @@ class PulseVolumeControl:
     def _set_output(self, pulse_inst: pulsectl.Pulse, sink_index: int):
         error_state = 1
         if not 0 <= sink_index < len(self._sink_list):
-            logger.error(f"Sink index '{sink_index}' out of range (0..{len(self._sink_list)-1}). "
+            logger.error(f"Sink index '{sink_index}' out of range (0..{len(self._sink_list) - 1}). "
                          f"Did you configure your secondary output device?")
         else:
             # Before we switch the sink, check the new sinks volume levels...
@@ -604,7 +603,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
             logger.error(f"Configured sink '{pulse_sink_name}' not available sinks '{all_sinks}!\n"
                          f"Using default sink '{default_sink_name}' as fallback\n"
                          f"Things like audio sink toggle and volume limit will not work as expected!\n"
-                         f"Please run audio config tool: ./run_configure_audio.py")
+                         f"Please run audio config tool: ./installation/components/setup_configure_audio.sh")
 
         sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
         key = 'secondary'
@@ -636,7 +635,7 @@ def finalize():
     global pulse_control
     # Set default output and start-up volume
     # Note: PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-    # with name module-switch-on-connect. On RaspianOS Bullseye, this module is not part of the default configuration.
+    # with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration.
     # So, we shouldn't need to worry about it. Still, set output and startup volume close to each other
     # to minimize bluetooth connection in between
     global pulse_control

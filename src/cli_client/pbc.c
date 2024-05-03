@@ -28,7 +28,7 @@
 
     pbc -> PhonieBox Command line interface
 
-    depenmds on libczmq:
+    depends on libczmq:
     apt-get install libczmq-dev
 
     how to compile:
@@ -44,9 +44,10 @@
 #define MAX_PARAMS 16
 int g_verbose = 0;
 
-typedef struct 
+typedef struct
 {
     char object [MAX_STRLEN];
+    char package [MAX_STRLEN];
     char method [MAX_STRLEN];
     char params [MAX_PARAMS][MAX_STRLEN];
     int num_params;
@@ -60,44 +61,44 @@ int send_zmq_request_and_wait_response(char * request, int request_len, char * r
     void *context = zmq_ctx_new ();
     void *requester = zmq_socket (context, ZMQ_REQ);
     int linger = 200;
-    
+
     if (g_verbose)
     {
       int major, minor, patch;
       zmq_version (&major, &minor, &patch);
       printf ("Current ØMQ version is %d.%d.%d\n", major, minor, patch);
     }
-    
+
     zmq_setsockopt(requester,ZMQ_LINGER,&linger,sizeof(linger));
     zmq_setsockopt(requester,ZMQ_RCVTIMEO,&linger,sizeof(linger));
     zmq_connect (requester, address);
 
     if (g_verbose) printf("connected to: %s",address);
-    
+
 
     zmq_ret = zmq_send (requester, request, request_len, 0);
 
     if (zmq_ret > 0)
     {
         zmq_ret = zmq_recv (requester, response, max_response_len, 0);
-        
+
         if (zmq_ret > 0)
         {
-            printf ("Received %s (%d Bytes)\n", response,zmq_ret);    
+            printf ("Received %s (%d Bytes)\n", response,zmq_ret);
             ret = 0;
         }
         else
         {
-            printf ("zmq_recv rturned %d \n", zmq_ret);    
+            printf ("zmq_recv rturned %d \n", zmq_ret);
         }
     }
     else
     {
-      if (g_verbose) printf ("zmq_send returned %d\n", zmq_ret);  
+      if (g_verbose) printf ("zmq_send returned %d\n", zmq_ret);
     }
 
     zmq_close (requester);
-    zmq_ctx_destroy (context); 
+    zmq_ctx_destroy (context);
     return (ret);
 }
 
@@ -113,7 +114,7 @@ void * connect_and_send_request(t_request * tr)
     if (tr->num_params > 0)
     {
         sprintf(kwargs, "\"kwargs\":{");
-        
+
         for (n = 0;n < tr->num_params;)
         {
             strcat(kwargs,tr->params[n]);
@@ -126,9 +127,9 @@ void * connect_and_send_request(t_request * tr)
     }
     else sprintf(kwargs, "\"kwargs\":{},");
 
-    snprintf(json_request,MAX_REQEST_STRLEN,"{\"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->object,tr->method,kwargs,123);
+    snprintf(json_request,MAX_REQEST_STRLEN,"{\"package\": \"%s\", \"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->package,tr->object,tr->method,kwargs,123);
     json_len = strlen(json_request);
-    
+
     if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);
 
     send_zmq_request_and_wait_response(json_request,json_len,json_response,MAX_REQEST_STRLEN,tr->address);
@@ -146,7 +147,7 @@ int check_and_map_parameters_to_json(char * arg, t_request * tr)
     {
         name = strtok(arg, ":");
         value = strtok(NULL, ":");
-        fmt = (isdigit(*value)) ? "\"%s\":%s"  : "\"%s\":\"%s\"";
+        fmt = (isdigit(*value)||*value=='-') ? "\"%s\":%s"  : "\"%s\":\"%s\"";
         snprintf (tr->params[tr->num_params++],MAX_STRLEN, fmt,name,value);
         ret = 1;
     }
@@ -156,9 +157,10 @@ int check_and_map_parameters_to_json(char * arg, t_request * tr)
 
 void usage(void)
 {
-    fprintf(stderr,"\npbc -> PhonieBox Command line interface\nusage: pbc -o object -m method param_name:value\n\n");
+    fprintf(stderr,"\npbc -> PhonieBox Command line interface\nusage: pbc -p package -o plugin -m method param_name:value\n\n");
     fprintf(stderr,"    -h this screen\n");
-    fprintf(stderr,"    -o, --object object\n");
+    fprintf(stderr,"    -p, --package package\n");
+    fprintf(stderr,"    -o, --object plugin\n");
     fprintf(stderr,"    -m, --method method\n");
     fprintf(stderr,"    -a, --address   default=tcp://localhost:5555\n");
     fprintf(stderr,"    -v verbose\n");
@@ -175,7 +177,7 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
 {
   int c;
   sprintf(tr->address,"tcp://localhost:5555");
-  
+
   const struct option long_options[] =
   {
     /* These options set a flag. */
@@ -184,6 +186,7 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
     /* These options don't set a flag.
     We distinguish them by their indices. */
     {"help",        no_argument,       0, 'h'},
+    {"package",     required_argument, 0, 'p'},
     {"object",      required_argument, 0, 'o'},
     {"method",      required_argument, 0, 'm'},
     {"address",     required_argument, 0, 'a'},
@@ -208,7 +211,9 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
         usage();
         puts ("option -a\n");
         break;
-
+      case 'p':
+        strncpy (tr->package,optarg,MAX_STRLEN);
+        break;
       case 'o':
         strncpy (tr->object,optarg,MAX_STRLEN);
         break;
@@ -224,7 +229,7 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
       case 'a':
         strncpy (tr->address,optarg,MAX_STRLEN);
         break;
-      
+
       default:
         usage();
         abort ();
@@ -235,7 +240,7 @@ int HandleOptions(int argc,char *argv[], t_request * tr)
   if (optind < argc)
   {
     while (optind < argc)
-    { 
+    {
         check_and_map_parameters_to_json(argv[optind++], tr);
     }
   }
@@ -251,6 +256,6 @@ int main(int argc,char *argv[])
 
     HandleOptions(argc,argv,&tr);
     connect_and_send_request(&tr);
-    
+
     return 0;
 }

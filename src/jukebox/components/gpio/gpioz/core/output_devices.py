@@ -11,7 +11,8 @@ to all devices. This function provides a unified API to all devices. This means 
 with parameters for this device and optional parameters from another device. Unused/unsupported parameters
 are silently ignored. This is done to reduce the amount of coding required for connectivity functions.
 
-For examples how to use the devices from the configuration files, see :ref:`userguide/gpioz:Output devices`
+For examples how to use the devices from the configuration files, see
+[GPIO: Output Devices](../../builders/gpio.md#output-devices).
 """
 
 from typing import Optional, List

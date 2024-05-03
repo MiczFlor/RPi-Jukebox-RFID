@@ -56,15 +56,15 @@ class ServiceIsRunningCallbacks(CallbackHandler):
     """
     Callbacks are executed when
 
-       * Jukebox app started
-       * Jukebox shuts down
+    * Jukebox app started
+    * Jukebox shuts down
 
     This is intended to e.g. signal an LED to change state.
     This is integrated into this module because:
 
-        * we need the GPIO to control a LED (it must be available when the status callback comes)
-        * the plugin callback functions provide all the functionality to control the status of the LED
-        * which means no need to adapt other modules
+    * we need the GPIO to control a LED (it must be available when the status callback comes)
+    * the plugin callback functions provide all the functionality to control the status of the LED
+    * which means no need to adapt other modules
     """
 
     def register(self, func: Callable[[int], None]):
@@ -76,7 +76,7 @@ class ServiceIsRunningCallbacks(CallbackHandler):
         .. py:function:: func(status: int)
             :noindex:
 
-            :param status: 1 if app started, 0 if app shuts down
+        :param status: 1 if app started, 0 if app shuts down
         """
         super().register(func)
 

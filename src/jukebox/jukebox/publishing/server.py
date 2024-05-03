@@ -1,31 +1,28 @@
 """
-Publishing Server
-********************
+## Publishing Server
 
 The common publishing server for the entire Jukebox using ZeroMQ
 
-Structure
-----------------
+### Structure
 
-.. code-block:: text
+    +-----------------------+
+    |  functional interface |   Publisher
+    |                       |     - functional interface for single Thread
+    |        PUB            |     - sends data to publisher (and thus across threads)
+    +-----------------------+
+              | (1)
+              v
+    +-----------------------+
+    |        SUB (bind)     |   PublishServer
+    |                       |     - Last Value (LV) Cache
+    |        XPUB (bind)    |     - Subscriber notification and LV resend
+    +-----------------------+     - independent thread
+              | (2)
+              v
 
-  +-----------------------+
-  |  functional interface |   Publisher
-  |                       |     - functional interface for single Thread
-  |        PUB            |     - sends data to publisher (and thus across threads)
-  +-----------------------+
-            | (1)
-            v
-  +-----------------------+
-  |        SUB (bind)     |   PublishServer
-  |                       |     - Last Value (LV) Cache
-  |        XPUB (bind)    |     - Subscriber notification and LV resend
-  +-----------------------+     - independent thread
-            | (2)
-            v
+#### Connection (1): Internal connection
 
-Connection (1): Internal connection
-    Internal connection only - do not use (no, not even inside this App for you own plugins - always bind to the PublishServer)
+Internal connection only - do not use (no, not even inside this App for you own plugins - always bind to the PublishServer)
 
     Protocol: Multi-part message
 
@@ -39,10 +36,11 @@ Connection (1): Internal connection
         Usually empty, i.e. ``b''``. If not empty the message is treated as command for the PublishServer
         and the message is not forwarded to the outside. This third part of the message is never forwarded
 
-Connection (2): External connection
-    Upon connection of a new subscriber, the entire current state is resend from cache to ALL subscribers!
-    Subscribers must subscribe to topics. Topics are treated as topic trees! Subscribing to a root tree will
-    also get you all the branch topics. To get everything, subscribe to ``b''``
+#### Connection (2): External connection
+
+Upon connection of a new subscriber, the entire current state is resend from cache to ALL subscribers!
+Subscribers must subscribe to topics. Topics are treated as topic trees! Subscribing to a root tree will
+also get you all the branch topics. To get everything, subscribe to ``b''``
 
     Protocol: Multi-part message
 
@@ -52,24 +50,22 @@ Connection (2): External connection
     Part 2: Payload or Message in json serialization
         If empty (i.e. b''), it means the subscriber must delete this key locally (not valid anymore)
 
-Why? Why?
--------------
+### Why? Why?
 
-Check out the `ZeroMQ Documentation  <https://zguide.zeromq.org/docs/chapter5>`_
+Check out the [ZeroMQ Documentation](https://zguide.zeromq.org/docs/chapter5)
 for why you need a proxy in a good design.
 
 For use case, we made a few simplifications
 
-Design Rationales
--------------------
+### Design Rationales
 
-* "If you need `millions of messages per second <https://zguide.zeromq.org/docs/chapter5/#Pros-and-Cons-of-Pub-Sub>`_
+* "If you need [millions of messages per second](https://zguide.zeromq.org/docs/chapter5/#Pros-and-Cons-of-Pub-Sub)
   sent to thousands of points,
-  you’ll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
+  you'll appreciate pub-sub a lot more than if you need a few messages a second sent to a handful of recipients."
 * "lower-volume network with a few dozen subscribers and a limited number of topics, we can use TCP and then
-  the `XSUB and XPUB <https://zguide.zeromq.org/docs/chapter5/#Last-Value-Caching>`_"
-* "Let’s imagine `our feed has an average of 100,000 100-byte messages a second
-  <https://zguide.zeromq.org/docs/chapter5/#High-Speed-Subscribers-Black-Box-Pattern>`_ [...].
+  the [XSUB and XPUB](https://zguide.zeromq.org/docs/chapter5/#Last-Value-Caching)"
+* "Let's imagine [our feed has an average of 100,000 100-byte messages a
+  second](https://zguide.zeromq.org/docs/chapter5/#High-Speed-Subscribers-Black-Box-Pattern) [...].
   While 100K messages a second is easy for a ZeroMQ application, ..."
 
 **But we have:**
@@ -100,8 +96,7 @@ This means, we can use less complex patters than used for these high-speed, high
 * Publisher plugin is first plugin to be loaded
 * Due to Publisher - PublisherServer structure no further sequencing required
 
-Plugin interactions and usage
-------------------------------
+### Plugin interactions and usage
 
 RPC can trigger through function call in components/publishing plugin that
 
@@ -110,23 +105,24 @@ RPC can trigger through function call in components/publishing plugin that
 
 Plugins publishing state information should publish initial state at @plugin.finalize
 
-.. important:: Do not direclty instantiate the Publisher in your plugin module. Only one Publisher is
-    required per thread. But the publisher instance **must** be thread-local!
-    Always go through :func:`publishing.get_publisher()`.
+> [!IMPORTANT]
+> Do not direclty instantiate the Publisher in your plugin module. Only one Publisher is
+> required per thread. But the publisher instance **must** be thread-local!
+> Always go through :func:`publishing.get_publisher()`.
 
 **Sockets**
 
 Three sockets are opened:
 
-#. TCP (on a configurable port)
-#. Websocket  (on a configurable port)
-#. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
+1. TCP (on a configurable port)
+2. Websocket (on a configurable port)
+3. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
    that want to know about the current state on event based updates.
 
 **Further ZeroMQ References:**
 
-* `Working with Messages <https://zguide.zeromq.org/docs/chapter2/#Working-with-Messages>`_
-* `Multiple Threads <https://zguide.zeromq.org/docs/chapter2/#Multithreading-with-ZeroMQ>`_
+* [Working with Messages](https://zguide.zeromq.org/docs/chapter2/#Working-with-Messages)
+* [Multiple Threads](https://zguide.zeromq.org/docs/chapter2/#Multithreading-with-ZeroMQ)
 """
 
 # Developer's notes:
@@ -190,7 +186,7 @@ class PublishServer(threading.Thread):
 
     Handles new subscriptions by sending out the entire cached state to **all** subscribers
 
-    The code is structures using a `Reactor Pattern <https://zguide.zeromq.org/docs/chapter5/#Using-a-Reactor>`_
+    The code is structures using a [Reactor Pattern](https://zguide.zeromq.org/docs/chapter5/#Using-a-Reactor)
     """
     def __init__(self, tcp_port, websocket_port):
         super().__init__(name='PubServer')
@@ -271,9 +267,9 @@ class Publisher:
     """
     The publisher that provides the functional interface to the application
 
-    .. note::
-      * An instance must not be shared across threads!
-      * One instance per thread is enough
+    > [!NOTE]
+    > * An instance must not be shared across threads!
+    > * One instance per thread is enough
 
     """
     def __init__(self, check_thread_owner=True):

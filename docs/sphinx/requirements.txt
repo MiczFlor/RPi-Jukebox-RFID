@@ -1,7 +1,0 @@
-# These are just the additional RTD-specific requirements
-readthedocs-sphinx-search
-
-# Install packages for documentation build from package repository
-# that are installed on the PI via APT
-RPi.GPIO
-gpiozero

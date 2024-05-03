@@ -3,27 +3,36 @@ version: "3.9"
 services:
   mpd:
     build:
+      args:
+        - UID=0
+        - USER=root
+        - HOME=/root
       context: ../
-      dockerfile: ./docker/mpd.Dockerfile
+      dockerfile: ./docker/Dockerfile.mpd
     container_name: mpd
-    ports:
-      - 6600:6600
-      - 8800:8800
+    image: phoniebox/mpd
+    environment:
+      - PULSE_SERVER=tcp:host.docker.internal:4713
     restart: unless-stopped
     volumes:
-      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders:rw
-      - ../shared/playlists:/root/.config/mpd/playlists:rw
-      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf:rw
+      - ../shared/audiofolders:/root/RPi-Jukebox-RFID/shared/audiofolders
+      - ../shared/playlists:/root/.config/mpd/playlists
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
 
   jukebox:
     build:
+      args:
+        - UID=0
+        - USER=root
+        - HOME=/root
       context: ../
-      dockerfile: ./docker/jukebox.Dockerfile
+      dockerfile: ./docker/Dockerfile.jukebox
     container_name: jukebox
+    image: phoniebox/jukebox
     depends_on:
       - mpd
-    links:
-      - mpd
+    environment:
+      - PULSE_SERVER=tcp:host.docker.internal:4713
     ports:
       - 5555:5555
       - 5556:5556
@@ -31,23 +40,24 @@ services:
     restart: unless-stopped
     tty: true
     volumes:
-      - ../src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox
-      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
-      - ./config/docker.mpd.conf:/etc/mpd.conf
+      - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
+      - ../src/webapp/public/cover-cache:/root/RPi-Jukebox-RFID/src/webapp/build/cover-cache
+      - ../shared:/root/RPi-Jukebox-RFID/shared
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
+    command: python run_jukebox.py
 
   webapp:
     build:
       context: ../
-      dockerfile: ./docker/webapp.Dockerfile
+      dockerfile: ./docker/Dockerfile.webapp
     container_name: webapp
+    image: phoniebox/webapp
     depends_on:
       - jukebox
     environment:
       - CHOKIDAR_USEPOLLING=true
-    links:
-      - jukebox
     ports:
-      - 3001:3000
+      - 3000:3000
     restart: unless-stopped
     volumes:
       - ../src/webapp:/home/node/webapp

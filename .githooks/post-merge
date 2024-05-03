@@ -5,7 +5,7 @@
 # TO ACTIVATE: cp .githooks/post-merge .git/hooks/.
 #
 # Checks:
-# - Changes to web app
+# - Changes to Web App
 # - Changes to web dependency
 # - Changes to python requirements
 #
@@ -20,7 +20,7 @@ warn_npm_dependency() {
   echo "************************************************************"
   echo "ATTENTION: npm dependencies have changed since last pull!"
   echo ""
-  echo "To update dependencies and rebuilt WebApp run:"
+  echo "To update dependencies and rebuilt Web App run:"
   echo "$ cd src/webapp && ./run_rebuild.sh -u"
   echo "************************************************************"
   echo -e "\n"
@@ -31,7 +31,7 @@ warn_webapp() {
   echo "************************************************************"
   echo "ATTENTION: Web App sources have changed since last pull!"
   echo ""
-  echo "To rebuilt the WebApp run:"
+  echo "To rebuilt the Web App run:"
   echo "$ cd src/webapp && ./run_rebuild.sh"
   echo "************************************************************"
   echo -e "\n"
@@ -43,7 +43,8 @@ warn_python_requirements() {
   echo "ATTENTION: Python requirements have changed since last pull!"
   echo ""
   echo "To update python requirements on the RPi run"
-  echo "$ sudo python3 -m pip install --upgrade -r requirements.txt"
+  echo "$ source .venv/bin/activate"
+  echo "$ python -m pip install --upgrade -r requirements.txt"
   echo "************************************************************"
   echo -e "\n"
 }
@@ -57,7 +58,17 @@ warn_githooks() {
   echo "$ cp .githooks/* .git/hooks/."
   echo "************************************************************"
   echo -e "\n"
+}
 
+warn_installer() {
+  echo -e "\n"
+  echo "************************************************************"
+  echo "ATTENTION: Installer sources have changed since last pull!"
+  echo ""
+  echo "Rerun the installer to apply changes"
+  echo "$ ./installation/install-jukebox.sh"
+  echo "************************************************************"
+  echo -e "\n"
 }
 
 # files_changed="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
@@ -65,6 +76,7 @@ webapp_changed="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD src
 webapp_dep_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD src/webapp/package.json)"
 python_req_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD requirements.txt)"
 githooks_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD .githooks)"
+installer_changed="$(git diff --name-only --no-commit-id ORIG_HEAD HEAD installation)"
 
 if [[ -n $python_req_changed ]]; then
     warn_python_requirements
@@ -78,6 +90,10 @@ fi
 
 if [[ -n $githooks_changed ]]; then
     warn_githooks
+fi
+
+if [[ -n $installer_changed ]]; then
+    warn_installer
 fi
 
 echo -e "\nTo see a summary of what happened since your last pull, do:"

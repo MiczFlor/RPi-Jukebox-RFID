@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer to run the %%AUTOHOTSPOT_SERVICE%% every 2 mins
+
+[Timer]
+OnBootSec=0min
+OnCalendar=*:0/2
+Unit=%%AUTOHOTSPOT_SERVICE%%
+
+[Install]
+WantedBy=timers.target

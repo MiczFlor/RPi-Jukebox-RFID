@@ -103,7 +103,8 @@ def jukebox_is_service():
 def is_any_jukebox_service_active():
     """Check if a Jukebox service is running
 
-    .. note:: Does not have the be the current app, that is running as a service!
+    > [!NOTE]
+    > Does not have the be the current app, that is running as a service!
     """
     ret = subprocess.run(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
@@ -193,6 +194,9 @@ def get_ip_address():
         ip_address = p.stdout.strip().decode()
     else:
         ip_address = '127.0.0.1'
+
+    # only get first if multiple adresses are present (ipv4/ipv6)
+    ip_address = ip_address.split(' ')[0]
     return ip_address
 
 
@@ -234,7 +238,7 @@ def get_autohotspot_status():
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
         status = 'inactive'
 
-        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot'],
+        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot.timer'],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                             stdin=subprocess.DEVNULL)
         # 0 = active, 3 = inactive
@@ -256,22 +260,21 @@ def get_autohotspot_status():
 def stop_autohotspot():
     """Stop auto hotspot functionality
 
-    Basically disabling the cronjob and running the script one last time manually
+    Stopping and disabling the timer and running the service one last time manually
     """
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
-        cron_job = "/etc/cron.d/autohotspot"
-        subprocess.run(["sudo", "sed", "-i", r"s/^\*.*/#&/", cron_job],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot'],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot'],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             check=False)
-        if ret.returncode != 0:
-            msg = f"Error 'stop_autohotspot': {ret.stdout} (Code: {ret.returncode})"
-            logger.error(msg)
-            return {'error': {'code': -1, 'message': msg}}
+        # Stop timer
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot.timer'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        # Prevent start after system restart
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.timer'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        # Prevent start after system restart (should always be disabled, but make sure)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.service'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.service'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 
         return 'inactive'
     else:
@@ -281,24 +284,17 @@ def stop_autohotspot():
 
 @plugin.register()
 def start_autohotspot():
-    """start auto hotspot functionality
+    """Start auto hotspot functionality
 
-    Basically enabling the cronjob and running the script one time manually
+    Enabling and starting the timer (timer will start the service)
     """
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
-        cron_job = "/etc/cron.d/autohotspot"
-        subprocess.run(["sudo", "sed", "-i", "-r", r"s/(^#)(\*[0-9]*)/\*/", cron_job],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot'],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot'],
-                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        ret = subprocess.run(['sudo', 'autohotspot'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             check=False)
-        if ret.returncode != 0:
-            msg = f"Error 'start_autohotspot': {ret.stdout} (Code: {ret.returncode})"
-            logger.error(msg)
-            return {'error': {'code': -1, 'message': msg}}
+        # Enable start after system restart
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot.timer'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        # Start timer (starts the service immediately)
+        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.timer'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 
         return 'active'
     else:

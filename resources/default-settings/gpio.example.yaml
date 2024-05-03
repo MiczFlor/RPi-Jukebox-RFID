@@ -1,6 +1,6 @@
 # Provides a few selected examples of GPIO configuration
 # Check out the documentation for many more configuration recipes
-# https://rpi-jukebox-rfid.readthedocs.io/en/latest/index.html
+# documentation/builders/gpio.md
 pin_factory:
   type: rpigpio.RPiGPIOFactory
 output_devices:

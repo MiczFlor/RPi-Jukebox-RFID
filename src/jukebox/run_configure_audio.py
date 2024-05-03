@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Setup tool to register the PulseAudio sinks as primary and secondary audio outputs.
 
 Will also setup equalizer and mono down mixer in the pulseaudio config file.
 
 Run this once after installation. Can be re-run at any time to change the settings.
-For more information see :ref:`userguide/audio:Audio Configuration`.
+For more information see [Audio Configuration](../../builders/audio.md#audio-configuration).
 """
 import os
 import argparse
@@ -192,7 +192,7 @@ def query_sinks(pulse_config: PaConfigClass):  # noqa: C901
                     if sink_is_equalizer(primary_signal_chain[sidx - 1]):
                         pulse_config.enable_equalizer = False
                         print(f"\n*** Equalizer already configured for '{pulse_config.primary}' with name\n"
-                              f"    '{primary_signal_chain[sidx-1].name}'. Shifting entry point...")
+                              f"    '{primary_signal_chain[sidx - 1].name}'. Shifting entry point...")
                         pulse_config.primary = primary_signal_chain[sidx - 1].name
                         sidx -= 1
                 except ValueError:

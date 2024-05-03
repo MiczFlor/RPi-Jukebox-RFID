@@ -8,35 +8,39 @@ import Display from './display';
 import SeekBar from './seekbar';
 import Volume from './volume';
 
+import AppSettingsContext from '../../context/appsettings/context';
 import PlayerContext from '../../context/player/context';
-import PubSubContext from '../../context/pubsub/context';
 import request from '../../utils/request';
-import { pluginIsLoaded } from '../../utils/utils';
 
 const Player = () => {
   const { state: { playerstatus } } = useContext(PlayerContext);
-  const { state: { 'core.plugins.loaded': plugins } } = useContext(PubSubContext);
   const { file } = playerstatus || {};
 
   const [coverImage, setCoverImage] = useState(undefined);
   const [backgroundImage, setBackgroundImage] = useState('none');
 
+  const {
+    settings,
+  } = useContext(AppSettingsContext);
+
+  const { show_covers } = settings;
+
   useEffect(() => {
-    const getMusicCover = async () => {
-      const { result } = await request('musicCoverByFilenameAsBase64', { audio_src: file });
+    const getCoverArt = async () => {
+      const { result } = await request('getSingleCoverArt', { song_url: file });
       if (result) {
-        setCoverImage(result);
+        setCoverImage(`/cover-cache/${result}`);
         setBackgroundImage([
-          'linear-gradient(to bottom, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 1))',
-          `url(data:image/jpeg;base64,${result})`
+          'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
+          `url(/cover-cache/${result})`
         ].join(','));
       };
     }
 
-    if (pluginIsLoaded(plugins, 'music_cover_art') && file) {
-      getMusicCover();
+    if (file && show_covers) {
+      getCoverArt();
     }
-  }, [file, plugins]);
+  }, [file]);
 
   return (
     <Grid

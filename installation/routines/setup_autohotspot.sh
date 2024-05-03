@@ -1,74 +1,46 @@
 #!/usr/bin/env bash
 
+AUTOHOTSPOT_INTERFACES_CONF_FILE="/etc/network/interfaces"
+AUTOHOTSPOT_TARGET_PATH="/usr/bin/autohotspot"
+AUTOHOTSPOT_SERVICE="autohotspot.service"
+AUTOHOTSPOT_SERVICE_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE}"
+AUTOHOTSPOT_TIMER="autohotspot.timer"
+AUTOHOTSPOT_TIMER_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_TIMER}"
+
 _get_interface() {
     # interfaces may vary
     WIFI_INTERFACE=$(iw dev | grep "Interface"| awk '{ print $2 }')
-    WIFI_REGION=$(iw reg get | grep country | awk '{ print $2}' | cut -d: -f1)
+
+    # fix for CI runs on docker
+    if [ "${CI_RUNNING}" == "true" ]; then
+        if [ -z "${WIFI_INTERFACE}" ]; then
+            WIFI_INTERFACE="CI TEST INTERFACE"
+        fi
+    fi
 }
 
 
-_install_packages() {
-    sudo apt-get -y install hostapd dnsmasq
-
-    # disable services. We want to start them manually
-    sudo systemctl unmask hostapd
-    sudo systemctl disable hostapd
-    sudo systemctl disable dnsmasq
+_get_last_ip_segment() {
+    local ip="$1"
+    echo $ip | cut -d'.' -f1-3
 }
 
-_configure_hostapd() {
-    HOSTAPD_CUSTOM_FILE="${INSTALLATION_PATH}"/resources/autohotspot/hostapd.conf
-    HOSTAPD_CONF_FILE="/etc/hostapd/hostapd.conf"
-    sed -i "s/WIFI_INTERFACE/${WIFI_INTERFACE}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sed -i "s/AUTOHOTSPOT_PASSWORD/${AUTOHOTSPOT_PASSWORD}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sed -i "s/WIFI_REGION/${WIFI_REGION}/g" "${HOSTAPD_CUSTOM_FILE}"
-    sudo cp "${HOSTAPD_CUSTOM_FILE}" "${HOSTAPD_CONF_FILE}"
-
-    sudo sed -i "s@^#DAEMON_CONF=.*@DAEMON_CONF=\"${HOSTAPD_CONF_FILE}\"@g" /etc/default/hostapd
-}
-
-_configure_dnsmasq() {
-    sudo tee -a /etc/dnsmasq.conf <<-EOF
-#AutoHotspot Config
-#stop DNSmasq from using resolv.conf
-no-resolv
-#Interface to use
-interface=${WIFI_INTERFACE}
-bind-interfaces
-dhcp-range=10.0.0.50,10.0.0.150,12h
-EOF
-}
-
-_other_configuration() {
-    sudo mv /etc/network/interfaces /etc/network/interfaces.bak
-    sudo touch /etc/network/interfaces
-    echo nohook wpa_supplicant | sudo tee -a /etc/dhcpcd.conf
-}
-
-_install_service_and_timer() {
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.service /etc/systemd/system/autohotspot.service
-    sudo systemctl enable autohotspot.service
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot.timer /etc/cron.d/autohotspot
-}
-
-_install_autohotspot_script() {
-    TARGET_PATH="/usr/bin/autohotspot"
-    sudo cp "${INSTALLATION_PATH}"/resources/autohotspot/autohotspot "${TARGET_PATH}"
-    sudo chmod +x "${TARGET_PATH}"
-}
 
 setup_autohotspot() {
-    echo "Install AutoHotspot functionality" | tee /dev/fd/3
-    # inspired by
-    # https://www.raspberryconnect.com/projects/65-raspberrypi-hotspot-accesspoints/158-raspberry-pi-auto-wifi-hotspot-switch-direct-connection
+    if [ "$ENABLE_AUTOHOTSPOT" == true ] ; then
+        local installed=false
+        if [[ $(is_dhcpcd_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+            run_with_log_frame _run_setup_autohotspot_dhcpcd "Install AutoHotspot"
+            installed=true
+        fi
 
-    _get_interface
-    _install_packages
-    _configure_hostapd
-    _configure_dnsmasq
-    _other_configuration
-    _install_autohotspot_script
-    _install_service_and_timer
+        if [[ $(is_NetworkManager_enabled) == true || "${CI_RUNNING}" == "true" ]]; then
+            run_with_log_frame _run_setup_autohotspot_NetworkManager "Install AutoHotspot"
+            installed=true
+        fi
 
-    echo "DONE: setup_autohotspot"
+        if [[ "$installed" != true ]]; then
+            exit_on_error "ERROR: No network service available"
+        fi
+    fi
 }

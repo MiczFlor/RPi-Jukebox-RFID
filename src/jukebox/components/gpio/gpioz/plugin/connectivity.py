@@ -19,6 +19,7 @@ import components.rfid.reader
 import components.gpio.gpioz.plugin
 from components.gpio.gpioz.core.output_devices import LED, PWMLED, Buzzer, TonalBuzzer, RGBLED
 from components.gpio.gpioz.core.converter import VolumeToRGB
+from components.rfid.reader import RfidCardDetectState
 
 logger = logging.getLogger('gpioz')
 
@@ -54,17 +55,17 @@ def register_rfid_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.LED`
-        - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-        - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
-        - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-        - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.LED`
+    * :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+    * :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+    * :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
     """
 
-    def rfid_callback(card_id: str, state: int):
-        if state == 0:
+    def rfid_callback(card_id: str, state: RfidCardDetectState):
+        if state == RfidCardDetectState.isRegistered:
             device.flash(on_time=0.1, n=1, tone=BUZZ_TONE)
-        elif state == 1:
+        elif state == RfidCardDetectState.isUnkown:
             device.flash(on_time=0.1, off_time=0.1, n=3, tone=BUZZ_TONE)
 
     components.rfid.reader.rfid_card_detect_callbacks.register(
@@ -77,9 +78,9 @@ def register_status_led_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.LED`
-        - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-        - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+    * :class:`components.gpio.gpioz.core.output_devices.LED`
+    * :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+    * :class:`components.gpio.gpioz.core.output_devices.RGBLED`
     """
 
     def set_status_led(state):
@@ -100,8 +101,8 @@ def register_status_buzzer_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-        - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
     """
 
     def set_status_buzzer(state):
@@ -120,7 +121,7 @@ def register_status_tonalbuzzer_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
     """
 
     def set_status_buzzer(state):
@@ -142,9 +143,9 @@ def register_audio_sink_change_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.LED`
-        - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
-        - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+    * :class:`components.gpio.gpioz.core.output_devices.LED`
+    * :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+    * :class:`components.gpio.gpioz.core.output_devices.RGBLED`
     """
 
     def audio_sink_change_callback(alias, sink_name, sink_index, error_state):
@@ -166,7 +167,7 @@ def register_volume_led_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.PWMLED`
+    * :class:`components.gpio.gpioz.core.output_devices.PWMLED`
     """
 
     def audio_volume_change_callback(volume, is_min, is_max):
@@ -190,8 +191,8 @@ def register_volume_buzzer_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.Buzzer`
-        - :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.Buzzer`
+    * :class:`components.gpio.gpioz.core.output_devices.TonalBuzzer`
     """
 
     def set_volume_buzzer(volume, is_min, is_max):
@@ -209,7 +210,7 @@ def register_volume_rgbled_callback(device):
 
     Compatible devices:
 
-        - :class:`components.gpio.gpioz.core.output_devices.RGBLED`
+    * :class:`components.gpio.gpioz.core.output_devices.RGBLED`
     """
 
     volume_to_rgb = VolumeToRGB(100, 120, 180)

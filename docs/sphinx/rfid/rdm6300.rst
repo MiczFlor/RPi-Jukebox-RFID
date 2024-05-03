@@ -1,1 +1,0 @@
-.. include:: ../../../src/jukebox/components/rfid/hardware/rdm6300_serial/README.rst

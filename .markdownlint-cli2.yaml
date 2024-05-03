@@ -1,0 +1,57 @@
+#
+# markdownlint-cli2 configuration, see https://github.com/DavidAnson/markdownlint-cli2?tab=readme-ov-file#configuration
+#
+
+# rules, see https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+config:
+  line-length: false
+  # ignore dollar signs
+  commands-show-output: false
+  no-trailing-punctuation: false
+  no-duplicate-heading:
+    siblings_only: true
+  # allow some tags we use for formatting
+  no-inline-html:
+    allowed_elements: [ "details", "summary" ]
+
+# Include a custom rule package
+#customRules:
+#  - markdownlint-rule-titlecase
+
+# Fix no fixable errors
+fix: false
+
+# Define a custom front matter pattern
+#frontMatter: "<head>[^]*<\/head>"
+
+# Define glob expressions to use (only valid at root)
+globs:
+  - "**.md"
+
+# Define glob expressions to ignore
+ignores:
+  - "documentation/developers/docstring/*"
+  - "src/**"
+
+# Use a plugin to recognize math
+#markdownItPlugins:
+#  -
+#    - "@iktakahiro/markdown-it-katex"
+
+# Additional paths to resolve module locations from
+#modulePaths:
+#  - "./modules"
+
+# Enable inline config comments
+noInlineConfig: false
+
+# Disable progress on stdout (only valid at root)
+noProgress: true
+
+# Use a specific formatter (only valid at root)
+#outputFormatters:
+#  -
+#    - markdownlint-cli2-formatter-default
+
+# Show found files on stdout (only valid at root)
+showFound: true

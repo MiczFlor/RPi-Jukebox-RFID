@@ -10,8 +10,8 @@ After=network.target sound.target mpd.service pulseaudio.service
 Requires=mpd.service pulseaudio.service
 
 [Service]
-ExecStart=/usr/bin/python3 run_jukebox.py
-WorkingDirectory=/home/pi/RPi-Jukebox-RFID/src/jukebox
+WorkingDirectory=%%INSTALLATION_PATH%%
+ExecStart=/bin/bash -c '%%INSTALLATION_PATH%%/run_jukebox.sh'
 StandardOutput=inherit
 StandardError=inherit
 Restart=always

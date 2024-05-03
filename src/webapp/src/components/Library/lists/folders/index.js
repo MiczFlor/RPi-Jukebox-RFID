@@ -10,13 +10,15 @@ import {
 import request from '../../../../utils/request';
 import FolderList from "./folder-list";
 
+import { ROOT_DIR } from '../../../../config';
+
 const Folders = ({
   musicFilter,
   isSelecting,
   registerMusicToCard,
 }) => {
   const { t } = useTranslation();
-  const { dir = './' } = useParams();
+  const { dir = ROOT_DIR } = useParams();
   const [folders, setFolders] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,9 +51,8 @@ const Folders = ({
 
   if (isLoading) return <CircularProgress />;
   if (error) return <Typography>{t('library.loading-error')}</Typography>;
-  if (!filteredFolders.length) {
-    if (musicFilter) return <Typography>{`☝️ ${t('library.folders.no-music')}`}</Typography>;
-    return <Typography>{`${t('library.folders.empty-folder')} 🙈`}</Typography>;
+  if (musicFilter && !filteredFolders.length) {
+    return <Typography>{t('library.folders.no-music')}</Typography>;
   }
 
   return (

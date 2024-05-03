@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 welcome() {
-  clear 1>&3
-  echo "#########################################################
+  clear_c
+  print_c "#########################################################
 #                                                       #
 #      ___  __ ______  _  __________ ____   __  _  _    #
 #     / _ \/ // / __ \/ |/ /  _/ __/(  _ \ /  \( \/ )   #
@@ -16,26 +16,29 @@ You are turning your Raspberry Pi into a Phoniebox.
 Good choice!
 
 Depending on your hardware, this installation might last
-around 60 minutes. It updates OS packages, installs
-Phoniebox dependencies and registers settings. Be patient
-and don't let your computer go to sleep. It might
-disconnect your SSH connection causing the interruption of
-the installation process.
+around 60 minutes (usually it's faster, 20-30 min). It
+updates OS packages, installs Phoniebox dependencies and
+applies settings. Be patient and don't let your computer
+go to sleep. It might disconnect your SSH connection
+causing the interruption of the installation process.
+Consider starting the installation in a terminal
+multiplexer like 'screen' or 'tmux' to avoid this.
 
-By the way, we write a log file to:
-${INSTALLATION_LOGFILE}
+To follow the installation closely, use this command
+in another terminal.
+cd; tail -f ${INSTALLATION_LOGFILE}
 
-Let's set up your Phoniebox now?! [Y/n]" 1>&3
-
-  read -rp "Do you want to install? [Y/n] " response
+Let's set up your Phoniebox.
+Do you want to start the installation? [Y/n]"
+  read -r response
   case "$response" in
     [nN][oO]|[nN])
       exit
       ;;
     *)
-      echo "Starting installation
+      print_c "Starting installation
 ---------------------
-" 1>&3
+"
       ;;
   esac
 }

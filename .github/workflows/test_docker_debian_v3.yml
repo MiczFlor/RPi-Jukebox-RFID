@@ -1,0 +1,69 @@
+name: Test Install Scripts Debian v3
+
+on:
+  schedule:
+    # run at 17:00 every sunday
+    - cron: '0 17 * * 0'
+  push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '.github/workflows/test_docker_debian*.yml'
+        - 'installation/**'
+        - 'ci/**'
+        - 'resources/**'
+        - 'src/jukebox/jukebox/version.py'
+        - 'packages*.txt'
+        - 'requirements*.txt'
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches:
+        - future3/develop
+        - future3/main
+    paths:
+        - '.github/workflows/test_docker_debian*.yml'
+        - 'installation/**'
+        - 'ci/**'
+        - 'resources/**'
+        - 'src/jukebox/jukebox/version.py'
+        - 'packages*.txt'
+        - 'requirements*.txt'
+
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ github.ref }}-test-debian-v3
+    cancel-in-progress: true
+
+jobs:
+
+  # Build container and run tests. Duplication of job intended for better visualization.
+  run_bookworm_armv7:
+    name: 'bookworm armv7'
+    uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
+    with:
+      debian_codename: 'bookworm'
+      platform: linux/arm/v7
+
+  # # can be activate on test branches, currently failing
+  # run_bookworm_armv6:
+  #   name: 'bookworm armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
+  #   with:
+  #       debian_codename: 'bookworm'
+  #       platform: linux/arm/v6
+
+  run_bullseye_armv7:
+    name: 'bullseye armv7'
+    uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
+    with:
+      debian_codename: 'bullseye'
+      platform: linux/arm/v7
+
+  # # can be activate on test branches, currently failing
+  # run_bullseye_armv6:
+  #   name: 'bullseye armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
+  #   with:
+  #       debian_codename: 'bullseye'
+  #       platform: linux/arm/v6

@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Remote Procedure Call Server (RPC)
-*************************************
+## Remote Procedure Call Server (RPC)
 
 Bind to tcp and/or websocket port and translates incoming requests to procedure calls.
 Avaiable procedures to call are all functions registered with the plugin package.
 
-To protocol is loosely based on `jsonrpc <https://www.jsonrpc.org/specification>`_
+The protocol is loosely based on [jsonrpc](https://www.jsonrpc.org/specification)
 
 But with different elements directly relating to the plugin concept and Python function argument options
-
-.. code-block:: yaml
 
     {
       'package'  : str  # The plugin package loaded from python module
@@ -38,9 +35,9 @@ If present, 'id' and 'tsp' may not be None. If they are None, there are treated 
 
 Three sockets are opened
 
-#. TCP (on a configurable port)
-#. Websocket  (on a configurable port)
-#. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
+1. TCP (on a configurable port)
+2. Websocket (on a configurable port)
+3. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
    call arbitrary RPC functions from plugins that provide an interface to the outside world (e.g. GPIO). By also going though
    the RPC instead of calling function directly we increase thread-safety and provide easy configurability (e.g. which
    button triggers what action)

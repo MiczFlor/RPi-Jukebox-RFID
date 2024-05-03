@@ -1,1 +1,0 @@
-.. include:: ../../../src/jukebox/components/rfid/hardware/pn532_i2c_py532/README.rst

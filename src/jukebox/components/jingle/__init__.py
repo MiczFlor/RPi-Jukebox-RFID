@@ -56,11 +56,12 @@ def initialize():
 def play(filename):
     """Play the jingle using the configured jingle service
 
-    Note: This runs in a separate thread. And this may cause troubles
-    when changing the volume level before
-    and after the sound playback: There is nothing to prevent another
-    thread from changing the volume and sink while playback happens
-    and afterwards we change the volume back to where it was before!
+    > [!NOTE]
+    > This runs in a separate thread. And this may cause troubles
+    > when changing the volume level before
+    > and after the sound playback: There is nothing to prevent another
+    > thread from changing the volume and sink while playback happens
+    > and afterwards we change the volume back to where it was before!
 
     There is no way around this dilemma except for not running the jingle as a
     separate thread. Currently (as thread) even the RPC is started before the sound
