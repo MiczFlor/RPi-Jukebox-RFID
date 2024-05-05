@@ -106,11 +106,7 @@ class SimpleButton:
             if inval != GPIO.LOW:
                 return None
 
-        if self.hold_mode in ('Repeat', 'Postpone', 'SecondFunc', 'SecondFuncRepeat'):
-            return self.longPressHandler(*args)
-        else:
-            logger.info('{}: execute callback'.format(self.name))
-            return self.when_pressed(*args)
+        return self._handleCallbackFunction(*args)
 
     @property
     def when_pressed(self):
@@ -136,10 +132,9 @@ class SimpleButton:
     def set_callbackFunction(self, callbackFunction):
         self.when_pressed = callbackFunction
 
-    def longPressHandler(self, *args):
-        logger.info('{}: longPressHandler, mode: {}'.format(self.name, self.hold_mode))
+    def _handleCallbackFunction(self, *args):
+        logger.info('{}: handleCallbackFunction, mode: {}'.format(self.name, self.hold_mode))
 
-        # action(s) after hold_time
         if self.hold_mode == "Repeat":
             # Repeated call of main action (instantly and multiple times if button is held long enough)
             self.when_pressed(*args)
@@ -172,6 +167,9 @@ class SimpleButton:
                 self.when_pressed(*args)
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
+
+        else:
+            self.when_pressed(*args)
 
     def __del__(self):
         logger.debug('remove event detection')
