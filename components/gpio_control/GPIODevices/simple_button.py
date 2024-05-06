@@ -145,28 +145,28 @@ class SimpleButton:
             # Postponed call of main action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_pressed(*args)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
-                pass
+                while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                    pass
 
         elif self.hold_mode == "SecondFunc":
             # Call of secondary action (once)
             # execute main action if not held past hold_time
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
+                while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                    pass
             else:
                 self.when_pressed(*args)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
-                pass
 
         elif self.hold_mode == "SecondFuncRepeat":
             # Repeated call of secondary action (multiple times if button is held long enough)
             # execute main action if not held past hold_time
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
+                while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
+                    self.when_held(*args)
             else:
                 self.when_pressed(*args)
-            while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
-                self.when_held(*args)
 
         else:
             self.when_pressed(*args)
