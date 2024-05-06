@@ -136,13 +136,14 @@ class SimpleButton:
         logger.info('{}: handleCallbackFunction, mode: {}'.format(self.name, self.hold_mode))
 
         if self.hold_mode == "Repeat":
-            # Repeated call of main action (instantly and multiple times if button is held long enough)
+            # Instantly call primary action
             self.when_pressed(*args)
+            # Repeated call of primary action if button is held long enough
             while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_pressed(*args)
 
         elif self.hold_mode == "Postpone":
-            # Postponed call of main action (once)
+            # Postponed call of primary action (once)
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_pressed(*args)
                 while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
@@ -150,7 +151,7 @@ class SimpleButton:
 
         elif self.hold_mode == "SecondFunc":
             # Call of secondary action (once)
-            # execute main action if not held past hold_time
+            # execute primary action if not held past hold_time
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
                 while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
@@ -160,7 +161,7 @@ class SimpleButton:
 
         elif self.hold_mode == "SecondFuncRepeat":
             # Repeated call of secondary action (multiple times if button is held long enough)
-            # execute main action if not held past hold_time
+            # execute primary action if not held past hold_time
             if checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
                 self.when_held(*args)
                 while checkGpioStaysInState(self.hold_time, self.pin, GPIO.LOW):
