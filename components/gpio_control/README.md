@@ -59,13 +59,17 @@ functionCall: functionCallPlayerPause
 However, a button has more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
 
 * **functionCallArgs**: Arguments for primary function, defaults to `None`. Arguments are ignored, if `functionCall` does not take any.
+
+> [!IMPORTANT]
+> Since v2.8.0 the behavior of `hold_mode` `SecondFunc` and `SecondFuncRepeat` has changed. The secondary function is no longer triggered additionally to the primary function.
+> Now its called exclusively if `hold_time` is reached. The primary function will only be triggered if the button is pressed shorter then `hold_time`! 
+> Existing configurations may need to adapt to this.
 * **hold_mode**: Specifies what shall happen if the button is held pressed for longer than `hold_time`:
   * `None` (Default): Nothing special will happen.
   * `Repeat`: The configured `functionCall` is instantly called and repeatedly after each `hold_time` interval.
   * `Postpone`: The function will not be called before `hold_time`, i.e. the button needs to be pressed this long to activate the function
   * `SecondFunc`: Pressing the button (shorter than `hold_time`) will execute the function `functionCall` with `functionCallArgs`. Holding the button for at least `hold_time` will execute the function `functionCall2` with `functionCall2Args`.
   * `SecondFuncRepeat`: Like SecondFunc, but `functionCall2` is repeated after each `hold_time` interval.
-  
   
   Holding the button even longer than `hold_time` will cause no further action unless you are in the `Repeat` or `SecondFuncRepeat` mode.
   
