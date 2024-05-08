@@ -59,14 +59,17 @@ functionCall: functionCallPlayerPause
 However, a button has more parameters than these. In the following comprehensive list you can also find the default values which are used automatically if you leave out these settings:
 
 * **functionCallArgs**: Arguments for primary function, defaults to `None`. Arguments are ignored, if `functionCall` does not take any.
+
+> [!IMPORTANT]
+> Since v2.8.0 the behavior of `hold_mode` `SecondFunc` and `SecondFuncRepeat` has changed. The secondary function is no longer triggered additionally to the primary function.
+> Now its called exclusively if `hold_time` is reached. The primary function will only be triggered if the button is pressed shorter then `hold_time`! 
+> Existing configurations may need to adapt to this.
 * **hold_mode**: Specifies what shall happen if the button is held pressed for longer than `hold_time`:
   * `None` (Default): Nothing special will happen.
-  * `Repeat`: The configured `functionCall` is repeated after each `hold_time` interval.
+  * `Repeat`: The configured `functionCall` is instantly called and repeatedly after each `hold_time` interval.
   * `Postpone`: The function will not be called before `hold_time`, i.e. the button needs to be pressed this long to activate the function
-  * `SecondFunc`: Holding the button for at least `hold_time` will additionally execute the function `functionCall2` with `functionCall2Args`.
+  * `SecondFunc`: Pressing the button (shorter than `hold_time`) will execute the function `functionCall` with `functionCallArgs`. Holding the button for at least `hold_time` will execute the function `functionCall2` with `functionCall2Args`.
   * `SecondFuncRepeat`: Like SecondFunc, but `functionCall2` is repeated after each `hold_time` interval.
-  
-  In every `hold_mode` except `Postpone`, the main action `functionCall` gets executed instantly.
   
   Holding the button even longer than `hold_time` will cause no further action unless you are in the `Repeat` or `SecondFuncRepeat` mode.
   
@@ -79,10 +82,10 @@ However, a button has more parameters than these. In the following comprehensive
   * `pull_off`. Use this to deactivate internal pull-up/pulldown resistors. This is useful if your wiring includes your own (external) pull up / down resistors.
 * **edge**: Configures the events in which the GPIO library shall trigger the callback function. Valid settings:
   * `falling` (Default). Triggers if the GPIO voltage goes down.
-  * `rising`. Trigegrs only if the GPIO voltage goes up.
+  * `rising`. Triggers only if the GPIO voltage goes up.
   * `both`. Triggers in both cases.
 * **bouncetime**: This is a setting of the GPIO library to limit bouncing effects during button usage. Default is `500` ms.
-* **antibouncehack**: Despite the integrated bounce reduction of the GPIO library some users may notice false triggers of their buttons (e.g. unrequested / double actions when releasing the button). If you encounter such problems, try setting this setting to `True` to activate an additional countermeasure.
+* **antibouncehack**: Despite the integrated bounce reduction of the GPIO library some users may notice false triggers of their buttons (e.g. unrequested / double actions when releasing the button). If you encounter such problems, try setting this to `True` to activate an additional countermeasure.
 
 Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
