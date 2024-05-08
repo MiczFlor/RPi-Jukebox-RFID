@@ -82,10 +82,10 @@ However, a button has more parameters than these. In the following comprehensive
   * `pull_off`. Use this to deactivate internal pull-up/pulldown resistors. This is useful if your wiring includes your own (external) pull up / down resistors.
 * **edge**: Configures the events in which the GPIO library shall trigger the callback function. Valid settings:
   * `falling` (Default). Triggers if the GPIO voltage goes down.
-  * `rising`. Trigegrs only if the GPIO voltage goes up.
+  * `rising`. Triggers only if the GPIO voltage goes up.
   * `both`. Triggers in both cases.
 * **bouncetime**: This is a setting of the GPIO library to limit bouncing effects during button usage. Default is `500` ms.
-* **antibouncehack**: Despite the integrated bounce reduction of the GPIO library some users may notice false triggers of their buttons (e.g. unrequested / double actions when releasing the button). If you encounter such problems, try setting this setting to `True` to activate an additional countermeasure.
+* **antibouncehack**: Despite the integrated bounce reduction of the GPIO library some users may notice false triggers of their buttons (e.g. unrequested / double actions when releasing the button). If you encounter such problems, try setting this to `True` to activate an additional countermeasure.
 
 Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
