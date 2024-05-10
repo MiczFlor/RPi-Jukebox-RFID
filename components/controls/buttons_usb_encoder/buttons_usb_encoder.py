@@ -30,8 +30,8 @@ try:
                         getattr(function_calls, function_name)(function_args)
                     except:
                         logger.warning(
-                            "Function " + function_name + " not found in function_calls.py (mapped from button: "
-                            + button_string + ")")
+                            "Function " + function_name
+                            + " not found in function_calls.py (mapped from button: " + button_string + ")")
                 except KeyError:
                     logger.warning("Button " + button_string + " not mapped to any function.")
 except:
