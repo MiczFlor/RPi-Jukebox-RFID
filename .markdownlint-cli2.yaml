@@ -30,8 +30,7 @@ globs:
 
 # Define glob expressions to ignore
 ignores:
-  - "documentation/developers/docstring/*"
-  - "src/**"
+  - "htdocs/**"
 
 # Use a plugin to recognize math
 #markdownItPlugins:
