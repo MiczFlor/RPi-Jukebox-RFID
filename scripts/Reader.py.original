@@ -19,7 +19,7 @@
 import os.path
 import sys
 
-from evdev import InputDevice, categorize, ecodes, list_devices
+from evdev import InputDevice, ecodes, list_devices
 from select import select
 import logging
 logger = logging.getLogger(__name__)
