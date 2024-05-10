@@ -47,7 +47,7 @@ def bt_check_mpc_err() -> None:
         logger.debug(mpcplay)
 
 
-def bt_switch(cmd, led_pin=None):
+def bt_switch(cmd, led_pin=None): # noqa C901
     """
     Set/Toggle between regular speakers and headphone output. If no bluetooth device is connected,
     always defaults to mpc output 1
@@ -143,7 +143,7 @@ def bt_switch(cmd, led_pin=None):
     isBtConnected_console = subprocess.run("bluetoothctl info", shell=True, check=False, stdout=subprocess.PIPE,
                                            stderr=subprocess.STDOUT)
     logger.debug(isBtConnected_console.stdout)
-    isBtConnected = re.search(b"Connected:\s+yes", isBtConnected_console.stdout)
+    isBtConnected = re.search(b"Connected:\s+yes", isBtConnected_console.stdout) # noqa W605
 
     if (cmd == "toggle" and isSpeakerOn) or (cmd == "headphones"):
         # Only switch to BT headphones if they are actually connected
