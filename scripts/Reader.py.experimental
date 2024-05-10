@@ -11,7 +11,7 @@ import sys
 import RPi.GPIO as GPIO
 import logging
 
-from evdev import InputDevice, categorize, ecodes, list_devices
+from evdev import InputDevice, ecodes, list_devices
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ class Rdm6300Reader:
         else:
             return None
 
-    def readCard(self):
+    def readCard(self): # noqa C901
         byte_card_id = bytearray()
 
         try:
@@ -188,7 +188,7 @@ class Pn532Reader:
         from py532lib.i2c import Pn532_i2c
         from py532lib.mifare import Mifare
         from py532lib.mifare import MIFARE_WAIT_FOR_ENTRY
-        pn532 = Pn532_i2c()
+        pn532 = Pn532_i2c() # noqa F841
         self.device = Mifare()
         self.device.SAMconfigure()
         self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)
