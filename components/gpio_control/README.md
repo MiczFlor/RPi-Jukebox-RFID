@@ -62,8 +62,9 @@ However, a button has more parameters than these. In the following comprehensive
 
 > [!IMPORTANT]
 > Since v2.8.0 the behavior of `hold_mode` `SecondFunc` and `SecondFuncRepeat` has changed. The secondary function is no longer triggered additionally to the primary function.
-> Now its called exclusively if `hold_time` is reached. The primary function will only be triggered if the button is pressed shorter then `hold_time`! 
+> Now its called exclusively if `hold_time` is reached. The primary function will only be triggered if the button is pressed shorter then `hold_time`!
 > Existing configurations may need to adapt to this.
+
 * **hold_mode**: Specifies what shall happen if the button is held pressed for longer than `hold_time`:
   * `None` (Default): Nothing special will happen.
   * `Repeat`: The configured `functionCall` is instantly called and repeatedly after each `hold_time` interval.
@@ -87,7 +88,8 @@ However, a button has more parameters than these. In the following comprehensive
 * **bouncetime**: This is a setting of the GPIO library to limit bouncing effects during button usage. Default is `500` ms.
 * **antibouncehack**: Despite the integrated bounce reduction of the GPIO library some users may notice false triggers of their buttons (e.g. unrequested / double actions when releasing the button). If you encounter such problems, try setting this to `True` to activate an additional countermeasure.
 
-Note: If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
+> [!NOTE]
+> If you prefer, you may also use `Type: SimpleButton` instead of `Type: Button` - this makes no difference.
 
 ### ShutdownButton
 
@@ -116,7 +118,7 @@ Again, there are more parameters than these. In the following comprehensive list
 * **iteration_time**: This parameter determines the flashing speed of the LED indicator. Default value is `0.2` seconds.
 * **functionCall**: While the default action is `functionCallShutdown`, you might use this button type even with other functions than system shutdown (again, see [function documentation below](#functions) for a list of available functions).
 
-Furthermore, the following settings can be used as described for the [regular buttons](#doc_button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**, **functionCallArgs**
+Furthermore, the following settings can be used as described for the [regular buttons](#button): **pull_up_down**, **edge**, **bouncetime**, **antibouncehack**, **functionCallArgs**
 
 Note that using a ShutdownButton without a LED can also be implemented with a normal button like this:
 
@@ -189,14 +191,16 @@ functionCall2: functionCallVolD
 * **functionCall1**: function called for every rotation step corresponding to rotary direction "clockwise". See below for passed arguments. See [function documentation below](#functions).
 * **functionCall2**: function called for every rotation step corresponding to rotary direction "counter clockwise". See below for passed arguments. See [function documentation below](#functions).
 * **timeBase**: Factor used for calculating the rotation value base on rotation speed, defaults to `0.1`. Use `0` for deactivating rotation speed influence.
-Example: 
- * a single rotation step leads to the value 1 passed to the function. 
- * steady rotation of two to or more steps, leads to the value 1 for the first call and the value 2 for all further calls.
- * speeding up rotation of two to or more steps, leads to the value 1 for the first call, the value 2 for the second, the value 3 for the third and so on.
-* **functionCall1Args**: Arguments for `functionCall1`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
-* **functionCall2Args**: Arguments for `functionCall2`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any. 
+  
+  Example:
+  * a single rotation step leads to the value 1 passed to the function.
+  * steady rotation of two to or more steps, leads to the value 1 for the first call and the value 2 for all further calls.
+  * speeding up rotation of two to or more steps, leads to the value 1 for the first call, the value 2 for the second, the value 3 for the third and so on.
+* **functionCall1Args**: Arguments for `functionCall1`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any.
+* **functionCall2Args**: Arguments for `functionCall2`, defaults to `None`. If defined takes precedence over rotation value. Arguments are ignored, if `functionCall1` does not take any.
 
 To also use the push button of the encoder just a button definition:
+
 ```bash
 [Mute]
 enabled: True
@@ -206,7 +210,6 @@ functionCall: functionCallVol0
 ```
 
 Note that the old configuration entries PinUp/PinDown and functionCallUp/functionCallDown are deprecated and might stop working in future.
-
 
 ```bash
 [RotarySeekingControl]
@@ -223,9 +226,9 @@ functionCall2Args: 5
 
 In this example, the encoder will be used to seek for- and backwards by 5 seconds on every rotation step. The rotation value will **NOT** be used in this case as the function args are defined!
 
-
 #### Circuit diagram
-```text 
+
+```text
   .---------------.                      .---------------.
   |               |                      |               |
   |           CLK |----------------------| GPIO 22       |
@@ -255,7 +258,9 @@ Pin: 14
 
 * **Pin**: GPIO number of the LED (mandatory option). Note that you should not attach LEDs to GPIO ports without a matching resistor in line.
 
-Note: If you prefer, you may also use `Type: MPDStatusLED` instead of `Type: StatusLED` - this makes no difference.
+> [!NOTE]
+> If you prefer, you may also use `Type: MPDStatusLED` instead of
+> `Type: StatusLED` - this makes no difference.
 
 ### Further examples
 
@@ -309,6 +314,7 @@ In this example, a short press initiates a short jump forward by customized 5 se
 For jumping backwards, this can be done equivalently (see [function list below](#functions)).
 
 #### Use Buttons to start playlists
+
 To use GPIO-Pins to play music, you can emulate a card scan with the function `functionCallTriggerPlayCardId`. Supply the `cardid` as `functionCallArgs`.
 This behaves like a card scan, so you must link a folder to the id (on first press it will show up in the Web App as new card).
 

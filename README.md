@@ -19,7 +19,7 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 Another bunch of wonderful designs!
 
-To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
+To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY).
 
 ![The Phoniebox Calendar](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/calendar/latest-Phoniebox-Calendar.jpg "The Phoniebox Calendar")
 
@@ -242,7 +242,6 @@ See innovation, upcycling and creativity in the [Phoniebox Gallery](https://gith
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
-
 
 ## Sustainability
 
