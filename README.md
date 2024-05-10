@@ -189,6 +189,8 @@ These are links to additional items, which will add an individual flavour to you
 Special hardware is now organised in the folder [`components`](components/). If you have new hardware attached to your Phoniebox, please add to this library! It currently contains soundcards, displays, GPIO controls, RFID reader, smarthome integration.
 
 ## Support Phoniebox
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD045 -->
 
 <a href="https://www.buymeacoffee.com/MiczFlor" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg"></a>
 
@@ -210,6 +212,8 @@ See the Phoniebox code in action, watch this video and read the blog post from [
 | <a href="https://youtu.be/spHDGSxckmw" target="_blank"><img src="https://i.ytimg.com/vi/spHDGSxckmw/hqdefault.jpg"><br>Installation und Hardware</a> | <a href="https://youtu.be/9ZSKFoWr9WY" target="_blank"><img src="https://i.ytimg.com/vi/9ZSKFoWr9WY/hqdefault.jpg"><br>Web App and Audio / Spotify</a> | <a href="https://youtu.be/YucQuwUD7XE" target="_blank"><img src="https://i.ytimg.com/vi/YucQuwUD7XE/hqdefault.jpg"><br>The finished Phoniebox in action</a> |
 
 A new video screencast about
+
+<!-- markdownlint-restore -->
 
 **What makes this Phoniebox easy to install and use:**
 
