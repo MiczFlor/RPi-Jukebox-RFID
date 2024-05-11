@@ -28,11 +28,11 @@ echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selecti
 # n reboot
 export CI_TEST_DHCPCD="true"
 export CI_TEST_NETWORKMANAGER="false"
-./../install-jukebox.sh <<< "y
+./../install-jukebox.sh <<< 'y
 y
-TestWifi
+a!b"c§d$e%f&g/h(i)j=k?l´m`n²o³p{q[r]s}t\u+v*w~x#y'\''z01234
 DE
-TestWifiPW
+ß,ä;ö.ü:Ä-Ö_Ü 1@2€3^4°5|6$7&8/9\0
 192.168.100.2
 192.168.100.1
 y
@@ -50,7 +50,7 @@ y
 y
 n
 n
-"
+'
 INSTALLATION_EXITCODE=$?
 
 # Test installation

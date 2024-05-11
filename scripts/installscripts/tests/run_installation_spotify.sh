@@ -33,8 +33,8 @@ n
 y
 
 y
-abc$defghijkl&mnopqrstuvwxyzßäöüÄÖÜ$1234567890
-!"§$%&/()=?´`²³{[]}\+*~#'\'',;.:-_ @€^°
+a!b"c§d$e%f&g/h(i)j=k?l´m`n²o³p{q[r]s}t\u+v*w~x#y'\''zß,ä;ö.ü:Ä-Ö_Ü 1@2€3^4°5|67890
+a!b"c§d$e%f&g/h(i)j=k?l´m`n²o³p{q[r]s}t\u+v*w~x#y'\''zß,ä;ö.ü:Ä-Ö_Ü 1@2€3^4°5|67890
 myclient_id
 myclient+SECRET/0123456789=
 

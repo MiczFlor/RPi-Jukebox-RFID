@@ -74,7 +74,7 @@ Check out the following references.
   * [PN532](components/rfid-reader/PN532/README.md)
   * PC/SC
   * also [multiple readers](https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/1012#issue-434052529) simultaneously
-* [**GPIO** control](components/gpio_control/README.md) for [buttons](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons), [knobs / dials](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Audio-RotaryKnobVolume) and much more to control your Phoniebox via GPIO.
+* [**GPIO** control](components/gpio_control/README.md) for [buttons](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons) and much more to control your Phoniebox via GPIO.
 * Control via smooth [**Web App**](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#webapp) running on ajax from your phone, tablet or PC. You can play, upload, move files, assign new RFID cards, control playout, settings, etc.
 * Support for files with embedded chapters metadata (like m4a)
 * Customizable poweroff command

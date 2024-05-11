@@ -4,19 +4,27 @@ antibouncehack: False
 
 [VolumeControl]
 enabled: False
-Type: TwoButtonControl ;or RotaryEncoder
+Type: TwoButtonControl
 Pin1: 5
 Pin2: 6
 pull_up_down: pull_up
 hold_time: 0.3
 hold_mode: Repeat
-timeBase: 0.1 ;only for RotaryEncoder
 functionCall1: functionCallVolU
 functionCall2: functionCallVolD
-functionCallTwoButtons: functionCallVol0 ;only for TwoButtonControl
+functionCallTwoButtons: functionCallVol0
 ;functionCall1Args: 1
 ;functionCall2Args: 1
 ;functionCallTwoButtonsArgs: x
+
+[RotaryVolumeControl]
+enabled: False
+Type: RotaryEncoder
+Pin1: 22
+Pin2: 23
+timeBase: 0.1
+functionCall1: functionCallVolU
+functionCall2: functionCallVolD
 
 [PrevNextControl]
 enabled: False
@@ -143,3 +151,7 @@ pull_up_down: pull_up
 functionCall: functionCallTriggerPlayFolder
 functionCallArgs: someRelativeFolderName
 
+[StatusLED]
+enabled: False
+Type: StatusLED
+Pin: 14

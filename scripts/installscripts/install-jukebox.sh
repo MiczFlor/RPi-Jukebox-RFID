@@ -19,8 +19,6 @@
 PATHDATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 GIT_BRANCH=${GIT_BRANCH:-master}
 GIT_URL=${GIT_URL:-https://github.com/MiczFlor/RPi-Jukebox-RFID.git}
-echo GIT_BRANCH $GIT_BRANCH
-echo GIT_URL $GIT_URL
 
 DATETIME=$(date +"%Y%m%d_%H%M%S")
 
@@ -29,8 +27,7 @@ JOB="${SCRIPTNAME}"
 
 CURRENT_USER="${SUDO_USER:-$(whoami)}"
 HOME_DIR=$(getent passwd "$CURRENT_USER" | cut -d: -f6)
-echo "Current User: $CURRENT_USER"
-echo "User home dir: $HOME_DIR"
+
 
 JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
@@ -38,7 +35,6 @@ JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
 # Get the Raspberry Pi OS codename (e.g. buster, bullseye, ...)
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
-printf "Used Raspberry Pi OS: ${OS_CODENAME}\n"
 
 WIFI_INTERFACE="wlan0"
 
@@ -94,15 +90,11 @@ log_close() {
     fi
 }
 
-escape_for_shell() {
+# local function as it is needed before the repo is checked out!
+_escape_for_shell() {
 	local escaped="${1//\"/\\\"}"
 	escaped="${escaped//\`/\\\`}"
     escaped="${escaped//\$/\\\$}"
-	echo "$escaped"
-}
-
-escape_for_sed() {
-	local escaped=$(echo "$1" | sed -e 's/[\/&'\'']/\\&/g')
 	echo "$escaped"
 }
 
@@ -227,12 +219,12 @@ case "$response" in
             *)
                 # append variables to config file
                 {
-                    echo "WIFIconfig=\"$WIFIconfig\"";
-                    echo "WIFIcountryCode=\"$WIFIcountryCode\"";
-                    echo "WIFIssid=\"$WIFIssid\"";
-                    echo "WIFIpass=\"$WIFIpass\"";
-                    echo "WIFIip=\"$WIFIip\"";
-                    echo "WIFIipRouter=\"$WIFIipRouter\"";
+                    echo "WIFIconfig=\"$(_escape_for_shell "$WIFIconfig")\"";
+                    echo "WIFIcountryCode=\"$(_escape_for_shell "$WIFIcountryCode")\"";
+                    echo "WIFIssid=\"$(_escape_for_shell "$WIFIssid")\"";
+                    echo "WIFIpass=\"$(_escape_for_shell "$WIFIpass")\"";
+                    echo "WIFIip=\"$(_escape_for_shell "$WIFIip")\"";
+                    echo "WIFIipRouter=\"$(_escape_for_shell "$WIFIipRouter")\"";
                 } >> "${HOME_DIR}/PhonieboxInstall.conf"
                 ;;
         esac
@@ -241,9 +233,9 @@ case "$response" in
         WIFIconfig=NO
         echo "You want to configure WiFi later."
         # append variables to config file
-        echo "WIFIconfig=$WIFIconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "WIFIconfig=\"$(_escape_for_shell "$WIFIconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         # make a fallback for WiFi Country Code, because we need that even without WiFi config
-        echo "WIFIcountryCode=DE" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "WIFIcountryCode=\"$(_escape_for_shell "DE")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 esac
 read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -315,18 +307,18 @@ case "$response" in
         esac
         # append variables to config file
         {
-            echo "AUTOHOTSPOTconfig=\"$AUTOHOTSPOTconfig\"";
-            echo "AUTOHOTSPOTssid=\"$AUTOHOTSPOTssid\"";
-            echo "AUTOHOTSPOTcountryCode=\"$AUTOHOTSPOTcountryCode\"";
-            echo "AUTOHOTSPOTpass=\"$AUTOHOTSPOTpass\"";
-            echo "AUTOHOTSPOTip=\"$AUTOHOTSPOTip\"";
+            echo "AUTOHOTSPOTconfig=\"$(_escape_for_shell "$AUTOHOTSPOTconfig")\"";
+            echo "AUTOHOTSPOTssid=\"$(_escape_for_shell "$AUTOHOTSPOTssid")\"";
+            echo "AUTOHOTSPOTcountryCode=\"$(_escape_for_shell "$AUTOHOTSPOTcountryCode")\"";
+            echo "AUTOHOTSPOTpass=\"$(_escape_for_shell "$AUTOHOTSPOTpass")\"";
+            echo "AUTOHOTSPOTip=\"$(_escape_for_shell "$AUTOHOTSPOTip")\"";
         } >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
     *)
         AUTOHOTSPOTconfig=NO
         echo "You don't want to configure Autohotspot."
         # append variables to config file
-        echo "AUTOHOTSPOTconfig=$AUTOHOTSPOTconfig" >> "${HOME_DIR}/PhonieboxInstall.conf"
+        echo "AUTOHOTSPOTconfig=\"$(_escape_for_shell "$AUTOHOTSPOTconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
         ;;
 
 esac
@@ -442,7 +434,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidConf=$EXISTINGuseRfidConf" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidConf=\"$(_escape_for_shell "$EXISTINGuseRfidConf")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "RFID shortcuts to play audio folders? [Y/n] " response
                 case "$response" in
@@ -454,7 +446,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseRfidLinks=$EXISTINGuseRfidLinks" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseRfidLinks=\"$(_escape_for_shell "$EXISTINGuseRfidLinks")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Audio folders: use existing? [Y/n] " response
                 case "$response" in
@@ -466,7 +458,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseAudio=$EXISTINGuseAudio" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseAudio=\"$(_escape_for_shell "$EXISTINGuseAudio")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Sound effects: use existing startup / shutdown sounds? [Y/n] " response
                 case "$response" in
@@ -478,7 +470,7 @@ check_existing() {
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseSounds=$EXISTINGuseSounds" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseSounds=\"$(_escape_for_shell "$EXISTINGuseSounds")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 if [ "$(printf '%s\n' "2.1" "$(cat ${local_home_dir}/BACKUP/settings/version-number)" | sort -V | head -n1)" = "2.1" ]; then
                     read -rp "GPIO: use existing file? [Y/n] " response
@@ -500,7 +492,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                     config_gpio
                 fi
                 # append variables to config file
-                echo "EXISTINGuseGpio=$EXISTINGuseGpio" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseGpio=\"$(_escape_for_shell "$EXISTINGuseGpio")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 read -rp "Button USB Encoder: use existing device and button mapping? [Y/n] " response
                 case "$response" in
@@ -512,7 +504,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
                         ;;
                 esac
                 # append variables to config file
-                echo "EXISTINGuseButtonUSBEncoder=$EXISTINGuseButtonUSBEncoder" >> "${local_home_dir}/PhonieboxInstall.conf"
+                echo "EXISTINGuseButtonUSBEncoder=\"$(_escape_for_shell "$EXISTINGuseButtonUSBEncoder")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
                 echo "Thanks. Got it."
                 echo "The existing install can be found in the BACKUP directory."
@@ -521,7 +513,7 @@ https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Using-GPIO-hardware-buttons"
         esac
     fi
     # append variables to config file
-    echo "EXISTINGuse=$EXISTINGuse" >> "${local_home_dir}/PhonieboxInstall.conf"
+    echo "EXISTINGuse=\"$(_escape_for_shell "$EXISTINGuse")\"" >> "${local_home_dir}/PhonieboxInstall.conf"
 
     # Check if we found a Phoniebox install configuration earlier and ask if to run this now
     if [ "${EXISTINGusePhonieboxInstall}" == "YES" ]; then
@@ -576,7 +568,7 @@ ${audio_interfaces}
             ;;
     esac
     # append variables to config file
-    echo "AUDIOiFace=\"$AUDIOiFace\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "AUDIOiFace=\"$(_escape_for_shell "$AUDIOiFace")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your iFace is called '$AUDIOiFace'"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -638,11 +630,11 @@ config_spotify() {
     esac
     # append variables to config file
     {
-        echo "SPOTinstall=\"$SPOTinstall\"";
-        echo "SPOTIuser=\"$(escape_for_shell "$SPOTIuser")\"";
-        echo "SPOTIpass=\"$(escape_for_shell "$SPOTIpass")\"";
-        echo "SPOTIclientid=\"$(escape_for_shell "$SPOTIclientid")\"";
-        echo "SPOTIclientsecret=\"$(escape_for_shell "$SPOTIclientsecret")\""
+        echo "SPOTinstall=\"$(_escape_for_shell "$SPOTinstall")\"";
+        echo "SPOTIuser=\"$(_escape_for_shell "$SPOTIuser")\"";
+        echo "SPOTIpass=\"$(_escape_for_shell "$SPOTIpass")\"";
+        echo "SPOTIclientid=\"$(_escape_for_shell "$SPOTIclientid")\"";
+        echo "SPOTIclientsecret=\"$(_escape_for_shell "$SPOTIclientsecret")\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -682,7 +674,7 @@ config_audio_folder() {
             ;;
     esac
     # append variables to config file
-    echo "DIRaudioFolders=\"$DIRaudioFolders\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "DIRaudioFolders=\"$(_escape_for_shell "$DIRaudioFolders")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo "Your audio folders live in this dir:"
     echo "${DIRaudioFolders}"
     read -rp "Hit ENTER to proceed to the next step." INPUT
@@ -723,7 +715,7 @@ config_gpio() {
             ;;
     esac
     # append variables to config file
-    echo "GPIOconfig=\"$GPIOconfig\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
+    echo "GPIOconfig=\"$(_escape_for_shell "$GPIOconfig")\"" >> "${HOME_DIR}/PhonieboxInstall.conf"
     echo ""
     read -rp "Hit ENTER to proceed to the next step." INPUT
 }
@@ -801,9 +793,7 @@ samba_config() {
     sudo chown root:root "${smb_conf}"
     sudo chmod 644 "${smb_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${smb_conf}"
-    # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${smb_conf}"
+    sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${smb_conf}"
     # Samba: create user 'pi' with password 'raspberry'
     # ToDo: use current user with a default password
     (echo "raspberry"; echo "raspberry") | sudo smbpasswd -s -a pi
@@ -822,8 +812,6 @@ web_server_config() {
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/lighttpd.conf-default.sample "${lighthttpd_conf}"
     sudo chown root:root "${lighthttpd_conf}"
     sudo chmod 644 "${lighthttpd_conf}"
-    # double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${lighthttpd_conf}"
 
     # Web server PHP7 fastcgi conf
     # -rw-r--r-- 1 root root 398 Apr 30 09:35 /etc/lighttpd/conf-available/15-fastcgi-php.conf
@@ -842,18 +830,6 @@ web_server_config() {
     echo "www-data ALL=(ALL) NOPASSWD: ALL" | sudo tee "${sudoers_wwwdata}" > /dev/null
     sudo chown root:root "${sudoers_wwwdata}"
     sudo chmod 440 "${sudoers_wwwdata}"
-}
-
-# Reads a textfile and pipes all lines as args to the given command.
-# Does filter out comments.
-# Arguments:
-#   1    : textfile to read
-#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
-call_with_args_from_file () {
-    local package_file="$1"
-    shift
-
-    sed 's/#.*//g' ${package_file} | xargs "$@"
 }
 
 install_main() {
@@ -894,6 +870,14 @@ install_main() {
     # Start logging here
     log_open
 
+    echo "################################################"
+    echo "Interactive mode: ${INTERACTIVE}"
+    echo "GIT_BRANCH ${GIT_BRANCH}"
+    echo "GIT_URL ${GIT_URL}"
+    echo "Current User: ${CURRENT_USER}"
+    echo "User home dir: ${HOME_DIR}"
+    echo "Used Raspberry Pi OS: ${OS_CODENAME}"
+
     # Add conffile into logfile for better debugging
     echo "################################################"
     grep -v -e "SPOTI" -e "WIFIpass" "${HOME_DIR}/PhonieboxInstall.conf"
@@ -927,6 +911,10 @@ install_main() {
     ${apt_get} install git
     cd "${HOME_DIR}"
     git clone ${GIT_URL} --branch "${GIT_BRANCH}"
+
+    source "${jukebox_dir}"/scripts/helperscripts/inc.helper.sh
+    source "${jukebox_dir}"/scripts/helperscripts/inc.networkHelper.sh
+
 
     # some packages are only available on raspberry pi's but not on test docker containers running on x86_64 machines
     if [[ $(uname -m) =~ ^armv.+$ ]]; then
@@ -1022,8 +1010,6 @@ install_main() {
 
     # create config file for web app from sample
     sudo cp "${jukebox_dir}"/htdocs/config.php.sample "${jukebox_dir}"/htdocs/config.php
-    # double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${jukebox_dir}"/htdocs/config.php
 
     # Starting web server and php7
     sudo lighttpd-enable-mod fastcgi
@@ -1058,24 +1044,16 @@ install_main() {
     # 2. install new ones - this is version > 1.1.8-beta
     RFID_READER_SERVICE="${systemd_dir}/phoniebox-rfid-reader.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-rfid-reader.service-default.sample "${RFID_READER_SERVICE}"
-    # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${RFID_READER_SERVICE}"
 
     STARTUP_SCRIPT_SERVICE="${systemd_dir}/phoniebox-startup-scripts.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-startup-scripts.service-default.sample "${STARTUP_SCRIPT_SERVICE}"
-    # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${STARTUP_SCRIPT_SERVICE}"
 
     IDLE_WATCHDOG_SERVICE="${systemd_dir}/phoniebox-idle-watchdog.service"
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-idle-watchdog.service.sample "${IDLE_WATCHDOG_SERVICE}"
-    # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${IDLE_WATCHDOG_SERVICE}"
 
     if [[ "${GPIOconfig}" == "YES" ]]; then
         GPIO_CONTROL_SERVICE="${systemd_dir}/phoniebox-gpio-control.service"
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/phoniebox-gpio-control.service.sample "${GPIO_CONTROL_SERVICE}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${GPIO_CONTROL_SERVICE}"
     fi
 
     sudo chown root:root "${systemd_dir}"/phoniebox-*.service
@@ -1097,11 +1075,9 @@ install_main() {
     # -rw-r----- 1 mpd audio 14043 Jul 17 20:16 /etc/mpd.conf
     sudo cp "${jukebox_dir}"/misc/sampleconfigs/mpd.conf.sample ${mpd_conf}
     # Change vars to match install config
-    sudo sed -i 's/%AUDIOiFace%/'"$AUDIOiFace"'/' "${mpd_conf}"
+    sudo sed -i 's|%AUDIOiFace%|'"$(escape_for_sed "$AUDIOiFace")"'|' "${mpd_conf}"
     # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-    sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mpd_conf}"
-    # Replace homedir; double quotes for variable expansion
-    sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mpd_conf}"
+    sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${mpd_conf}"
     sudo chown mpd:audio "${mpd_conf}"
     sudo chmod 640 "${mpd_conf}"
 
@@ -1120,14 +1096,12 @@ install_main() {
         sudo locale-gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's/%spotify_username%/'"$(escape_for_sed "$SPOTIuser")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_password%/'"$(escape_for_sed "$SPOTIpass")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_id%/'"$(escape_for_sed "$SPOTIclientid")"'/' "${mopidy_conf}"
-        sudo sed -i 's/%spotify_client_secret%/'"$(escape_for_sed "$SPOTIclientsecret")"'/' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_username%|'"$(escape_for_sed "$SPOTIuser")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_password%|'"$(escape_for_sed "$SPOTIpass")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_client_id%|'"$(escape_for_sed "$SPOTIclientid")"'|' "${mopidy_conf}"
+        sudo sed -i 's|%spotify_client_secret%|'"$(escape_for_sed "$SPOTIclientsecret")"'|' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash
-        sudo sed -i 's|%DIRaudioFolders%|'"$DIRaudioFolders"'|' "${mopidy_conf}"
-        # Replace homedir; double quotes for variable expansion
-        sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${mopidy_conf}"
+        sudo sed -i 's|%DIRaudioFolders%|'"$(escape_for_sed "$DIRaudioFolders")"'|' "${mopidy_conf}"
     fi
 
     # GPIO-Control
@@ -1145,6 +1119,9 @@ install_main() {
     else
         echo "classic" > "${jukebox_dir}"/settings/edition
     fi
+
+    wifi_settings "${jukebox_dir}"
+    autohotspot "${jukebox_dir}"
 
     # / INSTALLATION
     #####################################################
@@ -1172,7 +1149,7 @@ wifi_settings() {
             local wpa_supplicant_conf="/etc/wpa_supplicant/wpa_supplicant.conf"
             # -rw-rw-r-- 1 root netdev 137 Jul 16 08:53 /etc/wpa_supplicant/wpa_supplicant.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/wpa_supplicant.conf.sample "${wpa_supplicant_conf}"
-            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${wpa_supplicant_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$(escape_for_sed "$WIFIcountryCode")"'|' "${wpa_supplicant_conf}"
             sudo chown root:netdev "${wpa_supplicant_conf}"
             sudo chmod 664 "${wpa_supplicant_conf}"
 
@@ -1184,11 +1161,11 @@ wifi_settings() {
             #-rw-rw-r-- 1 root netdev 0 Apr 17 11:25 /etc/dhcpcd.conf
             sudo cp "${jukebox_dir}"/misc/sampleconfigs/dhcpcd.conf-default-noHotspot.sample "${dhcpcd_conf}"
             # Change IP for router and Phoniebox
-            sudo sed -i 's/%WIFIinterface%/'"$WIFI_INTERFACE"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIip%/'"$WIFIip"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIipRouter%/'"$WIFIipRouter"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIipExtDNS%/'"$wifiExtDNS"'/' "${dhcpcd_conf}"
-            sudo sed -i 's/%WIFIcountryCode%/'"$WIFIcountryCode"'/' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIinterface%|'"$(escape_for_sed "$WIFI_INTERFACE")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIip%|'"$(escape_for_sed "$WIFIip")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipRouter%|'"$(escape_for_sed "$WIFIipRouter")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIipExtDNS%|'"$(escape_for_sed "$wifiExtDNS")"'|' "${dhcpcd_conf}"
+            sudo sed -i 's|%WIFIcountryCode%|'"$(escape_for_sed "$WIFIcountryCode")"'|' "${dhcpcd_conf}"
             # Change user:group and access mod
             sudo chown root:netdev "${dhcpcd_conf}"
             sudo chmod 664 "${dhcpcd_conf}"
@@ -1229,7 +1206,7 @@ existing_assets() {
                 # Additional error check: key should not start with a hash and not be empty.
                 if [ ! "${key:0:1}" == '#' ] && [ -n "$key" ]; then
                     # Replace the matching value in the newly created conf file
-                    sed -i 's/%'"$key"'%/'"$val"'/' "${jukebox_dir}"/settings/rfid_trigger_play.conf
+                    sed -i 's|%'"$key"'%|'"$val"'|' "${jukebox_dir}"/settings/rfid_trigger_play.conf
                 fi
             done <"${backup_dir}"/settings/rfid_trigger_play.conf
         fi
@@ -1262,8 +1239,6 @@ existing_assets() {
             # make sure service is still enabled by registering again
             USB_BUTTONS_SERVICE="/etc/systemd/system/phoniebox-buttons-usb-encoder.service"
             sudo cp -v "${jukebox_dir}"/components/controls/buttons_usb_encoder/phoniebox-buttons-usb-encoder.service.sample "${USB_BUTTONS_SERVICE}"
-            # Replace homedir; double quotes for variable expansion
-            sudo sed -i "s%/home/pi%${HOME_DIR}%g" "${USB_BUTTONS_SERVICE}"
             sudo systemctl start phoniebox-buttons-usb-encoder.service
             sudo systemctl enable phoniebox-buttons-usb-encoder.service
         fi
@@ -1350,80 +1325,101 @@ autohotspot() {
     fi
 }
 
-finish_installation() {
-    local jukebox_dir="$1"
+finished() {
     echo "
 #
 # INSTALLATION FINISHED
 #
 #####################################################
+
+Let the sounds begin.
+Find more information and documentation on the github account:
+https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/
+
 "
+}
 
-    #####################################################
-    # Register external device(s)
+register_rfid_reader() {
+    local jukebox_dir="$1"
 
-    echo "If you are using an RFID reader, connect it to your RPi."
-    echo "(In case your RFID reader required soldering, consult the manual.)"
-    # Use -e to display response of user in the logfile
-    read -e -r -p "Have you connected your RFID reader? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-            ;;
-        *)
-            echo  'Please select the RFID reader you want to use'
-            options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
-            select opt in "${options[@]}"; do
-                case $opt in
-                    "USB-Reader (e.g. Neuftech)")
-                        cd "${jukebox_dir}"/scripts/ || exit
-                        python3 RegisterDevice.py
-                        sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
-                        sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
-                        break
-                        ;;
-                    "RC522")
-                        bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
-                        break
-                        ;;
-                    "PN532")
-                        bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
-                        break
-                        ;;
-                    "Manual configuration")
-                        echo "Please configure your reader manually."
-                        break
-                        ;;
-                    "Multiple RFID reader")
-                        cd "${jukebox_dir}"/scripts/ || exit
-                        sudo python3 RegisterDevice.py.Multi
-                        break
-                        ;;
-                    *)
-                        echo "This is not a number"
-                        ;;
-                esac
-            done
-    esac
+    echo ""
+    echo "-----------------------------------------------------"
+    echo "Register RFID reader"
+    echo "-----------------------------------------------------"
 
-    echo
-    echo "DONE. Let the sounds begin."
-    echo "Find more information and documentation on the github account:"
-    echo "https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/"
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        echo "If you are using an RFID reader, connect it to your RPi."
+        echo "(In case your RFID reader required soldering, consult the manual.)"
+        # Use -e to display response of user in the logfile
+        read -e -r -p "Have you connected your RFID reader? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                echo  'Please select the RFID reader you want to use'
+                options=("USB-Reader (e.g. Neuftech)" "RC522" "PN532" "Manual configuration" "Multiple RFID reader")
+                select opt in "${options[@]}"; do
+                    case $opt in
+                        "USB-Reader (e.g. Neuftech)")
+                            cd "${jukebox_dir}"/scripts/ || exit
+                            python3 RegisterDevice.py
+                            sudo chown pi:www-data "${jukebox_dir}"/scripts/deviceName.txt
+                            sudo chmod 644 "${jukebox_dir}"/scripts/deviceName.txt
+                            break
+                            ;;
+                        "RC522")
+                            bash "${jukebox_dir}"/components/rfid-reader/RC522/setup_rc522.sh
+                            break
+                            ;;
+                        "PN532")
+                            bash "${jukebox_dir}"/components/rfid-reader/PN532/setup_pn532.sh
+                            break
+                            ;;
+                        "Manual configuration")
+                            echo "Please configure your reader manually."
+                            break
+                            ;;
+                        "Multiple RFID reader")
+                            cd "${jukebox_dir}"/scripts/ || exit
+                            sudo python3 RegisterDevice.py.Multi
+                            break
+                            ;;
+                        *)
+                            echo "This is not a number"
+                            ;;
+                    esac
+                done
+        esac
+    else
+        echo "Skipping RFID reader setup..."
+        echo "For manual registration of an RFID reader type:"
+        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
+    fi
+}
 
-    echo "Reboot is needed to activate all settings"
-    # Use -e to display response of user in the logfile
-    read -e -r -p "Would you like to reboot now? [Y/n] " response
-    case "$response" in
-        [nN][oO]|[nN])
-        # Close logging
-        log_close
-            ;;
-        *)
-        # Close logging
-        log_close
-            sudo shutdown -r now
-            ;;
-    esac
+cleanup_and_reboot() {
+
+    echo ""
+    echo "-----------------------------------------------------"
+    echo "A reboot is required to activate all settings!"
+    local do_shutdown=false
+    if [[ ${INTERACTIVE} == "true" ]]; then
+        # Use -e to display response of user in the logfile
+        read -e -r -p "Would you like to reboot now? [Y/n] " response
+        case "$response" in
+            [nN][oO]|[nN])
+                ;;
+            *)
+                do_shutdown=true
+                ;;
+        esac
+    fi
+
+    # Close logging
+    log_close
+    if [[ ${do_shutdown} == "true" ]]; then
+        sudo shutdown -r now
+    fi
 }
 
 ########
@@ -1451,10 +1447,6 @@ main() {
     fi
     install_main "${JUKEBOX_HOME_DIR}"
 
-    source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
-
-    wifi_settings "${JUKEBOX_HOME_DIR}"
-    autohotspot "${JUKEBOX_HOME_DIR}"
     existing_assets "${JUKEBOX_HOME_DIR}" "${JUKEBOX_BACKUP_DIR}"
     folder_access "${JUKEBOX_HOME_DIR}" "pi:www-data" 775
 
@@ -1463,15 +1455,10 @@ main() {
     sudo chown pi:www-data "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
     sudo chmod 775 "${JUKEBOX_HOME_DIR}/settings/PhonieboxInstall.conf"
 
-    if [[ ${INTERACTIVE} == "true" ]]; then
-        finish_installation "${JUKEBOX_HOME_DIR}"
-    else
-        echo "Skipping USB device setup..."
-        echo "For manual registration of a USB card reader type:"
-        echo "python3 ${JUKEBOX_HOME_DIR}/scripts/RegisterDevice.py"
-        echo " "
-        echo "Reboot is required to activate all settings!"
-    fi
+    finished
+
+    register_rfid_reader "${JUKEBOX_HOME_DIR}"
+    cleanup_and_reboot
 }
 
 start=$(date +%s)

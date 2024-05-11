@@ -14,18 +14,6 @@ if [[ "$#" -lt 2 || ( "${AUTOHOTSPOTconfig}" != "NO" && "${AUTOHOTSPOTconfig}" !
     exit 1
 fi
 
-# Reads a textfile and pipes all lines as args to the given command.
-# Does filter out comments.
-# Arguments:
-#   1    : textfile to read
-#   2... : command to receive args (e.g. 'echo', 'apt-get -y install', ...)
-call_with_args_from_file () {
-    local package_file="$1"
-    shift
-
-    sed 's/#.*//g' ${package_file} | xargs "$@"
-}
-
 _get_last_ip_segment() {
     local ip="$1"
     echo $ip | cut -d'.' -f1-3
@@ -80,6 +68,7 @@ wifi_interface=wlan0
 ip_without_last_segment=$(_get_last_ip_segment $AUTOHOTSPOTip)
 autohotspot_profile="Phoniebox_Hotspot"
 
+source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.helper.sh
 source "${JUKEBOX_HOME_DIR}"/scripts/helperscripts/inc.networkHelper.sh
 
 _install_autohotspot_dhcpcd() {
@@ -103,8 +92,8 @@ _install_autohotspot_dhcpcd() {
     config_file_backup "${dnsmasq_conf}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/dnsmasq.conf "${dnsmasq_conf}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${dnsmasq_conf}"
-    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${dnsmasq_conf}"
+    sudo sed -i "s|%WIFI_INTERFACE%|$(escape_for_sed "${wifi_interface}")|g" "${dnsmasq_conf}"
+    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|$(escape_for_sed "${ip_without_last_segment}")|g" "${dnsmasq_conf}"
     sudo chown root:root "${dnsmasq_conf}"
     sudo chmod 644 "${dnsmasq_conf}"
 
@@ -112,10 +101,10 @@ _install_autohotspot_dhcpcd() {
     config_file_backup "${hostapd_conf}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd.conf "${hostapd_conf}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${hostapd_conf}"
-    sudo sed -i "s|%AUTOHOTSPOTssid%|${AUTOHOTSPOTssid}|g" "${hostapd_conf}"
-    sudo sed -i "s|%AUTOHOTSPOTpass%|${AUTOHOTSPOTpass}|g" "${hostapd_conf}"
-    sudo sed -i "s|%AUTOHOTSPOTcountryCode%|${AUTOHOTSPOTcountryCode}|g" "${hostapd_conf}"
+    sudo sed -i "s|%WIFI_INTERFACE%|$(escape_for_sed "${wifi_interface}")|g" "${hostapd_conf}"
+    sudo sed -i "s|%AUTOHOTSPOTssid%|$(escape_for_sed "${AUTOHOTSPOTssid}")|g" "${hostapd_conf}"
+    sudo sed -i "s|%AUTOHOTSPOTpass%|$(escape_for_sed "${AUTOHOTSPOTpass}")|g" "${hostapd_conf}"
+    sudo sed -i "s|%AUTOHOTSPOTcountryCode%|$(escape_for_sed "${AUTOHOTSPOTcountryCode}")|g" "${hostapd_conf}"
     sudo chown root:root "${hostapd_conf}"
     sudo chmod 644 "${hostapd_conf}"
 
@@ -123,7 +112,7 @@ _install_autohotspot_dhcpcd() {
     config_file_backup "${hostapd_deamon}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/hostapd "${hostapd_deamon}"
-    sudo sed -i "s|%HOSTAPD_CONF%|${hostapd_conf}|g" "${hostapd_deamon}"
+    sudo sed -i "s|%HOSTAPD_CONF%|$(escape_for_sed "${hostapd_conf}")|g" "${hostapd_deamon}"
     sudo chown root:root "${hostapd_deamon}"
     sudo chmod 644 "${hostapd_deamon}"
 
@@ -136,28 +125,28 @@ _install_autohotspot_dhcpcd() {
     fi
 
     if [[ ! $(grep -w "${dhcpcd_conf_nohook_wpa_supplicant}" ${dhcpcd_conf}) ]]; then
-        sudo bash -c "echo ${dhcpcd_conf_nohook_wpa_supplicant} >> ${dhcpcd_conf}"
+        echo "${dhcpcd_conf_nohook_wpa_supplicant}" | sudo tee -a "${dhcpcd_conf}" > /dev/null
     fi
 
     # create service to trigger hotspot
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot "${autohotspot_script}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_SERVICE_DAEMON%|${autohotspot_service_daemon}|g" "${autohotspot_script}"
+    sudo sed -i "s|%WIFI_INTERFACE%|$(escape_for_sed "${wifi_interface}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_IP%|$(escape_for_sed "${AUTOHOTSPOTip}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_SERVICE_DAEMON%|$(escape_for_sed "${autohotspot_service_daemon}")|g" "${autohotspot_script}"
     sudo chmod +x "${autohotspot_script}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot-daemon.service "${autohotspot_service_daemon_path}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${autohotspot_service_daemon_path}"
+    sudo sed -i "s|%WIFI_INTERFACE%|$(escape_for_sed "${wifi_interface}")|g" "${autohotspot_service_daemon_path}"
     sudo chown root:root "${autohotspot_service_daemon_path}"
     sudo chmod 644 "${autohotspot_service_daemon_path}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot.service "${autohotspot_service_path}"
-    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|$(escape_for_sed "${autohotspot_script}")|g" "${autohotspot_service_path}"
     sudo chown root:root "${autohotspot_service_path}"
     sudo chmod 644 "${autohotspot_service_path}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/dhcpcd/autohotspot.timer "${autohotspot_timer_path}"
-    sudo sed -i "s|%AUTOHOTSPOT_SERVICE%|${autohotspot_service}|g" "${autohotspot_timer_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SERVICE%|$(escape_for_sed "${autohotspot_service}")|g" "${autohotspot_timer_path}"
     sudo chown root:root "${autohotspot_timer_path}"
     sudo chmod 644 "${autohotspot_timer_path}"
 
@@ -212,22 +201,22 @@ _install_autohotspot_NetworkManager() {
 
     # create service to trigger hotspot
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot "${autohotspot_script}"
-    sudo sed -i "s|%WIFI_INTERFACE%|${wifi_interface}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_PROFILE%|${autohotspot_profile}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_SSID%|${AUTOHOTSPOTssid}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|${AUTOHOTSPOTpass}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_IP%|${AUTOHOTSPOTip}|g" "${autohotspot_script}"
-    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|${ip_without_last_segment}|g" "${autohotspot_script}"
-    sudo sed -i "s|%AUTOHOTSPOT_TIMER_NAME%|${autohotspot_timer}|g" "${autohotspot_script}"
+    sudo sed -i "s|%WIFI_INTERFACE%|$(escape_for_sed "${wifi_interface}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_PROFILE%|$(escape_for_sed "${autohotspot_profile}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_SSID%|$(escape_for_sed "${AUTOHOTSPOTssid}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_PASSWORD%|$(escape_for_sed "${AUTOHOTSPOTpass}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_IP%|$(escape_for_sed "${AUTOHOTSPOTip}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%IP_WITHOUT_LAST_SEGMENT%|$(escape_for_sed "${ip_without_last_segment}")|g" "${autohotspot_script}"
+    sudo sed -i "s|%AUTOHOTSPOT_TIMER_NAME%|$(escape_for_sed "${autohotspot_timer}")|g" "${autohotspot_script}"
     sudo chmod +x "${autohotspot_script}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot.service "${autohotspot_service_path}"
-    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|${autohotspot_script}|g" "${autohotspot_service_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SCRIPT%|$(escape_for_sed "${autohotspot_script}")|g" "${autohotspot_service_path}"
     sudo chown root:root "${autohotspot_service_path}"
     sudo chmod 644 "${autohotspot_service_path}"
 
     sudo cp "${JUKEBOX_HOME_DIR}"/misc/sampleconfigs/autohotspot/NetworkManager/autohotspot.timer "${autohotspot_timer_path}"
-    sudo sed -i "s|%AUTOHOTSPOT_SERVICE%|${autohotspot_service}|g" "${autohotspot_timer_path}"
+    sudo sed -i "s|%AUTOHOTSPOT_SERVICE%|$(escape_for_sed "${autohotspot_service}")|g" "${autohotspot_timer_path}"
     sudo chown root:root "${autohotspot_timer_path}"
     sudo chmod 644 "${autohotspot_timer_path}"
 
