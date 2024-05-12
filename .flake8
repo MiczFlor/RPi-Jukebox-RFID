@@ -14,7 +14,8 @@ per-file-ignores =
     # Not necessary, if __all__ is declared in __init__ file
     # https://www.python.org/dev/peps/pep-0008/#id48
     __init__.py:F401,
-    components/smart-home-automation/MQTT-protocol/daemon_mqtt_client.py:W605
+    components/smart-home-automation/MQTT-protocol/daemon_mqtt_client.py:W605,
+    components/controls/buttons_usb_encoder/*.py:E402
 count = True
 max-complexity = 12
 statistics = True

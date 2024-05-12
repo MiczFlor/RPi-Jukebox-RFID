@@ -4,10 +4,10 @@ import sys
 
 sys.path.append(".")  # This command should be before imports of components
 
-import logging # noqa E402
-from evdev import categorize, ecodes, KeyEvent # noqa E402
-from io_buttons_usb_encoder import button_map, current_device # noqa E402
-from components.gpio_control.function_calls import phoniebox_function_calls # noqa E402
+import logging
+from evdev import categorize, ecodes, KeyEvent
+from io_buttons_usb_encoder import button_map, current_device
+from components.gpio_control.function_calls import phoniebox_function_calls
 
 sys.path.append(".")
 
