@@ -69,7 +69,7 @@ def handler(signum, frame):
         # force pause the player script
         logger.info('Trigger Pause Force')
         subprocess.call([dir_path + '/playout_controls.sh -c=playerpauseforce -v=0.1'], shell=True)
-    except OSError as e:
+    except OSError:
         logger.info('Execution of Pause failed.')
 
 

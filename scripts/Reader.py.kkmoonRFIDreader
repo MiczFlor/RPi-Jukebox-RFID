@@ -44,7 +44,7 @@ class Reader:
                     break
             try:
                 self.dev
-            except:
+            except Exception:
                 sys.exit('Could not find the device %s\n. Make sure is connected' % deviceName)
 
     def readCard(self):
