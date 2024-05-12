@@ -51,7 +51,7 @@ def setupMFRC522():
 
 
 runCmd("cp {0}/scripts/Reader.py.experimental.Multi {1}/scripts/Reader.py".format(JUKEBOX_HOME_DIR, JUKEBOX_HOME_DIR))
-from Reader import get_devices, EDevices
+from Reader import get_devices, EDevices # noqa E402
 list_dev_ids = list()
 devices = get_devices()
 
