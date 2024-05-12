@@ -30,6 +30,7 @@ jobs:
         pip install spidev
         pip install -r requirements.txt
         pip install -r requirements-GPIO.txt
+        pip install -r components/rfid-reader/PN532/requirements.txt
     - name: Setup flake8 annotations
       uses: rbialon/flake8-annotations@v1
     - name: Lint with flake8
