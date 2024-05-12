@@ -8,7 +8,11 @@ ignore =
     # continuation line under-indented for visual indent
     E128,
     # line break before binary operator
-    W503
+    W503,
+    # We don't always want periods at the end of the first docstring line
+    D400,
+    # We dont rephrase to imperative mood
+    D401
 per-file-ignores =
     # Only in __init__files ignore imported but unused
     # Not necessary, if __all__ is declared in __init__ file
