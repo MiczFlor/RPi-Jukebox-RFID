@@ -19,13 +19,15 @@ Out-of-the box support is included for the following buttons
 
 Key codes are standarized and so it should also work with your headphones. If you want to add more keys or assign a different behaviour see [Troubleshooting](#troubleshooting)
 
-*Note:* Volume up/down is inherently supported by the bluetooth protocol. There is no need to handle these by this script.
+> [!NOTE]
+> Volume up/down is inherently supported by the bluetooth protocol. There is no need to handle these by this script.
 
 ## On Connect / On Disconnect
 
 If the feature [bluetooth-sink-switch](../../bluetooth-sink-switch) is enabled, the script automatically switches the audio stream to headphones / regular speakers on bluetooth connect / disconnect  respectivly. Playback state (play/pause) is retained.
 
-*Note:* On-connect actions may take up to 4 seconds - please be patient (bluetooth connection is only checked every two seconds, bluetooth stream needs to be buffered, etc...)
+ > [!NOTE]
+ > On-connect actions may take up to 4 seconds - please be patient (bluetooth connection is only checked every two seconds, bluetooth stream needs to be buffered, etc...)
 
 You can **customize** the behaviour by editing the functions
 
