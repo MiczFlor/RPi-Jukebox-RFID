@@ -141,7 +141,8 @@ There is a growing section of [troubleshooting](https://github.com/MiczFlor/RPi-
 
 Here is a list of equipment needed. You can find a lot second hand online (save money and the planet). The links below lead to Amazon, not at all because I want to support them, but because their PartnerNet program helps to support the Phoniebox maintenance (a little bit...).
 
-Note: depending on individual projects, the hardware requirements vary.
+> [!NOTE]
+> Depending on individual projects, the hardware requirements vary.
 
 ### Raspberry Pi
 
