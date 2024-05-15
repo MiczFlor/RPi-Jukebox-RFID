@@ -78,3 +78,8 @@ MISO.
 MFRC522 boards can be picked up from many places for little money.
 
 Good quality ones can be found e.g. here
+
+### Cards/Tags
+
+Cards or tags must support 13.56 MHz. NTAG product numbers should be S50 or S70.
+
