@@ -82,4 +82,3 @@ Good quality ones can be found e.g. here
 ### Cards/Tags
 
 Cards or tags must support 13.56 MHz. NTAG product numbers should be S50 or S70.
-
