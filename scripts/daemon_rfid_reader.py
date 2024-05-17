@@ -57,7 +57,7 @@ string = ''.join(extract)
 
 # if controlcards delay is deactivated, let the cards pass, otherwise, they have to wait...
 if sspc_nodelay == "ON":
-    ids = re.findall("(\d+)", string)
+    ids = re.findall("(\d+)", string) # noqa W605
 else:
     ids = ""
 
@@ -69,7 +69,7 @@ def handler(signum, frame):
         # force pause the player script
         logger.info('Trigger Pause Force')
         subprocess.call([dir_path + '/playout_controls.sh -c=playerpauseforce -v=0.1'], shell=True)
-    except OSError as e:
+    except OSError:
         logger.info('Execution of Pause failed.')
 
 

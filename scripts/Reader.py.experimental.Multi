@@ -17,13 +17,6 @@ import RPi.GPIO as GPIO
 import logging
 from enum import Enum
 from evdev import InputDevice, ecodes, list_devices
-# Workaround: when using RC522 reader with pirc522 pkg the py532lib pkg may not be installed and vice-versa
-try:
-    import pirc522
-    from py532lib.i2c import *
-    from py532lib.mifare import *
-except ImportError:
-    pass
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +158,10 @@ class Rdm6300Reader:
 
 class Pn532Reader:
     def __init__(self):
-        pn532 = Pn532_i2c()
+        from py532lib.i2c import Pn532_i2c
+        from py532lib.mifare import Mifare
+        from py532lib.mifare import MIFARE_WAIT_FOR_ENTRY
+        pn532 = Pn532_i2c() # noqa F841
         self.device = Mifare()
         self.device.SAMconfigure()
         self.device.set_max_retries(MIFARE_WAIT_FOR_ENTRY)

@@ -11,7 +11,7 @@ import components.gpio_control.function_calls
 sys.path.append(".")
 
 
-try:
+try: # noqa C901
     functions = list(
         filter(lambda function_name: function_name.startswith("functionCall"),
                dir(components.gpio_control.function_calls.phoniebox_function_calls)))
@@ -43,7 +43,8 @@ try:
 
                         button_map[button_string] = function_name
                         button_map[button_string + "_args"] = function_args
-                        print("Button '" + button_string + "' is now mapped to '" + function_name_short + "' with argument '" + str(function_args) + "'")
+                        print("Button '" + button_string + "' is now mapped to '" + function_name_short
+                              + "' with argument '" + str(function_args) + "'")
                         break
         except KeyboardInterrupt:
             continue

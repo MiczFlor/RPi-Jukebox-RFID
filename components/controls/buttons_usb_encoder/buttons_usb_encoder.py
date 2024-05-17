@@ -28,10 +28,11 @@ try:
                     function_args = button_map[button_string + "_args"]
                     try:
                         getattr(function_calls, function_name)(function_args)
-                    except:
+                    except Exception:
                         logger.warning(
-                            "Function " + function_name + " not found in function_calls.py (mapped from button: " + button_string + ")")
+                            "Function " + function_name
+                            + " not found in function_calls.py (mapped from button: " + button_string + ")")
                 except KeyError:
                     logger.warning("Button " + button_string + " not mapped to any function.")
-except:
+except Exception:
     logger.error("An error with Buttons USB Encoder occurred.")
