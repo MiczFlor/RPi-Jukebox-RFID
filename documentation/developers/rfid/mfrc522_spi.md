@@ -81,4 +81,4 @@ Good quality ones can be found e.g. here
 
 ### Cards/Tags
 
-Cards or tags must support 13.56 MHz. NTAG product numbers should be S50 or S70.
+Cards or tags must support 13.56 MHz. Currently, only cards/tags of the type "NXP Mifare Classic 1k(S50)", "NXP Mifare Classic 4k(S70)" and "NXP Mifare Ultralight (C)" can be used. Type "NXP Mifare NTAG2xx" or others will not work!
