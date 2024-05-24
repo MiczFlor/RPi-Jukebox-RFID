@@ -30,6 +30,8 @@
 
 ## Web Application
 
+* Application
+  * [Cover Art](./webapp/cover-art.md)
 * Music
   * [Playlists, Livestreams and Podcasts](./webapp/playlists-livestreams-podcasts.md)
 
