@@ -72,7 +72,7 @@ class battmon_ina219(BatteryMonitorBase.BattmonBase):
         super().__init__(cfg, logger)
 
     def init_batt_mon_hw(self, num, denom):
-        self.adc = INA219(float(num)/1000, busnum=1)
+        self.adc = INA219(float(num) / 1000, busnum=1)
         self.adc.configure(self.adc.RANGE_16V, self.adc.GAIN_AUTO, self.adc.ADC_32SAMP, self.adc.ADC_32SAMP)
 
     def get_batt_voltage(self):
