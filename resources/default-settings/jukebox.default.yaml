@@ -1,5 +1,5 @@
 # IMPORTANT:
-# Do not use paths with '~/some/dir' - always use '/home/pi/some/dir'
+# Always use relative path from folder `src/jukebox` (`../../`), but do not use relative paths with `~/`.
 # Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox
@@ -20,7 +20,6 @@ modules:
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
   others:
-  - music_cover_art
   - misc
 pulse:
   # Reset system volume to this level after start. (Comment out disables and volume is not changed)
@@ -30,7 +29,7 @@ pulse:
   toggle_on_connect: true
   # Limit maximum volume range to XX % - can be changed through the UI (for temporary use)
   soft_max_volume: 70
-  # Run the tool run_configure_audio.py to configure the pulseaudio sinks
+  # Run the audio configuration tool to configure the pulseaudio sinks
   #
   # After startup, the audio output defaults to primary
   # Any Bluetooth device should be the secondary (as it may not always be available directly after boot)
@@ -88,6 +87,12 @@ playermpd:
     update_on_startup: true
     check_user_rights: true
   mpd_conf: ~/.config/mpd/mpd.conf
+  # Must be one of: 'none', 'stop', 'rewind':
+  end_of_playlist_next_action: none
+  # Must be one of: 'none', 'prev', 'rewind':
+  stopped_prev_action: prev
+  # Must be one of: 'none', 'next', 'rewind':
+  stopped_next_action: next
 rpc:
   tcp_port: 5555
   websocket_port: 5556
@@ -146,3 +151,9 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+webapp:
+  coverart_cache_path: ../../src/webapp/build/cover-cache
+  # Load cover arts in Webapp. Change to false in case you have performance issue
+  # when handling a lot of music
+  # Defaults to true
+  show_covers: true

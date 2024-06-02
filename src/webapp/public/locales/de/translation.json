@@ -23,7 +23,14 @@
           "timer_fade_volume": "Fade volume",
           "toggle_output": "Audio-Ausgang umschalten",
           "sync_rfidcards_all": "Alle Audiodateien und Karteneinträge synchronisieren",
-          "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan' "
+          "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan'",
+          "next_song": "Nächster Song",
+          "pause": "Pause",
+          "play": "Abspielen",
+          "prev_song": "Vorheriger Song",
+          "shuffle": "Zufallswiedergabe",
+          "repeat": "Wiedergabe wiederholen",
+          "toggle": "Abspielen/Pause umschalten"
         }
       },
       "controls-selector": {
@@ -56,8 +63,25 @@
           "no-music-selected": "Es ist keine Musik ausgewählt.",
           "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
         },
-        "volume": {
-          "title": "Lautstärke Stufen"
+        "audio": {
+          "repeat": {
+            "description": "Wähle den zu setzenden Status.",
+            "label-toggle": "Umschalten - Schaltet durch 1) Wiedergabeliste Wiederholen, 2) Song Wiederholen, 3) Wiederholen Deaktiveren",
+            "label-toggle-repeat": "Wiedergabeliste Wiederholen umschalten",
+            "label-toggle-repeat-single": "Song Wiederholen umschalten",
+            "label-enable-repeat": "Wiedergabeliste Wiederholen aktivieren",
+            "label-enable-repeat-single": "Song Wiederholen aktivieren",
+            "label-disable": "Wiederholen deaktivieren"
+          },
+          "shuffle": {
+            "description": "Wähle den zu setzenden Status.",
+            "label-toggle": "Umschalten",
+            "label-enable": "Aktivieren",
+            "label-disable": "Deaktivieren"
+          },
+          "volume": {
+            "title": "Lautstärke Stufen"
+          }
         },
         "timers": {
           "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
@@ -114,8 +138,8 @@
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
-      "no-music": "Keine Musik vorhanden!",
-      "empty-folder": "Dieser Ordner ist leer!",
+      "no-music": "☝️ Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer! 🙈",
       "show-folder-content": "Zeige den Ordnerinhalt an",
       "back-button-label": "Zurück"
     },
@@ -138,17 +162,17 @@
   "player": {
     "controls": {
       "shuffle": {
-        "activate": "Shuffle aktivieren",
-        "deactivate": "Shuffle deaktivieren"
+        "enable": "Zufallswiedergabe aktivieren",
+        "disable": "Zufallswiedergabe deaktivieren"
       },
-      "skip": "Zurück",
+      "prev_song": "Zurück",
       "play": "Abspielen",
       "pause": "Pause",
-      "next": "Weiter",
+      "next_song": "Weiter",
       "repeat": {
-        "activate": "Wiederholen aktivieren",
-        "activate-single": "1 Wiederholen aktivieren",
-        "deactivate": "Wiederholen deaktivieren"
+        "enable": "Wiedergabeliste Wiederholen aktivieren",
+        "enable-single": "Song Wiederholen aktivieren",
+        "disable": "Wiederholen deaktivieren"
       }
     },
     "cover": {
@@ -177,7 +201,8 @@
         "rebooting": "Das System wird neu gestartet.",
         "button-title": "Neustart",
         "description-confirm": "Möchtest Du jetzt wirklich neu starten?",
-        "failed": "Neustart fehlgeschlagen"
+        "failed": "Neustart fehlgeschlagen",
+        "bye": "👋 Bis bald"
       },
       "shutdown": {
         "title": "Herunterfahren",
@@ -193,6 +218,12 @@
       "not-installed": "Diese Funktion ist nicht installiert",
       "why": "Warum?",
       "control-label": "Auto Hotspot"
+    },
+    "general": {
+      "title": "Allgmeine Einstellungen",
+      "show_covers": {
+        "title": "Cover anzeigen"
+      }
     },
     "timers": {
       "option-label-timeslot": "{{value}} min",
@@ -226,7 +257,7 @@
       },
       "disk-usage": {
         "label": "Speicherverbrauch",
-        "loading-error": "Die Angaben zum Speicherverbrauch konntent nicht geladen werden.",
+        "loading-error": "Die Angaben zum Speicherverbrauch konnten nicht geladen werden.",
         "result": "{{used}} GB von {{total}} GB sind belegt ({{result}}%)"
       },
       "ip-address": {

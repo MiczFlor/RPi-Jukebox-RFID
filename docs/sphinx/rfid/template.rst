@@ -1,1 +1,0 @@
-.. include:: ../../../src/jukebox/components/rfid/hardware/template_new_reader/README.rst

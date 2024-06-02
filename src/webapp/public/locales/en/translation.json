@@ -23,7 +23,14 @@
           "timer_fade_volume": "Fade volume",
           "toggle_output": "Toggle audio output",
           "sync_rfidcards_all": "Sync all audiofiles and card entries",
-          "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'"
+          "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'",
+          "next_song": "Next song",
+          "pause": "Pause",
+          "play": "Play",
+          "prev_song": "Previous song",
+          "shuffle": "Shuffle",
+          "repeat": "Repeat",
+          "toggle": "Toggle Play/Pause"
         }
       },
       "controls-selector": {
@@ -56,8 +63,25 @@
           "no-music-selected": "No music selected",
           "loading-song-error": "An error occurred while loading song."
         },
-        "volume": {
-          "title": "Volume steps"
+        "audio": {
+          "repeat": {
+            "description": "Choose the state to set.",
+            "label-toggle": "Toggle - Loops through 1) Repeat playlist, 2) Repeat song, 3) Disable repeat",
+            "label-toggle-repeat": "Toggle Repeat Playlist",
+            "label-toggle-repeat-single": "Toggle Repeat Song",
+            "label-enable-repeat": "Enable Repeat Playlist",
+            "label-enable-repeat-single": "Enable Repeat Song",
+            "label-disable": "Disable"
+          },
+          "shuffle": {
+            "description": "Choose the state to set.",
+            "label-toggle": "Toggle",
+            "label-enable": "Enable",
+            "label-disable": "Disable"
+          },
+          "volume": {
+            "title": "Volume steps"
+          }
         },
         "timers": {
           "description": "Choose the amount of minutes you want the action to be performed."
@@ -114,8 +138,8 @@
       "title": "Select an album, folder or song"
     },
     "folders": {
-      "no-music": "No music found!",
-      "empty-folder": "This folder is empty!",
+      "no-music": "☝️ No music found!",
+      "empty-folder": "This folder is empty! 🙈",
       "show-folder-content": "Show folder content",
       "back-button-label": "Back"
     },
@@ -138,17 +162,17 @@
   "player": {
     "controls": {
       "shuffle": {
-        "activate": "Activate shuffle",
-        "deactivate": "Deactivate shuffle"
+        "enable": "Enable shuffle",
+        "disable": "Disable shuffle"
       },
-      "skip": "Skip previous track",
+      "prev_song": "Skip to previous track",
       "play": "Play",
       "pause": "Pause",
-      "next": "Skip next track",
+      "next_song": "Skip to next track",
       "repeat": {
-        "activate": "Activate repeat",
-        "activate-single": "Activate single repeat",
-        "deactivate": "Deactivate repeat"
+        "enable": "Enable Playlist repeat",
+        "enable-single": "Enable Song repeat",
+        "disable": "Disable repeat"
       }
     },
     "cover": {
@@ -177,7 +201,8 @@
         "rebooting": "Rebooting",
         "button-title": "Reboot",
         "description-confirm": "Are you sure you want to reboot now?",
-        "failed": "Reboot failed"
+        "failed": "Reboot failed",
+        "bye": "👋 Good bye"
       },
       "shutdown": {
         "title": "Shut Down",
@@ -194,6 +219,12 @@
       "why": "Why?",
       "control-label": "Auto Hotspot"
     },
+    "general": {
+      "title": "General Settings",
+      "show_covers": {
+        "title": "Show Cover Art"
+      }
+    },
     "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
@@ -206,6 +237,7 @@
     },
     "secondswipe": {
       "title": "Second Swipe",
+      "description": "Second action after the same card swiped again",
       "restart": "Restart playlist",
       "toggle": "Toggle pause / play",
       "skip": "Skip to next track",

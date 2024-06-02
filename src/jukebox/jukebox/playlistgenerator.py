@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Playlists are build from directory content in the following way:
 a directory is parsed and files are added to the playlist in the following way
@@ -11,8 +11,6 @@ a directory is parsed and files are added to the playlist in the following way
    to the playlist except for ``*.xml`` and ``*.podcast`` URLS, which are expanded first
 
 An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
-
-.. code-block:: bash
 
     01-livestream.txt
     02-livestream.txt
@@ -191,7 +189,7 @@ class PlaylistCollector:
         but is omitted when generating the playlist entries. I.e. all files in the playlist are relative to this base dir
         """
         self.playlist = []
-        self._music_library_base_path = os.path.abspath(music_library_base_path)
+        self._music_library_base_path = os.path.abspath(os.path.expanduser(music_library_base_path))
         # These two variables only store reference content to generate __str__
         self._folder = ''
         self._recursive = False
@@ -277,7 +275,12 @@ class PlaylistCollector:
             logger.error(f" {e.__class__.__name__}: {e}")
         else:
             for m in content:
-                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path})
+                self.playlist.append({
+                    'type': TYPE_DECODE[m.filetype],
+                    'name': m.name,
+                    'path': m.path,
+                    'relpath': os.path.relpath(m.path, self._music_library_base_path)
+                })
 
     def _parse_nonrecusive(self, path='.'):
         return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
@@ -296,7 +299,7 @@ class PlaylistCollector:
         return recursive_playlist
 
     def parse(self, path='.', recursive=False):
-        """Parse the folder ``path`` and create a playlist from it's content
+        """Parse the folder ``path`` and create a playlist from its content
 
         :param path: Path to folder **relative** to ``music_library_base_path``
         :param recursive: Parse folder recursivley, or stay in top-level folder

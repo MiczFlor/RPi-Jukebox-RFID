@@ -69,7 +69,7 @@ const SeekBar = () => {
       direction="row"
       justifyContent="space-between"
       sx={ {
-        marginTop: '-20px',
+        marginTop: '-10px',
       }}
     >
       <Grid item>

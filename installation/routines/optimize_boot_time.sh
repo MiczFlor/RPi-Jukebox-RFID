@@ -2,121 +2,209 @@
 
 # Reference: https://panther.software/configuration-code/raspberry-pi-3-4-faster-boot-time-in-few-easy-steps/
 
+OPTIMIZE_DHCP_CONF="/etc/dhcpcd.conf"
+OPTIMIZE_BOOT_CMDLINE_OPTIONS="consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram"
+OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6="ipv6.disable=1"
+OPTIMIZE_DHCP_CONF_HEADER="## Jukebox DHCP Config"
+OPTIMIZE_BOOT_CONF_HEADER="## Jukebox Boot Config"
+
 _optimize_disable_irrelevant_services() {
-  echo "  * Disable keyboard-setup.service"
+  log "  Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
 
-  echo "  * Disable triggerhappy.service"
+  log "  Disable triggerhappy.service"
   sudo systemctl disable triggerhappy.service
   sudo systemctl disable triggerhappy.socket
 
-  echo "  * Disable raspi-config.service"
+  log "  Disable raspi-config.service"
   sudo systemctl disable raspi-config.service
 
-  echo "  * Disable apt-daily.service & apt-daily-upgrade.service"
+  log "  Disable apt-daily.service & apt-daily-upgrade.service"
   sudo systemctl disable apt-daily.service
   sudo systemctl disable apt-daily-upgrade.service
   sudo systemctl disable apt-daily.timer
   sudo systemctl disable apt-daily-upgrade.timer
 }
 
+_add_options_to_cmdline() {
+    local options="$1"
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+    if [ ! -s "${cmdlineFile}" ];then
+        sudo tee "${cmdlineFile}" <<-EOF
+${options}
+EOF
+    else
+        for option in $options
+        do
+            if ! grep -qiw "$option" "${cmdlineFile}" ; then
+                sudo sed -i "s/$/ $option/" "${cmdlineFile}"
+            fi
+        done
+    fi
+}
+
 # TODO: If false, actually make sure bluetooth is enabled
 _optimize_handle_bluetooth() {
   if [ "$DISABLE_BLUETOOTH" = true ] ; then
-    echo "  * Disable hciuart.service and bluetooth"
+    print_lc "  Disable bluetooth"
     sudo systemctl disable hciuart.service
     sudo systemctl disable bluetooth.service
   fi
 }
 
 # TODO: Allow options to enable/disable wifi, Dynamic/Static IP etc.
-_optimize_handle_network_connection() {
-  # Static IP Address and DHCP optimizations
-  local DHCP_CONF="/etc/dhcpcd.conf"
+_optimize_static_ip() {
+    # Static IP Address and DHCP optimizations
+    if [[ $(is_dhcpcd_enabled) == true ]]; then
+        if [ "$ENABLE_STATIC_IP" = true ] ; then
+            print_lc "  Set static IP address"
+            if grep -q "${OPTIMIZE_DHCP_CONF_HEADER}" "$OPTIMIZE_DHCP_CONF"; then
+                log "    Skipping. Already set up!"
+            else
+                # DHCP has not been configured
+                log "    ${CURRENT_INTERFACE} is the default network interface"
+                log "    ${CURRENT_GATEWAY} is the Router Gateway address"
+                log "    Using ${CURRENT_IP_ADDRESS} as the static IP for now"
 
-  if [ "$ENABLE_STATIC_IP" = true ] ; then
-    echo "  * Set static IP address" | tee /dev/fd/3
-    if grep -q "## Jukebox DHCP Config" "$DHCP_CONF"; then
-      echo "    Skipping. Already set up!" | tee /dev/fd/3
-    else
-      # DHCP has not been configured
-      # Reference: https://unix.stackexchange.com/a/307790/478030
-      INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+                sudo tee -a $OPTIMIZE_DHCP_CONF <<-EOF
 
-      # Reference: https://serverfault.com/a/31179/431930
-      GATEWAY=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
-
-      # Using the dynamically assigned IP address as it is the best guess to be free
-      # Reference: https://unix.stackexchange.com/a/48254/478030
-      CURRENT_IP_ADDRESS=$(hostname -I)
-      echo "    * ${INTERFACE} is the default network interface" | tee /dev/fd/3
-      echo "    * ${GATEWAY} is the Router Gateway address" | tee /dev/fd/3
-      echo "    * Using ${CURRENT_IP_ADDRESS} as the static IP for now" | tee /dev/fd/3
-
-      sudo tee -a $DHCP_CONF <<-EOF
-
-## Jukebox DHCP Config
-interface ${INTERFACE}
+${OPTIMIZE_DHCP_CONF_HEADER}
+interface ${CURRENT_INTERFACE}
 static ip_address=${CURRENT_IP_ADDRESS}/24
-static routers=${GATEWAY}
-static domain_name_servers=${GATEWAY}
+static routers=${CURRENT_GATEWAY}
+static domain_name_servers=${CURRENT_GATEWAY}
+noarp
 
 EOF
 
+            fi
+        fi
     fi
-  else
-    echo "  * Skipped static IP address"
-  fi
 }
 
 # TODO: Allow both Enable and Disable
+# Disable ipv6 thoroughly on the system with kernel parameter
 _optimize_ipv6_arp() {
-  if [ "$DISABLE_IPv6" = true ] ; then
-      echo "  * Disabling IPV6 and ARP"
-      sudo tee -a $DHCP_CONF <<-EOF
-
-## Jukebox boot speed-up settings
-noarp
-ipv4only
-noipv6
-
-EOF
-
-  fi
+    if [ "$DISABLE_IPv6" = true ] ; then
+        print_lc "  Disabling IPV6"
+        _add_options_to_cmdline "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}"
+    fi
 }
 
 # TODO: Allow both Enable and Disable
 _optimize_handle_boot_screen() {
+  local configFile=$(get_boot_config_path)
   if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
-    echo "  * Disable RPi rainbow screen"
-    BOOT_CONFIG='/boot/config.txt'
-    sudo tee -a $BOOT_CONFIG <<-EOF
+    log "  Disable RPi rainbow screen"
+    if grep -q "${OPTIMIZE_BOOT_CONF_HEADER}" "$configFile"; then
+      log "    Skipping. Already set up!"
+    else
+      sudo tee -a $configFile <<-EOF
 
-## Jukebox Settings
+${OPTIMIZE_BOOT_CONF_HEADER}
 disable_splash=1
 
 EOF
+    fi
   fi
 }
 
 # TODO: Allow both Enable and Disable
 _optimize_handle_boot_logs() {
   if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
-    echo "  * Disable boot logs"
-    BOOT_CMDLINE='/boot/cmdline.txt'
-    sudo sed -i "$ s/$/ consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram/" $BOOT_CMDLINE
+    log "  Disable boot logs"
+
+    _add_options_to_cmdline "${OPTIMIZE_BOOT_CMDLINE_OPTIONS}"
   fi
 }
 
+get_nm_active_profile()
+{
+	local active_profile=$(nmcli -g DEVICE,CONNECTION device status | grep "^${CURRENT_INTERFACE}" | cut -d':' -f2)
+	echo "$active_profile"
+}
+
+_optimize_static_ip_NetworkManager() {
+    if [[ $(is_NetworkManager_enabled) == true ]]; then
+        if [ "$ENABLE_STATIC_IP" = true ] ; then
+            print_lc "  Set static IP address"
+            log "    ${CURRENT_INTERFACE} is the default network interface"
+            log "    ${CURRENT_GATEWAY} is the Router Gateway address"
+            log "    Using ${CURRENT_IP_ADDRESS} as the static IP for now"
+            local active_profile=$(get_nm_active_profile)
+            sudo nmcli connection modify "$active_profile" ipv4.method manual ipv4.address "${CURRENT_IP_ADDRESS}/24" ipv4.gateway "$CURRENT_GATEWAY" ipv4.dns "$CURRENT_GATEWAY"
+        #else
+            # for future deactivation
+            #sudo nmcli connection modify "$active_profile" ipv4.method auto ipv4.address "" ipv4.gateway "" ipv4.dns ""
+        fi
+    fi
+}
+
+
+_optimize_check() {
+    print_verify_installation
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+    local configFile=$(get_boot_config_path)
+
+
+    verify_optional_service_enablement keyboard-setup.service disabled
+    verify_optional_service_enablement triggerhappy.service disabled
+    verify_optional_service_enablement triggerhappy.socket disabled
+    verify_optional_service_enablement raspi-config.service disabled
+    verify_optional_service_enablement apt-daily.service disabled
+    verify_optional_service_enablement apt-daily-upgrade.service disabled
+    verify_optional_service_enablement apt-daily.timer disabled
+    verify_optional_service_enablement apt-daily-upgrade.timer disabled
+
+    if [ "$DISABLE_BLUETOOTH" = true ] ; then
+        verify_optional_service_enablement hciuart.service disabled
+        verify_optional_service_enablement bluetooth.service disabled
+    fi
+
+    if [ "$ENABLE_STATIC_IP" = true ] ; then
+        if [[ $(is_dhcpcd_enabled) == true ]]; then
+            verify_file_contains_string_once "${OPTIMIZE_DHCP_CONF_HEADER}" "${OPTIMIZE_DHCP_CONF}"
+            verify_file_contains_string "${CURRENT_INTERFACE}" "${OPTIMIZE_DHCP_CONF}"
+            verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${OPTIMIZE_DHCP_CONF}"
+            verify_file_contains_string "${CURRENT_GATEWAY}" "${OPTIMIZE_DHCP_CONF}"
+        fi
+
+        if [[ $(is_NetworkManager_enabled) == true ]]; then
+            local active_profile=$(get_nm_active_profile)
+            local active_profile_path="/etc/NetworkManager/system-connections/${active_profile}.nmconnection"
+            verify_files_exists "${active_profile_path}"
+            verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${active_profile_path}"
+            verify_file_contains_string "${CURRENT_GATEWAY}" "${active_profile_path}"
+        fi
+    fi
+    if [ "$DISABLE_IPv6" = true ] ; then
+        verify_file_contains_string_once "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}" "${cmdlineFile}"
+    fi
+    if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
+        verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${configFile}"
+    fi
+
+    if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
+        for option in $OPTIMIZE_BOOT_CMDLINE_OPTIONS
+        do
+            verify_file_contains_string_once $option "${cmdlineFile}"
+        done
+    fi
+}
+
+_run_optimize_boot_time() {
+    _optimize_disable_irrelevant_services
+    _optimize_handle_boot_screen
+    _optimize_handle_boot_logs
+    _optimize_handle_bluetooth
+    _optimize_static_ip
+    _optimize_static_ip_NetworkManager
+    _optimize_ipv6_arp
+    _optimize_check
+}
+
 optimize_boot_time() {
-  echo "Optimize boot time" | tee /dev/fd/3
-
-  _optimize_disable_irrelevant_services
-  _optimize_handle_bluetooth
-  _optimize_handle_network_connection
-  _optimize_ipv6_arp
-  _optimize_handle_boot_screen
-  _optimize_handle_boot_logs
-
-  echo "DONE: optimize_boot_time"
+    run_with_log_frame _run_optimize_boot_time "Optimize boot time"
 }

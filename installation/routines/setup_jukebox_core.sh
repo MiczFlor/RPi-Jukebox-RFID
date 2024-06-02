@@ -1,71 +1,69 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_LIBZMQ_ARMV7="1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY" # ARMv7: https://drive.google.com/file/d/1KP6BqLF-i2dCUsHhOUpOwwuOmKsB5GKY/view?usp=sharing
-GD_ID_COMPILED_LIBZMQ_ARMV6="1iygOm-G1cg_3YERuVRT6FhGBE34ZkwgV" # ARMv6: https://drive.google.com/file/d/1iygOm-G1cg_3YERuVRT6FhGBE34ZkwgV/view?usp=sharing
-GD_ID_COMPILED_PYZMQ_ARMV7=""
-GD_ID_COMPILED_PYZMQ_ARMV6="1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n" # https://drive.google.com/file/d/1lDsV_pVcXbg6YReHb9AldMkyRZCpc6-n/view?usp=sharing
+JUKEBOX_ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
+JUKEBOX_ZMQ_PREFIX="/usr/local"
+JUKEBOX_ZMQ_VERSION="4.3.5"
 
-ZMQ_TMP_DIR="libzmq"
-ZMQ_PREFIX="/usr/local"
-
-_show_slow_hardware_message() {
-echo "  --------------------------------------------------------------------
-  | Your hardware is a little slower so this step will take a while. |
-  | Go watch a movie but don't let your computer go to sleep for the |
-  | SSH connection to remain intact.                                 |
-  --------------------------------------------------------------------" 1>&3
-}
+JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
+JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
 # Functions
 _jukebox_core_install_os_dependencies() {
-  echo "Install Jukebox OS dependencies"
-  sudo apt-get -y update; sudo apt-get -y install \
-    at \
-    alsa-utils \
-    python3 python3-dev python3-pip python3-setuptools \
-    python3-rpi.gpio python3-gpiozero \
-    espeak ffmpeg mpg123 \
-    pulseaudio pulseaudio-module-bluetooth pulseaudio-utils caps \
+  print_lc "  Install Jukebox OS dependencies"
+
+  local apt_packages=$(get_args_from_file "${INSTALLATION_PATH}/packages-core.txt")
+  sudo apt-get -y update && sudo apt-get -y install \
+    $apt_packages \
     --no-install-recommends \
     --allow-downgrades \
     --allow-remove-essential \
     --allow-change-held-packages
+}
 
-  sudo pip3 install --upgrade pip
+_jukebox_core_install_python_requirements() {
+  print_lc "  Install Python requirements"
+
+  cd "${INSTALLATION_PATH}"  || exit_on_error
+
+  python3 -m venv $VIRTUAL_ENV
+  source "$VIRTUAL_ENV/bin/activate"
+
+  pip install --upgrade pip
+  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_configure_pulseaudio() {
-  echo "Copy PulseAudio configuration"
-  mkdir -p ~/.config/pulse
-  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" ~/.config/pulse/default.pa
+  print_lc "  Copy PulseAudio configuration"
+  mkdir -p $(dirname "$JUKEBOX_PULSE_CONFIG")
+  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" "${JUKEBOX_PULSE_CONFIG}"
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
-  LIBSODIUM_VERSION="1.0.18"
-  ZMQ_VERSION="4.3.4"
+  print_lc "    Building libzmq v${JUKEBOX_ZMQ_VERSION} with drafts support"
+  local zmq_filename="zeromq-${JUKEBOX_ZMQ_VERSION}"
+  local zmq_tar_filename="${zmq_filename}.tar.gz"
+  local cpu_count=${CPU_COUNT:-$(python3 -c "import os; print(os.cpu_count())")}
 
-  { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
-  wget --quiet https://github.com/jedisct1/libsodium/releases/download/${LIBSODIUM_VERSION}-RELEASE/libsodium-${LIBSODIUM_VERSION}.tar.gz
-  tar -zxvf libsodium-${LIBSODIUM_VERSION}.tar.gz
-  cd libsodium-${LIBSODIUM_VERSION} || exit_on_error
-  ./configure
-  make && make install
-
-  cd "${HOME}/${ZMQ_TMP_DIR}" || exit_on_error
-  wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz
-  tar -xzf libzmq.tar.gz
-  zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts
-  make && make install
+  cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
+  wget --quiet https://github.com/zeromq/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/${zmq_tar_filename} || exit_on_error "Download failed"
+  tar -xzf ${zmq_tar_filename}
+  rm -f ${zmq_tar_filename}
+  cd ${zmq_filename} || exit_on_error
+  ./configure --prefix=${JUKEBOX_ZMQ_PREFIX} --enable-drafts --disable-Werror
+  make -j${cpu_count} && sudo make install
 }
 
-_jukebox_core_download_prebuild_libzmq_with_drafts() {
-  local ZMQ_TAR_FILENAME="libzmq.tar.gz"
+_jukebox_core_download_prebuilt_libzmq_with_drafts() {
+  log "    Download pre-compiled libzmq with drafts support"
+  local zmq_tar_filename="libzmq.tar.gz"
+  ARCH=$(get_architecture)
 
-  _download_file_from_google_drive "${LIBZMQ_GD_DOWNLOAD_ID}" "${ZMQ_TAR_FILENAME}"
-  tar -xzf ${ZMQ_TAR_FILENAME}
-  rm -f ${ZMQ_TAR_FILENAME}
-  sudo rsync -a ./* ${ZMQ_PREFIX}/
+  cd "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
+  wget --quiet https://github.com/pabera/libzmq/releases/download/v${JUKEBOX_ZMQ_VERSION}/libzmq5-${ARCH}-${JUKEBOX_ZMQ_VERSION}.tar.gz -O ${zmq_tar_filename} || exit_on_error "Download failed"
+  tar -xzf ${zmq_tar_filename}
+  rm -f ${zmq_tar_filename}
+  sudo rsync -a ./* ${JUKEBOX_ZMQ_PREFIX}/
 }
 
 _jukebox_core_build_and_install_pyzmq() {
@@ -74,85 +72,90 @@ _jukebox_core_build_and_install_pyzmq() {
   # we need to compile the latest version in Github
   # As soon WebSockets support is stable in ZMQ, this can be removed
   # Sources:
-  # https://pyzmq.readthedocs.io/en/latest/draft.html
+  # https://pyzmq.readthedocs.io/en/latest/howto/draft.html
   # https://github.com/MonsieurV/ZeroMQ-RPi/blob/master/README.md
-  echo "  Build and install pyzmq with WebSockets Support"
+  # https://github.com/zeromq/pyzmq/issues/1523#issuecomment-1593120264
+  print_lc "  Install pyzmq with libzmq-drafts to support WebSockets"
 
-  if ! sudo pip3 list | grep -F pyzmq >> /dev/null; then
-    # Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it
-    echo "    Download pre-compiled libzmq from Google Drive because RPi has trouble compiling it"
-
-    { cd "${HOME_PATH}" && mkdir "${ZMQ_TMP_DIR}" && cd "${ZMQ_TMP_DIR}"; } || exit_on_error
-
-    # ARMv7 as default
-    LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV7}
-    if [[ $(uname -m) == "armv6l" ]]; then
-      # ARMv6 as fallback
-      LIBZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_LIBZMQ_ARMV6}
-      _show_slow_hardware_message
-    fi
-
+  if ! pip list | grep -F pyzmq >> /dev/null; then
+    mkdir -p "${JUKEBOX_ZMQ_TMP_DIR}" || exit_on_error
     if [ "$BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE" = true ] ; then
       _jukebox_core_build_libzmq_with_drafts
     else
-      _jukebox_core_download_prebuild_libzmq_with_drafts
+      _jukebox_core_download_prebuilt_libzmq_with_drafts
     fi
 
-    sudo ZMQ_PREFIX=${ZMQ_PREFIX} ZMQ_DRAFT_API=1 \
-      pip3 install --no-cache-dir --pre pyzmq
+    ZMQ_PREFIX="${JUKEBOX_ZMQ_PREFIX}" ZMQ_DRAFT_API=1 \
+      pip install -v 'pyzmq<26' --no-binary pyzmq
   else
-    echo "    Skipping. pyzmq already installed"
+    print_lc "    Skipping. pyzmq already installed"
   fi
-}
-
-_jukebox_core_download_prebuilt_pyzmq() {
-  echo "  Download prebuilt pyzmq with WebSockets Support"
-  local PYZMQ_TAR_FILENAME="pyzmq-build-armv6.tar.gz"
-
-  cd "${HOME_PATH}" || exit_on_error
-
-  # ARMv7 as default
-  PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV7}
-  if [[ $(uname -m) == "armv6l" ]]; then
-    # ARMv6 as fallback
-    PYZMQ_GD_DOWNLOAD_ID=${GD_ID_COMPILED_PYZMQ_ARMV6}
-  fi
-
-  _download_file_from_google_drive "${PYZMQ_GD_DOWNLOAD_ID}" "${PYZMQ_TAR_FILENAME}"
-  tar -xvf "${PYZMQ_TAR_FILENAME}" -C /
-  rm -f "${PYZMQ_TAR_FILENAME}"
-}
-
-_jukebox_core_install_python_requirements() {
-  echo "  Install requirements"
-  cd "${INSTALLATION_PATH}"  || exit_on_error
-  sudo pip3 install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_install_settings() {
-  echo "  Register Jukebox settings"
+  print_lc "  Register Jukebox settings"
   cp -f "${INSTALLATION_PATH}/resources/default-settings/jukebox.default.yaml" "${SETTINGS_PATH}/jukebox.yaml"
   cp -f "${INSTALLATION_PATH}/resources/default-settings/logger.default.yaml" "${SETTINGS_PATH}/logger.yaml"
 }
 
 _jukebox_core_register_as_service() {
-  echo "  Register Jukebox Core user service"
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${SYSTEMD_USR_PATH}"
-  sudo chmod 644 "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+  print_lc "  Register Jukebox Core user service"
+
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-services/jukebox-daemon.service" "${JUKEBOX_SERVICE_NAME}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${JUKEBOX_SERVICE_NAME}"
+  sudo chmod 644 "${JUKEBOX_SERVICE_NAME}"
 
   systemctl --user daemon-reload
   systemctl --user enable jukebox-daemon.service
 }
 
+_jukebox_core_check() {
+    print_verify_installation
+
+    local apt_packages=$(get_args_from_file "${INSTALLATION_PATH}/packages-core.txt")
+    verify_apt_packages $apt_packages
+
+    verify_dirs_exists "${VIRTUAL_ENV}"
+
+    local pip_modules=$(get_args_from_file "${INSTALLATION_PATH}/requirements.txt")
+    verify_pip_modules pyzmq $pip_modules
+
+    log "  Verify ZMQ version '${JUKEBOX_ZMQ_VERSION}'"
+    local zmq_version=$(python -c 'import zmq; print(f"{zmq.zmq_version()}")')
+    if [[ "${zmq_version}" != "${JUKEBOX_ZMQ_VERSION}" ]]; then
+        exit_on_error "ERROR: ZMQ version '${zmq_version}' differs from expected '${JUKEBOX_ZMQ_VERSION}'!"
+    fi
+    log "  CHECK"
+
+    log "  Verify ZMQ has 'DRAFT-API' activated"
+    local zmq_hasDraftApi=$(python -c 'import zmq; print(f"{zmq.DRAFT_API}")')
+    if [[ "${zmq_hasDraftApi}" != "True" ]]; then
+        exit_on_error "ERROR: ZMQ has 'DRAFT-API' '${zmq_hasDraftApi}' differs from expected 'True'!"
+    fi
+    log "  CHECK"
+
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
+
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
+    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
+
+    verify_files_chmod_chown 644 root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+
+    verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
+
+    verify_service_enablement jukebox-daemon.service enabled --user
+}
+
+_run_setup_jukebox_core() {
+    _jukebox_core_install_os_dependencies
+    _jukebox_core_install_python_requirements
+    _jukebox_core_build_and_install_pyzmq
+    _jukebox_core_configure_pulseaudio
+    _jukebox_core_install_settings
+    _jukebox_core_register_as_service
+    _jukebox_core_check
+}
+
 setup_jukebox_core() {
-  echo "Install Jukebox Core" | tee /dev/fd/3
-
-  _jukebox_core_install_os_dependencies
-  _jukebox_core_configure_pulseaudio
-  _jukebox_core_install_python_requirements
-  _jukebox_core_build_and_install_pyzmq
-  _jukebox_core_install_settings
-  _jukebox_core_register_as_service
-
-  echo "DONE: setup_jukebox_core"
+    run_with_log_frame _run_setup_jukebox_core "Install Jukebox Core"
 }

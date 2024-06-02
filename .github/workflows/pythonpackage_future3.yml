@@ -6,15 +6,11 @@ on:
         - 'future3/**'
     paths:
         - '**.py'
-        - '**.py.*'
-        - 'docs/sphinx/**'
   pull_request:
     branches:
         - 'future3/**'
     paths:
         - '**.py'
-        - '**.py.*'
-        - 'docs/sphinx/**'
 
 jobs:
   build:
@@ -23,39 +19,49 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y libasound2-dev pulseaudio
+        python3 -m venv .venv
+        source ".venv/bin/activate"
+
         python3 -m pip install --upgrade pip
-        pip3 install wheel
-        pip3 install spidev
         pip3 install -r requirements.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
-        # When just building the docs, the regular ZMQ package is sufficient
-        pip3 install -r docs/sphinx/requirements_pyzmq.txt
-        pip3 install -r docs/sphinx/requirements.txt
         # Also install all optional dependencies
         pip3 install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt
         pip3 install -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
+    - name: Run pytest with coverage
+      run: |
+        ./run_pytest.sh --cov --cov-report xml --cov-config=.coveragerc
+    - name: Report to Coveralls (parallel)
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: coverage.xml
+        format: cobertura
+        parallel: true
     - name: Lint with flake8
       run: |
-        pip3 install flake8
         # Stop the build if linting fails
         ./run_flake8.sh
-    - name: Build the docs
-      working-directory: ./docs/sphinx
-      run: |
-        # Stop the build if documentation cannot be built
-        # Treat all warnings as errors
-        sphinx-build -W --keep-going -T -a -E -b html . _build
+
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true

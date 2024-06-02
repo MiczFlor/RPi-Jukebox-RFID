@@ -43,8 +43,6 @@ class VolumeToRGB:
 
     Map input :data:`0...100` to color range :data:`green...magenta` and get the color for level 50
 
-    .. code-block:: python
-
         conv = VolumeToRGB(100, offset=120, section=180)
         (r, g, b) = conv(50)
 

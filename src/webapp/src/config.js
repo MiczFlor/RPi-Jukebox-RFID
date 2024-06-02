@@ -17,11 +17,7 @@ const SUBSCRIPTIONS = [
   'volume.level',
 ];
 
-// TODO: This is not optimal, we should not know about this path here!
-// Let's try to work with relatives paths in the RPC only!
-const DEFAULT_AUDIO_DIR = '/home/pi/RPi-Jukebox-RFID/shared/audiofolders';
-const ROOT_DIRS = ['./', DEFAULT_AUDIO_DIR];
-
+const ROOT_DIR = './';
 
 // TODO: The reason why thos commands are empty objects is due to a legacy
 // situation where titles associated with those commands were stored here
@@ -44,7 +40,14 @@ const JUKEBOX_ACTIONS_MAP = {
   audio: {
     commands: {
       change_volume: {},
-      toggle_output: {}
+      toggle_output: {},
+      play: {},
+      pause: {},
+      toggle: {},
+      next_song: {},
+      prev_song: {},
+      shuffle: {},
+      repeat: {},
     },
   },
 
@@ -78,11 +81,10 @@ const JUKEBOX_ACTIONS_MAP = {
 const TIMER_STEPS = [0, 2, 5, 10, 15, 20, 30, 45, 60, 120, 180, 240];
 
 export {
-  DEFAULT_AUDIO_DIR,
   JUKEBOX_ACTIONS_MAP,
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,
-  ROOT_DIRS,
+  ROOT_DIR,
   SUBSCRIPTIONS,
   TIMER_STEPS,
 }

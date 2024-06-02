@@ -1,97 +1,176 @@
 #!/usr/bin/env bash
 
 # Constants
-GD_ID_COMPILED_WEBAPP="1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb" # https://drive.google.com/file/d/1EE_1MdneGtKL5V7GyYZC0nb6ODQWTsPb/view?usp=sharing
+WEBAPP_NGINX_SITE_DEFAULT_CONF="/etc/nginx/sites-available/default"
 
-# For ARMv7+
-NODE_SOURCE="https://deb.nodesource.com/setup_16.x"
-# For ARMv6
-# To update version, follow these links
-# https://github.com/sdesalas/node-pi-zero
-# https://github.com/nodejs/unofficial-builds/
-NODE_SOURCE_EXPERIMENTAL="https://raw.githubusercontent.com/sdesalas/node-pi-zero/master/install-node-v16.3.0.sh"
+# Node major version used.
+# If changed also update in .github\actions\build-webapp\action.yml
+NODE_MAJOR=20
+# Node version for ARMv6 (unofficial builds)
+NODE_ARMv6_VERSION=v20.10.0
+
+OPTIONAL_WEBAPP_BUILD_FAILED=false
 
 _jukebox_webapp_install_node() {
-  sudo apt-get -y update
+    print_lc "  Install NodeJS"
 
-  if which node > /dev/null; then
-    echo "  Found existing NodeJS. Hence, updating NodeJS" | tee /dev/fd/3
-    sudo npm cache clean -f
-    sudo npm install --silent -g n
-    sudo n --quiet latest
-    sudo npm update --silent -g
-  else
-    echo "  Install NodeJS" | tee /dev/fd/3
+    local node_version_installed=$(node -v 2>/dev/null)
+    local arch=$(uname -m)
+    if [[ "$arch" == "armv6l" ]]; then
+        if [ "$node_version_installed" == "$NODE_ARMv6_VERSION" ]; then
+            print_lc "    Skipping. NodeJS already installed"
+        else
+            # For ARMv6 unofficial build
+            # https://github.com/nodejs/unofficial-builds/
+            local node_tmp_dir="${HOME_PATH}/node"
+            local node_install_dir=/usr/local/lib/nodejs
+            local node_filename="node-${NODE_ARMv6_VERSION}-linux-${arch}"
+            local node_tar_filename="${node_filename}.tar.gz"
+            node_download_url="https://unofficial-builds.nodejs.org/download/release/${NODE_ARMv6_VERSION}/${node_tar_filename}"
 
-    # Zero and older versions of Pi with ARMv6 only
-    # support experimental NodeJS
-    if [[ $(uname -m) == "armv6l" ]]; then
-      NODE_SOURCE=${NODE_SOURCE_EXPERIMENTAL}
+            mkdir -p "${node_tmp_dir}" && cd "${node_tmp_dir}" || exit_on_error
+            download_from_url ${node_download_url} ${node_tar_filename}
+            tar -xzf ${node_tar_filename}
+            rm -rf ${node_tar_filename}
+
+            # see https://github.com/nodejs/help/wiki/Installation
+            # Remove existing symlinks
+            sudo unlink /usr/bin/node 2>/dev/null
+            sudo unlink /usr/bin/npm 2>/dev/null
+            sudo unlink /usr/bin/npx 2>/dev/null
+
+            # Clear existing nodejs and copy new files
+            sudo rm -rf "${node_install_dir}"
+            sudo mv "${node_filename}" "${node_install_dir}"
+
+            sudo ln -s "${node_install_dir}/bin/node" /usr/bin/node
+            sudo ln -s "${node_install_dir}/bin/npm" /usr/bin/npm
+            sudo ln -s "${node_install_dir}/bin/npx" /usr/bin/npx
+
+            cd "${HOME_PATH}" || exit_on_error
+            rm -rf "${node_tmp_dir}"
+        fi
+    else
+        if [[ "$node_version_installed" == "v${NODE_MAJOR}."* ]]; then
+            print_lc "    Skipping. NodeJS already installed"
+        else
+            sudo apt-get -y remove nodejs
+            # install NodeJS as recommended in
+            # https://deb.nodesource.com/
+            sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
+            sudo mkdir -p /etc/apt/keyrings
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+            echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+            sudo apt-get -y update && sudo apt-get -y install nodejs
+        fi
     fi
-
-    wget -O - ${NODE_SOURCE} | sudo bash
-    sudo apt-get -qq -y install nodejs
-    sudo npm install --silent -g npm
-  fi
 }
 
-# TODO: Avoid building the app locally
-# Instead implement a Github Action that prebuilds on commititung a git tag
 _jukebox_webapp_build() {
-  echo "  Building web application"
-  cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  npm ci --prefer-offline --no-audit --production
-  rm -rf build
-  # The build wrapper script checks available memory on system and sets Node options accordingly
-  ./run_rebuild.sh
+    print_lc "  Building Web App"
+    cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
+    if ! ./run_rebuild.sh -u ; then
+        print_lc "    Web App build failed!
+    Follow instructions shown at the end of installation!"
+        OPTIONAL_WEBAPP_BUILD_FAILED=true
+        # This message will be displayed at the end of the installation process
+        local tmp_fin_message="ATTENTION:  The build of the Web App failed during installation.
+            Please run the build manually with the following command
+            $ cd ~/RPi-Jukebox-RFID/src/webapp && ./run_rebuild.sh -u
+            Read the documentation regarding local Web App builds!"
+        FIN_MESSAGE="${FIN_MESSAGE:+$FIN_MESSAGE\n}${tmp_fin_message}"
+    fi
 }
 
 _jukebox_webapp_download() {
-  echo "  Downloading web application" | tee /dev/fd/3
-  local TAR_FILENAME="webapp-build.tar.gz"
+  print_lc "  Downloading Web App"
+  local jukebox_version=$(python "${INSTALLATION_PATH}/src/jukebox/jukebox/version.py")
+  local git_head_hash=$(git -C "${INSTALLATION_PATH}" rev-parse --verify --quiet HEAD)
+  local git_head_hash_short=${git_head_hash:0:10}
+  local tar_filename="webapp-build.tar.gz"
+  # URL must be set to default repo as installation can be run from different repos as well where releases may not exist
+  local download_url_commit="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-${git_head_hash_short}.tar.gz"
+  local download_url_latest="https://github.com/${GIT_UPSTREAM_USER}/RPi-Jukebox-RFID/releases/download/v${jukebox_version}/webapp-build-latest.tar.gz"
+
   cd "${INSTALLATION_PATH}/src/webapp" || exit_on_error
-  _download_file_from_google_drive ${GD_ID_COMPILED_WEBAPP} ${TAR_FILENAME}
-  tar -xzf ${TAR_FILENAME}
-  rm -f ${TAR_FILENAME}
+  if validate_url ${download_url_commit} ; then
+    log "    DOWNLOAD_URL ${download_url_commit}"
+    download_from_url ${download_url_commit} ${tar_filename}
+  elif [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true ]] && validate_url ${download_url_latest} ; then
+    log "    DOWNLOAD_URL ${download_url_latest}"
+    download_from_url ${download_url_latest} ${tar_filename}
+  else
+    exit_on_error "No prebuild Web App bundle found!"
+  fi
+  tar -xzf ${tar_filename}
+  rm -f ${tar_filename}
   cd "${INSTALLATION_PATH}" || exit_on_error
 }
 
 _jukebox_webapp_register_as_system_service_with_nginx() {
-  echo "  Install and configure nginx" | tee /dev/fd/3
-  sudo apt-get -qq -y update
+  print_lc "  Install and configure nginx"
+  sudo apt-get -y update
   sudo apt-get -y purge apache2
   sudo apt-get -y install nginx
 
-  sudo service nginx start
+  sudo mv -f "${WEBAPP_NGINX_SITE_DEFAULT_CONF}" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}.orig"
+  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+  sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
-  sudo mv -f /etc/nginx/sites-available/default /etc/nginx/sites-available/default.orig
-  sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" /etc/nginx/sites-available/default
+  if [ "$DISABLE_IPv6" = true ] ; then
+    sudo sed -i '/listen \[::\]:80/d' "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+  fi
 
-  sudo service nginx restart
+  # make sure nginx can access the home directory of the user
+  sudo chmod o+x "${HOME_PATH}"
+
+  sudo systemctl restart nginx.service
 }
 
-_jukebox_build_local_docs() {
-  echo "  Build docs locally" | tee /dev/fd/3
-  "${INSTALLATION_PATH}/run_sphinx.sh" -c
+_jukebox_webapp_check() {
+    print_verify_installation
+
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
+        verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+    else
+        local arch=$(uname -m)
+        if [[ "$arch" == "armv6l" ]]; then
+            local node_version_installed=$(node -v 2>/dev/null)
+            log "  Verify 'node' is installed"
+            test ! "${node_version_installed}" == "${NODE_ARMv6_VERSION}" && exit_on_error "ERROR: 'node' not in expected version: '${node_version_installed}' instead of '${NODE_ARMv6_VERSION}'!"
+            log "  CHECK"
+        else
+            verify_apt_packages nodejs
+        fi
+
+        if [[ "$OPTIONAL_WEBAPP_BUILD_FAILED" == false ]]; then
+            verify_dirs_exists "${INSTALLATION_PATH}/src/webapp/build"
+        fi
+    fi
+
+    verify_apt_packages nginx
+    verify_files_exists "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+
+    if [ "$DISABLE_IPv6" = true ] ; then
+      verify_file_does_not_contain_string "listen [::]:80" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+    fi
+
+    verify_service_enablement nginx.service enabled
 }
 
+_run_setup_jukebox_webapp() {
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
+        _jukebox_webapp_download
+    else
+        _jukebox_webapp_install_node
+        _jukebox_webapp_build
+    fi
+    _jukebox_webapp_register_as_system_service_with_nginx
+    _jukebox_webapp_check
+}
 
 setup_jukebox_webapp() {
-  echo "Install web application" | tee /dev/fd/3
-
-  if [[ $ENABLE_WEBAPP_PROD_DOWNLOAD == true || $ENABLE_WEBAPP_PROD_DOWNLOAD == release-only ]] ; then
-    _jukebox_webapp_download
-  fi
-  if [[ $ENABLE_INSTALL_NODE == true ]] ; then
-    _jukebox_webapp_install_node
-    # Local Web App build during installation does not work at the moment
-    # Needs to be done after reboot! There will be a message at the end of the installation process
-    # _jukebox_webapp_build
-  fi
-  if [[ $ENABLE_LOCAL_DOCS == true ]]; then
-    _jukebox_build_local_docs
-  fi
-  _jukebox_webapp_register_as_system_service_with_nginx
-
-  echo "DONE: setup_jukebox_webapp"
+    if [ "$ENABLE_WEBAPP" == true ] ; then
+        run_with_log_frame _run_setup_jukebox_webapp "Install Web App"
+    fi
 }

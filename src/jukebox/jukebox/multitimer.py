@@ -249,6 +249,7 @@ class GenericMultiTimerClass(GenericTimerClass):
         self._function = self._callee(*self.class_args, iterations=self._iterations, **self.class_kwargs)
         super().start(wait_seconds_per_iteration)
 
+    @plugin.tag
     def get_state(self):
         return {'enabled': self.is_alive(),
                 'wait_seconds_per_iteration': self.get_timeout(),

@@ -1,3 +1,0 @@
-# cron timer for autohotspot
-*/5 * * * * pi sudo /usr/bin/autohotspot 2>&1 | logger -t autohotspot
-@reboot pi sudo /usr/bin/autohotspot 2>&1 | logger -t autohotspot

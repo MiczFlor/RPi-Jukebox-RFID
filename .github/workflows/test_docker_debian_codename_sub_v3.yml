@@ -1,0 +1,192 @@
+name: Subworkflow Test Install Scripts Debian v3
+
+on:
+    workflow_call:
+      inputs:
+        debian_codename:
+          required: true
+          type: string
+        platform:
+          required: true
+          type: string
+        docker_image_name:
+          required: false
+          type: string
+          default: rpi-jukebox-rfid-v3
+        cache_scope:
+          required: false
+          type: string
+          default: ${{ github.ref }}-test-debian-v3
+        local_registry_port:
+          required: false
+          type: number
+          default: 5000
+        runs_on:
+          required: false
+          type: string
+          default: ubuntu-latest
+
+env:
+    TEST_USER_NAME: testuser
+    TEST_USER_GROUP: testusergroup
+
+# let only one instance run the test so cache is not corrupted.
+# cancel already running instances as only the last run will be relevant
+concurrency:
+    group: ${{ inputs.cache_scope }}-${{ inputs.debian_codename }}-${{ inputs.platform }}
+    cancel-in-progress: true
+
+jobs:
+
+  # Build container for test execution
+  build:
+    runs-on: ${{ inputs.runs_on }}
+
+    outputs:
+        cache_key: ${{ steps.vars.outputs.cache_key }}
+        image_file_name: ${{ steps.vars.outputs.image_file_name }}
+        image_tag_name: ${{ steps.vars.outputs.image_tag_name }}
+        docker_run_options: ${{ steps.vars.outputs.docker_run_options }}
+
+    # create local docker registry to use locally build images
+    services:
+        registry:
+          image: registry:2
+          ports:
+            - ${{ inputs.local_registry_port }}:5000
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+      with:
+        # network=host driver-opt needed to push to local registry
+        driver-opts: network=host
+
+    - name: Set Output pre-vars
+      id: pre-vars
+      env:
+        DEBIAN_CODENAME: ${{ inputs.debian_codename }}
+        DOCKER_IMAGE_NAME: ${{ inputs.docker_image_name }}
+        CACHE_SCOPE: ${{ inputs.cache_scope }}
+        PLATFORM: ${{ inputs.platform }}
+      run: |
+        PLATFORM=${PLATFORM////_}
+        echo "image_tag_name=${{ env.DOCKER_IMAGE_NAME }}:${{ env.DEBIAN_CODENAME }}-${PLATFORM}-test" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ env.DOCKER_IMAGE_NAME }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}.tar" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ env.CACHE_SCOPE }}-${{ env.DEBIAN_CODENAME }}-${PLATFORM}" >> $GITHUB_OUTPUT
+
+    - name: Set Output vars
+      id: vars
+      env:
+        LOCAL_REGISTRY_PORT: ${{ inputs.local_registry_port }}
+        PLATFORM: ${{ inputs.platform }}
+      run: |
+        echo "image_tag_name=${{ steps.pre-vars.outputs.image_tag_name }}" >> $GITHUB_OUTPUT
+        echo "image_tag_name_local_base=localhost:${{ env.LOCAL_REGISTRY_PORT }}/${{ steps.pre-vars.outputs.image_tag_name }}-base" >> $GITHUB_OUTPUT
+        echo "image_file_name=${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
+        echo "image_file_path=./${{ steps.pre-vars.outputs.image_file_name }}" >> $GITHUB_OUTPUT
+        echo "cache_scope=${{ steps.pre-vars.outputs.cache_scope }}" >> $GITHUB_OUTPUT
+        echo "cache_key=${{ steps.pre-vars.outputs.cache_scope }}-${{ github.sha }}#${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+        if [ "${{ env.PLATFORM }}" == "linux/arm/v6" ] ; then
+            echo "docker_run_options=-e QEMU_CPU=arm1176" >> $GITHUB_OUTPUT
+        fi
+
+    # Build base image for debian version name. Layers will be cached and image pushes to local registry
+    - name: Build Image - Base
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: true
+        file: ./ci/ci-debian.Dockerfile
+        target: test-code
+        platforms: ${{ inputs.platform }}
+        tags: ${{ steps.vars.outputs.image_tag_name_local_base }}
+        cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
+        cache-to: type=gha,mode=max,scope=${{ steps.vars.outputs.cache_scope }}
+        build-args: |
+          DEBIAN_CODENAME=${{ inputs.debian_codename }}
+          USER_NAME=${{ env.TEST_USER_NAME }}
+          USER_GROUP=${{ env.TEST_USER_GROUP }}
+          GIT_BRANCH=${{ github.head_ref || github.ref_name }}
+          GIT_USER=${{ github.event.pull_request.head.user.login || github.repository_owner }}
+
+    # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
+    - name: Build Image - Update
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: false
+        push: false
+        file: ./ci/ci-debian.Dockerfile
+        target: test-update
+        platforms: ${{ inputs.platform }}
+        tags: ${{ steps.vars.outputs.image_tag_name }}
+        cache-from: type=gha,scope=${{ steps.vars.outputs.cache_scope }}
+        # DON'T use 'cache-to' here as the layer is then cached and this build would be useless
+        outputs: type=docker,dest=${{ steps.vars.outputs.image_file_path }}
+        build-args: |
+          BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
+
+    - name: Artifact Upload Docker Image
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.vars.outputs.image_file_name }}
+        path: ${{ steps.vars.outputs.image_file_path }}
+        retention-days: 2
+
+
+  # Run tests with build image
+  test:
+    needs: [build]
+    runs-on: ${{ inputs.runs_on }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh', 'run_install_libzmq_local.sh']
+
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3.0.0
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3.0.0
+
+    - name: Artifact Download Docker Image
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ needs.build.outputs.image_file_name }}
+
+    - name: Load Docker Image
+      run: |
+        docker load --input ${{ needs.build.outputs.image_file_name }}
+
+    # Run test
+    - name: Run Test ${{ inputs.debian_codename }}-${{ env.TEST_USER_NAME }}-${{ matrix.test_script }}
+      uses: tj-actions/docker-run@v2
+      with:
+        image: ${{ needs.build.outputs.image_tag_name }}
+        options: ${{ needs.build.outputs.docker_run_options }} --platform ${{ inputs.platform }} --user ${{ env.TEST_USER_NAME }} --init
+        name: ${{ matrix.test_script }}
+        args: |
+          ./${{ matrix.test_script }}
+
+  # cleanup after test execution
+  cleanup:
+   # run only if tests didn't fail: keep the artifact to make job reruns possible
+   if: ${{ !failure() }}
+   needs: [build, test]
+   runs-on: ${{ inputs.runs_on }}
+  
+   steps:
+       - name: Artifact Delete Docker Image
+         uses: geekyeggo/delete-artifact@v5
+         with:
+           name: ${{ needs.build.outputs.image_file_name }}
+           failOnError: false

@@ -26,7 +26,6 @@ The Jukebox core app is written entirely in Python. Therefore, we follow the [Py
 
 * **Documentation**
   * You are expected to write some Documentation. It's easy. **Very** easy actually with [Python Docstrings](https://www.geeksforgeeks.org/python-docstrings/)
-  * If you dare, you may add the python documentation reference to the Sphinx documentation build. But we are also ok with doing that for you
   
 # Structure of files and folders
 
@@ -38,8 +37,6 @@ Inside the root folder or the repo, these folders are important:
   * contains the Python packages that are loaded using the plugin interface
 * `src/webapp`
   * contains the Web Interface
-* `src/docs/sphinx`  
-  * contains the documentation sources and build flow using Sphinx
 
 All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
 as local, temporary scratch areas.
@@ -48,12 +45,18 @@ as local, temporary scratch areas.
 
 Contributors have played a bigger role over time to keep Phoniebox on the edge of innovation :)
 
-We want to keep it as easy as possible to contribute changes that get things working in your environment.
-There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
+Our goal is to make it simple for you to contribute changes that improve functionality in your specific environment.
+To achieve this, we have a set of guidelines that we kindly request contributors to adhere to.
+These guidelines help us maintain a streamlined process and stay on top of incoming contributions.
 
-Development for Version 3 is done on the git branch `future3/develop`. How to move to that branch, see below.
+To report bug fixes and improvements, please follow the steps outlined below:
 
-For bug fixes and improvements just open an issue or PR as described below. If you plan to port a feature from Version 2.X or implement a new feature, it is advisable to contact us first. In this case, also open an issue describing what you are planning to do. We will just check that nobody else is already on the subject. We are looking forward to your work. Check the current [feature list](https://rpi-jukebox-rfid.readthedocs.io/en/latest/featurelist.html) for available features and work in progress.
+1. For bug fixes and minor improvements, simply open a new issue or pull request (PR).
+2. If you intend to port a feature from Version 2.x to future3 or wish to implement a new feature, we recommend reaching out to us beforehand.
+   * In such cases, please create an issue outlining your plans and intentions.
+   * We will ensure that there are no ongoing efforts on the same topic.
+
+We eagerly await your contributions! You can review the current [feature list](documentation/developers/status.md) to check for available features and ongoing work.
 
 ## Getting Started
 
@@ -63,31 +66,21 @@ For bug fixes and improvements just open an issue or PR as described below. If y
     Version 2 will continue to live for quite a while.
   * Clearly describe the issue including steps to reproduce when it is a bug
   * Make sure you fill in the earliest version that you know has the issue
-* By default this will get you to the `future3/main` branch. You will move to the `future3/develop` branch, do this:
-
-~~~bash
-cd /home/pi/RPi-Jukebox-RFID
-git checkout future3/develop
-git fetch origin
-git reset --hard origin/future3/develop
-git pull
-~~~
 
 The preferred way of code contributions are [pull requests (follow this link for a small howto)](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github).
-And, ideally pull requests use the "running code" on the `future3/develop` branch of your Phoniebox.
+And ideally pull requests use the "running code" of your Phoniebox.
 Alternatively, feel free to post tweaks, suggestions and snippets in the ["issues" section](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues).
 
 ## Making Changes
 
+* Create a fork of this repository
 * Create a topic branch from where you want to base your work.
-  * This is usually the master branch or the develop branch.
-  * Only target release branches if you are certain your fix must be on that
+  * This is usually the `future3/develop` branch.
+  * Only target the `future3/main` branch if you are certain your fix must be on that
     branch.
-  * To quickly create a topic branch based on master, run `git checkout -b
-    fix/master/my_contribution master`. Please avoid working directly on the
-    `master` branch.
 * Make commits of logical and atomic units.
 * Check for unnecessary whitespace with `git diff --check` before committing.
+* See also the [documentation for developers](documentation/developers/README.md)
 
 ## Making Trivial Changes
 
@@ -116,7 +109,7 @@ Run the checks below on the code. Fix those issues! Or you are running in delays
 We provide git hooks for those checks for convenience. To activate
 
 ~~~bash
-cp .githooks/pre-commit` .git/hooks/.
+cp .githooks/pre-commit .git/hooks/.
 ~~~
 
 ### Python Code
@@ -125,24 +118,12 @@ If you touched *any* Python file (even if only for fixing spelling errors), run 
 It contains out setup file.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID
+cd ~/RPi-Jukebox-RFID
 ./run_flake8.sh
 ~~~
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
 Let us know in the pull request - we will look at it.
-
-### Documentation
-
-When adding or improving documentation, build the documentation and look at it locally.
-If you are contributing to existing Python modules, be aware that these are already included in the documentation flow.
-Also run through this step in this case! Fix all warnings!
-
-~~~bash
-$ cd /home/pi/RPi-Jukebox-RFID/
-$ ./run_sphinx.sh
-# open and check the result: 'file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/index.html'
-~~~
 
 ### Tests
 
@@ -150,7 +131,7 @@ Tests are very few at the moment, but it cannot hurt to run them. If you have te
 them.
 
 ~~~bash
-cd /home/pi/RPi-Jukebox-RFID/
+cd ~/RPi-Jukebox-RFID/
 ./run_pytest.sh
 ~~~
 
@@ -172,7 +153,7 @@ to detect in advance.
 
 If the code change results in a test failure, we will make our best effort to
 correct the error. If a fix cannot be determined and committed within 24 hours
-of its discovery, the commit(s) responsible _may_ be reverted, at the
+of its discovery, the commit(s) responsible *may* be reverted, at the
 discretion of the committer and Phonie maintainers.
 The original contributor will be notified of the revert.
 
@@ -183,8 +164,8 @@ The original contributor will be notified of the revert.
 
 ## Guidelines
 
-* Phoniebox runs on Raspian **Buster**. Therefore, all Python code should work at least with **Python 3.7**.
-* For GPIO all code should work with **RPi.GPIO**. gpiozero is currently not intended to use.
+* Phoniebox runs on Raspberry Pi OS.
+* Minimum python version is currently **Python 3.9**.
 
 ## Additional Resources
 

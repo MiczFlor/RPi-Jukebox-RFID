@@ -1,6 +1,10 @@
 # RFID Jukebox Version 3 (aka future3)
 
-[![Documentation Status](https://readthedocs.org/projects/rpi-jukebox-rfid/badge/?version=latest)](https://rpi-jukebox-rfid.readthedocs.io/en/latest/?badge=latest)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/MiczFlor/RPi-Jukebox-RFID/future3/develop)
+
+[![Test Install Scripts Debian v3](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/test_docker_debian_v3.yml) [![Python + Docs Checks and Tests](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml/badge.svg?branch=future3%2Fdevelop)](https://github.com/MiczFlor/RPi-Jukebox-RFID/actions/workflows/pythonpackage_future3.yml) [![Coverage Status](https://coveralls.io/repos/github/MiczFlor/RPi-Jukebox-RFID/badge.svg?branch=future3/develop)](https://coveralls.io/github/MiczFlor/RPi-Jukebox-RFID?branch=future3/develop)
+
+[![Matrix chat](https://matrix.to/img/matrix-badge.svg)](https://matrix.to/#/#phoniebox_community:gitter.im)
 
 ## What is this?
 
@@ -11,29 +15,8 @@ project check out the [documentation of Version 2](<https://github.com/MiczFlor/
 
 ## Where are the Help pages?
 
-### Online
-
-Read the documentation at [Readthedocs.io](https://rpi-jukebox-rfid.readthedocs.io/en/latest/)
-
-### Local
-
-Alternatively, build the help locally:
-
-~~~bash
-cd docs/sphinx
-make
-~~~
-
-Then navigate your browser to
-
-~~~bash
-file:///path/to/RPi-Jukebox-RFID/docs/sphinx/_build/html/docs/index.html
-~~~
+The documentation can be found [here](./documentation/README.md)
 
 ## Installation?
 
-Run the following one-liner in a shell and follow the instructions
-
-~~~bash
-cd; bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
-~~~
+[Install Phoniebox software](documentation/builders/installation.md#install-phoniebox-software)

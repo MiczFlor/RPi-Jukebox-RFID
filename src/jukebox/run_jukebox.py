@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 This is the main app and starts the Jukebox Core.
 
 Usually this runs as a service, which is started automatically after boot-up. At times, it may be necessary to restart
 the service.
 For example after a configuration change. Not all configuration changes can be applied on-the-fly.
-See :ref:`userguide/configuration:Jukebox Configuration`.
+See [Jukebox Configuration](../../builders/configuration.md#jukebox-configuration).
 
 For debugging, it is usually desirable to run the Jukebox directly from the console rather than
 as service. This gives direct logging info in the console and allows changing command line parameters.
-See :ref:`userguide/troubleshooting:Troubleshooting`.
+See [Troubleshooting](../../builders/troubleshooting.md).
 """
 import os.path
 import argparse

@@ -1,34 +1,39 @@
+# Common python packages
+# You need to install these with `python -m pip install --no-cache-dir -r requirements.txt`
+
+setuptools
+wheel
+
 # Note:
 # sudo apt install libasound2-dev required on some machines
 
 # Jukebox Core
 # For USB inputs (reader, buttons) and bluetooth buttons
 evdev
+mutagen
 pyalsaaudio
 pulsectl
-python_mpd2
+python-mpd2
 ruamel.yaml
 # For playlistgenerator
 requests
 # For the publisher event reactor loop:
 tornado
 
-# RPi's GPIO packages: these are installed via APT on the PI
-# On regular machines, install them manually if needed for development
-# RPi.GPIO
-# gpiozero
+# RPi's GPIO packages:
+RPi.GPIO
+gpiozero
 
 # PyZMQ is a special case:
 # On the PI, it needs to be compiled with special options to enable Websocket support
 # On regular Linux PCs, Websocket is enabled in the Python package
 # pyzmq
 
-# Documentation build flow
-sphinx
-sphinx_rtd_theme
-
 # Code quality
 flake8>=4.0.0
 pytest
+pytest-cov
 mock
 
+# API docs generation
+pydoc-markdown

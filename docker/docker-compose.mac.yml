@@ -2,16 +2,11 @@ version: "3.9"
 
 services:
   mpd:
-    environment:
-      - PULSE_SERVER=tcp:host.docker.internal:4713
     volumes:
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf:rw
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse:/etc/pulse
 
   jukebox:
-    environment:
-      - PULSE_SERVER=tcp:host.docker.internal:4713
     volumes:
       - ~/.config/pulse:/root/.config/pulse
       - /usr/local/Cellar/pulseaudio/14.2/etc/pulse:/etc/pulse

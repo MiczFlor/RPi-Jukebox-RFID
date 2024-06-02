@@ -33,7 +33,6 @@ Please post here the output of 'tail -n 500 /var/log/syslog' or 'journalctl -u m
 i.e. `find logfiles at https://paste.ubuntu.com/p/cRS7qM8ZmP/`
 -->
 
-
 ## Software
 
 ### Base image and version
@@ -50,7 +49,7 @@ Otherwise the output of `cat /etc/os-release`
 i.e. `master`
 
 the following command will help with that
-`cd /home/pi/RPi-Jukebox-RFID/ && git status | head -2`
+`cd ~/RPi-Jukebox-RFID/ && git status | head -2`
 -->
 
 ### Installscript
@@ -58,7 +57,6 @@ the following command will help with that
 <!--
 i.e. `scripts/installscripts/buster-install-default.sh`
 -->
-
 
 ## Hardware
 

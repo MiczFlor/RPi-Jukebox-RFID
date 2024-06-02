@@ -1,8 +1,13 @@
 const commands = {
-  musicCoverByFilenameAsBase64: {
-    _package: 'music_cover_art',
+  getSingleCoverArt: {
+    _package: 'player',
     plugin: 'ctrl',
-    method: 'get_by_filename_as_base64',
+    method: 'get_single_coverart',
+  },
+  getAlbumCoverArt: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_album_coverart',
   },
   directoryTreeOfAudiofolder: {
     _package: 'player',
@@ -17,7 +22,7 @@ const commands = {
   songList: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'list_song_by_artist_and_album',
+    method: 'list_songs_by_artist_and_album',
   },
   getSongByUrl: {
     _package: 'player',
@@ -77,25 +82,32 @@ const commands = {
     plugin: 'ctrl',
     method: 'pause',
   },
-  previous: {
+  prev_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'prev',
   },
-  next: {
+  next_song: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'next',
+  },
+  toggle: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'toggle',
   },
   shuffle: {
     _package: 'player',
     plugin: 'ctrl',
     method: 'shuffle',
+    argKeys: ['option'],
   },
   repeat: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'repeatmode',
+    method: 'repeat',
+    argKeys: ['option'],
   },
   seek: {
     _package: 'player',
@@ -108,6 +120,7 @@ const commands = {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'set_volume',
+    argKeys: ['volume'],
   },
   getVolume: {
     _package: 'volume',
@@ -236,6 +249,18 @@ const commands = {
     _package: 'host',
     plugin: 'say_my_ip',
     argKeys: ['option'],
+  },
+
+  // Misc
+  getAppSettings: {
+    _package: 'misc',
+    plugin: 'get_app_settings'
+  },
+
+  setAppSettings: {
+    _package: 'misc',
+    plugin: 'set_app_settings',
+    argKeys: ['settings'],
   },
 
   // Synchronisation

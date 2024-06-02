@@ -2,9 +2,28 @@ version: "3.9"
 
 services:
   mpd:
-    devices:
-      - /dev/snd
+    build:
+      args:
+        - UID=${UID:-1000}
+        - USER=pi
+        - HOME=/home/pi
+    environment:
+      - PULSE_SERVER=unix:/tmp/pulse-sock
+    volumes:
+      - ../shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders
+      - ../shared/playlists:/home/pi/.config/mpd/playlists
+      - ./config/docker.mpd.conf:/home/pi/.config/mpd/mpd.conf
+      - $XDG_RUNTIME_DIR/pulse/native:/tmp/pulse-sock
 
   jukebox:
-    devices:
-      - /dev/snd
+    build:
+      args:
+        - UID=${UID:-1000}
+        - USER=pi
+        - HOME=/home/pi
+    environment:
+      - PULSE_SERVER=unix:/tmp/pulse-sock
+    volumes:
+      - ../shared:/home/pi/RPi-Jukebox-RFID/shared
+      - ./config/docker.mpd.conf:/home/pi/.config/mpd/mpd.conf
+      - $XDG_RUNTIME_DIR/pulse/native:/tmp/pulse-sock

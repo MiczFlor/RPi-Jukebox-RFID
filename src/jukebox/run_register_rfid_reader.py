@@ -1,12 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Setup tool to configure the RFID Readers.
 
 Run this once to register and configure the RFID readers with the Jukebox. Can be re-run at any time to change
-the settings. For more information see :ref:`rfid/rfid:RFID Readers`.
+the settings. For more information see [RFID Readers](../rfid/README.md).
 
-.. note:: This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
-    Any manual modifications to the settings will have to be re-applied
+> [!NOTE]
+> This tool will always write a new configurations file. Thus, overwrite the old one (after checking with the user).
+> Any manual modifications to the settings will have to be re-applied
 
 """
 import os
@@ -32,7 +33,8 @@ logger.addHandler(logconsole)
 
 def main():
     # The default config file relative to this files location and independent of working directory
-    cfg_file_default = os.path.abspath(os.path.dirname(os.path.realpath(__file__)) + '/../../shared/settings/rfid.yaml')
+    script_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
+    cfg_file_default = os.path.abspath(os.path.join(script_path, '../../shared/settings/rfid.yaml'))
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--force",

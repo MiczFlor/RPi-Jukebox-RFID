@@ -32,15 +32,11 @@ const Controls = () => {
   } = state;
 
   const toggleShuffle = () => {
-    request('shuffle', { random: !isShuffle });
+    request('shuffle', { option: 'toggle' });
   }
 
   const toggleRepeat = () => {
-    let mode = null;
-    if (!isRepeat && !isSingle) mode = 'repeat';
-    if (isRepeat && !isSingle) mode = 'single';
-
-    request('repeat', { mode });
+    request('repeat', { option: 'toggle' });
   }
 
   useEffect(() => {
@@ -58,14 +54,14 @@ const Controls = () => {
 
   const labelShuffle = () => (
     isShuffle
-      ? t('player.controls.shuffle.deactivate')
-      : t('player.controls.shuffle.activate')
+      ? t('player.controls.shuffle.disable')
+      : t('player.controls.shuffle.enable')
   );
 
   const labelRepeat = () => {
-    if (!isRepeat) return t('player.controls.repeat.activate');
-    if (isRepeat && !isSingle) return t('player.controls.repeat.activate-single');
-    if (isRepeat && isSingle) return t('player.controls.repeat.deactivate');
+    if (!isRepeat) return t('player.controls.repeat.enable');
+    if (isRepeat && !isSingle) return t('player.controls.repeat.enable-single');
+    if (isRepeat && isSingle) return t('player.controls.repeat.disable');
   };
 
   return (
@@ -89,14 +85,14 @@ const Controls = () => {
         <ShuffleRoundedIcon style={{ fontSize: 22 }} />
       </IconButton>
 
-      {/* Skip previous track */}
+      {/* Skip to previous song */}
       <IconButton
-        aria-label={t('player.controls.skip')}
+        aria-label={t('player.controls.prev_song')}
         disabled={!songIsScheduled}
-        onClick={e => request('previous')}
+        onClick={e => request('prev_song')}
         size="large"
         sx={iconStyles}
-        title={t('player.controls.skip')}
+        title={t('player.controls.prev_song')}
       >
         <SkipPreviousRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
@@ -127,14 +123,14 @@ const Controls = () => {
         </IconButton>
       }
 
-      {/* Skip next track */}
+      {/* Skip to next song */}
       <IconButton
-        aria-label={t('player.controls.next')}
+        aria-label={t('player.controls.next_song')}
         disabled={!songIsScheduled}
-        onClick={e => request('next')}
+        onClick={e => request('next_song')}
         size="large"
         sx={iconStyles}
-        title={t('player.controls.next')}
+        title={t('player.controls.next_song')}
       >
         <SkipNextRoundedIcon style={{ fontSize: 35 }} />
       </IconButton>
