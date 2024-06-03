@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import configparser
+
 import os
 from shutil import copyfile
 
 
-def Ini_CheckAndUpgrade(config):
+def Ini_CheckAndUpgrade(config): # noqa C901
     has_changed = False
     for section in config.sections():
         # enable: True  --> enabled: True

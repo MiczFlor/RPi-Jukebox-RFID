@@ -3,10 +3,9 @@
 import datetime
 import os
 import re
-import ssl
 import subprocess
 import time
-from threading import *
+from threading import Thread
 
 import inotify.adapters
 import paho.mqtt.client as mqtt
