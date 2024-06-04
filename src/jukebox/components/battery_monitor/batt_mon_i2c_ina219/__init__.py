@@ -30,7 +30,7 @@ from ina219 import INA219
 from ina219 import DeviceRangeError
 from components.battery_monitor import BatteryMonitorBase
 
-logger = logging.getLogger('jb.battmon')
+logger = logging.getLogger('jb.battmon.ina219')
 
 batt_mon = None
 
