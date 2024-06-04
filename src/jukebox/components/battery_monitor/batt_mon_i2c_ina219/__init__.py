@@ -1,6 +1,7 @@
-# MIT License
+# RPi-Jukebox-RFID Version 3
+# Copyright (c) See file LICENSE in project root folder
 #
-# Copyright (c) 2021 Arne Pagel
+# Copyright (c) 2021 Arne Pagel, 2024 Timm Eversmeyer
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +23,7 @@
 #
 # Contributing author(s):
 # - Arne Pagel
+# - Timm Eversmeyer
 
 import logging
 import jukebox.plugs as plugs
