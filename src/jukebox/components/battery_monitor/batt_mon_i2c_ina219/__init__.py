@@ -1,9 +1,5 @@
 # RPi-Jukebox-RFID Version 3
 # Copyright (c) See file LICENSE in project root folder
-#
-# Contributing author(s):
-# - Arne Pagel
-# - Timm Eversmeyer
 
 import logging
 import jukebox.plugs as plugs
