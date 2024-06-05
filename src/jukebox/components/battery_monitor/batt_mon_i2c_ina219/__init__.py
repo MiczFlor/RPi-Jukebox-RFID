@@ -49,13 +49,24 @@ class battmon_ina219(BatteryMonitorBase.BattmonBase):
     def __init__(self, cfg):
         super().__init__(cfg, logger)
 
-    def init_batt_mon_hw(self, num, denom):
-        self.adc = INA219(float(num) / 1000, busnum=1)
-        self.adc.configure(self.adc.RANGE_16V, self.adc.GAIN_AUTO, self.adc.ADC_32SAMP, self.adc.ADC_32SAMP)
+    def init_batt_mon_hw(self, num: float, denom: float) -> None:
+        try:
+            self.adc = INA219(float(num) / 1000, busnum=1)
+            self.adc.configure(self.adc.RANGE_16V, self.adc.GAIN_AUTO, self.adc.ADC_32SAMP, self.adc.ADC_32SAMP)
+        except DeviceRangeError as e:
+            logger.error(f"Device range error: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Failed to initialize INA219: {e}")
+            raise
 
-    def get_batt_voltage(self):
-        batt_voltage_mV = self.adc.supply_voltage() * 1000.0
-        return int(batt_voltage_mV)
+    def get_batt_voltage(self) -> int:
+        try:
+            batt_voltage_mV = self.adc.supply_voltage() * 1000.0
+            return int(batt_voltage_mV)
+        except Exception as e:
+            logger.error(f"Failed to get supply voltage from INA219: {e}")
+            raise
 
 
 @plugs.finalize
