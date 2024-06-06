@@ -1,14 +1,13 @@
-# Battery Monitor based on a ADS1015
-
 > [!CAUTION]
 > Lithium and other batteries are dangerous and must be treated with care.
 > Rechargeable Lithium Ion batteries are potentially hazardous and can
-> present a serious **FIRE HAZARD** if damaged, defective or improperly used.
-> Do not use this circuit to a lithium ion battery without expertise and
-> training in handling and use of batteries of this type.
+> present a serious **FIRE HAZARD** if damaged, defective, or improperly used.
+> Do not use this circuit for a lithium-ion battery without the expertise and
+> training in handling and using batteries of this type.
 > Use appropriate test equipment and safety protocols during development.
-> There is no warranty, this may not work as expected or at all!
+> There is no warranty, this may not work as expected!
 
+# Battery Monitor based on a ADS1015
 The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ads1015/\_\_init\_\_.py](../../../../src/jukebox/components/battery_monitor/batt_mon_i2c_ads1015/__init__.py) is intended to read out the voltage of a single Cell LiIon Battery using a [CY-ADS1015 Board](https://www.adafruit.com/product/1083):
 
 ```text
@@ -33,15 +32,6 @@ The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ads1015/\_\_i
 > * the time between sample needs to be a minimum 1sec with this high impedance voltage divider don't use the continuous conversion method!
 
 # Battery Monitor based on an INA219
-
-> [!CAUTION]
-> Lithium and other batteries are dangerous and must be treated with care.
-> Rechargeable Lithium Ion batteries are potentially hazardous and can
-> present a serious **FIRE HAZARD** if damaged, defective, or improperly used.
-> Do not use this circuit for a lithium-ion battery without the expertise and
-> training in handling and using batteries of this type.
-> Use appropriate test equipment and safety protocols during development.
-> There is no warranty, this may not work as expected!
 
 The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ina219/\_\_init\_\_.py](../../../../src/jukebox/components/battery_monitor/batt_mon_i2c_ina219/__init__.py) is intended to read out the voltage of a single cell or multiple LiIon Battery using a [INA219 Board](https://www.adafruit.com/product/904):
 
