@@ -16,34 +16,7 @@ batt_mon = None
 class battmon_ina219(BatteryMonitorBase.BattmonBase):
     '''Battery Monitor based on a INA219
 
-    CAUTION - WARNING
-    ========================================================================
-    Lithium and other batteries are dangerous and must be treated with care.
-    Rechargeable Lithium Ion batteries are potentially hazardous and can
-    present a serious FIRE HAZARD if damaged, defective or improperly used.
-    Do not use this circuit to a lithium ion battery without expertise and
-    training in handling and use of batteries of this type.
-    Use appropriate test equipment and safety protocols during development.
-
-    There is no warranty, this may not work as expected or at all!
-    =========================================================================
-
-    This script is intended to read out the Voltage of a single Cell LiIon Battery using a board with a INA219:
-
-                                                  3.3V
-                                                   +
-                                                   |
-                                              .----o----.
-                                              |         |  SDA
-              .-------------------------------o AIN     o------
-              |                               | INA219  |  SCL
-              |                    .----------o AOUT    o------
-             ---                   |          |         |
-     Battery  -           Regulator + Raspi   '----o----'
-     2.9V-4.2V|                    |               |
-              |                    |               |
-             ===                  ===             ===
-
+    See [Battery Monitor documentation](../../builders/components/power/batterymonitor.md)
     '''
 
     def __init__(self, cfg):
