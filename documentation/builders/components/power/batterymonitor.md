@@ -10,6 +10,7 @@
 > There is no warranty, this may not work as expected!
 
 ## Battery Monitor based on a ADS1015
+
 The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ads1015/\_\_init\_\_.py](../../../../src/jukebox/components/battery_monitor/batt_mon_i2c_ads1015/__init__.py) is intended to read out the voltage of a single Cell LiIon Battery using a [CY-ADS1015 Board](https://www.adafruit.com/product/1083):
 
 ```text
@@ -53,7 +54,7 @@ The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ina219/\_\_in
              ===                  ===             ===
 ```
 
-# Configuration example
+## Configuration example
 
 The battery monitoring is configured in the jukebox.yml file.
 
