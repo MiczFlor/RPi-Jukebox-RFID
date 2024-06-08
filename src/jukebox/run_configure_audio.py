@@ -192,7 +192,7 @@ def query_sinks(pulse_config: PaConfigClass):  # noqa: C901
                     if sink_is_equalizer(primary_signal_chain[sidx - 1]):
                         pulse_config.enable_equalizer = False
                         print(f"\n*** Equalizer already configured for '{pulse_config.primary}' with name\n"
-                              f"    '{primary_signal_chain[sidx-1].name}'. Shifting entry point...")
+                              f"    '{primary_signal_chain[sidx - 1].name}'. Shifting entry point...")
                         pulse_config.primary = primary_signal_chain[sidx - 1].name
                         sidx -= 1
                 except ValueError:

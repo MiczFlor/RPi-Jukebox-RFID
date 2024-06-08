@@ -1,6 +1,8 @@
 [flake8]
 max-line-length = 127
 ignore =
+    # continuation line over-indented for hanging indent
+    E126,
     # continuation line over-indented for visual indent
     E127,
     # continuation line under-indented for visual indent

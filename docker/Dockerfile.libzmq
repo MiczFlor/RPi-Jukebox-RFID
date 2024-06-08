@@ -1,0 +1,25 @@
+FROM debian:bullseye-slim
+
+# Install necessary build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential wget tar
+
+# Define environment variables for libzmq
+ENV ZMQ_VERSION 4.3.5
+ENV ZMQ_PREFIX /opt/libzmq
+
+# Download, compile, and install libzmq
+RUN mkdir -p ${ZMQ_PREFIX}; \
+    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
+    tar -xzf libzmq.tar.gz; \
+    cd zeromq-${ZMQ_VERSION}; \
+    ./configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
+    make -j$(nproc) && make install
+
+# Cleanup unnecessary files
+RUN rm -rf /zeromq-${ZMQ_VERSION} libzmq.tar.gz
+
+# Create final image with only the libzmq build fragments
+FROM scratch
+ENV ZMQ_PREFIX /opt/libzmq
+COPY --from=0 ${ZMQ_PREFIX} ${ZMQ_PREFIX}

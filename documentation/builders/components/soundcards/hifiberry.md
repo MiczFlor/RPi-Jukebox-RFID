@@ -19,7 +19,6 @@ If you know you HifiBerry Board identifier, you can run the script as a 1-liner 
 
 If you like to disable your HiFiberry Sound card and enable onboard sound, run the following command
 
-
 ```bash
 ./setup_hifiberry.sh disable
 ```

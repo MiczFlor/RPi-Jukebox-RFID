@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, useContext, useEffect, useState } from 'react';
 import {
   Link,
   useLocation,
@@ -15,12 +15,21 @@ import {
 
 import noCover from '../../../../../assets/noCover.jpg';
 
+import AppSettingsContext from '../../../../../context/appsettings/context';
 import request from '../../../../../utils/request';
 
 const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   const { t } = useTranslation();
   const { search: urlSearch } = useLocation();
   const [coverImage, setCoverImage] = useState(noCover);
+
+  const {
+    settings,
+  } = useContext(AppSettingsContext);
+
+  const {
+    show_covers,
+  } = settings;
 
   useEffect(() => {
     const getCoverArt = async () => {
@@ -29,11 +38,13 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
         album: album
       });
       if (result) {
-        setCoverImage(`/cover-cache/${result}`);
+        if(result !== 'CACHE_PENDING') {
+          setCoverImage(`/cover-cache/${result}`);
+        }
       };
     }
 
-    if (albumartist && album) {
+    if (albumartist && album && show_covers) {
       getCoverArt();
     }
   }, [albumartist, album]);
@@ -59,9 +70,11 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
       key={album}
     >
       <ListItemButton>
-        <ListItemAvatar>
-          <Avatar variant="rounded" alt="Cover" src={coverImage} />
-        </ListItemAvatar>
+        {show_covers &&
+          <ListItemAvatar>
+            <Avatar variant="rounded" alt="Cover" src={coverImage} />
+          </ListItemAvatar>
+        }
         <ListItemText
           primary={album || t('library.albums.unknown-album')}
           secondary={albumartist || null}

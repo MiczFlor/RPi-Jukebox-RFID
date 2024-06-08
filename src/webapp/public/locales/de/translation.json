@@ -138,8 +138,8 @@
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
-      "no-music": "Keine Musik vorhanden!",
-      "empty-folder": "Dieser Ordner ist leer!",
+      "no-music": "☝️ Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer! 🙈",
       "show-folder-content": "Zeige den Ordnerinhalt an",
       "back-button-label": "Zurück"
     },
@@ -218,6 +218,12 @@
       "not-installed": "Diese Funktion ist nicht installiert",
       "why": "Warum?",
       "control-label": "Auto Hotspot"
+    },
+    "general": {
+      "title": "Allgmeine Einstellungen",
+      "show_covers": {
+        "title": "Cover anzeigen"
+      }
     },
     "timers": {
       "option-label-timeslot": "{{value}} min",
