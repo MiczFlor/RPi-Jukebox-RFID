@@ -60,7 +60,7 @@ The battery monitoring is configured in the jukebox.yml file.
 
 The "battmon" module has to be added to the modules setting.
 
-```text
+```yaml
 modules:
   named:
     # Do not change the order!
