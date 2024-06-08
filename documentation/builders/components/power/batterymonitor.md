@@ -71,7 +71,7 @@ modules:
 
 The battmon module needs further configuration:
 
-```text
+```yaml
 battmon:
   scale_to_phy_num: 1
   scale_to_phy_denom: 0
