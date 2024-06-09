@@ -93,6 +93,10 @@ playermpd:
   stopped_prev_action: prev
   # Must be one of: 'none', 'next', 'rewind':
   stopped_next_action: next
+  resume:
+    resume_by_default: false
+    file: ../../shared/logs/resume_positions.json
+    flush_interval_seconds: 30
 rpc:
   tcp_port: 5555
   websocket_port: 5556

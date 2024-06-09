@@ -106,7 +106,8 @@ Topics marked _in progress_ are already in the process of implementation by comm
 
 - [ ] Folder configuration (_in progress_)
   - [ ] [Reference](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/MANUAL#manage-playout-behaviour)
-  - [ ] Resume: Save and restore position (how interact with shuffle?)
+  - [x] Resume: Save and restore position
+  - [ ] Resume during shuffle: How to interact?
   - [ ] Repeat Playlist
   - [ ] Repeat Song
   - [ ] Shuffle
