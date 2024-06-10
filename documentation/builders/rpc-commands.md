@@ -37,21 +37,21 @@ The keyword ``method`` is optional. If needs to be used depends on the function 
 ## Aliases
 
 Not so complicated, right? It will get even easier. For common commands we have defined aliases. An alias simply maps
-to a pre-defined RPC command, e.g. ``play_card`` maps to ``player.ctrl.play_card``.
+to a pre-defined RPC command, e.g. ``play_folder`` maps to ``player.ctrl.play_folder``.
 
 Instead of
 
 ```yml
 package: player
 plugin: ctrl
-method: play_card
+method: play_folder
 args: [path/to/folder]
 ```
 
 you can simply specify instead:
 
 ```yml
-alias: play_card
+alias: play_folder
 args: [path/to/folder]
 ```
 
@@ -60,10 +60,10 @@ Using in alias is optional. But if the keyword is present in the configuration i
 ## Arguments
 
 Arguments can be specified in similar fashion to Python function arguments: as positional arguments and / or
-keyword arguments. Let's check out play_card, which is defined as:
+keyword arguments. Let's check out play_folder, which is defined as:
 
 ```python
-play_card(...) -> player.ctrl.play_card(folder: str, recursive: bool = False)
+play_folder(...) -> player.ctrl.play_folder(folder: str, recursive: bool = False)
     :noindex:
 
     :param folder: Folder path relative to music library path
@@ -79,19 +79,19 @@ In the following examples, we will always use the alias for smaller configuratio
 do exactly the same, but use different ways of specifying the command.
 
 ```yml
-alias: play_card
+alias: play_folder
 args: [path/to/folder, True]
 ```
 
 ```yml
-alias: play_card
+alias: play_folder
 args: [path/to/folder]
 kwargs:
     recursive: True
 ```
 
 ```yml
-alias: play_card
+alias: play_folder
 kwargs:
     folder: path/to/folder
     recursive: True

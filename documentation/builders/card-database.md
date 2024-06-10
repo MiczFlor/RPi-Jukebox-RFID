@@ -21,15 +21,17 @@ using the alias option:
 '0002':
     # A RPC command using the alias definition with one arguments
     # Here: Trigger music playback through the card interface
-    alias: play_card
-    args: [path/to/folder]
+    alias: play_folder
+    args:
+    - /path/to/folder
 '0003':
     # A RPC command using keyword arguments. Args and kwargs can also be mixed.
     # Args and Kwargs translate directly into the function python call
     # Some as in '0002' but using kwargs
-    alias: play_card
+    alias: play_album
     kwargs:
-        folder: path/to/folder
+        albumartist: Some Artist Name
+        recursive: A song Name
 ```
 
 > [!NOTE]

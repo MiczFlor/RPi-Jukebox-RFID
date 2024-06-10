@@ -12,12 +12,6 @@ See [RPC Commands](../../builders/rpc-commands.md)
 # --------------------------------------------------------------
 cmd_alias_definitions = {
     # Player
-    'play_card': {
-        'title': 'Play music folder triggered by card swipe',
-        'note': "This function you'll want to use most often",
-        'package': 'player',
-        'plugin': 'ctrl',
-        'method': 'play_card'},
     'play_album': {
         'title': 'Play Album triggered by card swipe',
         'note': "This function plays the content of a given album",

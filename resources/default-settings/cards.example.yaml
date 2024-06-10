@@ -53,10 +53,10 @@
 'T':
       package: player
       plugin: ctrl
-      method: play_card
+      method: play_folder
       args: [path/to/music/folder]
 'G':
-      alias: play_card
+      alias: play_folder
       args: path/to/music/folder
 'V+':
       alias: change_volume
