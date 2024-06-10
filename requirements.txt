@@ -19,6 +19,8 @@ ruamel.yaml
 requests
 # For the publisher event reactor loop:
 tornado
+# for collecting audiofiles
+pyyaml
 
 # RPi's GPIO packages:
 RPi.GPIO

@@ -11,7 +11,7 @@ modules:
     jingle: jingle
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
-    player: playermpd
+    player: player.plugin
     cards: rfid.cards
     rfid: rfid.reader
     timers: timers
@@ -76,23 +76,6 @@ jinglemp3:
 alsawave:
   # Config of the Wave through ALSA Jingle Service
   device: default
-playermpd:
-  host: localhost
-  status_file: ../../shared/settings/music_player_status.json
-  second_swipe_action:
-    # Note: Does not follow the RPC alias convention (yet)
-    # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
-    alias: toggle
-  library:
-    update_on_startup: true
-    check_user_rights: true
-  mpd_conf: ~/.config/mpd/mpd.conf
-  # Must be one of: 'none', 'stop', 'rewind':
-  end_of_playlist_next_action: none
-  # Must be one of: 'none', 'prev', 'rewind':
-  stopped_prev_action: prev
-  # Must be one of: 'none', 'next', 'rewind':
-  stopped_next_action: next
 rpc:
   tcp_port: 5555
   websocket_port: 5556
