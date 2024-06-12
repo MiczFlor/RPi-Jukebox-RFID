@@ -166,7 +166,8 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [x] Publish mechanism of timer status
 - [x] Change multitimer function call interface such that endless timer etc. won't pass the `iteration` kwarg
 - [ ] Make timer settings persistent
-- [ ] Idle timer
+- [x] Idle timer (basic implementation covering player, SSH, config and audio content changes)
+- [ ] Idle timer: Do we need further extensions?
   - This needs clearer specification: Idle is when no music is playing and no user interaction is taking place
   - i.e., needs information from RPC AND from player status. Let's do this when we see a little clearer about Spotify
 
