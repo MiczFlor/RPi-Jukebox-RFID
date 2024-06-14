@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 source ../includes/02_helpers.sh
+
 script_name=$(basename "$0")
 boot_config_path=$(get_boot_config_path)
 
