@@ -37,3 +37,6 @@ mock
 
 # API docs generation
 pydoc-markdown
+
+# MQTT
+paho-mqtt
