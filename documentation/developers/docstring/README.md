@@ -11,6 +11,9 @@
 * [\_\_init\_\_](#__init__)
 * [run\_configure\_audio](#run_configure_audio)
 * [components](#components)
+* [components.mqtt.utils](#components.mqtt.utils)
+* [components.mqtt.mqtt\_command\_alias](#components.mqtt.mqtt_command_alias)
+* [components.mqtt.mqtt\_const](#components.mqtt.mqtt_const)
 * [components.mqtt](#components.mqtt)
   * [MQTT](#components.mqtt.MQTT)
     * [run](#components.mqtt.MQTT.run)
@@ -506,6 +509,24 @@ For more information see [Audio Configuration](../../builders/audio.md#audio-con
 
 # components
 
+<a id="components.mqtt.utils"></a>
+
+# components.mqtt.utils
+
+<a id="components.mqtt.mqtt_command_alias"></a>
+
+# components.mqtt.mqtt\_command\_alias
+
+This file provides definitions for MQTT to RPC command aliases
+
+See []
+See [RPC Commands](../../builders/rpc-commands.md)
+
+
+<a id="components.mqtt.mqtt_const"></a>
+
+# components.mqtt.mqtt\_const
+
 <a id="components.mqtt"></a>
 
 # components.mqtt
@@ -520,9 +541,6 @@ MQTT Plugin Package.
 ```python
 class MQTT(threading.Thread)
 ```
-
-A thread for monitoring the events and publish intersting events via mqtt.
-
 
 <a id="components.mqtt.MQTT.run"></a>
 
