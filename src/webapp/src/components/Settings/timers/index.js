@@ -31,7 +31,7 @@ const SettingsTimers = () => {
         >
           <Timer type={'shutdown'} />
           <Timer type={'stop-player'} />
-          {/* <Timer type={'fade-volume'} /> */}
+          <Timer type={'fade-volume'} />
           <Timer type={'idle-shutdown'} />
         </Grid>
       </CardContent>

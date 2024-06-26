@@ -4,8 +4,9 @@
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-from jukebox.multitimer import (GenericTimerClass, GenericMultiTimerClass)
+from jukebox.multitimer import GenericTimerClass
 from .idle_shutdown_timer import IdleShutdownTimer
+from .volume_fadeout_shutdown_timer import VolumeFadoutAndShutdown
 
 
 logger = logging.getLogger('jb.timers')
@@ -24,29 +25,12 @@ def stop_player():
     logger.info("Stopping the player on timer request...")
     plugin.call_ignore_errors('player', 'ctrl', 'stop')
 
-
-class VolumeFadeOutActionClass:
-    def __init__(self, iterations):
-        self.iterations = iterations
-        # Get the current volume, calculate step size
-        self.volume = plugin.call('volume', 'ctrl', 'get_volume')
-        self.step = float(self.volume) / iterations
-
-    def __call__(self, iteration):
-        self.volume = self.volume - self.step
-        logger.debug(f"Decrease volume to {self.volume} (Iteration index {iteration}/{self.iterations}-1)")
-        plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[int(self.volume)])
-        if iteration == 0:
-            logger.debug("Shut down from volume fade out")
-            plugin.call_ignore_errors('host', 'shutdown')
-
-
 # ---------------------------------------------------------------------------
 # Create the timers
 # ---------------------------------------------------------------------------
 timer_shutdown: GenericTimerClass
 timer_stop_player: GenericTimerClass
-timer_fade_volume: GenericMultiTimerClass
+timer_fade_volume: VolumeFadoutAndShutdown
 timer_idle_shutdown: IdleShutdownTimer
 
 
@@ -70,13 +54,15 @@ def finalize():
     timer_stop_player.__doc__ = "Timer for automatic player stop"
     plugin.register(timer_stop_player, name='timer_stop_player', package=plugin.loaded_as(__name__))
 
-    # Volume Fade Timer
+    # Volume Fadeout and Shutdown Timer
     global timer_fade_volume
-    timeout = cfg.setndefault('timers', 'volume_fade_out', 'default_time_per_iteration_sec', value=15 * 60)
-    steps = cfg.setndefault('timers', 'volume_fade_out', 'number_of_steps', value=10)
-    timer_fade_volume = GenericMultiTimerClass(f"{plugin.loaded_as(__name__)}.timer_fade_volume",
-                                               steps, timeout, VolumeFadeOutActionClass)
-    timer_fade_volume.__doc__ = "Timer step-wise volume fade out and shutdown"
+    current_volume = plugin.call('volume', 'ctrl', 'get_volume')
+    step_size = cfg.setndefault('timers', 'timer_fade_volume', 'step_size', value=3)
+    timer_fade_volume = VolumeFadoutAndShutdown(
+        name=f"{plugin.loaded_as(__name__)}.timer_fade_volume",
+        current_volume=current_volume
+        # step_size=step_size
+    )
     plugin.register(timer_fade_volume, name='timer_fade_volume', package=plugin.loaded_as(__name__))
 
     # Idle Timer

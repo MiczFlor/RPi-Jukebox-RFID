@@ -251,13 +251,15 @@ class GenericMultiTimerClass(GenericTimerClass):
 
     @plugin.tag
     def get_state(self):
-        remaining_seconds = max(
+        remaining_seconds_current_iteration = max(
             0,
             self.get_timeout() - (int(time()) - self._start_time)
         )
+        remaining_seconds = self.get_timeout() * self._iterations + remaining_seconds_current_iteration
 
         return {'enabled': self.is_alive(),
                 'wait_seconds_per_iteration': self.get_timeout(),
+                'remaining_seconds_current_iteration': remaining_seconds_current_iteration,
                 'remaining_seconds': remaining_seconds,
                 'iterations': self._iterations,
                 'type': 'GenericMultiTimerClass'}

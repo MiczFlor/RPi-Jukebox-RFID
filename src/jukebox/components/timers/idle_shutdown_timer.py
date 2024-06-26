@@ -130,10 +130,10 @@ class IdleShutdown():
     files_num_entries: int = 0
     files_latest_mtime: float = 0
 
-    def __init__(self, iterations) -> None:
+    def __init__(self) -> None:
         self.base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
 
-    def __call__(self, iteration):
+    def __call__(self):
         logger.debug('Last checks before shutting down')
         if self._has_active_ssh_sessions():
             logger.debug('Active SSH sessions found, will not shutdown now')
