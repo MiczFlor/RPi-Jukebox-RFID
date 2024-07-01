@@ -94,7 +94,7 @@ jobs:
 
     # Build base image for debian version name. Layers will be cached and image pushes to local registry
     - name: Build Image - Base
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         load: false
@@ -112,7 +112,7 @@ jobs:
 
     # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
     - name: Build Image - Update
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         load: false
