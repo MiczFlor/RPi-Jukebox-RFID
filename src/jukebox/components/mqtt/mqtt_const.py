@@ -16,9 +16,6 @@ class Mqtt_Attributes(Enum):
     MUTE = "attribute/mute"
 
 
-topics_to_send = ["volume.level", "playerstatus"]
-
-
 class Mqtt_Commands(Enum):
     PLAY = "play"
     PLAY_FOLDER = "play_folder"
@@ -43,3 +40,12 @@ class Mqtt_Commands(Enum):
     TIMER_SHUTDOWN = "timer_shutdown"
     TIMER_STOP_PLAYER = "timer_stop_player"
     TIMER_FADE_VOLUME = "timer_fade_volume"
+
+
+# List of topics to send
+topics_to_send = ["volume.level", "playerstatus"]
+
+# Constants for repeat modes
+REPEAT_MODE_OFF = "off"
+REPEAT_MODE_SINGLE = "single"
+REPEAT_MODE_PLAYLIST = "playlist"

@@ -6,10 +6,20 @@ See [RPC Commands](../../builders/rpc-commands.md)
 """
 
 import json
-from distutils.util import strtobool
+
+import jukebox.plugs as plugs
 
 from .mqtt_const import Mqtt_Commands
 from .utils import parse_repeat_mode, play_folder_recursive_args
+
+
+def get_mute(payload) -> bool:
+    """Helper to toggle mute in legacy support."""
+    is_mute = plugs.call_ignore_errors(
+        package="volume", plugin="ctrl", method="get_mute"
+    )
+    return not is_mute
+
 
 legacy_mqtt_cmd = {
     "volumeup": {"rpc": "change_volume", "args": 1},
@@ -20,7 +30,7 @@ legacy_mqtt_cmd = {
             "plugin": "ctrl",
             "method": "mute",
         },
-        "args": strtobool,
+        "args": get_mute,
     },
     "playerplay": {"rpc": "play"},
     "playerpause": {"rpc": "pause"},
@@ -48,12 +58,30 @@ legacy_mqtt_cmd = {
             "method": "replay",
         }
     },
-    "setvolume": {"rpc": "set_volume", "args": int},
-    "setmaxvolume": {"rpc": "set_soft_max_volume", "args": int},
-    "shutdownafter": {"rpc": "timer_shutdown", "args": int},
-    "playerstopafter": {"rpc": "timer_stop_player", "args": int},
-    "playerrepeat": {"rpc": "repeat", "args": parse_repeat_mode},
-    "playfolder": {"rpc": "play_folder", "args": str},
+    "setvolume": {
+        "rpc": "set_volume",
+        "args": int,
+    },
+    "setmaxvolume": {
+        "rpc": "set_soft_max_volume",
+        "args": int,
+    },
+    "shutdownafter": {
+        "rpc": "timer_shutdown",
+        "args": int,
+    },
+    "playerstopafter": {
+        "rpc": "timer_stop_player",
+        "args": int,
+    },
+    "playerrepeat": {
+        "rpc": "repeat",
+        "args": parse_repeat_mode,
+    },
+    "playfolder": {
+        "rpc": "play_folder",
+        "args": str,
+    },
     "playfolderrecursive": {
         "rpc": "play_folder",
         "kwargs": play_folder_recursive_args,  # kwargs: folder, recursive
