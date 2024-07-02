@@ -12,7 +12,16 @@
 * [run\_configure\_audio](#run_configure_audio)
 * [components](#components)
 * [components.mqtt.utils](#components.mqtt.utils)
+  * [play\_folder\_recursive\_args](#components.mqtt.utils.play_folder_recursive_args)
+  * [parse\_repeat\_mode](#components.mqtt.utils.parse_repeat_mode)
+  * [get\_args](#components.mqtt.utils.get_args)
+  * [get\_rpc\_command](#components.mqtt.utils.get_rpc_command)
+  * [get\_kwargs](#components.mqtt.utils.get_kwargs)
+  * [get\_current\_time\_milli](#components.mqtt.utils.get_current_time_milli)
+  * [split\_topic](#components.mqtt.utils.split_topic)
+  * [map\_repeat\_mode](#components.mqtt.utils.map_repeat_mode)
 * [components.mqtt.mqtt\_command\_alias](#components.mqtt.mqtt_command_alias)
+  * [get\_mute](#components.mqtt.mqtt_command_alias.get_mute)
 * [components.mqtt.mqtt\_const](#components.mqtt.mqtt_const)
 * [components.mqtt](#components.mqtt)
   * [MQTT](#components.mqtt.MQTT)
@@ -513,6 +522,94 @@ For more information see [Audio Configuration](../../builders/audio.md#audio-con
 
 # components.mqtt.utils
 
+<a id="components.mqtt.utils.play_folder_recursive_args"></a>
+
+#### play\_folder\_recursive\_args
+
+```python
+def play_folder_recursive_args(payload: str) -> dict
+```
+
+Create arguments for playing a folder recursively.
+
+
+<a id="components.mqtt.utils.parse_repeat_mode"></a>
+
+#### parse\_repeat\_mode
+
+```python
+def parse_repeat_mode(payload: str) -> Optional[str]
+```
+
+Parse a repeat mode command based on the given payload.
+
+
+<a id="components.mqtt.utils.get_args"></a>
+
+#### get\_args
+
+```python
+def get_args(config: dict, payload: dict) -> Optional[dict]
+```
+
+Retrieve arguments based on the configuration and payload.
+
+
+<a id="components.mqtt.utils.get_rpc_command"></a>
+
+#### get\_rpc\_command
+
+```python
+def get_rpc_command(config: dict) -> Optional[dict]
+```
+
+Retrieve the RPC command based on the configuration.
+
+
+<a id="components.mqtt.utils.get_kwargs"></a>
+
+#### get\_kwargs
+
+```python
+def get_kwargs(config: dict, payload: dict) -> Optional[dict]
+```
+
+Retrieve keyword arguments based on the configuration and payload.
+
+
+<a id="components.mqtt.utils.get_current_time_milli"></a>
+
+#### get\_current\_time\_milli
+
+```python
+def get_current_time_milli() -> int
+```
+
+Get the current time in milliseconds.
+
+
+<a id="components.mqtt.utils.split_topic"></a>
+
+#### split\_topic
+
+```python
+def split_topic(topic: str) -> str
+```
+
+Split an MQTT topic and return a part of it.
+
+
+<a id="components.mqtt.utils.map_repeat_mode"></a>
+
+#### map\_repeat\_mode
+
+```python
+def map_repeat_mode(repeat_active: bool, single_active: bool) -> str
+```
+
+Map boolean flags to repeat mode constants.
+
+
 <a id="components.mqtt.mqtt_command_alias"></a>
 
 # components.mqtt.mqtt\_command\_alias
@@ -523,6 +620,17 @@ See []
 See [RPC Commands](../../builders/rpc-commands.md)
 
 
+<a id="components.mqtt.mqtt_command_alias.get_mute"></a>
+
+#### get\_mute
+
+```python
+def get_mute(payload) -> bool
+```
+
+Helper to toggle mute in legacy support.
+
+
 <a id="components.mqtt.mqtt_const"></a>
 
 # components.mqtt.mqtt\_const
@@ -530,9 +638,6 @@ See [RPC Commands](../../builders/rpc-commands.md)
 <a id="components.mqtt"></a>
 
 # components.mqtt
-
-MQTT Plugin Package.
-
 
 <a id="components.mqtt.MQTT"></a>
 
@@ -542,6 +647,9 @@ MQTT Plugin Package.
 class MQTT(threading.Thread)
 ```
 
+A thread for monitoring events and publishing interesting events via MQTT.
+
+
 <a id="components.mqtt.MQTT.run"></a>
 
 #### run
@@ -550,7 +658,7 @@ class MQTT(threading.Thread)
 def run() -> None
 ```
 
-The main loop of the MQTT thread.
+Main loop of the MQTT thread.
 
 
 <a id="components.mqtt.MQTT.stop"></a>
@@ -561,7 +669,7 @@ The main loop of the MQTT thread.
 def stop()
 ```
 
-Stop the mqtt thread
+Stop the MQTT thread.
 
 
 <a id="components.mqtt.on_connect"></a>
@@ -572,7 +680,7 @@ Stop the mqtt thread
 def on_connect(client, userdata, flags, rc)
 ```
 
-Start thread on successful mqtt connection.
+Start thread on successful MQTT connection.
 
 
 <a id="components.mqtt.initialize"></a>
@@ -584,7 +692,7 @@ Start thread on successful mqtt connection.
 def initialize()
 ```
 
-Setup connection and trigger the mqtt loop.
+Setup connection and trigger the MQTT loop.
 
 
 <a id="components.volume"></a>
