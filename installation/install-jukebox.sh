@@ -154,7 +154,7 @@ _load_sources() {
 _setup_logging
 
 ### CHECK PREREQUISITE
-_check_os_type
+### _check_os_type
 _check_existing_installation
 
 ### RUN INSTALLATION
