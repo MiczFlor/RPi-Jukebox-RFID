@@ -76,7 +76,7 @@ get_architecture() {
 }
 
 is_raspbian() {
-    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
+    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]] || [[ -f /etc/apt/sources.list.d/raspi.list ]]; then
         echo true
     else
         echo false
