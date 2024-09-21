@@ -75,23 +75,11 @@ get_architecture() {
     echo $arch
 }
 
-is_raspbian() {
-    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]] || [[ -f /etc/apt/sources.list.d/raspi.list ]]; then
-        echo true
-    else
-        echo false
-    fi
-}
-
-get_debian_version_number() {
-    source /etc/os-release
-    echo "$VERSION_ID"
-}
-
 _get_boot_file_path() {
     local filename="$1"
-    if [ "$(is_raspbian)" = true ]; then
-        local debian_version_number=$(get_debian_version_number)
+    local os_release_id=$( . /etc/os-release; printf '%s\n' "$ID"; )
+    if [[ "$os_release_id" == *"raspbian"* ]] || [[ "$os_release_id" == *"debian"* ]]; then
+        local debian_version_number=$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )
 
         # Bullseye and lower
         if [ "$debian_version_number" -le 11 ]; then
