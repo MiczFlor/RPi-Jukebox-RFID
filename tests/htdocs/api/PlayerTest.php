@@ -36,4 +36,34 @@ class PlayerTest extends TestCase {
         $this->expectOutputString('{"key_one":"Value one","key_two":"Value two with spaces","key_three":"Value three with uppercase key"}');
         handleGet();
     }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testHandlePutFails() {
+        $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
+        $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue(null));
+
+        $this->expectOutputString('Body is missing command');
+        handlePut();
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testHandlePutSuccess() {
+        $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
+        $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue('{"command":"play", "value":"1.0"}'));
+
+        $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
+        $exec->expects($this->atLeastOnce())->willReturnCallback(
+            function ($command, &$output, &$returnValue) {
+                $output = '';
+                $returnValue = 0;
+            }
+        );
+
+        $this->expectOutputString('');
+        handlePut();
+    }
 }
