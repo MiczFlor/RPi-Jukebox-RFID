@@ -24,29 +24,29 @@ The created CSV file starts with the line
 
 ## CreatePodcastsKidsDeutsch.sh
 
-Creates sample folders with files and streams 
+Creates sample folders with files and streams
 inside the $AUDIOFOLDERSPATH directory
 
 ## CreateSampleAudiofoldersStreams.sh
 
-Creates sample folders with files and streams 
+Creates sample folders with files and streams
 inside the $AUDIOFOLDERSPATH directory
 
 ## DeleteAllConfig.sh
 
-This script will delete all config files 
+This script will delete all config files
 including mpd.conf and the like.
 
 ## DeleteSampleAudiofoldersStreams.sh
 
-Deletes sample folders with files and streams 
+Deletes sample folders with files and streams
 inside the $AUDIOFOLDERSPATH directory
 
 ## cli-player.py
 
 Command line player to play folders on the Phoniebox.
 
-A command line replacement some functionality of the phoniebox-web-ui, which challenges the raspberry pi zero. 
+A command line replacement some functionality of the phoniebox-web-ui, which challenges the raspberry pi zero.
 Using this small script significantly reduces resource usage on the system.
 
 ## cli_ReadWifiIp.php
@@ -55,11 +55,11 @@ Reads out the IP of the Phoniebox in English language on boot.
 
 ## organizeFiles.py
 
-A small script for conveniently organizing audio folders, 
-linking them to RFID cards, finding audio folders that are currently 
+A small script for conveniently organizing audio folders,
+linking them to RFID cards, finding audio folders that are currently
 not bound to any RFID card, and fixing broken links.
 
-A command line replacement some functionality of the phoniebox-web-ui, which challenges the raspberry pi zero. 
+A command line replacement some functionality of the phoniebox-web-ui, which challenges the raspberry pi zero.
 Using this small script significantly reduces resource usage on the system.
 
 ## setup_autohotspot.sh
@@ -67,17 +67,19 @@ Using this small script significantly reduces resource usage on the system.
 Script to setup the autohotspot feature. It automatically sets up a wifi hotspot if no known network is found.
 This is already included in the main install script, but can also be run manually. Please perform a reboot after you changed the configuration.
 
-usage: 
+usage:
 setup_autohotspot.sh \<jukeboxDir\> \<activation=YES|NO\> \<ssid\> \<countryCode (e.g. DE, GB, CZ, ...)\> \<password (8..63 characters)\> \<ipAdress\>
 
 ### activate
-```
+
+```bash
 chmod +x ./scripts/helperscripts/setup_autohotspot.sh
 ./scripts/helperscripts/setup_autohotspot.sh . YES phoniebox DE PlayItLoud 10.0.0.5
 ```
 
 ### deactivate
-```
+
+```bash
 chmod +x ./scripts/helperscripts/setup_autohotspot.sh
 ./scripts/helperscripts/setup_autohotspot.sh . NO
 ```

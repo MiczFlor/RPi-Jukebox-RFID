@@ -150,7 +150,7 @@ class TestButton:
         simple_button.hold_mode = 'SecondFunc'
         calls = mockedSecAction.call_count
         simple_button.callbackFunctionHandler(simple_button.pin)
-        mockedAction.assert_called_once()
+        mockedAction.assert_not_called()
         assert mockedSecAction.call_count - calls == 1
 
     def test_hold_SecondFunc_shorter_holdtime(self, simple_button):
@@ -170,7 +170,7 @@ class TestButton:
         simple_button.hold_mode = 'SecondFuncRepeat'
         calls = mockedSecAction.call_count
         simple_button.callbackFunctionHandler(simple_button.pin)
-        mockedAction.assert_called_once()
+        mockedAction.assert_not_called()
         assert mockedSecAction.call_count - calls == 3
 
     def test_hold_SecondFuncRepeat_shorter_holdtime(self, simple_button):

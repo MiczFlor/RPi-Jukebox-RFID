@@ -28,7 +28,7 @@ def current_device():
                 break
         try:
             _current_device
-        except:
+        except Exception:
             sys.exit('Could not find the device %s\n. Make sure it is connected' % device_name)
         return _current_device
 

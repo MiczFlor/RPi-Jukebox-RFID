@@ -19,7 +19,7 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 Another bunch of wonderful designs!
 
-To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY). 
+To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY).
 
 ![The Phoniebox Calendar](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/calendar/latest-Phoniebox-Calendar.jpg "The Phoniebox Calendar")
 
@@ -141,7 +141,8 @@ There is a growing section of [troubleshooting](https://github.com/MiczFlor/RPi-
 
 Here is a list of equipment needed. You can find a lot second hand online (save money and the planet). The links below lead to Amazon, not at all because I want to support them, but because their PartnerNet program helps to support the Phoniebox maintenance (a little bit...).
 
-Note: depending on individual projects, the hardware requirements vary.
+> [!NOTE]
+> Depending on individual projects, the hardware requirements vary.
 
 ### Raspberry Pi
 
@@ -189,6 +190,8 @@ These are links to additional items, which will add an individual flavour to you
 Special hardware is now organised in the folder [`components`](components/). If you have new hardware attached to your Phoniebox, please add to this library! It currently contains soundcards, displays, GPIO controls, RFID reader, smarthome integration.
 
 ## Support Phoniebox
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD045 -->
 
 <a href="https://www.buymeacoffee.com/MiczFlor" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg"></a>
 
@@ -210,6 +213,8 @@ See the Phoniebox code in action, watch this video and read the blog post from [
 | <a href="https://youtu.be/spHDGSxckmw" target="_blank"><img src="https://i.ytimg.com/vi/spHDGSxckmw/hqdefault.jpg"><br>Installation und Hardware</a> | <a href="https://youtu.be/9ZSKFoWr9WY" target="_blank"><img src="https://i.ytimg.com/vi/9ZSKFoWr9WY/hqdefault.jpg"><br>Web App and Audio / Spotify</a> | <a href="https://youtu.be/YucQuwUD7XE" target="_blank"><img src="https://i.ytimg.com/vi/YucQuwUD7XE/hqdefault.jpg"><br>The finished Phoniebox in action</a> |
 
 A new video screencast about
+
+<!-- markdownlint-restore -->
 
 **What makes this Phoniebox easy to install and use:**
 
@@ -242,7 +247,6 @@ See innovation, upcycling and creativity in the [Phoniebox Gallery](https://gith
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
 ![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
-
 
 ## Sustainability
 

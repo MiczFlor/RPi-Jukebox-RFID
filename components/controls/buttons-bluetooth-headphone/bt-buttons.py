@@ -56,7 +56,7 @@ def bt_on_disconnect(mpd_support=0) -> None:
     """
     logger.info("on disconnect")
     if mpd_support:
-        pctproc = subprocess.run(f"{os.path.dirname(os.path.realpath(__file__))}/../../../scripts/playout_controls.sh -c=bluetoothtoggle -v=speakers", shell=True, check=False,
+        pctproc = subprocess.run(f"{os.path.dirname(os.path.realpath(__file__))}/../../../scripts/playout_controls.sh -c=bluetoothtoggle -v=speakers", shell=True, check=False,  # noqa: E501
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         logger.debug(pctproc.stdout)
 
@@ -71,7 +71,7 @@ def bt_on_connect(mpd_support=0) -> None:
     """
     logger.info("on connect")
     if mpd_support:
-        pctproc = subprocess.run(f"{os.path.dirname(os.path.realpath(__file__))}/../../../scripts/playout_controls.sh -c=bluetoothtoggle -v=headphones", shell=True, check=False,
+        pctproc = subprocess.run(f"{os.path.dirname(os.path.realpath(__file__))}/../../../scripts/playout_controls.sh -c=bluetoothtoggle -v=headphones", shell=True, check=False,  # noqa: E501
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         logger.debug(pctproc.stdout)
 
@@ -139,17 +139,17 @@ def bt_key_handler(name, mpd_support=0) -> None:
             # Only act on button press, not button release
             if event.value == 1:
                 if event.code == bt_keycode_play:
-                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerpause", shell=True, check=False,
-                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerpause", shell=True,
+                                          check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 elif event.code == bt_keycode_pause:
-                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerpause", shell=True, check=False,
-                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerpause", shell=True,
+                                          check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 elif event.code == bt_keycode_next:
-                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playernext", shell=True, check=False,
-                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playernext", shell=True,
+                                          check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 elif event.code == bt_keycode_prev:
-                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerprev", shell=True, check=False,
-                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    proc = subprocess.run(f"{path}/../../../scripts/playout_controls.sh -c=playerprev", shell=True,
+                                          check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 logger.debug(proc.stdout)
                 if proc.returncode != 0:
                     logger.error("#" * 60)

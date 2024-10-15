@@ -1,15 +1,15 @@
-## Control Phoniebox via Buttons from Bluetooth Headset
+# Control Phoniebox via Buttons from Bluetooth Headset
 
 Many bluetooth headsets or bluetooth speaker sets have buttons for controlling the music stream. **Let's make use of them!**
 This component provides support for controlling your Phoniebox through these buttons on your bluetooth headset (or speaker set).
 
-### Installation
+## Installation
 
 1. Make sure your bluetooth headset is connected to the Phoniebox. Follow the instructions in the [Wiki](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/Connecting_Bluetooth_device_to_Phoniebox).
 2. Execute `$ ./install-bt-buttons.sh. It will ask you to identify your headset and set up appropriate user rights, and registers the script as a service. It should work immediatly. In case of doubt, reboot.
     - If later changing the headset, re-run `$ ./register-device.py`. Reboot or restart the service with `sudo systemctl restart phoniebox-bt-buttons.service`
 
-### Supported Buttons
+## Supported Buttons
 
 Out-of-the box support is included for the following buttons
 
@@ -19,13 +19,15 @@ Out-of-the box support is included for the following buttons
 
 Key codes are standarized and so it should also work with your headphones. If you want to add more keys or assign a different behaviour see [Troubleshooting](#troubleshooting)
 
-*Note:* Volume up/down is inherently supported by the bluetooth protocol. There is no need to handle these by this script.
+> [!NOTE]
+> Volume up/down is inherently supported by the bluetooth protocol. There is no need to handle these by this script.
 
-### On Connect / On Disconnect
+## On Connect / On Disconnect
 
 If the feature [bluetooth-sink-switch](../../bluetooth-sink-switch) is enabled, the script automatically switches the audio stream to headphones / regular speakers on bluetooth connect / disconnect  respectivly. Playback state (play/pause) is retained.
 
-*Note:* On-connect actions may take up to 4 seconds - please be patient (bluetooth connection is only checked every two seconds, bluetooth stream needs to be buffered, etc...)
+ > [!NOTE]
+ > On-connect actions may take up to 4 seconds - please be patient (bluetooth connection is only checked every two seconds, bluetooth stream needs to be buffered, etc...)
 
 You can **customize** the behaviour by editing the functions
 
@@ -34,16 +36,16 @@ You can **customize** the behaviour by editing the functions
 
 where `mpd_support` indicates wether the bt-sink-switch-feature is enabled.
 
-### Troubleshooting
+## Troubleshooting
 
 This feature has been tested with PowerLocus Buddy and Sennheiser Momentum M2 AEBT headphones.
 
-#### Preparation
+### Preparation
 
 - Stop the service `$ sudo systemctl stop phoniebox-bt-buttons.service`
 - Start the script in a command line with debug option `$ ./bt-buttons.py debug`
 
-#### Check that correct bluetooth device is found
+### Check that correct bluetooth device is found
 
 - Run the [preparatory steps](#preparation)
 - Check headset is connected and listed as input event device with `$ cat /proc/bus/input/devices`. Note the device name.
@@ -57,7 +59,7 @@ This feature has been tested with PowerLocus Buddy and Sennheiser Momentum M2 AE
 
 - If you see discrepancies, re-run `$ ./register-device.py`(see above)
 
-#### Add key codes / change actions
+### Add key codes / change actions
 
 - Run the [preparatory steps](#preparation)
 - Press the buttons on the headset and check for these debug outputs. Note down the keycode. The **163** is the keycode, you are looking for. Go through all the buttons. Also try short/long press. On my headphones, they result in different keycodes
@@ -78,7 +80,7 @@ This feature has been tested with PowerLocus Buddy and Sennheiser Momentum M2 AE
 
 ~~~
 
-#### Still having trouble?
+### Still having trouble?
 
 Check the basics: test the event input. Make sure the headphones are connected beforehand. Replace event*X* with the event number obtained from `$ cat /proc/bus/input/devices`.
 
