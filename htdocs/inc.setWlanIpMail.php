@@ -34,13 +34,18 @@ if(isset($_POST['WlanIpMailYN']) && trim($_POST['WlanIpMailYN']) != "") {
     } 
     // Email address
     $WlanIpMailAddr = trim($_POST['WlanIpMailAddr']);
-    $exec = 'echo "'.$WlanIpMailAddr.'" > '.$conf['settings_abs'].'/WlanIpMailAddr';
-    if($debug == "true") {
-        print $exec;
+    if (filter_var($WlanIpMailAddr, FILTER_VALIDATE_EMAIL)) {
+        $WlanIpMailAddr = htmlspecialchars($WlanIpMailAddr, ENT_QUOTES, 'UTF-8');
+        $exec = 'echo "'.$WlanIpMailAddr.'" > '.$conf['settings_abs'].'/WlanIpMailAddr';
+        if($debug == "true") {
+            print $exec;
+        }
+        shell_exec($exec); // P36bd
+    } else {
+        echo "Invalid email address.";
     }
-    exec($exec);
     // execute shell to create config file
-    exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh");
+    shell_exec("sudo ".$conf['scripts_abs']."/inc.writeGlobalConfig.sh"); // P36bd
 }
 ?>
 
