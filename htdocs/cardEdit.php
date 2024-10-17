@@ -14,6 +14,26 @@ include("inc.header.php");
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';
 $conf['url_abs']    = $protocol.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']; // URL to PHP_SELF
 
+/*******************************************
+* Input Validation and Sanitization
+*******************************************/
+
+function validateInput($input) {
+    // Ensure the input only contains valid characters
+    return preg_match('/^[a-zA-Z0-9_\-\/\.]+$/', $input);
+}
+
+function sanitizeInput($input) {
+    // Remove any potentially harmful characters from the input
+    return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+}
+
+foreach ($_POST as $key => $value) {
+    if (!validateInput($value)) {
+        die("Invalid input detected.");
+    }
+    $_POST[$key] = sanitizeInput($value);
+}
 
 /*******************************************
 * START HTML

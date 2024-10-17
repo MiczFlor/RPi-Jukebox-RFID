@@ -609,4 +609,22 @@ function mopidyApiCall($method, $params){
     return $json;
 }
 
-?>
+function validateInput($input) {
+    // Ensure the input only contains valid characters
+    return preg_match('/^[a-zA-Z0-9_\-\/\.]+$/', $input);
+}
+
+function sanitizeInput($input) {
+    // Remove any potentially harmful characters from the input
+    return escapeshellcmd($input);
+}
+
+function safeExec($command) {
+    // Validate and sanitize the command before executing
+    if (validateInput($command)) {
+        $sanitizedCommand = sanitizeInput($command);
+        return shell_exec($sanitizedCommand);
+    } else {
+        return false;
+    }
+}

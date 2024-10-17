@@ -6,6 +6,8 @@
 * works for both.
 */
 
+include('utils/validation.php'); 
+
 /******************************************
 * read available RFID trigger commands
 */
@@ -107,6 +109,9 @@ foreach($audiofolders_abs as $audiofolder){
 $messageError = "";
 $messageAction = "";
 $messageSuccess = "";
+
+// Input validation and sanitization for $_POST parameters
+$post = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 if($post['delete'] == "delete") {
     $messageAction .= "<p>The card with the ID '".$post['cardID']." has been deleted.

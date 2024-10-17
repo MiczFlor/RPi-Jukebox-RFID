@@ -1,10 +1,10 @@
 <?php
 namespace JukeBox;
 
-
 include("inc.header.php");
 require_once 'utils/Files.php';
 require_once 'utils/Strings.php';
+require_once 'utils/validation.php';
 use JukeBox\Utils\Files;
 use JukeBox\Utils\Strings;
 
@@ -134,33 +134,33 @@ $trackDat['metaKeys']['mp3'] = array(
 * URLPARAMETERS
 *******************************************/
 if(isset($_GET['folder']) && $_GET['folder'] != "") { 
-    $post['folder'] = $_GET['folder'];
+    $post['folder'] = sanitizeInput($_GET['folder']);
 } else {
     if(isset($_POST['folder']) && $_POST['folder'] != "") { 
-        $post['folder'] = $_POST['folder'];
+        $post['folder'] = sanitizeInput($_POST['folder']);
     }
 }
 if(isset($_GET['filename']) && $_GET['filename'] != "") { 
-    $post['filename'] = $_GET['filename'];
+    $post['filename'] = sanitizeInput($_GET['filename']);
 } else {
     if(isset($_POST['filename']) && $_POST['filename'] != "") { 
-        $post['filename'] = $_POST['filename'];
+        $post['filename'] = sanitizeInput($_POST['filename']);
     }
 }
 /*
 * track information 
 */
 if(isset($_POST['TIT2']) && trim($_POST['TIT2']) != "") { 
-    $post['trackTitle'] = trim($_POST['TIT2']);
+    $post['trackTitle'] = sanitizeInput(trim($_POST['TIT2']));
 }
 if(isset($_POST['TPE1']) && trim($_POST['TPE1']) != "") { 
-    $post['trackArtist'] = trim($_POST['TPE1']);
+    $post['trackArtist'] = sanitizeInput(trim($_POST['TPE1']));
 }
 if(isset($_POST['TALB']) && trim($_POST['TALB']) != "") { 
-    $post['trackAlbum'] = trim($_POST['TALB']);
+    $post['trackAlbum'] = sanitizeInput(trim($_POST['TALB']));
 }
 if(isset($_POST['TCOM']) && trim($_POST['TCOM']) != "") { 
-    $post['trackComposer'] = trim($_POST['TCOM']);
+    $post['trackComposer'] = sanitizeInput(trim($_POST['TCOM']));
 }
 
 /*******************************************
@@ -174,8 +174,8 @@ $messageSuccess = "";
 */
 if($_POST['ACTION'] == "trackMove") {
     $sourceFolder = $post['folder'];
-    $targetFolder = trim($_POST['folderNew']);
-    $fileName = trim($_POST['filename']);
+    $targetFolder = sanitizeInput(trim($_POST['folderNew']));
+    $fileName = sanitizeInput(trim($_POST['filename']));
 
     $sourceFile = Files::buildPath($sourceFolder, $fileName);
     $targetFile = Files::buildPath($targetFolder, $fileName);
@@ -563,4 +563,3 @@ if($debug == "true") {
 ?>
 </body>
 </html>
-

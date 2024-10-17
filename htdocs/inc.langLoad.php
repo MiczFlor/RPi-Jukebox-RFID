@@ -51,4 +51,24 @@ foreach($lang as $key => $value) {
 }
 print "</ul>\n";
 /**/
+
+function validateInput($input) {
+    // Ensure the input only contains valid characters
+    return preg_match('/^[a-zA-Z0-9_\-\/\.]+$/', $input);
+}
+
+function sanitizeInput($input) {
+    // Remove any potentially harmful characters from the input
+    return htmlspecialchars($input, ENT_QUOTES, 'UTF-8');
+}
+
+if (isset($_POST['lang'])) {
+    if (validateInput($_POST['lang'])) {
+        $_POST['lang'] = sanitizeInput($_POST['lang']);
+    } else {
+        http_response_code(400);
+        echo "Invalid input.";
+        exit;
+    }
+}
 ?>
