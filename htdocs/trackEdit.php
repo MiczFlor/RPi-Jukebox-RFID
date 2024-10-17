@@ -134,17 +134,17 @@ $trackDat['metaKeys']['mp3'] = array(
 * URLPARAMETERS
 *******************************************/
 if(isset($_GET['folder']) && $_GET['folder'] != "") { 
-    $post['folder'] = sanitizeInput($_GET['folder']);
+    $post['folder'] = $_GET['folder'];
 } else {
     if(isset($_POST['folder']) && $_POST['folder'] != "") { 
-        $post['folder'] = sanitizeInput($_POST['folder']);
+        $post['folder'] = $_POST['folder'];
     }
 }
 if(isset($_GET['filename']) && $_GET['filename'] != "") { 
-    $post['filename'] = sanitizeInput($_GET['filename']);
+    $post['filename'] = $_GET['filename'];
 } else {
     if(isset($_POST['filename']) && $_POST['filename'] != "") { 
-        $post['filename'] = sanitizeInput($_POST['filename']);
+        $post['filename'] = $_POST['filename'];
     }
 }
 /*
