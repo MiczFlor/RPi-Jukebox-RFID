@@ -78,4 +78,71 @@ class PlayListTest extends TestCase {
         $this->expectOutputString('');
         handlePut();
     }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testValidateFilePath() {
+        $this->assertTrue(validateFilePath('valid/file/path.mp3'));
+        $this->assertFalse(validateFilePath('invalid/file/path;rm -rf /'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSanitizeFilePath() {
+        $this->assertEquals('valid/file/path.mp3', sanitizeFilePath('valid/file/path.mp3'));
+        $this->assertEquals('invalid/file/pathrm -rf /', sanitizeFilePath('invalid/file/path;rm -rf /'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testExecFunctionWithSanitizedInput() {
+        $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
+        $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue('{"playlist":"The playlist I want to hear", "recursive":"true"}'));
+
+        $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
+        $exec->expects($this->atLeastOnce())->willReturnCallback(
+            function ($command, &$output, &$returnValue) {
+                $this->assertStringNotContainsString(';', $command);
+                $output = '';
+                $returnValue = 0;
+            }
+        );
+
+        $this->expectOutputString('');
+        handlePut();
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testValidateAndSanitizeGetFileParameter() {
+        $_GET['file'] = 'valid/file/path.mp3';
+        $this->assertTrue(validateFilePath($_GET['file']));
+        $this->assertEquals('valid/file/path.mp3', sanitizeFilePath($_GET['file']));
+
+        $_GET['file'] = 'invalid/file/path;rm -rf /';
+        $this->assertFalse(validateFilePath($_GET['file']));
+        $this->assertEquals('invalid/file/pathrm -rf /', sanitizeFilePath($_GET['file']));
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testExecFunctionWithSanitizedGetFileParameter() {
+        $_GET['file'] = 'valid/file/path.mp3';
+        $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
+        $exec->expects($this->atLeastOnce())->willReturnCallback(
+            function ($command, &$output, &$returnValue) {
+                $this->assertStringNotContainsString(';', $command);
+                $output = '';
+                $returnValue = 0;
+            }
+        );
+
+        $this->expectOutputString('');
+        handlePut();
+    }
 }

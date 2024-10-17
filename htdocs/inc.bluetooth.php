@@ -26,19 +26,35 @@
          <i class='mdi mdi-volume-high'></i> <?php print $lang['globalAudioSink']; ?> 
       </h4>
       <?php
+        function validateInput($input) {
+            // Ensure the input only contains valid characters
+            return preg_match('/^[a-zA-Z0-9_\-\/\.]+$/', $input);
+        }
+
+        function sanitizeInput($input) {
+            // Remove any potentially harmful characters from the input
+            return escapeshellcmd($input);
+        }
+
 	if(isset($_POST['btToggle'])) {
-  	  $btswitch = shell_exec($conf['scripts_abs']."/playout_controls.sh -c=bluetoothtoggle -v=toggle");
-	  print "<br>";
-	  print "<div class=\"row\">";
-          print "  <div class=\"col-md-12\">";
-          if (strpos($btswitch, "Default") === false) {
-            print "    <div class=\"alert alert-success\">";
-          }  else {
-            print "    <div class=\"alert alert-warning\">"; 
+          if (validateInput($_POST['btToggle'])) {
+              $sanitizedBtToggle = sanitizeInput($_POST['btToggle']);
+              $btswitch = shell_exec($conf['scripts_abs']."/playout_controls.sh -c=bluetoothtoggle -v=toggle");
+              print "<br>";
+              print "<div class=\"row\">";
+              print "  <div class=\"col-md-12\">";
+              if (strpos($btswitch, "Default") === false) {
+                print "    <div class=\"alert alert-success\">";
+              }  else {
+                print "    <div class=\"alert alert-warning\">"; 
+              }
+              print "Message: $btswitch</div>";
+              print "  </div>";
+              print "</div>";
+          } else {
+              http_response_code(400);
+              echo "Invalid input.";
           }
-	  print "Message: $btswitch</div>";
-          print "  </div>";
-          print "</div>";
 	}
       ?>
     </div><!-- /.panel-heading -->
@@ -64,4 +80,3 @@
     </div><!-- /.panel-body -->	
   </div><!-- /.panel panel-default-->
 </div><!-- /.panel-group -->
-

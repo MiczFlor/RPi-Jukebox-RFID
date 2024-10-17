@@ -5,6 +5,7 @@ namespace JukeBox\Api;
  * Appends a given file to the current playlist (and starts playing)
  */
 include('../common.php');
+include('../../utils/validation.php'); 
 
 /*
 * debug? Conf file line:
@@ -21,15 +22,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
         file_put_contents("../../../logs/debug.log", "\n  # \$body: " . $body , FILE_APPEND | LOCK_EX);
     }
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='{$body}'");
+    if (validateFilePath($body)) {
+        $sanitizedBody = sanitizeInput($body); 
+        execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='{$sanitizedBody}'");
+    } else {
+        http_response_code(400);
+        echo "Invalid file path.";
+    }
 } else {
-  $file = $_GET["file"];
-  if ($file !== "") {
-    print "Playing file " . $file;
-    execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='$file'");
-  }else{
-    http_response_code(405);
-  }
+    $file = $_GET["file"];
+    if ($file !== "") {
+        if (validateFilePath($file)) {
+            $sanitizedFile = sanitizeInput($file); 
+            print "Playing file " . $sanitizedFile;
+            execScriptWithoutCheck("playout_controls.sh -c=playlistappend -v='$sanitizedFile'"); 
+        } else {
+            http_response_code(400);
+            echo "Invalid file path.";
+        }
+    } else {
+        http_response_code(405);
+    }
 }
-
 ?>
