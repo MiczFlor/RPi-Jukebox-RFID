@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ../../../../../../installation/includes/02_helpers.sh
+source ../../../../../installation/includes/02_helpers.sh
 
 echo "Entering setup.inc.sh"
 
