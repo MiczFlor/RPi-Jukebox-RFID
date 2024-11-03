@@ -88,6 +88,8 @@ import logging
 import time
 import functools
 from pathlib import Path
+from typing import Union, Dict, Any
+
 import components.player
 import jukebox.cfghandler
 import jukebox.utils as utils
@@ -98,8 +100,9 @@ import jukebox.playlistgenerator as playlistgenerator
 import misc
 
 from jukebox.NvManager import nv_manager
-from .playcontentcallback import PlayContentCallbacks, PlayCardState
+from .play_content_callback import PlayContentCallbacks, PlayCardState
 from .coverart_cache_manager import CoverartCacheManager
+from .play_content_handler import PlayContentHandler, PlayContent, PlayContentType
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
@@ -222,6 +225,13 @@ class PlayerMPD:
         self.mpd_status = {}
         self.mpd_status_poll_interval = 0.25
         self.mpd_lock = MpdLock(self.mpd_client, self.mpd_host, 6600)
+
+        global play_card_callbacks
+        play_card_callbacks = PlayContentCallbacks[PlayCardState]('play_card_callbacks', logger, context=self.mpd_lock)
+        self.play_card_callbacks = play_card_callbacks
+        self.play_content_handler = PlayContentHandler(self)
+        self.play_content_handler.set_second_swipe_action(self.second_swipe_action)
+
         self.status_is_closing = False
         # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
@@ -522,12 +532,110 @@ class PlayerMPD:
         # MPDClient.swapid(song1, song2)
         raise NotImplementedError
 
-    @plugs.tag
-    def play_single(self, song_url):
+    def _play_single_internal(self, song_url: str) -> None:
         with self.mpd_lock:
             self.mpd_client.clear()
             self.mpd_client.addid(song_url)
             self.mpd_client.play()
+
+    def _play_album_internal(self, artist: str, album: str) -> None:
+        with self.mpd_lock:
+            logger.info(f"Play album: '{album}' by '{artist}")
+            self.mpd_client.clear()
+            self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', artist, 'album', album)
+            self.mpd_client.play()
+
+    def _play_folder_internal(self, folder: str, recursive: bool) -> None:
+        with self.mpd_lock:
+            logger.info(f"Play folder: '{folder}'")
+            self.mpd_client.clear()
+
+            plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+            plc.parse(folder, recursive)
+            uri = '--unset--'
+            try:
+                for uri in plc:
+                    self.mpd_client.addid(uri)
+            except mpd.base.CommandError as e:
+                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
+            except Exception as e:
+                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
+
+            self.music_player_status['player_status']['last_played_folder'] = folder
+
+            self.current_folder_status = self.music_player_status['audio_folder_status'].get(folder)
+            if self.current_folder_status is None:
+                self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
+
+            self.mpd_client.play()
+
+    @plugs.tag
+    def play_content(self, content: Union[str, Dict[str, str]], content_type: str = 'folder', recursive: bool = False):
+        """
+        Main entry point for trigger music playing from any source (RFID reader, web UI, etc.).
+        Supports second swipe for all content types.
+
+        :param content: Content identifier, either:
+                       - string path for single/folder types
+                       - dict with 'artist' and 'album' keys for album type
+        :param content_type: Type of content ('single', 'album', 'folder')
+        :param recursive: Add folder recursively (only used for folder type)
+        """
+        try:
+            content_type = content_type.lower()
+            if content_type == 'album':
+                if not isinstance(content, dict):
+                    raise ValueError("Album content must be a dictionary with 'artist' and 'album' keys")
+                if 'artist' not in content or 'album' not in content:
+                    raise ValueError("Album content dictionary must contain both 'artist' and 'album' keys")
+
+                play_content = PlayContent(
+                    type=PlayContentType.ALBUM,
+                    content=(content['artist'], content['album'])
+                )
+            elif content_type == 'single':
+                if not isinstance(content, str):
+                    raise ValueError("Single track content must be a string path")
+                play_content = PlayContent(
+                    type=PlayContentType.SINGLE,
+                    content=content
+                )
+            else:  # folder is default
+                if not isinstance(content, str):
+                    raise ValueError("Folder content must be a string path")
+                play_content = PlayContent(
+                    type=PlayContentType.FOLDER,
+                    content=content,
+                    recursive=recursive
+                )
+
+            self.play_content_handler.play_content(play_content)
+
+        except Exception as e:
+            logger.error(f"Error playing content: {e}")
+            raise
+
+    # Legacy/compatibility methods
+
+    @plugs.tag
+    def play_card(self, folder: str, recursive: bool = False):
+        """Legacy method for RFID cards - redirects to play_content"""
+        return self.play_content(folder, content_type='folder', recursive=recursive)
+
+    @plugs.tag
+    def play_single(self, song_url):
+        """Deprecated: Use play_content with content_type='single' instead"""
+        self.play_content(song_url, content_type='single')
+
+    @plugs.tag
+    def play_album(self, albumartist: str, album: str):
+        """Deprecated: Use play_content with content_type='album' instead"""
+        self.play_content({'artist': albumartist, 'album': album}, content_type='album')
+
+    @plugs.tag
+    def play_folder(self, folder: str, recursive: bool = False):
+        """Deprecated: Use play_content with content_type='folder' instead"""
+        self.play_content(folder, content_type='folder', recursive=recursive)
 
     @plugs.tag
     def resume(self):
@@ -536,46 +644,6 @@ class PlayerMPD:
             elapsed = self.current_folder_status["ELAPSED"]
             self.mpd_client.seek(songpos, elapsed)
             self.mpd_client.play()
-
-    @plugs.tag
-    def play_card(self, folder: str, recursive: bool = False):
-        """
-        Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
-
-        Checks for second (or multiple) trigger of the same folder and calls first swipe / second swipe action
-        accordingly.
-
-        :param folder: Folder path relative to music library path
-        :param recursive: Add folder recursively
-        """
-        # Developers notes:
-        #
-        #     * 2nd swipe trigger may also happen, if playlist has already stopped playing
-        #       --> Generally, treat as first swipe
-        #     * 2nd swipe of same Card ID may also happen if a different song has been played in between from WebUI
-        #       --> Treat as first swipe
-        #     * With place-not-swipe: Card is placed on reader until playlist expieres. Music stop. Card is removed and
-        #       placed again on the reader: Should be like first swipe
-        #     * TODO: last_played_folder is restored after box start, so first swipe of last played card may look like
-        #       second swipe
-        #
-        logger.debug(f"last_played_folder = {self.music_player_status['player_status']['last_played_folder']}")
-        with self.mpd_lock:
-            is_second_swipe = self.music_player_status['player_status']['last_played_folder'] == folder
-        if self.second_swipe_action is not None and is_second_swipe:
-            logger.debug('Calling second swipe action')
-
-            # run callbacks before second_swipe_action is invoked
-            play_card_callbacks.run_callbacks(folder, PlayCardState.secondSwipe)
-
-            self.second_swipe_action()
-        else:
-            logger.debug('Calling first swipe action')
-
-            # run callbacks before play_folder is invoked
-            play_card_callbacks.run_callbacks(folder, PlayCardState.firstSwipe)
-
-            self.play_folder(folder, recursive)
 
     @plugs.tag
     def get_single_coverart(self, song_url):
@@ -610,58 +678,6 @@ class PlayerMPD:
         plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
         plc.get_directory_content(folder)
         return plc.playlist
-
-    @plugs.tag
-    def play_folder(self, folder: str, recursive: bool = False) -> None:
-        """
-        Playback a music folder.
-
-        Folder content is added to the playlist as described by :mod:`jukebox.playlistgenerator`.
-        The playlist is cleared first.
-
-        :param folder: Folder path relative to music library path
-        :param recursive: Add folder recursively
-        """
-        # TODO: This changes the current state -> Need to save last state
-        with self.mpd_lock:
-            logger.info(f"Play folder: '{folder}'")
-            self.mpd_client.clear()
-
-            plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
-            plc.parse(folder, recursive)
-            uri = '--unset--'
-            try:
-                for uri in plc:
-                    self.mpd_client.addid(uri)
-            except mpd.base.CommandError as e:
-                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
-            except Exception as e:
-                logger.error(f"{e.__class__.__qualname__}: {e} at uri {uri}")
-
-            self.music_player_status['player_status']['last_played_folder'] = folder
-
-            self.current_folder_status = self.music_player_status['audio_folder_status'].get(folder)
-            if self.current_folder_status is None:
-                self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
-
-            self.mpd_client.play()
-
-    @plugs.tag
-    def play_album(self, albumartist: str, album: str):
-        """
-        Playback a album found in MPD database.
-
-        All album songs are added to the playlist
-        The playlist is cleared first.
-
-        :param albumartist: Artist of the Album provided by MPD database
-        :param album: Album name provided by MPD database
-        """
-        with self.mpd_lock:
-            logger.info(f"Play album: '{album}' by '{albumartist}")
-            self.mpd_client.clear()
-            self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
-            self.mpd_client.play()
 
     @plugs.tag
     def queue_load(self, folder):
@@ -762,6 +778,7 @@ player_ctrl: PlayerMPD
 #: States:
 #: - See :class:`PlayCardState`
 #: See :class:`PlayContentCallbacks`
+player_ctrl: PlayerMPD
 play_card_callbacks: PlayContentCallbacks[PlayCardState]
 
 

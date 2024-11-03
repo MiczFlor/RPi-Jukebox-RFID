@@ -27,10 +27,10 @@
   * [resolve](#misc.simplecolors.resolve)
   * [print](#misc.simplecolors.print)
 * [components](#components)
-* [components.playermpd.playcontentcallback](#components.playermpd.playcontentcallback)
-  * [PlayContentCallbacks](#components.playermpd.playcontentcallback.PlayContentCallbacks)
-    * [register](#components.playermpd.playcontentcallback.PlayContentCallbacks.register)
-    * [run\_callbacks](#components.playermpd.playcontentcallback.PlayContentCallbacks.run_callbacks)
+* [components.playermpd.play_content_callback](#components.playermpd.play_content_callback)
+  * [PlayContentCallbacks](#components.playermpd.play_content_callback.PlayContentCallbacks)
+    * [register](#components.playermpd.play_content_callback.PlayContentCallbacks.register)
+    * [run\_callbacks](#components.playermpd.play_content_callback.PlayContentCallbacks.run_callbacks)
 * [components.playermpd](#components.playermpd)
   * [PlayerMPD](#components.playermpd.PlayerMPD)
     * [mpd\_retry\_with\_mutex](#components.playermpd.PlayerMPD.mpd_retry_with_mutex)
@@ -761,11 +761,11 @@ Use just as a regular print function, but with first parameter as color
 
 # components
 
-<a id="components.playermpd.playcontentcallback"></a>
+<a id="components.playermpd.play_content_callback"></a>
 
-# components.playermpd.playcontentcallback
+# components.playermpd.play_content_callback
 
-<a id="components.playermpd.playcontentcallback.PlayContentCallbacks"></a>
+<a id="components.playermpd.play_content_callback.PlayContentCallbacks"></a>
 
 ## PlayContentCallbacks Objects
 
@@ -776,7 +776,7 @@ class PlayContentCallbacks(Generic[STATE], CallbackHandler)
 Callbacks are executed in various play functions
 
 
-<a id="components.playermpd.playcontentcallback.PlayContentCallbacks.register"></a>
+<a id="components.playermpd.play_content_callback.PlayContentCallbacks.register"></a>
 
 #### register
 
@@ -796,7 +796,7 @@ Callback signature is
 - `folder`: relativ path to folder to play
 - `state`: indicator of the state inside the calling
 
-<a id="components.playermpd.playcontentcallback.PlayContentCallbacks.run_callbacks"></a>
+<a id="components.playermpd.play_content_callback.PlayContentCallbacks.run_callbacks"></a>
 
 #### run\_callbacks
 
