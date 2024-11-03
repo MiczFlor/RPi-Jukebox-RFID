@@ -4,12 +4,15 @@ import jukebox.cfghandler
 import jukebox.plugs as plugin
 from jukebox.multitimer import GenericTimerClass, GenericMultiTimerClass
 
+
 logger = logging.getLogger('jb.timers')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
 
 class VolumeFadeoutError(Exception):
     """Custom exception for volume fadeout errors"""
     pass
+
 
 class VolumeFadeoutAction:
     """Handles the actual volume fade out actions"""
@@ -26,6 +29,7 @@ class VolumeFadeoutAction:
         target_volume = max(0, int(self.start_volume - (self.iterations - iteration - 1) * self.volume_step))
         logger.debug(f"Fading volume to {target_volume} (Step {self.iterations - iteration}/{self.iterations})")
         plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[target_volume])
+
 
 class VolumeFadoutAndShutdown:
     """Timer system that gracefully fades out volume before shutdown.
@@ -158,10 +162,10 @@ class VolumeFadoutAndShutdown:
     @plugin.tag
     def is_alive(self):
         """Check if any timer is currently active"""
-        return bool(
-            (self.shutdown_timer and self.shutdown_timer.is_alive()) or
-            (self.fadeout_start_timer and self.fadeout_start_timer.is_alive()) or
-            (self.fadeout_timer and self.fadeout_timer.is_alive())
+        return (
+            (self.shutdown_timer and self.shutdown_timer.is_alive())
+            or (self.fadeout_start_timer and self.fadeout_start_timer.is_alive())
+            or (self.fadeout_timer and self.fadeout_timer.is_alive())
         )
 
     @plugin.tag
