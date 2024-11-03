@@ -141,10 +141,14 @@ class IdleShutdown():
             return
         # if self._has_changed_files():
         #     logger.debug('Changes files found, will not shutdown now')
-        #     plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'set_timeout', args=[int(EXTEND_IDLE_TIMEOUT)])
+        #     plugin.call_ignore_errors(
+        #         'timers',
+        #         'private_timer_idle_shutdown',
+        #         'set_timeout',
+        #         args=[int(EXTEND_IDLE_TIMEOUT)])
         #     return
 
-        logger.info(f'No activity, shutting down')
+        logger.info('No activity, shutting down')
         plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
         plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
         plugin.call_ignore_errors('host', 'shutdown')

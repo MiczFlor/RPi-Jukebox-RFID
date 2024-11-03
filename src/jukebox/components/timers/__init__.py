@@ -25,6 +25,7 @@ def stop_player():
     logger.info("Stopping the player on timer request...")
     plugin.call_ignore_errors('player', 'ctrl', 'stop')
 
+
 # ---------------------------------------------------------------------------
 # Create the timers
 # ---------------------------------------------------------------------------
