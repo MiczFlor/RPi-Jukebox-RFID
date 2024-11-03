@@ -107,6 +107,18 @@ _get_boot_file_path() {
     fi
 }
 
+is_bookworm_or_higher() {
+    if [ "$(is_raspbian)" = true ]; then
+        local debian_version_number=$(get_debian_version_number)
+
+        # Bookworm and higher
+        if [ "$debian_version_number" -ge 12 ]; then
+            echo true
+        fi
+    fi
+    echo false
+}
+
 get_boot_config_path() {
     echo $(_get_boot_file_path "config.txt")
 }
