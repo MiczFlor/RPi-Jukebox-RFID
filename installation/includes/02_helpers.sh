@@ -91,16 +91,10 @@ get_debian_version_number() {
 _get_boot_file_path() {
     local filename="$1"
     if [ "$(is_raspbian)" = true ]; then
-        local debian_version_number=$(get_debian_version_number)
-
-        # Bullseye and lower
-        if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/${filename}"
-        # Bookworm and higher
-        elif [ "$debian_version_number" -ge 12 ]; then
+        if [ "$(is_bookworm_or_higher)" = true ]; then
             echo "/boot/firmware/${filename}"
         else
-            echo "unknown"
+            echo "/boot/${filename}"
         fi
     else
         echo "unknown"
