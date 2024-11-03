@@ -7,12 +7,9 @@ This uses the same interface as the WebUI. Can be used for additional control
 or for debugging.
 
 The tool features auto-completion and command history.
+Now supports quoted arguments for handling spaces in arguments.
 
 The list of available commands is fetched from the running Jukebox service.
-
-.. todo:
-   - kwargs support
-
 """
 
 import argparse
@@ -20,17 +17,7 @@ import zmq
 import curses
 import curses.ascii
 import jukebox.rpc.client as rpc
-
-# Developers note: Scripting at it's dirty end :-)
-
-
-# Careful: curses and default outputs don't mix!
-# In case you'll get an error, most likely your terminal may become funny
-# Best bet: Just don't configure any logger at all!
-# import logging
-# import misc.loggingext
-# logger = misc.loggingext.configure_default(logging.ERROR)
-
+import shlex  # Added for proper command parsing
 
 url: str
 client: rpc.RpcClient
@@ -77,7 +64,6 @@ def format_help(scr, topic):
         sign: str = value['signature']
         sign = sign[sign.find('('):]
         func = f"{key}{sign}"
-        # print(f"{func:50}: {value['description']}")
         if key.startswith(topic):
             scr.addstr(f"{func:50}: {value['description']}\n")
         [y, x] = scr.getyx()
@@ -107,10 +93,14 @@ def format_usage(scr):
     scr.addstr("\n\nUsage:\n")
     scr.addstr("  > cmd [arg1] [arg2] [arg3]\n")
     scr.addstr("e.g.\n")
-    scr.addstr("  > volume.ctrl.set_volume 50\n")
-    scr.addstr("Note: NOT yet supported: kwargs, quoting!\n")
+    scr.addstr('  > volume.ctrl.set_volume 50\n')
+    scr.addstr('  > player.ctrl.play_album "Bibi & Tina" "Jetzt in Echt - Soundtrack zum Kinofilm"\n')
     scr.addstr("\n")
-    scr.addstr("Numbers are supported in decimal and hexadecimal format when prefixed with '0x'")
+    scr.addstr("Quoting:\n")
+    scr.addstr("  - Use double quotes (\") for arguments containing spaces\n")
+    scr.addstr('  - Escape quotes within quoted strings with \\\n')
+    scr.addstr("\n")
+    scr.addstr("Numbers are supported in decimal and hexadecimal format when prefixed with '0x'\n")
     scr.addstr("\n")
     scr.addstr("Use <TAB> for auto-completion of commands!\n")
     scr.addstr("Use <UP>/<DOWN> for command history!\n")
@@ -141,12 +131,8 @@ def get_common_beginning(strings):
 
 
 def autocomplete(msg):
-    # logger.debug(f"Autocomplete {msg}")
-    # Get all stings that match the beginning
-    # candidates = ["ap1", 'ap2', 'appbbb3', 'appbbb4', 'appbbb5', 'appbbb6', 'exit']
     matches = [s for s in candidates if s.startswith(msg)]
     if len(matches) == 0:
-        # Matches is empty: nothing found
         return msg, matches
     common = get_common_beginning(matches)
     return common, matches
@@ -164,7 +150,7 @@ def reprompt(scr, msg, y, x):
     scr.move(y, x)
 
 
-def get_input(scr):  # noqa: C901
+def get_input(scr):
     curses.noecho()
     ch = 0
     msg = ''
@@ -173,6 +159,11 @@ def get_input(scr):  # noqa: C901
     [y, x] = scr.getyx()
     reprompt(scr, msg, y, len(prompt) + len(msg))
     scr.refresh()
+
+    # Track if we're inside quotes
+    in_quotes = False
+    escape_next = False
+
     while ch != ord(b'\n'):
         try:
             ch = scr.getch()
@@ -181,7 +172,8 @@ def get_input(scr):  # noqa: C901
             break
         [y, x] = scr.getyx()
         pos = x - len(prompt)
-        if ch == ord(b'\t'):
+
+        if ch == ord(b'\t') and not in_quotes:
             msg, matches = autocomplete(msg)
             if len(matches) > 1:
                 scr.addstr('\n')
@@ -189,18 +181,32 @@ def get_input(scr):  # noqa: C901
                 scr.addstr('\n')
             scr.clrtobot()
             reprompt(scr, msg, y, len(prompt) + len(msg))
-        if ch == ord(b'\n'):
-            break
-        if ch == 4:
+        elif ch == ord(b'\n'):
+            # Only accept newline if we're not in the middle of a quote
+            if not in_quotes:
+                break
+            else:
+                # Add the newline to multi-line quoted string
+                msg = msg[0:pos] + "\\n" + msg[pos:]
+                reprompt(scr, msg, y, x + 2)
+        elif ch == 4 and not in_quotes:
             msg = 'exit'
             break
         elif ch == curses.KEY_BACKSPACE or ch == 127:
             if pos > 0:
+                # Handle backspace in quotes - need to check if we're deleting a quote char
+                if msg[pos-1] == '"' and not escape_next:
+                    in_quotes = not in_quotes
+                elif msg[pos-1] == '\\':
+                    escape_next = False
                 scr.delch(y, x - 1)
                 msg = msg[0:pos - 1] + msg[pos:]
         elif ch == curses.KEY_DC:
-            scr.delch(y, x)
-            msg = msg[0:pos] + msg[pos + 1:]
+            if pos < len(msg):
+                if msg[pos] == '"' and not escape_next:
+                    in_quotes = not in_quotes
+                scr.delch(y, x)
+                msg = msg[0:pos] + msg[pos + 1:]
         elif ch == curses.KEY_LEFT:
             if pos > 0:
                 scr.move(y, x - 1)
@@ -211,13 +217,13 @@ def get_input(scr):  # noqa: C901
             scr.move(y, len(prompt))
         elif ch == curses.KEY_END:
             scr.move(y, len(prompt) + len(msg))
-        elif ch == curses.KEY_UP:
+        elif ch == curses.KEY_UP and not in_quotes:
             if hidx == len(history):
                 ihist = msg
             hidx = max(hidx - 1, 0)
             msg = history[hidx]
             reprompt(scr, msg, y, len(prompt) + len(msg))
-        elif ch == curses.KEY_DOWN:
+        elif ch == curses.KEY_DOWN and not in_quotes:
             hidx = min(hidx + 1, len(history))
             if hidx == len(history):
                 msg = ihist
@@ -225,17 +231,48 @@ def get_input(scr):  # noqa: C901
                 msg = history[hidx]
             reprompt(scr, msg, y, len(prompt) + len(msg))
         elif is_printable(ch):
-            msg = msg[0:pos] + curses.ascii.unctrl(ch) + msg[pos:]
+            char = curses.ascii.unctrl(ch)
+            if char == '"' and not escape_next:
+                in_quotes = not in_quotes
+            elif char == '\\':
+                escape_next = True
+            else:
+                escape_next = False
+            msg = msg[0:pos] + char + msg[pos:]
             reprompt(scr, msg, y, x + 1)
-        # else:
-        #     print(f" {ch} -- {type(ch)}")
+
         scr.refresh()
+
     scr.refresh()
-    history.append(msg)
+    if msg:
+        history.append(msg)
     return msg
 
 
+def parse_command(cmd_str):
+    """
+    Parse command string using shlex to handle quoted arguments properly.
+    Returns (command_parts, args) tuple.
+    """
+    try:
+        parts = shlex.split(cmd_str)
+        if not parts:
+            return [], []
+
+        # Split the command on dots for package.plugin.method
+        cmd_parts = [v for v in parts[0].split('.') if v]
+
+        # Convert args to appropriate types
+        args = [tonum(arg) for arg in parts[1:]]
+
+        return cmd_parts, args
+    except ValueError as e:
+        # Handle unclosed quotes
+        return None, str(e)
+
+
 def tonum(string_value):
+    """Convert string to number if possible, otherwise return original string."""
     ret = string_value
     try:
         ret = int(string_value)
@@ -270,79 +307,74 @@ def main(scr):
     while cmd != 'exit':
         cmd = get_input(scr)
         scr.addstr("\n")
-        # Split on whitespaces to separate cmd and arg list
-        dec = [v for v in cmd.strip().split(' ') if len(v) > 0]
-        if len(dec) == 0:
+
+        if cmd == '':
             continue
-        elif dec[0] == 'help':
+
+        # Handle built-in commands
+        if cmd.startswith('help'):
             topic = ''
-            if len(dec) > 1:
-                topic = dec[1]
+            try:
+                _, args = parse_command(cmd)
+                if args:
+                    topic = args[0]
+            except:
+                pass
             format_help(scr, topic)
             continue
-        elif dec[0] == 'usage':
+        elif cmd == 'usage':
             format_usage(scr)
             continue
-        # scr.addstr(f"\n{cmd}\n")
-        # Split cmd on '.' into package.plugin.method
-        # Remove duplicate '.' along the way
-        sl = [v for v in dec[0].split('.') if len(v) > 0]
-        fargs = [tonum(a) for a in dec[1:]]
-        scr.addstr(f"\n:: Command = {sl}, args = {fargs}\n")
-        response = None
-        method = None
-        if not (2 <= len(sl) <= 3):
-            scr.addstr(":: Error = Ill-formatted command\n")
+        elif cmd == 'exit':
+            break
+
+        # Parse the command
+        cmd_parts, args = parse_command(cmd)
+
+        if isinstance(args, str):
+            scr.addstr(f"Error parsing command: {args}\n")
             continue
-        if len(sl) == 3:
-            method = sl[2]
+
+        if not (2 <= len(cmd_parts) <= 3):
+            scr.addstr("Error: Invalid command format. Use: package.plugin.method or package.plugin\n")
+            continue
+
+        method = cmd_parts[2] if len(cmd_parts) == 3 else None
+
         try:
-            response = client.enque(sl[0], sl[1], method, args=fargs)
+            response = client.enque(cmd_parts[0], cmd_parts[1], method, args=args)
+            scr.addstr(f"\n:: Response =\n{response}\n\n")
         except zmq.error.Again:
             scr.addstr("\n\n" + '-' * 70 + "\n")
             scr.addstr("Could not reach RPC Server. Jukebox running? Correct Port?\n")
             scr.addstr('-' * 70 + "\n\n")
-            scr.refresh()
         except Exception as e:
-            scr.addstr(f":: Exception response =\n{e}\n")
-        else:
-            scr.addstr(f"\n:: Response =\n{response}\n\n")
+            scr.addstr(f":: Error: {str(e)}\n")
 
 
 def runcmd(cmd):
-    """
-    Just run a command.
-    Right now duplicates more or less main()
-    :todo remove duplication of code
-    """
+    """Run a single command and exit."""
+    cmd_parts, args = parse_command(cmd)
 
-    # Split on whitespaces to separate cmd and arg list
-    dec = [v for v in cmd.strip().split(' ') if len(v) > 0]
-    if len(dec) == 0:
+    if isinstance(args, str):
+        print(f"Error parsing command: {args}")
         return
-    # Split cmd on '.' into package.plugin.method
-    # Remove duplicate '.' along the way
-    sl = [v for v in dec[0].split('.') if len(v) > 0]
-    fargs = [tonum(a) for a in dec[1:]]
-    response = None
-    method = None
-    if not (2 <= len(sl) <= 3):
-        print(":: Error = Ill-formatted command\n")
+
+    if not (2 <= len(cmd_parts) <= 3):
+        print("Error: Invalid command format. Use: package.plugin.method or package.plugin")
         return
-    if len(sl) == 3:
-        method = sl[2]
+
+    method = cmd_parts[2] if len(cmd_parts) == 3 else None
+
     try:
-        response = client.enque(sl[0], sl[1], method, args=fargs)
+        response = client.enque(cmd_parts[0], cmd_parts[1], method, args=args)
+        print(f"\n:: Response =\n{response}\n")
     except zmq.error.Again:
-        print("\n\n" + '-' * 70 + "\n")
-        print("Could not reach RPC Server. Jukebox running? Correct Port?\n")
-        print('-' * 70 + "\n\n")
-        return
+        print("\n\n" + '-' * 70)
+        print("Could not reach RPC Server. Jukebox running? Correct Port?")
+        print('-' * 70 + "\n")
     except Exception as e:
-        print(f":: Exception response =\n{e}\n")
-        return
-    else:
-        print(f"\n:: Response =\n{response}\n\n")
+        print(f":: Error: {str(e)}")
 
 
 if __name__ == '__main__':
@@ -350,19 +382,19 @@ if __name__ == '__main__':
     default_ws = 5556
     url = f"tcp://localhost:{default_tcp}"
     argparser = argparse.ArgumentParser(description='The Jukebox RPC command line tool',
-                                        epilog=f'Default connection: {url}')
+                                      epilog=f'Default connection: {url}')
     port_group = argparser.add_mutually_exclusive_group()
     port_group.add_argument("-w", "--websocket",
-                            help=f"Use websocket protocol on PORT [default: {default_ws}]",
-                            nargs='?', const=default_ws,
-                            metavar="PORT", default=None)
+                           help=f"Use websocket protocol on PORT [default: {default_ws}]",
+                           nargs='?', const=default_ws,
+                           metavar="PORT", default=None)
     port_group.add_argument("-t", "--tcp",
-                            help=f"Use tcp protocol on PORT [default: {default_tcp}]",
-                            nargs='?', const=default_tcp,
-                            metavar="PORT", default=None)
+                           help=f"Use tcp protocol on PORT [default: {default_tcp}]",
+                           nargs='?', const=default_tcp,
+                           metavar="PORT", default=None)
     port_group.add_argument("-c", "--command",
-                            help="Send command to Jukebox server",
-                            default=None)
+                           help="Send command to Jukebox server",
+                           default=None)
     args = argparser.parse_args()
 
     if args.websocket is not None:
