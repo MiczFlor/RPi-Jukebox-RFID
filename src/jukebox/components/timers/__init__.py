@@ -55,13 +55,8 @@ def finalize():
     plugin.register(timer_stop_player, name='timer_stop_player', package=plugin.loaded_as(__name__))
 
     # Volume Fadeout and Shutdown Timer
-    global timer_fade_volume
-    current_volume = plugin.call('volume', 'ctrl', 'get_volume')
-    step_size = cfg.setndefault('timers', 'timer_fade_volume', 'step_size', value=3)
     timer_fade_volume = VolumeFadoutAndShutdown(
-        name=f"{plugin.loaded_as(__name__)}.timer_fade_volume",
-        current_volume=current_volume
-        # step_size=step_size
+        name=f"{plugin.loaded_as(__name__)}.timer_fade_volume"
     )
     plugin.register(timer_fade_volume, name='timer_fade_volume', package=plugin.loaded_as(__name__))
 

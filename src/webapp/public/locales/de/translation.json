@@ -229,10 +229,22 @@
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Aus",
       "title": "Timer",
-      "stop-player": "Wiedergabe stoppen",
-      "shutdown": "Herunterfahren",
-      "fade-volume": "Lautstärke ausblenden",
-      "idle-shutdown": "Leerlaufabschaltung",
+      "stop-player": {
+        "title": "Wiedergabe stoppen",
+        "label": "Stoppt die Wiedergabe nach Ablauf des Timers."
+      },
+      "shutdown": {
+        "title": "Herunterfahren",
+        "label": "Fährt die Phoniebox nach Ablauf des Timers herunter."
+      },
+      "fade-volume": {
+        "title": "Lautstärke ausblenden",
+        "label": "Blendet die Lautstärke zum Ende des Timers langsam aus und fährt dann die Phoniebox herunter."
+      },
+      "idle-shutdown": {
+        "title": "Leerlaufabschaltung",
+        "label": "Fährt die Phoniebox herunter, nachdem sie für eine bestimmte Zeit im Leerlauf war."
+      },
       "set": "Timer erstellen",
       "cancel": "Abbrechen",
       "paused": "Pausiert",

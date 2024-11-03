@@ -1,111 +1,138 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import {
-  Box,
-  Grid,
-  Typography,
-} from '@mui/material';
-
-import request from '../../../utils/request';
+import { Box, ListItem, ListItemText, Typography } from '@mui/material';
 import { Countdown } from '../../general';
 import SetTimerDialog from './set-timer-dialog';
+import request from '../../../utils/request';
 
-const Timer = ({ type }) => {
-  const { t } = useTranslation();
-
-  // Constants
+// Custom hook to manage timer state and logic
+const useTimer = (type) => {
   const pluginName = `timer_${type.replace('-', '_')}`;
-
-  // State
-  const [error, setError] = useState(null);
-  const [enabled, setEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState({ enabled: false });
-  const [waitSeconds, setWaitSeconds] = useState(0);
-  const [running, setRunning] = useState(true);
-
-  // Requests
-  const cancelTimer = async () => {
-    await request(`${pluginName}.cancel`);
-    setEnabled(false);
-  };
-
-  const setTimer = async (wait_seconds) => {
-    await cancelTimer();
-
-    if (wait_seconds > 0) {
-      await request(pluginName, { wait_seconds } );
-      fetchTimerStatus();
-    }
-  }
+  const [timerState, setTimerState] = useState({
+    error: null,
+    enabled: false,
+    isLoading: true,
+    status: { enabled: false },
+    waitSeconds: 0,
+    running: true
+  });
 
   const fetchTimerStatus = useCallback(async () => {
-    const {
-      result: timerStatus,
-      error: timerStatusError
-    } = await request(`${pluginName}.get_state`);
+    try {
+      const { result: timerStatus, error: timerStatusError } = await request(`${pluginName}.get_state`);
 
-    if(timerStatusError) {
-      setEnabled(false);
-      return setError(timerStatusError);
-    }
+      if (timerStatusError) {
+        throw timerStatusError;
+      }
 
-    setStatus(timerStatus);
-    setEnabled(timerStatus?.enabled);
-    if (timerStatus.running === undefined) {
-      setRunning(true);
-    }
-    else {
-      setRunning(timerStatus.running);
+      setTimerState(prev => ({
+        ...prev,
+        status: timerStatus,
+        enabled: timerStatus?.enabled,
+        running: timerStatus.running ?? true,
+        error: null,
+        isLoading: false
+      }));
+    } catch (error) {
+      setTimerState(prev => ({
+        ...prev,
+        enabled: false,
+        error,
+        isLoading: false
+      }));
     }
   }, [pluginName]);
 
-  // Effects
+  const cancelTimer = async () => {
+    try {
+      await request(`${pluginName}.cancel`);
+      setTimerState(prev => ({ ...prev, enabled: false }));
+    } catch (error) {
+      setTimerState(prev => ({ ...prev, error }));
+    }
+  };
+
+  const setTimer = async (wait_seconds) => {
+    try {
+      await cancelTimer();
+      if (wait_seconds > 0) {
+        await request(pluginName, { wait_seconds });
+        await fetchTimerStatus();
+      }
+    } catch (error) {
+      setTimerState(prev => ({ ...prev, error }));
+    }
+  };
+
+  const setWaitSeconds = (seconds) => {
+    setTimerState(prev => ({ ...prev, waitSeconds: seconds }));
+  };
+
   useEffect(() => {
     fetchTimerStatus();
-    setIsLoading(false);
   }, [fetchTimerStatus]);
 
+  return {
+    ...timerState,
+    setTimer,
+    cancelTimer,
+    setWaitSeconds
+  };
+};
+
+// Separate component for timer actions
+const TimerActions = ({ enabled, running, status, error, isLoading, type, onSetTimer, onCancelTimer, waitSeconds, onSetWaitSeconds }) => {
+  const { t } = useTranslation();
+
   return (
-    <Grid container direction="column" justifyContent="center">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        <Typography>
-          {t(`settings.timers.${type}`)}
-        </Typography>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          marginLeft: '0',
-        }}>
-          {enabled && running &&
-            <Countdown
-              seconds={status.remaining_seconds}
-              onEnd={() => setEnabled(false)}
-              stringEnded={t('settings.timers.ended')}
-            />
-          }
-          {enabled && !running &&
-            <Typography>
-              Paused
-            </Typography>
-          }
-          {error &&
-            <Typography>⚠️</Typography>
-          }
-          {!isLoading &&
-            <SetTimerDialog
-              type={type}
-              enabled={enabled}
-              setTimer={setTimer}
-              cancelTimer={cancelTimer}
-              waitSeconds={waitSeconds}
-              setWaitSeconds={setWaitSeconds}
-            />
-          }
-        </Box>
-      </Grid>
-    </Grid>
+    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '0' }}>
+      {enabled && running && (
+        <Countdown
+          seconds={status.remaining_seconds}
+          onEnd={() => onCancelTimer()}
+          stringEnded={t('settings.timers.ended')}
+        />
+      )}
+      {enabled && !running && (
+        <Typography>{t('settings.timers.paused')}</Typography>
+      )}
+      {error && <Typography>⚠️</Typography>}
+      {!isLoading && (
+        <SetTimerDialog
+          type={type}
+          enabled={enabled}
+          setTimer={onSetTimer}
+          cancelTimer={onCancelTimer}
+          waitSeconds={waitSeconds}
+          setWaitSeconds={onSetWaitSeconds}
+        />
+      )}
+    </Box>
+  );
+};
+
+const Timer = ({ type }) => {
+  const { t } = useTranslation();
+  const timer = useTimer(type);
+
+  return (
+    <ListItem
+      disableGutters
+      secondaryAction={
+        <TimerActions
+          {...timer}
+          onSetTimer={timer.setTimer}
+          onCancelTimer={timer.cancelTimer}
+          onSetWaitSeconds={timer.setWaitSeconds}
+          type={type}
+        />
+      }
+    >
+      <ListItemText
+        primary={t(`settings.timers.${type}.title`)}
+        secondary={t(`settings.timers.${type}.label`)}
+      />
+    </ListItem>
   );
 };
 

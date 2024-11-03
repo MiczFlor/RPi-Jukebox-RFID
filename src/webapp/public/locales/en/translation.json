@@ -229,10 +229,22 @@
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
       "title": "Timers",
-      "stop-player": "Stop player",
-      "shutdown": "Shut Down",
-      "fade-volume": "Fade volume and Shut Down",
-      "idle-shutdown": "Idle Shut Down",
+      "stop-player": {
+        "title": "Stop player",
+        "label": "Stops playback after the timer has ended."
+      },
+      "shutdown": {
+        "title": "Shut Down",
+        "label": "Forces the Phoniebox to shut down after the timer has ended."
+      },
+      "fade-volume": {
+        "title": "Fade volume and Shut Down",
+        "label": "Slowly fades out volume towards the end of the timer and then shuts down the Phoniebox."
+      },
+      "idle-shutdown": {
+        "title": "Idle Shut Down",
+        "label": "Shuts down the Phoniebox after the Phoniebox was idle for a given time."
+      },
       "ended": "Done",
       "set": "Set timer",
       "cancel": "Cancel",
