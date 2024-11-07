@@ -95,14 +95,13 @@ _get_debian_version_number() {
 
 is_debian_version_at_least() {
     local expected_version=$1
-    if [ "$(is_raspbian)" = true ]; then
-        local debian_version_number=$(get_debian_version_number)
+    local debian_version_number=$(get_debian_version_number)
 
-        if [ "$debian_version_number" -ge "$expected_version" ]; then
-            echo true
-        fi
+    if [ "$debian_version_number" -ge "$expected_version" ]; then
+        echo true
+    else
+        echo false
     fi
-    echo false
 }
 
 _get_boot_file_path() {
