@@ -75,23 +75,42 @@ get_architecture() {
     echo $arch
 }
 
-_get_boot_file_path() {
-    local filename="$1"
+is_debian_based() {
     local os_release_id=$( . /etc/os-release; printf '%s\n' "$ID"; )
     if [[ "$os_release_id" == *"raspbian"* ]] || [[ "$os_release_id" == *"debian"* ]]; then
-        local debian_version_number=$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )
-
-        # Bullseye and lower
-        if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/${filename}"
-        # Bookworm and higher
-        elif [ "$debian_version_number" -ge 12 ]; then
-            echo "/boot/firmware/${filename}"
-        else
-            echo "unknown"
-        fi
+        echo true
     else
-        echo "unknown"
+        echo false
+    fi
+}
+
+_get_debian_version_number() {
+    if [ "$(is_debian_based)" = true ]; then
+        local debian_version_number=$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )
+        echo "$debian_version_number"
+    else
+        echo "-1"
+    fi
+}
+
+is_debian_version_at_least() {
+    local expected_version=$1
+    local debian_version_number=$(get_debian_version_number)
+
+    if [ "$debian_version_number" -ge "$expected_version" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+_get_boot_file_path() {
+    local filename="$1"
+    local is_debian_version_number_at_least_12=$(is_debian_version_at_least 12)
+    if [ "$(is_debian_version_number_at_least_12)" = true ]; then
+        echo "/boot/firmware/${filename}"
+    else
+        echo "/boot/${filename}"
     fi
 }
 
