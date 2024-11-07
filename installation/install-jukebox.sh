@@ -86,23 +86,6 @@ Check install log for details:"
   exit 1
 }
 
-# Check if current distro is a 32-bit version
-# Support for 64-bit Distros has not been checked (or precisely: is known not to work)
-# All Raspberry Pi OS versions report as machine "armv6l" or "armv7l", if 32-bit (even the ARMv8 cores!)
-_check_os_type() {
-  local os_type=$(uname -m)
-
-  print_lc "\nChecking OS type '$os_type'"
-
-  if [[ $os_type == "armv7l" || $os_type == "armv6l" ]]; then
-    print_lc "  ... OK!\n"
-  else
-    print_lc "ERROR: Only 32-bit operating systems are supported. Please use a 32-bit version of Raspberry Pi OS!"
-    print_lc "For Pi 4 models or newer running a 64-bit kernels, also see this: https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2041"
-    exit 1
-  fi
-}
-
 _check_existing_installation() {
     if [[ -e "${INSTALLATION_PATH}" ]]; then
         print_lc "
@@ -154,7 +137,6 @@ _load_sources() {
 _setup_logging
 
 ### CHECK PREREQUISITE
-_check_os_type
 _check_existing_installation
 
 ### RUN INSTALLATION
