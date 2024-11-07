@@ -1,4 +1,4 @@
-FROM libzmq:local as libzmq
+FROM libzmq:local AS libzmq
 FROM debian:bullseye-slim
 
 # These are only dependencies that are required to get as close to the
