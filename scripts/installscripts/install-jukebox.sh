@@ -963,8 +963,8 @@ install_main() {
 
         # not yet available on apt.mopidy.com, so install manually
         local arch=$(dpkg --print-architecture)
-        local gst_plugin_spotify_name="gst-plugin-spotify_0.12.2-1_${arch}.deb"
-        wget -q https://github.com/kingosticks/gst-plugins-rs-build/releases/download/gst-plugin-spotify_0.12.2-1/${gst_plugin_spotify_name}
+        local gst_plugin_spotify_name="gst-plugin-spotify_0.14.0.alpha.1-1_${arch}.deb"
+        wget -q https://github.com/kingosticks/gst-plugins-rs-build/releases/download/gst-plugin-spotify_0.14.0-alpha.1-1/${gst_plugin_spotify_name}
         ${apt_get} install ./${gst_plugin_spotify_name}
         sudo rm -f ${gst_plugin_spotify_name}
 

@@ -55,10 +55,10 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3.0.0
+      uses: docker/setup-qemu-action@v3.2.0
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.2.0
+      uses: docker/setup-buildx-action@v3.7.1
       with:
         # network=host driver-opt needed to push to local registry
         driver-opts: network=host
@@ -94,7 +94,7 @@ jobs:
 
     # Build base image for debian version name. Layers will be cached and image pushes to local registry
     - name: Build Image - Base
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         load: false
@@ -112,7 +112,7 @@ jobs:
 
     # Build new image with updates packages based on base image. Layers will NOT be chached. Result is written to file.
     - name: Build Image - Update
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         load: false
@@ -152,10 +152,10 @@ jobs:
 
     steps:
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3.0.0
+      uses: docker/setup-qemu-action@v3.2.0
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3.2.0
+      uses: docker/setup-buildx-action@v3.7.1
 
     - name: Artifact Download Docker Image
       uses: actions/download-artifact@v4
