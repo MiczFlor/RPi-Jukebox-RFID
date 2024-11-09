@@ -69,7 +69,7 @@ export default function SetTimerDialog({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {t('settings.timers.dialog.title', { value: t(`settings.timers.${type}`)} )}
+          {t('settings.timers.dialog.title', { value: t(`settings.timers.${type}.title`)} )}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
