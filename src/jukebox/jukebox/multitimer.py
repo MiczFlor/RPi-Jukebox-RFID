@@ -441,8 +441,7 @@ class GenericMultiTimerClass(GenericTimerClass):
             0,
             self.get_timeout() - (int(time()) - self._start_time)
         )
-        remaining_seconds = (self.get_timeout() * self._iterations +
-                           remaining_seconds_current_iteration)
+        remaining_seconds = (self.get_timeout() * self._iterations + remaining_seconds_current_iteration)
 
         return {
             'enabled': self.is_alive(),
