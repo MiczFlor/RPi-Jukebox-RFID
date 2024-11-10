@@ -1,116 +1,138 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import {
-  Box,
-  Grid,
-  Switch,
-  Typography,
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-
+import { Box, ListItem, ListItemText, Typography } from '@mui/material';
+import { Countdown } from '../../general';
+import SetTimerDialog from './set-timer-dialog';
 import request from '../../../utils/request';
-import {
-  Countdown,
-  SliderTimer
-} from '../../general';
+
+// Custom hook to manage timer state and logic
+const useTimer = (type) => {
+  const pluginName = `timer_${type.replace('-', '_')}`;
+  const [timerState, setTimerState] = useState({
+    error: null,
+    enabled: false,
+    isLoading: true,
+    status: { enabled: false },
+    waitSeconds: 0,
+    running: true
+  });
+
+  const fetchTimerStatus = useCallback(async () => {
+    try {
+      const { result: timerStatus, error: timerStatusError } = await request(`${pluginName}.get_state`);
+
+      if (timerStatusError) {
+        throw timerStatusError;
+      }
+
+      setTimerState(prev => ({
+        ...prev,
+        status: timerStatus,
+        enabled: timerStatus?.enabled,
+        running: timerStatus.running ?? true,
+        error: null,
+        isLoading: false
+      }));
+    } catch (error) {
+      setTimerState(prev => ({
+        ...prev,
+        enabled: false,
+        error,
+        isLoading: false
+      }));
+    }
+  }, [pluginName]);
+
+  const cancelTimer = async () => {
+    try {
+      await request(`${pluginName}.cancel`);
+      setTimerState(prev => ({ ...prev, enabled: false }));
+    } catch (error) {
+      setTimerState(prev => ({ ...prev, error }));
+    }
+  };
+
+  const setTimer = async (wait_seconds) => {
+    try {
+      await cancelTimer();
+      if (wait_seconds > 0) {
+        await request(pluginName, { wait_seconds });
+        await fetchTimerStatus();
+      }
+    } catch (error) {
+      setTimerState(prev => ({ ...prev, error }));
+    }
+  };
+
+  const setWaitSeconds = (seconds) => {
+    setTimerState(prev => ({ ...prev, waitSeconds: seconds }));
+  };
+
+  useEffect(() => {
+    fetchTimerStatus();
+  }, [fetchTimerStatus]);
+
+  return {
+    ...timerState,
+    setTimer,
+    cancelTimer,
+    setWaitSeconds
+  };
+};
+
+// Separate component for timer actions
+const TimerActions = ({ enabled, running, status, error, isLoading, type, onSetTimer, onCancelTimer, waitSeconds, onSetWaitSeconds }) => {
+  const { t } = useTranslation();
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '0' }}>
+      {enabled && running && (
+        <Countdown
+          seconds={status.remaining_seconds}
+          onEnd={() => onCancelTimer()}
+          stringEnded={t('settings.timers.ended')}
+        />
+      )}
+      {enabled && !running && (
+        <Typography>{t('settings.timers.paused')}</Typography>
+      )}
+      {error && <Typography>⚠️</Typography>}
+      {!isLoading && (
+        <SetTimerDialog
+          type={type}
+          enabled={enabled}
+          setTimer={onSetTimer}
+          cancelTimer={onCancelTimer}
+          waitSeconds={waitSeconds}
+          setWaitSeconds={onSetWaitSeconds}
+        />
+      )}
+    </Box>
+  );
+};
 
 const Timer = ({ type }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
-
-  // Constants
-  const pluginName = `timer_${type.replace('-', '_')}`;
-
-  // State
-  const [error, setError] = useState(null);
-  const [enabled, setEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [status, setStatus] = useState({ enabled: false });
-  const [waitSeconds, setWaitSeconds] = useState(0);
-
-  // Requests
-  const cancelTimer = async () => {
-    await request(`${pluginName}.cancel`);
-    setStatus({ enabled: false });
-  };
-
-  const setTimer = async (event, wait_seconds) => {
-    await cancelTimer();
-
-    if (wait_seconds > 0) {
-      await request(pluginName, { wait_seconds } );
-      fetchTimerStatus();
-    }
-  }
-
-  const fetchTimerStatus = useCallback(async () => {
-    const {
-      result: timerStatus,
-      error: timerStatusError
-    } = await request(`${pluginName}.get_state`);
-
-    if(timerStatusError) {
-      setEnabled(false);
-      return setError(timerStatusError);
-    }
-
-    setStatus(timerStatus);
-    setEnabled(timerStatus?.enabled);
-    setWaitSeconds(timerStatus?.wait_seconds || 0);
-  }, [pluginName]);
-
-
-  // Event Handlers
-  const handleSwitch = (event) => {
-    setEnabled(event.target.checked);
-    setWaitSeconds(0); // Always start the slider at 0
-    cancelTimer();
-  }
-
-  // Effects
-  useEffect(() => {
-    fetchTimerStatus();
-    setIsLoading(false);
-  }, [fetchTimerStatus]);
+  const timer = useTimer(type);
 
   return (
-    <Grid container direction="column" justifyContent="center">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        <Typography>
-          {t(`settings.timers.${type}`)}
-        </Typography>
-        <Box sx={{
-          display: 'flex',
-          alignItems: 'center',
-          marginLeft: '0',
-        }}>
-          {status?.enabled &&
-            <Countdown
-              seconds={status.remaining_seconds}
-              onEnd={() => setEnabled(false)}
-              stringEnded={t('settings.timers.ended')}
-            />
-          }
-          {error &&
-            <Typography>⚠️</Typography>
-          }
-          <Switch
-            checked={enabled}
-            disabled={isLoading}
-            onChange={handleSwitch}
-          />
-        </Box>
-      </Grid>
-      {enabled &&
-        <Grid item sx={{ padding: theme.spacing(1) }}>
-          <SliderTimer
-            value={waitSeconds}
-            onChangeCommitted={setTimer}
-          />
-        </Grid>
+    <ListItem
+      disableGutters
+      secondaryAction={
+        <TimerActions
+          {...timer}
+          onSetTimer={timer.setTimer}
+          onCancelTimer={timer.cancelTimer}
+          onSetWaitSeconds={timer.setWaitSeconds}
+          type={type}
+        />
       }
-    </Grid>
+    >
+      <ListItemText
+        primary={t(`settings.timers.${type}.title`)}
+        secondary={t(`settings.timers.${type}.label`)}
+      />
+    </ListItem>
   );
 };
 

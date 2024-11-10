@@ -23,7 +23,7 @@ const Countdown = ({ onEnd, seconds, stringEnded = undefined }) => {
     }
   }, [onEndCallback, time]);
 
-  if (time) return toHHMMSS(time);
+  if (time) return toHHMMSS(Math.round(time));
   if (stringEnded) return stringEnded;
   return toHHMMSS(0);
 }
