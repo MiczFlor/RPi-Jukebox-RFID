@@ -108,6 +108,10 @@ gpioz:
   enable: false
   config_file: ../../shared/settings/gpio.yaml
 timers:
+  idle_shutdown:
+    # If you want the box to shutdown on inactivity automatically, configure timeout_sec with a number of seconds (at least 60).
+    # Inactivity is defined as: no music playing, no active SSH sessions, no changes in configs or audio content.
+    timeout_sec: 0
   # These timers are always disabled after start
   # The following values only give the default values.
   # These can be changed when enabling the respective timer on a case-by-case basis w/o saving
