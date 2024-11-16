@@ -24,8 +24,8 @@ const FolderListItem = ({
 
   const playItem = () => {
     switch(type) {
-      case 'directory': return request('play_folder', { folder: relpath, recursive: true });
-      case 'file': return request('play_single', { song_url: relpath });
+      case 'directory': return request('play_content', { content: relpath, content_type: 'folder', recursive: true });
+      case 'file': request('play_content', { content: relpath, content_type: 'single' });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;

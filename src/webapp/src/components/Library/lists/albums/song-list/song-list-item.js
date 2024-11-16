@@ -26,7 +26,7 @@ const SongListItem = ({
   } = song;
 
   const playSingle = () => {
-    request(command, { song_url: file })
+    request('play_content', { content: file, content_type: 'single' })
   }
 
   const registerSongToCard = () => (

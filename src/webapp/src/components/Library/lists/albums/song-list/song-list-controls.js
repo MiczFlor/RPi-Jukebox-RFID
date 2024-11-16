@@ -21,7 +21,7 @@ const SongListControls = ({
   const command = 'play_album';
 
   const playAlbum = () => (
-    request(command, { albumartist, album })
+    request('play_content', { content: { "artist": albumartist, album }, content_type: 'album' })
   );
 
   const registerAlbumToCard = () => (
