@@ -115,11 +115,11 @@ def format_usage(scr):
     scr.addstr('  > player.ctrl.play_content "/music/classical" folder true\n')
     scr.addstr('  > player.ctrl.play_content "/music/favorites/track.mp3" single\n')
 
-    # RFID card specific examples
-    scr.addstr("\nPlaying content with card behavior (using play_card):\n")
-    scr.addstr('  > player.ctrl.play_card \'{"artist":"Pink Floyd","album":"The Wall"}\' album false toggle\n')
-    scr.addstr('  > player.ctrl.play_card "/music/classical" folder true replay\n')
-    scr.addstr('  > player.ctrl.play_card "/music/stories" folder false none\n')
+    # Update the reader examples section
+    scr.addstr("\nPlaying content from physical readers (using play_from_reader):\n")
+    scr.addstr('  > player.ctrl.play_from_reader \'{"artist":"Pink Floyd","album":"The Wall"}\' album false toggle\n')
+    scr.addstr('  > player.ctrl.play_from_reader "/music/classical" folder true replay\n')
+    scr.addstr('  > player.ctrl.play_from_reader "/music/stories" folder false none\n')
 
     scr.addstr("\n")
     scr.addstr("Quoting:\n")
