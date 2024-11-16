@@ -88,7 +88,7 @@ import logging
 import time
 import functools
 from pathlib import Path
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 
 import components.player
 import jukebox.cfghandler
@@ -151,38 +151,38 @@ class PlayerMPD:
         self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
 
         self.second_swipe_action_dict = {'toggle': self.toggle,
-                                         'play': self.play,
-                                         'skip': self.next,
-                                         'rewind': self.rewind,
-                                         'replay': self.replay,
-                                         'replay_if_stopped': self.replay_if_stopped}
+                                        'play': self.play,
+                                        'skip': self.next,
+                                        'rewind': self.rewind,
+                                        'replay': self.replay,
+                                        'replay_if_stopped': self.replay_if_stopped}
         self.second_swipe_action = None
         self.decode_2nd_swipe_option()
 
         self.end_of_playlist_next_action = utils.get_config_action(cfg,
-                                                                   'playermpd',
-                                                                   'end_of_playlist_next_action',
-                                                                   'none',
-                                                                   {'rewind': self.rewind,
+                                                                'playermpd',
+                                                                'end_of_playlist_next_action',
+                                                                'none',
+                                                                {'rewind': self.rewind,
                                                                     'stop': self.stop,
                                                                     'none': lambda: None},
-                                                                   logger)
+                                                                logger)
         self.stopped_prev_action = utils.get_config_action(cfg,
-                                                           'playermpd',
-                                                           'stopped_prev_action',
-                                                           'prev',
-                                                           {'rewind': self.rewind,
+                                                        'playermpd',
+                                                        'stopped_prev_action',
+                                                        'prev',
+                                                        {'rewind': self.rewind,
                                                             'prev': self._prev_in_stopped_state,
                                                             'none': lambda: None},
-                                                           logger)
+                                                        logger)
         self.stopped_next_action = utils.get_config_action(cfg,
-                                                          'playermpd',
-                                                          'stopped_next_action',
-                                                          'next',
-                                                          {'rewind': self.rewind,
-                                                           'next': self._next_in_stopped_state,
-                                                           'none': lambda: None},
-                                                          logger)
+                                                        'playermpd',
+                                                        'stopped_next_action',
+                                                        'next',
+                                                        {'rewind': self.rewind,
+                                                        'next': self._next_in_stopped_state,
+                                                        'none': lambda: None},
+                                                        logger)
 
         self.mpd_client = mpd.MPDClient()
         self.coverart_cache_manager = CoverartCacheManager()
@@ -236,7 +236,7 @@ class PlayerMPD:
         # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
         self.status_thread = multitimer.GenericEndlessTimerClass('mpd.timer_status',
-                                                                 self.mpd_status_poll_interval, self._mpd_status_poll)
+                                                                self.mpd_status_poll_interval, self._mpd_status_poll)
         self.status_thread.start()
 
     def exit(self):
@@ -570,57 +570,101 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
-    def play_content(self, content: Union[str, Dict[str, str]], content_type: str = 'folder', recursive: bool = False):
+    def play_content(self, content: Union[str, Dict[str, Any]], content_type: str = 'folder', recursive: bool = False):
         """
         Main entry point for trigger music playing from any source (RFID reader, web UI, etc.).
-        Supports second swipe for all content types.
+        Does NOT support second swipe - use play_from_reader() for that.
 
-        :param content: Content identifier, either:
-                       - string path for single/folder types
-                       - dict with 'artist' and 'album' keys for album type
+        :param content: Content identifier:
+                     - For singles/folders: file/folder path as string
+                     - For albums: dict with 'artist' and 'album' keys
         :param content_type: Type of content ('single', 'album', 'folder')
         :param recursive: Add folder recursively (only used for folder type)
         """
         try:
             content_type = content_type.lower()
             if content_type == 'album':
-                if not isinstance(content, dict):
+                if isinstance(content, dict):
+                    artist = content.get('artist')
+                    album = content.get('album')
+                    if not artist or not album:
+                        raise ValueError("Album content must contain both 'artist' and 'album' keys")
+                else:
                     raise ValueError("Album content must be a dictionary with 'artist' and 'album' keys")
-                if 'artist' not in content or 'album' not in content:
-                    raise ValueError("Album content dictionary must contain both 'artist' and 'album' keys")
 
                 play_content = PlayContent(
                     type=PlayContentType.ALBUM,
-                    content=(content['artist'], content['album'])
+                    content=(artist, album)
                 )
             elif content_type == 'single':
-                if not isinstance(content, str):
-                    raise ValueError("Single track content must be a string path")
+                if isinstance(content, dict):
+                    raise ValueError("Single track content should be a direct file path, not a dictionary")
                 play_content = PlayContent(
                     type=PlayContentType.SINGLE,
                     content=content
                 )
             else:  # folder is default
-                if not isinstance(content, str):
-                    raise ValueError("Folder content must be a string path")
+                if isinstance(content, dict):
+                    raise ValueError("Folder content should be a direct folder path, not a dictionary")
                 play_content = PlayContent(
                     type=PlayContentType.FOLDER,
                     content=content,
                     recursive=recursive
                 )
 
-            self.play_content_handler.play_content(play_content)
+            # Ensure no second swipe for regular content playback
+            old_action = self.play_content_handler._second_swipe_action
+            self.play_content_handler._second_swipe_action = None
+
+            try:
+                self.play_content_handler.play_content(play_content)
+            finally:
+                # Restore previous second swipe action
+                self.play_content_handler._second_swipe_action = old_action
 
         except Exception as e:
             logger.error(f"Error playing content: {e}")
             raise
 
-    # Legacy/compatibility methods
-
     @plugs.tag
-    def play_card(self, folder: str, recursive: bool = False):
-        """Legacy method for RFID cards - redirects to play_content"""
-        return self.play_content(folder, content_type='folder', recursive=recursive)
+    def play_from_reader(self, content: Union[str, Dict[str, str]], content_type: str = 'folder',
+                        recursive: bool = False, second_swipe: Optional[str] = None):
+        """
+        Special entry point for reader-triggered playback with second swipe support.
+        Used when content is identified via RFID, barcode, or other physical readers.
+
+        :param content: Content identifier, either:
+                    - string path for single/folder types
+                    - dict with 'artist' and 'album' keys for album type
+        :param content_type: Type of content ('single', 'album', 'folder')
+        :param recursive: Add folder recursively (only used for folder type)
+        :param second_swipe: Override default second swipe action for this reader:
+                        - None/not specified: use default from config
+                        - 'none': disable second swipe
+                        - One of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'replay_if_stopped'
+        """
+        # Determine second swipe action
+        if second_swipe is None:
+            action = self.second_swipe_action
+        elif second_swipe.lower() == 'none':
+            action = None
+        else:
+            action = self.second_swipe_action_dict.get(second_swipe.lower())
+            if action is None:
+                logger.error(f"Unknown second swipe action '{second_swipe}', using default")
+                action = self.second_swipe_action
+
+        # Temporarily set the chosen second swipe action
+        old_action = self.play_content_handler._second_swipe_action
+        self.play_content_handler.set_second_swipe_action(action)
+
+        try:
+            self.play_content(content, content_type, recursive)
+        finally:
+            # Restore previous second swipe action
+            self.play_content_handler.set_second_swipe_action(old_action)
+
+    # The following methods are kept for backward compatibility but now use play_content internally
 
     @plugs.tag
     def play_single(self, song_url):
@@ -630,7 +674,8 @@ class PlayerMPD:
     @plugs.tag
     def play_album(self, albumartist: str, album: str):
         """Deprecated: Use play_content with content_type='album' instead"""
-        self.play_content({'artist': albumartist, 'album': album}, content_type='album')
+        content = {'artist': albumartist, 'album': album}
+        self.play_content(content, content_type='album')
 
     @plugs.tag
     def play_folder(self, folder: str, recursive: bool = False):
