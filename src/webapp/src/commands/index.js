@@ -65,6 +65,24 @@ const commands = {
     method: 'play_content',
     argKeys: ['content', 'content_type', 'recursive']
   },
+  // play_single: {
+  //   _package: 'player',
+  //   plugin: 'ctrl',
+  //   method: 'play_single',
+  //   argKeys: ['song_url']
+  // },
+  // play_folder: {
+  //   _package: 'player',
+  //   plugin: 'ctrl',
+  //   method: 'play_folder',
+  //   argKeys: ['folder']
+  // },
+  // play_album: {
+  //   _package: 'player',
+  //   plugin: 'ctrl',
+  //   method: 'play_album',
+  //   argKeys: ['albumartist', 'album']
+  // },
   pause: {
     _package: 'player',
     plugin: 'ctrl',

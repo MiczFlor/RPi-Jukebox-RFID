@@ -577,7 +577,7 @@ class PlayerMPD:
 
         :param content: Content identifier:
                      - For singles/folders: file/folder path as string
-                     - For albums: dict with 'artist' and 'album' keys
+                     - For albums: dict with 'albumartist' and 'album' keys
         :param content_type: Type of content ('single', 'album', 'folder')
         :param recursive: Add folder recursively (only used for folder type)
         """
@@ -585,16 +585,16 @@ class PlayerMPD:
             content_type = content_type.lower()
             if content_type == 'album':
                 if isinstance(content, dict):
-                    artist = content.get('artist')
+                    albumartist = content.get('albumartist')
                     album = content.get('album')
-                    if not artist or not album:
-                        raise ValueError("Album content must contain both 'artist' and 'album' keys")
+                    if not albumartist or not album:
+                        raise ValueError("Album content must contain both 'albumartist' and 'album' keys")
                 else:
-                    raise ValueError("Album content must be a dictionary with 'artist' and 'album' keys")
+                    raise ValueError("Album content must be a dictionary with 'albumartist' and 'album' keys")
 
                 play_content = PlayContent(
                     type=PlayContentType.ALBUM,
-                    content=(artist, album)
+                    content=(albumartist, album)
                 )
             elif content_type == 'single':
                 if isinstance(content, dict):
@@ -635,7 +635,7 @@ class PlayerMPD:
 
         :param content: Content identifier, either:
                     - string path for single/folder types
-                    - dict with 'artist' and 'album' keys for album type
+                    - dict with 'albumartist' and 'album' keys for album type
         :param content_type: Type of content ('single', 'album', 'folder')
         :param recursive: Add folder recursively (only used for folder type)
         :param second_swipe: Override default second swipe action for this reader:

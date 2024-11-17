@@ -17,7 +17,7 @@ import FolderTypeAvatar from './folder-type-avatar';
 const FolderListItem = ({
   folder,
   isSelecting,
-  registerMusicToCard,
+  registerContentToCard,
 }) => {
   const { t } = useTranslation();
   const { type, name, relpath } = folder;
@@ -34,8 +34,8 @@ const FolderListItem = ({
 
   const registerItemToCard = () => {
     switch(type) {
-      case 'directory': return registerMusicToCard('play_folder', { folder: relpath, recursive: true });
-      case 'file': return registerMusicToCard('play_single', { song_url: relpath });
+      case 'directory': return registerContentToCard('play_content', { content: relpath, content_type: 'folder', recursive: true });
+      case 'file': return registerContentToCard('play_content', { content: relpath, content_type: 'single' });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;

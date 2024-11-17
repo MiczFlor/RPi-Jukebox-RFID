@@ -14,18 +14,17 @@ const SongListControls = ({
   albumartist,
   album,
   disabled,
-  registerMusicToCard,
+  registerContentToCard,
   isSelecting
 }) => {
   const { t } = useTranslation();
-  const command = 'play_album';
 
   const playAlbum = () => (
-    request('play_content', { content: { "artist": albumartist, album }, content_type: 'album' })
+    request('play_content', { content: { albumartist, album }, content_type: 'album' })
   );
 
   const registerAlbumToCard = () => (
-    registerMusicToCard(command, { albumartist, album })
+    registerContentToCard('play_content', { content: { albumartist, album }, content_type: 'album' })
   );
 
   return (

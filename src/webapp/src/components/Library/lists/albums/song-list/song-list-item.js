@@ -12,12 +12,11 @@ import request from '../../../../../utils/request'
 
 const SongListItem = ({
   isSelecting,
-  registerMusicToCard,
+  registerContentToCard,
   song,
 }) => {
   const { t } = useTranslation();
 
-  const command = 'play_single';
   const {
     artist,
     duration,
@@ -29,15 +28,15 @@ const SongListItem = ({
     request('play_content', { content: file, content_type: 'single' })
   }
 
-  const registerSongToCard = () => (
-    registerMusicToCard(command, { song_url: file })
+  const registerSingleToCard = () => (
+    registerContentToCard('play_content', { content: file, content_type: 'single' })
   );
 
   return (
     <ListItem disablePadding>
       <ListItemButton
         role={undefined}
-        onClick={() => (isSelecting ? registerSongToCard() : playSingle())}
+        onClick={() => (isSelecting ? registerSingleToCard() : playSingle())}
       >
         <ListItemText
           primary={title || t('library.albums.unknown-title')}

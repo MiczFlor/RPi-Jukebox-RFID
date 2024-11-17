@@ -27,6 +27,7 @@
           "next_song": "Next song",
           "pause": "Pause",
           "play": "Play",
+          "play_content": "Play content",
           "prev_song": "Previous song",
           "shuffle": "Shuffle",
           "repeat": "Repeat",
@@ -40,7 +41,7 @@
         "label": "Actions",
         "placeholder": "Select an action",
         "actions": {
-          "play_music": "Play music",
+          "play_content": "Play content",
           "audio": "Audio & Volume",
           "host": "System",
           "timers": "Timers",
@@ -53,15 +54,15 @@
           "label-full": "Full address (e.g. 192.168.1.53)",
           "label-short": "Last quadrant (e.g. 53)"
         },
-        "play-music": {
+        "play-content": {
           "commands": {
-            "play_album": "Selected album",
-            "play_folder": "Selected folder",
-            "play_single": "Selected song"
+            "album": "Selected album",
+            "folder": "Selected folder",
+            "single": "Selected song"
           },
-          "button-label": "Select music",
-          "no-music-selected": "No music selected",
-          "loading-song-error": "An error occurred while loading song."
+          "button-label": "Select content",
+          "no-music-selected": "No content selected",
+          "loading-song-error": "An error occurred while loading the content."
         },
         "audio": {
           "repeat": {

@@ -18,7 +18,7 @@ import SongListItem from './song-list-item';
 
 const SongList = ({
   isSelecting,
-  registerMusicToCard,
+  registerContentToCard,
 }) => {
   const { t } = useTranslation();
   const { artist, album } = useParams();
@@ -59,7 +59,7 @@ const SongList = ({
         albumartist={decodeURIComponent(artist)}
         disabled={songs.length === 0}
         isSelecting={isSelecting}
-        registerMusicToCard={registerMusicToCard}
+        registerContentToCard={registerContentToCard}
       />
       <Grid
         container
@@ -78,7 +78,7 @@ const SongList = ({
                   key={song.track}
                   song={song}
                   isSelecting={isSelecting}
-                  registerMusicToCard={registerMusicToCard}
+                  registerContentToCard={registerContentToCard}
                 />
               )}
             </List>
