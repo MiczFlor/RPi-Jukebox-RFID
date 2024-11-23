@@ -106,8 +106,7 @@ is_debian_version_at_least() {
 
 _get_boot_file_path() {
     local filename="$1"
-    local is_debian_version_number_at_least_12=$(is_debian_version_at_least 12)
-    if [ "$(is_debian_version_number_at_least_12)" = true ]; then
+    if [ "$(is_debian_version_at_least 12)" = true ]; then
         echo "/boot/firmware/${filename}"
     else
         echo "/boot/${filename}"
