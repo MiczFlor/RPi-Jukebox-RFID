@@ -8,6 +8,7 @@ import Display from './display';
 import SeekBar from './seekbar';
 import Volume from './volume';
 
+import AppSettingsContext from '../../context/appsettings/context';
 import PlayerContext from '../../context/player/context';
 import request from '../../utils/request';
 
@@ -17,6 +18,12 @@ const Player = () => {
 
   const [coverImage, setCoverImage] = useState(undefined);
   const [backgroundImage, setBackgroundImage] = useState('none');
+
+  const {
+    settings,
+  } = useContext(AppSettingsContext);
+
+  const { show_covers } = settings;
 
   useEffect(() => {
     const getCoverArt = async () => {
@@ -30,7 +37,7 @@ const Player = () => {
       };
     }
 
-    if (file) {
+    if (file && show_covers) {
       getCoverArt();
     }
   }, [file]);

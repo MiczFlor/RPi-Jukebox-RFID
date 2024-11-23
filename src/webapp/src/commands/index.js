@@ -120,6 +120,7 @@ const commands = {
     _package: 'volume',
     plugin: 'ctrl',
     method: 'set_volume',
+    argKeys: ['volume'],
   },
   getVolume: {
     _package: 'volume',
@@ -215,6 +216,25 @@ const commands = {
   },
 
 
+  'timer_idle_shutdown.cancel': {
+    _package: 'timers',
+    plugin: 'timer_idle_shutdown',
+    method: 'cancel',
+  },
+  'timer_idle_shutdown.get_state': {
+    _package: 'timers',
+    plugin: 'timer_idle_shutdown',
+    method: 'get_state',
+  },
+  'timer_idle_shutdown': {
+    _package: 'timers',
+    plugin: 'timer_idle_shutdown',
+    method: 'start',
+    argKeys: ['wait_seconds'],
+  },
+
+
+
   // Host
   getAutohotspotStatus: {
     _package: 'host',
@@ -248,6 +268,18 @@ const commands = {
     _package: 'host',
     plugin: 'say_my_ip',
     argKeys: ['option'],
+  },
+
+  // Misc
+  getAppSettings: {
+    _package: 'misc',
+    plugin: 'get_app_settings'
+  },
+
+  setAppSettings: {
+    _package: 'misc',
+    plugin: 'set_app_settings',
+    argKeys: ['settings'],
   },
 
   // Synchronisation

@@ -424,7 +424,7 @@ class PulseVolumeControl:
     def _set_output(self, pulse_inst: pulsectl.Pulse, sink_index: int):
         error_state = 1
         if not 0 <= sink_index < len(self._sink_list):
-            logger.error(f"Sink index '{sink_index}' out of range (0..{len(self._sink_list)-1}). "
+            logger.error(f"Sink index '{sink_index}' out of range (0..{len(self._sink_list) - 1}). "
                          f"Did you configure your secondary output device?")
         else:
             # Before we switch the sink, check the new sinks volume levels...

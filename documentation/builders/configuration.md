@@ -27,9 +27,10 @@ $ ./run_jukebox.sh
 # Restart the service
 $ systemctl --user start jukebox-daemon
 ```
-To try different configurations, you can start the Jukebox with a custom config file. 
+
+To try different configurations, you can start the Jukebox with a custom config file.
 This could be useful if you want your Jukebox to only allow a lower volume when started
-at nighttime, signaling it's time to go to bed. :-) 
+at nighttime, signaling it's time to go to bed. :-)
 The path to the custom config file must be either absolute or relative to the folder `src/jukebox/`.
 
 ```bash

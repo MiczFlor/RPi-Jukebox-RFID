@@ -70,7 +70,7 @@ class JukeBox:
         # systemd: By default, a SIGTERM is sent, followed by 90 seconds of waiting followed by a SIGKILL.
         # Pressing Ctrl-C gives SIGINT
         self._signal_cnt += 1
-        timeout: float = 10.0
+        timeout: float = 5.0
         time_start = time.time_ns()
         msg = f"Received signal '{signal.Signals(esignal).name}'. Count = {self._signal_cnt}"
         print(msg)

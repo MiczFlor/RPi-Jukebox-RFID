@@ -275,7 +275,12 @@ class PlaylistCollector:
             logger.error(f" {e.__class__.__name__}: {e}")
         else:
             for m in content:
-                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.path})
+                self.playlist.append({
+                    'type': TYPE_DECODE[m.filetype],
+                    'name': m.name,
+                    'path': m.path,
+                    'relpath': os.path.relpath(m.path, self._music_library_base_path)
+                })
 
     def _parse_nonrecusive(self, path='.'):
         return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
@@ -294,7 +299,7 @@ class PlaylistCollector:
         return recursive_playlist
 
     def parse(self, path='.', recursive=False):
-        """Parse the folder ``path`` and create a playlist from it's content
+        """Parse the folder ``path`` and create a playlist from its content
 
         :param path: Path to folder **relative** to ``music_library_base_path``
         :param recursive: Parse folder recursivley, or stay in top-level folder

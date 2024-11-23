@@ -11,13 +11,14 @@ driver, and thus cannot be used with the [genericusb](genericusb.md) module. Als
 > The setup will do this automatically, so make sure the device is connected
 > before running the [RFID reader configuration tool](../coreapps.md#RFID-Reader).
 
-# Configuration
+## Configuration
 
-The installation script will scan for compatible devices and will assist in configuration. 
+The installation script will scan for compatible devices and will assist in configuration.
 By setting `rfid > readers > generic_nfcpy > config > device_path` in `shared/settings/rfid.yaml` you can override the
 device location. By specifying an explicit device location it is possible to use multiple readers compatible with NFCpy.
 
 Example configuration for a usb-device with vendor ID 072f and product ID 2200:
+
 ```yaml
 rfid:
   readers:
