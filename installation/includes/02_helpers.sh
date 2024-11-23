@@ -199,6 +199,46 @@ config_file_revert() {
     fi
 }
 
+_add_options_to_cmdline() {
+    local options="$1"
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+    if [ ! -s "${cmdlineFile}" ];then
+        sudo tee "${cmdlineFile}" <<-EOF
+${options}
+EOF
+    else
+        for option in $options
+        do
+            if ! grep -qiw "$option" "${cmdlineFile}" ; then
+                sudo sed -i "s/$/ $option/" "${cmdlineFile}"
+            fi
+        done
+    fi
+}
+
+_remove_options_from_cmdline() {
+    local options="$1"
+
+    local cmdlineFile=$(get_boot_cmdline_path)
+
+    if [ -s "${cmdlineFile}" ]; then
+        for option in $options; do
+            sudo sed -i "/$option/d" "${cmdlineFile}"
+        done
+    fi
+}
+
+is_package_installed() {
+  local package_name=$1
+
+  if apt list --installed 2>/dev/null | grep -q "$package_name"; then
+    echo "true"
+  else
+    echo "false"
+  fi
+}
+
 ### Verify helpers
 print_verify_installation() {
     log "\n
