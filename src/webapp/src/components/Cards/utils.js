@@ -1,6 +1,8 @@
 import {
   isEmpty,
+  isNil,
   has,
+  reject,
 } from 'ramda';
 
 import commands from '../../commands';
@@ -67,8 +69,11 @@ const getArgsValues = (actionData) => {
   );
 };
 
+const cleanObject = reject(isNil);
+
 export {
   buildActionData,
+  cleanObject,
   findActionByCommand,
   getActionAndCommand,
   getArgsValues,

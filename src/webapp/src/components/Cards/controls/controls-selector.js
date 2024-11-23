@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 
 import SelectCommandAliases from './select-command-aliases';
-import SelectPlayMusic from './actions/play-music';
+import SelectPlayContent from './actions/play-content';
 import SelectTimers from './actions/timers';
 import SelectAudio from './actions/audio';
 import { buildActionData } from '../utils';
@@ -61,8 +61,8 @@ const ControlsSelector = ({
           />
         }
 
-        {actionData.action === 'play_music' &&
-          <SelectPlayMusic
+        {actionData.action === 'play_content' &&
+          <SelectPlayContent
             actionData={actionData}
             cardId={cardId}
           />

@@ -22,8 +22,10 @@ const CardsEdit = () => {
         if (result && result[cardId]) {
           const {
             action: { args },
-            from_alias: command
+            from_alias,
           } = result[cardId];
+
+          const command = from_alias === 'play_from_reader' ? 'play_content' : from_alias;
 
           const action = findActionByCommand(command);
           const actionData = buildActionData(action, command, args);

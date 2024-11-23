@@ -24,10 +24,21 @@ const flatByAlbum = (albumList, { albumartist, album }) => {
   return [...albumList, ...list];
 };
 
+const printObject = (obj) => {
+  return Object.entries(obj)
+    .map(([key, value]) => {
+      if (value && typeof value === 'object') {
+        return `${key}: ${printObject(value)}`;
+      }
+      return `${key}: ${value}`;
+    })
+    .join(', ');
+};
 
 export {
   flatByAlbum,
   pluginIsLoaded,
+  printObject,
   progressToTime,
   timeToProgress,
   toHHMMSS,

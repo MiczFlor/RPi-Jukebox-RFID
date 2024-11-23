@@ -27,6 +27,7 @@
           "next_song": "Nächster Song",
           "pause": "Pause",
           "play": "Abspielen",
+          "play_content": "Inhalte abspielen",
           "prev_song": "Vorheriger Song",
           "shuffle": "Zufallswiedergabe",
           "repeat": "Wiedergabe wiederholen",
@@ -40,7 +41,7 @@
         "label": "Aktionen",
         "placeholder": "Wähle eine Aktion aus",
         "actions": {
-          "play_music": "Musik abspielen",
+          "play_content": "Inhalte abspielen",
           "audio": "Audio & Lautstärke",
           "host": "System",
           "timers": "Timer",
@@ -53,15 +54,15 @@
           "label-full": "Gesamte Addresse (z.B. 192.168.1.53)",
           "label-short": "Letzter Quadrant (z.B. 53)"
         },
-        "play-music": {
+        "play-content": {
           "commands": {
-            "play_album": "Ausgewähltes Album",
-            "play_folder": "Ausgewählter Ordner",
-            "play_single": "Ausgewählter Song"
+            "album": "Ausgewähltes Album",
+            "folder": "Ausgewählter Ordner",
+            "single": "Ausgewählter Song"
           },
-          "button-label": "Musik auswählen",
-          "no-music-selected": "Es ist keine Musik ausgewählt.",
-          "loading-song-error": "Während des Ladens des Songs ist ein Fehler aufgetreten."
+          "button-label": "Inhalt auswählen",
+          "no-music-selected": "Es sind keine Inhalte ausgewählt.",
+          "loading-song-error": "Während des Ladens des Inhalts ist ein Fehler aufgetreten."
         },
         "audio": {
           "repeat": {

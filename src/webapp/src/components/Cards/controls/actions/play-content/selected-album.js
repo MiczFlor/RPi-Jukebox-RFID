@@ -4,7 +4,7 @@ import { List } from '@mui/material';
 import AlbumListItem from '../../../../Library/lists/albums/album-list/album-list-item'
 import NoMusicSelected from './no-music-selected';
 
-const SelectedAlbum = ({ values: [albumartist, album] }) => {
+const SelectedAlbum = ({ values: [{ albumartist, album }] }) => {
   if (albumartist && album) {
     return (
       <List sx={{ width: '100%' }}>

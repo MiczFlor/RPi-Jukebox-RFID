@@ -32,7 +32,7 @@ const SelectecSingle = ({ values: [song_url] }) => {
   if (error) {
     return (
       <Typography>
-        {t('cards.controls.actions.play-music.loading-song-error')}
+        {t('cards.controls.actions.play-content.loading-song-error')}
       </Typography>
     );
   }

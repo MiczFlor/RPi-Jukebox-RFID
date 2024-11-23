@@ -17,6 +17,7 @@ const CardsRegister = () => {
 
   const [cardId, setCardId] = useState(undefined);
   const [actionData, setActionData] = useState(registerCard?.actionData || {});
+  const [args, setArgs] = useState(registerCard?.args || {});
 
   useEffect(() => {
     setState(state => (omit(['rfid.card_id'], state)));

@@ -8,7 +8,7 @@ const NoMusicSelected = () => {
 
   return (
     <Typography>
-      {t('cards.controls.actions.play-music.no-music-selected')}
+      {t('cards.controls.actions.play-content.no-music-selected')}
     </Typography>
   );
 }

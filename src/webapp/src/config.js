@@ -28,11 +28,9 @@ const ROOT_DIR = './';
 const JUKEBOX_ACTIONS_MAP = {
   // Command Aliases
   // Player
-  play_music: {
+  play_content: {
     commands: {
-      play_album: {},
-      play_folder: {},
-      play_single: {},
+      play_content: {},
     }
   },
 
