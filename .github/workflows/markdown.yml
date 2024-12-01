@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Linting markdown
-      uses: DavidAnson/markdownlint-cli2-action@v17
+      uses: DavidAnson/markdownlint-cli2-action@v18
       with:
         config: .markdownlint-cli2.yaml
       #continue-on-error: true
