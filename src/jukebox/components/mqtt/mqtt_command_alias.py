@@ -1,7 +1,6 @@
 """
 This file provides definitions for MQTT to RPC command aliases
 
-See []
 See [RPC Commands](../../builders/rpc-commands.md)
 """
 
