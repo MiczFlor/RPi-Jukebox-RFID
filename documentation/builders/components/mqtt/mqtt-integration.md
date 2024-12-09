@@ -29,7 +29,7 @@ mqtt:
 
 ## Usage in Home Assistant
 
-Home Assistant does not have a native MQTT Media Player integration. To integrate Phoniebox into Home Assistant, you 
+Home Assistant does not have a native MQTT Media Player integration. To integrate Phoniebox into Home Assistant, you
 can use the Universal Media Player configuration in combination with the Home Assistant MQTT service.
 
-There is also an HACS addon adding Phoniebox as Media Player https://github.com/c0un7-z3r0/hass-phoniebox
+There is also an HACS addon adding Phoniebox as Media Player [Hass Phoniebox](https://github.com/c0un7-z3r0/hass-phoniebox).
