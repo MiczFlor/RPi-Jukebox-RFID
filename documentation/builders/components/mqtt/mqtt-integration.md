@@ -15,6 +15,10 @@ modules:
 ...
 mqtt:
     enable: true
+    # The prefix for the mqtt topic. /{base_topic}/{topic}
+    base_topic: phoniebox-dev
+    # Enable support for legacy commands. Only needed for compatiblity to previous phoniebox mqtt integration.
+    enable_legacy: false
     # The client id used in communication with the MQTT broker and identification of the phoniebox
     client_id: phoniebox_dev
     # The username to authenticate against the broker
