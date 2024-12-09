@@ -183,6 +183,19 @@ def rpc_call_to_str(cfg_rpc_call: Dict, with_args=True) -> str:
     return readable
 
 
+def get_config_action(cfg, section, option, default, valid_actions_dict, logger):
+    """
+    Looks up the given {section}.{option} config option and returns
+    the associated entry from valid_actions_dict, if valid. Falls back to the given
+    default otherwise.
+    """
+    action = cfg.setndefault(section, option, value='').lower()
+    if action not in valid_actions_dict:
+        logger.error(f"Config {section}.{option} must be one of {valid_actions_dict.keys()}. Using default '{default}'")
+        action = default
+    return valid_actions_dict[action]
+
+
 def indent(doc, spaces=4):
     lines = doc.split('\n')
     for i in range(0, len(lines)):

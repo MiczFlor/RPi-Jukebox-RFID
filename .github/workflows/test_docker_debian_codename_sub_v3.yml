@@ -134,11 +134,11 @@ jobs:
           BASE_TEST_IMAGE=${{ steps.vars.outputs.image_tag_name_local_base }}
 
     - name: Artifact Upload Docker Image
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.vars.outputs.image_file_name }}
         path: ${{ steps.vars.outputs.image_file_path }}
-        retention-days: 1
+        retention-days: 2
 
 
   # Run tests with build image
@@ -159,7 +159,7 @@ jobs:
       uses: docker/setup-buildx-action@v3.0.0
 
     - name: Artifact Download Docker Image
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ needs.build.outputs.image_file_name }}
 
@@ -179,13 +179,14 @@ jobs:
 
   # cleanup after test execution
   cleanup:
-    # run only if tests didn't fail: keep the artifact to make job reruns possible
-    if: ${{ !failure() }}
-    needs: [build, test]
-    runs-on: ${{ inputs.runs_on }}
-
-    steps:
-        - name: Artifact Delete Docker Image
-          uses: geekyeggo/delete-artifact@v2
-          with:
-            name: ${{ needs.build.outputs.image_file_name }}
+   # run only if tests didn't fail: keep the artifact to make job reruns possible
+   if: ${{ !failure() }}
+   needs: [build, test]
+   runs-on: ${{ inputs.runs_on }}
+  
+   steps:
+       - name: Artifact Delete Docker Image
+         uses: geekyeggo/delete-artifact@v5
+         with:
+           name: ${{ needs.build.outputs.image_file_name }}
+           failOnError: false

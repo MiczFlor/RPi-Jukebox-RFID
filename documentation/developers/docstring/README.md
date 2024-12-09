@@ -104,6 +104,12 @@
   * [pbox\_set\_state](#components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.pbox_set_state)
   * [que\_set\_pbox](#components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.que_set_pbox)
   * [create\_outputs](#components.rfid.hardware.fake_reader_gui.gpioz_gui_addon.create_outputs)
+* [components.rfid.hardware.generic\_nfcpy.description](#components.rfid.hardware.generic_nfcpy.description)
+* [components.rfid.hardware.generic\_nfcpy.generic\_nfcpy](#components.rfid.hardware.generic_nfcpy.generic_nfcpy)
+  * [ReaderClass](#components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass)
+    * [cleanup](#components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.cleanup)
+    * [stop](#components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.stop)
+    * [read\_card](#components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.read_card)
 * [components.rfid.hardware.generic\_usb.description](#components.rfid.hardware.generic_usb.description)
 * [components.rfid.hardware.generic\_usb.generic\_usb](#components.rfid.hardware.generic_usb.generic_usb)
 * [components.rfid.hardware.rc522\_spi.description](#components.rfid.hardware.rc522_spi.description)
@@ -1948,6 +1954,61 @@ Add all output devices to the GUI
 
 List of all added GUI objects
 
+<a id="components.rfid.hardware.generic_nfcpy.description"></a>
+
+# components.rfid.hardware.generic\_nfcpy.description
+
+List of supported devices https://nfcpy.readthedocs.io/en/latest/overview.html
+
+
+<a id="components.rfid.hardware.generic_nfcpy.generic_nfcpy"></a>
+
+# components.rfid.hardware.generic\_nfcpy.generic\_nfcpy
+
+<a id="components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass"></a>
+
+## ReaderClass Objects
+
+```python
+class ReaderClass(ReaderBaseClass)
+```
+
+The reader class for nfcpy supported NFC card readers.
+
+
+<a id="components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.cleanup"></a>
+
+#### cleanup
+
+```python
+def cleanup()
+```
+
+The cleanup function: free and release all resources used by this card reader (if any).
+
+
+<a id="components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.stop"></a>
+
+#### stop
+
+```python
+def stop()
+```
+
+This function is called to tell the reader to exit its reading function.
+
+
+<a id="components.rfid.hardware.generic_nfcpy.generic_nfcpy.ReaderClass.read_card"></a>
+
+#### read\_card
+
+```python
+def read_card() -> str
+```
+
+Blocking or non-blocking function that waits for a new card to appear and return the card's UID as string
+
+
 <a id="components.rfid.hardware.generic_usb.description"></a>
 
 # components.rfid.hardware.generic\_usb.description
@@ -2659,7 +2720,7 @@ def stop_autohotspot()
 
 Stop auto hotspot functionality
 
-Basically disabling the cronjob and running the script one last time manually
+Stopping and disabling the timer and running the service one last time manually
 
 
 <a id="components.hostif.linux.start_autohotspot"></a>
@@ -2671,9 +2732,9 @@ Basically disabling the cronjob and running the script one last time manually
 def start_autohotspot()
 ```
 
-start auto hotspot functionality
+Start auto hotspot functionality
 
-Basically enabling the cronjob and running the script one time manually
+Enabling and starting the timer (timer will start the service)
 
 
 <a id="components.misc"></a>
@@ -2966,35 +3027,7 @@ class battmon_ads1015(BatteryMonitorBase.BattmonBase)
 
 Battery Monitor based on a ADS1015
 
-> [!CAUTION]
-> Lithium and other batteries are dangerous and must be treated with care.
-> Rechargeable Lithium Ion batteries are potentially hazardous and can
-> present a serious **FIRE HAZARD** if damaged, defective or improperly used.
-> Do not use this circuit to a lithium ion battery without expertise and
-> training in handling and use of batteries of this type.
-> Use appropriate test equipment and safety protocols during development.
-> There is no warranty, this may not work as expected or at all!
-
-This script is intended to read out the Voltage of a single Cell LiIon Battery using a CY-ADS1015 Board:
-
-                                                  3.3V
-                                                   +
-                                                   |
-                                              .----o----.
-                        ___                   |         |  SDA
-              .--------|___|---o----o---------o AIN0    o------
-              |         2MΩ    |    |         |         |  SCL
-              |               .-.   |         | ADS1015 o------
-             ---              | |  ---        |         |
-     Battery  -          1.5MΩ| |  ---100nF   '----o----'
-     2.9V-4.2V|               '-'   |              |
-              |                |    |              |
-             ===              ===  ===            ===
-
-Attention:
-* the circuit is constantly draining the battery! (leak current up to: 2.1µA)
-* the time between sample needs to be a minimum 1sec with this high impedance voltage divider
-      don't use the continuous conversion method!
+See [Battery Monitor documentation](../../builders/components/power/batterymonitor.md)
 
 
 <a id="components.gpio.gpioz.plugin"></a>

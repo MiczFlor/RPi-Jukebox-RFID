@@ -18,9 +18,9 @@
           "shutdown": "Herunterfahren",
           "reboot": "Neustarten",
           "say_my_ip": "IP Addresse vorlesen",
-          "timer_shutdown": "Shut Down",
-          "timer_stop_player": "Stop player",
-          "timer_fade_volume": "Fade volume",
+          "timer_shutdown": "Herunterfahren",
+          "timer_stop_player": "Player stoppen",
+          "timer_fade_volume": "Lautstärke ausblenden und herunterfahren",
           "toggle_output": "Audio-Ausgang umschalten",
           "sync_rfidcards_all": "Alle Audiodateien und Karteneinträge synchronisieren",
           "sync_rfidcards_change_on_rfid_scan": "Aktivierung ändern für 'on RFID scan'",
@@ -138,8 +138,8 @@
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"
     },
     "folders": {
-      "no-music": "Keine Musik vorhanden!",
-      "empty-folder": "Dieser Ordner ist leer!",
+      "no-music": "☝️ Keine Musik vorhanden!",
+      "empty-folder": "Dieser Ordner ist leer! 🙈",
       "show-folder-content": "Zeige den Ordnerinhalt an",
       "back-button-label": "Zurück"
     },
@@ -219,15 +219,42 @@
       "why": "Warum?",
       "control-label": "Auto Hotspot"
     },
+    "general": {
+      "title": "Allgmeine Einstellungen",
+      "show_covers": {
+        "title": "Cover anzeigen"
+      }
+    },
     "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Aus",
       "title": "Timer",
-      "stop-player": "Wiedergabe stoppen",
-      "shutdown": "Herunterfahren",
-      "fade-volume": "Lautstärke ausblenden",
-      "idle-shutdown": "Leerlaufabschaltung",
-      "ended": "Beendet"
+      "stop-player": {
+        "title": "Wiedergabe stoppen",
+        "label": "Stoppt die Wiedergabe nach Ablauf des Timers."
+      },
+      "shutdown": {
+        "title": "Herunterfahren",
+        "label": "Fährt die Phoniebox nach Ablauf des Timers herunter."
+      },
+      "fade-volume": {
+        "title": "Lautstärke ausblenden",
+        "label": "Blendet die Lautstärke zum Ende des Timers langsam aus und fährt dann die Phoniebox herunter."
+      },
+      "idle-shutdown": {
+        "title": "Leerlaufabschaltung",
+        "label": "Fährt die Phoniebox herunter, nachdem sie für eine bestimmte Zeit im Leerlauf war."
+      },
+      "set": "Timer erstellen",
+      "cancel": "Abbrechen",
+      "paused": "Pausiert",
+      "ended": "Beendet",
+      "dialog": {
+        "title": "{{value}} Timer erstellen",
+        "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll.",
+        "start": "Timer starten",
+        "cancel": "Abbrechen"
+      }
     },
     "secondswipe": {
       "title": "Erneute Aktivierung (Second Swipe)",

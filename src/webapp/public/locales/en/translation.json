@@ -20,7 +20,7 @@
           "say_my_ip": "Say IP address",
           "timer_shutdown": "Shut Down",
           "timer_stop_player": "Stop player",
-          "timer_fade_volume": "Fade volume",
+          "timer_fade_volume": "Fade volume and Shut Down",
           "toggle_output": "Toggle audio output",
           "sync_rfidcards_all": "Sync all audiofiles and card entries",
           "sync_rfidcards_change_on_rfid_scan": "Change activation of 'on RFID scan'",
@@ -138,8 +138,8 @@
       "title": "Select an album, folder or song"
     },
     "folders": {
-      "no-music": "No music found!",
-      "empty-folder": "This folder is empty!",
+      "no-music": "☝️ No music found!",
+      "empty-folder": "This folder is empty! 🙈",
       "show-folder-content": "Show folder content",
       "back-button-label": "Back"
     },
@@ -219,15 +219,42 @@
       "why": "Why?",
       "control-label": "Auto Hotspot"
     },
+    "general": {
+      "title": "General Settings",
+      "show_covers": {
+        "title": "Show Cover Art"
+      }
+    },
     "timers": {
       "option-label-timeslot": "{{value}} min",
       "option-label-off": "Off",
       "title": "Timers",
-      "stop-player": "Stop player",
-      "shutdown": "Shut Down",
-      "fade-volume": "Fade volume",
-      "idle-shutdown": "Idle Shut Down",
-      "ended": "Done"
+      "stop-player": {
+        "title": "Stop player",
+        "label": "Stops playback after the timer has ended."
+      },
+      "shutdown": {
+        "title": "Shut Down",
+        "label": "Forces the Phoniebox to shut down after the timer has ended."
+      },
+      "fade-volume": {
+        "title": "Fade volume and Shut Down",
+        "label": "Slowly fades out volume towards the end of the timer and then shuts down the Phoniebox."
+      },
+      "idle-shutdown": {
+        "title": "Idle Shut Down",
+        "label": "Shuts down the Phoniebox after the Phoniebox was idle for a given time."
+      },
+      "ended": "Done",
+      "set": "Set timer",
+      "cancel": "Cancel",
+      "paused": "Paused",
+      "dialog": {
+        "title": "Set {{value}} timer",
+        "description": "Choose the amount of minutes you want the action to be performed.",
+        "start": "Start timer",
+        "cancel": "Cancel"
+      }
     },
     "secondswipe": {
       "title": "Second Swipe",

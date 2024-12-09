@@ -8,7 +8,7 @@ services:
         - USER=root
         - HOME=/root
       context: ../
-      dockerfile: ./docker/mpd.Dockerfile
+      dockerfile: ./docker/Dockerfile.mpd
     container_name: mpd
     image: phoniebox/mpd
     environment:
@@ -17,7 +17,7 @@ services:
     volumes:
       - ../shared/audiofolders:/root/RPi-Jukebox-RFID/shared/audiofolders
       - ../shared/playlists:/root/.config/mpd/playlists
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
 
   jukebox:
     build:
@@ -26,7 +26,7 @@ services:
         - USER=root
         - HOME=/root
       context: ../
-      dockerfile: ./docker/jukebox.Dockerfile
+      dockerfile: ./docker/Dockerfile.jukebox
     container_name: jukebox
     image: phoniebox/jukebox
     depends_on:
@@ -43,13 +43,13 @@ services:
       - ../src/jukebox:/root/RPi-Jukebox-RFID/src/jukebox
       - ../src/webapp/public/cover-cache:/root/RPi-Jukebox-RFID/src/webapp/build/cover-cache
       - ../shared:/root/RPi-Jukebox-RFID/shared
-      - ./config/docker.pulse.mpd.conf:/root/.config/mpd/mpd.conf
+      - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
     command: python run_jukebox.py
 
   webapp:
     build:
       context: ../
-      dockerfile: ./docker/webapp.Dockerfile
+      dockerfile: ./docker/Dockerfile.webapp
     container_name: webapp
     image: phoniebox/webapp
     depends_on:

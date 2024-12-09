@@ -11,4 +11,3 @@
   * [Generic Readers without HID (NFCpy)](generic_nfcpy.md)
   * [Mock Reader](mock_reader.md)
   * [Template Reader](template_reader.md)
-  
