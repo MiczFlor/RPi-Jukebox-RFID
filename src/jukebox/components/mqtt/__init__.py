@@ -26,6 +26,7 @@ logger = logging.getLogger("jb.mqtt")
 cfg = jukebox.cfghandler.get_handler("jukebox")
 
 base_topic = cfg.setndefault("mqtt", "base_topic", value="phoniebox-dev")
+mqtt_enabled = cfg.setndefault('mqtt', 'enable', value=False) is True
 legacy_support_enabled = cfg.setndefault("mqtt", "enable_legacy", value=True)
 
 
@@ -39,15 +40,18 @@ class MQTT(threading.Thread):
 
     def __init__(self, client: paho_mqtt.Client):
         super().__init__(name="MqttClient")
-        self._mqtt_client = client
-        if legacy_support_enabled:
-            logger.info("Supporting legacy MQTT commands.")
-            self._available_cmds = {**mqtt_cmd, **legacy_mqtt_cmd}
+        if mqtt_enabled:
+            self._mqtt_client = client
+            if legacy_support_enabled:
+                logger.info("Supporting legacy MQTT commands.")
+                self._available_cmds = {**mqtt_cmd, **legacy_mqtt_cmd}
 
-        self.daemon = True
-        self._keep_running = True
-        self.listen_done = threading.Event()
-        self.action_done = threading.Event()
+            self.daemon = True
+            self._keep_running = True
+            self.listen_done = threading.Event()
+            self.action_done = threading.Event()
+        else:
+            logger.info("MQTT Client is disabled")
 
     def _subscribe(self):
         logger.debug("Subscribing to MQTT topics.")
@@ -202,31 +206,37 @@ def initialize():
     """Setup connection and trigger the MQTT loop."""
     global mqtt_client
 
-    client_id = cfg.setndefault("mqtt", "client_id", value="phoniebox-future3")
-    username = cfg.setndefault("mqtt", "username", value="phoniebox-dev")
-    password = cfg.setndefault("mqtt", "password", value="phoniebox-dev")
-    host = cfg.setndefault("mqtt", "host", value="127.0.0.1")
-    port = cfg.setndefault("mqtt", "port", value=1883)
+    if mqtt_enabled:
+        client_id = cfg.setndefault("mqtt", "client_id", value="phoniebox-future3")
+        username = cfg.setndefault("mqtt", "username", value="phoniebox-dev")
+        password = cfg.setndefault("mqtt", "password", value="phoniebox-dev")
+        host = cfg.setndefault("mqtt", "host", value="127.0.0.1")
+        port = cfg.setndefault("mqtt", "port", value=1883)
 
-    logger.info(
-        f"Initializing MQTT client with client_id={client_id}, username={username}, host={host}, port={port}"
-    )
-    mqtt_client = paho_mqtt.Client(client_id=client_id)
-    mqtt_client.username_pw_set(username=username, password=password)
-    mqtt_client.on_connect = on_connect
-    mqtt_client.will_set(
-        topic=f"{base_topic}/state", payload=json.dumps("offline"), qos=1, retain=True
-    )
-    mqtt_client.connect(host, port, 60)
-    mqtt_client.loop_start()
-    logger.info("MQTT client initialized and loop started")
+        logger.info(
+            f"Initializing MQTT client with client_id={client_id}, username={username}, host={host}, port={port}"
+        )
+        mqtt_client = paho_mqtt.Client(client_id=client_id)
+        mqtt_client.username_pw_set(username=username, password=password)
+        mqtt_client.on_connect = on_connect
+        mqtt_client.will_set(
+            topic=f"{base_topic}/state", payload=json.dumps("offline"), qos=1, retain=True
+        )
+        mqtt_client.connect(host, port, 60)
+        mqtt_client.loop_start()
+        logger.info("MQTT client initialized and loop started")
+    else:
+        logger.info("MQTT client is disabled")
 
 
 @plugs.atexit
 def atexit(signal_id: int, **ignored_kwargs):
     global mqtt, mqtt_client
-    logger.info("Executing atexit handler, stopping MQTT client")
-    mqtt.stop()
-    mqtt_client.loop_stop()
-    mqtt_client.disconnect()
-    logger.info("MQTT client stopped and disconnected")
+    if mqtt_enabled:
+        logger.info("Executing atexit handler, stopping MQTT client")
+        mqtt.stop()
+        mqtt_client.loop_stop()
+        mqtt_client.disconnect()
+        logger.info("MQTT client stopped and disconnected")
+    else:
+        logger.info("MQTT client is disabled")
