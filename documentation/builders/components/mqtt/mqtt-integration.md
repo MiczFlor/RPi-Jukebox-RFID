@@ -1,6 +1,6 @@
 # MQTT Integration
 
-The MQTT integration allows you to control your Phoniebox via the MQTT protocol. This feature enables not only MQTT 
+The MQTT integration allows you to control your Phoniebox via the MQTT protocol. This feature enables not only MQTT
 control but also integration with home automation systems like Home Assistant.
 
 ## Configuration
