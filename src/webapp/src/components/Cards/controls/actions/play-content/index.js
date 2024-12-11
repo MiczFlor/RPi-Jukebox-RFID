@@ -20,17 +20,18 @@ import SelectedAlbum from './selected-album';
 import SelectedFolder from './selected-folder';
 import SelectedSingle from './selected-single';
 
-const SelectPlayMusic = ({
+const SelectPlayContent = ({
   actionData,
   cardId,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { command } = getActionAndCommand(actionData);
+  const { content_type } = actionData.command.args || {};
+
   const values = getArgsValues(actionData);
 
-  const selectMusic = () => {
+  const selectContent = () => {
     const searchParams = createSearchParams({
       isSelecting: true,
       cardId
@@ -44,30 +45,30 @@ const SelectPlayMusic = ({
 
   return (
     <Grid container>
-      {command &&
+      {content_type &&
         <Grid item xs={12}>
           <Typography>
-            {t(`cards.controls.actions.play-music.commands.${command}`)}
+            {t(`cards.controls.actions.play-content.commands.${content_type}`)}
           </Typography>
         </Grid>
       }
       <Grid item xs={12}>
-        {command === 'play_album' && <SelectedAlbum values={values} />}
-        {command === 'play_folder' && <SelectedFolder values={values} />}
-        {command === 'play_single' && <SelectedSingle values={values} />}
+        {content_type === 'album' && <SelectedAlbum values={values} />}
+        {content_type === 'folder' && <SelectedFolder values={values} />}
+        {content_type === 'single' && <SelectedSingle values={values} />}
       </Grid>
 
       <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           variant="outlined"
-          onClick={selectMusic}
+          onClick={selectContent}
           endIcon={<KeyboardArrowRightIcon />}
         >
-          {t('cards.controls.actions.play-music.button-label')}
+          {t('cards.controls.actions.play-content.button-label')}
         </Button>
       </Grid>
     </Grid>
   );
 };
 
-export default SelectPlayMusic;
+export default SelectPlayContent;

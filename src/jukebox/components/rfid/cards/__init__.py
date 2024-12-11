@@ -17,7 +17,7 @@ TODO: check if args is really a list (convert if not?)
 
 import logging
 import time
-from typing import (List, Dict, Optional)
+from typing import List, Dict, Optional, Union
 import jukebox.utils as utils
 import jukebox.cfghandler
 import jukebox.plugs as plugs
@@ -89,42 +89,48 @@ def delete_card(card_id: str, auto_save: bool = True):
 
 @plugs.register
 def register_card(card_id: str, cmd_alias: str,
-                  args: Optional[List] = None, kwargs: Optional[Dict] = None,
-                  ignore_card_removal_action: Optional[bool] = None, ignore_same_id_delay: Optional[bool] = None,
-                  overwrite: bool = False,
-                  auto_save: bool = True):
-    """Register a new card based on quick-selection
-
-    If you are going to call this through the RPC it will get a little verbose
-
-    **Example:** Registering a new card with ID *0009* for increment volume with a custom argument to inc_volume
-    (*here: 15*) and custom *ignore_same_id_delay value*::
-
-        plugin.call_ignore_errors('cards', 'register_card',
-                                  args=['0009', 'inc_volume'],
-                                  kwargs={'args': [15], 'ignore_same_id_delay': True, 'overwrite': True})
-
-    """
+                 args: Optional[Union[List, Dict]] = None,
+                 kwargs: Optional[Dict] = None,
+                 ignore_card_removal_action: Optional[bool] = None,
+                 ignore_same_id_delay: Optional[bool] = None,
+                 overwrite: bool = False,
+                 auto_save: bool = True):
+    """Register a new card based on quick-selection"""
     if cmd_alias not in cmd_alias_definitions.keys():
         msg = f"Unknown RPC command alias: '{cmd_alias}'"
         log.error(msg)
         raise KeyError(msg)
+
     with cfg_cards:
         if not overwrite and card_id in cfg_cards.keys():
             msg = f"Card already registered: '{card_id}'. Abort. (use overwrite=True to overrule)"
             log.error(msg)
             raise KeyError(msg)
+
         cfg_cards[card_id] = {'alias': cmd_alias}
-        if args is not None:
+
+        # For play_from_reader, expect a single dict of args
+        if cmd_alias == 'play_from_reader':
+            # Use either kwargs or args if it's a dict
+            if kwargs is not None:
+                cfg_cards[card_id]['args'] = kwargs
+            elif isinstance(args, dict):
+                cfg_cards[card_id]['args'] = args
+            else:
+                log.error(f"play_from_reader requires dict arguments, got: {type(args)}")
+                raise ValueError("play_from_reader requires dict arguments")
+        # For other commands, maintain list args support
+        elif args is not None:
             cfg_cards[card_id]['args'] = args
-        if kwargs is not None:
-            cfg_cards[card_id]['kwargs'] = args
+
         if ignore_same_id_delay is not None:
             cfg_cards[card_id]['ignore_same_id_delay'] = ignore_same_id_delay
         if ignore_card_removal_action is not None:
             cfg_cards[card_id]['ignore_card_removal_action'] = ignore_card_removal_action
+
         if auto_save:
             cfg_cards.save()
+
     publishing.get_publisher().send(f'{plugs.loaded_as(__name__)}.database.has_changed', time.ctime())
 
 
