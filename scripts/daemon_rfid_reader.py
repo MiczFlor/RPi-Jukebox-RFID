@@ -34,7 +34,7 @@ same_id_delay = ssp.read().strip()
 sspc = open('../settings/Second_Swipe_Pause_Controls', 'r')
 sspc_nodelay = sspc.readline().strip()
 previous_id = ""
-previous_time = time.time()
+previous_time = time.monotonic()
 
 # get swipe or place configuration value
 sop = open('../settings/Swipe_or_Place', 'r')
@@ -94,7 +94,7 @@ while True:
         # start the player script and pass on the cardid (but only if new card or otherwise
         # "same_id_delay" seconds have passed)
         if cardid is not None:
-            if cardid != previous_id or (time.time() - previous_time) >= float(same_id_delay) or cardid in str(ids):
+            if cardid != previous_id or (time.monotonic() - previous_time) >= float(same_id_delay) or cardid in str(ids):
                 logger.info('Trigger Play Cardid={cardid}'.format(cardid=cardid))
                 subprocess.call([dir_path + '/rfid_trigger_play.sh --cardid=' + cardid], shell=True)
                 previous_id = cardid
@@ -105,7 +105,7 @@ while True:
                     same_id_delay=same_id_delay
                 ))
 
-            previous_time = time.time()
+            previous_time = time.monotonic()
 
     except OSError as e:
         logger.error('Execution failed: {e}'.format(e=e))
