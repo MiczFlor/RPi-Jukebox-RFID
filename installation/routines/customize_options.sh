@@ -28,26 +28,6 @@ Set a static IP? [Y/n]"
   log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
 }
 
-_option_ipv6() {
-  # DISABLE_IPv6
-  clear_c
-  print_c "------------------------- IP V6 -------------------------
-
-IPv6 is only needed if you intend to use it.
-Otherwise it can be disabled.
-
-Do you want to disable IPv6? [Y/n]"
-  read -r response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_IPv6=false
-      ;;
-    *)
-      ;;
-  esac
-  log "DISABLE_IPv6=${DISABLE_IPv6}"
-}
-
 _option_autohotspot() {
     # ENABLE_AUTOHOTSPOT
     clear_c
@@ -310,36 +290,6 @@ Would you like to update the operating system? [Y/n]"
   log "UPDATE_RASPI_OS=${UPDATE_RASPI_OS}"
 }
 
-_option_disable_onboard_audio() {
-  # Disable BCM on-chip audio (typically Headphones)
-  # not needed when external sound card is sued
-  clear_c
-  print_c "--------------------- ON-CHIP AUDIO ---------------------
-
-If you are using an external sound card (e.g. USB,
-HifiBerry, PirateAudio, etc), we recommend to disable
-the on-chip audio. It will make the ALSA sound
-configuration easier.
-If you are planning to only use Bluetooth speakers,
-leave the on-chip audio enabled!
-(This will touch your boot configuration file.
-We will do our best not to mess anything up. However,
-a backup copy will be written. Please check the install
-log after for further details.)
-
-Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      DISABLE_ONBOARD_AUDIO=true
-      ;;
-    *)
-      ;;
-  esac
-  log "DISABLE_ONBOARD_AUDIO=${DISABLE_ONBOARD_AUDIO}"
-
-}
-
 _option_webapp_devel_build() {
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" && "$GIT_BRANCH" != "${GIT_BRANCH_DEVELOP}" ]] || [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]] || [[ "$CI_RUNNING" == "true" ]] ; then
@@ -377,22 +327,16 @@ Do you want to build the Web App? [Y/n]"
 }
 
 _run_customize_options() {
-  _option_ipv6
-  _option_static_ip
-  _option_autohotspot
-  _option_bluetooth
-  _option_disable_onboard_audio
-  _option_mpd
-  _option_rfid_reader
-  _option_samba
-  _option_webapp
+  _option_static_ip   # Optional: Not required for installation
+  _option_autohotspot # Optional: Not required for installation
+  _option_mpd         # !!Required, without options
+  _option_rfid_reader # !!Required, with options
+  _option_samba       # !!Required, without options
+  _option_webapp      # !!Required, without options
   if [[ $ENABLE_WEBAPP == true ]] ; then
-    _option_webapp_devel_build
-    _option_kiosk_mode
+    _option_webapp_devel_build # Optional: Not required for installation
+    _option_kiosk_mode # Optional: Not required for installation
   fi
-  # Bullseye is currently under active development and should be updated in any case.
-  # Hence, removing the step below as it becomse mandatory
-  # _options_update_raspi_os
 }
 
 customize_options() {

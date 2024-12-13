@@ -13,6 +13,24 @@ Audio outputs run via PulseAudio and the basic configuration should be easy.
 There is a [configuration tool](../developers/coreapps.md#Audio),
 to setup the configuration for the Jukebox Core App.
 
+### Disable On-Chip audio
+
+If you are planning on using an external sound card (e.g. USB, HifiBerry, PirateAudio, etc), we recommend to disable the on-chip audio. It will make the sound configuration easier.
+If you are planning to only use Bluetooth speakers, leave the on-chip audio enabled!
+
+Run the following command to manage the On-chip audio. Make sure you reboot your device afterwards.
+
+```bash
+cd ~/RPi-Jukebox-RFID/installation/options
+./onboard_sound.sh disable
+```
+
+If you like to enable it, use the following command:
+
+```bash
+./onboard_sound.sh enable
+```
+
 ### To set up the audio
 
 1. Follow the setup steps according to your sound card
