@@ -12,6 +12,8 @@ a directory is parsed and files are added to the playlist in the following way
 
 An directory may contain a mixed set of files and multiple ``*.txt`` files, e.g.
 
+.. code-block:: bash
+
     01-livestream.txt
     02-livestream.txt
     music.mp3
@@ -69,22 +71,22 @@ TYPE_DECODE = ['file', 'directory', 'stream', 'podcast']
 
 
 class PlaylistEntry:
-    def __init__(self, filetype: int, name: str, path: str):
+    def __init__(self, filetype: int, name: str, uri: str = None):
         self._type = filetype
         self._name = name
-        self._path = path
+        self._uri = uri
 
     @property
     def name(self):
         return self._name
 
     @property
-    def path(self):
-        return self._path
-
-    @property
     def filetype(self):
         return self._type
+
+    @property
+    def uri(self):
+        return self._uri
 
 
 def decode_podcast_core(url, playlist):
@@ -210,7 +212,7 @@ class PlaylistCollector:
         Check if filename is valid
         """
         return direntry.is_file() and not direntry.name.startswith('.') \
-               and PlaylistCollector._exclude_re.match(direntry.name) is None and direntry.name.find('.') >= 0
+            and PlaylistCollector._exclude_re.match(direntry.name) is None and direntry.name.find('.') >= 0
 
     @classmethod
     def set_exclusion_endings(cls, endings: List[str]):
@@ -267,6 +269,7 @@ class PlaylistCollector:
         """
         self.playlist = []
         self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        logger.debug(self._folder)
         try:
             content = self._get_directory_content(self._folder)
         except NotADirectoryError as e:
@@ -274,16 +277,12 @@ class PlaylistCollector:
         except FileNotFoundError as e:
             logger.error(f" {e.__class__.__name__}: {e}")
         else:
+            logger.debug(f"Playlist Content: {content}")
             for m in content:
-                self.playlist.append({
-                    'type': TYPE_DECODE[m.filetype],
-                    'name': m.name,
-                    'path': m.path,
-                    'relpath': os.path.relpath(m.path, self._music_library_base_path)
-                })
+                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.uri})
 
     def _parse_nonrecusive(self, path='.'):
-        return [x.path for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
+        return [x.uri for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]
 
     def _parse_recursive(self, path='.'):
         # This can certainly be optimized, as os.walk is called on all
@@ -299,7 +298,7 @@ class PlaylistCollector:
         return recursive_playlist
 
     def parse(self, path='.', recursive=False):
-        """Parse the folder ``path`` and create a playlist from its content
+        """Parse the folder ``path`` and create a playlist from it's content
 
         :param path: Path to folder **relative** to ``music_library_base_path``
         :param recursive: Parse folder recursivley, or stay in top-level folder

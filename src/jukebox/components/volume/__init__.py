@@ -63,7 +63,6 @@ import logging
 import threading
 import time
 import traceback
-
 import pulsectl
 import jukebox.cfghandler
 import jukebox.plugs as plugin

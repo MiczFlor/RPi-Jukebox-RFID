@@ -49,8 +49,8 @@ const commands = {
   },
   playerstatus: {
     _package: 'player',
-    plugin: 'ctrl',
-    method: 'playerstatus'
+    plugin: 'player_status',
+    method: 'status'
   },
 
   // Player Actions
@@ -65,6 +65,7 @@ const commands = {
     method: 'play_single',
     argKeys: ['song_url']
   },
+  // ToDo: verify if this is really needed?
   play_folder: {
     _package: 'player',
     plugin: 'ctrl',
