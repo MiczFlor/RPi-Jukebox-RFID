@@ -538,7 +538,7 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
-    def play_card(self, folder: str, recursive: bool = False):
+    def play_card(self, folder: str, recursive: bool = False, resume: bool = False):
         """
         Main entry point for trigger music playing from RFID reader. Decodes second swipe options before playing folder content
 
@@ -547,6 +547,7 @@ class PlayerMPD:
 
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
+        :param resume: Try to resume from last position?
         """
         # Developers notes:
         #
@@ -575,7 +576,7 @@ class PlayerMPD:
             # run callbacks before play_folder is invoked
             play_card_callbacks.run_callbacks(folder, PlayCardState.firstSwipe)
 
-            self.play_folder(folder, recursive)
+            self.play_folder(folder, recursive, resume=resume)
 
     @plugs.tag
     def get_single_coverart(self, song_url):
@@ -612,7 +613,8 @@ class PlayerMPD:
         return plc.playlist
 
     @plugs.tag
-    def play_folder(self, folder: str, recursive: bool = False) -> None:
+    def play_folder(self, folder: str, recursive: bool = False,
+            resume: bool = False) -> None:
         """
         Playback a music folder.
 
@@ -621,6 +623,7 @@ class PlayerMPD:
 
         :param folder: Folder path relative to music library path
         :param recursive: Add folder recursively
+        :param resume: Try to resume from previous state?
         """
         # TODO: This changes the current state -> Need to save last state
         with self.mpd_lock:
@@ -640,11 +643,23 @@ class PlayerMPD:
 
             self.music_player_status['player_status']['last_played_folder'] = folder
 
+            # Here a reference to the folder dict is used.
+            # Thus any update to the current_folder_status dict will
+            # be reflected in the dict of the corresponding folder
             self.current_folder_status = self.music_player_status['audio_folder_status'].get(folder)
             if self.current_folder_status is None:
                 self.current_folder_status = self.music_player_status['audio_folder_status'][folder] = {}
-
-            self.mpd_client.play()
+                # Dont attempt to resume, if this is a new folder
+                self.mpd_client.play()
+            else:
+                if resume:
+                    try:
+                        self.resume()
+                    except mpd.base.CommandError as e:
+                        logger.exception("Failed to resume folder: %s", folder, exc_info=e)
+                        self.mpd_client.play()
+                else:
+                    self.mpd_client.play()
 
     @plugs.tag
     def play_album(self, albumartist: str, album: str):
