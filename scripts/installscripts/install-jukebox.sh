@@ -618,8 +618,6 @@ config_spotify() {
 # Please note your client_id and client_secret!
 #
 "
-            read -rp "Type your Spotify username: " SPOTIuser
-            read -rp "Type your Spotify password: " SPOTIpass
             read -rp "Type your client_id: " SPOTIclientid
             read -rp "Type your client_secret: " SPOTIclientsecret
             ;;
@@ -631,8 +629,6 @@ config_spotify() {
     # append variables to config file
     {
         echo "SPOTinstall=\"$(_escape_for_shell "$SPOTinstall")\"";
-        echo "SPOTIuser=\"$(_escape_for_shell "$SPOTIuser")\"";
-        echo "SPOTIpass=\"$(_escape_for_shell "$SPOTIpass")\"";
         echo "SPOTIclientid=\"$(_escape_for_shell "$SPOTIclientid")\"";
         echo "SPOTIclientsecret=\"$(_escape_for_shell "$SPOTIclientsecret")\""
     } >> "${HOME_DIR}/PhonieboxInstall.conf"
@@ -756,8 +752,6 @@ check_config_file() {
         echo "ERROR: \$SPOTinstall is missing or not set!" && fail=true
     else
         if [ "$SPOTinstall" == "YES" ]; then
-            check_variable "SPOTIuser"
-            check_variable "SPOTIpass"
             check_variable "SPOTIclientid"
             check_variable "SPOTIclientsecret"
         fi
@@ -1096,8 +1090,6 @@ install_main() {
         sudo locale-gen
         sudo cp "${jukebox_dir}"/misc/sampleconfigs/mopidy.conf.sample "${mopidy_conf}"
         # Change vars to match install config
-        sudo sed -i 's|%spotify_username%|'"$(escape_for_sed "$SPOTIuser")"'|' "${mopidy_conf}"
-        sudo sed -i 's|%spotify_password%|'"$(escape_for_sed "$SPOTIpass")"'|' "${mopidy_conf}"
         sudo sed -i 's|%spotify_client_id%|'"$(escape_for_sed "$SPOTIclientid")"'|' "${mopidy_conf}"
         sudo sed -i 's|%spotify_client_secret%|'"$(escape_for_sed "$SPOTIclientsecret")"'|' "${mopidy_conf}"
         # for $DIRaudioFolders using | as alternate regex delimiter because of the folder path slash

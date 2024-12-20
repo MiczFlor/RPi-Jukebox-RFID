@@ -170,8 +170,6 @@ verify_conf_file() {
     else
         echo "\$SPOTinstall is set to '$SPOTinstall'"
         if [ "$SPOTinstall" == "YES" ]; then
-            check_variable "SPOTIuser"
-            check_variable "SPOTIpass"
             check_variable "SPOTIclientid"
             check_variable "SPOTIclientsecret"
         fi
@@ -459,8 +457,6 @@ verify_spotify_config() {
 
         printf "\nTESTING spotify config...\n\n"
 
-        check_file_contains_string "username = ${SPOTIuser}" "${mopidy_conf}"
-        check_file_contains_string "password = ${SPOTIpass}" "${mopidy_conf}"
         check_file_contains_string "client_id = ${SPOTIclientid}" "${mopidy_conf}"
         check_file_contains_string "client_secret = ${SPOTIclientsecret}" "${mopidy_conf}"
         check_file_contains_string "media_dir = ${DIRaudioFolders}" "${mopidy_conf}"

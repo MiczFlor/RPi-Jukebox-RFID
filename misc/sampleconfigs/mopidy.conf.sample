@@ -32,8 +32,6 @@ locale = de_DE
 
 [spotify]
 enabled = true
-username = %spotify_username%
-password = %spotify_password%
 client_id = %spotify_client_id%
 client_secret = %spotify_client_secret%
 #bitrate = 160
