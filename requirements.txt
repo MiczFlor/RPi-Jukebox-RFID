@@ -21,7 +21,8 @@ requests
 tornado
 
 # RPi's GPIO packages:
-RPi.GPIO
+# use shim to keep current RPi.GPIO behavior also under Bookworm - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
+rpi-lgpio
 gpiozero
 
 # PyZMQ is a special case:

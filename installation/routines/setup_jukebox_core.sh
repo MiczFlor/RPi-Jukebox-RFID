@@ -30,6 +30,8 @@ _jukebox_core_install_python_requirements() {
   source "$VIRTUAL_ENV/bin/activate"
 
   pip install --upgrade pip
+  # Remove RPi.GPIO, if still installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
+  pip uninstall rpi-gpio
   pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
