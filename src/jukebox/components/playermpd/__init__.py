@@ -151,11 +151,8 @@ class PlayerMPD:
         self.music_player_status = self.nvm.load(cfg.getn('playermpd', 'status_file'))
 
         self.second_swipe_action_dict = {'toggle': self.toggle,
-                                        'play': self.play,
-                                        'skip': self.next,
-                                        'rewind': self.rewind,
-                                        'replay': self.replay,
-                                        'replay_if_stopped': self.replay_if_stopped}
+                                        'next': self.next,
+                                        'rewind': self.rewind}
         self.second_swipe_action = None
         self.decode_second_swipe_action()
 
@@ -254,16 +251,12 @@ class PlayerMPD:
         """
         Decode the second swipe option from the configuration
         """
-        logger.debug("Decoding second swipe option")
         second_swipe_action = cfg.getn('playermpd', 'second_swipe_action', 'none')
-        logger.debug(f"Second swipe option from config: {second_swipe_action}")
 
         if second_swipe_action in self.second_swipe_action_dict:
             self.second_swipe_action = self.second_swipe_action_dict[second_swipe_action]
-            logger.debug(f"Second swipe action set to: {self.second_swipe_action}")
         else:
             self.second_swipe_action = None
-            logger.debug("No valid second swipe action found, setting to None")
 
     def mpd_retry_with_mutex(self, mpd_cmd, *args):
         """
@@ -420,32 +413,10 @@ class PlayerMPD:
             self.mpd_client.play(0)
 
     @plugs.tag
-    def replay(self):
-        """
-        Re-start playing the last-played folder
-
-        Will reset settings to folder config"""
-        logger.debug("Replay")
-        with self.mpd_lock:
-            self.play_folder(self.music_player_status['player_status']['last_played_folder'])
-
-    @plugs.tag
     def toggle(self):
         """Toggle pause state, i.e. do a pause / resume depending on current state"""
         with self.mpd_lock:
             self.mpd_client.pause()
-
-    @plugs.tag
-    def replay_if_stopped(self):
-        """
-        Re-start playing the last-played folder unless playlist is still playing
-
-        > [!NOTE]
-        > To me this seems much like the behaviour of play,
-        > but we keep it as it is specifically implemented in box 2.X"""
-        with self.mpd_lock:
-            if self.mpd_status['state'] == 'stop':
-                self.play_folder(self.music_player_status['player_status']['last_played_folder'])
 
     # Shuffle
     def _shuffle(self, random):
@@ -772,6 +743,21 @@ class PlayerMPD:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
 
         return song
+
+    @plugs.tag
+    def get_second_swipe_action(self):
+        action = cfg.getn('playermpd', 'second_swipe_action', default='None')
+
+        return action
+
+    @plugs.tag
+    def set_second_swipe_action(self, action):
+        if action is None:
+            cfg.setn('playermpd', 'second_swipe_action', value='None')
+        else:
+            cfg.setn('playermpd', 'second_swipe_action', value=action)
+
+        self.decode_second_swipe_action()
 
     def get_volume(self):
         """

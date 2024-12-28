@@ -260,10 +260,10 @@
     "secondswipe": {
       "title": "Erneute Aktivierung (Second Swipe)",
       "description": "Aktion, wenn dieselbe Karte ein weiteres Mal aktiviert wird",
-      "restart": "Wiedergabeliste neu starten",
+      "rewind": "Wiedergabeliste neu starten",
       "toggle": "Pause / Wiedergabe umschalten",
-      "skip": "Zum nächsten Track springen",
-      "ignore": "Nur Systembefehle mehrfach ausführen"
+      "next": "Zum nächsten Track springen",
+      "none": "Keine Aktion"
     },
     "status": {
       "title": "Systemstatus",

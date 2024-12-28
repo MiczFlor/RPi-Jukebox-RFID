@@ -52,6 +52,18 @@ const commands = {
     plugin: 'ctrl',
     method: 'playerstatus'
   },
+  // Player Options
+  getSecondSwipeAction: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_second_swipe_action',
+  },
+  setSecondSwipeAction: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'set_second_swipe_action',
+    argKeys: ['action']
+  },
 
   // Player Actions
   play: {

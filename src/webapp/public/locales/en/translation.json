@@ -260,10 +260,10 @@
     "secondswipe": {
       "title": "Second Swipe",
       "description": "Second action after the same card swiped again",
-      "restart": "Restart playlist",
+      "rewind": "Restart playlist",
       "toggle": "Toggle pause / play",
-      "skip": "Skip to next track",
-      "ignore": "Ignore audio playout triggers, only system commands"
+      "next": "Skip to next track",
+      "none": "No action"
     },
     "status": {
       "title": "System",
