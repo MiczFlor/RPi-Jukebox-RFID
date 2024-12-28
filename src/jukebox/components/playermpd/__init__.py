@@ -157,7 +157,7 @@ class PlayerMPD:
                                         'replay': self.replay,
                                         'replay_if_stopped': self.replay_if_stopped}
         self.second_swipe_action = None
-        self.decode_2nd_swipe_option()
+        self.decode_second_swipe_action()
 
         self.end_of_playlist_next_action = utils.get_config_action(cfg,
                                                                 'playermpd',
@@ -250,21 +250,20 @@ class PlayerMPD:
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
 
-    def decode_2nd_swipe_option(self):
-        cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
-        if cfg_2nd_swipe_action not in [*self.second_swipe_action_dict.keys(), 'none', 'custom']:
-            logger.error(f"Config mpd.second_swipe_action must be one of "
-                         f"{[*self.second_swipe_action_dict.keys(), 'none', 'custom']}. Ignore setting.")
-        if cfg_2nd_swipe_action in self.second_swipe_action_dict.keys():
-            self.second_swipe_action = self.second_swipe_action_dict[cfg_2nd_swipe_action]
-        if cfg_2nd_swipe_action == 'custom':
-            custom_action = utils.decode_rpc_call(cfg.getn('playermpd', 'second_swipe_action', default=None))
-            self.second_swipe_action = functools.partial(plugs.call_ignore_errors,
-                                                         custom_action['package'],
-                                                         custom_action['plugin'],
-                                                         custom_action['method'],
-                                                         custom_action['args'],
-                                                         custom_action['kwargs'])
+    def decode_second_swipe_action(self):
+        """
+        Decode the second swipe option from the configuration
+        """
+        logger.debug("Decoding second swipe option")
+        second_swipe_action = cfg.getn('playermpd', 'second_swipe_action', 'none')
+        logger.debug(f"Second swipe option from config: {second_swipe_action}")
+
+        if second_swipe_action in self.second_swipe_action_dict:
+            self.second_swipe_action = self.second_swipe_action_dict[second_swipe_action]
+            logger.debug(f"Second swipe action set to: {self.second_swipe_action}")
+        else:
+            self.second_swipe_action = None
+            logger.debug("No valid second swipe action found, setting to None")
 
     def mpd_retry_with_mutex(self, mpd_cmd, *args):
         """
@@ -570,16 +569,16 @@ class PlayerMPD:
             self.mpd_client.play()
 
     @plugs.tag
-    def play_content(self, content: Union[str, Dict[str, Any]], content_type: str = 'folder', recursive: bool = False):
+    def play_content(self, content: Union[str, Dict[str, Any]], content_type: str = 'folder',
+                    recursive: bool = False, preserve_second_swipe: bool = False):
         """
-        Main entry point for trigger music playing from any source (RFID reader, web UI, etc.).
-        Does NOT support second swipe - use play_from_reader() for that.
+        Main entry point for playing content.
 
-        :param content: Content identifier:
-                     - For singles/folders: file/folder path as string
-                     - For albums: dict with 'albumartist' and 'album' keys
-        :param content_type: Type of content ('single', 'album', 'folder')
-        :param recursive: Add folder recursively (only used for folder type)
+        Args:
+            content: Content to play
+            content_type: Type of content ('folder', 'album', etc.)
+            recursive: Whether to play recursively
+            preserve_second_swipe: If True, preserves any existing second_swipe_action
         """
         try:
             content_type = content_type.lower()
@@ -612,15 +611,16 @@ class PlayerMPD:
                     recursive=recursive
                 )
 
+            old_action = self.play_content_handler.second_swipe_action
             # Ensure no second swipe for regular content playback
-            old_action = self.play_content_handler._second_swipe_action
-            self.play_content_handler._second_swipe_action = None
+            if not preserve_second_swipe:
+                self.play_content_handler.second_swipe_action = None
 
             try:
                 self.play_content_handler.play_content(play_content)
             finally:
                 # Restore previous second swipe action
-                self.play_content_handler._second_swipe_action = old_action
+                self.play_content_handler.second_swipe_action = old_action
 
         except Exception as e:
             logger.error(f"Error playing content: {e}")
@@ -643,7 +643,6 @@ class PlayerMPD:
                         - 'none': disable second swipe
                         - One of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'replay_if_stopped'
         """
-        # Determine second swipe action
         if second_swipe is None:
             action = self.second_swipe_action
         elif second_swipe.lower() == 'none':
@@ -651,17 +650,14 @@ class PlayerMPD:
         else:
             action = self.second_swipe_action_dict.get(second_swipe.lower())
             if action is None:
-                logger.error(f"Unknown second swipe action '{second_swipe}', using default")
                 action = self.second_swipe_action
 
-        # Temporarily set the chosen second swipe action
-        old_action = self.play_content_handler._second_swipe_action
+        old_action = self.play_content_handler.second_swipe_action
         self.play_content_handler.set_second_swipe_action(action)
 
         try:
-            self.play_content(content, content_type, recursive)
+            self.play_content(content, content_type, recursive, preserve_second_swipe=True)
         finally:
-            # Restore previous second swipe action
             self.play_content_handler.set_second_swipe_action(old_action)
 
     # The following methods are kept for backward compatibility but now use play_content internally

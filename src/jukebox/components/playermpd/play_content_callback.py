@@ -1,4 +1,3 @@
-
 from enum import Enum
 from typing import Callable, Generic, TypeVar
 
@@ -6,8 +5,8 @@ from jukebox.callingback import CallbackHandler
 
 
 class PlayCardState(Enum):
-    firstSwipe = 0,
-    secondSwipe = 1
+    FIRST_SWIPE = 0
+    SECOND_SWIPE = 1
 
 
 STATE = TypeVar('STATE', bound=Enum)
@@ -27,7 +26,7 @@ class PlayContentCallbacks(Generic[STATE], CallbackHandler):
         .. py:function:: func(folder: str, state: STATE)
             :noindex:
 
-        :param folder: relativ path to folder to play
+        :param folder: relative path to folder to play
         :param state: indicator of the state inside the calling
         """
         super().register(func)
