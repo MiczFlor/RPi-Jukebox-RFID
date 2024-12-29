@@ -84,7 +84,7 @@ is_debian_based() {
     fi
 }
 
-get_debian_version_number() {
+_get_debian_version_number() {
     if [ "$(is_debian_based)" = true ]; then
         local debian_version_number=$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )
         echo "$debian_version_number"
