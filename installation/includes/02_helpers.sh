@@ -400,7 +400,7 @@ verify_optional_service_enablement() {
 #   1    : textfile to read
 get_args_from_file() {
     local package_file="$1"
-    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs echo
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;).*//g' | xargs echo
 }
 
 # Check if all passed packages are installed. Fail on first missing.
@@ -436,6 +436,25 @@ verify_pip_modules() {
     do
         if [[ ! $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
             exit_on_error "ERROR: ${module} is not installed"
+        fi
+    done
+    log "  CHECK"
+}
+
+# Check if all passed modules are not installed. Fail on first found.
+verify_pip_modules_not() {
+    local modules="$@"
+    log "  Verify modules are not installed: '${modules}'"
+
+    if [[ -z "${modules}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    local pip_list_installed=$(pip list 2>/dev/null)
+    for module in ${modules}
+    do
+        if [[ $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
+            exit_on_error "ERROR: ${module} is installed"
         fi
     done
     log "  CHECK"

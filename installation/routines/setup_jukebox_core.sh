@@ -24,15 +24,33 @@ _jukebox_core_install_os_dependencies() {
 _jukebox_core_install_python_requirements() {
   print_lc "  Install Python requirements"
 
-  cd "${INSTALLATION_PATH}"  || exit_on_error
+  cd "${INSTALLATION_PATH}" || exit_on_error
 
   python3 -m venv $VIRTUAL_ENV
   source "$VIRTUAL_ENV/bin/activate"
 
   pip install --upgrade pip
-  # Remove RPi.GPIO, if still installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
-  pip uninstall rpi-gpio
-  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
+  # Remove excluded libs, if installed - see - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
+  pip uninstall -y -r "${INSTALLATION_PATH}"/requirements-excluded.txt
+
+  # prepare lgpio build for bullseye as the binaries are broken
+  local pip_install_options=""
+  if [ "$(is_debian_version_at_least 12)" = false ]; then
+    local tmp_path="${HOME_PATH}/tmp"
+    local lg_filename="lg"
+    local lg_zip_filename="${lg_filename}.zip"
+
+    sudo apt-get -y install swig unzip
+    mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
+    wget --quiet http://abyz.me.uk/lg/${lg_zip_filename} || exit_on_error "Download failed"
+    unzip ${lg_zip_filename} || exit_on_error
+    cd "${lg_filename}" || exit_on_error
+    make && sudo make install
+    cd "${INSTALLATION_PATH}" && sudo rm -rf "${tmp_path}"
+    pip_install_options="--no-binary=lgpio"
+  fi
+
+  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt" ${pip_install_options}
 }
 
 _jukebox_core_configure_pulseaudio() {
@@ -121,6 +139,9 @@ _jukebox_core_check() {
 
     local pip_modules=$(get_args_from_file "${INSTALLATION_PATH}/requirements.txt")
     verify_pip_modules pyzmq $pip_modules
+
+    local pip_modules_excluded=$(get_args_from_file "${INSTALLATION_PATH}/requirements-excluded.txt")
+    verify_pip_modules_not $pip_modules_excluded
 
     log "  Verify ZMQ version '${JUKEBOX_ZMQ_VERSION}'"
     local zmq_version=$(python -c 'import zmq; print(f"{zmq.zmq_version()}")')
