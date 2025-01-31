@@ -38,7 +38,7 @@ Mandatory IRQ pin. This can be any GPIO pin.
 
 Reset pin for hardware reset. This is an optional pin. If not used,
 
-- hardware reset will only be performed by power-on-reset. This has been tested on works fine.
+- hardware reset will only be performed by power-on-reset. This has been tested and works fine.
 - you **must** tie the reset pin of the MFRC522 board **high**!
 
 ### mode_legacy *(default=false)*
@@ -76,8 +76,6 @@ MISO.
 ## Hardware
 
 MFRC522 boards can be picked up from many places for little money.
-
-Good quality ones can be found e.g. here
 
 ### Cards/Tags
 
