@@ -130,7 +130,7 @@ void * connect_and_send_request(t_request * tr)
     snprintf(json_request,MAX_REQEST_STRLEN,"{\"package\": \"%s\", \"plugin\": \"%s\", \"method\": \"%s\", %s\"id\":%d}",tr->package,tr->object,tr->method,kwargs,123);
     json_len = strlen(json_request);
 
-    if (g_verbose) printf("Sending Request (%ld Bytes):\n%s\n",json_len,json_request);
+    if (g_verbose) printf("Sending Request (%d Bytes):\n%s\n",json_len,json_request);
 
     send_zmq_request_and_wait_response(json_request,json_len,json_response,MAX_REQEST_STRLEN,tr->address);
 
