@@ -30,7 +30,7 @@ _jukebox_core_install_python_requirements() {
   source "$VIRTUAL_ENV/bin/activate"
 
   pip install --upgrade pip
-  # Remove excluded libs, if installed - see - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
+  # Remove excluded libs, if installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
   pip uninstall -y -r "${INSTALLATION_PATH}"/requirements-excluded.txt
 
   # prepare lgpio build for bullseye as the binaries are broken
