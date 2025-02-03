@@ -37,24 +37,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-          python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        # Install necessary packages
-        sudo apt-get update
-        sudo apt-get install libasound2-dev pulseaudio
-        python3 -m venv .venv
-        source ".venv/bin/activate"
-
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        # Set the `CODEQL_EXTRACTOR_PYTHON_ANALYSIS_VERSION` environment variable to the Python executable
-        # that includes the dependencies
-        echo "CODEQL_EXTRACTOR_PYTHON_ANALYSIS_VERSION=$(which python)" >> $GITHUB_ENV
-
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
