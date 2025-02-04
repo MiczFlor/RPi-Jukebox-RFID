@@ -159,7 +159,7 @@ def bt_switch(cmd, led_pin=None): # noqa C901
             if led_pin:
                 sleeptime = 0.25
                 for i in range(0, 3):
-                    proc = subprocess.run(["gpioset", led_pin[0], led_pin[1]+"=1"], shell=False,
+                    proc = subprocess.run(["gpioset", led_pin[0], led_pin[1] + "=1"], shell=False,
                                           check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     time.sleep(sleeptime)
                     proc = subprocess.run(["gpioset", led_pin[0], led_pin[1]+"=0"], shell=False,
