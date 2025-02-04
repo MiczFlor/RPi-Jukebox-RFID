@@ -150,7 +150,7 @@ def bt_switch(cmd, led_pin=None): # noqa C901
             # Yet, in some cases, a stream error still occurs: check and recover
             bt_check_mpc_err()
             if led_pin is not None:
-                proc = subprocess.run(["gpioset", led_pin[0], led_pin[1]+"=1"], shell=False,
+                proc = subprocess.run(["gpioset", led_pin[0], led_pin[1] + "=1"], shell=False,
                                       check=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 logger.debug(b'LED on: ' + proc.stdout)
             return
