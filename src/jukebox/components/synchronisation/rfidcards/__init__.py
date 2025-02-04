@@ -29,7 +29,7 @@ import os
 import shutil
 
 from components.rfid.reader import RfidCardDetectState
-from components.playermpd.playcontentcallback import PlayCardState
+from components.playermpd.play_content_callback import PlayCardState
 
 
 logger = logging.getLogger('jb.sync_rfidcards')

@@ -32,8 +32,8 @@ const LibraryLists = () => {
     setMusicFilter(event.target.value);
   };
 
-  const registerMusicToCard = (command, args) => {
-    const actionData = buildActionData('play_music', command, args);
+  const registerContentToCard = (command, args) => {
+    const actionData = buildActionData('play_content', command, args);
     const state = {
       registerCard: {
         actionData,
@@ -71,7 +71,7 @@ const LibraryLists = () => {
               element={
                 <SongList
                   isSelecting={isSelecting}
-                  registerMusicToCard={registerMusicToCard}
+                  registerContentToCard={registerContentToCard}
                 />
               }
               exact
@@ -86,7 +86,7 @@ const LibraryLists = () => {
                 <Folders
                   musicFilter={musicFilter}
                   isSelecting={isSelecting}
-                  registerMusicToCard={registerMusicToCard}
+                  registerContentToCard={registerContentToCard}
                 />
               }
             />

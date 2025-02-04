@@ -79,10 +79,7 @@ alsawave:
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
-  second_swipe_action:
-    # Note: Does not follow the RPC alias convention (yet)
-    # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
-    alias: toggle
+  second_swipe_action: toggle # Must be one of: 'toggle', 'next', 'rewind', 'none'
   library:
     update_on_startup: true
     check_user_rights: true

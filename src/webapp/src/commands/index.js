@@ -52,6 +52,18 @@ const commands = {
     plugin: 'ctrl',
     method: 'playerstatus'
   },
+  // Player Options
+  getSecondSwipeAction: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'get_second_swipe_action',
+  },
+  setSecondSwipeAction: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'set_second_swipe_action',
+    argKeys: ['action']
+  },
 
   // Player Actions
   play: {
@@ -59,23 +71,11 @@ const commands = {
     plugin: 'ctrl',
     method: 'play',
   },
-  play_single: {
+  play_content: {
     _package: 'player',
     plugin: 'ctrl',
-    method: 'play_single',
-    argKeys: ['song_url']
-  },
-  play_folder: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'play_folder',
-    argKeys: ['folder']
-  },
-  play_album: {
-    _package: 'player',
-    plugin: 'ctrl',
-    method: 'play_album',
-    argKeys: ['albumartist', 'album']
+    method: 'play_content',
+    argKeys: ['content', 'content_type', 'recursive']
   },
   pause: {
     _package: 'player',

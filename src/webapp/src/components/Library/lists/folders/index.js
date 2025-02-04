@@ -15,7 +15,7 @@ import { ROOT_DIR } from '../../../../config';
 const Folders = ({
   musicFilter,
   isSelecting,
-  registerMusicToCard,
+  registerContentToCard,
 }) => {
   const { t } = useTranslation();
   const { dir = ROOT_DIR } = useParams();
@@ -60,7 +60,7 @@ const Folders = ({
       dir={dir}
       folders={filteredFolders}
       isSelecting={isSelecting}
-      registerMusicToCard={registerMusicToCard}
+      registerContentToCard={registerContentToCard}
     />
   );
 };

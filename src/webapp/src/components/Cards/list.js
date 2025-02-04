@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import { printObject } from '../../utils/utils';
 
 const CardsList = ({ cardsList }) => {
   const { t } = useTranslation();
@@ -28,10 +29,15 @@ const CardsList = ({ cardsList }) => {
       return <Link ref={ref} to={location} {...props} />
     });
 
-    const description = cardsList[cardId].from_alias
+    const command = cardsList[cardId].from_alias === 'play_from_reader' ? 'play_content' : cardsList[cardId].from_alias;
+
+    const description = command
       ? reject(
           isNil,
-          [cardsList[cardId].from_alias, cardsList[cardId].action.args]
+          [
+            t(`cards.controls.command-selector.commands.${command}`),
+            printObject(cardsList[cardId].action.args)
+          ]
         ).join(', ')
       : cardsList[cardId].func
 
