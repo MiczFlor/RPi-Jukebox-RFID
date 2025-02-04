@@ -112,7 +112,7 @@ def bt_switch(cmd, led_pin=None): # noqa C901
     # Rudimentary check if LED pin request is valid GPIO pin number
     if led_pin is not None:
         # detect GPIO
-        proc = subprocess.run(["gpiofind", led_pin], 
+        proc = subprocess.run(["gpiofind", led_pin],
                             shell=False, check=False,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         logger.debug(proc.stdout)
