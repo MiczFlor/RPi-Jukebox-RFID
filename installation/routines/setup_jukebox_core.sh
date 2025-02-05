@@ -21,6 +21,20 @@ _jukebox_core_install_os_dependencies() {
     --allow-change-held-packages
 }
 
+_jukebox_core_build_and_install_lgpio() {
+    local tmp_path="${HOME_PATH}/tmp"
+    local lg_filename="lg"
+    local lg_zip_filename="${lg_filename}.zip"
+
+    sudo apt-get -y install swig unzip python3-dev python3-setuptools
+    mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
+    download_from_url "http://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
+    unzip ${lg_zip_filename} || exit_on_error
+    cd "${lg_filename}" || exit_on_error
+    make && sudo make install
+    cd "${INSTALLATION_PATH}" && sudo rm -rf "${tmp_path}"
+}
+
 _jukebox_core_install_python_requirements() {
   print_lc "  Install Python requirements"
 
@@ -36,17 +50,7 @@ _jukebox_core_install_python_requirements() {
   # prepare lgpio build for bullseye as the binaries are broken
   local pip_install_options=""
   if [ "$(is_debian_version_at_least 12)" = false ]; then
-    local tmp_path="${HOME_PATH}/tmp"
-    local lg_filename="lg"
-    local lg_zip_filename="${lg_filename}.zip"
-
-    sudo apt-get -y install swig unzip
-    mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
-    wget --quiet http://abyz.me.uk/lg/${lg_zip_filename} || exit_on_error "Download failed"
-    unzip ${lg_zip_filename} || exit_on_error
-    cd "${lg_filename}" || exit_on_error
-    make && sudo make install
-    cd "${INSTALLATION_PATH}" && sudo rm -rf "${tmp_path}"
+    _jukebox_core_build_and_install_lgpio
     pip_install_options="--no-binary=lgpio"
   fi
 
