@@ -15,4 +15,7 @@ python3
 python3-venv
 python3-dev
 rsync
+swig #needed for lgpio build
+tar
+unzip
 wget
