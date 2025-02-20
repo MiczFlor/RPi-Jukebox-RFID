@@ -399,7 +399,7 @@ verify_optional_service_enablement() {
 #   1    : textfile to read
 get_args_from_file() {
     local package_file="$1"
-    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;).*//g' | xargs echo
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;|--).*//g' | xargs echo
 }
 
 # Check if all passed packages are installed. Fail on first missing.

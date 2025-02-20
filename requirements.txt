@@ -22,6 +22,8 @@ tornado
 
 # RPi's GPIO packages:
 # use shim to keep current RPi.GPIO behavior also under Bookworm - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
+swig # needed to build lgpio
+lgpio --no-binary=lgpio
 rpi-lgpio
 gpiozero
 
