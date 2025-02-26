@@ -20,12 +20,12 @@ const FolderListItem = ({
   registerMusicToCard,
 }) => {
   const { t } = useTranslation();
-  const { type, name, relpath } = folder;
+  const { type, name, path } = folder;
 
   const playItem = () => {
     switch(type) {
-      case 'directory': return request('play_folder', { folder: relpath, recursive: true });
-      case 'file': return request('play_single', { song_url: relpath });
+      case 'directory': return request('play_folder', { folder: path, recursive: true });
+      case 'file': return request('play_single', { song_url: path });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;
@@ -34,8 +34,8 @@ const FolderListItem = ({
 
   const registerItemToCard = () => {
     switch(type) {
-      case 'directory': return registerMusicToCard('play_folder', { folder: relpath, recursive: true });
-      case 'file': return registerMusicToCard('play_single', { song_url: relpath });
+      case 'directory': return registerMusicToCard('play_folder', { folder: path, recursive: true });
+      case 'file': return registerMusicToCard('play_single', { song_url: path });
       // TODO: Add missing Podcast
       // TODO: Add missing Stream
       default: return;
@@ -49,7 +49,7 @@ const FolderListItem = ({
         type === 'directory'
           ? <IconButton
               component={FolderLink}
-              data={{ dir: relpath }}
+              data={{ dir: path }}
               edge="end"
               aria-label={t('library.folders.show-folder-content')}
             >
