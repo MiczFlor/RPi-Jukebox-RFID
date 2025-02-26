@@ -48,7 +48,7 @@ class MPDBackend(BackendPlayer):
         # TODO: If connect fails on first try this is non recoverable
         self.connect()
         # Start the status listener in an endless loop in the event loop
-        # asyncio.run_coroutine_threadsafe(self._status_listener(), self.loop)
+        asyncio.run_coroutine_threadsafe(self._status_listener(), self.loop)
 
     # ------------------------------------------------------------------------------------------------------
     # Bring calls to client functions from the synchronous part into the async domain
