@@ -110,12 +110,12 @@ class IdleShutdownTimer:
 
 class IdleCheck:
     def __init__(self) -> None:
-        self.last_player_status = plugin.call('player', 'player_status', 'status')
+        self.last_player_status = plugin.call('player', 'playerstatus', 'status')
         logger.debug('Started IdleCheck with initial state: {}'.format(self.last_player_status))
 
     # Run function
     def __call__(self):
-        player_status = plugin.call('player', 'player_status', 'status')
+        player_status = plugin.call('player', 'playerstatus', 'status')
 
         if self.last_player_status == player_status:
             plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'start')
