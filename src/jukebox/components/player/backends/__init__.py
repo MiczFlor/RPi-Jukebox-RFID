@@ -7,6 +7,10 @@ class BackendPlayer(ABC):
     """
 
     @abstractmethod
+    def playerstatus(self):
+        pass
+    
+    @abstractmethod
     def next(self):
         pass
 
