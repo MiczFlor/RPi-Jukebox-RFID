@@ -103,7 +103,7 @@ class MPDBackend(BackendPlayer):
         return await self.client.status()
 
     @plugin.tag
-    def playerstatus(self):
+    def status(self):
         """Refresh the current MPD status (by a manual, sync trigger)"""
         # Example
         # Status: {'volume': '40', 'repeat': '0', 'random': '0', 'single': '0', 'consume': '0', 'partition': 'default',

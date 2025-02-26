@@ -5,10 +5,6 @@ class BackendPlayer(ABC):
     """
     Abstract Class to inherit, so that you can build a proper new Player
     """
-
-    @abstractmethod
-    def playerstatus(self):
-        pass
     
     @abstractmethod
     def next(self):
