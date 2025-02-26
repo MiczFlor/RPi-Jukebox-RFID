@@ -75,35 +75,41 @@ get_architecture() {
     echo $arch
 }
 
-is_raspbian() {
-    if [[ $( . /etc/os-release; printf '%s\n' "$ID"; ) == *"raspbian"* ]]; then
+is_debian_based() {
+    local os_release_id=$( . /etc/os-release; printf '%s\n' "$ID"; )
+    if [[ "$os_release_id" == *"raspbian"* ]] || [[ "$os_release_id" == *"debian"* ]]; then
         echo true
     else
         echo false
     fi
 }
 
-get_debian_version_number() {
-    source /etc/os-release
-    echo "$VERSION_ID"
+_get_debian_version_number() {
+    if [ "$(is_debian_based)" = true ]; then
+        local debian_version_number=$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )
+        echo "$debian_version_number"
+    else
+        echo "-1"
+    fi
+}
+
+is_debian_version_at_least() {
+    local expected_version=$1
+    local debian_version_number=$(_get_debian_version_number)
+
+    if [ "$debian_version_number" -ge "$expected_version" ]; then
+        echo true
+    else
+        echo false
+    fi
 }
 
 _get_boot_file_path() {
     local filename="$1"
-    if [ "$(is_raspbian)" = true ]; then
-        local debian_version_number=$(get_debian_version_number)
-
-        # Bullseye and lower
-        if [ "$debian_version_number" -le 11 ]; then
-            echo "/boot/${filename}"
-        # Bookworm and higher
-        elif [ "$debian_version_number" -ge 12 ]; then
-            echo "/boot/firmware/${filename}"
-        else
-            echo "unknown"
-        fi
+    if [ "$(is_debian_version_at_least 12)" = true ]; then
+        echo "/boot/firmware/${filename}"
     else
-        echo "unknown"
+        echo "/boot/${filename}"
     fi
 }
 
@@ -124,7 +130,7 @@ validate_url() {
 download_from_url() {
     local url=$1
     local output_filename=$2
-    wget --quiet ${url} -O ${output_filename} || exit_on_error "Download failed"
+    wget ${url} -O ${output_filename} || exit_on_error "Download failed"
     return $?
 }
 
@@ -393,7 +399,7 @@ verify_optional_service_enablement() {
 #   1    : textfile to read
 get_args_from_file() {
     local package_file="$1"
-    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<).*//g' | xargs echo
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;).*//g' | xargs echo
 }
 
 # Check if all passed packages are installed. Fail on first missing.
@@ -429,6 +435,25 @@ verify_pip_modules() {
     do
         if [[ ! $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
             exit_on_error "ERROR: ${module} is not installed"
+        fi
+    done
+    log "  CHECK"
+}
+
+# Check if all passed modules are not installed. Fail on first found.
+verify_pip_modules_not() {
+    local modules="$@"
+    log "  Verify modules are not installed: '${modules}'"
+
+    if [[ -z "${modules}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    local pip_list_installed=$(pip list 2>/dev/null)
+    for module in ${modules}
+    do
+        if [[ $(echo "${pip_list_installed}" | grep -i "^${module} ") ]]; then
+            exit_on_error "ERROR: ${module} is installed"
         fi
     done
     log "  CHECK"

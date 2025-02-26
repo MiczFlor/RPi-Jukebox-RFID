@@ -66,7 +66,7 @@ def _is_keyboard(device: evdev.InputDevice) -> bool:
         is_keyboard_res = mandatory_keys.issubset(device_key_list) and reserved_key.isdisjoint(device_key_list)
     except KeyError:
         is_keyboard_res = False
-    logger.debug(f"is_keyboard test for '{device.name}' at '{device.fn}' is '{is_keyboard_res}'")
+    logger.debug(f"is_keyboard test for '{device.name}' at '{device.path}' is '{is_keyboard_res}'")
     return is_keyboard_res
 
 
@@ -140,8 +140,6 @@ class ReaderClass(ReaderBaseClass):
                 raise KeyError("Mandatory key 'device_name' not given in configuration!")
             if 'device_phys' not in config:
                 self._logger.warning("Key 'device_phys' not given in configuration! Trying without...")
-            if 'key_capability' not in config:
-                self._logger.warning("Key 'key_capability' not given in configuration! Using default value: 'true'.")
             if 'name_is_unique' not in config:
                 self._logger.warning("Key 'name_is_unique' not given in configuration! Using default value: 'true'.")
             if 'key_check_is_unique' not in config:

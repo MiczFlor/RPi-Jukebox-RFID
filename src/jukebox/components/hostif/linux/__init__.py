@@ -10,26 +10,11 @@ import jukebox.cfghandler
 import jukebox.publishing
 import jukebox.speaking_text
 from jukebox.multitimer import GenericEndlessTimerClass
-import socket
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 # Get the main Thread Publisher
 publisher = jukebox.publishing.get_publisher()
-
-# This is a slightly dirty way of checking if we are on an RPi
-# JukeBox installs the dependency RPI which has no meaning on other machines
-# If it does not exist all is clear
-# It could still be installed, which results in a RuntimeError when loaded on a PC
-try:
-    import RPi.GPIO as gpio  # noqa: F401
-
-    IS_RPI = True
-except ModuleNotFoundError:
-    IS_RPI = False
-except RuntimeError as e:
-    logger.info(f"You don't seem to be on a PI, because loading 'RPi.GPIO' failed: {e.__class__.__name__}: {e}")
-    IS_RPI = False
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -302,12 +287,94 @@ def start_autohotspot():
         return 'not-installed'
 
 
+# ---------------------------------------------------------------------------
+# RPi-only stuff
+# ---------------------------------------------------------------------------
+THROTTLE_CODES = {
+    0x1: "under-voltage detected",
+    0x2: "ARM frequency capped",
+    0x4: "currently throttled",
+    0x8: "soft temperature limit active",
+    0x10000: "under-voltage has occurred",
+    0x20000: "ARM frequency capped has occurred",
+    0x40000: "throttling has occurred",
+    0x80000: "soft temperature limit has occurred"
+}
+
+
+def command_exists(command):
+    ret = shutil.which(command)
+    return ret is not None
+
+
+@plugin.register
+def hdmi_power_down():
+    """Power down HDMI circuits to save power if no display is connected
+
+    This must be done after every reboot"""
+    success = False
+    commandname = "tvservice"
+    if command_exists(commandname):
+        logger.info('Power down HDMI circuits')
+        ret = subprocess.run(['sudo', commandname, '-o'],
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+        if ret.returncode != 0:
+            logger.error(f"{ret.stdout}")
+        else:
+            success = True
+    else:
+        logger.info('Power down HDMI not available on this system')
+
+    return success
+
+
+def filter_throttle_codes(code):
+    for error, msg in THROTTLE_CODES.items():
+        if code & error > 0:
+            yield msg
+
+
+@plugin.register
+def get_throttled():
+    commandname = "vcgencmd"
+    if command_exists(commandname):
+        # https://www.raspberrypi.org/documentation/computers/os.html#get_throttled
+        ret = subprocess.run(['sudo', commandname, 'get_throttled'],
+                            stdout=subprocess.PIPE, check=False)
+        if ret.returncode != 0:
+            status_string = f"Error in subprocess with code: {ret.returncode}"
+            logger.error(status_string)
+        else:
+            try:
+                status_code = int(ret.stdout.decode().strip().split('0x')[1], base=16)
+            except Exception as e:
+                status_string = f"Error in interpreting return value: {e.__class__.__name__}: {e}"
+                logger.error(status_string)
+            else:
+                if status_code == 0:
+                    status_string = "All OK - not throttled"
+                else:
+                    # Decode the bit array after we have handled all the possible exceptions
+                    status_string = "Warning: " + ', '.join(filter_throttle_codes(status_code))
+    else:
+        logger.info('Throttled state not available on this system')
+        status_string = "Not available"
+
+    return status_string
+
+
+# ---------------------------------------------------------------------------
+# Init
+# ---------------------------------------------------------------------------
 @plugin.initialize
 def initialize():
     wlan_power = cfg.setndefault('host', 'wlan_power', 'disable_power_down', value=True)
     card = cfg.setndefault('host', 'wlan_power', 'card', value='wlan0')
     if wlan_power:
         wlan_disable_power_down(card)
+    hdmi_off = cfg.setndefault('host', 'rpi', 'hdmi_power_down', value=False)
+    if hdmi_off:
+        hdmi_power_down()
 
 
 @plugin.finalize
@@ -330,65 +397,3 @@ def atexit(**ignored_kwargs):
     global timer_temperature
     timer_temperature.cancel()
     return timer_temperature.timer_thread
-
-
-# ---------------------------------------------------------------------------
-# RPi-only stuff
-# ---------------------------------------------------------------------------
-if IS_RPI:  # noqa: C901
-
-    THROTTLE_CODES = {
-        0x1: "under-voltage detected",
-        0x2: "ARM frequency capped",
-        0x4: "currently throttled",
-        0x8: "soft temperature limit active",
-        0x10000: "under-voltage has occurred",
-        0x20000: "ARM frequency capped has occurred",
-        0x40000: "throttling has occurred",
-        0x80000: "soft temperature limit has occurred"
-    }
-
-    @plugin.register
-    def hdmi_power_down():
-        """Power down HDMI circuits to save power if no display is connected
-
-        This must be done after every reboot"""
-        logger.info('Power down HDMI circuits')
-        ret = subprocess.run(['sudo', '/usr/bin/tvservice', '-o'],
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
-        if ret.returncode != 0:
-            logger.error(f"{ret.stdout}")
-
-    def filter_throttle_codes(code):
-        for error, msg in THROTTLE_CODES.items():
-            if code & error > 0:
-                yield msg
-
-    @plugin.register
-    def get_throttled():
-        # https://www.raspberrypi.org/documentation/computers/os.html#get_throttled
-        ret = subprocess.run(['sudo', 'vcgencmd', 'get_throttled'],
-                             stdout=subprocess.PIPE, check=False)
-        if ret.returncode != 0:
-            status_string = f"Error in subprocess with code: {ret.returncode}"
-            logger.error(status_string)
-        else:
-            try:
-                status_code = int(ret.stdout.decode().strip().split('0x')[1], base=16)
-            except Exception as e:
-                status_string = f"Error in interpreting return value: {e.__class__.__name__}: {e}"
-                logger.error(status_string)
-            else:
-                if status_code == 0:
-                    status_string = "All OK - not throttled"
-                else:
-                    # Decode the bit array after we have handled all the possible exceptions
-                    status_string = "Warning: " + ', '.join(filter_throttle_codes(status_code))
-
-        return status_string
-
-    @plugin.initialize
-    def rpi_initialize():
-        hdmi_off = cfg.setndefault('host', 'rpi', 'hdmi_power_down', value=False)
-        if hdmi_off:
-            hdmi_power_down()

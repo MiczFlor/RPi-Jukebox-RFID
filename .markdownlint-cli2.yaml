@@ -32,6 +32,7 @@ globs:
 ignores:
   - "documentation/developers/docstring/*"
   - "src/**"
+  - "LICENSE"
 
 # Use a plugin to recognize math
 #markdownItPlugins:

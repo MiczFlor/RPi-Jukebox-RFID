@@ -16,7 +16,7 @@ import { SwitchWithLoader } from '../general';
 
 import request from '../../utils/request';
 
-const helpUrl = 'https://rpi-jukebox-rfid.readthedocs.io/en/latest/userguide/autohotspot.html';
+const helpUrl = 'https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/builders/autohotspot.md';
 
 const SettingsAutoHotpot = () => {
   const { t } = useTranslation();

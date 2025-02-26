@@ -230,6 +230,21 @@ would be of course useful to get rid of them, but currently we make a
 trade-off between a development environment and solving the specific
 details.
 
+### Error when local libzmq Dockerfile has not been built:
+
+``` bash
+------
+ > [jukebox internal] load metadata for docker.io/library/libzmq:local:
+------
+failed to solve: libzmq:local: pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
+```
+
+Build libzmq for your host machine
+
+``` bash
+docker build -f docker/Dockerfile.libzmq -t libzmq:local .
+```
+
 ### `mpd` container
 
 #### Pulseaudio issue on Mac
@@ -286,7 +301,7 @@ Error starting userland proxy: listen tcp4 0.0.0.0:6600: bind: address already i
 
 Read these threads for details: [thread 1](https://unix.stackexchange.com/questions/456909/socket-already-in-use-but-is-not-listed-mpd) and [thread 2](https://stackoverflow.com/questions/5106674/error-address-already-in-use-while-binding-socket-with-address-but-the-port-num/5106755#5106755)
 
-#### Other error messages
+#### MPD issues
 
 When starting the `mpd` container, you will see the following errors.
 You can ignore them, MPD will run.
@@ -309,7 +324,7 @@ mpd | alsa_mixer: snd_mixer_handle_events() failed: Input/output error
 mpd | exception: Failed to read mixer for 'My ALSA Device': snd_mixer_handle_events() failed: Input/output error
 ```
 
-### `jukebox` container
+#### `jukebox` container
 
 Many features of the Phoniebox are based on the Raspberry Pi hardware.
 This hardware can\'t be mocked in a virtual Docker environment. As a

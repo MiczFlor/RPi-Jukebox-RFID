@@ -1,6 +1,4 @@
 # RC522 related requirements
 # You need to install these with `python -m pip install --upgrade --force-reinstall -q -r requirements.txt`
 
-pi-rc522==2.3.0
-
-
+git+https://github.com/hoffie/pi-rc522-gpiozero@1dc878c

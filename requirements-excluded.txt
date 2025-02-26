@@ -1,0 +1,9 @@
+# Remove excluded libs, if installed
+# Libraries which must be excluded. These must be removed with
+# You need to uninstall these with `python -m pip uninstall -y -r requirements.txt`
+
+# RPi.GPIO uses direct /sys/class/gpio/ access, which is removed since kernel 6.6 (bookworm)
+# see also
+# - https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
+# - https://github.com/MiczFlor/RPi-Jukebox-RFID/discussions/2295
+RPi.GPIO
