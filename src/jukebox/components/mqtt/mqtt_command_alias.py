@@ -113,7 +113,7 @@ _player_cmds = {
     },
     Mqtt_Commands.PLAY_SINGLE.value: {
         "rpc": "play_single",
-        "kwargs": json.loads,  # kwargs: song_url
+        "kwargs": json.loads,  # kwargs: uri
     },
     Mqtt_Commands.PAUSE.value: {"rpc": "pause"},
     Mqtt_Commands.NEXT_SONG.value: {"rpc": "next_song"},

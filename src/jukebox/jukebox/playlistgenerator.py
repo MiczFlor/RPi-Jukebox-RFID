@@ -279,7 +279,7 @@ class PlaylistCollector:
         else:
             logger.debug(f"Playlist Content: {content}")
             for m in content:
-                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'path': m.uri})
+                self.playlist.append({'type': TYPE_DECODE[m.filetype], 'name': m.name, 'uri': m.uri})
 
     def _parse_nonrecusive(self, path='.'):
         return [x.uri for x in self._get_directory_content(path) if x.filetype != TYPE_DIR]

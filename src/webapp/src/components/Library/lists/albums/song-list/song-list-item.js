@@ -26,11 +26,11 @@ const SongListItem = ({
   } = song;
 
   const playSingle = () => {
-    request(command, { song_url: file })
+    request(command, { uri: file })
   }
 
   const registerSongToCard = () => (
-    registerMusicToCard(command, { song_url: file })
+    registerMusicToCard(command, { uri: file })
   );
 
   return (

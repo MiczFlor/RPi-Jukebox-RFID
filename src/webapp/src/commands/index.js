@@ -63,7 +63,7 @@ const commands = {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_single',
-    argKeys: ['song_url']
+    argKeys: ['uri']
   },
   // ToDo: verify if this is really needed?
   play_folder: {
