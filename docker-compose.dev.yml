@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  phoniebox-dev:
+    build:
+      context: .
+      dockerfile: ci/Dockerfile.debian
+    ports:
+      - "8080:80"  # Web interface
+      - "6600:6600"  # MPD
+      - "6680:6680"  # Mopidy (if using Spotify)
+    volumes:
+      - ./htdocs:/var/www/html
+      - ./scripts:/home/pi/RPi-Jukebox-RFID/scripts
+      - ./settings:/home/pi/RPi-Jukebox-RFID/settings
+      - ./shared:/home/pi/RPi-Jukebox-RFID/shared
+      - ./logs:/home/pi/RPi-Jukebox-RFID/logs
+    environment:
+      - DEBUG=true
+    command: >
+      bash -c "
+        # Start required services
+        service lighttpd start
+        service mpd start
+        # Keep container running
+        tail -f /dev/null
+      " 

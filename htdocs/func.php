@@ -181,6 +181,146 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
         .panel-heading a.btn-panel-big {
             cursor: pointer;
         }
+        
+        /* Alarm day buttons styling */
+        .day-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50% !important;
+            margin: 1px;
+            padding: 0;
+            line-height: 33px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid #ddd;
+        }
+        
+        .day-btn.active,
+        .day-btn.btn-primary {
+            background-color: #337ab7;
+            border-color: #337ab7;
+            color: white;
+        }
+        
+        .day-btn:hover {
+            border-color: #337ab7;
+        }
+        
+        .day-btn input[type=\"checkbox\"] {
+            display: none;
+        }
+        
+        /* Alarm form styling */
+        .alarm-time-group {
+            margin-bottom: 15px;
+        }
+        
+        .alarm-sound-group {
+            margin-bottom: 15px;
+        }
+        
+        .alarm-recurrence-group {
+            margin-bottom: 20px;
+        }
+        
+        /* Alarm table styling */
+        .alarm-table th {
+            background-color: #464545;
+            color: white;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+        
+        .alarm-table td {
+            vertical-align: middle;
+            padding: 12px 8px;
+        }
+        
+        .alarm-table .btn {
+            vertical-align: middle;
+        }
+        
+        /* Specific cell styling for proper vertical centering */
+        .alarm-time-cell {
+            vertical-align: middle !important;
+        }
+        
+        .alarm-time-cell strong {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1.2;
+        }
+        
+        .alarm-sound-cell {
+            vertical-align: middle !important;
+        }
+        
+        .alarm-sound-cell code {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1.2;
+            background-color: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .alarm-days-cell {
+            vertical-align: middle !important;
+        }
+        
+        .alarm-status-cell {
+            vertical-align: middle !important;
+        }
+        
+        .alarm-status-cell .label {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1.2;
+        }
+        
+        .alarm-actions {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        
+        .alarm-actions .btn {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        
+        /* Time dropdown styling */
+        .alarm-time-select {
+            min-width: 60px !important;
+            width: auto !important;
+        }
+        
+        /* Button spacing */
+        .alarm-form-buttons .btn {
+            margin-right: 10px;
+        }
+        
+        /* Icon-only buttons */
+        .icon-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .icon-btn:hover {
+            color: #333;
+        }
+        
+        .icon-btn.edit:hover {
+            color: #337ab7;
+        }
+        
+        .icon-btn.delete:hover {
+            color: #d9534f;
+        }
         </style>
 
     </head>\n";

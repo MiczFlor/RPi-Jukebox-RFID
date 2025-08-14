@@ -57,6 +57,9 @@ if($debug == "true") {
         <a href="#secondSwipe" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
         </a> |
+        <a href="#alarms" class="xbtn xbtn-default ">
+        <i class='mdi mdi-alarm'></i> <?php print $lang['globalAlarms']; ?>
+        </a> |
         <a href="#DebugLogSettings" class="xbtn xbtn-default ">
         <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogSettings']; ?>
         </a>
@@ -78,6 +81,149 @@ if($debug == "true") {
                 <a href="cardRegisterNew.php" class="btn btn-primary btn">
                 <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRegisterCard']; ?>
                 </a>
+          </div><!-- / .col-lg-12 -->
+        </div><!-- /.row -->
+      </div><!-- /.panel-body -->
+
+    </div><!-- /.panel -->
+</div><!-- /.panel-group -->
+
+<div class="panel-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title"><a name="alarms"></a>
+         <i class='mdi mdi-alarm'></i> <?php print $lang['globalAlarms']; ?>
+      </h4>
+    </div><!-- /.panel-heading -->
+
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <!-- Existing Alarms Display -->
+            <div id="existing-alarms">
+              <!-- Alarms will be loaded here via AJAX -->
+            </div>
+            
+            <!-- Add New Alarm Button -->
+            <div style="margin-top: 20px;">
+              <button id="show-add-alarm-form" class="btn btn-primary btn">
+                <i class='mdi mdi-plus'></i> <?php print $lang['globalAddAlarm']; ?>
+              </button>
+            </div>
+            
+            <!-- Add New Alarm Form (Hidden by default) -->
+            <div id="add-alarm-form" style="display: none; margin-top: 20px;">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h5 class="panel-title"><?php print $lang['globalAddAlarm']; ?></h5>
+                </div>
+                <div class="panel-body">
+                  <form id="alarm-form" method="post">
+                    <!-- Grid Headers -->
+                    <div class="row" style="margin-bottom: 15px;">
+                      <div class="col-md-3">
+                        <h5 style="margin: 0; color: white; font-weight: bold;">Time</h5>
+                      </div>
+                      <div class="col-md-3">
+                        <h5 style="margin: 0; color: white; font-weight: bold;">Sound</h5>
+                      </div>
+                      <div class="col-md-4">
+                        <h5 style="margin: 0; color: white; font-weight: bold;">Recurrence</h5>
+                      </div>
+                      <div class="col-md-2">
+                        <h5 style="margin: 0; color: white; font-weight: bold;">Volume</h5>
+                      </div>
+                    </div>
+                    
+                    <!-- Grid Content -->
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <div class="row">
+                            <div class="col-xs-4">
+                              <select id="alarm-hour" name="alarm-hour" class="form-control alarm-time-select">
+                                <?php for($i = 1; $i <= 12; $i++): ?>
+                                  <option value="<?php print $i; ?>"><?php print $i; ?></option>
+                                <?php endfor; ?>
+                              </select>
+                            </div>
+                            <div class="col-xs-4">
+                              <select id="alarm-minute" name="alarm-minute" class="form-control alarm-time-select">
+                                <?php for($i = 0; $i <= 59; $i++): ?>
+                                  <option value="<?php print str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php print str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
+                                <?php endfor; ?>
+                              </select>
+                            </div>
+                            <div class="col-xs-4">
+                              <select id="alarm-ampm" name="alarm-ampm" class="form-control alarm-time-select">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <div id="refresh_alarm_sound">
+                            <input id="alarm-sound" name="alarm-sound" placeholder="<?php print $lang['globalAlarmScanCard']; ?>" class="form-control input-md" type="text" readonly>
+                          </div>
+                          <span class="help-block"><?php print $lang['globalAlarmScanCard']; ?></span>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <div class="btn-group">
+                            <label class="btn btn-default day-btn" data-day="mon">
+                              <input type="checkbox" name="days[]" value="mon" autocomplete="off"> Mon
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="tue">
+                              <input type="checkbox" name="days[]" value="tue" autocomplete="off"> Tue
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="wed">
+                              <input type="checkbox" name="days[]" value="wed" autocomplete="off"> Wed
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="thu">
+                              <input type="checkbox" name="days[]" value="thu" autocomplete="off"> Thu
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="fri">
+                              <input type="checkbox" name="days[]" value="fri" autocomplete="off"> Fri
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="sat">
+                              <input type="checkbox" name="days[]" value="sat" autocomplete="off"> Sat
+                            </label>
+                            <label class="btn btn-default day-btn" data-day="sun">
+                              <input type="checkbox" name="days[]" value="sun" autocomplete="off"> Sun
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2">
+                        <div class="form-group">
+                          <select id="alarm-volume" name="alarm-volume" class="form-control">
+                            <?php for($i = 100; $i >= 5; $i -= 5): ?>
+                              <option value="<?php print $i; ?>"<?php if($i == 70) print ' selected'; ?>><?php print $i; ?>%</option>
+                            <?php endfor; ?>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Buttons Row -->
+                    <div class="row" style="margin-top: 20px;">
+                      <div class="col-md-12 alarm-form-buttons">
+                        <button type="submit" class="btn btn-success">
+                          <i class='mdi mdi-check'></i> Save
+                        </button>
+                        <button type="button" id="cancel-add-alarm" class="btn btn-default">
+                          <i class='mdi mdi-close'></i> Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div><!-- / .col-lg-12 -->
         </div><!-- /.row -->
       </div><!-- /.panel-body -->
@@ -265,5 +411,121 @@ include("inc.setSecondSwipePauseControls.php");
 
 </body>
 <script src="js/jukebox.js">
+</script>
+
+<script>
+$(document).ready(function() {
+    // Load existing alarms
+    $('#existing-alarms').load('ajax.load_alarms.php');
+    
+    // Initialize alarm sound field refresh
+    $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php');
+    var refreshAlarmSound = setInterval(function() {
+        $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php?' + 1*new Date());
+    }, 1000);
+    
+    // Show/hide add alarm form
+    $('#show-add-alarm-form').click(function() {
+        $('#add-alarm-form').show();
+        $(this).hide();
+    });
+    
+    // Cancel add alarm form
+    $('#cancel-add-alarm').click(function() {
+        $('#add-alarm-form').hide();
+        $('#show-add-alarm-form').show();
+        // Reset form
+        $('#alarm-form')[0].reset();
+        $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+    });
+    
+    // Handle day button toggles
+    $('.day-btn').click(function(e) {
+        e.preventDefault(); // Prevent any default behavior
+        
+        var $this = $(this);
+        var $checkbox = $this.find('input[type="checkbox"]');
+        
+        // Toggle the checkbox state
+        var newState = !$checkbox.prop('checked');
+        $checkbox.prop('checked', newState);
+        
+        // Update button styling based on new checkbox state
+        if (newState) {
+            $this.removeClass('btn-default').addClass('btn-primary active');
+        } else {
+            $this.removeClass('btn-primary active').addClass('btn-default');
+        }
+        
+        // Debug logging
+        console.log('Day button clicked:', $this.data('day'), 'New state:', newState);
+    });
+    
+    // Handle form submission
+    $('#alarm-form').submit(function(e) {
+        e.preventDefault();
+        
+        var formData = $(this).serialize();
+        var selectedDays = $('input[name="days[]"]:checked').map(function() {
+            return this.value;
+        }).get();
+        
+        if (selectedDays.length === 0) {
+            alert('Please select at least one day for the alarm to recur.');
+            return;
+        }
+        
+        // Here you would typically send the data to a PHP script to save the alarm
+        console.log('Alarm form submitted:', formData);
+        alert('Alarm added successfully! (This is a demo - actual saving would be implemented)');
+        
+        // Reset form and hide it
+        this.reset();
+        $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+        $('#add-alarm-form').hide();
+        $('#show-add-alarm-form').show();
+        
+        // Reload the alarms list
+        $('#existing-alarms').load('ajax.load_alarms.php');
+    });
+    
+    // Handle alarm actions (delegate to handle dynamically loaded content)
+    $(document).on('click', '.toggle-alarm', function() {
+        var alarmId = $(this).data('id');
+        var enabled = $(this).data('enabled');
+        
+        // Here you would typically send the data to a PHP script to update the alarm
+        console.log('Toggle alarm:', alarmId, 'enabled:', enabled);
+        alert('Alarm ' + (enabled ? 'disabled' : 'enabled') + ' successfully! (This is a demo)');
+        
+        // Reload the alarms list
+        $('#existing-alarms').load('ajax.load_alarms.php');
+    });
+    
+    $(document).on('click', '.edit-alarm', function() {
+        var alarmId = $(this).data('id');
+        
+        // Here you would typically load the alarm data and populate the form
+        console.log('Edit alarm:', alarmId);
+        alert('Edit functionality would be implemented here. (This is a demo)');
+        
+        // For now, just show the form
+        $('#add-alarm-form').show();
+        $('#show-add-alarm-form').hide();
+    });
+    
+    $(document).on('click', '.delete-alarm', function() {
+        var alarmId = $(this).data('id');
+        
+        if (confirm('Are you sure you want to delete this alarm?')) {
+            // Here you would typically send the data to a PHP script to delete the alarm
+            console.log('Delete alarm:', alarmId);
+            alert('Alarm deleted successfully! (This is a demo)');
+            
+            // Reload the alarms list
+            $('#existing-alarms').load('ajax.load_alarms.php');
+        }
+    });
+});
 </script>
 </html>

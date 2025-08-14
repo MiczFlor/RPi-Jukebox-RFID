@@ -70,6 +70,22 @@ $lang['globalLanguageSettings'] = "Language Settings";
 $lang['globalPriority'] = "Priority";
 $lang['globalEmail'] = "Email address";
 $lang['globalAudioSink'] = "Audio Devices";
+$lang['globalAlarms'] = "Alarms";
+$lang['globalAddAlarm'] = "Add New Alarm";
+$lang['globalAlarmTime'] = "Alarm Time";
+$lang['globalAlarmSound'] = "Alarm Sound";
+$lang['globalAlarmRecurrence'] = "Recurrence";
+$lang['globalAlarmDays'] = "Days of Week";
+$lang['globalAlarmHour'] = "Hour";
+$lang['globalAlarmMinute'] = "Minute";
+$lang['globalAlarmAMPM'] = "AM/PM";
+$lang['globalAlarmScanCard'] = "Scan RFID card to set alarm sound";
+$lang['globalAlarmVolume'] = "Alarm Volume";
+
+// Settings navigation
+$lang['settingsSecondSwipe'] = "Second Swipe";
+$lang['settingsWebInterface'] = "Web Interface";
+$lang['infoDebugLogSettings'] = "Debug Log Settings";
 
 // Player title HTML
 $lang['playerSeekBack'] = "seek back";

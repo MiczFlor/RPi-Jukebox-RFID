@@ -67,6 +67,22 @@ $lang['globalLoop'] = "Loop";
 $lang['globalLang'] = "Taal";
 $lang['globalLanguageSettings'] = "Taalinstellingen";
 $lang['globalAudioSink'] = "Audio Devices";
+$lang['globalAlarms'] = "Alarmen";
+$lang['globalAddAlarm'] = "Nieuw alarm toevoegen";
+$lang['globalAlarmTime'] = "Alarmtijd";
+$lang['globalAlarmSound'] = "Alarmgeluid";
+$lang['globalAlarmRecurrence'] = "Herhaling";
+$lang['globalAlarmDays'] = "Dagen van de week";
+$lang['globalAlarmHour'] = "Uur";
+$lang['globalAlarmMinute'] = "Minuut";
+$lang['globalAlarmAMPM'] = "AM/PM";
+$lang['globalAlarmScanCard'] = "Scan RFID-kaart om alarmgeluid in te stellen";
+$lang['globalAlarmVolume'] = "Alarmvolume";
+
+// Settings navigation
+$lang['settingsSecondSwipe'] = "Tweede veeg";
+$lang['settingsWebInterface'] = "Web Interface";
+$lang['infoDebugLogSettings'] = "Debug Log Instellingen";
 
 $lang['playerFilePlayed'] = "is gespeeld";
 $lang['playerFileAdded'] = "is toegevoegd aan de playlist";

@@ -70,6 +70,22 @@ $lang['globalLanguageSettings'] = "Spracheinstellungen";
 $lang['globalPriority'] = "Priorität";
 $lang['globalEmail'] = "Email address";
 $lang['globalAudioSink'] = "Audio Ausgabegeräte";
+$lang['globalAlarms'] = "Wecker";
+$lang['globalAddAlarm'] = "Neuen Wecker hinzufügen";
+$lang['globalAlarmTime'] = "Weckzeit";
+$lang['globalAlarmSound'] = "Weckton";
+$lang['globalAlarmRecurrence'] = "Wiederholung";
+$lang['globalAlarmDays'] = "Wochentage";
+$lang['globalAlarmHour'] = "Stunde";
+$lang['globalAlarmMinute'] = "Minute";
+$lang['globalAlarmAMPM'] = "AM/PM";
+$lang['globalAlarmScanCard'] = "RFID-Karte scannen, um Weckton einzustellen";
+$lang['globalAlarmVolume'] = "Wecklautstärke";
+
+// Settings navigation
+$lang['settingsSecondSwipe'] = "Erneute Aktivierung";
+$lang['settingsWebInterface'] = "Web-Interface";
+$lang['infoDebugLogSettings'] = "Debug-Protokoll-Einstellungen";
 
 // Player title HTML
 $lang['playerSeekBack'] = "Rückwärts spulen";
