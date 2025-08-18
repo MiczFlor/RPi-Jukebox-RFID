@@ -265,12 +265,6 @@ $sample_alarms = array(
 
 <script>
 $(document).ready(function() {
-    // Initialize alarm sound field refresh
-    $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php');
-    var refreshAlarmSound = setInterval(function() {
-        $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php?' + 1*new Date());
-    }, 1000);
-    
     // Handle day button toggles
     $('.day-btn').click(function() {
         var $this = $(this);

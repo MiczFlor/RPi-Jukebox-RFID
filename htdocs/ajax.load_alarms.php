@@ -1,29 +1,14 @@
 <?php
 include("config.php");
+include("inc.alarmManager.php");
 
-// Sample alarms data (in a real implementation, this would come from a database or file)
-$sample_alarms = array(
-    array(
-        'id' => 1,
-        'hour' => 7,
-        'minute' => 0,
-        'ampm' => 'AM',
-        'sound' => '1234567890',
-        'days' => array('mon', 'tue', 'wed', 'thu', 'fri'),
-        'enabled' => true
-    ),
-    array(
-        'id' => 2,
-        'hour' => 8,
-        'minute' => 30,
-        'ampm' => 'AM',
-        'sound' => '0987654321',
-        'days' => array('sat', 'sun'),
-        'enabled' => false
-    )
-);
+// Initialize the alarm manager
+$alarmManager = new AlarmManager();
 
-if (empty($sample_alarms)) {
+// Get all alarms from configuration files
+$alarms = $alarmManager->getAllAlarms();
+
+if (empty($alarms)) {
     print "<p class='text-muted'>No alarms configured yet.</p>";
 } else {
     print "<div class='table-responsive'>";
@@ -33,13 +18,14 @@ if (empty($sample_alarms)) {
     print "<th>Time</th>";
     print "<th>Sound</th>";
     print "<th>Days</th>";
+    print "<th>Volume</th>";
     print "<th>Status</th>";
     print "<th>Actions</th>";
     print "</tr>";
     print "</thead>";
     print "<tbody>";
     
-    foreach ($sample_alarms as $alarm) {
+    foreach ($alarms as $alarm) {
         print "<tr>";
         
         // Time column
@@ -65,6 +51,11 @@ if (empty($sample_alarms)) {
             }
         }
         print implode(', ', $display_days);
+        print "</td>";
+        
+        // Volume column
+        print "<td class='alarm-volume-cell'>";
+        print "<span class='volume-display'>" . $alarm['volume'] . "%</span>";
         print "</td>";
         
         // Status column

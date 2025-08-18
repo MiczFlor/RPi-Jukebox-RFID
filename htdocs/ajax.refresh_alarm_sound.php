@@ -14,7 +14,7 @@ if (file_exists($Audio_Folders_Path.'/'.$onlyID)) {
     $shortcutready = file_get_contents($Audio_Folders_Path.'/'.$onlyID, true);
 }
 
-// Display the RFID field
+// Display the RFID field with readonly attribute
 print "
           <input id=\"alarm-sound\" name=\"alarm-sound\" placeholder=\"".$lang['globalAlarmScanCard']."\" class=\"form-control input-md\" type=\"text\" value=\"".$onlyID."\" readonly>
 ";

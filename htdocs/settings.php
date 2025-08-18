@@ -30,6 +30,9 @@ if($debug == "true") {
         <a href="#RFID" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['globalRFIDCards']; ?>
         </a> |
+        <a href="#alarms" class="xbtn xbtn-default ">
+        <i class='mdi mdi-alarm'></i> <?php print $lang['globalAlarms']; ?>
+        </a> |
         <a href="#language" class="xbtn xbtn-default ">
         <i class='mdi mdi-emoticon'></i> <?php print $lang['globalLanguageSettings']; ?>
         </a> |
@@ -56,9 +59,6 @@ if($debug == "true") {
         </a>  |
         <a href="#secondSwipe" class="xbtn xbtn-default ">
         <i class='mdi mdi-cards-outline'></i> <?php print $lang['settingsSecondSwipe']; ?>
-        </a> |
-        <a href="#alarms" class="xbtn xbtn-default ">
-        <i class='mdi mdi-alarm'></i> <?php print $lang['globalAlarms']; ?>
         </a> |
         <a href="#DebugLogSettings" class="xbtn xbtn-default ">
         <i class='mdi mdi-text'></i> <?php print $lang['infoDebugLogSettings']; ?>
@@ -475,18 +475,31 @@ $(document).ready(function() {
             return;
         }
         
-        // Here you would typically send the data to a PHP script to save the alarm
-        console.log('Alarm form submitted:', formData);
-        alert('Alarm added successfully! (This is a demo - actual saving would be implemented)');
-        
-        // Reset form and hide it
-        this.reset();
-        $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
-        $('#add-alarm-form').hide();
-        $('#show-add-alarm-form').show();
-        
-        // Reload the alarms list
-        $('#existing-alarms').load('ajax.load_alarms.php');
+        // Send the data to save the alarm
+        $.ajax({
+            url: 'ajax.save_alarm.php',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Reset form and hide it
+                    $('#alarm-form')[0].reset();
+                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+                    $('#add-alarm-form').hide();
+                    $('#show-add-alarm-form').show();
+                    
+                    // Reload the alarms list to show the new alarm
+                    $('#existing-alarms').load('ajax.load_alarms.php');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                var response = JSON.parse(xhr.responseText);
+                alert('Error: ' + (response.message || 'Failed to save alarm'));
+            }
+        });
     });
     
     // Handle alarm actions (delegate to handle dynamically loaded content)
@@ -494,36 +507,155 @@ $(document).ready(function() {
         var alarmId = $(this).data('id');
         var enabled = $(this).data('enabled');
         
-        // Here you would typically send the data to a PHP script to update the alarm
-        console.log('Toggle alarm:', alarmId, 'enabled:', enabled);
-        alert('Alarm ' + (enabled ? 'disabled' : 'enabled') + ' successfully! (This is a demo)');
-        
-        // Reload the alarms list
-        $('#existing-alarms').load('ajax.load_alarms.php');
+        // Send the data to update the alarm
+        $.ajax({
+            url: 'ajax.update_alarm.php',
+            type: 'POST',
+            data: {
+                alarm_id: alarmId,
+                enabled: enabled ? '0' : '1'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    // Reload the alarms list
+                    $('#existing-alarms').load('ajax.load_alarms.php');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                var response = JSON.parse(xhr.responseText);
+                alert('Error: ' + (response.message || 'Failed to update alarm'));
+            }
+        });
     });
     
     $(document).on('click', '.edit-alarm', function() {
         var alarmId = $(this).data('id');
         
-        // Here you would typically load the alarm data and populate the form
-        console.log('Edit alarm:', alarmId);
-        alert('Edit functionality would be implemented here. (This is a demo)');
-        
-        // For now, just show the form
-        $('#add-alarm-form').show();
-        $('#show-add-alarm-form').hide();
+        // Load alarm data and populate the form
+        $.ajax({
+            url: 'ajax.load_alarm.php',
+            type: 'GET',
+            data: {
+                alarm_id: alarmId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    var alarm = response.alarm;
+                    
+                    // Populate the form with alarm data
+                    $('#alarm-hour').val(alarm.hour);
+                    // Ensure minute is properly formatted to match select option values
+                    $('#alarm-minute').val(String(alarm.minute).padStart(2, '0'));
+                    $('#alarm-ampm').val(alarm.ampm);
+                    $('#alarm-sound').val(alarm.sound);
+                    $('#alarm-volume').val(alarm.volume);
+                    
+                    // Reset and set day buttons
+                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+                    $('input[name="days[]"]').prop('checked', false);
+                    
+                    alarm.days.forEach(function(day) {
+                        $('input[name="days[]"][value="' + day + '"]').prop('checked', true);
+                        $('.day-btn[data-day="' + day + '"]').removeClass('btn-default').addClass('btn-primary active');
+                    });
+                    
+                    // Add hidden field for alarm ID and change form action
+                    if (!$('#alarm-id').length) {
+                        $('#alarm-form').append('<input type="hidden" id="alarm-id" name="alarm_id" value="' + alarmId + '">');
+                    } else {
+                        $('#alarm-id').val(alarmId);
+                    }
+                    
+                    // Change form submission to update instead of create
+                    $('#alarm-form').off('submit').on('submit', function(e) {
+                        e.preventDefault();
+                        
+                        var formData = $(this).serialize();
+                        var selectedDays = $('input[name="days[]"]:checked').map(function() {
+                            return this.value;
+                        }).get();
+                        
+                        if (selectedDays.length === 0) {
+                            alert('Please select at least one day for the alarm to recur.');
+                            return;
+                        }
+                        
+                        // Send the data to update the alarm
+                        $.ajax({
+                            url: 'ajax.update_alarm.php',
+                            type: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success) {
+                                    // Reset form and hide it
+                                    $('#alarm-form')[0].reset();
+                                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+                                    $('#add-alarm-form').hide();
+                                    $('#show-add-alarm-form').show();
+                                    
+                                    // Remove hidden field and restore original form submission
+                                    $('#alarm-id').remove();
+                                    $('#alarm-form').off('submit').on('submit', function(e) {
+                                        // Re-attach the original submit handler
+                                        $('#alarm-form').trigger('submit');
+                                    });
+                                    
+                                    // Reload the alarms list
+                                    $('#existing-alarms').load('ajax.load_alarms.php');
+                                } else {
+                                    alert('Error: ' + response.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                var response = JSON.parse(xhr.responseText);
+                                alert('Error: ' + (response.message || 'Failed to update alarm'));
+                            }
+                        });
+                    });
+                    
+                    // Show the form
+                    $('#add-alarm-form').show();
+                    $('#show-add-alarm-form').hide();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error loading alarm data');
+            }
+        });
     });
     
     $(document).on('click', '.delete-alarm', function() {
         var alarmId = $(this).data('id');
         
         if (confirm('Are you sure you want to delete this alarm?')) {
-            // Here you would typically send the data to a PHP script to delete the alarm
-            console.log('Delete alarm:', alarmId);
-            alert('Alarm deleted successfully! (This is a demo)');
-            
-            // Reload the alarms list
-            $('#existing-alarms').load('ajax.load_alarms.php');
+            // Send the data to delete the alarm
+            $.ajax({
+                url: 'ajax.delete_alarm.php',
+                type: 'POST',
+                data: {
+                    alarm_id: alarmId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        // Reload the alarms list
+                        $('#existing-alarms').load('ajax.load_alarms.php');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    var response = JSON.parse(xhr.responseText);
+                    alert('Error: ' + (response.message || 'Failed to delete alarm'));
+                }
+            });
         }
     });
 });

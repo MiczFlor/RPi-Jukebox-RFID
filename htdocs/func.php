@@ -269,6 +269,18 @@ function html_bootstrap3_createHeader($lang="en",$title="Welcome",$url_absolute=
             vertical-align: middle !important;
         }
         
+        .alarm-volume-cell {
+            vertical-align: middle !important;
+        }
+        
+        .alarm-volume-cell .volume-display {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1.2;
+            font-weight: bold;
+            color: white;
+        }
+        
         .alarm-status-cell {
             vertical-align: middle !important;
         }
