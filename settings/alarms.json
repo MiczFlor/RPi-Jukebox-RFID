@@ -1,0 +1,42 @@
+{
+    "version": "1.0",
+    "alarms": [
+        {
+            "id": "8",
+            "hour": 7,
+            "minute": 7,
+            "ampm": "AM",
+            "sound": "123",
+            "days": [
+                "tue",
+                "thu"
+            ],
+            "volume": 25,
+            "enabled": true
+        },
+        {
+            "id": "9",
+            "hour": 1,
+            "minute": 0,
+            "ampm": "AM",
+            "sound": "12345",
+            "days": [
+                "wed"
+            ],
+            "volume": 70,
+            "enabled": true
+        },
+        {
+            "id": "10",
+            "hour": 1,
+            "minute": 0,
+            "ampm": "AM",
+            "sound": "2345",
+            "days": [
+                "tue"
+            ],
+            "volume": 70,
+            "enabled": true
+        }
+    ]
+}
