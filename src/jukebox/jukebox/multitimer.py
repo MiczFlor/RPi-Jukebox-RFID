@@ -415,8 +415,7 @@ class GenericMultiTimerClass(GenericTimerClass):
             self._iterations = iterations
 
         def create_callback():
-            instance = self._callee(*self.class_args, iterations=self._iterations,
-                                  **self.class_kwargs)
+            instance = self._callee(*self.class_args, **self.class_kwargs)
             return lambda iteration, *args, **kwargs: instance(*args,
                                                              iteration=iteration,
                                                              **kwargs)
