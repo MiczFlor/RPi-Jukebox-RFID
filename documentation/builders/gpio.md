@@ -377,7 +377,9 @@ output_devices:
     type: RGBLED
     connect: gpio.gpioz.plugin.connectivity.register_volume_rgbled_callback
     kwargs:
-      pin: 18
+      red: 18
+      green: 13
+      blue: 19
 ```
 
 ### Bluetooth audio output LED
