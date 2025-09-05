@@ -506,6 +506,7 @@ include("inc.setSecondSwipePauseControls.php");
 .alarm-table td {
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle !important;
 }
 
 /* Percentage-based column widths with min-width constraints */
@@ -515,13 +516,13 @@ include("inc.setSecondSwipePauseControls.php");
 }
 
 .alarm-table .alarm-sound-cell {
-    width: 15%;
+    width: 20%;
     min-width: 120px;
 }
 
 .alarm-table .alarm-days-cell {
-    width: 35%;
-    min-width: 275px;
+    width: 30%;
+    min-width: 295px;
 }
 
 .alarm-table .alarm-volume-cell {
