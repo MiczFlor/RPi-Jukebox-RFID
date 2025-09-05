@@ -2,35 +2,39 @@
     "version": "1.0",
     "alarms": [
         {
-            "hour": 7,
-            "minute": 7,
+            "hour": 11,
+            "minute": 11,
             "ampm": "AM",
             "sound": "123",
             "days": [
-                "tue",
-                "thu",
-                "sun"
+                "fri"
             ],
-            "volume": 100,
+            "volume": 80,
             "enabled": true,
             "id": "8"
         },
         {
-            "id": "9",
-            "hour": 1,
-            "minute": 0,
+            "hour": 6,
+            "minute": 6,
             "ampm": "AM",
             "sound": "12345",
             "days": [
-                "wed"
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri",
+                "sat",
+                "sun"
             ],
-            "volume": 70,
-            "enabled": true
+            "volume": 20,
+            "enabled": true,
+            "id": "9"
         },
         {
-            "hour": 1,
-            "minute": 0,
-            "ampm": "AM",
+            "hour": 7,
+            "minute": 7,
+            "ampm": "PM",
             "sound": "2345",
             "days": [
                 "mon",
@@ -41,7 +45,7 @@
                 "sat",
                 "sun"
             ],
-            "volume": 50,
+            "volume": 20,
             "enabled": true,
             "id": "10"
         }
