@@ -2,17 +2,18 @@
     "version": "1.0",
     "alarms": [
         {
-            "id": "8",
             "hour": 7,
             "minute": 7,
             "ampm": "AM",
             "sound": "123",
             "days": [
                 "tue",
-                "thu"
+                "thu",
+                "sun"
             ],
-            "volume": 25,
-            "enabled": true
+            "volume": 100,
+            "enabled": true,
+            "id": "8"
         },
         {
             "id": "9",
@@ -27,16 +28,22 @@
             "enabled": true
         },
         {
-            "id": "10",
             "hour": 1,
             "minute": 0,
             "ampm": "AM",
             "sound": "2345",
             "days": [
-                "tue"
+                "mon",
+                "tue",
+                "wed",
+                "thu",
+                "fri",
+                "sat",
+                "sun"
             ],
-            "volume": 70,
-            "enabled": true
+            "volume": 50,
+            "enabled": true,
+            "id": "10"
         }
     ]
 }

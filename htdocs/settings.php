@@ -106,122 +106,92 @@ if($debug == "true") {
             
             <!-- Add New Alarm Button -->
             <div style="margin-top: 20px;">
-              <button id="show-add-alarm-form" class="btn btn-primary btn">
+              <button id="show-new-alarm-table" class="btn btn-primary btn">
                 <i class='mdi mdi-plus'></i> <?php print $lang['globalAddAlarm']; ?>
               </button>
             </div>
             
-            <!-- Add New Alarm Form (Hidden by default) -->
-            <div id="add-alarm-form" style="display: none; margin-top: 20px;">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h5 class="panel-title"><?php print $lang['globalAddAlarm']; ?></h5>
-                </div>
-                <div class="panel-body">
-                  <form id="alarm-form" method="post">
-                    <!-- Grid Headers -->
-                    <div class="row" style="margin-bottom: 15px;">
-                      <div class="col-md-3">
-                        <h5 style="margin: 0; color: white; font-weight: bold;">Time</h5>
-                      </div>
-                      <div class="col-md-3">
-                        <h5 style="margin: 0; color: white; font-weight: bold;">Sound</h5>
-                      </div>
-                      <div class="col-md-4">
-                        <h5 style="margin: 0; color: white; font-weight: bold;">Recurrence</h5>
-                      </div>
-                      <div class="col-md-2">
-                        <h5 style="margin: 0; color: white; font-weight: bold;">Volume</h5>
-                      </div>
-                    </div>
-                    
-                    <!-- Grid Content -->
-                    <div class="row">
-                      <div class="col-md-3">
-                        <div class="form-group">
+            <!-- New Alarm Table -->
+            <div id="new-alarm-table-container" style="margin-top: 20px; display: none;">
+              <div class="table-responsive">
+                <table class="table table-striped alarm-table">
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Sound</th>
+                      <th>Days</th>
+                      <th>Volume</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr id="new-alarm-row">
+                      <td class="alarm-time-cell">
+                        <div class="alarm-time-group">
                           <div class="row">
                             <div class="col-xs-4">
-                              <select id="alarm-hour" name="alarm-hour" class="form-control alarm-time-select">
+                              <select class="form-control input-sm new-hour">
                                 <?php for($i = 1; $i <= 12; $i++): ?>
-                                  <option value="<?php print $i; ?>"><?php print $i; ?></option>
+                                  <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
                                 <?php endfor; ?>
                               </select>
                             </div>
                             <div class="col-xs-4">
-                              <select id="alarm-minute" name="alarm-minute" class="form-control alarm-time-select">
+                              <select class="form-control input-sm new-minute">
                                 <?php for($i = 0; $i <= 59; $i++): ?>
-                                  <option value="<?php print str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php print str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
+                                  <option value="<?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?>"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></option>
                                 <?php endfor; ?>
                               </select>
                             </div>
                             <div class="col-xs-4">
-                              <select id="alarm-ampm" name="alarm-ampm" class="form-control alarm-time-select">
+                              <select class="form-control input-sm new-ampm">
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                               </select>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <div id="refresh_alarm_sound">
-                            <input id="alarm-sound" name="alarm-sound" placeholder="<?php print $lang['globalAlarmScanCard']; ?>" class="form-control input-md" type="text" readonly>
-                          </div>
-                          <span class="help-block"><?php print $lang['globalAlarmScanCard']; ?></span>
+                      </td>
+                      
+                      <td class="alarm-sound-cell">
+                        <div id="refresh_alarm_sound"></div>
+                      </td>
+                      
+                      <td class="alarm-days-cell">
+                        <div class="alarm-recurrence-group">
+                          <?php 
+                          $days = array('mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun');
+                          $day_names = array(
+                            'mon' => 'Mon', 'tue' => 'Tue', 'wed' => 'Wed', 
+                            'thu' => 'Thu', 'fri' => 'Fri', 'sat' => 'Sat', 'sun' => 'Sun'
+                          );
+                          foreach ($days as $day): ?>
+                            <label class="btn btn-default day-btn new-day-btn" data-day="<?php echo $day; ?>">
+                              <input type="checkbox" class="new-day-checkbox" value="<?php echo $day; ?>" autocomplete="off"> <?php echo $day_names[$day]; ?>
+                            </label>
+                          <?php endforeach; ?>
                         </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group">
-                          <div class="btn-group">
-                            <label class="btn btn-default day-btn" data-day="mon">
-                              <input type="checkbox" name="days[]" value="mon" autocomplete="off"> Mon
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="tue">
-                              <input type="checkbox" name="days[]" value="tue" autocomplete="off"> Tue
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="wed">
-                              <input type="checkbox" name="days[]" value="wed" autocomplete="off"> Wed
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="thu">
-                              <input type="checkbox" name="days[]" value="thu" autocomplete="off"> Thu
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="fri">
-                              <input type="checkbox" name="days[]" value="fri" autocomplete="off"> Fri
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="sat">
-                              <input type="checkbox" name="days[]" value="sat" autocomplete="off"> Sat
-                            </label>
-                            <label class="btn btn-default day-btn" data-day="sun">
-                              <input type="checkbox" name="days[]" value="sun" autocomplete="off"> Sun
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-2">
-                        <div class="form-group">
-                          <select id="alarm-volume" name="alarm-volume" class="form-control">
-                            <?php for($i = 100; $i >= 5; $i -= 5): ?>
-                              <option value="<?php print $i; ?>"<?php if($i == 70) print ' selected'; ?>><?php print $i; ?>%</option>
-                            <?php endfor; ?>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Buttons Row -->
-                    <div class="row" style="margin-top: 20px;">
-                      <div class="col-md-12 alarm-form-buttons">
-                        <button type="submit" class="btn btn-success">
-                          <i class='mdi mdi-check'></i> Save
+                      </td>
+                      
+                      <td class="alarm-volume-cell">
+                        <select class="form-control input-sm new-volume">
+                          <?php for($i = 100; $i >= 5; $i -= 5): ?>
+                            <option value="<?php echo $i; ?>" <?php echo ($i == 70) ? 'selected' : ''; ?>><?php echo $i; ?>%</option>
+                          <?php endfor; ?>
+                        </select>
+                      </td>
+                      
+                      <td class="alarm-actions">
+                        <button class="btn btn-sm btn-success save-new-alarm" title="Save New Alarm">
+                          <i class="mdi mdi-check"></i> Save
                         </button>
-                        <button type="button" id="cancel-add-alarm" class="btn btn-default">
-                          <i class='mdi mdi-close'></i> Cancel
+                        <button class="btn btn-sm btn-default cancel-new-alarm" title="Cancel">
+                          <i class="mdi mdi-close"></i> Cancel
                         </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div><!-- / .col-lg-12 -->
@@ -409,6 +379,183 @@ include("inc.setSecondSwipePauseControls.php");
 
 </div><!-- /.container -->
 
+<style>
+/* Inline editing styles - preserve existing styling */
+.alarm-edit {
+    margin: 0;
+}
+
+.alarm-edit .form-control {
+    margin-bottom: 0;
+}
+
+/* Smooth transitions */
+.alarm-display, .alarm-edit {
+    transition: opacity 0.2s ease;
+}
+
+/* Ensure edit mode doesn't interfere with Bootstrap table styling */
+.alarm-edit {
+    background-color: transparent !important;
+}
+
+/* Preserve Bootstrap table striping */
+.alarm-table tbody tr {
+    background-color: inherit !important;
+}
+
+/* Make sure edit controls are properly sized */
+.alarm-edit select,
+.alarm-edit input {
+    height: 30px;
+    padding: 5px 8px;
+}
+
+/* Preserve existing day button styling from func.php */
+.alarm-edit .day-btn,
+.new-day-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50% !important;
+    margin: 1px;
+    padding: 0;
+    line-height: 33px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+    border: 2px solid #ddd;
+}
+
+.alarm-edit .day-btn.active,
+.alarm-edit .day-btn.btn-primary,
+.new-day-btn.active,
+.new-day-btn.btn-primary {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    color: white;
+}
+
+.alarm-edit .day-btn:hover,
+.new-day-btn:hover {
+    border-color: #337ab7;
+}
+
+.alarm-edit .day-btn input[type="checkbox"],
+.new-day-btn input[type="checkbox"] {
+    display: none;
+}
+
+/* Make inline editing more compact */
+.alarm-edit .alarm-time-group,
+.alarm-edit .alarm-recurrence-group {
+    margin-bottom: 0;
+}
+
+/* Compact time selector styling with proper spacing */
+.alarm-time-group .row {
+    margin-left: -2.5px;
+    margin-right: -2.5px;
+    min-width: 165px;
+}
+
+.alarm-time-group .col-xs-4 {
+    padding-left: 2.5px;
+    padding-right: 2.5px;
+    width: 55px;
+}
+
+.alarm-time-group .form-control {
+    width: 100%;
+    min-width: 48px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+/* Volume selector styling */
+.alarm-volume-cell .form-control {
+    width: 70px;
+    min-width: 70px;
+}
+
+.alarm-edit .form-control {
+    height: 28px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+/* New alarm row styling */
+#refresh_alarm_sound {
+    max-width: 120px;
+}
+
+#refresh_alarm_sound .form-control {
+    width: 100%;
+    height: 28px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+
+/* Old fixed-width rules removed - now using percentage-based widths above */
+
+/* Table layout with percentage-based widths */
+.alarm-table {
+    table-layout: auto;
+    width: 100%;
+}
+
+.alarm-table td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Percentage-based column widths with min-width constraints */
+.alarm-table .alarm-time-cell {
+    width: 20%;
+    min-width: 165px;
+}
+
+.alarm-table .alarm-sound-cell {
+    width: 15%;
+    min-width: 120px;
+}
+
+.alarm-table .alarm-days-cell {
+    width: 35%;
+    min-width: 275px;
+}
+
+.alarm-table .alarm-volume-cell {
+    width: 8%;
+    min-width: 65px;
+}
+
+.alarm-table .alarm-status-cell {
+    width: 10%;
+    min-width: 80px;
+}
+
+.alarm-table .alarm-actions {
+    width: 12%;
+    min-width: 120px;
+}
+
+/* New alarm table specific styling */
+#new-alarm-table-container {
+    width: 100%;
+}
+
+#new-alarm-table-container .table-responsive {
+    width: 100%;
+}
+
+#new-alarm-table-container .alarm-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* New alarm table uses the same percentage-based widths as existing alarms */
+</style>
+
 </body>
 <script src="js/jukebox.js">
 </script>
@@ -418,55 +565,34 @@ $(document).ready(function() {
     // Load existing alarms
     $('#existing-alarms').load('ajax.load_alarms.php');
     
-    // Initialize alarm sound field refresh
+    // Initialize alarm sound field refresh for new alarm row (same pattern as Register New Card)
     $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php');
-    var refreshAlarmSound = setInterval(function() {
+    var refreshNewAlarmSound = setInterval(function() {
         $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php?' + 1*new Date());
     }, 1000);
     
-    // Show/hide add alarm form
-    $('#show-add-alarm-form').click(function() {
-        $('#add-alarm-form').show();
+    // Show/hide new alarm table
+    $('#show-new-alarm-table').click(function() {
+        $('#new-alarm-table-container').show();
         $(this).hide();
     });
     
-    // Cancel add alarm form
-    $('#cancel-add-alarm').click(function() {
-        $('#add-alarm-form').hide();
-        $('#show-add-alarm-form').show();
-        // Reset form
-        $('#alarm-form')[0].reset();
-        $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
+    // Cancel new alarm
+    $(document).on('click', '.cancel-new-alarm', function() {
+        $('#new-alarm-table-container').hide();
+        $('#show-new-alarm-table').show();
+        // Reset new alarm row
+        $('.new-hour').val('1');
+        $('.new-minute').val('00');
+        $('.new-ampm').val('AM');
+        $('.new-volume').val('70');
+        $('.new-day-checkbox').prop('checked', false);
+        $('.new-day-btn').removeClass('btn-primary active').addClass('btn-default');
     });
     
-    // Handle day button toggles
-    $('.day-btn').click(function(e) {
-        e.preventDefault(); // Prevent any default behavior
-        
-        var $this = $(this);
-        var $checkbox = $this.find('input[type="checkbox"]');
-        
-        // Toggle the checkbox state
-        var newState = !$checkbox.prop('checked');
-        $checkbox.prop('checked', newState);
-        
-        // Update button styling based on new checkbox state
-        if (newState) {
-            $this.removeClass('btn-default').addClass('btn-primary active');
-        } else {
-            $this.removeClass('btn-primary active').addClass('btn-default');
-        }
-        
-        // Debug logging
-        console.log('Day button clicked:', $this.data('day'), 'New state:', newState);
-    });
-    
-    // Handle form submission
-    $('#alarm-form').submit(function(e) {
-        e.preventDefault();
-        
-        var formData = $(this).serialize();
-        var selectedDays = $('input[name="days[]"]:checked').map(function() {
+    // Save new alarm
+    $(document).on('click', '.save-new-alarm', function() {
+        var selectedDays = $('.new-day-checkbox:checked').map(function() {
             return this.value;
         }).get();
         
@@ -475,19 +601,34 @@ $(document).ready(function() {
             return;
         }
         
+        var alarmData = {
+            'alarm-hour': $('.new-hour').val(),
+            'alarm-minute': $('.new-minute').val(),
+            'alarm-ampm': $('.new-ampm').val(),
+            'alarm-sound': $('#alarm-sound').val(),
+            'alarm-volume': $('.new-volume').val(),
+            'days': selectedDays
+        };
+        
         // Send the data to save the alarm
         $.ajax({
             url: 'ajax.save_alarm.php',
             type: 'POST',
-            data: formData,
+            data: alarmData,
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    // Reset form and hide it
-                    $('#alarm-form')[0].reset();
-                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
-                    $('#add-alarm-form').hide();
-                    $('#show-add-alarm-form').show();
+                    // Hide new alarm table and show button
+                    $('#new-alarm-table-container').hide();
+                    $('#show-new-alarm-table').show();
+                    
+                    // Reset new alarm row
+                    $('.new-hour').val('1');
+                    $('.new-minute').val('00');
+                    $('.new-ampm').val('AM');
+                    $('.new-volume').val('70');
+                    $('.new-day-checkbox').prop('checked', false);
+                    $('.new-day-btn').removeClass('btn-primary active').addClass('btn-default');
                     
                     // Reload the alarms list to show the new alarm
                     $('#existing-alarms').load('ajax.load_alarms.php');
@@ -531,104 +672,132 @@ $(document).ready(function() {
         });
     });
     
+    // Edit alarm - switch to edit mode
     $(document).on('click', '.edit-alarm', function() {
+        var $row = $(this).closest('tr');
         var alarmId = $(this).data('id');
         
-        // Load alarm data and populate the form
+        // Switch to edit mode
+        $row.find('.alarm-display').hide();
+        $row.find('.alarm-edit').show();
+        
+        // Store original values for cancel
+        $row.data('original-values', {
+            hour: $row.find('.edit-hour').val(),
+            minute: $row.find('.edit-minute').val(),
+            ampm: $row.find('.edit-ampm').val(),
+            volume: $row.find('.edit-volume').val(),
+            days: $row.find('.edit-day-checkbox:checked').map(function() { return this.value; }).get()
+        });
+    });
+    
+    // Cancel edit - restore original values and switch back to display mode
+    $(document).on('click', '.cancel-edit', function() {
+        var $row = $(this).closest('tr');
+        var originalValues = $row.data('original-values');
+        
+        if (originalValues) {
+            // Restore original values
+            $row.find('.edit-hour').val(originalValues.hour);
+            $row.find('.edit-minute').val(originalValues.minute);
+            $row.find('.edit-ampm').val(originalValues.ampm);
+            $row.find('.edit-volume').val(originalValues.volume);
+            
+            // Restore original day selections
+            $row.find('.edit-day-checkbox').prop('checked', false);
+            $row.find('.edit-day-btn').removeClass('btn-primary active').addClass('btn-default');
+            originalValues.days.forEach(function(day) {
+                $row.find('.edit-day-checkbox[value="' + day + '"]').prop('checked', true);
+                $row.find('.edit-day-btn[data-day="' + day + '"]').removeClass('btn-default').addClass('btn-primary active');
+            });
+        }
+        
+        // Switch back to display mode
+        $row.find('.alarm-display').show();
+        $row.find('.alarm-edit').hide();
+    });
+    
+    // Save alarm changes
+    $(document).on('click', '.save-alarm', function() {
+        var $row = $(this).closest('tr');
+        var alarmId = $(this).data('id');
+        
+        var selectedDays = $row.find('.edit-day-checkbox:checked').map(function() {
+            return this.value;
+        }).get();
+        
+        if (selectedDays.length === 0) {
+            alert('Please select at least one day for the alarm to recur.');
+            return;
+        }
+        
+        var alarmData = {
+            'alarm_id': alarmId,
+            'alarm-hour': $row.find('.edit-hour').val(),
+            'alarm-minute': $row.find('.edit-minute').val(),
+            'alarm-ampm': $row.find('.edit-ampm').val(),
+            'alarm-sound': $row.find('.alarm-sound-cell .alarm-display code').text(),
+            'alarm-volume': $row.find('.edit-volume').val(),
+            'days': selectedDays
+        };
+        
+        // Send the data to update the alarm
         $.ajax({
-            url: 'ajax.load_alarm.php',
-            type: 'GET',
-            data: {
-                alarm_id: alarmId
-            },
+            url: 'ajax.update_alarm.php',
+            type: 'POST',
+            data: alarmData,
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    var alarm = response.alarm;
-                    
-                    // Populate the form with alarm data
-                    $('#alarm-hour').val(alarm.hour);
-                    // Ensure minute is properly formatted to match select option values
-                    $('#alarm-minute').val(String(alarm.minute).padStart(2, '0'));
-                    $('#alarm-ampm').val(alarm.ampm);
-                    $('#alarm-sound').val(alarm.sound);
-                    $('#alarm-volume').val(alarm.volume);
-                    
-                    // Reset and set day buttons
-                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
-                    $('input[name="days[]"]').prop('checked', false);
-                    
-                    alarm.days.forEach(function(day) {
-                        $('input[name="days[]"][value="' + day + '"]').prop('checked', true);
-                        $('.day-btn[data-day="' + day + '"]').removeClass('btn-default').addClass('btn-primary active');
-                    });
-                    
-                    // Add hidden field for alarm ID and change form action
-                    if (!$('#alarm-id').length) {
-                        $('#alarm-form').append('<input type="hidden" id="alarm-id" name="alarm_id" value="' + alarmId + '">');
-                    } else {
-                        $('#alarm-id').val(alarmId);
-                    }
-                    
-                    // Change form submission to update instead of create
-                    $('#alarm-form').off('submit').on('submit', function(e) {
-                        e.preventDefault();
-                        
-                        var formData = $(this).serialize();
-                        var selectedDays = $('input[name="days[]"]:checked').map(function() {
-                            return this.value;
-                        }).get();
-                        
-                        if (selectedDays.length === 0) {
-                            alert('Please select at least one day for the alarm to recur.');
-                            return;
-                        }
-                        
-                        // Send the data to update the alarm
-                        $.ajax({
-                            url: 'ajax.update_alarm.php',
-                            type: 'POST',
-                            data: formData,
-                            dataType: 'json',
-                            success: function(response) {
-                                if (response.success) {
-                                    // Reset form and hide it
-                                    $('#alarm-form')[0].reset();
-                                    $('.day-btn').removeClass('btn-primary active').addClass('btn-default');
-                                    $('#add-alarm-form').hide();
-                                    $('#show-add-alarm-form').show();
-                                    
-                                    // Remove hidden field and restore original form submission
-                                    $('#alarm-id').remove();
-                                    $('#alarm-form').off('submit').on('submit', function(e) {
-                                        // Re-attach the original submit handler
-                                        $('#alarm-form').trigger('submit');
-                                    });
-                                    
-                                    // Reload the alarms list
-                                    $('#existing-alarms').load('ajax.load_alarms.php');
-                                } else {
-                                    alert('Error: ' + response.message);
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                var response = JSON.parse(xhr.responseText);
-                                alert('Error: ' + (response.message || 'Failed to update alarm'));
-                            }
-                        });
-                    });
-                    
-                    // Show the form
-                    $('#add-alarm-form').show();
-                    $('#show-add-alarm-form').hide();
+                    // Reload the alarms list to show updated values
+                    $('#existing-alarms').load('ajax.load_alarms.php');
                 } else {
                     alert('Error: ' + response.message);
                 }
             },
             error: function(xhr, status, error) {
-                alert('Error loading alarm data');
+                var response = JSON.parse(xhr.responseText);
+                alert('Error: ' + (response.message || 'Failed to update alarm'));
             }
         });
+    });
+    
+    // Handle day button toggles for editing
+    $(document).on('click', '.edit-day-btn', function(e) {
+        e.preventDefault();
+        
+        var $this = $(this);
+        var $checkbox = $this.find('input[type="checkbox"]');
+        
+        // Toggle the checkbox state
+        var newState = !$checkbox.prop('checked');
+        $checkbox.prop('checked', newState);
+        
+        // Update button styling based on new checkbox state
+        if (newState) {
+            $this.removeClass('btn-default').addClass('btn-primary active');
+        } else {
+            $this.removeClass('btn-primary active').addClass('btn-default');
+        }
+    });
+    
+    // Handle day button toggles for new alarm
+    $(document).on('click', '.new-day-btn', function(e) {
+        e.preventDefault();
+        
+        var $this = $(this);
+        var $checkbox = $this.find('input[type="checkbox"]');
+        
+        // Toggle the checkbox state
+        var newState = !$checkbox.prop('checked');
+        $checkbox.prop('checked', newState);
+        
+        // Update button styling based on new checkbox state
+        if (newState) {
+            $this.removeClass('btn-default').addClass('btn-primary active');
+        } else {
+            $this.removeClass('btn-primary active').addClass('btn-default');
+        }
     });
     
     $(document).on('click', '.delete-alarm', function() {

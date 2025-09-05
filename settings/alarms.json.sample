@@ -1,0 +1,25 @@
+{
+    "version": "1.0",
+    "alarms": [
+        {
+            "id": 1,
+            "hour": 7,
+            "minute": 0,
+            "ampm": "AM",
+            "sound": "1234567890",
+            "days": ["mon", "tue", "wed", "thu", "fri"],
+            "volume": 80,
+            "enabled": true
+        },
+        {
+            "id": 2,
+            "hour": 8,
+            "minute": 30,
+            "ampm": "AM",
+            "sound": "0987654321",
+            "days": ["sat", "sun"],
+            "volume": 60,
+            "enabled": false
+        }
+    ]
+} 
