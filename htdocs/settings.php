@@ -411,6 +411,24 @@ include("inc.setSecondSwipePauseControls.php");
     padding: 5px 8px;
 }
 
+/* Center the days selectors in their container using absolute positioning */
+.alarm-table .alarm-days-cell {
+    width: 30%;
+    min-width: 295px;
+    vertical-align: middle !important;
+    height: auto;
+    position: relative;
+}
+
+.alarm-recurrence-group {
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+}
+
 /* Preserve existing day button styling from func.php */
 .alarm-edit .day-btn,
 .new-day-btn {
@@ -483,10 +501,6 @@ include("inc.setSecondSwipePauseControls.php");
     font-size: 12px;
 }
 
-/* New alarm row styling */
-#refresh_alarm_sound {
-    max-width: 120px;
-}
 
 #refresh_alarm_sound .form-control {
     width: 100%;
@@ -518,12 +532,9 @@ include("inc.setSecondSwipePauseControls.php");
 .alarm-table .alarm-sound-cell {
     width: 20%;
     min-width: 120px;
+    max-width: 220px;
 }
 
-.alarm-table .alarm-days-cell {
-    width: 30%;
-    min-width: 295px;
-}
 
 .alarm-table .alarm-volume-cell {
     width: 8%;
@@ -568,6 +579,10 @@ $(document).ready(function() {
     
     // Initialize alarm sound field refresh for new alarm row (same pattern as Register New Card)
     $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php');
+    
+    // Set all days as selected by default for new alarm
+    $('.new-day-checkbox').prop('checked', true);
+    $('.new-day-btn').removeClass('btn-default').addClass('btn-primary active');
     var refreshNewAlarmSound = setInterval(function() {
         $('#refresh_alarm_sound').load('ajax.refresh_alarm_sound.php?' + 1*new Date());
     }, 1000);
@@ -587,8 +602,8 @@ $(document).ready(function() {
         $('.new-minute').val('00');
         $('.new-ampm').val('AM');
         $('.new-volume').val('70');
-        $('.new-day-checkbox').prop('checked', false);
-        $('.new-day-btn').removeClass('btn-primary active').addClass('btn-default');
+        $('.new-day-checkbox').prop('checked', true);
+        $('.new-day-btn').removeClass('btn-default').addClass('btn-primary active');
     });
     
     // Save new alarm
@@ -628,8 +643,8 @@ $(document).ready(function() {
                     $('.new-minute').val('00');
                     $('.new-ampm').val('AM');
                     $('.new-volume').val('70');
-                    $('.new-day-checkbox').prop('checked', false);
-                    $('.new-day-btn').removeClass('btn-primary active').addClass('btn-default');
+                    $('.new-day-checkbox').prop('checked', true);
+                    $('.new-day-btn').removeClass('btn-default').addClass('btn-primary active');
                     
                     // Reload the alarms list to show the new alarm
                     $('#existing-alarms').load('ajax.load_alarms.php');
