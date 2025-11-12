@@ -22,7 +22,7 @@ tornado
 
 # RPi's GPIO packages:
 # use shim to keep current RPi.GPIO behavior also under Bookworm - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
-rpi-lgpio; platform_machine == "armv7l" or platform_machine == "aarch64"
+rpi-lgpio; platform_machine == "armv6l" or platform_machine == "armv7l" or platform_machine == "aarch64"
 gpiozero
 
 # PyZMQ is a special case:
