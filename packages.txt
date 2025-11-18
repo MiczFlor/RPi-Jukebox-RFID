@@ -27,4 +27,7 @@ python3-setuptools
 python3-wheel
 python3-mutagen
 python3-spidev
+swig
+tar
+unzip
 wget
