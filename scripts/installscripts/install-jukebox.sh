@@ -983,7 +983,7 @@ install_main() {
     fi
 
     # always build lgpio as the pypi binaries are incomplete (armv6) or broken (bullseye)
-    mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make > /dev/null && sudo make install > /dev/null
+    mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
     cd "${HOME_DIR}" && sudo rm -rf tmp > /dev/null
     local pip_install_options="--no-binary=lgpio"
 
