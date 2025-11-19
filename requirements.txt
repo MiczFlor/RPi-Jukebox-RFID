@@ -10,7 +10,7 @@ git+https://github.com/lthiery/SPI-Py.git#egg=spi-py
 yt-dlp
 pyserial
 # use shim to keep current RPi.GPIO behavior also under Bookworm - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
-rpi-lgpio
+rpi-lgpio --no-binary=lgpio
 
 # Type checking for python
 # typing
