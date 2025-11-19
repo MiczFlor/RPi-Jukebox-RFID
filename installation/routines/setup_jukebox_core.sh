@@ -26,7 +26,7 @@ _jukebox_core_build_and_install_lg() {
     local lg_filename="lg"
     local lg_zip_filename="${lg_filename}.zip"
 
-    # always build lg and lgpio from source as pypi wheels are incomplete (armv6) or broken (bullseye)
+    # always build lg and lgpio from source as pypi wheels are incomplete (armv6, python3.13) or broken (bullseye)
     # build needs apt packages "swig python3-dev"
     mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
     download_from_url "http://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
