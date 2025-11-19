@@ -982,13 +982,15 @@ install_main() {
         sudo chmod 440 "${sudoers_mopidy}"
     fi
 
-    # always build lgpio as the pypi binaries are incomplete (armv6) or broken (bullseye)
+    # always build lgpio as the pypi binaries are incomplete (armv6, python3.13) or broken (bullseye)
+    echo "Installing lgpio build dependecies..."
     mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
     cd "${HOME_DIR}" && sudo rm -rf tmp > /dev/null
 
     # Install more required packages
     echo "Installing additional Python packages..."
     ${pip_install} -r "${jukebox_dir}"/requirements.txt
+
 
     samba_config
 
