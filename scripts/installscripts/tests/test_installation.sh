@@ -331,7 +331,7 @@ call_with_args_from_file() {
     local package_file="$1"
     shift
 
-    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;).*//g' | xargs "$@"
+    sed 's/.*#egg=//g' ${package_file} | sed -E 's/(#|=|>|<|;|--).*//g' | xargs "$@"
 }
 
 verify_apt_packages() {
