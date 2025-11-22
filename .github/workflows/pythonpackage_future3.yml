@@ -5,11 +5,13 @@ on:
     branches:
         - 'future3/**'
     paths:
+        - '.github/workflows/pythonpackage_future3.yml'
         - '**.py'
   pull_request:
     branches:
         - 'future3/**'
     paths:
+        - '.github/workflows/pythonpackage_future3.yml'
         - '**.py'
 
 jobs:
