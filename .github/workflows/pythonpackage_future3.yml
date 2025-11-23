@@ -6,12 +6,22 @@ on:
         - 'future3/**'
     paths:
         - '.github/workflows/pythonpackage_future3.yml'
+        - '.flake8'
+        - 'run_flake8.sh'
+        - '.coveragerc'
+        - 'run_pytest.sh'
+        - '**requirements*.txt'
         - '**.py'
   pull_request:
     branches:
         - 'future3/**'
     paths:
         - '.github/workflows/pythonpackage_future3.yml'
+        - '.flake8'
+        - 'run_flake8.sh'
+        - '.coveragerc'
+        - 'run_pytest.sh'
+        - '**requirements*.txt'
         - '**.py'
 
 jobs:
