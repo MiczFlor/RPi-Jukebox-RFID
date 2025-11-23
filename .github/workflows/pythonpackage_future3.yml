@@ -10,6 +10,7 @@ on:
         - 'run_flake8.sh'
         - '.coveragerc'
         - 'run_pytest.sh'
+        - '**requirements*.txt'
         - '**.py'
   pull_request:
     branches:
@@ -20,6 +21,7 @@ on:
         - 'run_flake8.sh'
         - '.coveragerc'
         - 'run_pytest.sh'
+        - '**requirements*.txt'
         - '**.py'
 
 jobs:
