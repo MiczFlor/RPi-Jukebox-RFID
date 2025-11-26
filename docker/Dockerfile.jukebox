@@ -38,7 +38,7 @@ RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install all Python dependencies
-RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+RUN pip install --no-binary=lgpio --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 # Install pyzmq Python dependency separately
 ENV ZMQ_PREFIX /opt/libzmq
