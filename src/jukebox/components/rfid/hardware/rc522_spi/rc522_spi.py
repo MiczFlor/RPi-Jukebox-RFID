@@ -25,7 +25,11 @@ def query_customization() -> dict:
     spi_ce = pyil.input_int("SPI CEx (CE0=GPIO8, CE1=GPIO7)?", blank=0, min=0, max=1, prompt_color=prompt_color,
                             prompt_hint=True)
 
-    pin_irq = pyil.input_int("IRQ GPIO pin (BCM numbering)?", blank=24, min=1, max=27, prompt_color=prompt_color,
+    print("\nThe IRQ GPIO pin for card detection.\n"
+          "This pin is REQUIRED for interrupt-driven card detection.\n"
+          "WARNING: Polling mode (pin=0) has high CPU usage and may cause performance issues!\n"
+          "Only disable IRQ if you have serious interrupt conflicts.")
+    pin_irq = pyil.input_int("IRQ GPIO pin (BCM numbering)?", blank=24, min=0, max=27, prompt_color=prompt_color,
                              prompt_hint=True)
 
     print("\nReset GPIO pin for hardware reset. This is an optional pin.\n"
@@ -68,6 +72,15 @@ class ReaderClass(ReaderBaseClass):
             spi_bus = config.setdefault('spi_bus', None)
             spi_ce = config.setdefault('spi_ce', None)
             pin_irq = config.setdefault('pin_irq', None)
+            if pin_irq == 0:
+                pin_irq = None
+            self.pin_irq = pin_irq
+            if self.pin_irq is None:
+                self._logger.warning("No IRQ pin configured - using POLLING MODE")
+                self._logger.warning("WARNING: Polling mode has high CPU usage and may impact system performance!")
+                self._logger.warning("Consider using an IRQ pin for better performance")
+            else:
+                self._logger.info(f"Using IRQ pin {self.pin_irq} for interrupt-driven card detection")
 
             if 'pin_rst' not in config:
                 self._logger.warning("No parameter 'pin_rst' found. Disabling hardware reset.")
@@ -131,7 +144,8 @@ class ReaderClass(ReaderBaseClass):
 
     def read_card(self) -> str:
         # Scan for cards
-        self.device.wait_for_tag()
+        if self.pin_irq is not None:
+            self.device.wait_for_tag()
         if not self._keep_running:
             return ''
         return self._read_function()

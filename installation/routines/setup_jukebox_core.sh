@@ -21,12 +21,13 @@ _jukebox_core_install_os_dependencies() {
     --allow-change-held-packages
 }
 
-_jukebox_core_build_and_install_lgpio() {
+_jukebox_core_build_and_install_lg() {
     local tmp_path="${HOME_PATH}/tmp"
     local lg_filename="lg"
     local lg_zip_filename="${lg_filename}.zip"
 
-    sudo apt-get -y install swig unzip python3-dev python3-setuptools
+    # always build lg and lgpio from source as pypi wheels are incomplete (armv6, python3.13) or broken (bullseye)
+    # build needs apt packages "swig python3-dev"
     mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
     download_from_url "http://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
     unzip ${lg_zip_filename} || exit_on_error
@@ -47,14 +48,9 @@ _jukebox_core_install_python_requirements() {
   # Remove excluded libs, if installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
   pip uninstall -y -r "${INSTALLATION_PATH}"/requirements-excluded.txt
 
-  # prepare lgpio build for bullseye as the binaries are broken
-  local pip_install_options=""
-  if [ "$(is_debian_version_at_least 12)" = false ]; then
-    _jukebox_core_build_and_install_lgpio
-    pip_install_options="--no-binary=lgpio"
-  fi
+  _jukebox_core_build_and_install_lg
 
-  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt" ${pip_install_options}
+  pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
 }
 
 _jukebox_core_configure_pulseaudio() {
