@@ -1,5 +1,5 @@
 FROM libzmq:local AS libzmq
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # These are only dependencies that are required to get as close to the
 # Raspberry Pi environment as possible.
