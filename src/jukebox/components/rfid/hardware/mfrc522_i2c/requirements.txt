@@ -1,0 +1,4 @@
+# MFRC522 I2C related requirements
+# You need to install these with `python -m pip install --upgrade --force-reinstall -q -r requirements.txt`
+
+mfrc522_i2c
