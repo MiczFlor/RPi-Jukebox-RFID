@@ -7,6 +7,7 @@
   * [Generic USB Reader](genericusb.md)
   * [RDM6300 Reader](rdm6300.md)
   * [MFRC522 SPI Reader](mfrc522_spi.md)
+  * [MFRC522 I2C Reader](mfrc522_i2c.md)
   * [PN532 I2C Reader](pn532_i2c.md)
   * [Generic Readers without HID (NFCpy)](generic_nfcpy.md)
   * [Mock Reader](mock_reader.md)
