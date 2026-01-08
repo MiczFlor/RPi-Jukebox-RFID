@@ -383,7 +383,7 @@ verify_optional_service_enablement() {
     fi
 
     local actual_enablement=$(_get_service_enablement $service $option)
-    if [[ -z "${actual_enablement}" ]]; then
+    if [[ -z "${actual_enablement}" || "${actual_enablement}" == "not-found" ]]; then
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then
         log "  INFO: optional service ${option}${service} is set static."
