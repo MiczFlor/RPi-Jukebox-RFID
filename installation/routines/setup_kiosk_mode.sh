@@ -11,11 +11,13 @@ _kiosk_mode_install_os_dependencies() {
   # Resource:
   # https://blog.r0b.io/post/minimal-rpi-kiosk/
   sudo apt-get -qq -y install --no-install-recommends \
-    xserver-xorg \
+    xserver-xorg-core \
+    xserver-xorg-input-all \
+    xserver-xorg-video-all \
     x11-xserver-utils \
     xinit \
     openbox \
-    chromium-browser
+    chromium
 }
 
 _kiosk_mode_set_autostart() {
@@ -65,11 +67,13 @@ EOF
 _kiosk_mode_check() {
     print_verify_installation
 
-    verify_apt_packages xserver-xorg \
+    verify_apt_packages     xserver-xorg-core \
+        xserver-xorg-input-all \
+        xserver-xorg-video-all \
         x11-xserver-utils \
         xinit \
         openbox \
-        chromium-browser
+        chromium
 
     verify_files_exists "${KIOSK_MODE_BASHRC}"
     verify_file_contains_string "${KIOSK_MODE_CONF_HEADER}" "${KIOSK_MODE_BASHRC}"
