@@ -56,6 +56,7 @@ def finalize():
     plugin.register(timer_stop_player, name='timer_stop_player', package=plugin.loaded_as(__name__))
 
     # Volume Fadeout and Shutdown Timer
+    global timer_fade_volume
     timer_fade_volume = VolumeFadoutAndShutdown(
         name=f"{plugin.loaded_as(__name__)}.timer_fade_volume"
     )
@@ -93,13 +94,8 @@ def atexit(**ignored_kwargs):
     timer_fade_volume.cancel()
     global timer_idle_shutdown
     timer_idle_shutdown.cancel()
-    global timer_idle_check
-    timer_idle_check.cancel()
     ret = [
         timer_shutdown.timer_thread,
         timer_stop_player.timer_thread,
-        timer_fade_volume.timer_thread,
-        timer_idle_shutdown.timer_thread,
-        timer_idle_check.timer_thread
     ]
     return ret
