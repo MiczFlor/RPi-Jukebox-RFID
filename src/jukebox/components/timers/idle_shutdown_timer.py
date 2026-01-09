@@ -17,7 +17,6 @@ PATHS = ['shared/settings',
          'shared/audiofolders']
 
 IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
-EXTEND_IDLE_TIMEOUT = 60
 IDLE_CHECK_INTERVAL = 10
 
 
@@ -56,11 +55,12 @@ class IdleShutdownTimer:
             self.idle_timeout = 0
 
     # Using GenericMultiTimerClass instead of GenericTimerClass as it supports classes rather than functions
-    # Calling GenericMultiTimerClass with iterations=1 is the same as GenericTimerClass
+    # Configure to run endless (iterations=-1) so we can skip shutting down as many times as needed
+    # if there's SSH or file changes detected
     def init_idle_shutdown(self):
         self.private_timer_idle_shutdown = GenericMultiTimerClass(
             name=f"{self.package}.private_timer_idle_shutdown",
-            iterations=1,
+            iterations=-1,
             wait_seconds_per_iteration=self.idle_timeout,
             callee=IdleShutdown
         )
@@ -138,7 +138,11 @@ class IdleShutdown():
         logger.debug('Last checks before shutting down')
         if self._has_active_ssh_sessions():
             logger.debug('Active SSH sessions found, will not shutdown now')
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'set_timeout', args=[int(EXTEND_IDLE_TIMEOUT)])
+            # Simply return. Will be called again, because
+            # private_timer_idle_shutdown is and endless timer.
+            # TODO: If playback is started in the meantime, the timer will
+            #       not be stopped and the system will be shut down if there
+            #       is no file/SSH activity.
             return
         # if self._has_changed_files():
         #     logger.debug('Changes files found, will not shutdown now')
