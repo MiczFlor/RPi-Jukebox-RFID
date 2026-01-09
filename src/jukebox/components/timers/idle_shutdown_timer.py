@@ -109,20 +109,25 @@ class IdleShutdownTimer:
 
 class IdleCheck:
     def __init__(self) -> None:
-        self.last_player_status = plugin.call('player', 'ctrl', 'playerstatus')
-        logger.debug('Started IdleCheck with initial state: {}'.format(self.last_player_status))
+        logger.debug('Initializing IdleCheck')
+        # We're interested only in the state changes between "music playing"
+        # and "music not playing".
+        # Initialize state to True in order to detect the case of no music
+        # playing right after startup.
+        self.prev_playing = True
 
     # Run function
     def __call__(self):
         player_status = plugin.call('player', 'ctrl', 'playerstatus')
+        playing = player_status['state'] == 'play'
 
-        if self.last_player_status == player_status:
+        if self.prev_playing and not playing:
+            # Drops the previous IdleShutdown object living inside the timer.
             plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'start')
-        else:
+        elif not self.prev_playing and playing:
             plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
 
-        self.last_player_status = player_status.copy()
-        return self.last_player_status
+        self.prev_playing = playing
 
 
 class IdleShutdown():
