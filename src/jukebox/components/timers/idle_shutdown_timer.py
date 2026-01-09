@@ -41,6 +41,7 @@ class IdleShutdownTimer:
         self.set_idle_timeout(idle_timeout)
         self.init_idle_shutdown()
         self.init_idle_check()
+        IdleShutdown().init_singleton()
 
     def set_idle_timeout(self, idle_timeout):
         try:
@@ -138,25 +139,26 @@ class IdleShutdown():
         # iterations arg is required by GenericMultiTimerClass but not used here
         self.base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
 
+    def init_singleton(self):
+        # Initializes files_latest_mtime and files_num_entries
+        self._has_changed_files()
+
     def __call__(self, iteration=0):
         # iteration arg is required by GenericMultiTimerClass but not used here
         logger.debug('Last checks before shutting down')
-        if self._has_active_ssh_sessions():
+        has_active_session = self._has_active_ssh_sessions()
+        has_changed_files = self._has_changed_files()
+        if has_active_session:
             logger.debug('Active SSH sessions found, will not shutdown now')
+        if has_changed_files:
+            logger.debug('Changed files found, will not shutdown now')
+        if has_active_session or has_changed_files:
             # Simply return. Will be called again, because
             # private_timer_idle_shutdown is and endless timer.
             # TODO: If playback is started in the meantime, the timer will
             #       not be stopped and the system will be shut down if there
             #       is no file/SSH activity.
             return
-        # if self._has_changed_files():
-        #     logger.debug('Changes files found, will not shutdown now')
-        #     plugin.call_ignore_errors(
-        #         'timers',
-        #         'private_timer_idle_shutdown',
-        #         'set_timeout',
-        #         args=[int(EXTEND_IDLE_TIMEOUT)])
-        #     return
 
         logger.info('No activity, shutting down')
         plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
@@ -177,12 +179,14 @@ class IdleShutdown():
                     continue
                 if SSH_CHILD_RE.match(cmdline):
                     return True
+        return False
 
     def _has_changed_files(self):
-        # This is a rather expensive check, but it only runs twice
-        # when an idle shutdown is initiated.
-        # Only when there are actual changes (file transfers via
-        # SFTP, Samba, etc.), the check may run multiple times.
+        # This is a rather expensive check, but it typically only runs twice
+        # (during init and when an idle shutdown is initiated).
+        # Only when there are actual changes (file transfers via SFTP, Samba,
+        # etc.) or when there is an active SSH session, the check may run
+        # multiple times.
         logger.debug('Scanning for file changes')
         latest_mtime = 0
         num_entries = 0
