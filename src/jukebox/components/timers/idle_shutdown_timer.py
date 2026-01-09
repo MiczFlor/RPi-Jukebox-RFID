@@ -89,10 +89,9 @@ class IdleShutdownTimer:
 
     @plugin.tag
     def cancel(self):
-        """Cancels all idle timers and disables idle shutdown in jukebox.yaml"""
+        """Cancels all idle timers"""
         plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
         plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-        cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=0)
 
     @plugin.tag
     def get_state(self):
