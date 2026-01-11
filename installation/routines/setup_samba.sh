@@ -50,7 +50,7 @@ _samba_check() {
 
     verify_apt_packages samba samba-common-bin
 
-    verify_files_chmod_chown 644 root root "${SMB_CONF}"
+    verify_owner_group_and_access root root rw "${SMB_CONF}"
 
     verify_file_contains_string "${SMB_CONF_HEADER}" "${SMB_CONF}"
     verify_file_contains_string "${SHARED_PATH}" "${SMB_CONF}"

@@ -238,54 +238,33 @@ verify_dirs_exists() {
     log "  CHECK"
 }
 
-# Check if the file(s) has/have the expected owner and modifications
-verify_files_chmod_chown() {
-    local mod_expected=$1
-    local user_expected=$2
-    local group_expected=$3
-    local files="${@:4}"
-    log "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${files}'"
+# Check if the dir(s) / file(s) has/have the expected owner, group and access rights for the user
+verify_owner_group_and_access() {
+    local user_expected=$1
+    local group_expected=$2
+    local mod_expected=$3
+    local dirs_files="${@:4}"
+    log "  Verify '${user_expected}:${group_expected}' with '${mod_expected}' is set for '${dirs_files}'"
 
-    if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${files}" ]]; then
+    if [[ -z "${user_expected}" || -z "${group_expected}" || -z "${mod_expected}" || -z "${dirs_files}" ]]; then
         exit_on_error "ERROR: at least one parameter value is missing!"
     fi
 
-    for file in $files
+    for dir_file in $dirs_files
     do
-        test ! -f ${file} && exit_on_error "ERROR: '${file}' does not exists or is not a file!"
+        test ! -e ${dir_file} && exit_on_error "ERROR: '${dir_file}' does not exists!"
 
-        mod_actual=$(stat --format '%a' "${file}")
-        user_actual=$(stat -c '%U' "${file}")
-        group_actual=$(stat -c '%G' "${file}")
-        test ! "${mod_expected}" -eq "${mod_actual}" && exit_on_error "ERROR: '${file}' actual mod '${mod_actual}' differs from expected '${mod_expected}'!"
-        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${file}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
-        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${file}' actual group '${group_actual}' differs from expected '${group_expected}'!"
-    done
-    log "  CHECK"
-}
+        user_actual=$(stat -c '%U' "${dir_file}")
+        group_actual=$(stat -c '%G' "${dir_file}")
+        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${dir_file}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
+        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${dir_file}' actual group '${group_actual}' differs from expected '${group_expected}'!"
 
-# Check if the dir(s) has/have the expected owner and modifications
-verify_dirs_chmod_chown() {
-    local mod_expected=$1
-    local user_expected=$2
-    local group_expected=$3
-    local dirs="${@:4}"
-    log "  Verify '${mod_expected}' '${user_expected}:${group_expected}' is set for '${dirs}'"
-
-    if [[ -z "${mod_expected}" || -z "${user_expected}" || -z "${group_expected}" || -z "${dirs}" ]]; then
-        exit_on_error "ERROR: at least one parameter value is missing!"
-    fi
-
-    for dir in $dirs
-    do
-        test ! -d ${dir} && exit_on_error "ERROR: '${dir}' does not exists or is not a dir!"
-
-        mod_actual=$(stat --format '%a' "${dir}")
-        user_actual=$(stat -c '%U' "${dir}")
-        group_actual=$(stat -c '%G' "${dir}")
-        test ! "${mod_expected}" -eq "${mod_actual}" && exit_on_error "ERROR: '${dir}' actual mod '${mod_actual}' differs from expected '${mod_expected}'!"
-        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${dir}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
-        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${dir}' actual group '${group_actual}' differs from expected '${group_expected}'!"
+        local mod_actual=""
+        for (( i=0; i<${#mod_expected}; i++ )); do
+            local current_mod="${mod_expected:$i:1}"
+            sudo -u ${user_expected} test "-${current_mod}" "${dir_file}" && mod_actual="${mod_actual}${current_mod}"
+        done
+        test ! "${mod_expected}" == "${mod_actual}" && exit_on_error "ERROR: '${dir_file}' actual access rights '${mod_actual}' differs from expected '${mod_expected}'!"
     done
     log "  CHECK"
 }

@@ -157,12 +157,9 @@ _jukebox_core_check() {
     fi
     log "  CHECK"
 
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
+    verify_owner_group_and_access "${CURRENT_USER}" "${CURRENT_USER_GROUP}" rw "${JUKEBOX_PULSE_CONFIG}" "${SETTINGS_PATH}/jukebox.yaml" "${SETTINGS_PATH}/logger.yaml"
 
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
-
-    verify_files_chmod_chown 644 root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+    verify_owner_group_and_access root root rw "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
     verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
 
