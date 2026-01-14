@@ -3,78 +3,97 @@
 
 import os
 import re
+from glob import iglob
 import logging
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-from jukebox.multitimer import (GenericEndlessTimerClass, GenericMultiTimerClass)
-
+from jukebox.multitimer import GenericEndlessTimerClass
+# Use monotonic time to avoid issues with system time changes
+from time import monotonic as time
 
 logger = logging.getLogger('jb.timers.idle_shutdown_timer')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
 
-SSH_CHILD_RE = re.compile(r'sshd: [^/].*')
 PATHS = ['shared/settings',
          'shared/audiofolders']
+SSH_CHILD_RE = re.compile(r'sshd: [^/].*')
 
 IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
 IDLE_CHECK_INTERVAL = 10
 
 
-def get_seconds_since_boot():
-    # We may not have a stable clock source when there is no network
-    # connectivity (yet). As we only need to measure the relative time which
-    # has passed, we can just calculate based on the seconds since boot.
-    with open('/proc/uptime') as f:
-        line = f.read()
-    seconds_since_boot, _ = line.split(' ', 1)
-    return float(seconds_since_boot)
+def playback_active():
+    # Returns True if audio is currently playing
+    player_status = plugin.call('player', 'ctrl', 'playerstatus')
+    return player_status['state'] == 'play'
+
+
+def ssh_activity():
+    # Returns True if there is an active SSH session
+    logger.debug('Checking for SSH activity')
+
+    for cmdline in iglob('/proc/*/cmdline'):
+        try:
+            with open(cmdline) as f:
+                cmdline = f.read()
+        except PermissionError:
+            continue
+        if SSH_CHILD_RE.match(cmdline):
+            logger.info('SSH activity detected, resetting idle timer')
+            return True
+    return False
+
+
+class FSWatcher:
+    # Minimal filesystem watcher that needs to be polled to detect changes.
+    def __init__(self, paths):
+        self.paths = paths
+        self.previous_state = None
+        self.has_changed()  # Initialize state
+
+    def has_changed(self):
+        # Returns True if the directory state has changed since the last call/initialization.
+        logger.debug('Collecting directory state')
+        latest_mtime = 0
+        num_entries = 0
+        for path in self.paths:
+            for root, dirs, files in os.walk(path):
+                for p in dirs + files:
+                    mtime = os.stat(os.path.join(root, p)).st_mtime
+                    latest_mtime = max(latest_mtime, mtime)
+                    num_entries += 1
+
+        logger.debug(f'Completed file scan ({num_entries} entries, latest_mtime={latest_mtime})')
+        has_changed = self.previous_state != (num_entries, latest_mtime)
+        self.previous_state = (num_entries, latest_mtime)
+        return has_changed
 
 
 class IdleShutdownTimer:
     def __init__(self, package: str, idle_timeout: int) -> None:
-        self.private_timer_idle_shutdown = None
         self.private_timer_idle_check = None
-        self.idle_timeout = 0
+        self.idle_timeout = idle_timeout
         self.package = package
-        self.idle_check_interval = IDLE_CHECK_INTERVAL
+        self.last_activity_time = time()
+        self.fswatcher = FSWatcher([os.path.join(base_path, path) for path in PATHS])
+        self.idle_state = False  # Idle state as determined in last idle_check()
 
-        self.set_idle_timeout(idle_timeout)
-        self.init_idle_shutdown()
-        self.init_idle_check()
-        IdleShutdown().init_singleton()
+        self.init_idle_check(idle_timeout)
 
-    def set_idle_timeout(self, idle_timeout):
-        try:
-            self.idle_timeout = int(idle_timeout)
-        except ValueError:
-            logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(idle_timeout)}')
+    def init_idle_check(self, idle_timeout):
+        self.idle_timeout = int(idle_timeout)
 
+        # Prevent bricking the system by shutting down immediately after boot
         if self.idle_timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
-            logger.info('disabling idle shutdown timer; set '
-                        'timers.idle_shutdown.timeout_sec to at least '
+            logger.info('disabling idle shutdown timer; set timers.idle_shutdown.timeout_sec to at least '
                         f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
             self.idle_timeout = 0
 
-    # Using GenericMultiTimerClass instead of GenericTimerClass as it supports classes rather than functions
-    # Configure to run endless (iterations=-1) so we can skip shutting down as many times as needed
-    # if there's SSH or file changes detected
-    def init_idle_shutdown(self):
-        self.private_timer_idle_shutdown = GenericMultiTimerClass(
-            name=f"{self.package}.private_timer_idle_shutdown",
-            iterations=-1,
-            wait_seconds_per_iteration=self.idle_timeout,
-            callee=IdleShutdown
-        )
-        self.private_timer_idle_shutdown.__doc__ = "Timer to shutdown after system is idle for a given time"
-        plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
-
-    # Regularly check if player has activity, if not private_timer_idle_check will start/cancel private_timer_idle_shutdown
-    def init_idle_check(self):
-        idle_check_timer_instance = IdleCheck()
         self.private_timer_idle_check = GenericEndlessTimerClass(
             name=f"{self.package}.private_timer_idle_check",
-            wait_seconds_per_iteration=self.idle_check_interval,
-            function=idle_check_timer_instance
+            wait_seconds_per_iteration=IDLE_CHECK_INTERVAL,
+            function=self.idle_check
         )
         self.private_timer_idle_check.__doc__ = 'Timer to check if system is idle'
         if self.idle_timeout:
@@ -82,127 +101,49 @@ class IdleShutdownTimer:
 
         plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
 
+    def time_left(self):
+        if not self.idle_timeout:
+            return None
+        return self.idle_timeout - (time() - self.last_activity_time)
+
+    def idle_check(self):
+        # Regularly check for activity
+
+        # Lazily evaluate activity functions to avoid unnecessary expensive checks.
+        # Note this can lead to FSWatcher.has_changed returning True once when playback and ssh go inactive, effectively
+        # extending the idle timeout by one check interval. This is acceptable.
+        if playback_active() or ssh_activity() or self.fswatcher.has_changed():
+            self.idle_state = False
+            # Be generous and mark this whole interval as active by adding IDLE_CHECK_INTERVAL
+            self.last_activity_time = time() + IDLE_CHECK_INTERVAL
+        else:
+            self.idle_state = True
+            time_left = self.time_left()
+            if time_left > 0:
+                logger.debug(f'No activity detected, shutting down in {int(time_left)} seconds')
+            else:
+                logger.debug('No activity detected, initiating shutdown sequence')
+                plugin.call_ignore_errors('host', 'shutdown')
+
     @plugin.tag
     def start(self, wait_seconds: int):
-        """Sets idle_shutdown timeout_sec stored in jukebox.yaml"""
+        """Updates idle_shutdown timeout_sec (also in jukebox.yaml), starts the idle timer in case it wasn't running yet"""
         cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=wait_seconds)
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'start')
+        self.private_timer_idle_check.start()
 
     @plugin.tag
     def cancel(self):
-        """Cancels all idle timers"""
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
+        """Cancels the idle timer"""
+        self.private_timer_idle_check.cancel()
 
     @plugin.tag
     def get_state(self):
         """Returns the current state of Idle Shutdown"""
-        idle_check_state = plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'get_state')
-        idle_shutdown_state = plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'get_state')
+        idle_check_state = self.private_timer_idle_check.get_state()
 
+        # Field names compatible to previous version:
         return {
             'enabled': idle_check_state['enabled'],
-            'running': idle_shutdown_state['enabled'],
-            'remaining_seconds': idle_shutdown_state['remaining_seconds'],
-            'wait_seconds': idle_shutdown_state['wait_seconds_per_iteration'],
+            'running': self.idle_state,
+            'remaining_seconds': self.time_left(),
         }
-
-
-class IdleCheck:
-    def __init__(self) -> None:
-        logger.debug('Initializing IdleCheck')
-        # We're interested only in the state changes between "music playing"
-        # and "music not playing".
-        # Initialize state to True in order to detect the case of no music
-        # playing right after startup.
-        self.prev_playing = True
-
-    # Run function
-    def __call__(self):
-        player_status = plugin.call('player', 'ctrl', 'playerstatus')
-        playing = player_status['state'] == 'play'
-
-        if self.prev_playing and not playing:
-            # Drops the previous IdleShutdown object living inside the timer.
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'start')
-        elif not self.prev_playing and playing:
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-
-        self.prev_playing = playing
-
-
-class IdleShutdown():
-    files_num_entries: int = 0
-    files_latest_mtime: float = 0
-
-    def __init__(self, iterations=0) -> None:
-        # iterations arg is required by GenericMultiTimerClass but not used here
-        self.base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
-
-    def init_singleton(self):
-        # Initializes files_latest_mtime and files_num_entries
-        self._has_changed_files()
-
-    def __call__(self, iteration=0):
-        # iteration arg is required by GenericMultiTimerClass but not used here
-        logger.debug('Last checks before shutting down')
-        has_active_session = self._has_active_ssh_sessions()
-        has_changed_files = self._has_changed_files()
-        if has_active_session:
-            logger.debug('Active SSH sessions found, will not shutdown now')
-        if has_changed_files:
-            logger.debug('Changed files found, will not shutdown now')
-        if has_active_session or has_changed_files:
-            # Simply return. Will be called again, because
-            # private_timer_idle_shutdown is and endless timer.
-            # TODO: If playback is started in the meantime, the timer will
-            #       not be stopped and the system will be shut down if there
-            #       is no file/SSH activity.
-            return
-
-        logger.info('No activity, shutting down')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-        plugin.call_ignore_errors('host', 'shutdown')
-
-    @staticmethod
-    def _has_active_ssh_sessions():
-        logger.debug('Checking for SSH activity')
-        with os.scandir('/proc') as proc_dir:
-            for proc_path in proc_dir:
-                if not proc_path.is_dir():
-                    continue
-                try:
-                    with open(os.path.join(proc_path, 'cmdline')) as f:
-                        cmdline = f.read()
-                except (FileNotFoundError, PermissionError):
-                    continue
-                if SSH_CHILD_RE.match(cmdline):
-                    return True
-        return False
-
-    def _has_changed_files(self):
-        # This is a rather expensive check, but it typically only runs twice
-        # (during init and when an idle shutdown is initiated).
-        # Only when there are actual changes (file transfers via SFTP, Samba,
-        # etc.) or when there is an active SSH session, the check may run
-        # multiple times.
-        logger.debug('Scanning for file changes')
-        latest_mtime = 0
-        num_entries = 0
-        for path in PATHS:
-            for root, dirs, files in os.walk(os.path.join(self.base_path, path)):
-                for p in dirs + files:
-                    mtime = os.stat(os.path.join(root, p)).st_mtime
-                    latest_mtime = max(latest_mtime, mtime)
-                    num_entries += 1
-
-        logger.debug(f'Completed file scan ({num_entries} entries, latest_mtime={latest_mtime})')
-        if self.files_latest_mtime != latest_mtime or self.files_num_entries != num_entries:
-            # We compare the number of entries to have a chance to detect file
-            # deletions as well.
-            self.files_latest_mtime = latest_mtime
-            self.files_num_entries = num_entries
-            return True
-
-        return False
