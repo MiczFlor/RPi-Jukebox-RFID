@@ -33,7 +33,7 @@ JUKEBOX_HOME_DIR="${HOME_DIR}/RPi-Jukebox-RFID"
 LOGDIR="${HOME_DIR}"/phoniebox_logs
 JUKEBOX_BACKUP_DIR="${HOME_DIR}/BACKUP"
 
-# Get the Raspberry Pi OS codename (e.g. buster, bullseye, ...)
+# Get the Raspberry Pi OS codename (e.g. bullseye, bookworm, ...)
 OS_CODENAME="$( . /etc/os-release; printf '%s\n' "$VERSION_CODENAME"; )"
 # Get the Raspberry Pi OS version id (e.g. 11, 12, ...)
 OS_VERSION_ID="$( . /etc/os-release; printf '%s\n' "$VERSION_ID"; )"
