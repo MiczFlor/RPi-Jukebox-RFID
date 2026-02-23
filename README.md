@@ -15,13 +15,18 @@
 
 Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, playlists, podcasts, web streams and spotify triggered by RFID cards. All plug and play via USB, no soldering iron needed. It also features GPIO buttons control support.
 
-## The new Phoniebox Calendar is here
+## Everyone builds an original
 
-Another bunch of wonderful designs!
+This is one of the most inspiring and gratifying experiences: Phoniebox is about Open Source AND Open Design. 
 
-To share your design or see all previous calendars and designs of the community visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY).
+See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
 
-![The Phoniebox Calendar](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/calendar/latest-Phoniebox-Calendar.jpg "The Phoniebox Calendar")
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Steph-20171215_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Elsa-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
+![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
 
 ## Install Phoniebox
 
@@ -200,6 +205,10 @@ or donate via [PayPal](https://www.paypal.com) to <micz.flor@web.de> using the *
 
 ## Media
 
+### Phoniebox Gallery
+
+Visit the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
+
 ### Videos and Screenshots
 
 <a href="https://youtu.be/7GI0VdPehQI" target="_blank"><img src="https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/iFun-YouTube.jpg" alt="Prototype of the RFID jukebox" width="800" height="450" border="1" /></a>
@@ -237,16 +246,6 @@ The **web app** runs on any device and is mobile optimised. It provides:
 * Register new RFID cards, manage Phoniebox settings, display system info and edit the wifi connection.
 * Covers displayed in the web app (files called `cover.jpg`).
 
-### Phoniebox Gallery
-
-See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
-
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Steph-20171215_h90-01.jpg)
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Elsa-20171210_h90-01.jpg)
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/Geliras-20171228-Jukebox-01-h90.jpg)
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/UlliH-20171210_h90-01.jpg)
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/KingKahn-20180101-Jukebox-01-h90.jpg)
-![Caption](https://raw.githubusercontent.com/wiki/MiczFlor/RPi-Jukebox-RFID/img/gallery/hailogugo-20171222-h90-01.jpg)
 
 ## Sustainability
 
