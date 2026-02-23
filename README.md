@@ -208,9 +208,9 @@ See the Phoniebox code in action, watch this video and read the blog post from [
 
 **We love Tech** published a video screencast on *how to build your Phoniebox* (in German), you can find all the steps and see the final product here:
 
-|  |  |   |
+| Installation und Hardware | Web App and Audio / Spotify | The finished Phoniebox in action |
 | --- | --- | --- |
-| <a href="https://youtu.be/spHDGSxckmw" target="_blank"><img src="https://i.ytimg.com/vi/spHDGSxckmw/hqdefault.jpg"><br>Installation und Hardware</a> | <a href="https://youtu.be/9ZSKFoWr9WY" target="_blank"><img src="https://i.ytimg.com/vi/9ZSKFoWr9WY/hqdefault.jpg"><br>Web App and Audio / Spotify</a> | <a href="https://youtu.be/YucQuwUD7XE" target="_blank"><img src="https://i.ytimg.com/vi/YucQuwUD7XE/hqdefault.jpg"><br>The finished Phoniebox in action</a> |
+| [![Installation und Hardware](https://i.ytimg.com/vi/spHDGSxckmw/hqdefault.jpg)](https://youtu.be/spHDGSxckmw) | [![Web App and Audio / Spotify](https://i.ytimg.com/vi/9ZSKFoWr9WY/hqdefault.jpg)](https://youtu.be/9ZSKFoWr9WY) | [![The finished Phoniebox in action](https://i.ytimg.com/vi/YucQuwUD7XE/hqdefault.jpg)](https://youtu.be/YucQuwUD7XE) |
 
 A new video screencast about
 
