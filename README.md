@@ -17,7 +17,7 @@ Phoniebox is a contactless jukebox for the Raspberry Pi, playing audio files, pl
 
 ## Everyone builds an original
 
-This is one of the most inspiring and gratifying experiences: Phoniebox is about Open Source AND Open Design. 
+This is one of the most inspiring and gratifying experiences: Phoniebox is about Open Source AND Open Design.
 
 See innovation, upcycling and creativity in the [Phoniebox Gallery](https://github.com/MiczFlor/RPi-Jukebox-RFID/wiki/GALLERY)
 
@@ -245,7 +245,6 @@ The **web app** runs on any device and is mobile optimised. It provides:
 * Manage files and folders via the web app.
 * Register new RFID cards, manage Phoniebox settings, display system info and edit the wifi connection.
 * Covers displayed in the web app (files called `cover.jpg`).
-
 
 ## Sustainability
 
