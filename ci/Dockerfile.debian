@@ -1,5 +1,5 @@
 # Base Target to build and install all needed base configuration and packages. Specifie the needed platform with the docker '--platform XXX' option
-ARG DEBIAN_CODENAME=bullseye
+ARG DEBIAN_CODENAME=bookworm
 ARG BASE_TEST_IMAGE=test-code
 FROM debian:${DEBIAN_CODENAME}-slim AS base
 ARG DEBIAN_CODENAME
