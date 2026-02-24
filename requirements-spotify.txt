@@ -2,5 +2,5 @@
 # You need to install these with `sudo pip install --upgrade --force-reinstall -r requirements-spotify.txt`
 Mopidy-Local
 Mopidy-MPD
-Mopidy-Iris==3.69.3
+Mopidy-Iris==3.70.0
 Mopidy-Spotify==5.0.0a3
