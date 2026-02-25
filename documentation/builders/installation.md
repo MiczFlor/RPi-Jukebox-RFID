@@ -16,7 +16,7 @@ This instruction uses the official [Raspberry Pi Imager](https://www.raspberrypi
 1. Model: select "No filtering"
 1. OS: select **Raspberry Pi OS (other)** and then **Raspberry Pi OS (Legacy, 32-bit) Lite** (no desktop environment).
 1. Storage: Select your Micro SD card (your card will be formatted)
-1. Customize: 
+1. Customize:
     * Hostname: choose hostname for the network (e.g. "phoniebox")
     * Localization: choose acording to your location
     * User: choose a username and a password
