@@ -14,8 +14,7 @@ This instruction uses the official [Raspberry Pi Imager](https://www.raspberrypi
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 1. Start the Raspberry Pi Imager
 1. Model: select "No filtering"
-1. OS: select **Raspberry Pi OS (other)** and then **Raspberry Pi OS (Legacy, 32-bit) Lite** (no desktop environment). *64-bit is currently not supported*.
-    * For Pi 4 and newer also check [this](#workaround-for-64-bit-kernels-pi-4-and-newer).
+1. OS: select **Raspberry Pi OS (other)** and then **Raspberry Pi OS (Legacy, 32-bit) Lite** (no desktop environment).
 1. Storage: Select your Micro SD card (your card will be formatted)
 1. Customize: 
     * Hostname: choose hostname for the network (e.g. "phoniebox")
@@ -33,8 +32,7 @@ This instruction uses the official [Raspberry Pi Imager](https://www.raspberrypi
 1. Connect a Micro SD card to your computer (preferable an SD card with high read throughput)
 1. Start the Raspberry Pi Imager
 1. Click on "Raspberry Pi Device" and select "No filtering"
-1. As operating system select **Raspberry Pi OS (other)** and then **Raspberry Pi OS (Legacy, 32-bit) Lite** (no desktop environment). *64-bit is currently not supported*.
-    * For Pi 4 and newer also check [this](#workaround-for-64-bit-kernels-pi-4-and-newer).
+1. As operating system select **Raspberry Pi OS (other)** and then **Raspberry Pi OS (Legacy, 32-bit) Lite** (no desktop environment).
 1. Select your Micro SD card (your card will be formatted)
 1. After you click `Next`, a prompt will ask you if you like to customize the OS settings
     * Click `Edit Settings`
@@ -128,19 +126,6 @@ If you need Wifi, add the information now
 * select `1 - Wireless LAN`
 * enter Wifi information
 
-</details>
-
-#### Workaround for 64-bit Kernels (Pi 4 and newer)
-
-<details>
-
-The installation process checks if a 32-bit OS is running, as 64-bit is currently not supported.
-This check also fails if the kernel is running in 64-bit mode. This is the default for Raspberry Pi models 4 and newer.
-
-To be able to run the installation, you have to switch to the 32-bit mode by modifying the `config.txt` and add/change the line `arm_64bit=0`.
-Up to Bullseye, the `config.txt` file is located at `/boot/`. Since Bookworm, the location changed to `/boot/firmware/` ([see here](https://www.raspberrypi.com/documentation/computers/config_txt.html)).
-
-Reboot before you proceed.
 </details>
 
 ## Install Phoniebox software
