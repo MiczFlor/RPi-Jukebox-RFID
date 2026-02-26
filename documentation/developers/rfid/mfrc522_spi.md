@@ -36,7 +36,7 @@ The IRQ GPIO pin for card detection. This is an optional pin, but required for i
 
 If not used,
 
-- uses pollig mode instead of interrupt event
+- uses polling mode instead of interrupt event
 - has high CPU usage and may impact system performance!
 - Only use this mode if you have serious interrupt conflicts
 
