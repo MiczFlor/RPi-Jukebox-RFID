@@ -26,25 +26,28 @@ The SPI Bus ID. Fixed to 0, because other bus IDs also need re-configuration of 
 The SPI Chip Select (CEx) pin. Mandatory.
 
 This can be
+
 - 0 = GPIO8 (SPI0 CE0) - Pin 24
 - 1 = GPIO7 (SPI0 CE1) - Pin 26
 
-For other SPI buses 
+For other SPI buses
 
 ### pin_irq *(default=24)*
 
 The IRQ GPIO pin for card detection. This is an optional pin, but required for interrupt-driven card detection.
 
 If not used,
+
 - uses pollig mode instead of interrupt event
 - has high CPU usage and may impact system performance!
 - Only use this mode if you have serious interrupt conflicts
 
 ### pin_rst *(default=25)*
 
-The Reset GPIO pin for hardware reset. This is an optional pin. 
+The Reset GPIO pin for hardware reset. This is an optional pin.
 
 If not used,
+
 - hardware reset will only be performed by power-on-reset. This has been tested and works fine.
 - you **must** tie the reset pin of the MFRC522 board **high**!
 
