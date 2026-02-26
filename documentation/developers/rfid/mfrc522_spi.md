@@ -38,7 +38,7 @@ If not used:
 
 - uses polling mode instead of interrupt event
 - has high CPU usage and may impact system performance!
-- Only use this mode if you have serious interrupt conflicts
+- only use this mode if you have serious interrupt conflicts
 
 ### pin_rst *(default=25)*
 
