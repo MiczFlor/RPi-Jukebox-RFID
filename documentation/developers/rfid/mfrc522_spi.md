@@ -47,7 +47,7 @@ The Reset GPIO pin for hardware reset. This is an optional pin.
 If not used:
 
 - hardware reset will only be performed by power-on-reset. This has been tested and works fine.
-- you **must** tie the reset pin of the MFRC522 board **high**!
+- you **_must_** tie the reset pin of the MFRC522 board **_high_**!
 
 ### mode_legacy *(default=false)*
 
