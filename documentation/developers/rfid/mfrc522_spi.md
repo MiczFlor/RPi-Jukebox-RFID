@@ -17,11 +17,11 @@ are just routed through to spidev. Have a look at the spidev
 documentation for details if you really want to use a different SPI bus.
 The default setup makes most sense for almost everyone.
 
-### spi_bus *(0)*
+### spi_bus _(0)_
 
 The SPI Bus ID. Fixed to 0, because other bus IDs also need re-configuration of the RPi (refer to RPi documentation).
 
-### spi_ce *(default=0)*
+### spi_ce _(default=0)_
 
 The SPI Chip Select (CEx) pin. Mandatory.
 
@@ -30,7 +30,7 @@ This can be:
 - 0 = GPIO8 (SPI0 CE0) - Pin 24
 - 1 = GPIO7 (SPI0 CE1) - Pin 26
 
-### pin_irq *(default=24)*
+### pin_irq _(default=24)_
 
 The IRQ GPIO pin for card detection. This is an optional pin, but required for interrupt-driven card detection.
 
@@ -40,7 +40,7 @@ If not used:
 - has high CPU usage and may impact system performance!
 - only use this mode if you have serious interrupt conflicts
 
-### pin_rst *(default=25)*
+### pin_rst _(default=25)_
 
 The Reset GPIO pin for hardware reset. This is an optional pin.
 
@@ -49,15 +49,15 @@ If not used:
 - hardware reset will only be performed by power-on-reset. This has been tested and works fine.
 - you **_must_** tie the reset pin of the MFRC522 board **_high_**!
 
-### mode_legacy *(default=false)*
+### mode_legacy _(default=false)_
 
 4-byte-only legacy mode: previously the pirc522 library could only read the lower 4 bytes of a card UID. It can now read 4-byte and full 7-byte UIDs. Legacy mode turns back to the old behaviour. This only makes sense, if you already have an large RFID collection and do not want to re-assign every card.
 
-### antenna_gain *(default=4)*
+### antenna_gain _(default=4)_
 
 Antenna gain factor of the RFID reader chip on the MFRC522 board.
 
-### log_all_cards *(default=false)*
+### log_all_cards _(default=false)_
 
 If true all card read-outs will be logged, even when card is permanently on reader. Only for debugging.
 
