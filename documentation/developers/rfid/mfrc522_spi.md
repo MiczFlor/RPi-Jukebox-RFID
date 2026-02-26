@@ -30,8 +30,6 @@ This can be
 - 0 = GPIO8 (SPI0 CE0) - Pin 24
 - 1 = GPIO7 (SPI0 CE1) - Pin 26
 
-For other SPI buses
-
 ### pin_irq *(default=24)*
 
 The IRQ GPIO pin for card detection. This is an optional pin, but required for interrupt-driven card detection.
