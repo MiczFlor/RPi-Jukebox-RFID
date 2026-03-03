@@ -1,5 +1,9 @@
 # Update
 
+- [Updating your Jukebox Version 3](#updating-your-jukebox-version-3)
+  - [Manually upgrade to the latest version (not recommended)](#manually-upgrade-to-the-latest-version-not-recommended)
+- [Migration Path from Version 2](#migration-path-from-version-2)
+
 ## Updating your Jukebox Version 3
 
 Currently there is no functionality to update an existing installation to the next release.
@@ -16,7 +20,7 @@ To switch to the latest version
     diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
     ```
 
-### Manually upgrade to the latest version
+### Manually upgrade to the latest version (not recommended)
 
 > [!CAUTION]
 > This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version (The Upgrade Feature will come in the future [#2304](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2304)). Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
@@ -110,7 +114,7 @@ Revert to Backup If Needed:
     mv build-backup build
     ```
 
-## Migration Path from Version 2
+## Migration path from Version 2
 
 There is no update path coming from Version 2.x of the Jukebox.
 You need to do a fresh install of Version 3 on a fresh Raspberry Pi OS image.
