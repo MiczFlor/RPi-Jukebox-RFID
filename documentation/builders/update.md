@@ -29,44 +29,46 @@ If you only want to update a few recent commits, this following explanation outl
 
 Typically, 4 steps need to be considered
 
-1. Backup Local Changes (Optional)
-1. Pull the latest version from Github
-1. Replace the Web App with the most recent build
-1. Optional: Update the config files
+1. Backup local changes
+1. Pull the latest changes and run update commands
+1. Update Web App (if installed, and an official release branch is used)
+1. Update the config files
 
-### Fetch the most recent version from Github
+#### In detail
 
-First, SSH into your Phoniebox.
+1. Backup local changes
 
-```bash
-cd ~/RPi-Jukebox-RFID/
-```
+    - SSH into your Phoniebox and open the installation folder
 
-Second, get the latest version from Github. Depending on your proficiency with Git, you can also checkout a specific branch or version.
-Be aware, in case you have made changes to the software, stash them to keep them safe.
+        ```bash
+        cd ~/RPi-Jukebox-RFID/
+        ```
 
-1. Backup Local Changes (Optional):
     - Stash your local changes:
 
         ```bash
         git stash push -m "Backup before pull"
         ```
 
-    - Create a Backup Branch (and potentially delete it in case it already exists):
+    - Create a backup branch (and potentially delete an already existing one):
 
         ```bash
         git branch -D backup-before-pull
         git branch backup-before-pull
         ```
 
-1. Pull Latest Changes:
+1. Pull the latest changes and run update commands:
 
-   ```bash
-   git pull
-   ```
+    ```bash
+    git pull
+    ```
 
-1. Update Web App:
-    1. Backup the current webapp build
+    After the `pull` some checks are triggered to make recommendations about needed update commands. Run the commands described in the output. (Ignore the Web App build commands if you don't have the Web App installed, or an official release branch is used).
+
+    Note the commands in case of an backup restore.
+
+1. Update Web App (if installed, and an official release branch is used):
+    - Backup the current webapp build
 
         ```bash
         cd ~/RPi-Jukebox-RFID/src/webapp
@@ -74,9 +76,9 @@ Be aware, in case you have made changes to the software, stash them to keep them
         mv build build-backup
         ```
 
-    1. Go to the [Github Release page](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases) find the latest `Pre-release` release (typically Alpha).
-    1. Under "Assets", find the latest Web App release called "webapp-build-latest.tar.gz" and copy the URL.
-    1. On your Phoniebox, download the file and extract the archive. Afterwards, delete the archive
+    - Go to the [Github Release page](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases) find the latest release for the  branch used.
+    - Under "Assets", find the latest Web App release called "webapp-build-latest.tar.gz" and copy the URL.
+    - On your Phoniebox, download the file and extract the archive. Afterwards, delete the archive
 
         ```bash
         wget {URL}
@@ -84,20 +86,34 @@ Be aware, in case you have made changes to the software, stash them to keep them
         rm -rf webapp-build-latest.tar.gz
         ```
 
-1. Reboot the Phoniebox:
+1. Update the config files
+
+    - Check if new mandatory settings have been added
+
+        ``` bash
+        diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
+        ```
+
+Reboot the Phoniebox:
 
    ```bash
    sudo reboot
    ```
 
-1. Verify the version of your Phoniebox in the settings tab.
+Verify the version of your Phoniebox in the settings tab.
 
-Revert to Backup If Needed:
+#### Revert to backup if needed
 
-- Checkout the backup branch:
+- SSH into your Phoniebox and open the installation folder
 
     ```bash
-    git checkout backup-before-pull
+    cd ~/RPi-Jukebox-RFID/
+    ```
+
+- Reset current branch to the backup state:
+
+    ```bash
+    git reset --hard backup-before-pull
     ```
 
 - Reapply stashed changes (if any):
@@ -105,6 +121,8 @@ Revert to Backup If Needed:
     ```bash
     git stash pop
     ```
+
+- Rerun noted update commands
 
 - Revert Web App:
 
