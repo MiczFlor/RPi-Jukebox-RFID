@@ -23,11 +23,12 @@ To switch to the latest version
 ### Manually upgrade to the latest version (not recommended)
 
 > [!CAUTION]
-> This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version (The Upgrade Feature will come in the future [#2304](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2304)). Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
+> **This process is strongly discouraged to use in general.**
+>
+> It can help in some specific cases, like applying hotfixes on the `future3/main` branch or a few commits on the `future3/develop` branch.
+This process may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution and note extra information in the release notes.
 
-If you only want to update a few recent commits, this following explanation outlines the steps to do so
-
-Typically, 4 steps need to be considered
+Typically these steps need to be considered
 
 1. Backup local changes
 1. Pull the latest changes and run update commands
