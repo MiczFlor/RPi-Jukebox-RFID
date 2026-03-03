@@ -2,17 +2,20 @@
 
 ## Updating your Jukebox Version 3
 
-### Update from v3.5.0 and prior
+Currently there is no functionality to update an existing installation to the next release.
+This is planned for a future release ([#2304](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2304))
 
-As there are some significant changes in the Jukebox installation, no updates can be performed with the installer.
-Please backup your './shared' folder and changed files and run a new installation on a fresh image.
-Restore your old files after the new installation was successful and check if new mandatory settings have been added.
+To switch to the latest version
 
-``` bash
-$ diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
-```
+- back up your './shared' folder and changed files
+- perform a new installation on a fresh image
+- restore your backed up files after the new installation was successful
+- check if new mandatory settings have been added
+    ``` bash
+    diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
+    ```
 
-## Manually upgrade to the latest version
+### Manually upgrade to the latest version
 
 > [!CAUTION]
 > This documentation is only recommended for users running on `future3/develop` branch. For optimal system updates, it is strongly recommended to utilize the upgrade feature when transitioning to the next version (The Upgrade Feature will come in the future [#2304](https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2304)). Manual updates may necessitate specific migration steps and, if overlooked, could result in system failure. Please use these steps with caution.
