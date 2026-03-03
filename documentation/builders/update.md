@@ -11,6 +11,7 @@ To switch to the latest version
 - perform a new installation on a fresh image
 - restore your backed up files after the new installation was successful
 - check if new mandatory settings have been added
+
     ``` bash
     diff shared/settings/jukebox.yaml resources/default-settings/jukebox.default.yaml
     ```
