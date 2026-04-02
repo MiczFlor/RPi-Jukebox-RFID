@@ -185,7 +185,7 @@ jobs:
     
     steps:
        - name: Artifact Delete Docker Image
-         uses: geekyeggo/delete-artifact@v5
+         uses: geekyeggo/delete-artifact@v6
          with:
            name: ${{ needs.build.outputs.image_file_name }}
            failOnError: false
