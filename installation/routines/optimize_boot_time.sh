@@ -8,6 +8,18 @@ OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6="ipv6.disable=1"
 OPTIMIZE_DHCP_CONF_HEADER="## Jukebox DHCP Config"
 OPTIMIZE_BOOT_CONF_HEADER="## Jukebox Boot Config"
 
+_optimize_get_boot_cmdline_options() {
+    local options="${OPTIMIZE_BOOT_CMDLINE_OPTIONS}"
+
+    if [ "$ENABLE_KIOSK_MODE" = true ] && [ "$(is_debian_version_at_least 12)" = true ] ; then
+        options="${options/consoleblank=1 /}"
+        options="${options/ consoleblank=1/}"
+        options="${options/consoleblank=1/}"
+    fi
+
+    echo "$options"
+}
+
 _optimize_disable_irrelevant_services() {
   log "  Disable keyboard-setup.service"
   sudo systemctl disable keyboard-setup.service
@@ -115,7 +127,7 @@ _optimize_handle_boot_logs() {
   if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
     log "  Disable boot logs"
 
-    _add_options_to_cmdline "${OPTIMIZE_BOOT_CMDLINE_OPTIONS}"
+    _add_options_to_cmdline "$(_optimize_get_boot_cmdline_options)"
   fi
 }
 
@@ -187,7 +199,7 @@ _optimize_check() {
     fi
 
     if [ "$DISABLE_BOOT_LOGS_PRINT" = true ] ; then
-        for option in $OPTIMIZE_BOOT_CMDLINE_OPTIONS
+        for option in $(_optimize_get_boot_cmdline_options)
         do
             verify_file_contains_string_once $option "${cmdlineFile}"
         done
