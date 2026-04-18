@@ -32,7 +32,12 @@ $replace = array("ae","oe","ue","Ae","Oe","Ue","ss", "");
 /*****************************************************************************************/
 
 if(isset($_GET['rss'])) {
-    $filesMp3 = unserialize($_GET['rss']);
+    // Use json_decode instead of unserialize to prevent PHP Object Injection (CWE-502)
+    $filesMp3 = json_decode($_GET['rss'], true);
+    if (!is_array($filesMp3)) {
+        // Fallback: try unserialize with allowed_classes=false for backwards compatibility
+        $filesMp3 = unserialize($_GET['rss'], ['allowed_classes' => false]);
+    }
     $title = urldecode($_GET['title']);
     phoniepodcastxml($filesMp3, $title);
 } else {
