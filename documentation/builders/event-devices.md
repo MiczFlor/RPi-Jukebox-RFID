@@ -27,7 +27,7 @@ And add the following section with the plugin specific configuration:
 
 ``` yaml
 evdev:
-  enabled: true
+  enable: true
   config_file: ../../shared/settings/evdev.yaml
 ```
 
