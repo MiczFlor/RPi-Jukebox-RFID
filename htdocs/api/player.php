@@ -19,17 +19,17 @@ if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
     file_put_contents("../../logs/debug.log", "\n  # \$_SERVER['REQUEST_METHOD']: " . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
 }
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    handlePut();
+    handlePlayerPut();
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    handleGet();
+    handlePlayerGet();
 } else {
     http_response_code(405);
 }
 
-function handlePut() {
+function handlePlayerPut() {
     global $debugLoggingConf;
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handlePut() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # function handlePlayerPut() ", FILE_APPEND | LOCK_EX);
     }
 
     $body = file_get_contents('php://input');
@@ -50,7 +50,7 @@ function handlePut() {
     }
 }
 
-function handleGet() {
+function handlePlayerGet() {
     global $debugLoggingConf;
     global $globalConf;    
     $statusCommand = "status\ncurrentsong\nclose";
@@ -99,7 +99,7 @@ function handleGet() {
     $responseList['chapters'] = $mappedChapters;
 
     if ($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handleGet() ", FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # function handlePlayerGet() ", FILE_APPEND | LOCK_EX);
         file_put_contents("../../logs/debug.log", "\n\$responseList: " . json_encode($responseList) . $_SERVER['REQUEST_METHOD'], FILE_APPEND | LOCK_EX);
     }
 

@@ -18,14 +18,14 @@ if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
 include 'common.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    handleGet();
+    handlePlaylistGet();
 } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    handlePut();
+    handlePlaylistPut();
 } else {
     http_response_code(405);
 }
 
-function handleGet() {
+function handlePlaylistGet() {
     $statusCommand = "echo 'playlistinfo\nclose' | nc -w 1 localhost 6600";
     $playListInfoResponse = execSuccessfully($statusCommand);
     $playList = array();
@@ -81,14 +81,14 @@ function handleGet() {
     echo json_encode($playList);
 }
 
-function handlePut() {
+function handlePlaylistPut() {
     global $debugLoggingConf;
     if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
-        file_put_contents("../../logs/debug.log", "\n  # function handlePut() " , FILE_APPEND | LOCK_EX);
+        file_put_contents("../../logs/debug.log", "\n  # function handlePlaylistPut() " , FILE_APPEND | LOCK_EX);
     }
     $body = file_get_contents('php://input');
     $json = json_decode(trim($body), TRUE);
-    if (validateRequest($json)) {
+    if (validatePlaylistRequest($json)) {
         $playlist = $json['playlist'];
         if($debugLoggingConf['DEBUG_WebApp_API'] == "TRUE") {
             file_put_contents("../../logs/debug.log", "\n  # \$playlist:" . $playlist , FILE_APPEND | LOCK_EX);
@@ -101,7 +101,7 @@ function handlePut() {
     }
 }
 
-function validateRequest($json) {
+function validatePlaylistRequest($json) {
     if ($json['playlist'] == null) {
         http_response_code(400);
         echo "playlist attribute missing";

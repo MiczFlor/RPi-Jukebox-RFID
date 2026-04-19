@@ -22,7 +22,7 @@ class PlayListTest extends TestCase {
     /**
      * @runInSeparateProcess
      */
-    public function testReturnHandleGet() {
+    public function testReturnHandlePlaylistGet() {
         $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
         $exec->expects($this->once())->willReturnCallback(
             function ($command, &$output, &$returnValue) {
@@ -46,24 +46,24 @@ class PlayListTest extends TestCase {
         $header = $this->getFunctionMock(__NAMESPACE__, 'header');
         $header->expects($this->once());
         $this->expectOutputString('{"tracks":[{"file":"First track","pos":"0","time":"111"},{"file":"Second track","pos":"1","time":"222"},{"file":"Third track","pos":"2","time":"333"}],"albumLength":666}');
-        handleGet();
+        handlePlaylistGet();
     }
 
     /**
      * @runInSeparateProcess
      */
-    public function testHandlePutFails() {
+    public function testHandlePlaylistPutFails() {
         $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
         $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue(null));
 
         $this->expectOutputString('playlist attribute missing');
-        handlePut();
+        handlePlaylistPut();
     }
 
     /**
      * @runInSeparateProcess
      */
-    public function testHandlePutSuccess() {
+    public function testHandlePlaylistPutSuccess() {
         $file_get_contents = $this->getFunctionMock(__NAMESPACE__, 'file_get_contents');
         $file_get_contents->expects($this->atLeastOnce())->will($this->returnValue('{"playlist":"The playlist I want to hear", "recursive":"true"}'));
 
@@ -76,6 +76,6 @@ class PlayListTest extends TestCase {
         );
 
         $this->expectOutputString('');
-        handlePut();
+        handlePlaylistPut();
     }
 }

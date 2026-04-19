@@ -22,7 +22,7 @@ class PlayerTest extends TestCase {
     /**
      * @group real-env
      */
-    public function testReturnHandleGet() {
+    public function testReturnHandlePlayerGet() {
         $exec = $this->getFunctionMock(__NAMESPACE__, 'exec');
         $exec->expects($this->once())->willReturnCallback(
             function ($command, &$output, &$returnValue) {
@@ -34,6 +34,6 @@ class PlayerTest extends TestCase {
         $header = $this->getFunctionMock(__NAMESPACE__, 'header');
         $header->expects($this->once());
         $this->expectOutputString('{"key_one":"Value one","key_two":"Value two with spaces","key_three":"Value three with uppercase key"}');
-        handleGet();
+        handlePlayerGet();
     }
 }
