@@ -40,6 +40,21 @@ concurrency:
 jobs:
 
   # Build container and run tests. Duplication of job intended for better visualization.
+  run_trixie_armv7:
+    name: 'trixie armv7'
+    uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+    with:
+      debian_codename: 'trixie'
+      platform: linux/arm/v7
+
+  # # can be activate on test branches
+  # run_trixie_armv6:
+  #   name: 'trixie armv6'
+  #   uses: ./.github/workflows/test_docker_debian_codename_sub.yml
+  #   with:
+  #     debian_codename: 'trixie'
+  #     platform: linux/arm/v6
+
   run_bookworm_armv7:
     name: 'bookworm armv7'
     uses: ./.github/workflows/test_docker_debian_codename_sub.yml
