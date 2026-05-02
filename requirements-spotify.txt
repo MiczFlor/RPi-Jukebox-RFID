@@ -3,4 +3,4 @@
 Mopidy-Local
 Mopidy-MPD
 Mopidy-Iris==3.70.0
-Mopidy-Spotify==5.0.0a3
+Mopidy-Spotify==5.0.0
