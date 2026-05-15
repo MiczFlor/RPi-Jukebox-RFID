@@ -282,7 +282,7 @@ sudo mpd --kill
 Otherwise you might get the error message:
 
 ``` bash
-docker-compose -f docker-compose.yml -f docker-compose.linux.yml up
+docker compose -f docker/docker-compose.yml -f docker/docker-compose.linux.yml up
 Starting mpd ...
 Starting mpd ... error
 (...)
