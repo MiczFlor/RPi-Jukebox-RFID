@@ -45,7 +45,7 @@ jobs:
         sudo apt-get install -y libasound2-dev pulseaudio
 
         CUR_DIR="$(pwd)"
-        mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
+        mkdir -p tmp && cd tmp && wget -q https://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
         cd "${CUR_DIR}" && sudo rm -rf tmp > /dev/null
 
         python3 -m venv .venv

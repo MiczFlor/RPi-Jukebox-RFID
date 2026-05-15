@@ -37,33 +37,16 @@ concurrency:
 
 jobs:
 
-  # Build container and run tests. Duplication of job intended for better visualization.
-  run_bookworm_armv7:
-    name: 'bookworm armv7'
+  run_trixie_armv7:
+    name: 'trixie armv7'
     uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
-      debian_codename: 'bookworm'
+      debian_codename: 'trixie'
       platform: linux/arm/v7
 
-  # # can be activate on test branches, currently failing
-  # run_bookworm_armv6:
-  #   name: 'bookworm armv6'
-  #   uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
-  #   with:
-  #       debian_codename: 'bookworm'
-  #       platform: linux/arm/v6
-
-  run_bullseye_armv7:
-    name: 'bullseye armv7'
+  run_trixie_arm64:
+    name: 'trixie arm64'
     uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
     with:
-      debian_codename: 'bullseye'
-      platform: linux/arm/v7
-
-  # # can be activate on test branches, currently failing
-  # run_bullseye_armv6:
-  #   name: 'bullseye armv6'
-  #   uses: ./.github/workflows/test_docker_debian_codename_sub_v3.yml
-  #   with:
-  #       debian_codename: 'bullseye'
-  #       platform: linux/arm/v6
+      debian_codename: 'trixie'
+      platform: linux/arm64
