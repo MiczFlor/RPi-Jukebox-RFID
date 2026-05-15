@@ -8,9 +8,12 @@ espeak
 ffmpeg
 libasound2-dev
 mpg123
-pulseaudio
-pulseaudio-module-bluetooth
-pulseaudio-utils
+pipewire
+pipewire-pulse
+pipewire-audio
+wireplumber
+libspa-0.2-bluetooth
+pulseaudio-utils # provides pactl/paplay; compatible with pipewire-pulse
 python3
 python3-venv
 python3-dev

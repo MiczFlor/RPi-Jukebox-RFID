@@ -5,7 +5,6 @@ JUKEBOX_ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
 JUKEBOX_ZMQ_PREFIX="/usr/local"
 JUKEBOX_ZMQ_VERSION="4.3.5"
 
-JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
 # Functions
@@ -26,10 +25,10 @@ _jukebox_core_build_and_install_lg() {
     local lg_filename="lg"
     local lg_zip_filename="${lg_filename}.zip"
 
-    # always build lg and lgpio from source as pypi wheels are incomplete (armv6, python3.13) or broken (bullseye)
-    # build needs apt packages "swig python3-dev"
+    # Always build lg and lgpio from source: PyPI lgpio wheels are incomplete
+    # (no armv6, no Python 3.13). Requires apt packages "swig python3-dev".
     mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
-    download_from_url "http://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
+    download_from_url "https://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
     unzip ${lg_zip_filename} || exit_on_error
     cd "${lg_filename}" || exit_on_error
     make && sudo make install
@@ -51,12 +50,6 @@ _jukebox_core_install_python_requirements() {
   _jukebox_core_build_and_install_lg
 
   pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
-}
-
-_jukebox_core_configure_pulseaudio() {
-  print_lc "  Copy PulseAudio configuration"
-  mkdir -p $(dirname "$JUKEBOX_PULSE_CONFIG")
-  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" "${JUKEBOX_PULSE_CONFIG}"
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
@@ -157,8 +150,6 @@ _jukebox_core_check() {
     fi
     log "  CHECK"
 
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
-
     verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
     verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
 
@@ -173,7 +164,6 @@ _run_setup_jukebox_core() {
     _jukebox_core_install_os_dependencies
     _jukebox_core_install_python_requirements
     _jukebox_core_build_and_install_pyzmq
-    _jukebox_core_configure_pulseaudio
     _jukebox_core_install_settings
     _jukebox_core_register_as_service
     _jukebox_core_check
