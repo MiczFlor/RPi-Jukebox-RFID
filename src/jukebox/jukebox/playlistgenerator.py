@@ -91,6 +91,8 @@ def decode_podcast_core(url, playlist):
     # Example url:
     # url = 'http://www.kakadu.de/podcast-kakadu.2730.de.podcast.xml'
     # url = 'https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast'
+    # url = 'https://feeds.simplecast.com/BqbsxVfO'
+
     try:
         r = requests.get(url)
     except Exception as e:
@@ -98,7 +100,7 @@ def decode_podcast_core(url, playlist):
         return
     if r.status_code != 200:
         logger.error(f"Got error code {r.status_code} fetching from '{url}'")
-    er = enclosure_re.findall(r.content.decode(r.encoding))
+    er = enclosure_re.findall(r.content.decode(r.encoding) or 'utf-8')
     if len(er) == 0:
         logger.error(f"Zero file entries in parsed content from '{url}'")
     for exp in er:
