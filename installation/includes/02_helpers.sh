@@ -286,6 +286,30 @@ verify_files_chown() {
     log "  CHECK"
 }
 
+# Check if the dir(s) has/have the expected owner.
+# Use this when only ownership matters and directory modes may depend on umask.
+verify_dirs_chown() {
+    local user_expected=$1
+    local group_expected=$2
+    local dirs="${@:3}"
+    log "  Verify '${user_expected}:${group_expected}' is set for '${dirs}'"
+
+    if [[ -z "${user_expected}" || -z "${group_expected}" || -z "${dirs}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    for dir in $dirs
+    do
+        test ! -d ${dir} && exit_on_error "ERROR: '${dir}' does not exists or is not a dir!"
+
+        user_actual=$(stat -c '%U' "${dir}")
+        group_actual=$(stat -c '%G' "${dir}")
+        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${dir}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
+        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${dir}' actual group '${group_actual}' differs from expected '${group_expected}'!"
+    done
+    log "  CHECK"
+}
+
 # Check if the dir(s) has/have the expected owner and modifications
 verify_dirs_chmod_chown() {
     local mod_expected=$1

@@ -143,7 +143,7 @@ _git_repo_check() {
     print_verify_installation
 
     verify_apt_packages git
-    verify_dirs_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${INSTALLATION_PATH}/.git"
+    verify_dirs_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${INSTALLATION_PATH}/.git"
 }
 
 _run_init_git_repo_from_tardir() {
