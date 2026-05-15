@@ -106,11 +106,8 @@ is_debian_version_at_least() {
 
 _get_boot_file_path() {
     local filename="$1"
-    if [ "$(is_debian_version_at_least 12)" = true ]; then
-        echo "/boot/firmware/${filename}"
-    else
-        echo "/boot/${filename}"
-    fi
+    # Trixie (and Bookworm) ship Pi firmware files under /boot/firmware/
+    echo "/boot/firmware/${filename}"
 }
 
 get_boot_config_path() {
