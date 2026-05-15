@@ -5,7 +5,7 @@
 #Released under the GPL3 Licence (https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 #Script to automatically switch to an Access Point when no Wifi connection is available
-#Developed on a Raspberry Pi PiOS Bookworm for use with Network Manager
+#Used on Raspberry Pi OS (Trixie / Bookworm) with NetworkManager
 
 #Additions where made for the Phoniebox project
 #https://github.com/MiczFlor/RPi-Jukebox-RFID

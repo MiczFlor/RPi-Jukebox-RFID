@@ -361,7 +361,6 @@ docker run -it --rm \
     -v $(PWD)/src/jukebox:/home/pi/RPi-Jukebox-RFID/src/jukebox \
     -v $(PWD)/shared/audiofolders:/home/pi/RPi-Jukebox-RFID/shared/audiofolders \
     -v ~/.config/pulse:/root/.config/pulse \
-    -v /usr/local/Cellar/pulseaudio/14.2/etc/pulse/:/etc/pulse \
     -e PULSE_SERVER=tcp:host.docker.internal:4713 \
     --name jukebox jukebox
 ```

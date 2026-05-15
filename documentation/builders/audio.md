@@ -42,11 +42,11 @@ $ aplay /usr/share/sounds/alsa/Front_Center.wav
 ```
 <!-- markdownlint-restore -->
 
-You can also play a sound to a specific sink without changing the default. PipeWire takes the target via the
-`PIPEWIRE_NODE` environment variable, identified by the sink name shown in `wpctl status`:
+You can also play a sound to a specific sink without changing the default. Use
+the sink ID shown by `wpctl status`:
 
 ```bash
-$ PIPEWIRE_NODE=<sink_name> pw-play /usr/share/sounds/alsa/Front_Center.wav
+$ pw-play --target=<id> /usr/share/sounds/alsa/Front_Center.wav
 ```
 
 ## Bluetooth

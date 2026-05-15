@@ -37,8 +37,8 @@ pulse:
   # For manual inspection of available sinks use:
   # $ wpctl status
   #
-  # Test sinks with (sink_name comes from `wpctl status`):
-  # $ PIPEWIRE_NODE=sink_name pw-play /usr/share/sounds/alsa/Front_Center.wav
+  # Test a sink with its ID from `wpctl status`:
+  # $ pw-play --target=<id> /usr/share/sounds/alsa/Front_Center.wav
   #
   # Parameters:
   # - alias       : user defined alias for better readability

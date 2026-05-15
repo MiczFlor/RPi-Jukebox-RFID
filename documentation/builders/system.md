@@ -5,8 +5,8 @@ A few words on how the system is setup and interacts.
 The system consists of
 
 1. [Music Player Daemon (MPD)](system.md#music-player-daemon-mpd) which we use for all music playback (local, stream, podcast, ...)
-2. [PulseAudio](system.md#pulseaudio) for flexible audio output support
-3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and PulseAudio and providing all the features
+2. [Audio (PipeWire)](system.md#audio-pipewire) for flexible audio output support
+3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and the audio outputs and providing all the features
 4. [Web App](system.md#web-app-ui) as User Interface (UI) for a web browser
 5. A set of [Configuration Tools](../developers/coreapps.md#configuration-tools) and a set of [Developer Tools](../developers/coreapps.md#developer-tools)
 
@@ -17,7 +17,7 @@ The system consists of
 ## Music Player Daemon (MPD)
 
 The Music Player Daemon runs as *user-local* service (not as system-wide service which is usually the default).
-This is important for the interaction with PulseAudio.
+This is important for the interaction with the user-session audio server.
 
 You will find the MPD configuration file under
 
