@@ -45,7 +45,7 @@ _mpd_check() {
 
     verify_apt_packages mpd mpc
 
-    verify_files_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${MPD_CONF_PATH}"
+    verify_files_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${MPD_CONF_PATH}"
 
     verify_file_contains_string "${AUDIOFOLDERS_PATH}" "${MPD_CONF_PATH}"
     verify_file_contains_string "${PLAYLISTS_PATH}" "${MPD_CONF_PATH}"

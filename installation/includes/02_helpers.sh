@@ -261,6 +261,31 @@ verify_files_chmod_chown() {
     log "  CHECK"
 }
 
+# Check if the file(s) has/have the expected owner.
+# Use this when only ownership matters; modes that depend on the install
+# user's umask (Trixie defaults to 002) should not be asserted.
+verify_files_chown() {
+    local user_expected=$1
+    local group_expected=$2
+    local files="${@:3}"
+    log "  Verify '${user_expected}:${group_expected}' is set for '${files}'"
+
+    if [[ -z "${user_expected}" || -z "${group_expected}" || -z "${files}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    for file in $files
+    do
+        test ! -f ${file} && exit_on_error "ERROR: '${file}' does not exists or is not a file!"
+
+        user_actual=$(stat -c '%U' "${file}")
+        group_actual=$(stat -c '%G' "${file}")
+        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${file}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
+        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${file}' actual group '${group_actual}' differs from expected '${group_expected}'!"
+    done
+    log "  CHECK"
+}
+
 # Check if the dir(s) has/have the expected owner and modifications
 verify_dirs_chmod_chown() {
     local mod_expected=$1
