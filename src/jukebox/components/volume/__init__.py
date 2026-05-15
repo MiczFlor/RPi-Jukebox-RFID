@@ -32,10 +32,9 @@ This means must also run as user process, as described in
 
 ## Misc
 
-PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration
-in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
-If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
+PulseAudio (and pipewire-pulse) may switch the sink automatically to a connecting
+bluetooth device when the module ``module-switch-on-connect`` is loaded. If loaded,
+it conflicts with the toggle-on-connect and the selected primary / secondary outputs
 from the Jukebox. Remove it from the configuration!
 
     ### Use hot-plugged devices like Bluetooth or USB automatically (LP: #1702794)
@@ -52,7 +51,8 @@ makes our life easier. Besides, it is only option to support Bluetooth at the mo
 
 ## Callbacks:
 
-The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
+The following callbacks are provided. Register callbacks with these adder functions
+(see their documentation for details):
 
 1. :func:`add_on_connect_callback`
 2. :func:`add_on_output_change_callbacks`
@@ -116,8 +116,11 @@ class PulseMonitor(threading.Thread):
             .. py:function:: func(card_driver: str, device_name: str)
                 :noindex:
 
-            :param card_driver: The PulseAudio card driver module,
-                e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
+            :param card_driver: The audio card driver as reported by the server.
+                On PulseAudio this is the module name
+                (e.g. :data:`module-bluez5-device.c`, :data:`module-alsa-card.c`).
+                On PipeWire (via pipewire-pulse) the value differs but the
+                ``device_name`` argument is still meaningful.
             :param device_name: The sound card device name as reported
                 in device properties
             """
@@ -208,10 +211,20 @@ class PulseMonitor(threading.Thread):
             # Find the newly connected card
             for card_info in self._pulse_inst.card_list():
                 if card_info.index == current_event.index:
-                    # Alsa device drivers (HifiBerry, USB, etc...) have field 'alsa.card_name',
-                    # bluetooth drivers have field 'device.description'. Any others? Don't know about other drivers -> Unknown
-                    device_name = card_info.proplist.get('device.description',
-                                                         card_info.proplist.get('alsa.card_name', 'Unknown'))
+                    # `device.api == 'bluez5'` and `device.bus == 'bluetooth'` are stable
+                    # across PulseAudio and PipeWire (via pipewire-pulse). Older code keyed off
+                    # `card_info.driver == 'module-bluez5-device.c'` which only matches PulseAudio.
+                    proplist = card_info.proplist
+                    is_bluetooth = (
+                        proplist.get('device.api') == 'bluez5'
+                        or proplist.get('device.bus') == 'bluetooth'
+                    )
+                    if is_bluetooth:
+                        device_name = proplist.get('device.description', 'Unknown')
+                    else:
+                        # Alsa device drivers (HifiBerry, USB, etc.) prefer 'alsa.card_name'
+                        device_name = proplist.get('alsa.card_name',
+                                                   proplist.get('device.description', 'Unknown'))
                     break
             else:
                 # This should never happen!
@@ -248,7 +261,8 @@ class PulseMonitor(threading.Thread):
     def run(self) -> None:
         """Starts the pulse monitor thread"""
         logger.info('Start Pulse Monitor Thread')
-        # <Enum event-mask [all autoload card client module null sample_cache server sink sink_input source source_output]>
+        # <Enum event-mask [all autoload card client module null sample_cache
+        #                    server sink sink_input source source_output]>
         self._pulse_inst.event_mask_set('card', 'sink')
         self._pulse_inst.event_callback_set(self._get_event)
 
@@ -634,10 +648,10 @@ def initialize():
 def finalize():
     global pulse_control
     # Set default output and start-up volume
-    # Note: PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-    # with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration.
-    # So, we shouldn't need to worry about it. Still, set output and startup volume close to each other
-    # to minimize bluetooth connection in between
+    # Note: PulseAudio (or pipewire-pulse) may switch the sink automatically to a connecting
+    # bluetooth device when ``module-switch-on-connect`` is loaded.
+    # If loaded, it conflicts with the toggle-on-connect logic below — see module docstring.
+    # Still, set output and startup volume close to each other to minimize bluetooth connection in between
     global pulse_control
     pulse_control.set_output(0)
     startup_volume = cfg.getn('pulse', 'startup_volume', default=None)
