@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 ARG UID
 ARG USER
 ARG HOME
-ENV INSTALLATION_PATH ${HOME}/RPi-Jukebox-RFID
+ENV INSTALLATION_PATH=${HOME}/RPi-Jukebox-RFID
 
 RUN test ${UID} -gt 0 && useradd -m -u ${UID} ${USER} || continue
 RUN usermod -aG pulse ${USER}
@@ -54,8 +54,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 # Install pyzmq Python dependency separately
-ENV ZMQ_PREFIX /opt/libzmq
-ENV ZMQ_DRAFT_API 1
+ENV ZMQ_PREFIX=/opt/libzmq
+ENV ZMQ_DRAFT_API=1
 COPY --from=libzmq ${ZMQ_PREFIX} ${ZMQ_PREFIX}
 RUN pip install -v pyzmq --no-binary pyzmq
 
