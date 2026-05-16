@@ -173,10 +173,18 @@ _optimize_check() {
 
         if [[ $(is_NetworkManager_enabled) == true ]]; then
             local active_profile=$(get_nm_active_profile)
-            local active_profile_path="/etc/NetworkManager/system-connections/${active_profile}.nmconnection"
-            verify_files_exists "${active_profile_path}"
-            verify_file_contains_string "${CURRENT_IP_ADDRESS}" "${active_profile_path}"
-            verify_file_contains_string "${CURRENT_GATEWAY}" "${active_profile_path}"
+            # Pi OS Trixie may render its NM connection from netplan, in which
+            # case the profile is not persisted as a .nmconnection keyfile.
+            # Ask NetworkManager directly for the resolved settings.
+            local nm_settings=$(nmcli -t -f ipv4.method,ipv4.addresses,ipv4.gateway connection show "${active_profile}")
+            log "  Verify static IP via nmcli for connection '${active_profile}'"
+            if [[ "${nm_settings}" != *"${CURRENT_IP_ADDRESS}"* ]]; then
+                exit_on_error "ERROR: nmcli does not report '${CURRENT_IP_ADDRESS}' on connection '${active_profile}':\n${nm_settings}"
+            fi
+            if [[ "${nm_settings}" != *"${CURRENT_GATEWAY}"* ]]; then
+                exit_on_error "ERROR: nmcli does not report gateway '${CURRENT_GATEWAY}' on connection '${active_profile}':\n${nm_settings}"
+            fi
+            log "  CHECK"
         fi
     fi
     if [ "$DISABLE_IPv6" = true ] ; then
