@@ -56,6 +56,7 @@ class MQTT(threading.Thread):
     def _subscribe(self):
         logger.debug("Subscribing to MQTT topics.")
         self._mqtt_client.message_callback_add(f'{base_topic}/cmd/#', self._on_cmd)
+        self._mqtt_client.subscribe(f'{base_topic}/cmd/#',0)
 
     def _on_cmd(self, client, userdata, msg):
         cmd = split_topic(topic=msg.topic)
