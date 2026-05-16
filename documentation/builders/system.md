@@ -52,28 +52,36 @@ The `systemd` service file is located at the default location for user services:
 /usr/lib/systemd/user/mpd.service
 ```
 
-## PulseAudio
+## Audio (PipeWire)
 
-We use PulseAudio for the audio output configuration. Check out the Audio Configuration page for details.
+On Pi OS Trixie the audio stack is **PipeWire** with `wireplumber` as its
+session manager and `pipewire-pulse` providing the PulseAudio-protocol socket
+that the Jukebox client (`pulsectl`) and MPD's `output { type "pulse" }`
+connect to. Native CLI tools are `wpctl` (sink management) and
+`pw-play` / `pw-cat` (playback).
 
-There is a number of reasons for that:
+We use this stack for a few reasons:
 
-* It is easier to support and setup different audio hardware. Over the years, many builders have tried many different ways to set up audio on their Jukebox so this become the most reliable and compatible solution
-* We can cleanly control and switch between different audio outputs independent of the playback software
-* The current Pi OS based on Bullseye does not allow another way to control Bluetooth based speakers, as Bluealsa is currently not working with Bluez 5
+* It is the default audio stack on current Pi OS; no extra setup is required.
+* It is easier to support a wide variety of audio hardware. Over the years,
+  many builders have tried different ways to set up audio on their Jukebox;
+  PipeWire is currently the most reliable and compatible option.
+* We can cleanly control and switch between different audio outputs
+  independently of the playback software.
+* Bluetooth speaker support is reliable through `wireplumber`'s bluez5 backend
+  (`libspa-0.2-bluetooth`).
 
-The PulseAudio configuration file is located at
-
-```text
-~/.config/pulse/default.pa
-```
+PipeWire reads its configuration from `/etc/pipewire/` and `~/.config/pipewire/`;
+`wireplumber` adds its own drop-ins under `/etc/wireplumber/` and
+`~/.config/wireplumber/`. The Jukebox installer does not ship custom config —
+the distro defaults are sufficient.
 
 Service control and service configuration file location is identical to MPD.
 
 ## Jukebox Core Service
 
 The [Jukebox Core Service](../developers/coreapps.md#Jukebox-Core) runs as a *user-local* service with the name `jukebox-daemon`.
-Similar to MPD, it's important that it does run as system-wide service to be able to interact with PulseAudio.
+Similar to MPD, it's important that it runs as a user service so it can talk to the audio server through the user session.
 
 The service can be controlled with the `systemctl`-command by adding the parameter `--user`
 
