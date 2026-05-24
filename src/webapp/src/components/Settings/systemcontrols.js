@@ -20,7 +20,13 @@ const SystemControls = () => {
       <CardHeader title={t('settings.systemcontrols.title')} />
       <Divider />
       <CardContent>
-        <Grid container direction="row" justifyContent="space-around" alignItems="center">
+        <Grid
+          container
+          direction="row"
+          sx={{
+            justifyContent: "space-around",
+            alignItems: "center"
+          }}>
           <Grid item>
             <RebootDialog />
           </Grid>

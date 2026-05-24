@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom';
 import { isNil, reject } from 'ramda';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Avatar,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Typography
-} from '@mui/material';
+import { Avatar, List, ListItemAvatar, ListItemButton, ListItemText, Typography } from '@mui/material';
 
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 
@@ -36,12 +29,10 @@ const CardsList = ({ cardsList }) => {
       : cardsList[cardId].func
 
     return (
-      <ListItem
-        button
+      <ListItemButton
         component={EditCardLink}
         data={{ id: cardId, ...cardsList[cardId] }}
-        key={cardId}
-      >
+        key={cardId}>
         <ListItemAvatar>
           <Avatar>
             <BookmarkIcon />
@@ -51,7 +42,7 @@ const CardsList = ({ cardsList }) => {
           primary={cardId}
           secondary={description}
         />
-      </ListItem>
+      </ListItemButton>
     );
   }
 

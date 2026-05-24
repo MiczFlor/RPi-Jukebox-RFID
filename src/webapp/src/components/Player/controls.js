@@ -67,12 +67,12 @@ const Controls = () => {
   return (
     <Grid
       container
-      alignItems="center"
       direction="row"
-      flexWrap="nowrap"
-      justifyContent="space-evenly"
-    >
-
+      sx={{
+        alignItems: "center",
+        flexWrap: "nowrap",
+        justifyContent: "space-evenly"
+      }}>
       {/* Shuffle */}
       <IconButton
         aria-label={labelShuffle()}

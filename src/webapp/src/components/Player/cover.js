@@ -9,7 +9,13 @@ const Cover = ({ coverImage }) => {
   const { t } = useTranslation();
 
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid
+      container
+      direction="row"
+      sx={{
+        justifyContent: "center",
+        alignItems: "center"
+      }}>
       <Paper
         elevation={3}
         sx={{
@@ -21,14 +27,13 @@ const Cover = ({ coverImage }) => {
         <Grid
           container
           direction="row"
-          justifyContent="center"
-          alignItems="center"
           sx={{
+            justifyContent: "center",
+            alignItems: "center",
             position: 'absolute',
             width: '100%',
-            height: '100%',
-          }}
-        >
+            height: '100%'
+          }}>
           {coverImage &&
             <img
               alt={t('player.cover.title')}

@@ -31,7 +31,12 @@ const OptionsSelector = ({
   };
 
   return (
-    <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
+    <Grid
+      container
+      sx={{
+        alignItems: "center",
+        marginTop: "20px"
+      }}>
       <Grid item xs={12}>
         <Typography>
           {t(optionLabel)}

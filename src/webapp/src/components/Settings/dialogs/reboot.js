@@ -62,59 +62,58 @@ export default function RebootDialog() {
     setShowError(false);
   };
 
-  return (
-    <>
-      <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-      >
-        {t('settings.dialogs.reboot.button-title')}
-      </Button>
-      <Dialog
-        open={dialogOpen}
-        onClose={handleCancelReboot}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {!waitingForReboot && t('settings.dialogs.reboot.title')}
-          {waitingForReboot && t('settings.dialogs.reboot.rebooting')}
-        </DialogTitle>
-        <DialogContent>
-          {
-            !waitingForReboot &&
-            <DialogContentText id="alert-dialog-description">
-              {t('settings.dialogs.reboot.description-confirm')}
-            </DialogContentText>
-          }
+  return (<>
+    <Button
+      variant="outlined"
+      onClick={handleClickOpen}
+    >
+      {t('settings.dialogs.reboot.button-title')}
+    </Button>
+    <Dialog
+      open={dialogOpen}
+      onClose={handleCancelReboot}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {!waitingForReboot && t('settings.dialogs.reboot.title')}
+        {waitingForReboot && t('settings.dialogs.reboot.rebooting')}
+      </DialogTitle>
+      <DialogContent>
+        {
+          !waitingForReboot &&
+          <DialogContentText id="alert-dialog-description">
+            {t('settings.dialogs.reboot.description-confirm')}
+          </DialogContentText>
+        }
 
-          {
-            waitingForReboot &&
-            <Grid container spacing={2}>
-              <Grid item xs={12} justifyContent="center">
-                <CircularProgress />
-              </Grid>
+        {
+          waitingForReboot &&
+          <Grid container spacing={2}>
+            <Grid item xs={12} sx={{
+              justifyContent: "center"
+            }}>
+              <CircularProgress />
             </Grid>
-          }
+          </Grid>
+        }
 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelReboot} color="secondary">
-            {t('general.buttons.cancel')}
-          </Button>
-          <Button onClick={doReboot} color="primary" autoFocus>
-            {t('settings.dialogs.reboot.button-title')}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar
-        id="error"
-        open={showError}
-        autoHideDuration={5000}
-        onClose={handleCloseError}
-        message={t('settings.dialogs.reboot.failed')}
-      />
-    </>
-  );
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancelReboot} color="secondary">
+          {t('general.buttons.cancel')}
+        </Button>
+        <Button onClick={doReboot} color="primary" autoFocus>
+          {t('settings.dialogs.reboot.button-title')}
+        </Button>
+      </DialogActions>
+    </Dialog>
+    <Snackbar
+      id="error"
+      open={showError}
+      autoHideDuration={5000}
+      onClose={handleCloseError}
+      message={t('settings.dialogs.reboot.failed')}
+    />
+  </>);
 }

@@ -33,8 +33,16 @@ const ShowCovers = () => {
   }
 
   return (
-    <Grid container direction="column" justifyContent="center">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+    <Grid container direction="column" sx={{
+      justifyContent: "center"
+    }}>
+      <Grid
+        container
+        direction="row"
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
         <Typography>
           {t(`settings.general.show_covers.title`)}
         </Typography>

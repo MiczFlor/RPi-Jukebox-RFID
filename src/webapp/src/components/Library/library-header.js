@@ -69,13 +69,16 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
         }
         {!showSearchInput &&
           <Stack
-            alignItems="center"
             direction="row"
-            sx={{ marginRight: '5px' }}
-          >
+            sx={{
+              alignItems: "center",
+              marginRight: "5px"
+            }}>
             <Typography
-              color={getCurrentView() === 'albums' && 'primary'}
-              sx={{ transition: 'color .25s' }}
+              sx={{
+                color: getCurrentView() === 'albums' && 'primary',
+                transition: 'color .25s'
+              }}
             >
               {t('library.header.albums')}
             </Typography>
@@ -86,8 +89,10 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
               color="default"
             />
             <Typography
-              color={getCurrentView() === 'folders' && 'primary'}
-              sx={{ transition: 'color .25s' }}
+              sx={{
+                color: getCurrentView() === 'folders' && 'primary',
+                transition: 'color .25s'
+              }}
             >
               {t('library.header.folders')}
             </Typography>

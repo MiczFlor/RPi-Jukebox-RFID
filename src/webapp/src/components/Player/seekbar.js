@@ -48,7 +48,7 @@ const SeekBar = () => {
     if (!isSeeking) {
       updateTimeAndProgress(playerstatus?.elapsed);
     }
-  }, [playerstatus]);
+  }, [isSeeking, playerstatus]);
 
   return <>
     <Grid container>
@@ -64,14 +64,13 @@ const SeekBar = () => {
       </Grid>
     </Grid>
     <Grid
-      alignItems="center"
       container
       direction="row"
-      justifyContent="space-between"
-      sx={ {
-        marginTop: '-10px',
-      }}
-    >
+      sx={{
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: "-10px"
+      }}>
       <Grid item>
         <Typography color="textSecondary">
           {toHHMMSS(parseInt(timeElapsed))}

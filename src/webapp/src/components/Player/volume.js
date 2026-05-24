@@ -74,10 +74,11 @@ const Volume = () => {
 
   return (
     <Grid
-      alignItems="center"
       container
-      sx={{ width: '100%' }}
-    >
+      sx={{
+        alignItems: "center",
+        width: "100%"
+      }}>
       <Grid item sx={{ marginRight: theme.spacing(1) }}>
         <IconButton
           aria-label={labelIcon()}

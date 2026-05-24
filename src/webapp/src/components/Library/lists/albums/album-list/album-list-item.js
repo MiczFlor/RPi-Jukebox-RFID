@@ -5,13 +5,7 @@ import {
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Avatar,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-} from '@mui/material';
+import { Avatar, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material';
 
 import noCover from '../../../../../assets/noCover.jpg';
 
@@ -47,7 +41,7 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
     if (albumartist && album && show_covers) {
       getCoverArt();
     }
-  }, [albumartist, album]);
+  }, [albumartist, album, show_covers]);
 
   const AlbumLink = forwardRef((props, ref) => {
     const { data } = props;
@@ -62,14 +56,11 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   });
 
   return (
-    <ListItem
-      button={isButton}
+    <ListItemButton
       component={isButton ? AlbumLink : null}
       data={{ albumartist, album }}
       disablePadding
-      key={album}
-    >
-      <ListItemButton>
+      key={album}>
         {show_covers &&
           <ListItemAvatar>
             <Avatar variant="rounded" alt="Cover" src={coverImage} />
@@ -79,8 +70,7 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
           primary={album || t('library.albums.unknown-album')}
           secondary={albumartist || null}
         />
-      </ListItemButton>
-    </ListItem>
+    </ListItemButton>
   );
 }
 

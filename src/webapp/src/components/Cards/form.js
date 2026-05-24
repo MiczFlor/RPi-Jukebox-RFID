@@ -33,47 +33,47 @@ const CardsForm = ({
 }) => {
   const { t } = useTranslation();
 
-  return (
-    <>
-      <Header title={title} backLink="/cards" />
-      <Grid container>
-        <Grid item xs={12}>
-          <Card elevation={0}>
-            <CardHeader
-              avatar={
-                <Avatar aria-label={t('cards.form.no-card-swiped')}>
-                  <BookmarkIcon />
-                </Avatar>
-              }
-              title={
-                cardId
-                  ? cardId
-                  : t('cards.form.no-card-id')
-              }
-            />
-            <CardContent>
-              {cardId &&
-                <>
-                  <Grid container direction="row" alignItems="center">
-                    <ControlsSelector
-                      actionData={actionData}
-                      setActionData={setActionData}
-                      cardId={cardId}
-                    />
-                  </Grid>
-                  <ActionsControls
+  return (<>
+    <Header title={title} backLink="/cards" />
+    <Grid container>
+      <Grid item xs={12}>
+        <Card elevation={0}>
+          <CardHeader
+            avatar={
+              <Avatar aria-label={t('cards.form.no-card-swiped')}>
+                <BookmarkIcon />
+              </Avatar>
+            }
+            title={
+              cardId
+                ? cardId
+                : t('cards.form.no-card-id')
+            }
+          />
+          <CardContent>
+            {cardId &&
+              <>
+                <Grid container direction="row" sx={{
+                  alignItems: "center"
+                }}>
+                  <ControlsSelector
                     actionData={actionData}
+                    setActionData={setActionData}
                     cardId={cardId}
                   />
-                </>
-              }
-              {!cardId && <InfoNoCardSwiped />}
-            </CardContent>
-          </Card>
-        </Grid>
+                </Grid>
+                <ActionsControls
+                  actionData={actionData}
+                  cardId={cardId}
+                />
+              </>
+            }
+            {!cardId && <InfoNoCardSwiped />}
+          </CardContent>
+        </Card>
       </Grid>
-    </>
-  );
+    </Grid>
+  </>);
 };
 
 

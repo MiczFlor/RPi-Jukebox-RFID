@@ -58,7 +58,13 @@ const Outputs = () => {
 
   return (
     <Grid container direction="column">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+      <Grid
+        container
+        direction="row"
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
         <Typography>{t('settings.audio.outputs.title')}</Typography>
         {isLoading && <CircularProgress size={20} />}
         {isError && <Typography>⚠️</Typography>}

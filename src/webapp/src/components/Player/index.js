@@ -40,7 +40,7 @@ const Player = () => {
     if (file && show_covers) {
       getCoverArt();
     }
-  }, [file]);
+  }, [file, show_covers]);
 
   return (
     <Grid
