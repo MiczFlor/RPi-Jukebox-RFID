@@ -9,6 +9,7 @@ KIOSK_MODE_LABWC_AUTOSTART="${KIOSK_MODE_LABWC_DIR}/autostart"
 KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium-browser/customizations/01-disable-update-check'
 KIOSK_MODE_CHROMIUM_FLAG_UPDATE_INTERVAL='--check-for-update-interval=31536000'
 KIOSK_MODE_BOOKWORM_DISPLAY_SCALE='1.35'
+KIOSK_MODE_BOOKWORM_IDLE_TIMEOUT_SECONDS='600'
 
 _kiosk_mode_use_bookworm_variant() {
   if [ "$(is_debian_version_at_least 12)" = true ] ; then
@@ -24,6 +25,8 @@ _kiosk_mode_install_os_dependencies() {
     sudo apt-get -qq -y install --no-install-recommends \
       labwc \
       wlr-randr \
+      wlopm \
+      swayidle \
       fonts-noto-color-emoji \
       chromium-browser
   else
@@ -108,6 +111,9 @@ EOF
 
 ${KIOSK_MODE_CONF_HEADER}
 wlr-randr --output DSI-1 --on >/dev/null 2>&1 || true
+swayidle -w \
+  timeout ${KIOSK_MODE_BOOKWORM_IDLE_TIMEOUT_SECONDS} "wlopm --off '*'" \
+  resume "wlopm --on '*'" >/dev/null 2>&1 &
 (
   while ! wget -q --spider http://localhost; do
     sleep 1
@@ -156,6 +162,8 @@ _kiosk_mode_check() {
     if [ "$(_kiosk_mode_use_bookworm_variant)" = true ] ; then
         verify_apt_packages labwc \
             wlr-randr \
+            wlopm \
+            swayidle \
             fonts-noto-color-emoji \
             chromium-browser
 
@@ -165,6 +173,9 @@ _kiosk_mode_check() {
 
         verify_files_exists "${KIOSK_MODE_LABWC_AUTOSTART}"
         verify_file_contains_string "${KIOSK_MODE_CONF_HEADER}" "${KIOSK_MODE_LABWC_AUTOSTART}"
+        verify_file_contains_string "swayidle" "${KIOSK_MODE_LABWC_AUTOSTART}"
+        verify_file_contains_string "timeout ${KIOSK_MODE_BOOKWORM_IDLE_TIMEOUT_SECONDS}" "${KIOSK_MODE_LABWC_AUTOSTART}"
+        verify_file_contains_string "wlopm --off" "${KIOSK_MODE_LABWC_AUTOSTART}"
         verify_file_contains_string "ozone-platform=wayland" "${KIOSK_MODE_LABWC_AUTOSTART}"
         verify_file_contains_string "force-device-scale-factor=${KIOSK_MODE_BOOKWORM_DISPLAY_SCALE}" "${KIOSK_MODE_LABWC_AUTOSTART}"
     else
