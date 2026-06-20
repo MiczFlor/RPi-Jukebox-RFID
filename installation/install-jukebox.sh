@@ -6,16 +6,16 @@
 #
 # If you want to get a specific branch or a different repository (mainly for developers)
 # you may specify them like this
-# cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+# cd; GIT_USER='MiczFlor' GIT_REPO_NAME='RPi-Jukebox-RFID' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 #
 export LC_ALL=C
 
 # Set Repo variables if not specified when calling the script
 GIT_USER=${GIT_USER:-"MiczFlor"}
+GIT_REPO_NAME=${GIT_REPO_NAME:-"RPi-Jukebox-RFID"}
 GIT_BRANCH=${GIT_BRANCH:-"future3/main"}
 
 # Constants
-GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
 echo GIT_BRANCH $GIT_BRANCH
 echo GIT_URL $GIT_URL
