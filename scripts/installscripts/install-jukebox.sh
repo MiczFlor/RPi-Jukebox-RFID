@@ -986,6 +986,8 @@ install_main() {
     echo "Installing lgpio build dependecies..."
     mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
     cd "${HOME_DIR}" && sudo rm -rf tmp > /dev/null
+    # make sure the just built lgpio is recognized in the next step
+    sudo ldconfig
 
     # Install more required packages
     echo "Installing additional Python packages..."
