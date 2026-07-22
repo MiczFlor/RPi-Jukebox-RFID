@@ -14,6 +14,52 @@ python packages and can be accessed by normal means
 If you want to provide additional functionality to the same feature (probably even for run-time switching)
 you can implement a Factory Pattern using this package. Take a look at volume.py as an example.
 
+Plugin packages are loaded in two ways, both strictly opt-in: installing or shipping a package is not enough
+by itself, it must also be explicitly listed in the jukebox configuration file (``jukebox.yaml``) to actually
+be loaded.
+
+* Core plugins: shipped inside the ``components`` package. Which packages these are, under which name and
+  module they are loaded is a fixed, hardcoded list (``jukebox.daemon.CORE_COMPONENTS``) -- including their
+  load order, since some depend on another one already being loaded earlier. The ``components`` list in the
+  configuration file only selects which of these are actually loaded (removing/commenting out an entry
+  disables it); listing them in a different order there has no effect on load order. Loaded with
+  :func:`load_all_named`::
+
+      components:
+        - volume
+        - player
+
+* User plugins: any other, independently installed (e.g. via pip/uv) python package that advertises itself
+  under the ``jukebox.plugins`` entry-point group. Installing such a package only makes it discoverable --
+  it is only actually loaded if its entry-point name is listed in the ``plugins`` entry of the jukebox
+  configuration file, always after all core plugins, see :func:`load_all_entry_points`. Since there is no
+  inherent order between independent third-party plugins, they are loaded in the order they are listed
+  there (unlike core plugins). A user plugin package declares itself in its own ``pyproject.toml``::
+
+      [project.entry-points."jukebox.plugins"]
+      my_plugin = "my_plugin_package"
+
+  and is activated with, in ``jukebox.yaml``::
+
+      plugins:
+        - my_plugin
+
+  The entry-point name (``my_plugin`` above) becomes the plugs package name (``load_as``).
+
+  Just like core plugins (e.g. ``playermpd``), a user plugin can have its own configuration section in
+  ``jukebox.yaml``, under a key of its own choosing (by convention, the entry-point/plugs name). There is
+  nothing special to wire up for this: `jukebox.cfghandler.get_handler('jukebox')` is a global handler
+  obtainable from anywhere, exactly the same way core plugins already use it::
+
+      # jukebox.yaml
+      my_plugin:
+        greeting: "hello"
+
+      # my_plugin_package/__init__.py
+      import jukebox.cfghandler
+      cfg = jukebox.cfghandler.get_handler('jukebox')
+      greeting = cfg.getn('my_plugin', 'greeting', default='hi')
+
 **Example:** Decorate a function for auto-registering under it's own name:
 
     import jukebox.plugs as plugs
@@ -72,6 +118,7 @@ Naming convention:
 """
 
 import importlib
+import importlib.metadata
 import inspect
 import functools
 import sys
@@ -103,6 +150,10 @@ PluginType = Callable[..., Any]
 # Loading plugs first, and setting this variable to True, allows to do so
 # In this case, initializer functions are not executed!
 ALLOW_DIRECT_IMPORTS: bool = False
+
+# The entry-point group under which independently installed (i.e. not shipped in `components`) user plugins
+# advertise themselves. See load_all_entry_points()
+USER_PLUGIN_ENTRY_POINT_GROUP: str = 'jukebox.plugins'
 
 # ---------------------------------------------------------------------------
 # Global thread-related stuff
@@ -592,18 +643,59 @@ def load_all_named(packages_named: Mapping[str, str], prefix: Optional[str] = No
                 raise e
 
 
-def load_all_unnamed(packages_unnamed: Iterable[str], prefix: Optional[str] = None, ignore_errors=False):
-    """Load all packages in packages_unnamed with default names"""
-    for package in packages_unnamed:
+def load_all_entry_points(enabled: Iterable[str], group: str = USER_PLUGIN_ENTRY_POINT_GROUP,
+                          ignore_errors=False) -> List[str]:
+    """Load the user plugins listed in `enabled` from those advertised under the `group` entry-point group
+
+    Unlike core plugins (a fixed, hardcoded set shipped in the `components` package), user plugins are
+    independently installed python packages (e.g. via pip/uv) that declare themselves in their own package
+    metadata. Installing a package is not enough to activate it though: only plugins named in `enabled`
+    (typically the `plugins` list from the configuration file) are loaded, and in the order given there.
+    This keeps activation an explicit, auditable step even though discovery itself is automatic.
+
+    Installed-but-not-activated plugins are logged (at info level) as a hint that they exist and are
+    waiting to be added to the `enabled` list; this is also handed back to the caller so it can be surfaced
+    further (e.g. published on the event bus for a UI to show).
+
+    The entry-point name becomes the plugs package name (`load_as`); the entry-point value is the python
+    module to load, exactly as for `load()`.
+
+    :param enabled: Names of the entry points (as given in `enabled`) to load
+    :param group: The entry-point group to search `enabled` names in
+    :param ignore_errors: If True, log and skip both unresolvable names and load failures instead of raising
+    :return: Names of installed entry points that are not in `enabled` (i.e. not activated)
+    """
+    try:
+        # Python >= 3.10: entry_points() accepts a `group` filter and returns a selectable EntryPoints
+        eps = importlib.metadata.entry_points(group=group)
+    except TypeError:
+        # Python 3.9: entry_points() returns a plain Dict[group_name, Tuple[EntryPoint, ...]]
+        eps = importlib.metadata.entry_points().get(group, ())
+    eps_by_name = {ep.name: ep for ep in eps}
+
+    for name in enabled:
+        ep = eps_by_name.get(name)
+        if ep is None:
+            msg = f"User plugin '{name}' is listed in the configuration but not installed (no '{group}' entry point found)"
+            logger.error(msg)
+            if ignore_errors:
+                continue
+            raise NameError(msg)
         try:
-            load(package, prefix=prefix)
+            load(ep.value, load_as=ep.name)
         except Exception as e:
             if ignore_errors:
-                logger.error(f"Ignoring failed package load for '{package}'")
+                logger.error(f"Ignoring failed package load for user plugin '{ep.name}' ({ep.value})")
                 logger.error(f"Reason: {e.__class__.__name__}: {e}")
                 logger.error(f"Detailed reason:\n{traceback.format_exc()}")
             else:
                 raise e
+
+    inactive = sorted(set(eps_by_name) - set(enabled))
+    for name in inactive:
+        logger.info(f"User plugin '{name}' is installed but not activated. "
+                    f"Add it to the 'plugins' list in the configuration to enable it.")
+    return inactive
 
 
 def load_all_finalize(ignore_errors=False):

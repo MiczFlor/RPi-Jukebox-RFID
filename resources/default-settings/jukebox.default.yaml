@@ -3,24 +3,28 @@
 # Sole (!) exception is in playermpd.mpd_conf
 system:
   box_name: Jukebox
-modules:
-  named:
-    # Do not change the order!
-    publishing: publishing
-    volume: volume
-    jingle: jingle
-    jingle.alsawave: jingle.alsawave
-    jingle.jinglemp3: jingle.jinglemp3
-    player: playermpd
-    cards: rfid.cards
-    rfid: rfid.reader
-    timers: timers
-    host: hostif.linux
-    bluetooth_audio_buttons: controls.bluetooth_audio_buttons
-    gpio: gpio.gpioz.plugin
-    sync_rfidcards: synchronisation.rfidcards
-  others:
+# The core plugins shipped with the Jukebox (inside the `components` package). Only plugins listed here are
+# loaded. Their load order is fixed in code (jukebox.daemon.CORE_COMPONENTS) and does not depend on the
+# order they are listed in here -- comment out an entry to disable it.
+components:
+  - publishing
+  - volume
+  - jingle
+  - jingle.alsawave
+  - jingle.jinglemp3
+  - player
+  - cards
+  - rfid
+  - timers
+  - host
+  - bluetooth_audio_buttons
+  - gpio
+  - sync_rfidcards
   - misc
+# User plugins (independent python packages installed via pip/uv, see documentation) are only loaded if
+# listed here by their entry-point name, in the order given here:
+# plugins:
+#   - my_user_plugin_package
 pulse:
   # Reset system volume to this level after start. (Comment out disables and volume is not changed)
   startup_volume: 40

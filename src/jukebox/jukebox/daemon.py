@@ -6,7 +6,7 @@ import signal
 import logging
 import time
 import atexit
-from typing import (Optional)
+from typing import (Optional, List, Tuple)
 
 from misc import flatten
 import jukebox.plugs as plugin
@@ -20,6 +20,27 @@ import jukebox.cfghandler
 
 logger = logging.getLogger('jb.daemon')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+# Core plugins shipped in `components`, as (load_as, module) pairs, in the fixed load order they must be
+# loaded in -- some depend on another one already being loaded earlier. This order is not configurable.
+# Which of these are actually loaded is controlled by the `components` list in the jukebox configuration
+# file: only listed entries are loaded (in this order, irrespective of the order they are listed in there).
+CORE_COMPONENTS: List[Tuple[str, str]] = [
+    ('publishing', 'publishing'),
+    ('volume', 'volume'),
+    ('jingle', 'jingle'),
+    ('jingle.alsawave', 'jingle.alsawave'),
+    ('jingle.jinglemp3', 'jingle.jinglemp3'),
+    ('player', 'playermpd'),
+    ('cards', 'rfid.cards'),
+    ('rfid', 'rfid.reader'),
+    ('timers', 'timers'),
+    ('host', 'hostif.linux'),
+    ('bluetooth_audio_buttons', 'controls.bluetooth_audio_buttons'),
+    ('gpio', 'gpio.gpioz.plugin'),
+    ('sync_rfidcards', 'synchronisation.rfidcards'),
+    ('misc', 'misc'),
+]
 
 
 @atexit.register
@@ -133,10 +154,15 @@ class JukeBox:
         # Load the plugins
         # Ignore all errors during plugin loading to provide functionality
         # even if a plugin throws errors or has bad error handling
-        plugins_named = cfg.getn('modules', 'named', default={})
-        plugins_other = cfg.getn('modules', 'others', default=[])
-        plugin.load_all_named(plugins_named, prefix='components', ignore_errors=True)
-        plugin.load_all_unnamed(plugins_other, prefix='components', ignore_errors=True)
+        enabled_components = set(cfg.getn('components', default=[]))
+        core_components = {load_as: module for load_as, module in CORE_COMPONENTS if load_as in enabled_components}
+        plugin.load_all_named(core_components, prefix='components', ignore_errors=True)
+
+        # User plugins: independently installed packages advertised via entry points, only loaded if
+        # explicitly activated in the configuration file, always after the core plugins shipped in `components`
+        enabled_plugins = cfg.getn('plugins', default=[])
+        inactive_plugins = plugin.load_all_entry_points(enabled_plugins, ignore_errors=True)
+
         plugin.load_all_finalize(ignore_errors=True)
 
         pack_ok = plugin.call_ignore_errors('misc', 'get_all_loaded_packages')
@@ -144,8 +170,11 @@ class JukeBox:
         logger.info(f"Loaded plugins: {', '.join(pack_ok)}")
         if len(pack_error) > 0:
             logger.error(f"Plugins with errors during load: {', '.join(pack_error)}")
+        if len(inactive_plugins) > 0:
+            logger.info(f"Installed but not activated user plugins: {', '.join(inactive_plugins)}")
         publishing.get_publisher().send('core.plugins.loaded', pack_ok)
         publishing.get_publisher().send('core.plugins.error', pack_error)
+        publishing.get_publisher().send('core.plugins.inactive', inactive_plugins)
         publishing.get_publisher().send('core.started_at', time.ctime(self._start_time))
         publishing.get_publisher().send('core.git_state', self._git_state)
 

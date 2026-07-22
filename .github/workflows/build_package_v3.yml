@@ -1,0 +1,40 @@
+name: Build Python Package v3
+
+on:
+  push:
+    branches:
+        - 'future3/**'
+    paths:
+        - '.github/workflows/build_package_v3.yml'
+        - 'src/jukebox/**'
+  pull_request:
+    branches:
+        - 'future3/**'
+    paths:
+        - '.github/workflows/build_package_v3.yml'
+        - 'src/jukebox/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build sdist and wheel
+        working-directory: src/jukebox
+        run: uv build
+
+      - name: Check package metadata
+        working-directory: src/jukebox
+        run: uvx twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpi-jukebox-rfid-dist
+          path: src/jukebox/dist/
+          retention-days: 14

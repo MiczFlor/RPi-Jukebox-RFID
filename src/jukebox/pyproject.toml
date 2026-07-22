@@ -1,0 +1,64 @@
+[project]
+name = "rpi-jukebox-rfid"
+# Keep in sync with jukebox/version.py (that module remains the runtime source of truth).
+# PEP 440 does not allow the "-alpha" suffix used there, hence "a0" here.
+version = "3.7.0a0"
+description = "RFID Jukebox Version 3 (aka future3) - Core"
+license = "MIT"
+requires-python = ">=3.9"
+
+dependencies = [
+    "evdev",
+    "mutagen",
+    "pyalsaaudio",
+    "pulsectl",
+    "python-mpd2",
+    "ruamel.yaml",
+    "requests",
+    "tornado",
+    "rpi-lgpio",
+    "gpiozero",
+    "paho-mqtt",
+]
+
+[project.optional-dependencies]
+dev = [
+    "flake8>=4.0.0",
+    "pytest",
+    "pytest-cov",
+    "mock",
+    "pydoc-markdown",
+]
+
+[project.scripts]
+jukebox = "run_jukebox:main"
+jukebox-configure-audio = "run_configure_audio:main"
+jukebox-publicity-sniffer = "run_publicity_sniffer:main"
+jukebox-register-rfid-reader = "run_register_rfid_reader:main"
+jukebox-rpc-tool = "run_rpc_tool:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["jukebox", "components", "misc"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"run_jukebox.py" = "run_jukebox.py"
+"run_configure_audio.py" = "run_configure_audio.py"
+"run_publicity_sniffer.py" = "run_publicity_sniffer.py"
+"run_register_rfid_reader.py" = "run_register_rfid_reader.py"
+"run_rpc_tool.py" = "run_rpc_tool.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "jukebox",
+    "components",
+    "misc",
+    "run_jukebox.py",
+    "run_configure_audio.py",
+    "run_publicity_sniffer.py",
+    "run_register_rfid_reader.py",
+    "run_rpc_tool.py",
+]

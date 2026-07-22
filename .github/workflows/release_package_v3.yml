@@ -1,0 +1,38 @@
+name: Release Python Package v3
+
+# Manual trigger only -- this workflow is not wired into push/PR events and will never run on its own.
+# It exists to show the intended release shape; the actual publish step further below is commented out
+# on top of that, so triggering this manually still won't publish anything.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build sdist and wheel
+        working-directory: src/jukebox
+        run: uv build
+
+      - name: Check package metadata
+        working-directory: src/jukebox
+        run: uvx twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpi-jukebox-rfid-dist
+          path: src/jukebox/dist/
+          retention-days: 14
+
+      # Not enabled yet -- kept here to show where/how publishing would hook in once we decide to
+      # actually release to PyPI. Needs a trusted-publisher setup (or a PYPI_API_TOKEN secret) first.
+      # - name: Publish to PyPI
+      #   working-directory: src/jukebox
+      #   run: uv publish
