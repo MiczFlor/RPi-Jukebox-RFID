@@ -43,13 +43,10 @@ audiofolder / -files will remain). To remove not existing items us a
 Set the corresponding setting in `shared\settings\jukebox.yaml` to
 activate this feature.
 
-``` yaml
-modules:
-    named:
-        ...
-        sync_rfidcards: synchronisation.rfidcards
+`sync_rfidcards` is enabled by default (see `components` in `jukebox.default.yaml`); it just does nothing
+unless also switched on here:
 
-...
+``` yaml
 sync_rfidcards:
     enable: false
     config_file: ../../shared/settings/sync_rfidcards.yaml

@@ -21,10 +21,15 @@ components:
   - gpio
   - sync_rfidcards
   - misc
+  - webui_plugins
 # User plugins (independent python packages installed via pip/uv, see documentation) are only loaded if
 # listed here by their entry-point name, in the order given here:
-# plugins:
-#   - my_user_plugin_package
+plugins:
+  - sleep_timer
+# Serves webapp UI bundles that plugins ship themselves, see documentation/developers/webui-plugins.md
+webui_plugins:
+  host: localhost
+  port: 5559
 pulse:
   # Reset system volume to this level after start. (Comment out disables and volume is not changed)
   startup_volume: 40

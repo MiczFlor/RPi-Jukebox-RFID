@@ -5,13 +5,12 @@ control but also integration with home automation systems like Home Assistant.
 
 ## Configuration
 
-Set the corresponding setting in `shared\settings\jukebox.yaml` to activate this feature.
+Enable the `mqtt` core component in `shared\settings\jukebox.yaml` to activate this feature.
 
 ``` yaml
-modules:
-    named:
-        ...
-        mqtt: mqtt
+components:
+  - ...
+  - mqtt
 ...
 mqtt:
     enable: true

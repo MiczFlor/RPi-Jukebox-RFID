@@ -215,6 +215,12 @@ const commands = {
     argKeys: ['wait_seconds'],
   },
 
+  // Generic webapp UI plugin mechanism (see components.webui_plugins and PluginSlot): plugins bring
+  // their own UI bundle instead of requiring changes here. This is the one command needed for that.
+  getUiPlugins: {
+    _package: 'webui_plugins',
+    plugin: 'get_manifest',
+  },
 
   'timer_idle_shutdown.cancel': {
     _package: 'timers',

@@ -1058,6 +1058,19 @@ def get_all_loaded_packages() -> Dict[str, str]:
         return {k: _PLUGINS[k].loaded_from for k in _PLUGINS.keys()}
 
 
+def get_module(load_as: str) -> Any:
+    """Get the python module object of a loaded plugin package, by the name it was loaded as
+
+    Useful for introspecting module-level attributes a plugin may expose beyond the plugs-callable
+    interface (e.g. metadata describing a webapp UI extension it ships, see ``components.webui_plugins``).
+
+    :param load_as: The plugs package name (as passed to/returned by `load()`)
+    :raises KeyError: If no package is loaded under that name
+    """
+    with _lock_module:
+        return _PLUGINS[load_as].module
+
+
 def get_all_failed_packages() -> Dict[str, str]:
     """Report those packages that did not load error free
 

@@ -13,6 +13,7 @@
 * [RFID Readers](./rfid/README.md)
 * [Docstring API Docs (from py files)](./docstring/README.md)
 * [Plugin Reference](./docstring/README.md#jukebox.plugs)
+* [Webapp UI Plugins](./webui-plugins.md)
 * [Feature Status](./status.md)
 * [Known Issues](./known-issues.md)
 

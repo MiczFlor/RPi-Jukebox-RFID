@@ -39,7 +39,15 @@ CORE_COMPONENTS: List[Tuple[str, str]] = [
     ('bluetooth_audio_buttons', 'controls.bluetooth_audio_buttons'),
     ('gpio', 'gpio.gpioz.plugin'),
     ('sync_rfidcards', 'synchronisation.rfidcards'),
+    ('event_devices', 'controls.event_devices'),
+    ('mqtt', 'mqtt'),
     ('misc', 'misc'),
+    ('webui_plugins', 'webui_plugins'),
+    # 'battmon' is intentionally NOT listed here: it has three mutually exclusive hardware backends
+    # (battery_monitor.batt_mon_i2c_ads1015 / batt_mon_i2c_ina219 / batt_mon_simulator) and this catalog
+    # can only bind one fixed module per name. Selecting a backend currently requires editing this list
+    # locally, e.g. `('battmon', 'battery_monitor.batt_mon_i2c_ina219')` -- see
+    # documentation/builders/components/power/batterymonitor.md. This is a known gap, not yet solved.
 ]
 
 

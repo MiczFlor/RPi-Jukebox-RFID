@@ -8,6 +8,7 @@ import Display from './display';
 import SeekBar from './seekbar';
 import Volume from './volume';
 
+import { PluginSlot } from '../general';
 import AppSettingsContext from '../../context/appsettings/context';
 import PlayerContext from '../../context/player/context';
 import request from '../../utils/request';
@@ -69,6 +70,7 @@ const Player = () => {
           <SeekBar />
           <Controls />
           <Volume />
+          <PluginSlot name="player" />
         </Grid>
       </Grid>
     </Grid>

@@ -58,16 +58,19 @@ The script in [src/jukebox/components/battery_monitor/batt_mon_i2c_ina219/\_\_in
 
 The battery monitoring is configured in the jukebox.yml file.
 
-The "battmon" module has to be added to the modules setting.
-
-```yaml
-modules:
-  named:
-    # Do not change the order!
-    publishing: publishing
-    ...
-    battmon: battery_monitor.batt_mon_i2c_ina219
-```
+> [!NOTE]
+> Unlike other optional components, "battmon" cannot currently be enabled through `jukebox.yaml` alone.
+> The core plugin catalog (`jukebox.daemon.CORE_COMPONENTS`) binds each name to exactly one fixed module,
+> but "battmon" has three mutually exclusive hardware backends to choose from -- so picking one requires a
+> local code change for now:
+>
+> ```python
+> # src/jukebox/jukebox/daemon.py, in CORE_COMPONENTS
+> ('battmon', 'battery_monitor.batt_mon_i2c_ina219'),   # or batt_mon_i2c_ads1015 / batt_mon_simulator
+> ```
+>
+> and then adding `battmon` to the `components` list in `jukebox.yaml` as usual. This is a known gap in the
+> component-selection mechanism, not a permanent design decision.
 
 The battmon module needs further configuration:
 

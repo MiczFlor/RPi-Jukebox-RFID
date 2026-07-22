@@ -15,12 +15,13 @@ The devices and their button mappings need to be mapped in the configuration fil
 
 ## Configuration
 
-To configure event devices, first add the plugin as an entry to the module list of your main configuration file ``shared/settings/jukebox.yaml``:
+To configure event devices, first enable the `event_devices` core component in your main configuration file
+``shared/settings/jukebox.yaml``:
 
 ``` yaml
-modules:
-  named:
-    event_devices: controls.event_devices
+components:
+  - ...
+  - event_devices
 ```
 
 And add the following section with the plugin specific configuration:
