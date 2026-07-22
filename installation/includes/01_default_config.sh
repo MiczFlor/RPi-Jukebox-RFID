@@ -32,6 +32,3 @@ GIT_USE_SSH=${GIT_USE_SSH:-"true"}
 # - false: never download
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}
 
-# Populated by _option_plugins() in customize_options.sh during installation
-SELECTED_PLUGINS=${SELECTED_PLUGINS:-""}
-CUSTOM_PLUGINS=${CUSTOM_PLUGINS:-""}

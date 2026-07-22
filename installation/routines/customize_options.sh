@@ -376,91 +376,6 @@ Do you want to build the Web App? [Y/n]"
   log "ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD}"
 }
 
-_option_plugins() {
-  local registry_file="${INSTALLATION_PATH}/resources/default-settings/plugin_registry.yaml"
-
-  if [[ ! -f "$registry_file" ]]; then
-    log "Plugin registry not found. Skipping plugin selection."
-    return
-  fi
-
-  clear_c
-  print_c "----------------------- PLUGINS -------------------------
-The following optional plugins are available.
-You will be asked for each one individually."
-
-  # Read plugin entries from plugin_registry.yaml.
-  # Uses an awk-based script that skips commented lines (example entries in YAML header).
-  local plugin_entries
-  local parser_script="${INSTALLATION_PATH}/installation/includes/read_plugin_registry.sh"
-  if [[ -f "$parser_script" ]]; then
-    plugin_entries=$(bash "$parser_script" "$registry_file")
-  fi
-
-  while IFS='|' read -r plugin_name plugin_desc; do
-    [[ -z "$plugin_name" ]] && continue
-
-    print_c "
-----------------------------------------------------------
-${plugin_name}:
-  ${plugin_desc}
-
-Do you want to install ${plugin_name}? [y/N]"
-    # Must read from /dev/tty (not stdin) because the surrounding
-    # while...done <<< redirects stdin from the plugin_entries string.
-    read -r response </dev/tty
-    case "$response" in
-      [yY][eE][sS]|[yY])
-        if [[ -z "$SELECTED_PLUGINS" ]]; then
-          SELECTED_PLUGINS="$plugin_name"
-        else
-          SELECTED_PLUGINS="$SELECTED_PLUGINS $plugin_name"
-        fi
-        ;;
-      *)
-        ;;
-    esac
-  done <<< "$plugin_entries"
-
-  log "SELECTED_PLUGINS=${SELECTED_PLUGINS}"
-
-  # === Custom/User-provided Plugins ===
-  print_c "
-----------------------------------------------------------
-Do you want to install any other (custom) plugins?
-These are plugins NOT from the official registry.
-You install them at your own risk. [y/N]"
-  read -r response
-  case "$response" in
-    [yY][eE][sS]|[yY])
-      while true; do
-        print_c "
-Enter plugin name (or leave empty to finish):"
-        read -r custom_name
-        if [[ -z "$custom_name" ]]; then
-          break
-        fi
-        print_c "Enter Git repository URL for '${custom_name}':"
-        read -r custom_repo
-        if [[ -z "$custom_repo" ]]; then
-          print_c "  WARNING: No repository URL provided. Skipping."
-          continue
-        fi
-        if [[ -z "$CUSTOM_PLUGINS" ]]; then
-          CUSTOM_PLUGINS="${custom_name}|${custom_repo}"
-        else
-          CUSTOM_PLUGINS="${CUSTOM_PLUGINS} ${custom_name}|${custom_repo}"
-        fi
-        print_c "  Added: ${custom_name} from ${custom_repo}"
-      done
-      ;;
-    *)
-      ;;
-  esac
-
-  log "CUSTOM_PLUGINS=${CUSTOM_PLUGINS}"
-}
-
 _run_customize_options() {
   _option_ipv6
   _option_static_ip
@@ -475,7 +390,6 @@ _run_customize_options() {
     _option_webapp_devel_build
     _option_kiosk_mode
   fi
-  _option_plugins
   # Bullseye is currently under active development and should be updated in any case.
   # Hence, removing the step below as it becomse mandatory
   # _options_update_raspi_os

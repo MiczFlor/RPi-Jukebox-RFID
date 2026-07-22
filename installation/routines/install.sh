@@ -8,7 +8,6 @@ install() {
   update_raspi_os
   init_git_repo_from_tardir
   setup_jukebox_core
-  setup_plugins
   setup_mpd
   setup_samba
   setup_jukebox_webapp
