@@ -19,6 +19,7 @@ This component collects that metadata from all loaded plugins (once, after all o
 and serves each plugin's ``static/`` directory over a small dedicated HTTP server, so the webapp can fetch
 and dynamically load the bundles at runtime without needing to know about them at build time.
 """
+import asyncio
 import logging
 import threading
 from pathlib import Path
@@ -26,7 +27,7 @@ from typing import Any, Dict, List, Optional
 
 import tornado.httpserver
 import tornado.web
-from zmq.eventloop.ioloop import IOLoop
+from tornado.ioloop import IOLoop
 
 import jukebox.cfghandler
 import jukebox.plugs as plugin
@@ -38,29 +39,38 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 class _UiExtensionServer(threading.Thread):
     """Tiny static file server, one route per plugin, serving its `static/` directory
 
-    Runs its own tornado IOLoop in a dedicated thread, mirroring jukebox.publishing.server.PublishServer.
+    Runs in a dedicated thread with its own, freshly created event loop -- NOT the shared
+    `zmq.eventloop.ioloop.IOLoop.instance()` singleton that jukebox.publishing.server.PublishServer
+    uses, since that singleton is process-wide and can only be started/run from one thread at a time.
+    All tornado setup happens inside run(), in the new thread, not in __init__ (which runs on the
+    thread that calls `finalize()`).
     """
 
     def __init__(self, port: int, static_dirs: Dict[str, Path]):
         super().__init__(name='WebUiPluginServer')
         self.daemon = True
-        self.loop = IOLoop.instance()
-        handlers = [
-            (rf"/{name}/(.*)", tornado.web.StaticFileHandler, {'path': str(path)})
-            for name, path in static_dirs.items()
-        ]
-        self.app = tornado.web.Application(handlers)
-        self.server = tornado.httpserver.HTTPServer(self.app)
-        self.server.listen(port)
-        logger.info(f"Serving {len(static_dirs)} webapp UI plugin bundle(s) on port {port}: "
-                    f"{', '.join(static_dirs.keys())}")
+        self._port = port
+        self._static_dirs = static_dirs
+        self.loop = None
 
     def run(self):
         """Thread's activity"""
+        asyncio.set_event_loop(asyncio.new_event_loop())
+        self.loop = IOLoop.current()
+        handlers = [
+            (rf"/{name}/(.*)", tornado.web.StaticFileHandler, {'path': str(path)})
+            for name, path in self._static_dirs.items()
+        ]
+        app = tornado.web.Application(handlers)
+        server = tornado.httpserver.HTTPServer(app)
+        server.listen(self._port)
+        logger.info(f"Serving {len(self._static_dirs)} webapp UI plugin bundle(s) on port {self._port}: "
+                    f"{', '.join(self._static_dirs.keys())}")
         self.loop.start()
 
     def stop(self):
-        self.loop.add_callback(self.loop.stop)
+        if self.loop is not None:
+            self.loop.add_callback(self.loop.stop)
 
 
 _server: Optional[_UiExtensionServer] = None
