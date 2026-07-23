@@ -51,6 +51,22 @@ _jukebox_core_install_python_requirements() {
   _jukebox_core_build_and_install_lg
 
   pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
+
+  _jukebox_core_install_jukebox_package
+}
+
+_jukebox_core_install_jukebox_package() {
+  print_lc "  Install jukebox package"
+  # TODO: Once published to PyPI, replace this with a normal `pip install rpi-jukebox-rfid` (or fold
+  # it into requirements.txt). Until then, this is the workaround: install directly from this git
+  # checkout (already present locally as ${INSTALLATION_PATH}) via uv, which -- like pip -- supports
+  # installing from a local path or, if ever needed, directly from a git URL
+  # (uv pip install "git+https://github.com/${GIT_USER}/${GIT_REPO_NAME}@${GIT_BRANCH}#subdirectory=src/jukebox").
+  # We use the local path since the repo is already checked out here; no need to re-fetch over the network.
+  # --no-deps: runtime dependencies are already installed above (with the special-cased pyzmq/lgpio
+  # builds); this step only registers the package itself (entry points, console scripts).
+  pip install --no-cache-dir uv
+  uv pip install --no-cache-dir --no-deps -e "${INSTALLATION_PATH}/src/jukebox"
 }
 
 _jukebox_core_configure_pulseaudio() {
@@ -139,6 +155,8 @@ _jukebox_core_check() {
 
     local pip_modules=$(get_args_from_file "${INSTALLATION_PATH}/requirements.txt")
     verify_pip_modules pyzmq $pip_modules
+
+    verify_pip_modules rpi-jukebox-rfid
 
     local pip_modules_excluded=$(get_args_from_file "${INSTALLATION_PATH}/requirements-excluded.txt")
     verify_pip_modules_not $pip_modules_excluded
