@@ -14,6 +14,7 @@
 * [Docstring API Docs (from py files)](./docstring/README.md)
 * [Plugin Reference](./docstring/README.md#jukebox.plugs)
 * [Webapp UI Plugins](./webui-plugins.md)
+* [Roadmap: Plugin Architecture & Packaging](./roadmap-plugins-and-packaging.md)
 * [Feature Status](./status.md)
 * [Known Issues](./known-issues.md)
 
