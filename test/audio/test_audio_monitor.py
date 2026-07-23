@@ -69,6 +69,29 @@ def test_new_card_callback_uses_stable_bluetooth_properties(
         expected_name, is_bluetooth)
 
 
+@pytest.mark.parametrize(
+    ('proplist', 'should_switch'),
+    [
+        ({'device.api': 'bluez5', 'device.description': 'Headset'}, True),
+        ({'device.api': 'alsa', 'alsa.card_name': 'USB Audio'}, False),
+    ],
+)
+def test_toggle_on_connect_only_switches_for_bluetooth(
+        monitor, proplist, should_switch):
+    monitor._toggle_on_connect = True
+    monitor._audio_server.card_list.return_value = [
+        SimpleNamespace(index=7, driver='PipeWire', proplist=proplist),
+    ]
+
+    monitor._handle_event()
+
+    if should_switch:
+        volume.volume_control._set_output.assert_called_once_with(
+            monitor._audio_server, 1)
+    else:
+        volume.volume_control._set_output.assert_not_called()
+
+
 def test_unknown_card_index_does_not_run_callbacks(monitor):
     monitor._audio_server.card_list.return_value = [
         SimpleNamespace(index=3, driver='PipeWire', proplist={}),

@@ -223,8 +223,7 @@ class AudioMonitor(threading.Thread):
             logger.info(f"New audio output detected: '{device_name}' "
                         f"(driver = {card_info.driver}, index {current_event.index})")
 
-            # A new card is always assumed to be the Bluetooth device, as this is the only removable device
-            if self._toggle_on_connect:
+            if self._toggle_on_connect and is_bluetooth:
                 volume_control._set_output(self._audio_server, 1)
             # Context for running callbacks is already acquired
             self.on_connect_callbacks._run_callbacks(device_name, is_bluetooth)
