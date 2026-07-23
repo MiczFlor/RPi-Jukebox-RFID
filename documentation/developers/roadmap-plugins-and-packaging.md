@@ -126,6 +126,19 @@ running application *is* the git checkout:
    the right environment, handling the same dependency-resolution concerns) and registers it in the
    config. Depends on Track A's plugin mechanism (already there) and, loosely, on how packaging/updates
    are eventually handled here in Track B.
+9. **Stop depending on `abyz.me.uk` as a single point of failure for `lg`/`lgpio`.** Finding from actually
+   running CI: `installation/routines/setup_jukebox_core.sh`'s `_jukebox_core_build_and_install_lg()`
+   downloads `http://abyz.me.uk/lg/lg.zip` (a personal site, not a CDN) to build the C library
+   `rpi-lgpio` links against; a real CI run failed after 20 retries / ~40 minutes when that site
+   timed out for GitHub's runner IPs, even though the site was reachable from elsewhere at the same
+   time -- looks like the site rate-limits/blocks cloud IP ranges rather than being generally down.
+   The same URL is duplicated in three places: `setup_jukebox_core.sh`, `docker/Dockerfile.jukebox`,
+   and `.github/workflows/pythonpackage_future3.yml` -- any fix needs to be consolidated, not patched
+   three times. Most likely direction: **host the package ourselves**, the same way the project already
+   solved this exact problem for libzmq (`_jukebox_core_download_prebuilt_libzmq_with_drafts()`
+   downloads a prebuilt binary from a GitHub release under `pabera/libzmq` instead of relying on an
+   external site) -- i.e. mirror/build `lg`/`lgpio` once and publish it as a GitHub release asset,
+   with source build as a fallback. Not scoped or estimated yet.
 
 ### Progress so far
 
@@ -144,3 +157,5 @@ running application *is* the git checkout:
 * How much of the shell-script install/update logic moves into the CLI tool vs. stays as shell.
 * What a plugin-installer interface in the CLI tool would need to expose (own pip/uv wrapper? shell out to
   `uv`? how does it interact with the `plugins` list in `jukebox.yaml`?).
+* Where to host a self-provided `lg`/`lgpio` build (own GitHub release, like `pabera/libzmq`? something
+  else?), and whether to keep a source-build fallback for architectures/versions not covered by it.
