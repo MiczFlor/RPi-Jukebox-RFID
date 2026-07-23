@@ -1,0 +1,15 @@
+[project]
+name = "rpi-jukebox-rfid-devtools"
+version = "0"
+description = "Dev tooling for the RPi-Jukebox-RFID repo (ruff, pyright) -- not the packaged application, see src/jukebox/pyproject.toml for that."
+requires-python = ">=3.9"
+dependencies = [
+    "ruff",
+    "pyright",
+]
+
+# This project ships no importable code -- it exists only so `uv run` resolves a lightweight dev-tool
+# environment from repo root, without pulling in the actual application's (hardware-specific) runtime
+# dependencies from src/jukebox/pyproject.toml.
+[tool.uv]
+package = false

@@ -51,9 +51,9 @@ def test_modified():
 def test_contains():
     cfg = cfghandler.get_handler('test_contains')
     cfg.config_dict(ref_dict)
-    assert True == ('l1' in cfg)
-    assert False == ('nonono' in cfg)
-    assert False == ('key1' in cfg)
+    assert 'l1' in cfg
+    assert 'nonono' not in cfg
+    assert 'key1' not in cfg
 
 
 def test_lock():

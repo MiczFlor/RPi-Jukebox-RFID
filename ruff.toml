@@ -1,0 +1,26 @@
+# Ruff config, replacing the previous flake8 setup (see git history for .flake8).
+line-length = 127
+
+extend-exclude = [
+    "scratch*",
+    "src/jukebox/jukebox/NvManager.py",
+    ".venv",
+    "node_modules",
+]
+
+[lint]
+# E126/E127/E128 (indentation) and W503 (line break before binary operator) were ignored under flake8
+# because they conflicted with each other / with black-style formatting -- ruff's formatter doesn't
+# produce these situations in the first place, so there is nothing to ignore here.
+select = ["E", "F", "W", "C90"]
+# Note: flake8's F824 (dead global/nonlocal declaration) has no ruff equivalent yet, nothing to ignore.
+
+[lint.mccabe]
+max-complexity = 12
+
+[lint.per-file-ignores]
+# Only in __init__.py files: ignore imported-but-unused (re-exports without __all__)
+"__init__.py" = ["F401"]
+
+[format]
+quote-style = "preserve"

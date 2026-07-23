@@ -6,8 +6,11 @@ on:
         - 'future3/**'
     paths:
         - '.github/workflows/pythonpackage_future3.yml'
-        - '.flake8'
-        - 'run_flake8.sh'
+        - 'pyproject.toml'
+        - 'ruff.toml'
+        - 'pyrightconfig.json'
+        - 'run_ruff.sh'
+        - 'run_pyright.sh'
         - '.coveragerc'
         - 'run_pytest.sh'
         - '**requirements*.txt'
@@ -17,8 +20,11 @@ on:
         - 'future3/**'
     paths:
         - '.github/workflows/pythonpackage_future3.yml'
-        - '.flake8'
-        - 'run_flake8.sh'
+        - 'pyproject.toml'
+        - 'ruff.toml'
+        - 'pyrightconfig.json'
+        - 'run_ruff.sh'
+        - 'run_pyright.sh'
         - '.coveragerc'
         - 'run_pytest.sh'
         - '**requirements*.txt'
@@ -39,6 +45,8 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -69,10 +77,22 @@ jobs:
         file: coverage.xml
         format: cobertura
         parallel: true
-    - name: Lint with flake8
+    - name: Lint with ruff
       run: |
         # Stop the build if linting fails
-        ./run_flake8.sh
+        uv run ruff check --config ruff.toml .
+    - name: Format check with ruff
+      # Not enforced yet: the codebase has never been run through a formatter, so this would fail
+      # on essentially every file. Enable once a one-time reformat commit has landed.
+      continue-on-error: true
+      run: |
+        uv run ruff format --config ruff.toml --check --diff .
+    - name: Type check with pyright
+      # Not enforced yet: ~340 pre-existing errors on a codebase that has never been type-checked.
+      # Report-only until that backlog is worked down.
+      continue-on-error: true
+      run: |
+        ./run_pyright.sh
 
   finish:
     needs: build

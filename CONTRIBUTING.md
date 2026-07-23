@@ -38,7 +38,7 @@ Inside the root folder or the repo, these folders are important:
 * `src/webapp`
   * contains the Web Interface
 
-All folders on all hierarchy levels starting with `scratch*` are ignored by git and flake8. These are intended
+All folders on all hierarchy levels starting with `scratch*` are ignored by git and ruff. These are intended
 as local, temporary scratch areas.
 
 # How to contribute
@@ -114,13 +114,16 @@ cp .githooks/pre-commit .git/hooks/.
 
 ### Python Code
 
-If you touched *any* Python file (even if only for fixing spelling errors), run flake8 in the top-level folder.
-It contains out setup file.
+If you touched *any* Python file (even if only for fixing spelling errors), run ruff in the top-level folder
+(uses `uv`, see https://docs.astral.sh/uv/ -- no manual install needed, `uv run` fetches it on first use).
 
 ~~~bash
 cd ~/RPi-Jukebox-RFID
-./run_flake8.sh
+./run_ruff.sh
 ~~~
+
+Type checking with pyright (`./run_pyright.sh`) is available too, but not yet enforced -- the codebase has
+pre-existing type errors that haven't been worked through yet.
 
 If you are convinced some issue should not apply to your case or would require extensive re-coding, that could be OK.
 Let us know in the pull request - we will look at it.
