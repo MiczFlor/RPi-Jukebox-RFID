@@ -2,6 +2,7 @@
 
 ## Getting started
 
+* [Plugin System: overview, benefits, try it yourself](./plugin-system.md)
 * [Development Environment](./development-environment.md)
 * [Python Development Notes](python.md)
 * [Documentation (with Markdown)](documentation.md)

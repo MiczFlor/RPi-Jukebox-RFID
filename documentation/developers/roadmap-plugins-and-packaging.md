@@ -1,5 +1,10 @@
 # Roadmap: Plugin Architecture & Packaging/Installation
 
+> [!NOTE]
+> Looking for the pitch -- current state, why it's worth it, and how to try it yourself? See
+> [Plugin System: overview, benefits, try it yourself](./plugin-system.md). This document is the detailed
+> backlog behind it.
+
 This tracks two related but independent efforts. Keep them separate when planning work: finishing one
 does not require the other.
 
