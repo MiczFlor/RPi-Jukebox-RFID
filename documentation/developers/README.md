@@ -15,7 +15,6 @@
 * [Plugin Reference](./docstring/README.md#jukebox.plugs)
 * [Feature Status](./status.md)
 * [Known Issues](./known-issues.md)
-* [Trixie and PipeWire Branch Review](./trixie-pipewire-review.md)
 
 ## RPC
 
