@@ -14,8 +14,23 @@ ARG USER
 ARG HOME
 ENV INSTALLATION_PATH=${HOME}/RPi-Jukebox-RFID
 
-RUN test ${UID} -gt 0 && useradd -m -u ${UID} ${USER} || continue
-RUN usermod -aG pulse ${USER}
+# The base/macOS Compose configuration runs as root; Linux maps the host UID.
+RUN case "${UID}" in \
+      ''|*[!0-9]*) echo "UID must be a non-negative integer" >&2; exit 1 ;; \
+    esac \
+    && if [ "${UID}" -eq 0 ]; then \
+         if [ "${USER}" != "root" ]; then \
+           echo "UID 0 requires USER=root" >&2; \
+           exit 1; \
+         fi; \
+       else \
+         if [ -z "${USER}" ] || [ "${USER}" = "root" ]; then \
+           echo "A positive UID requires a non-root USER" >&2; \
+           exit 1; \
+         fi; \
+         useradd -m -u "${UID}" "${USER}"; \
+       fi \
+    && usermod -aG pulse "${USER}"
 
 # Jukebox
 # Install all Jukebox dependencies
