@@ -9,6 +9,10 @@ from unittest.mock import MagicMock
 # to not try to register the plugins
 import jukebox.plugs as plugin
 
+_original_register = plugin.register
+_original_initialize = plugin.initialize
+_original_atexit = plugin.atexit
+
 
 def dummy_decorator(fkt):
     return fkt
@@ -17,6 +21,15 @@ def dummy_decorator(fkt):
 plugin.register = dummy_decorator
 plugin.initialize = dummy_decorator
 plugin.atexit = dummy_decorator
+
+
+def teardown_module():
+    # jukebox.plugs is a single module instance shared across the whole pytest session -- restore the
+    # patched-over decorators so other test files that run afterwards get the real behavior back.
+    plugin.register = _original_register
+    plugin.initialize = _original_initialize
+    plugin.atexit = _original_atexit
+
 
 # Mock the jukebox.publishing module to prevent issues with zmq
 # which is currently hard to install(see issue #2050)
