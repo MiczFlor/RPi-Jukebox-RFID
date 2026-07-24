@@ -1,16 +1,6 @@
 GIT_ABORT_MSG="Aborting dir to git repo conversion.
 Your directory content is untouched, you simply cannot use git for updating / developing"
 
-_git_install_os_dependencies() {
-  log "  Install Git dependencies"
-  sudo apt-get -y update; sudo apt-get -y install \
-    git \
-    --no-install-recommends \
-    --allow-downgrades \
-    --allow-remove-essential \
-    --allow-change-held-packages
-}
-
 _git_convert_tardir_git_repo() {
   log "****************************************************
 *** Converting tar-ball download into git repository
@@ -148,7 +138,6 @@ _git_repo_check() {
 
 _run_init_git_repo_from_tardir() {
     cd "${INSTALLATION_PATH}" || exit_on_error
-    _git_install_os_dependencies
     _git_convert_tardir_git_repo
     _git_repo_check
 }

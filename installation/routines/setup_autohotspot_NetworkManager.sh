@@ -3,10 +3,6 @@
 AUTOHOTSPOT_NETWORKMANAGER_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/NetworkManager"
 AUTOHOTSPOT_NETWORKMANAGER_CONNECTIONS_PATH="/etc/NetworkManager/system-connections"
 
-_install_packages_NetworkManager() {
-    sudo apt-get -y install iw
-}
-
 _install_autohotspot_NetworkManager() {
     # configure interface conf
     config_file_backup "${AUTOHOTSPOT_INTERFACES_CONF_FILE}"
@@ -90,7 +86,6 @@ _autohotspot_check_NetworkManager() {
 
 _run_setup_autohotspot_NetworkManager() {
     log "Install AutoHotspot NetworkManager"
-    _install_packages_NetworkManager
     _get_interface
     _uninstall_autohotspot_NetworkManager
     _install_autohotspot_NetworkManager

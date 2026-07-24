@@ -41,11 +41,8 @@ RUN apt-get update && apt-get install -qq -y \
     python3 python3-venv python3-dev python3-setuptools python3-mutagen \
     swig unzip
 
-# Build and install the lg C library from source.
-# rpi-lgpio pulls in lgpio, which `requirements.txt` forces to build from source
-# (`--no-binary=lgpio`) because the PyPI lgpio wheels are incomplete (armv6,
-# python3.13). Mirrors
-# `installation/routines/setup_jukebox_core.sh::_jukebox_core_build_and_install_lg`.
+# Generic Debian does not configure Raspberry Pi's repository, so build the lg
+# C library here instead of installing the Pi installer's `liblgpio-dev`.
 ARG LG_COMMIT=b959a17d723360e85648316757b02dbea9902feb
 ARG LG_ARCHIVE_SHA256=3554cd7e60d338b659d38579e6226c46690237d2abe69e8bd77ee7e3b6e615fe
 RUN mkdir -p /tmp/lg && cd /tmp/lg \

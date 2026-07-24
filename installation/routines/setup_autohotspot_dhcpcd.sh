@@ -14,9 +14,7 @@ AUTOHOTSPOT_SERVICE_DAEMON_PATH="${SYSTEMD_PATH}/${AUTOHOTSPOT_SERVICE_DAEMON}"
 
 AUTOHOTSPOT_DHCPCD_RESOURCES_PATH="${INSTALLATION_PATH}/resources/autohotspot/dhcpcd"
 
-_install_packages_dhcpcd() {
-    sudo apt-get -y install hostapd dnsmasq iw
-
+_prepare_services_dhcpcd() {
     # disable services. We want to start them manually
     sudo systemctl unmask hostapd
     sudo systemctl disable hostapd
@@ -177,7 +175,7 @@ _autohotspot_check_dhcpcd() {
 
 _run_setup_autohotspot_dhcpcd() {
     log "Install AutoHotspot dhcpcd"
-    _install_packages_dhcpcd
+    _prepare_services_dhcpcd
     _get_interface
     _uninstall_autohotspot_dhcpcd
     _install_autohotspot_dhcpcd

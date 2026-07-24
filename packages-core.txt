@@ -6,6 +6,7 @@ alsa-utils
 espeak
 ffmpeg
 libasound2-dev
+liblgpio-dev
 mpg123
 pipewire
 pipewire-pulse
