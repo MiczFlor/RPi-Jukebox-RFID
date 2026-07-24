@@ -73,6 +73,15 @@ You can also install a specific branch and/or a fork repository. Update the vari
 cd; GIT_USER='MiczFlor' GIT_BRANCH='future3/develop' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```
 
+The installer uses HTTPS and fetches only the selected branch with shallow history. Set `GIT_USE_SSH=true` to opt in to SSH access. The installed checkout remains a normal tracking branch, so `git pull` works as usual.
+
+Developers who later need all branches, history and tags can fetch them explicitly:
+
+```bash
+git fetch --unshallow origin
+git fetch origin --tags
+```
+
 > [!NOTE]
 > The Installation of the official repository's release branches ([Stable Release](#stable-release) and [Pre-Release](#pre-release)) will deploy a pre-build bundle of the Web App.
 > If you install another branch or from a fork repository, the Web App needs to be built locally. This is part of the installation process. See the the developers [Web App](../developers/webapp.md) documentation for further details.

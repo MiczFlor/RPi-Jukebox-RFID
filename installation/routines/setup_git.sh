@@ -1,30 +1,62 @@
 GIT_ABORT_MSG="Aborting dir to git repo conversion.
 Your directory content is untouched, you simply cannot use git for updating / developing"
 
+_git_fetch_origin() {
+  if [[ "$GIT_USE_SSH" == true ]]; then
+    # Avoid an interactive host-key prompt during installation.
+    git -c core.sshCommand='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' fetch "$@"
+  else
+    git fetch "$@"
+  fi
+}
+
+_git_add_upstream_remote() {
+  if [[ "$GIT_USER" == "$GIT_UPSTREAM_USER" ]]; then
+    return
+  fi
+
+  if [[ "$GIT_USE_SSH" == true ]]; then
+    git remote add upstream "git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+  else
+    git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+  fi
+}
+
+_git_fetch_requested_branch() {
+  local branch_refspec="refs/heads/${GIT_BRANCH}:refs/remotes/origin/${GIT_BRANCH}"
+
+  if ! _git_fetch_origin --depth=1 --no-tags origin "$branch_refspec"; then
+    return 1
+  fi
+
+  if ! git cat-file -e "${GIT_HASH}^{commit}" 2>/dev/null; then
+    log "*** Downloaded commit is not the current branch tip; deepening by 50 commits"
+    _git_fetch_origin --deepen=50 --no-tags origin "$branch_refspec" || return 1
+  fi
+
+  if ! git cat-file -e "${GIT_HASH}^{commit}" 2>/dev/null; then
+    log "*** Downloaded commit is still unresolved; fetching full branch history"
+    _git_fetch_origin --unshallow --no-tags origin "$branch_refspec" || return 1
+  fi
+
+  if ! git cat-file -e "${GIT_HASH}^{commit}" 2>/dev/null; then
+    log "Error: downloaded commit ${GIT_HASH} is not in ${GIT_BRANCH}"
+    return 1
+  fi
+}
+
 _git_convert_tardir_git_repo() {
   log "****************************************************
 *** Converting tar-ball download into git repository
 ****************************************************"
 
-  # Just in case, the git version is not new enough, we split up git init -b "${GIT_BRANCH}" into:
   git -c init.defaultBranch=main init
-  git checkout -q -b "${GIT_BRANCH}"
   git config pull.rebase false
 
-  # We always add origin as the selected (possible) user repository
-  # and, if relevant, MiczFlor's repository as upstream
-  # This means for developers everything is fully set up.
-  # For users there is no difference there is only origin = MiczFlor
-  # We need to get the branch with larger depth, as we do not know
-  # how many commits happened between download and git repo init
-  # We simply get everything from the beginning of future 3 development but excluding Version 2.X
   if [[ $GIT_USE_SSH == true ]]; then
     git remote add origin "git@github.com:${GIT_USER}/${GIT_REPO_NAME}.git"
     log "\n*** Git fetch (SSH) *******************************"
-    # Prevent: The authenticity of host 'github.com (140.82.121.4)' can't be established.
-    # Do only for this one command, so we do not disable the checks forever
-    if ! git -c core.sshCommand='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' fetch origin "${GIT_BRANCH}" --set-upstream --shallow-since=2021-04-21 --tags;
-    then
+    if ! _git_fetch_requested_branch; then
       log "\n*** NOTICE *****************************************
 * Error in getting Git Repository using SSH! USING FALLBACK HTTPS.
 * Note: This is only relevant for developers!
@@ -35,72 +67,34 @@ _git_convert_tardir_git_repo() {
 
       git remote remove origin
       GIT_USE_SSH=false
-    else
-      # Only add upstream with SSH when fetch over SSH succeeded
-      if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
-        git remote add upstream "git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
-      fi
     fi
   fi
 
   if [[ $GIT_USE_SSH == false ]]; then
     git remote add origin "https://github.com/${GIT_USER}/${GIT_REPO_NAME}.git"
-    if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
-      git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
-    fi
     log "\n*** Git fetch (HTTPS) *****************************"
-    if ! git fetch origin --set-upstream --shallow-since=2021-04-21 --tags "${GIT_BRANCH}"; then
+    if ! _git_fetch_requested_branch; then
       log "Error: Could not fetch repository!"
       log "$GIT_ABORT_MSG"
-      return
+      return 1
     fi
   fi
-  HASH_BRANCH=$(git rev-parse FETCH_HEAD) || { echo -e "$GIT_ABORT_MSG"; return; }
 
+  _git_add_upstream_remote
+
+  HASH_BRANCH=$(git rev-parse "refs/remotes/origin/${GIT_BRANCH}") || { echo -e "$GIT_ABORT_MSG"; return 1; }
   log "\n*** FETCH_HEAD ($GIT_BRANCH) = $HASH_BRANCH"
 
   git add .
-  # Checkout the exact hash that we have downloaded as tarball
+  GIT_HASH=$(git rev-parse "${GIT_HASH}^{commit}") || { echo -e "$GIT_ABORT_MSG"; return 1; }
   log "*** Git checkout commit"
-  git -c advice.detachedHead=false checkout "$GIT_HASH" || { echo -e "$GIT_ABORT_MSG"; return; }
-  HASH_HEAD=$(git rev-parse HEAD) || { echo -e "$GIT_ABORT_MSG"; return; }
+  git -c advice.detachedHead=false checkout "$GIT_HASH" || { echo -e "$GIT_ABORT_MSG"; return 1; }
+  HASH_HEAD=$(git rev-parse HEAD) || { echo -e "$GIT_ABORT_MSG"; return 1; }
   log "*** REQUESTED COMMIT = $HASH_HEAD"
 
-  # Let's move onto the relevant branch, WITHOUT touching the current checked-out commit
-  # Since we have fetched with --set-upstream above this initializes the tracking branch
   log "*** Git initialize branch"
   git checkout -b "$GIT_BRANCH"
-
-  if [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]]; then
-    log "*** Get upstream release tags"
-    # Always get the upstream release branch to get all release tags
-    # in case they have not been copied to user repository
-    git fetch upstream --shallow-since=2021-04-21 --tags "${GIT_BRANCH_RELEASE}"
-  fi
-
-  # Done! Directory is all set up as git repository now!
-
-  # In case we get a non-develop or non-main branch, we speculatively
-  # try to get these branches, so they can be checkout out with
-  # git checkout ${GIT_BRANCH_DEVELOP}
-  # without the need to set up the remote tracking information
-  # However, in a user repository, these may not be present, so we suppress output in these cases
-  if [[ $GIT_BRANCH != "${GIT_BRANCH_RELEASE}" ]]; then
-    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 --tags "${GIT_BRANCH_RELEASE}" 2>&1)
-    if [[ $? -ne 128 ]]; then
-      log "*** Preparing ${GIT_BRANCH_RELEASE} in background"
-      echo -e "$OUTPUT"
-    fi
-    unset OUTPUT
-  fi
-  if [[ $GIT_BRANCH != "${GIT_BRANCH_DEVELOP}" ]]; then
-    OUTPUT=$(git fetch origin --shallow-since=2021-04-21 --tags "${GIT_BRANCH_DEVELOP}" 2>&1)
-    if [[ $? -ne 128 ]]; then
-      log "*** Preparing ${GIT_BRANCH_DEVELOP} in background"
-      echo -e "$OUTPUT"
-    fi
-    unset OUTPUT
-  fi
+  git branch --set-upstream-to="origin/$GIT_BRANCH" "$GIT_BRANCH"
 
   # Provide some status outputs to the user
   if [[ "${HASH_BRANCH}" != "${HASH_HEAD}" ]]; then
@@ -118,9 +112,9 @@ _git_convert_tardir_git_repo() {
   log "*** Git status *************************************"
   git status -sb
   log "*** Git log ****************************************"
-  git log --oneline "HEAD^..origin/$GIT_BRANCH"
+  git log --oneline --decorate -n 5 HEAD "origin/$GIT_BRANCH"
   log "*** Git describe ***********************************"
-  git describe --tag --dirty='-dirty'
+  git describe --always --dirty
   log "****************************************************"
 
   cp -f .githooks/* .git/hooks
@@ -138,7 +132,7 @@ _git_repo_check() {
 
 _run_init_git_repo_from_tardir() {
     cd "${INSTALLATION_PATH}" || exit_on_error
-    _git_convert_tardir_git_repo
+    _git_convert_tardir_git_repo || exit_on_error "$GIT_ABORT_MSG"
     _git_repo_check
 }
 

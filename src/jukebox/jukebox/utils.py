@@ -292,7 +292,7 @@ def get_git_state():
 
     describe = "No git describe info"
     try:
-        sub = subprocess.run("git describe --tag --dirty='-dirty'",
+        sub = subprocess.run("git describe --always --dirty",
                              shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              check=True)
         if sub.returncode == 0:
