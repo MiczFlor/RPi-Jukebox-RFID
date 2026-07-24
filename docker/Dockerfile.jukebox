@@ -65,8 +65,9 @@ ENV VIRTUAL_ENV=${INSTALLATION_PATH}/.venv
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install all Python dependencies
-RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+# Install build tooling and runtime Python dependencies
+RUN pip install --no-cache-dir --upgrade setuptools wheel \
+    && pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 
 # Install pyzmq Python dependency separately
 ENV ZMQ_PREFIX=/opt/libzmq

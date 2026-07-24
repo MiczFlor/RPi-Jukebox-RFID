@@ -43,7 +43,9 @@ _jukebox_core_install_python_requirements() {
   python3 -m venv $VIRTUAL_ENV
   source "$VIRTUAL_ENV/bin/activate"
 
-  pip install --upgrade pip
+  # Build tooling is needed for native Python dependencies, but is not part of
+  # the Jukebox runtime requirements.
+  pip install --upgrade pip setuptools wheel
   # Remove excluded libs, if installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
   pip uninstall -y -r "${INSTALLATION_PATH}"/requirements-excluded.txt
 

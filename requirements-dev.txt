@@ -1,0 +1,12 @@
+# Runtime dependencies
+-r requirements.txt
+
+# Code quality and tests
+flake8>=4.0.0
+pytest
+coverage
+pytest-cov
+mock
+
+# API docs generation
+pydoc-markdown
