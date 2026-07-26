@@ -3,6 +3,7 @@ Generic MP3 jingle Service for jingle.JingleFactory
 """
 import logging
 import subprocess
+import time
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 
@@ -22,7 +23,12 @@ class JingleMp3Play:
     def play(self, filename):
         """Play the MP3 file"""
         subargs = cfg.getn('jinglemp3', 'call_parameters', default=[])
+        # mpg123 has no timeout here, so a stuck process (corrupt file, blocked audio device)
+        # would block this call indefinitely - log before/after so that's at least visible.
+        logger.debug(f"Playing jingle (blocking, no timeout): '{filename}'")
+        start = time.monotonic()
         res = subprocess.run(['mpg123', '-q', *subargs, filename], capture_output=True)
+        logger.debug(f"Jingle '{filename}' finished after {time.monotonic() - start:.1f}s")
         if res.stderr != b'':
             logger.error(f"Playing MP3: {res.stderr}")
 

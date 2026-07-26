@@ -104,6 +104,11 @@ from .coverart_cache_manager import CoverartCacheManager
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
+# Threshold above which an operation is considered slow enough to warrant a warning log. Used
+# for code paths that are not already covered by the RPC server's own slow-call warning, e.g.
+# the background status poll timer which never goes through the RPC dispatch.
+_SLOW_CALL_WARN_SECONDS = 1.0
+
 
 class MpdLock:
     def __init__(self, client: mpd.MPDClient, host: str, port: int):
@@ -293,8 +298,17 @@ class PlayerMPD:
         this method polls the status from mpd and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
         """
+        # This runs on its own timer, not through the RPC server, so it isn't covered by the
+        # RPC server's own slow-call warning - but it competes for the same mpd_lock as every
+        # RPC-triggered MPD command, so a slow poll here is just as capable of stalling the
+        # WebUI as a slow RPC call.
+        poll_start = time.monotonic()
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
+        poll_duration = time.monotonic() - poll_start
+        if poll_duration > _SLOW_CALL_WARN_SECONDS:
+            logger.warning(f"MPD status poll took {poll_duration:.1f}s (interval is "
+                           f"{self.mpd_status_poll_interval}s) - this held mpd_lock the whole time")
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -624,7 +638,11 @@ class PlayerMPD:
         :param folder: Folder path relative to music library path
         """
         plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+        start = time.monotonic()
         plc.get_directory_content(folder)
+        duration = time.monotonic() - start
+        if duration > _SLOW_CALL_WARN_SECONDS:
+            logger.warning(f"get_folder_content('{folder}') took {duration:.1f}s")
         return plc.playlist
 
     @plugs.tag
@@ -644,7 +662,14 @@ class PlayerMPD:
             self.mpd_client.clear()
 
             plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+            # plc.parse() walks the filesystem and, for podcast/livestream references, may do a
+            # network fetch with no timeout (see playlistgenerator.decode_podcast_core) - all
+            # while mpd_lock is held, so a slow parse here blocks every other MPD/RPC caller.
+            parse_start = time.monotonic()
             plc.parse(folder, recursive)
+            parse_duration = time.monotonic() - parse_start
+            if parse_duration > _SLOW_CALL_WARN_SECONDS:
+                logger.warning(f"Parsing folder '{folder}' took {parse_duration:.1f}s while holding mpd_lock")
             uri = '--unset--'
             try:
                 for uri in plc:

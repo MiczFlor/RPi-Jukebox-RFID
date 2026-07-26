@@ -4,6 +4,7 @@
 import os
 import shutil
 import subprocess
+import time
 import logging
 import jukebox.plugs as plugin
 import jukebox.cfghandler
@@ -24,6 +25,23 @@ except Exception:
     pass
 
 
+def _run_logged(args, **kwargs):
+    """subprocess.run wrapper that logs before/after with duration.
+
+    None of these host commands (systemctl, sudo iwconfig/vcgencmd/tvservice, ...) have a
+    timeout, so a stuck one - e.g. sudo blocking on a password prompt due to missing NOPASSWD -
+    blocks its caller indefinitely. These are all called synchronously via the RPC dispatch, so
+    that also stalls the single-threaded RPC server. Logging makes such a hang visible.
+    """
+    cmd_str = args if isinstance(args, str) else ' '.join(args)
+    logger.debug(f"Running (blocking, no timeout): {cmd_str}")
+    start = time.monotonic()
+    try:
+        return subprocess.run(args, **kwargs)
+    finally:
+        logger.debug(f"Command finished after {time.monotonic() - start:.1f}s: {cmd_str}")
+
+
 # ---------------------------------------------------------------------------
 # Shutdown / Reboot
 # ---------------------------------------------------------------------------
@@ -39,7 +57,7 @@ def shutdown():
     # If omit that, there is a dead lock and the service will not shut down properly
     # This works on the RPi w/o further authentication, on other machines a systemctl reboot may work better
     # If authentication is required, the command will simply not execute and time out
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True, capture_output=False,
+    ret = _run_logged(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True, capture_output=False,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -54,7 +72,7 @@ def reboot():
     """Reboot the host machine"""
     logger.info('Rebooting down host system now')
     debug_flag = '-k' if IS_DEBUG else ''
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True, capture_output=False,
+    ret = _run_logged(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True, capture_output=False,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -67,7 +85,7 @@ def reboot():
 @plugin.register
 def jukebox_is_service():
     """Check if current Jukebox process is running as a service"""
-    ret = subprocess.run(['systemctl', 'show', '--user', '--property', 'MainPID', '--value', 'jukebox-daemon'],
+    ret = _run_logged(['systemctl', 'show', '--user', '--property', 'MainPID', '--value', 'jukebox-daemon'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -91,7 +109,7 @@ def is_any_jukebox_service_active():
     > [!NOTE]
     > Does not have the be the current app, that is running as a service!
     """
-    ret = subprocess.run(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
+    ret = _run_logged(["systemctl", "--user", "show", "jukebox-daemon", "--property", "ActiveState", "--value"],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                          stdin=subprocess.DEVNULL)
     if ret.returncode != 0:
@@ -113,7 +131,7 @@ def restart_service():
     if not jukebox_is_service():
         msg = "I am not running as a service! Doing nothing"
     else:
-        ret = subprocess.run('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True, capture_output=False,
+        ret = _run_logged('(sleep 1; systemctl --user restart jukebox-daemon.service) &', shell=True, capture_output=False,
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
                              stdin=subprocess.DEVNULL)
         if ret.returncode != 0:
@@ -174,7 +192,7 @@ def get_ip_address():
     """
     Get the IP address
     """
-    p = subprocess.run(['hostname', '-I'], capture_output=True)
+    p = _run_logged(['hostname', '-I'], capture_output=True)
     if p.returncode == 0:
         ip_address = p.stdout.strip().decode()
     else:
@@ -209,7 +227,7 @@ def wlan_disable_power_down(card=None):
     if card is None:
         card = cfg.setndefault('host', 'wlan_power', 'card', value='wlan0')
     logger.info(f'Disable power down management of {card}')
-    ret = subprocess.run(['sudo', 'iwconfig', card, 'power', 'off'],
+    ret = _run_logged(['sudo', 'iwconfig', card, 'power', 'off'],
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
     if ret.returncode != 0:
         logger.error(f"{ret.stdout}")
@@ -223,7 +241,7 @@ def get_autohotspot_status():
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
         status = 'inactive'
 
-        ret = subprocess.run(['systemctl', 'is-active', 'autohotspot.timer'],
+        ret = _run_logged(['systemctl', 'is-active', 'autohotspot.timer'],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False,
                             stdin=subprocess.DEVNULL)
         # 0 = active, 3 = inactive
@@ -249,16 +267,16 @@ def stop_autohotspot():
     """
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
         # Stop timer
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot.timer'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'stop', 'autohotspot.timer'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         # Prevent start after system restart
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.timer'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.timer'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         # Prevent start after system restart (should always be disabled, but make sure)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.service'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'disable', 'autohotspot.service'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.service'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.service'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 
         return 'inactive'
@@ -275,10 +293,10 @@ def start_autohotspot():
     """
     if os.path.isfile("/etc/systemd/system/autohotspot.service"):
         # Enable start after system restart
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot.timer'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'enable', 'autohotspot.timer'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         # Start timer (starts the service immediately)
-        subprocess.run(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.timer'],
+        _run_logged(['sudo', '/usr/bin/systemctl', 'start', 'autohotspot.timer'],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
 
         return 'active'
@@ -316,7 +334,7 @@ def hdmi_power_down():
     commandname = "tvservice"
     if command_exists(commandname):
         logger.info('Power down HDMI circuits')
-        ret = subprocess.run(['sudo', commandname, '-o'],
+        ret = _run_logged(['sudo', commandname, '-o'],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
         if ret.returncode != 0:
             logger.error(f"{ret.stdout}")
@@ -339,7 +357,7 @@ def get_throttled():
     commandname = "vcgencmd"
     if command_exists(commandname):
         # https://www.raspberrypi.org/documentation/computers/os.html#get_throttled
-        ret = subprocess.run(['sudo', commandname, 'get_throttled'],
+        ret = _run_logged(['sudo', commandname, 'get_throttled'],
                             stdout=subprocess.PIPE, check=False)
         if ret.returncode != 0:
             status_string = f"Error in subprocess with code: {ret.returncode}"

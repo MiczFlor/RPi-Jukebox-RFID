@@ -50,6 +50,7 @@ import os.path
 import logging
 import re
 import requests
+import time
 
 from typing import (List)
 
@@ -93,11 +94,18 @@ def decode_podcast_core(url, playlist):
     # url = 'https://www1.wdr.de/mediathek/audio/hoerspiel-speicher/wdr_hoerspielspeicher150.podcast'
     # url = 'https://feeds.simplecast.com/BqbsxVfO'
 
+    # This request has no timeout, so an unresponsive podcast host blocks the caller
+    # indefinitely - often while a caller upstream (e.g. play_folder) holds mpd_lock. Log
+    # before/after so a hang here is at least visible and attributable.
+    logger.debug(f"Fetching podcast feed (blocking, no timeout): '{url}'")
+    fetch_start = time.monotonic()
     try:
         r = requests.get(url)
     except Exception as e:
         logger.error(f"Get URL: {e.__class__.__name__}: {e}")
         return
+    finally:
+        logger.debug(f"Podcast feed fetch '{url}' took {time.monotonic() - fetch_start:.1f}s")
     if r.status_code != 200:
         logger.error(f"Got error code {r.status_code} fetching from '{url}'")
     er = enclosure_re.findall(r.content.decode(r.encoding) or 'utf-8')

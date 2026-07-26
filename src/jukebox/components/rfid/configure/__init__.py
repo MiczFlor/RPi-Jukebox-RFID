@@ -2,6 +2,7 @@ import logging
 import os
 import importlib
 import subprocess
+import time
 
 import jukebox.cfghandler
 from misc.simplecolors import Colors
@@ -32,8 +33,11 @@ def reader_install_dependencies(reader_path: str, dependency_install: str) -> No
                                                                 prompt_color=Colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
                 quiet_level = '-q' if logger.isEnabledFor(logging.DEBUG) else ''
+                logger.debug(f"Running pip install in '{reader_path}' (blocking, no timeout)")
+                start = time.monotonic()
                 subprocess.run(f"pip install --upgrade {quiet_level} -r requirements.txt", cwd=reader_path,
                                shell=True, check=False)
+                logger.debug(f"pip install finished after {time.monotonic() - start:.1f}s")
                 print(f"\n{'=' * 80}\nInstalling dependencies ... done!")
         if os.path.exists(reader_path + '/setup.inc.sh'):
             # The shell dependencies/settings (if any)
@@ -41,8 +45,11 @@ def reader_install_dependencies(reader_path: str, dependency_install: str) -> No
             if dependency_install == 'auto' or pyil.input_yesno("Auto-configure system settings?", blank=True,
                                                                 prompt_color=Colors.lightgreen, prompt_hint=True):
                 print(f"{'=' * 80}")
+                logger.debug(f"Running setup.inc.sh in '{reader_path}' (blocking, no timeout)")
+                start = time.monotonic()
                 subprocess.run('./setup.inc.sh', cwd=reader_path,
                                shell=True, check=False)
+                logger.debug(f"setup.inc.sh finished after {time.monotonic() - start:.1f}s")
                 print(f"\n{'=' * 80}\nExecuting shell support commands  ... done!\n")
 
 
