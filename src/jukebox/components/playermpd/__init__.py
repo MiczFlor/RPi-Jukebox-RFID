@@ -115,8 +115,12 @@ class MpdLock:
     def _try_connect(self):
         try:
             self.client.connect(self.host, self.port)
-        except mpd.base.ConnectionError:
-            pass
+        except mpd.base.ConnectionError as e:
+            # "Already connected" is the expected steady-state case (we call this on every
+            # __enter__). Anything else means MPD is actually unreachable, which is exactly the
+            # kind of thing that otherwise shows up only as "the WebUI is stuck" - log it.
+            if str(e) != "Already connected":
+                logger.warning(f"MPD connect failed, will retry on next command: {e}")
 
     def __enter__(self):
         self._lock.acquire()
@@ -128,10 +132,12 @@ class MpdLock:
             # The MPD connection may be left in an inconsistent state after a socket timeout or
             # protocol error (e.g. a partially read response). Force a reconnect on the next
             # __enter__ instead of risking every following command misparsing stale data.
+            logger.warning(f"MPD command failed with {exc_type.__name__}: {exc_value} - "
+                           f"reconnecting before next command")
             try:
                 self.client.disconnect()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(f"MPD disconnect after error raised itself: {e}")
         self._lock.release()
 
     def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
