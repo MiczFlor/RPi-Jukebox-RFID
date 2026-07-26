@@ -79,6 +79,10 @@ alsawave:
 playermpd:
   host: localhost
   status_file: ../../shared/settings/music_player_status.json
+  # Socket timeout (in seconds) for commands sent to MPD. A stuck/unresponsive MPD connection
+  # blocks the single-threaded RPC server (and therefore all WebUI/RFID/GPIO actions) until this
+  # timeout expires, so keep it low enough to recover quickly.
+  mpd_timeout: 10
   second_swipe_action:
     # Note: Does not follow the RPC alias convention (yet)
     # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'

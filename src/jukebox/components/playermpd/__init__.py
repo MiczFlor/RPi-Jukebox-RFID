@@ -124,6 +124,14 @@ class MpdLock:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            # The MPD connection may be left in an inconsistent state after a socket timeout or
+            # protocol error (e.g. a partially read response). Force a reconnect on the next
+            # __enter__ instead of risking every following command misparsing stale data.
+            try:
+                self.client.disconnect()
+            except Exception:
+                pass
         self._lock.release()
 
     def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
@@ -184,12 +192,14 @@ class PlayerMPD:
         self.mpd_client = mpd.MPDClient()
         self.coverart_cache_manager = CoverartCacheManager()
 
-        # The timeout refer to the low-level socket time-out
-        # If these are too short and the response is not fast enough (due to the PI being busy),
-        # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket
-        # in any relevant matter anyway
-        self.mpd_client.timeout = None               # network timeout in seconds (floats allowed), default: None
-        self.mpd_client.idletimeout = None           # timeout for fetching the result of the idle command
+        # The timeout refers to the low-level socket time-out.
+        # This used to be left at None (i.e. blocking forever), but an MPD command that never
+        # returns (stuck socket, unresponsive MPD, ...) would then block the single-threaded RPC
+        # server indefinitely, wedging the whole WebUI (and any other RPC caller) until the
+        # process was restarted. A finite timeout turns that into a recoverable error instead
+        # (see MpdLock.__exit__, which reconnects after any exception).
+        self.mpd_client.timeout = cfg.getn('playermpd', 'mpd_timeout', default=10)  # network timeout in seconds
+        self.mpd_client.idletimeout = cfg.getn('playermpd', 'mpd_timeout', default=10)  # timeout for idle command
         self.connect()
         logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
