@@ -107,7 +107,7 @@ cfg = jukebox.cfghandler.get_handler('jukebox')
 # Threshold above which an operation is considered slow enough to warrant a warning log. Used
 # for code paths that are not already covered by the RPC server's own slow-call warning, e.g.
 # the background status poll timer which never goes through the RPC dispatch.
-_SLOW_CALL_WARN_SECONDS = 1.0
+_SLOW_CALL_WARN_SECONDS = cfg.getn('playermpd', 'mpd_slow_response_warn_seconds', default=1.0)
 
 
 class MpdLock:

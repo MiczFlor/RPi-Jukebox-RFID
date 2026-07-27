@@ -82,7 +82,13 @@ playermpd:
   # Socket timeout (in seconds) for commands sent to MPD. A stuck/unresponsive MPD connection
   # blocks the single-threaded RPC server (and therefore all WebUI/RFID/GPIO actions) until this
   # timeout expires, so keep it low enough to recover quickly.
+  # Default: 10
   mpd_timeout: 10
+  # Log a warning if a single MPD-related operation (RPC call, status poll, folder parse) takes
+  # longer than this many seconds - such an operation blocks the single-threaded RPC server (and
+  # therefore all WebUI/RFID/GPIO actions) for its whole duration.
+  # Default: 1.0
+  mpd_slow_response_warn_seconds: 1.0
   second_swipe_action:
     # Note: Does not follow the RPC alias convention (yet)
     # Must be one of: 'toggle', 'play', 'skip', 'rewind', 'replay', 'none'
