@@ -47,24 +47,30 @@ const socketRequest = (_package, plugin, method, kwargs) => (
   new Promise((resolve, reject) => {
     const requestId = uuidv4();
 
-    socketRequest.server = new zmq.Req();
+    // Each call gets its own local socket instance (previously a shared `socketRequest.server`
+    // static field was reassigned on every call and never closed - see git history). With many
+    // requests in flight at once (e.g. lazy-loaded cover art, or repeatedly navigating into the
+    // library), that leaked an ever-growing number of open Req sockets, all still registered as
+    // peers of the server's REP socket, which degraded and eventually stalled the WebUI over
+    // time. Using a local variable makes it safe to close the socket once this specific request
+    // is done, without risking closing a different in-flight request's socket.
+    const socket = new zmq.Req();
 
-    socketRequest.server.on('message', (msg) => {
+    const cleanup = () => {
+      try {
+        socket.close();
+      } catch (closeError) {
+        // Already closed / never fully connected - nothing to do.
+      }
+    };
+
+    socket.on('message', (msg) => {
       const { id, error, result } = decodeMessage(msg);
+      cleanup();
 
       if (error && error.message) {
         return reject(error.message);
       }
-
-      // This implementation of Req Sockets is not ideal for parallel
-      // requests. In case 2 requests are launched at the same time
-      // both connect to the socket. The first one to return would
-      // close the channel which cancels the second request without
-      // allowing to receive the data. Not closing the channel
-      // here is not ideal, but it's not harmful either.
-      // Ideally, we outsouce `socketRequest.server` similar to
-      // `socket_sub`
-      // socketRequest.server.close();
 
       if (id && id === requestId) {
         return resolve(result);
@@ -74,12 +80,13 @@ const socketRequest = (_package, plugin, method, kwargs) => (
       }
     });
 
-    socketRequest.server.onerror = function (err) {
+    socket.onerror = function (err) {
+      cleanup();
       reject(err);
     };
 
     try {
-      socketRequest.server.connect(REQRES_ENDPOINT);
+      socket.connect(REQRES_ENDPOINT);
     }
     catch (error) {
       console.error(`WebSocket connection to '${REQRES_ENDPOINT} failed: `, error);
@@ -92,7 +99,7 @@ const socketRequest = (_package, plugin, method, kwargs) => (
       method,
       kwargs,
     );
-    socketRequest.server.send(encodeMessage(payload));
+    socket.send(encodeMessage(payload));
   })
 );
 
