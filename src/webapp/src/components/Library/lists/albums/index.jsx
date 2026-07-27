@@ -11,6 +11,14 @@ import { flatByAlbum } from '../../../../utils/utils';
 
 import AlbumList from "./album-list";
 
+// The album list rarely changes within a session (only on library updates), but the Albums
+// component is unmounted/remounted every time the user navigates away from and back to the
+// library (react-router unmounts non-matching routes). Without a cache, every single visit to
+// the library re-fetches the entire list from the server via RPC. Cache it at module scope, keyed
+// by provider+content-types (the actual query params), so it survives remounts within the same
+// page load - only a full page reload or an actual provider/filter change refetches.
+const albumListCache = new Map();
+
 const Albums = ({
   contentTypes,
   musicFilter,
@@ -19,9 +27,13 @@ const Albums = ({
 }) => {
   const { t } = useTranslation();
 
-  const [albums, setAlbums] = useState([]);
+  const contentTypesKey = contentTypes?.join(',') || '';
+  const cacheKey = `${provider}:${contentTypesKey}`;
+  const cached = albumListCache.get(cacheKey);
+
+  const [albums, setAlbums] = useState(cached || []);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(cached === undefined);
 
   const search = ({ albumartist, album }) => {
     if (musicFilter === '') return true;
@@ -32,9 +44,9 @@ const Albums = ({
       (album || '').toLowerCase().includes(lowerCaseMusicFilter);
   };
 
-  const contentTypesKey = contentTypes?.join(',') || '';
-
   useEffect(() => {
+    if (albumListCache.has(cacheKey)) return undefined;
+
     let isCurrent = true;
     const fetchAlbumList = async () => {
       setIsLoading(true);
@@ -46,7 +58,11 @@ const Albums = ({
       if (!isCurrent) return;
       setIsLoading(false);
 
-      if(result) setAlbums(result.reduce(flatByAlbum, []));
+      if(result) {
+        const flattened = result.reduce(flatByAlbum, []);
+        albumListCache.set(cacheKey, flattened);
+        setAlbums(flattened);
+      }
       if(requestError) setError(requestError);
     }
 
@@ -54,7 +70,7 @@ const Albums = ({
     return () => {
       isCurrent = false;
     };
-  }, [contentTypesKey, provider]);
+  }, [cacheKey, contentTypesKey, provider]);
 
   return (
     <>
