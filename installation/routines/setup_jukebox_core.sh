@@ -4,6 +4,8 @@
 JUKEBOX_ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
 JUKEBOX_ZMQ_PREFIX="/usr/local"
 JUKEBOX_ZMQ_VERSION="4.3.5"
+JUKEBOX_LG_COMMIT="b959a17d723360e85648316757b02dbea9902feb"
+JUKEBOX_LG_ARCHIVE_SHA256="3554cd7e60d338b659d38579e6226c46690237d2abe69e8bd77ee7e3b6e615fe"
 
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
@@ -22,15 +24,18 @@ _jukebox_core_install_os_dependencies() {
 
 _jukebox_core_build_and_install_lg() {
     local tmp_path="${HOME_PATH}/tmp"
-    local lg_filename="lg"
-    local lg_zip_filename="${lg_filename}.zip"
+    local lg_source_dir="lg-${JUKEBOX_LG_COMMIT}"
+    local lg_zip_filename="${lg_source_dir}.zip"
+    local lg_download_url="https://github.com/joan2937/lg/archive/${JUKEBOX_LG_COMMIT}.zip"
 
     # Always build lg and lgpio from source: PyPI lgpio wheels are incomplete
     # (no armv6, no Python 3.13). Requires apt packages "swig python3-dev".
     mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
-    download_from_url "https://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
-    unzip ${lg_zip_filename} || exit_on_error
-    cd "${lg_filename}" || exit_on_error
+    download_from_url "${lg_download_url}" "${lg_zip_filename}"
+    echo "${JUKEBOX_LG_ARCHIVE_SHA256}  ${lg_zip_filename}" | sha256sum --check --status \
+        || exit_on_error "lg source checksum verification failed"
+    unzip -q "${lg_zip_filename}" || exit_on_error
+    cd "${lg_source_dir}" || exit_on_error
     make && sudo make install
     cd "${INSTALLATION_PATH}" && sudo rm -rf "${tmp_path}"
 }

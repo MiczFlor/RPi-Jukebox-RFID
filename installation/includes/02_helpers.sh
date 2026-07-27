@@ -127,7 +127,7 @@ validate_url() {
 download_from_url() {
     local url=$1
     local output_filename=$2
-    wget ${url} -O ${output_filename} || exit_on_error "Download failed"
+    wget --timeout=30 --tries=3 "${url}" -O "${output_filename}" || exit_on_error "Download failed"
     return $?
 }
 

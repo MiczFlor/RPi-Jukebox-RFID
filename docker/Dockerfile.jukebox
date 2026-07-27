@@ -46,10 +46,14 @@ RUN apt-get update && apt-get install -qq -y \
 # (`--no-binary=lgpio`) because the PyPI lgpio wheels are incomplete (armv6,
 # python3.13). Mirrors
 # `installation/routines/setup_jukebox_core.sh::_jukebox_core_build_and_install_lg`.
+ARG LG_COMMIT=b959a17d723360e85648316757b02dbea9902feb
+ARG LG_ARCHIVE_SHA256=3554cd7e60d338b659d38579e6226c46690237d2abe69e8bd77ee7e3b6e615fe
 RUN mkdir -p /tmp/lg && cd /tmp/lg \
-    && wget --quiet https://abyz.me.uk/lg/lg.zip \
+    && wget --quiet --timeout=30 --tries=3 \
+        "https://github.com/joan2937/lg/archive/${LG_COMMIT}.zip" -O lg.zip \
+    && echo "${LG_ARCHIVE_SHA256}  lg.zip" | sha256sum --check --status \
     && unzip -q lg.zip \
-    && cd lg \
+    && cd "lg-${LG_COMMIT}" \
     && make && make install \
     && cd / && rm -rf /tmp/lg
 
