@@ -104,6 +104,11 @@ from .coverart_cache_manager import CoverartCacheManager
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
+# Threshold above which an operation is considered slow enough to warrant a warning log. Used
+# for code paths that are not already covered by the RPC server's own slow-call warning, e.g.
+# the background status poll timer which never goes through the RPC dispatch.
+_SLOW_CALL_WARN_SECONDS = cfg.getn('playermpd', 'mpd_slow_response_warn_seconds', default=1.0)
+
 
 class MpdLock:
     def __init__(self, client: mpd.MPDClient, host: str, port: int):
@@ -115,8 +120,12 @@ class MpdLock:
     def _try_connect(self):
         try:
             self.client.connect(self.host, self.port)
-        except mpd.base.ConnectionError:
-            pass
+        except mpd.base.ConnectionError as e:
+            # "Already connected" is the expected steady-state case (we call this on every
+            # __enter__). Anything else means MPD is actually unreachable, which is exactly the
+            # kind of thing that otherwise shows up only as "the WebUI is stuck" - log it.
+            if str(e) != "Already connected":
+                logger.warning(f"MPD connect failed, will retry on next command: {e}")
 
     def __enter__(self):
         self._lock.acquire()
@@ -124,6 +133,16 @@ class MpdLock:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            # The MPD connection may be left in an inconsistent state after a socket timeout or
+            # protocol error (e.g. a partially read response). Force a reconnect on the next
+            # __enter__ instead of risking every following command misparsing stale data.
+            logger.warning(f"MPD command failed with {exc_type.__name__}: {exc_value} - "
+                           f"reconnecting before next command")
+            try:
+                self.client.disconnect()
+            except Exception as e:
+                logger.debug(f"MPD disconnect after error raised itself: {e}")
         self._lock.release()
 
     def acquire(self, blocking: bool = True, timeout: float = -1) -> bool:
@@ -184,12 +203,14 @@ class PlayerMPD:
         self.mpd_client = mpd.MPDClient()
         self.coverart_cache_manager = CoverartCacheManager()
 
-        # The timeout refer to the low-level socket time-out
-        # If these are too short and the response is not fast enough (due to the PI being busy),
-        # the current MPC command times out. Leave these at blocking calls, since we do not react on a timed out socket
-        # in any relevant matter anyway
-        self.mpd_client.timeout = None               # network timeout in seconds (floats allowed), default: None
-        self.mpd_client.idletimeout = None           # timeout for fetching the result of the idle command
+        # The timeout refers to the low-level socket time-out.
+        # This used to be left at None (i.e. blocking forever), but an MPD command that never
+        # returns (stuck socket, unresponsive MPD, ...) would then block the single-threaded RPC
+        # server indefinitely, wedging the whole WebUI (and any other RPC caller) until the
+        # process was restarted. A finite timeout turns that into a recoverable error instead
+        # (see MpdLock.__exit__, which reconnects after any exception).
+        self.mpd_client.timeout = cfg.getn('playermpd', 'mpd_timeout', default=10)  # network timeout in seconds
+        self.mpd_client.idletimeout = cfg.getn('playermpd', 'mpd_timeout', default=10)  # timeout for idle command
         self.connect()
         logger.info(f"Connected to MPD Version: {self.mpd_client.mpd_version}")
 
@@ -277,8 +298,17 @@ class PlayerMPD:
         this method polls the status from mpd and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
         """
+        # This runs on its own timer, not through the RPC server, so it isn't covered by the
+        # RPC server's own slow-call warning - but it competes for the same mpd_lock as every
+        # RPC-triggered MPD command, so a slow poll here is just as capable of stalling the
+        # WebUI as a slow RPC call.
+        poll_start = time.monotonic()
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
+        poll_duration = time.monotonic() - poll_start
+        if poll_duration > _SLOW_CALL_WARN_SECONDS:
+            logger.warning(f"MPD status poll took {poll_duration:.1f}s (interval is "
+                           f"{self.mpd_status_poll_interval}s) - this held mpd_lock the whole time")
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -608,7 +638,11 @@ class PlayerMPD:
         :param folder: Folder path relative to music library path
         """
         plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+        start = time.monotonic()
         plc.get_directory_content(folder)
+        duration = time.monotonic() - start
+        if duration > _SLOW_CALL_WARN_SECONDS:
+            logger.warning(f"get_folder_content('{folder}') took {duration:.1f}s")
         return plc.playlist
 
     @plugs.tag
@@ -628,7 +662,14 @@ class PlayerMPD:
             self.mpd_client.clear()
 
             plc = playlistgenerator.PlaylistCollector(components.player.get_music_library_path())
+            # plc.parse() walks the filesystem and, for podcast/livestream references, may do a
+            # network fetch with no timeout (see playlistgenerator.decode_podcast_core) - all
+            # while mpd_lock is held, so a slow parse here blocks every other MPD/RPC caller.
+            parse_start = time.monotonic()
             plc.parse(folder, recursive)
+            parse_duration = time.monotonic() - parse_start
+            if parse_duration > _SLOW_CALL_WARN_SECONDS:
+                logger.warning(f"Parsing folder '{folder}' took {parse_duration:.1f}s while holding mpd_lock")
             uri = '--unset--'
             try:
                 for uri in plc:

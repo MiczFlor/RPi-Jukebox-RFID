@@ -272,7 +272,12 @@ class SyncRfidcards:
                         '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude'
                         ] + _paths)
 
+        # rsync has no timeout of its own here, so a stalled network share/SSH host blocks this
+        # call (and, since it usually runs with the MPD lock held via play_card_callbacks,
+        # every other MPD/RPC caller too) for as long as rsync itself hangs.
+        logger.debug(f"Starting rsync '{src_path}' -> '{dst_path}' (blocking, no timeout)")
         _runresult = subprocess.run(_run_params, shell=False, check=False, capture_output=True, text=True)
+        logger.debug(f"rsync '{src_path}' -> '{dst_path}' finished with returncode {_runresult.returncode}")
 
         if _runresult.returncode == 0 and _runresult.stdout != '':
             logger.debug(f"Synced:\n{_runresult.stdout}")
@@ -307,6 +312,7 @@ class SyncRfidcards:
             _host = self._sync_remote_server
             _port = self._sync_remote_port
 
+            logger.debug(f"Checking remote file '{path}' via ssh (blocking, no timeout)")
             _runresult = subprocess.run(['ssh',
                                     f"{_user}@{_host}", f"-p {_port}",
                                     '[', '-f', f"'{path}'", ']'],
@@ -325,6 +331,7 @@ class SyncRfidcards:
             _host = self._sync_remote_server
             _port = self._sync_remote_port
 
+            logger.debug(f"Checking remote dir '{path}' via ssh (blocking, no timeout)")
             _runresult = subprocess.run(['ssh',
                                     f"{_user}@{_host}", f"-p {_port}",
                                     '[', '-d', f"'{path}'", ']'],

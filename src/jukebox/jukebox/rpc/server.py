@@ -55,6 +55,12 @@ import jukebox.plugs as plugs
 logger = logging.getLogger('jb.rpc.server')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
+# The server is single-threaded and processes one request at a time: while a call is in
+# progress, socket.recv() is not called again, so every other caller (WebUI, RFID, GPIO, ...)
+# is stuck waiting. A call that takes longer than this is worth a loud log, since it explains
+# "the WebUI is unresponsive" symptoms that would otherwise leave no trace.
+_SLOW_CALL_WARN_SECONDS = 1.0
+
 
 class RpcServer:
     """The RPC Server Class"""
@@ -120,10 +126,17 @@ class RpcServer:
                     args = client_request.pop('args', tuple())
                     kwargs = client_request.pop('kwargs', {})
                     as_thread = client_request.pop('as_thread', False)
+                    call_start = time.monotonic()
                     try:
                         result = plugs.call(package, plugin, method, args=args, kwargs=kwargs, as_thread=as_thread)
                     except Exception as e:
                         error = f"{e.__class__.__name__}: {e.__str__()}"
+                    finally:
+                        call_duration = time.monotonic() - call_start
+                        if call_duration > _SLOW_CALL_WARN_SECONDS:
+                            logger.warning(f"RPC call {package}.{plugin}.{method} took {call_duration:.1f}s - "
+                                          f"the single-threaded RPC server was unresponsive to all other "
+                                          f"callers (WebUI/RFID/GPIO) for this whole duration")
                 else:
                     error = "Missing mandatory parameter 'plugin'."
             else:

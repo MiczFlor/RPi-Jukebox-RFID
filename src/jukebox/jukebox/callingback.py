@@ -5,8 +5,15 @@ Provides a generic callback handler
 """
 import logging
 import threading
+import time
 import traceback
 from typing import Callable, Optional, List
+
+# Callbacks may run with a shared resource lock held for their entire duration (e.g. MPD's
+# connection lock, passed in as `context`). A callback that blocks past this threshold is
+# effectively stalling every other user of that lock - worth a loud log even though we don't
+# abort it, since it explains "everything is stuck" symptoms that would otherwise go unexplained.
+_SLOW_CALLBACK_WARN_SECONDS = 1.0
 
 
 class CallbackHandler:
@@ -45,11 +52,17 @@ class CallbackHandler:
         Comes in useful in scenarios where the calling function has already acquired the context.
         """
         for f in self._callbacks:
+            start = time.monotonic()
             try:
                 f(*args, **kwargs)
             except Exception:
                 self._logger.error(f"In callback handler '{self._name}': while executing callback '{f.__qualname__}': \n"
                                    f"{traceback.format_exc()}")
+            finally:
+                duration = time.monotonic() - start
+                if duration > _SLOW_CALLBACK_WARN_SECONDS:
+                    self._logger.warning(f"In callback handler '{self._name}': callback '{f.__qualname__}' took "
+                                         f"{duration:.1f}s to complete, blocking any other user of this lock")
 
     def run_callbacks(self, *args, **kwargs):
         """Run all registered callbacks.
