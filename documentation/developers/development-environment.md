@@ -29,7 +29,14 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. While this har
 
 The jukebox also runs on any Linux machine. The Raspberry Pi specific stuff will not work of course. That is no issue depending our your development area. USB RFID Readers, however, will work. You will have to install and configure [MPD (Music Player Daemon)](https://www.musicpd.org/).
 
-In addition to the `requirements.txt`, you will this dependency. On the Raspberry PI, the latest stable release of ZMQ does not support WebSockets. We need to compile the latest version from Github, which is taken care of by the installation script. For regular machines, the normal package can be installed:
+Install the runtime and development dependencies from `requirements-dev.txt`:
+
+``` bash
+pip install --upgrade setuptools wheel
+pip install -r requirements-dev.txt
+```
+
+In addition to these requirements, you need the following dependency. On the Raspberry PI, the latest stable release of ZMQ does not support WebSockets. We need to compile the latest version from Github, which is taken care of by the installation script. For regular machines, the normal package can be installed:
 
 ``` bash
 pip install pyzmq

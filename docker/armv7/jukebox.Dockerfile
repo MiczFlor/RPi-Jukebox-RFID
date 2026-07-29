@@ -64,7 +64,8 @@ USER ${USER}
 WORKDIR ${HOME}
 COPY --chown=${USER}:${USER} . ${INSTALLATION_PATH}/
 
-RUN pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
+RUN pip install --no-cache-dir --upgrade setuptools wheel \
+    && pip install --no-cache-dir -r ${INSTALLATION_PATH}/requirements.txt
 RUN pip install --no-cache-dir --no-binary pyzmq pyzmq
 
 EXPOSE 5555 5556

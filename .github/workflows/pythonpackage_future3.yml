@@ -44,15 +44,22 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libasound2-dev pulseaudio
 
-        CUR_DIR="$(pwd)"
-        mkdir -p tmp && cd tmp && wget -q http://abyz.me.uk/lg/lg.zip && unzip lg.zip > /dev/null && cd lg && make && sudo make install
-        cd "${CUR_DIR}" && sudo rm -rf tmp > /dev/null
+        LG_COMMIT=b959a17d723360e85648316757b02dbea9902feb
+        LG_ARCHIVE_SHA256=3554cd7e60d338b659d38579e6226c46690237d2abe69e8bd77ee7e3b6e615fe
+        mkdir -p tmp
+        wget --quiet --timeout=30 --tries=3 \
+          "https://github.com/joan2937/lg/archive/${LG_COMMIT}.zip" -O tmp/lg.zip
+        echo "${LG_ARCHIVE_SHA256}  tmp/lg.zip" | sha256sum --check --status
+        unzip -q tmp/lg.zip -d tmp
+        make -C "tmp/lg-${LG_COMMIT}"
+        sudo make -C "tmp/lg-${LG_COMMIT}" install
+        sudo rm -rf tmp
 
         python3 -m venv .venv
         source ".venv/bin/activate"
 
-        python3 -m pip install --upgrade pip
-        pip3 install -r requirements.txt
+        python3 -m pip install --upgrade pip setuptools wheel
+        pip3 install -r requirements-dev.txt
         # For operation of the Jukebox, ZMQ must be compiled from sources due to Websocket support
         # Also install all optional dependencies
         pip3 install -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt

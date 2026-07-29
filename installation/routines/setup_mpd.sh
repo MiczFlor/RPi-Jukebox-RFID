@@ -3,20 +3,6 @@
 AUDIOFOLDERS_PATH="${SHARED_PATH}/audiofolders"
 PLAYLISTS_PATH="${SHARED_PATH}/playlists"
 
-_mpd_install_os_dependencies() {
-  log "  Install MPD OS dependencies"
-  sudo apt-get -y update
-
-  log "Note: Installing MPD might cause a message: 'Job failed. See journalctl -xe for details'
-It can be ignored! It's an artefact of the MPD installation - nothing we can do about it."
-  sudo apt-get -y install \
-    mpd mpc \
-    --no-install-recommends \
-    --allow-downgrades \
-    --allow-remove-essential \
-    --allow-change-held-packages
-}
-
 _mpd_configure() {
   print_lc "  Configure MPD as user local service"
 
@@ -45,7 +31,7 @@ _mpd_check() {
 
     verify_apt_packages mpd mpc
 
-    verify_files_chmod_chown 755 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${MPD_CONF_PATH}"
+    verify_files_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${MPD_CONF_PATH}"
 
     verify_file_contains_string "${AUDIOFOLDERS_PATH}" "${MPD_CONF_PATH}"
     verify_file_contains_string "${PLAYLISTS_PATH}" "${MPD_CONF_PATH}"
@@ -58,7 +44,6 @@ _mpd_check() {
 }
 
 _run_setup_mpd() {
-    _mpd_install_os_dependencies
     _mpd_configure
     _mpd_check
 }

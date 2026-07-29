@@ -72,7 +72,7 @@ def play(filename):
     if (a) through the RPC or (b) some other plugin the volume is changed. Okay, now
     (a) let's hope that there is enough delay in the user requesting a volume change
     (b) let's hope no other plugin wants to do that
-    (c) no bluetooth device connects during this time (and pulseaudio control is set to toggle_on_connect)
+    (c) no bluetooth device connects during this time (and audio control is set to toggle_on_connect)
     and take our changes with the threaded approach.
     """
     global factory

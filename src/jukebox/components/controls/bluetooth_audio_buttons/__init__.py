@@ -67,17 +67,17 @@ def activate(device_name: str, exact: bool = True, open_initial_delay: float = 0
     new_listener.start()
 
 
-def activate_from_pulse(card_driver: str, device_name: str):
-    if card_driver == 'module-bluez5-device.c':
+def activate_from_audio_monitor(device_name: str, is_bluetooth: bool):
+    if is_bluetooth:
         activate(device_name, exact=False)
     else:
-        logger.info(f"Ignoring activation request from non-bluetooth module '{card_driver}'")
+        logger.info(f"Ignoring activation request from non-bluetooth audio card '{device_name}'")
 
 
 @plugin.initialize
 def initialize():
     if cfg.setndefault('bluetooth_audio_buttons', 'enable', value=True):
-        components.volume.pulse_monitor.on_connect_callbacks.register(activate_from_pulse)
+        components.volume.audio_monitor.on_connect_callbacks.register(activate_from_audio_monitor)
         button_mapping = cfg.getn('bluetooth_audio_buttons', 'mapping', default=None)
         if button_mapping:
             for key, action_request in button_mapping.items():
@@ -93,17 +93,22 @@ def initialize():
             button_callbacks[bt_keycode_prev] = jukebox.utils.bind_rpc_command({'alias': 'prev_song'},
                                                                                dereference=True, logger=logger)
 
-        # The is a potential start-up race condition:
-        # The activation callback from the PulseAudio plugin only gets executed when a new sound card connects
-        # If a bluetooth device connects faster than this service boots, we might never see the
-        # callback. So, at this point, we simply try to connect to all connected sound card bluetooth devices
-        # It is no issue, if they have been connected by callback in between either: we only get an additional debug log entry
-        sound_cards = components.volume.pulse_control.card_list()
+        # There is a potential start-up race condition:
+        # The activation callback from the volume plugin only fires when a new sound
+        # card connects. If a bluetooth device connects faster than this service boots,
+        # we might never see the callback. So, at this point, we simply try to connect
+        # to all connected sound-card bluetooth devices. No issue if they were already
+        # connected by callback in between — we only get an additional debug log entry.
+        sound_cards = components.volume.volume_control.card_list()
         for s in sound_cards:
-            if s.driver == 'module-bluez5-device.c':
-                device_name = s.proplist.get('device.description', None)
+            # `device.api == 'bluez5'` and `device.bus == 'bluetooth'` are stable
+            # across PulseAudio and PipeWire (via pipewire-pulse).
+            proplist = s.proplist
+            if proplist.get('device.api') == 'bluez5' or proplist.get('device.bus') == 'bluetooth':
+                device_name = proplist.get('device.description', None)
                 if device_name:
-                    logger.debug(f"Speculative start-up activation of buttons on bluetooth sound device '{device_name}'")
+                    logger.debug("Speculative start-up activation of buttons on "
+                                 f"bluetooth sound device '{device_name}'")
                     activate(device_name, exact=False, open_initial_delay=0.1)
 
 

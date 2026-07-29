@@ -390,9 +390,6 @@ _run_customize_options() {
     _option_webapp_devel_build
     _option_kiosk_mode
   fi
-  # Bullseye is currently under active development and should be updated in any case.
-  # Hence, removing the step below as it becomse mandatory
-  # _options_update_raspi_os
 }
 
 customize_options() {

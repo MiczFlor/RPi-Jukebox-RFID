@@ -1,27 +1,36 @@
 # Base Target to build and install all needed base configuration and packages. Specifie the needed platform with the docker '--platform XXX' option
-ARG DEBIAN_CODENAME=bookworm
+ARG DEBIAN_CODENAME=trixie
 ARG BASE_TEST_IMAGE=test-code
-FROM debian:${DEBIAN_CODENAME}-slim as base
+FROM debian:${DEBIAN_CODENAME}-slim AS base
 ARG DEBIAN_CODENAME
 
 ENV TERM=xterm DEBIAN_FRONTEND=noninteractive
 ENV CI_RUNNING=true
 
-# create RPi configs to test installation
-RUN mkdir -p /boot && touch /boot/config.txt && echo "logo.nologo" > /boot/cmdline.txt
+# create RPi config files for test installation
 RUN mkdir -p /boot/firmware && touch /boot/firmware/config.txt && echo "logo.nologo" > /boot/firmware/cmdline.txt
 
 RUN echo "--- install packages (1) ---" \
   && apt-get update \
   && apt-get -y install \
     apt-utils \
+    ca-certificates \
     curl \
-    gnupg \
+  && echo "--- install Raspberry Pi archive keyrings ---" \
+  && curl -fsSLo /tmp/raspbian-archive-keyring_20120528.4_all.deb \
+    https://archive.raspbian.org/raspbian/pool/main/r/raspbian-archive-keyring/raspbian-archive-keyring_20120528.4_all.deb \
+  && curl -fsSLo /tmp/raspberrypi-archive-keyring_2025.1+rpt1_all.deb \
+    https://archive.raspberrypi.com/debian/pool/main/r/raspberrypi-archive-keyring/raspberrypi-archive-keyring_2025.1+rpt1_all.deb \
+  && echo "eb2bc175ecfad128ece8222b42eefabd0a2846afd14f3af04364f4a047cbc88f  /tmp/raspbian-archive-keyring_20120528.4_all.deb" | sha256sum -c - \
+  && echo "2e727149d7acb8cc7f604e66d0049161039c8aa1eaf1175e54f9e69d963d60e4  /tmp/raspberrypi-archive-keyring_2025.1+rpt1_all.deb" | sha256sum -c - \
+  && apt-get -y install \
+    /tmp/raspbian-archive-keyring_20120528.4_all.deb \
+    /tmp/raspberrypi-archive-keyring_2025.1+rpt1_all.deb \
+  && rm -f /tmp/raspbian-archive-keyring_20120528.4_all.deb \
+    /tmp/raspberrypi-archive-keyring_2025.1+rpt1_all.deb \
   && echo "--- add sources ---" \
-  && curl -fsSL http://raspbian.raspberrypi.org/raspbian.public.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-raspbian-keyring.gpg \
-  && curl -fsSL http://archive.raspberrypi.org/debian/raspberrypi.gpg.key | gpg --dearmor > /usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg \
-  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-raspbian-keyring.gpg] http://raspbian.raspberrypi.org/raspbian/ ${DEBIAN_CODENAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
-  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-debian-keyring.gpg] http://archive.raspberrypi.org/debian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list.d/raspi.list \
+  && echo "deb [arch=armhf signed-by=/usr/share/keyrings/raspbian-archive-keyring.gpg] https://archive.raspbian.org/raspbian/ ${DEBIAN_CODENAME} main contrib non-free rpi" > /etc/apt/sources.list.d/raspi.list \
+  && echo "deb [signed-by=/usr/share/keyrings/raspberrypi-archive-keyring.gpg] https://archive.raspberrypi.com/debian/ ${DEBIAN_CODENAME} main" >> /etc/apt/sources.list.d/raspi.list \
   && echo "--- install packages (2) ---" \
   && apt-get update \
   && apt-get -y upgrade \
@@ -41,7 +50,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-sel
 # ------
 
 # Base Target for setting up a test user. user can be selected with the docker '--user YYY' option
-FROM base as test-user
+FROM base AS test-user
 ARG USER_NAME=pi
 ARG USER_GROUP=$USER_NAME
 ARG USER_ID=1000
@@ -57,7 +66,7 @@ ENV XDG_RUNTIME_DIR=/run/user/$USER_ID DBUS_SESSION_BUS_ADDRESS=unix:path=/run/u
 # ------
 
 # Target for adding envs and scripts from the repo to test installation
-FROM test-user as test-code
+FROM test-user AS test-code
 ARG GIT_BRANCH
 ARG GIT_USER
 
@@ -81,7 +90,7 @@ COPY --chown=root:$TEST_USER_GROUP --chmod=770 ci/installation/*.sh ./
 
 
 # Target for applying latest updates (should not be cached!)
-FROM $BASE_TEST_IMAGE as test-update
+FROM $BASE_TEST_IMAGE AS test-update
 RUN apt-get update \
   && apt-get -y upgrade \
   && rm -rf /var/lib/apt/lists/*
