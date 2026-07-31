@@ -246,7 +246,7 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
         }))
         await tornado.gen.sleep(0.01)
         self.broker.publish([b'player.status', b''])
-        with pytest.raises(TimeoutError):
+        with pytest.raises(asyncio.TimeoutError):
             await tornado.gen.with_timeout(
                 timedelta(milliseconds=20),
                 first.read_message(),
@@ -258,7 +258,7 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
             'type': 'subscribe',
             'topics': ['player'],
         }))
-        with pytest.raises(TimeoutError):
+        with pytest.raises(asyncio.TimeoutError):
             await tornado.gen.with_timeout(
                 timedelta(milliseconds=20),
                 second.read_message(),
