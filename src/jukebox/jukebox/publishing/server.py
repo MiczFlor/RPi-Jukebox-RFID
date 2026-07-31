@@ -112,11 +112,10 @@ Plugins publishing state information should publish initial state at @plugin.fin
 
 **Sockets**
 
-Three sockets are opened:
+Two endpoints are opened:
 
 1. TCP (on a configurable port)
-2. Websocket (on a configurable port)
-3. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
+2. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
    that want to know about the current state on event based updates.
 
 **Further ZeroMQ References:**
@@ -188,7 +187,7 @@ class PublishServer(threading.Thread):
 
     The code is structures using a [Reactor Pattern](https://zguide.zeromq.org/docs/chapter5/#Using-a-Reactor)
     """
-    def __init__(self, tcp_port, websocket_port):
+    def __init__(self, tcp_port):
         super().__init__(name='PubServer')
         self.daemon = True
         self.ctx = zmq.Context.instance()
@@ -203,11 +202,8 @@ class PublishServer(threading.Thread):
         if tcp_port:
             self.backend.bind(f"tcp://*:{tcp_port}")
 
-        if websocket_port:
-            self.backend.bind(f'ws://*:{websocket_port}')
-
-        if not tcp_port and not websocket_port:
-            logger.error("Both ports disabled. Need to configure at least one port TCP or Websocket")
+        if not tcp_port:
+            logger.warning("TCP publishing is disabled; only inproc publishing is available")
 
         # This gives a a deprecation warning if used without tornado installed
         # pip install tornado solves the issue
@@ -223,7 +219,7 @@ class PublishServer(threading.Thread):
         self.backend.on_recv(self.handle_subscription)
         # Ready to go
         logger.debug(f"PublishServer initialized (Pyzmq version: {zmq.pyzmq_version()}; "
-                     f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
+                     f"ZMQ version: {zmq.zmq_version()})")
 
     def run(self):
         """Thread's activity"""

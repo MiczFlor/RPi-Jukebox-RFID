@@ -427,6 +427,10 @@
     * [\_\_init\_\_](#jukebox.multitimer.GenericMultiTimerClass.__init__)
     * [start](#jukebox.multitimer.GenericMultiTimerClass.start)
     * [get\_state](#jukebox.multitimer.GenericMultiTimerClass.get_state)
+* [jukebox.api.server](#jukebox.api.server)
+  * [EventBroker](#jukebox.api.server.EventBroker)
+  * [ApiServer](#jukebox.api.server.ApiServer)
+* [jukebox.api](#jukebox.api)
 * [jukebox.callingback](#jukebox.callingback)
   * [CallbackHandler](#jukebox.callingback.CallbackHandler)
     * [register](#jukebox.callingback.CallbackHandler.register)
@@ -438,6 +442,8 @@
     * [run](#jukebox.rpc.server.RpcServer.run)
 * [jukebox.rpc.client](#jukebox.rpc.client)
 * [jukebox.rpc](#jukebox.rpc)
+* [jukebox.rpc.processor](#jukebox.rpc.processor)
+  * [process\_request](#jukebox.rpc.processor.process_request)
 * [jukebox.daemon](#jukebox.daemon)
   * [log\_active\_threads](#jukebox.daemon.log_active_threads)
   * [JukeBox](#jukebox.daemon.JukeBox)
@@ -4745,11 +4751,10 @@ Plugins publishing state information should publish initial state at @plugin.fin
 
 **Sockets**
 
-Three sockets are opened:
+Two endpoints are opened:
 
 1. TCP (on a configurable port)
-2. Websocket (on a configurable port)
-3. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
+2. Inproc: On ``inproc://PublisherToProxy`` all topics are published app-internally. This can be used for plugin modules
    that want to know about the current state on event based updates.
 
 **Further ZeroMQ References:**
@@ -6550,6 +6555,42 @@ Get current timer state.
 - iterations: Total iteration count
 - type: Timer class name
 
+<a id="jukebox.api.server"></a>
+
+# jukebox.api.server
+
+Tornado HTTP RPC and WebSocket event server.
+
+
+<a id="jukebox.api.server.EventBroker"></a>
+
+## EventBroker Objects
+
+```python
+class EventBroker()
+```
+
+Maintain browser subscriptions and a private last-value cache.
+
+
+<a id="jukebox.api.server.ApiServer"></a>
+
+## ApiServer Objects
+
+```python
+class ApiServer(threading.Thread)
+```
+
+Run the browser API on an isolated Tornado I/O loop.
+
+
+<a id="jukebox.api"></a>
+
+# jukebox.api
+
+HTTP and WebSocket API for browser clients.
+
+
 <a id="jukebox.callingback"></a>
 
 # jukebox.callingback
@@ -6620,9 +6661,9 @@ def has_callbacks()
 
 # jukebox.rpc.server
 
-## Remote Procedure Call Server (RPC)
+## ZeroMQ Remote Procedure Call Server (RPC)
 
-Bind to tcp and/or websocket port and translates incoming requests to procedure calls.
+Bind to TCP and inproc endpoints and translate incoming requests to procedure calls.
 Avaiable procedures to call are all functions registered with the plugin package.
 
 The protocol is loosely based on [jsonrpc](https://www.jsonrpc.org/specification)
@@ -6653,11 +6694,10 @@ If present, 'id' and 'tsp' may not be None. If they are None, there are treated 
 
 **Sockets**
 
-Three sockets are opened
+Two endpoints are opened on one REP socket:
 
 1. TCP (on a configurable port)
-2. Websocket (on a configurable port)
-3. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
+2. Inproc: On ``inproc://JukeBoxRpcServer`` connection from the internal app are accepted. This is indented be
    call arbitrary RPC functions from plugins that provide an interface to the outside world (e.g. GPIO). By also going though
    the RPC instead of calling function directly we increase thread-safety and provide easy configurability (e.g. which
    button triggers what action)
@@ -6706,6 +6746,27 @@ call request to the plugin module
 
 # jukebox.rpc
 
+<a id="jukebox.rpc.processor"></a>
+
+# jukebox.rpc.processor
+
+Transport-neutral processing for Jukebox RPC requests.
+
+
+<a id="jukebox.rpc.processor.process_request"></a>
+
+#### process\_request
+
+```python
+def process_request(client_request, received_at_ns=None)
+```
+
+Execute an RPC request and return its response envelope.
+
+The request is copied before any values are passed to plugin code so the
+caller's dictionary, including nested ``args`` and ``kwargs``, is retained.
+
+
 <a id="jukebox.daemon"></a>
 
 # jukebox.daemon
@@ -6746,4 +6807,3 @@ Signal handler for orderly shutdown
 
 On first Ctrl-C (or SIGTERM) orderly shutdown procedure is embarked upon. It gets allocated a time-out!
 On third Ctrl-C (or SIGTERM), this is interrupted and there will be a hard exit!
-

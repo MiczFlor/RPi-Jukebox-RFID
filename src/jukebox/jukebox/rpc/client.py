@@ -25,7 +25,7 @@ class RpcClient:
         self._address = address
         self.queue.connect(address)
         self.logger.debug(f"RPC Client initialized on '{address}' (Pyzmq version: {zmq.pyzmq_version()}; "
-                          f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
+                          f"ZMQ version: {zmq.zmq_version()})")
 
     @property
     def address(self):

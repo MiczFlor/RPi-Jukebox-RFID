@@ -73,12 +73,6 @@ Engine — the legacy `docker-compose` v1 binary is no longer required).
 
 1. Run `docker compose`
 
-    1. Build libzmq for your host machine
-
-        ```bash
-        docker build -f docker/Dockerfile.libzmq -t libzmq:local .
-        ```
-
     1. Build images
 
         ```bash
@@ -132,12 +126,6 @@ Engine — the legacy `docker-compose` v1 binary is no longer required).
 
 1. Run `docker compose`
 
-    1. Build libzmq for your host machine
-
-        ```bash
-        docker build -f docker/Dockerfile.libzmq -t libzmq:local .
-        ```
-
     1. Build images
 
         ```bash
@@ -171,12 +159,6 @@ Engine — the legacy `docker-compose` v1 binary is no longer required).
 Docker\'s [post-installation guide](https://docs.docker.com/engine/install/linux-postinstall/) for more information.
 
 1. Run `docker compose`
-
-    1. Build libzmq for your host machine
-
-        ```bash
-        docker build -f docker/Dockerfile.libzmq -t libzmq:local .
-        ```
 
     1. Build images
 
@@ -225,21 +207,6 @@ which you can easily ignore unless they prevent you from progressing. If
 would be of course useful to get rid of them, but currently we make a
 trade-off between a development environment and solving the specific
 details.
-
-### Error when local libzmq Dockerfile has not been built:
-
-``` bash
-------
- > [jukebox internal] load metadata for docker.io/library/libzmq:local:
-------
-failed to solve: libzmq:local: pull access denied, repository does not exist or may require authorization: server message: insufficient_scope: authorization failed
-```
-
-Build libzmq for your host machine
-
-``` bash
-docker build -f docker/Dockerfile.libzmq -t libzmq:local .
-```
 
 ### `mpd` container
 
@@ -404,7 +371,3 @@ Mount the device into the container by configuring the appropriate device in a `
 * <https://stmllr.net/blog/streaming-audio-with-mpd-and-icecast2-on-raspberry-pi/>
 * <https://github.com/Tob1asDocker/rpi-mpd>
 * <https://github.com/vimagick/dockerfiles/tree/master/mpd>
-
-#### ZMQ
-
-* <https://codeblog.dotsandbrackets.com/using-zeromq-with-docker/>

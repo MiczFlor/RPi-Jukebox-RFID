@@ -11,7 +11,7 @@ class Subscriber:
         self.ctx = zmq.Context.instance()
         self.socket = self.ctx.socket(zmq.SUB)
         if url is None:
-            url = "tcp://localhost:5557"
+            url = "tcp://localhost:5558"
         logger.debug(f"Subscriber started on '{url}'")
         self.socket.connect(url)
         if topics is None:
@@ -23,7 +23,7 @@ class Subscriber:
                 self.socket.setsockopt_string(zmq.SUBSCRIBE, t)
 
         logger.debug(f"ZMQ Subscriber initialized on '{url}' (Pyzmq version: {zmq.pyzmq_version()}; "
-                     f"ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API})")
+                     f"ZMQ version: {zmq.zmq_version()})")
 
     def receive(self):
         [topic, message] = self.socket.recv_multipart()

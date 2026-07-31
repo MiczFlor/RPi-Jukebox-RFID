@@ -1,22 +1,31 @@
 # Known Issues
 
-## Installing `libzmq` in Docker fails
+## Legacy custom libzmq installation
 
-To speed up the Docker build process, we are distributing pre-build versions of libzmq with drafts flag at the latest version. In case the download fails because the respective architecture build does not exist, you can build the version yourself.
+Current releases use the Raspberry Pi OS or Debian `libzmq5` and
+`python3-zmq` packages. The installer deliberately does not delete files
+under `/usr/local`.
 
-Add `build-essential` to be installed additionally with `apt-get`. Additionally, replace the command to download the pre-built library with the following command.
+An installation upgraded from an older release may still have the project's
+custom libzmq archive under `/usr/local`. First check which library is loaded:
 
-```docker
-# Compile ZMQ
-RUN cd ${HOME} && mkdir ${ZMQ_TMP_DIR} && cd ${ZMQ_TMP_DIR}; \
-    wget https://github.com/zeromq/libzmq/releases/download/v${ZMQ_VERSION}/zeromq-${ZMQ_VERSION}.tar.gz -O libzmq.tar.gz; \
-    tar -xzf libzmq.tar.gz; \
-    rm -f libzmq.tar.gz; \
-    zeromq-${ZMQ_VERSION}/configure --prefix=${ZMQ_PREFIX} --enable-drafts; \
-    make && make install
+```bash
+ldconfig -p | grep libzmq
+python3 -c 'import zmq; print(zmq.__file__, zmq.zmq_version())'
 ```
 
-[libzmq details](./libzmq.md)
+Only if the old archive is known to have been installed by Phoniebox, its
+libzmq-specific files can be removed before refreshing the linker cache:
+
+```bash
+sudo rm -f /usr/local/lib/libzmq.so*
+sudo rm -f /usr/local/lib/pkgconfig/libzmq.pc
+sudo rm -f /usr/local/include/zmq.h /usr/local/include/zmq_utils.h
+sudo rm -rf /usr/local/lib/cmake/ZeroMQ
+sudo ldconfig
+```
+
+Do not remove unrelated files from `/usr/local`.
 
 ## Configuration
 

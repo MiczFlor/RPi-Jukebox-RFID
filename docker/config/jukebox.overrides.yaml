@@ -1,2 +1,4 @@
 playermpd:
   host: mpd
+api:
+  bind_address: 0.0.0.0

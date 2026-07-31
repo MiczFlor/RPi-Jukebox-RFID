@@ -24,17 +24,12 @@ def main(address, topic):
 
 
 if __name__ == '__main__':
-    default_ws = 5557
     default_tcp = 5558
     url = f"tcp://localhost:{default_tcp}"
     argparser = argparse.ArgumentParser(description='The Jukebox Publisher sniffer tool',
                                         epilog=f'Default connection: {url}\nExample:\n$ {__file__} -t 5558 -k core host',
                                         formatter_class=argparse.RawDescriptionHelpFormatter)
     port_group = argparser.add_mutually_exclusive_group()
-    port_group.add_argument("-w", "--websocket",
-                            help=f"Use websocket protocol on PORT [default: {default_ws}]",
-                            nargs='?', const=default_ws,
-                            metavar="PORT", default=None)
     port_group.add_argument("-t", "--tcp",
                             help=f"Use tcp protocol on PORT [default: {default_tcp}]",
                             nargs='?', const=default_tcp,
@@ -46,9 +41,7 @@ if __name__ == '__main__':
                            default='')
     args = argparser.parse_args()
 
-    if args.websocket is not None:
-        url = f"ws://localhost:{args.websocket}"
-    elif args.tcp is not None:
+    if args.tcp is not None:
         url = f"tcp://localhost:{args.tcp}"
 
     print(f">>> Sniffer Client connect on {url} for topics '{args.topics}'\n\n")

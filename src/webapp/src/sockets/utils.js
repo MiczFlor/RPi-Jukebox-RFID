@@ -1,30 +1,38 @@
 const encodeMessage = (obj) => {
-  // console.log('encodeMessage', obj);
-  const payload = JSON.stringify(obj);
-  return payload;
+  return JSON.stringify(obj);
 }
 
 const decodeMessage = (msg) => {
+  const decoded = (typeof msg === 'string') ?
+    JSON.parse(msg) :
+    msg;
   const {
     id = undefined,
     error = undefined,
     result = undefined,
-  } = JSON.parse(new TextDecoder().decode(msg));
+  } = decoded;
 
   return { id, result, error };
 }
 
-const decodePubSubMessage = (_topic, _payload) => {
-  const topic = new TextDecoder().decode(_topic);
-  const payload = new TextDecoder().decode(_payload);
-
+const decodePubSubMessage = (message) => {
   try {
-    const data = JSON.parse(payload);
+    const decoded = (typeof message === 'string') ?
+      JSON.parse(message) :
+      message;
+    const {
+      type,
+      topic,
+      data = undefined,
+    } = decoded;
 
-    return { topic, data };
+    if (!['event', 'revoke'].includes(type) || typeof topic !== 'string') {
+      throw new Error('Invalid event message.');
+    }
+    return { type, topic, data };
   }
   catch (error) {
-    return { topic,  error };
+    return { error };
   }
 }
 

@@ -18,6 +18,6 @@
 
 ## RPC
 
-* [LibZMQ](./libzmq.md)
+* [Web App API](./webapp.md#backend-api)
 * [CLI Client for RPC](../builders/cli-client.md)
 * [RPC Commands](../builders/rpc-commands.md)

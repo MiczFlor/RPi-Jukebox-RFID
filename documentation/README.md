@@ -32,7 +32,7 @@ project check out the [documentation of Version 2](https://github.com/MiczFlor/R
 
 * Jukebox core is a holistic Python3-only application
 * Avoid shell script invocation during runtime wherever possible
-* Establish a socket based API (using ZeroMQ) toward the WebUI or other clients
+* Provide an HTTP RPC and WebSocket event API to the WebUI while retaining ZeroMQ for native clients
 * Implemented a Remote-Procedure-Call (RPC) server through which all user function calls pass
 * Implemented a plugin concept to dynamically load Python modules configurable through the configuration file
 * In conjunction with the RPC, this is a neat way of allowing additional features without having to touch the core all the time

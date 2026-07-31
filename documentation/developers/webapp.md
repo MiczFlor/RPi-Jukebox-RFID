@@ -23,6 +23,20 @@ npm install # Just the first time or when dependencies change
 npm start
 ```
 
+The development server proxies `/api/` to `http://localhost:5556`. Set
+`API_PROXY_TARGET` to use another Jukebox API server.
+
+## Backend API
+
+The Web App uses `POST /api/v1/rpc` for commands and
+`WS /api/v1/events` for state updates. Both are served on the configured
+API port, `5556` by default, and nginx exposes them under the same origin as
+the Web App. `GET /api/v1/health` reports API availability.
+
+The old ZeroMQ-over-WebSocket endpoints on ports `5556` and `5557` were
+intentionally removed. Native ZeroMQ clients remain wire-compatible on TCP
+RPC port `5555` and publishing port `5558`.
+
 ## Build the Web App
 
 To build your Web App after its source code has changed (e.g. through a local change or through a pull from the repository), it needs to be rebuilt manually.

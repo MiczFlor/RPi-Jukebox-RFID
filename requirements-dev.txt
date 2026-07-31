@@ -1,6 +1,10 @@
 # Runtime dependencies
 -r requirements.txt
 
+# Use a standard PyZMQ wheel in development; never build bundled libzmq.
+--only-binary=pyzmq
+pyzmq
+
 # Code quality and tests
 flake8>=4.0.0
 pytest

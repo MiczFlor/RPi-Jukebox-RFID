@@ -12,6 +12,7 @@ from misc import flatten
 import jukebox.plugs as plugin
 import jukebox.utils
 import jukebox.publishing as publishing
+from jukebox.api import ApiServer
 from jukebox.rpc.server import RpcServer
 from jukebox.NvManager import nv_manager
 
@@ -46,6 +47,7 @@ class JukeBox:
         self.nvm = nv_manager()
         self._signal_cnt = 0
         self.rpc_server = None
+        self.api_server = None
         jukebox.cfghandler.load_yaml(cfg, configuration_file)
 
         self.write_artifacts = write_artifacts
@@ -103,6 +105,8 @@ class JukeBox:
         # (1) Stop taking commands from RPC
         if self.rpc_server is not None:
             self.rpc_server.terminate()
+        if self.api_server is not None:
+            self.api_server.terminate()
         # (2) Stop the music
         plugin.call_ignore_errors('player', 'ctrl', 'stop')
         # (3) Call exit functions of all plugins -> return list of threads we should to wait for before shutting down
@@ -225,6 +229,8 @@ class JukeBox:
         #     gpio_thread = None
 
         self.rpc_server = RpcServer()
+        self.api_server = ApiServer()
+        self.api_server.start_and_wait()
 
         logger.info(f"Start-up time: {((time.time_ns() - time_start) / 1000000.0):.3f} ms")
 

@@ -7,12 +7,12 @@ const PlayerProvider = ({ children }) => {
   const [state, setState] = useState({});
 
   // Initialize sockets for player context
-  useEffect(() => {
+  useEffect(() => (
     initSockets({
       events: ['playerstatus'],
       setState,
-    });
-  }, []);
+    })
+  ), []);
 
   const context = {
     setState,

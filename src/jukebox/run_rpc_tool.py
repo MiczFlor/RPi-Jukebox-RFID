@@ -99,7 +99,7 @@ def format_welcome(scr):
     except Exception:
         jukebox_version = "unknown"
     scr.addstr(f"Jukebox version: {jukebox_version}\n")
-    scr.addstr(f"Pyzmq version: {zmq.pyzmq_version()}; ZMQ version: {zmq.zmq_version()}; has draft API: {zmq.DRAFT_API}\n")
+    scr.addstr(f"Pyzmq version: {zmq.pyzmq_version()}; ZMQ version: {zmq.zmq_version()}\n")
     scr.addstr('-' * 70 + "\n")
 
 
@@ -347,15 +347,10 @@ def runcmd(cmd):
 
 if __name__ == '__main__':
     default_tcp = 5555
-    default_ws = 5556
     url = f"tcp://localhost:{default_tcp}"
     argparser = argparse.ArgumentParser(description='The Jukebox RPC command line tool',
                                         epilog=f'Default connection: {url}')
     port_group = argparser.add_mutually_exclusive_group()
-    port_group.add_argument("-w", "--websocket",
-                            help=f"Use websocket protocol on PORT [default: {default_ws}]",
-                            nargs='?', const=default_ws,
-                            metavar="PORT", default=None)
     port_group.add_argument("-t", "--tcp",
                             help=f"Use tcp protocol on PORT [default: {default_tcp}]",
                             nargs='?', const=default_tcp,
@@ -365,9 +360,7 @@ if __name__ == '__main__':
                             default=None)
     args = argparser.parse_args()
 
-    if args.websocket is not None:
-        url = f"ws://localhost:{args.websocket}"
-    elif args.tcp is not None:
+    if args.tcp is not None:
         url = f"tcp://localhost:{args.tcp}"
 
     print(f">>> RPC Client connect on {url}")
