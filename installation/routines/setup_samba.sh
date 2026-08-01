@@ -3,16 +3,6 @@
 SMB_CONF="/etc/samba/smb.conf"
 SMB_CONF_HEADER="## Jukebox Samba Config"
 
-_samba_install_os_dependencies() {
-  log "  Install Samba Core dependencies"
-  sudo apt-get -qq -y update; sudo apt-get -qq -y install \
-    samba samba-common-bin \
-    --no-install-recommends \
-    --allow-downgrades \
-    --allow-remove-essential \
-    --allow-change-held-packages
-}
-
 _samba_set_user() {
   print_lc "  Configure Samba"
   local SMB_PASSWD="raspberry"
@@ -50,7 +40,7 @@ _samba_check() {
 
     verify_apt_packages samba samba-common-bin
 
-    verify_files_chmod_chown 644 root root "${SMB_CONF}"
+    verify_files_chown root root "${SMB_CONF}"
 
     verify_file_contains_string "${SMB_CONF_HEADER}" "${SMB_CONF}"
     verify_file_contains_string "${SHARED_PATH}" "${SMB_CONF}"
@@ -61,9 +51,6 @@ _samba_check() {
 }
 
 _run_setup_samba() {
-    # Skip interactive Samba WINS config dialog
-    echo "samba-common samba-common/dhcp boolean false" | sudo debconf-set-selections
-    _samba_install_os_dependencies
     _samba_set_user
     _samba_check
 }

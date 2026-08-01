@@ -1,6 +1,6 @@
 # RPi-Jukebox-RFID Version 3
 # Copyright (c) See file LICENSE in project root folder
-"""PulseAudio Volume Control Plugin Package
+"""Volume Control Plugin Package
 
 ## Features
 
@@ -13,46 +13,37 @@
 * volume.level
 * volume.sink
 
-## PulseAudio References
+## Audio server
 
-<https://brokkr.net/2018/05/24/down-the-drain-the-elusive-default-pulseaudio-sink/>
-
-Check fallback device (on device de-connect):
-
-    $ pacmd list-sinks | grep -e 'name:' -e 'index'
-
+The plugin talks to the local audio server through the PulseAudio protocol
+via the `pulsectl` Python library. On Pi OS Trixie this is `pipewire-pulse`
+(the protocol shim shipped with PipeWire); on a real PulseAudio system the
+same code path connects to PulseAudio directly. Everything below applies
+either way; "the audio server" means whichever daemon is listening on the
+PulseAudio Unix socket.
 
 ## Integration
 
-Pulse Audio runs as a user process. Processes who want to communicate / stream to it
-must also run as a user process.
-
-This means must also run as user process, as described in
-[Music Player Daemon](../../builders/system.md#music-player-daemon-mpd).
+The audio server runs as a user process. Processes that want to communicate
+with / stream to it must also run as a user process. The Jukebox daemon does
+this; see [Music Player Daemon](../../builders/system.md#music-player-daemon-mpd).
 
 ## Misc
 
-PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration
-in ``/usr/pulse/default.pa``. So, we don't need to worry about it.
-If the module gets loaded it conflicts with the toggle on connect and the selected primary / secondary outputs
-from the Jukebox. Remove it from the configuration!
+The audio server may switch the sink automatically to a connecting bluetooth
+device when the module ``module-switch-on-connect`` is loaded. If loaded, it
+conflicts with the Jukebox's toggle-on-connect and primary / secondary
+output selection. Remove it from the configuration:
 
     ### Use hot-plugged devices like Bluetooth or USB automatically (LP: #1702794)
-    ### not available on PI?
     .ifexists module-switch-on-connect.so
     load-module module-switch-on-connect
     .endif
 
-## Why PulseAudio?
+## Callbacks
 
-The audio configuration of the system is one of those topics,
-which has a myriad of options and possibilities. Every system is different and PulseAudio unifies these and
-makes our life easier. Besides, it is only option to support Bluetooth at the moment.
-
-## Callbacks:
-
-The following callbacks are provided. Register callbacks with these adder functions (see their documentation for details):
+The following callbacks are provided. Register callbacks with these adder
+functions (see their documentation for details):
 
 1. :func:`add_on_connect_callback`
 2. :func:`add_on_output_change_callbacks`
@@ -71,8 +62,8 @@ import jukebox.publishing as publishing
 from typing import (List, Optional, Callable)
 from jukebox.callingback import CallbackHandler
 
-logger = logging.getLogger('jb.pulse')
-logger_event = logging.getLogger('jb.pulse.event')
+logger = logging.getLogger('jb.audio')
+logger_event = logging.getLogger('jb.audio.event')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
@@ -83,21 +74,21 @@ def clamp(n, minn, maxn):
     return min(max(n, minn), maxn)
 
 
-PulseAudioSinkClass = collections.namedtuple('PaSink', ['alias',
-                                                        'pulse_sink_name',
-                                                        'volume_limit'])
+AudioSinkClass = collections.namedtuple('AudioSink', ['alias',
+                                                       'pulse_sink_name',
+                                                       'volume_limit'])
 
 
-class PulseMonitor(threading.Thread):
-    """A thread for monitoring and interacting with the Pulse Lib via pulsectrl
+class AudioMonitor(threading.Thread):
+    """A thread for monitoring and interacting with the audio server via `pulsectl`.
 
-    Whenever we want to access pulsectl, we need to exit the event listen loop.
+    Whenever we want to access the server, we need to exit the event listen loop.
     This is handled by the context manager. It stops the event loop and returns
-    the pulsectl instance to be used (it does no return the monitor thread itself!)
+    the `pulsectl.Pulse` instance to be used (not the monitor thread itself!).
 
     The context manager also locks the module to ensure proper thread sequencing,
-    as only a single thread may work with pulsectl at any time. Currently, an RLock is
-    used, even if it may not be necessary
+    as only a single thread may work with `pulsectl` at any time. Currently, an
+    RLock is used, even if it may not be necessary.
     """
 
     class SoundCardConnectCallbacks(CallbackHandler):
@@ -107,41 +98,41 @@ class PulseMonitor(threading.Thread):
             * new sound card gets connected
 
         """
-        def register(self, func: Callable[[str, str], None]):
+        def register(self, func: Callable[[str, bool], None]):
             """
             Add a new callback function :attr:`func`.
 
             Callback signature is
 
-            .. py:function:: func(card_driver: str, device_name: str)
+            .. py:function:: func(device_name: str, is_bluetooth: bool)
                 :noindex:
 
-            :param card_driver: The PulseAudio card driver module,
-                e.g. :data:`module-bluez5-device.c` or :data:`module-alsa-card.c`
             :param device_name: The sound card device name as reported
                 in device properties
+            :param is_bluetooth: Whether stable device properties identify the
+                sound card as a Bluetooth device
             """
             super().register(func)
 
-        def run_callbacks(self, sink_name, alias, sink_index, error_state):
+        def run_callbacks(self, device_name: str, is_bluetooth: bool):
             """:meta private:"""
-            super().run_callbacks(sink_name, alias, sink_index, error_state)
+            super().run_callbacks(device_name, is_bluetooth)
 
     def __init__(self):
-        super().__init__(name='PulseMon')
+        super().__init__(name='AudioMon')
         self.daemon = True
         self._keep_running = True
         self.listen_done = threading.Event()
         self.action_done = threading.Event()
         self.last_event: List[pulsectl.PulseEventInfo] = []
-        self._pulse_inst = pulsectl.Pulse('jukebox-client')
+        self._audio_server = pulsectl.Pulse('jukebox-client')
         self._toggle_on_connect = True
 
         # For the callback handler: We use the context lock only explicitly for registering new functions
-        # When the callbacks are run, it happens from inside the pulse_monitor which an already acquired lock
+        # When the callbacks are run, it happens from inside the audio_monitor which an already acquired lock
         #: Callback handler instance for on_connect_callbacks events.
-        #: See #PulseMonitor.SoundCardConnectCallbacks
-        self.on_connect_callbacks: PulseMonitor.SoundCardConnectCallbacks = PulseMonitor.SoundCardConnectCallbacks(
+        #: See #AudioMonitor.SoundCardConnectCallbacks
+        self.on_connect_callbacks: AudioMonitor.SoundCardConnectCallbacks = AudioMonitor.SoundCardConnectCallbacks(
             'on_connect_callback', logger, context=self)
 
     @property
@@ -165,23 +156,23 @@ class PulseMonitor(threading.Thread):
     def __enter__(self):
         _lock_module.acquire()
         while not self.listen_done.is_set():
-            self._pulse_inst.event_listen_stop()
+            self._audio_server.event_listen_stop()
             time.sleep(0.01)
         self.listen_done.clear()
-        return self._pulse_inst
+        return self._audio_server
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.action_done.set()
         _lock_module.release()
 
     def stop(self):
-        """Stop the pulse monitor thread"""
+        """Stop the audio monitor thread"""
         logger.debug('Stop request received')
         _lock_module.acquire()
         try:
             self._keep_running = False
             while not self.listen_done.is_set():
-                self._pulse_inst.event_listen_stop()
+                self._audio_server.event_listen_stop()
                 time.sleep(0.01)
             self.listen_done.clear()
             self.action_done.set()
@@ -190,82 +181,93 @@ class PulseMonitor(threading.Thread):
 
     def _get_event(self, event: pulsectl.PulseEventInfo):
         if logger_event.isEnabledFor(logging.DEBUG):
-            logger_event.debug(f'Received PulseAudio event: {event}')
+            logger_event.debug(f'Received audio server event: {event}')
         # This access is exclusive with handle_event access in the same thread: No need to lock
         # We can receive multiple events w/o them being handled in between
         self.last_event.append(event)
-        # This causes self.pulse_inst.event_listen to exit (w/o an exception!)
+        # This causes self._audio_server.event_listen to exit (w/o an exception!)
         raise pulsectl.PulseLoopStop
 
     def _handle_event(self):
-        # Event handling must happen outside PA Event Loop
+        # Event handling must happen outside the audio-server event loop.
         # Everything in here is within context already, meaning we MUST use the
-        # pulse_control._* functions!
+        # volume_control._* functions!
         current_event = self.last_event[0]
         if logger_event.isEnabledFor(logging.DEBUG):
-            logger_event.debug(f'Handling PulseAudio event: {current_event}')
+            logger_event.debug(f'Handling audio server event: {current_event}')
         if current_event.facility == 'card' and current_event.t == 'new':
             # Find the newly connected card
-            for card_info in self._pulse_inst.card_list():
+            for card_info in self._audio_server.card_list():
                 if card_info.index == current_event.index:
-                    # Alsa device drivers (HifiBerry, USB, etc...) have field 'alsa.card_name',
-                    # bluetooth drivers have field 'device.description'. Any others? Don't know about other drivers -> Unknown
-                    device_name = card_info.proplist.get('device.description',
-                                                         card_info.proplist.get('alsa.card_name', 'Unknown'))
+                    # `device.api == 'bluez5'` and `device.bus == 'bluetooth'` are stable
+                    # across PulseAudio and PipeWire (via pipewire-pulse). Older code keyed off
+                    # `card_info.driver == 'module-bluez5-device.c'` which only matches PulseAudio.
+                    proplist = card_info.proplist
+                    is_bluetooth = (
+                        proplist.get('device.api') == 'bluez5'
+                        or proplist.get('device.bus') == 'bluetooth'
+                    )
+                    if is_bluetooth:
+                        device_name = proplist.get('device.description', 'Unknown')
+                    else:
+                        # Alsa device drivers (HifiBerry, USB, etc.) prefer 'alsa.card_name'
+                        device_name = proplist.get('alsa.card_name',
+                                                   proplist.get('device.description', 'Unknown'))
                     break
             else:
                 # This should never happen!
                 logger.error(f"Got new card event with index {current_event.index} but could not "
-                             f"find card in {self._pulse_inst.card_list()}")
+                             f"find card in {self._audio_server.card_list()}")
                 return
 
             logger.info(f"New audio output detected: '{device_name}' "
                         f"(driver = {card_info.driver}, index {current_event.index})")
 
-            # A new card is always assumed to be the Bluetooth device, as this is the only removable device
-            if self._toggle_on_connect:
-                pulse_control._set_output(self._pulse_inst, 1)
+            if self._toggle_on_connect and is_bluetooth:
+                volume_control._set_output(self._audio_server, 1)
             # Context for running callbacks is already acquired
-            self.on_connect_callbacks._run_callbacks(card_info.driver, device_name)
+            self.on_connect_callbacks._run_callbacks(device_name, is_bluetooth)
         elif current_event.facility == 'card' and current_event.t == 'remove':
             # An card has been removed. This could be any card, but for now we assume that it always is
             # the bluetooth device that has been removed, as we only have that one removable device
             # Minimum check: is it still in the sink list?
-            # On disconnect PulseAudio, goes to fallback device
-            # This can be checked with
-            # pacmd list-sinks | grep -e 'name:' -e 'index'
+            # On disconnect the audio server goes to its fallback device.
+            # This can be checked with `wpctl status` (PipeWire) or
+            # `pacmd list-sinks | grep -e 'name:' -e 'index'` (PulseAudio).
             logger.info('Audio output disconnection detected')
-            # For now we always go back to user defined primary device as
-            # it could be different from what PulseAudio makes as the fallback device
-            # (On Pis with a single sound card and a single bluetooth it makes  no difference, but also does not hurt)
-            pulse_control._set_output(self._pulse_inst, 0)
-            # When relying on PA default fallback situation, remember to publish the new output
-            # alias, name = pulse_control._publish_outputs(self._pulse_inst)
-            pulse_control._publish_volume(self._pulse_inst)
+            # For now we always go back to the user-defined primary device, since
+            # it could be different from what the server picks as the fallback
+            # (On Pis with a single sound card and a single bluetooth it makes
+            #  no difference, but also does not hurt)
+            volume_control._set_output(self._audio_server, 0)
+            # When relying on the server's default fallback, remember to publish the new output
+            # alias, name = volume_control._publish_outputs(self._audio_server)
+            volume_control._publish_volume(self._audio_server)
         if current_event.facility == 'sink' and current_event.t == 'change':
-            pulse_control._publish_volume(self._pulse_inst)
+            volume_control._publish_volume(self._audio_server)
 
     def run(self) -> None:
-        """Starts the pulse monitor thread"""
-        logger.info('Start Pulse Monitor Thread')
-        # <Enum event-mask [all autoload card client module null sample_cache server sink sink_input source source_output]>
-        self._pulse_inst.event_mask_set('card', 'sink')
-        self._pulse_inst.event_callback_set(self._get_event)
+        """Starts the audio monitor thread"""
+        logger.info('Start Audio Monitor Thread')
+        # <Enum event-mask [all autoload card client module null sample_cache
+        #                    server sink sink_input source source_output]>
+        self._audio_server.event_mask_set('card', 'sink')
+        self._audio_server.event_callback_set(self._get_event)
 
         while self._keep_running:
-            self._pulse_inst.event_listen(timeout=None)
+            self._audio_server.event_listen(timeout=None)
             if not self.last_event:
                 # Event loop has been stopped with event_loop_stop
                 # Need to temporarily disable callbacks: otherwise we sporadically get events in the
                 # MainThread even though event_listening is stopped. Why?
-                self._pulse_inst.event_callback_set(None)
+                self._audio_server.event_callback_set(None)
                 self.listen_done.set()
                 if logger_event.isEnabledFor(logging.DEBUG):
                     logger_event.debug('Waiting for action done command')
                 # Gives control to action execution request
                 self.action_done.wait()
                 self.action_done.clear()
-                self._pulse_inst.event_callback_set(self._get_event)
+                self._audio_server.event_callback_set(self._get_event)
             else:
                 while self.last_event:
                     try:
@@ -274,20 +276,19 @@ class PulseMonitor(threading.Thread):
                         logger.error(f'Exception in handling event callback: {e.__class__.__name__}: {e}')
                     finally:
                         self.last_event.__delitem__(0)
-        logger.info('Exit Pulse Monitor Thread')
+        logger.info('Exit Audio Monitor Thread')
 
 
-class PulseVolumeControl:
-    """Volume control manager for PulseAudio
+class VolumeControl:
+    """Volume control manager for the audio server.
 
-    When accessing the pulse library, it needs to be put into a special
-    state. Which is ensured by the context manager
+    When accessing the audio server through `pulsectl`, the connection needs
+    to be put into a special state, ensured by the context manager:
 
-        with pulse_monitor as pulse ...
+        with audio_monitor as pulse ...
 
-
-    All private functions starting with `_function_name` assume that this is ensured by
-    the calling function. All user functions acquire proper context!
+    All private functions starting with `_function_name` assume that this is
+    ensured by the calling function. All user functions acquire proper context.
     """
 
     class OutputChangeCallbackHandler(CallbackHandler):
@@ -308,7 +309,7 @@ class PulseVolumeControl:
             .. py:function:: func(sink_name: str, alias: str, sink_index: int, error_state: int)
                 :noindex:
 
-            :param sink_name: PulseAudio's sink name
+            :param sink_name: The audio server's sink name
             :param alias: The alias for :attr:`sink_name`
             :param sink_index: The index of the sink in the configuration list
             :param error_state: 1 if there was an attempt to change the output
@@ -347,25 +348,25 @@ class PulseVolumeControl:
             """:meta private:"""
             super().run_callbacks(sink_name, alias, sink_index, error_state)
 
-    def __init__(self, sink_list: List[PulseAudioSinkClass]):
-        self._sink_list: List[PulseAudioSinkClass] = sink_list
+    def __init__(self, sink_list: List[AudioSinkClass]):
+        self._sink_list: List[AudioSinkClass] = sink_list
         logger.debug(f'Configured audio sinks: {self._sink_list}')
         # Prepare quick look-ups for volume_limit
         self._volume_limit = {x.pulse_sink_name: x.volume_limit / 100.0 for x in self._sink_list}
         self._soft_max_volume = cfg.setndefault('pulse', 'soft_max_volume', value=100)
 
         # For both callback handler: We use the context lock only explicitly for registering new functions
-        # When the callbacks are run, it happens from inside the pulse_control which an already acquired lock
+        # When the callbacks are run, it happens from inside the volume_control which an already acquired lock
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See #PulseVolumeControl.OutputChangeCallbackHandler
-        self.on_output_change_callbacks = PulseVolumeControl.OutputChangeCallbackHandler(
-            'on_output_change_callbacks', logger, context=pulse_monitor)
+        #: See #VolumeControl.OutputChangeCallbackHandler
+        self.on_output_change_callbacks = VolumeControl.OutputChangeCallbackHandler(
+            'on_output_change_callbacks', logger, context=audio_monitor)
 
         #: Callback handler instance for on_output_change_callbacks events.
-        #: See #PulseVolumeControl.OutputVolumeCallbackHandler
-        self.on_volume_change_callbacks = PulseVolumeControl.OutputVolumeCallbackHandler(
-            'on_volume_change_callbacks', logger, context=pulse_monitor)
+        #: See #VolumeControl.OutputVolumeCallbackHandler
+        self.on_volume_change_callbacks = VolumeControl.OutputVolumeCallbackHandler(
+            'on_volume_change_callbacks', logger, context=audio_monitor)
 
     def _set_volume(self, pulse_inst: pulsectl.Pulse, volume: int, sink_name: Optional[str] = None):
         # Set volume triggers should not trigger a volume change event,
@@ -467,13 +468,13 @@ class PulseVolumeControl:
     @plugin.tag
     def toggle_output(self):
         """Toggle the audio output sink"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             self._toggle_output(pulse)
 
     @plugin.tag
     def get_outputs(self):
         """Get current output and list of outputs"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             sink_alias, sink_name = self._get_outputs(pulse)
         return {'active_alias': sink_alias,
                 'active_sink': sink_name,
@@ -482,14 +483,14 @@ class PulseVolumeControl:
     @plugin.tag
     def publish_volume(self):
         """Publish (volume, mute)"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             volume, mute = self._publish_volume(pulse)
         return volume, mute
 
     @plugin.tag
     def publish_outputs(self):
         """Publish current output and list of outputs"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             sink_alias, sink_name = self._publish_outputs(pulse)
         return sink_alias, sink_name
 
@@ -499,20 +500,20 @@ class PulseVolumeControl:
         if not 0 <= volume <= 100:
             logger.warning(f"set_volume: volume out-of-range: {volume}")
             volume = clamp(volume, 0, 100)
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             self._set_volume(pulse, volume)
 
     @plugin.tag
     def get_volume(self):
         """Get the volume"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             volume = self._get_volume_and_mute(pulse)[0]
         return volume
 
     @plugin.tag
     def change_volume(self, step: int):
         """Increase/decrease the volume by step for the currently active output"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             volume, mute = self._get_volume_and_mute(pulse)
             volume += step
             # We could be muted, but have a high volume level and
@@ -527,14 +528,14 @@ class PulseVolumeControl:
     @plugin.tag
     def get_mute(self):
         """Return mute status for the currently active output"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             mute = self._get_volume_and_mute(pulse)[1]
         return mute
 
     @plugin.tag
     def mute(self, mute=True):
         """Set mute status for the currently active output"""
-        with pulse_monitor as pulse_inst:
+        with audio_monitor as pulse_inst:
             sink = pulse_inst.get_sink_by_name(pulse_inst.server_info().default_sink_name)
             pulse_inst.mute(sink, mute)
             self._publish_volume(pulse_inst)
@@ -542,7 +543,7 @@ class PulseVolumeControl:
     @plugin.tag
     def set_output(self, sink_index: int):
         """Set the active output (sink_index = 0: primary, 1: secondary)"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             sink_name = self._set_output(pulse, sink_index)
         return sink_name
 
@@ -554,7 +555,7 @@ class PulseVolumeControl:
             logger.warning(f"set_max_volume: volume out-of-range: {max_volume}")
             return
         self._soft_max_volume = max_volume
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             current_volume, mute = self._get_volume_and_mute(pulse)
             if max_volume < current_volume:
                 self._set_volume(pulse, max_volume)
@@ -567,20 +568,20 @@ class PulseVolumeControl:
 
     def card_list(self) -> List[pulsectl.PulseCardInfo]:
         """Return the list of present sound card"""
-        with pulse_monitor as pulse:
+        with audio_monitor as pulse:
             cards = pulse.card_list()
         return cards
 
 
-pulse_control: PulseVolumeControl
-pulse_monitor: PulseMonitor
+volume_control: VolumeControl
+audio_monitor: AudioMonitor
 
 
-def parse_config() -> List[PulseAudioSinkClass]:
-    global pulse_monitor
+def parse_config() -> List[AudioSinkClass]:
+    global audio_monitor
 
     # We get the current default sink, in case of corrupt configuration
-    with pulse_monitor as pulse_inst:
+    with audio_monitor as pulse_inst:
         default_sink_name = pulse_inst.server_info().default_sink_name
         default_sink = pulse_inst.get_sink_by_name(default_sink_name)
         all_sinks = [x.name for x in pulse_inst.sink_list()]
@@ -605,7 +606,7 @@ def parse_config() -> List[PulseAudioSinkClass]:
                          f"Things like audio sink toggle and volume limit will not work as expected!\n"
                          f"Please run audio config tool: ./installation/components/setup_configure_audio.sh")
 
-        sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
+        sink_list.append(AudioSinkClass(alias, pulse_sink_name, volume_limit))
         key = 'secondary'
         pulse_sink_name = cfg.getn('pulse', 'outputs', key, 'pulse_sink_name', default=None)
         # No need to check validity of pulse sink name: this could be a disconnected bluetooth device
@@ -615,41 +616,42 @@ def parse_config() -> List[PulseAudioSinkClass]:
             # Only need to get the configuration, if device is actually configured
             alias = cfg.setndefault('pulse', 'outputs', key, 'alias', value='Unset alias')
             volume_limit = cfg.setndefault('pulse', 'outputs', key, 'volume_limit', value=100)
-            sink_list.append(PulseAudioSinkClass(alias, pulse_sink_name, volume_limit))
+            sink_list.append(AudioSinkClass(alias, pulse_sink_name, volume_limit))
     return sink_list
 
 
 @plugin.initialize
 def initialize():
-    global pulse_control
-    global pulse_monitor
-    pulse_monitor = PulseMonitor()
-    pulse_monitor.toggle_on_connect = cfg.setndefault('pulse', 'toggle_on_connect', value=True)
-    pulse_monitor.start()
+    global volume_control
+    global audio_monitor
+    audio_monitor = AudioMonitor()
+    audio_monitor.toggle_on_connect = cfg.setndefault('pulse', 'toggle_on_connect', value=True)
+    audio_monitor.start()
 
-    pulse_control = PulseVolumeControl(parse_config())
+    volume_control = VolumeControl(parse_config())
 
 
 @plugin.finalize
 def finalize():
-    global pulse_control
-    # Set default output and start-up volume
-    # Note: PulseAudio may switch the sink automatically to a connecting bluetooth device depending on the loaded module
-    # with name module-switch-on-connect. On Raspberry Pi OS Bullseye, this module is not part of the default configuration.
-    # So, we shouldn't need to worry about it. Still, set output and startup volume close to each other
-    # to minimize bluetooth connection in between
-    global pulse_control
-    pulse_control.set_output(0)
+    global volume_control
+    # Set default output and start-up volume.
+    # Note: the audio server may switch the sink automatically to a connecting
+    # bluetooth device when ``module-switch-on-connect`` is loaded. If loaded,
+    # it conflicts with the toggle-on-connect logic below — see module docstring.
+    # Still, set output and startup volume close to each other to minimize the
+    # bluetooth connection window in between.
+    global volume_control
+    volume_control.set_output(0)
     startup_volume = cfg.getn('pulse', 'startup_volume', default=None)
     if startup_volume is not None:
-        pulse_control.set_volume(startup_volume)
+        volume_control.set_volume(startup_volume)
     else:
-        pulse_control.publish_volume()
-    plugin.register(pulse_control, package="volume", name="ctrl", replace=True)
+        volume_control.publish_volume()
+    plugin.register(volume_control, package="volume", name="ctrl", replace=True)
 
 
 @plugin.atexit
 def atexit(**ignored_kwargs):
-    global pulse_monitor
-    pulse_monitor.stop()
-    return pulse_monitor
+    global audio_monitor
+    audio_monitor.stop()
+    return audio_monitor

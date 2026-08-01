@@ -106,11 +106,8 @@ is_debian_version_at_least() {
 
 _get_boot_file_path() {
     local filename="$1"
-    if [ "$(is_debian_version_at_least 12)" = true ]; then
-        echo "/boot/firmware/${filename}"
-    else
-        echo "/boot/${filename}"
-    fi
+    # Trixie (and Bookworm) ship Pi firmware files under /boot/firmware/
+    echo "/boot/firmware/${filename}"
 }
 
 get_boot_config_path() {
@@ -130,7 +127,7 @@ validate_url() {
 download_from_url() {
     local url=$1
     local output_filename=$2
-    wget ${url} -O ${output_filename} || exit_on_error "Download failed"
+    wget --timeout=30 --tries=3 "${url}" -O "${output_filename}" || exit_on_error "Download failed"
     return $?
 }
 
@@ -264,6 +261,55 @@ verify_files_chmod_chown() {
     log "  CHECK"
 }
 
+# Check if the file(s) has/have the expected owner.
+# Use this when only ownership matters; modes that depend on the install
+# user's umask (Trixie defaults to 002) should not be asserted.
+verify_files_chown() {
+    local user_expected=$1
+    local group_expected=$2
+    local files="${@:3}"
+    log "  Verify '${user_expected}:${group_expected}' is set for '${files}'"
+
+    if [[ -z "${user_expected}" || -z "${group_expected}" || -z "${files}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    for file in $files
+    do
+        test ! -f ${file} && exit_on_error "ERROR: '${file}' does not exists or is not a file!"
+
+        user_actual=$(stat -c '%U' "${file}")
+        group_actual=$(stat -c '%G' "${file}")
+        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${file}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
+        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${file}' actual group '${group_actual}' differs from expected '${group_expected}'!"
+    done
+    log "  CHECK"
+}
+
+# Check if the dir(s) has/have the expected owner.
+# Use this when only ownership matters and directory modes may depend on umask.
+verify_dirs_chown() {
+    local user_expected=$1
+    local group_expected=$2
+    local dirs="${@:3}"
+    log "  Verify '${user_expected}:${group_expected}' is set for '${dirs}'"
+
+    if [[ -z "${user_expected}" || -z "${group_expected}" || -z "${dirs}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    for dir in $dirs
+    do
+        test ! -d ${dir} && exit_on_error "ERROR: '${dir}' does not exists or is not a dir!"
+
+        user_actual=$(stat -c '%U' "${dir}")
+        group_actual=$(stat -c '%G' "${dir}")
+        test ! "${user_expected}" == "${user_actual}" && exit_on_error "ERROR: '${dir}' actual owner '${user_actual}' differs from expected '${user_expected}'!"
+        test ! "${group_expected}" == "${group_actual}" && exit_on_error "ERROR: '${dir}' actual group '${group_actual}' differs from expected '${group_expected}'!"
+    done
+    log "  CHECK"
+}
+
 # Check if the dir(s) has/have the expected owner and modifications
 verify_dirs_chmod_chown() {
     local mod_expected=$1
@@ -383,7 +429,7 @@ verify_optional_service_enablement() {
     fi
 
     local actual_enablement=$(_get_service_enablement $service $option)
-    if [[ -z "${actual_enablement}" ]]; then
+    if [[ "${actual_enablement}" == "not-found" ]]; then
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then
         log "  INFO: optional service ${option}${service} is set static."

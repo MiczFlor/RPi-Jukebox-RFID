@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 _run_update_raspi_os() {
-    sudo apt-get -qq -y update && sudo apt-get -qq -y full-upgrade || exit_on_error "Failed to Update Raspberry Pi OS"
+    sudo apt-get -qq -y full-upgrade || exit_on_error "Failed to update Raspberry Pi OS"
     if [ "$CI_RUNNING" != "true" ]; then
-        sudo apt-get -qq -y autoremove
+        sudo apt-get -qq -y autoremove || exit_on_error "Failed to remove obsolete OS packages"
     fi
 }
 

@@ -6,18 +6,6 @@ KIOSK_MODE_BASHRC="${HOME_PATH}/.bashrc"
 KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium-browser/customizations/01-disable-update-check'
 KIOSK_MODE_CHROMIUM_FLAG_UPDATE_INTERVAL='--check-for-update-interval=31536000'
 
-_kiosk_mode_install_os_dependencies() {
-  print_lc "  Install Kiosk Mode dependencies"
-  # Resource:
-  # https://blog.r0b.io/post/minimal-rpi-kiosk/
-  sudo apt-get -qq -y install --no-install-recommends \
-    xserver-xorg \
-    x11-xserver-utils \
-    xinit \
-    openbox \
-    chromium-browser
-}
-
 _kiosk_mode_set_autostart() {
   print_lc "  Configure Kiosk Mode"
   local _DISPLAY='$DISPLAY'
@@ -82,7 +70,6 @@ _kiosk_mode_check() {
 }
 
 _run_setup_kiosk_mode() {
-    _kiosk_mode_install_os_dependencies
     _kiosk_mode_set_autostart
     _kiosk_mode_update_settings
     _kiosk_mode_check

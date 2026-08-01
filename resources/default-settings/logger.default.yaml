@@ -52,7 +52,7 @@ loggers:
     # handlers: [console, publisher]
     # handlers: [console]
     propagate: false
-  jb.pulse.event:
+  jb.audio.event:
     level: WARNING
   jb.daemon:
     level: DEBUG

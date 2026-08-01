@@ -178,7 +178,7 @@ class PlaylistCollector:
     #: Ignore files with the following endings.
     #: Attention: this will go into a regexp builder, i.e. ``.*`` will match anything!
     #: Always set via :func:`set_exclusion_endings`
-    _exclude_endings = ['zip', 'xcf', 'py', 'db', 'png', 'jpg', 'conf', 'yaml', 'json', '.*~', '.*#']
+    _exclude_endings = ['zip', 'xcf', 'py', 'db', 'png', 'jpg', 'pdf', 'conf', 'yaml', 'json', '.*~', '.*#']
     # Will generate a regex pattern string like this: r'.*\.((txt)|(zip))$
     _exclude_str = '.*\\.((' + ')|('.join(_exclude_endings) + '))$'
     _exclude_re = re.compile(_exclude_str, re.IGNORECASE)

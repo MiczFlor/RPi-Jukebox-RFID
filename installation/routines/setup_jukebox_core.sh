@@ -5,36 +5,7 @@ JUKEBOX_ZMQ_TMP_DIR="${HOME_PATH}/libzmq"
 JUKEBOX_ZMQ_PREFIX="/usr/local"
 JUKEBOX_ZMQ_VERSION="4.3.5"
 
-JUKEBOX_PULSE_CONFIG="${HOME_PATH}"/.config/pulse/default.pa
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
-
-# Functions
-_jukebox_core_install_os_dependencies() {
-  print_lc "  Install Jukebox OS dependencies"
-
-  local apt_packages=$(get_args_from_file "${INSTALLATION_PATH}/packages-core.txt")
-  sudo apt-get -y update && sudo apt-get -y install \
-    $apt_packages \
-    --no-install-recommends \
-    --allow-downgrades \
-    --allow-remove-essential \
-    --allow-change-held-packages
-}
-
-_jukebox_core_build_and_install_lg() {
-    local tmp_path="${HOME_PATH}/tmp"
-    local lg_filename="lg"
-    local lg_zip_filename="${lg_filename}.zip"
-
-    # always build lg and lgpio from source as pypi wheels are incomplete (armv6, python3.13) or broken (bullseye)
-    # build needs apt packages "swig python3-dev"
-    mkdir -p "${tmp_path}" && cd "${tmp_path}" || exit_on_error
-    download_from_url "http://abyz.me.uk/lg/${lg_zip_filename}" "${lg_zip_filename}"
-    unzip ${lg_zip_filename} || exit_on_error
-    cd "${lg_filename}" || exit_on_error
-    make && sudo make install
-    cd "${INSTALLATION_PATH}" && sudo rm -rf "${tmp_path}"
-}
 
 _jukebox_core_install_python_requirements() {
   print_lc "  Install Python requirements"
@@ -44,19 +15,13 @@ _jukebox_core_install_python_requirements() {
   python3 -m venv $VIRTUAL_ENV
   source "$VIRTUAL_ENV/bin/activate"
 
-  pip install --upgrade pip
+  # Build tooling is needed for native Python dependencies, but is not part of
+  # the Jukebox runtime requirements.
+  pip install --upgrade pip setuptools wheel
   # Remove excluded libs, if installed - see https://github.com/MiczFlor/RPi-Jukebox-RFID/pull/2470
   pip uninstall -y -r "${INSTALLATION_PATH}"/requirements-excluded.txt
 
-  _jukebox_core_build_and_install_lg
-
   pip install --no-cache-dir -r "${INSTALLATION_PATH}/requirements.txt"
-}
-
-_jukebox_core_configure_pulseaudio() {
-  print_lc "  Copy PulseAudio configuration"
-  mkdir -p $(dirname "$JUKEBOX_PULSE_CONFIG")
-  cp -f "${INSTALLATION_PATH}/resources/default-settings/pulseaudio.default.pa" "${JUKEBOX_PULSE_CONFIG}"
 }
 
 _jukebox_core_build_libzmq_with_drafts() {
@@ -157,12 +122,10 @@ _jukebox_core_check() {
     fi
     log "  CHECK"
 
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${JUKEBOX_PULSE_CONFIG}"
+    verify_files_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
+    verify_files_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
 
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/jukebox.yaml"
-    verify_files_chmod_chown 644 "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
-
-    verify_files_chmod_chown 644 root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+    verify_files_chown root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
 
     verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
 
@@ -170,10 +133,8 @@ _jukebox_core_check() {
 }
 
 _run_setup_jukebox_core() {
-    _jukebox_core_install_os_dependencies
     _jukebox_core_install_python_requirements
     _jukebox_core_build_and_install_pyzmq
-    _jukebox_core_configure_pulseaudio
     _jukebox_core_install_settings
     _jukebox_core_register_as_service
     _jukebox_core_check

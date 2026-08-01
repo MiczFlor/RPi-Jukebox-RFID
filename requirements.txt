@@ -1,9 +1,6 @@
 # Common python packages
 # You need to install these with `python -m pip install --no-cache-dir -r requirements.txt`
 
-setuptools
-wheel
-
 # Note:
 # sudo apt install libasound2-dev required on some machines
 
@@ -21,7 +18,8 @@ requests
 tornado
 
 # RPi's GPIO packages:
-# use shim to keep current RPi.GPIO behavior also under Bookworm - see https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
+# Shim that preserves the RPi.GPIO API on kernels >= 6.6 (Trixie),
+# where /sys/class/gpio/ is gone. See https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2313
 rpi-lgpio --no-binary=lgpio
 gpiozero
 
@@ -29,15 +27,6 @@ gpiozero
 # On the PI, it needs to be compiled with special options to enable Websocket support
 # On regular Linux PCs, Websocket is enabled in the Python package
 # pyzmq
-
-# Code quality
-flake8>=4.0.0
-pytest
-pytest-cov
-mock
-
-# API docs generation
-pydoc-markdown
 
 # MQTT
 paho-mqtt

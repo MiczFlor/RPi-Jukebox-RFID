@@ -156,7 +156,7 @@ def register_audio_sink_change_callback(device):
         else:
             device.off()
 
-    components.volume.pulse_control.on_output_change_callbacks.register(
+    components.volume.volume_control.on_output_change_callbacks.register(
         _check_device_type(device, [LED, PWMLED, RGBLED], audio_sink_change_callback))
 
 
@@ -181,7 +181,7 @@ def register_volume_led_callback(device):
         if is_max:
             device.flash(on_time=0.0, off_time=0.3, n=1)
 
-    components.volume.pulse_control.on_volume_change_callbacks.register(
+    components.volume.volume_control.on_volume_change_callbacks.register(
         _check_device_type(device, [PWMLED], audio_volume_change_callback))
 
 
@@ -199,7 +199,7 @@ def register_volume_buzzer_callback(device):
         if is_min or is_max:
             device.flash(on_time=0.1, off_time=0, n=1, tone=BUZZ_TONE)
 
-    components.volume.pulse_control.on_volume_change_callbacks.register(
+    components.volume.volume_control.on_volume_change_callbacks.register(
         _check_device_type(device, [Buzzer, TonalBuzzer], set_volume_buzzer))
 
 
@@ -220,5 +220,5 @@ def register_volume_rgbled_callback(device):
         if is_min or is_max:
             device.flash(on_time=0.1, off_time=0, n=1, color=volume_to_rgb.luminize(1, 1, 1))
 
-    components.volume.pulse_control.on_volume_change_callbacks.register(
+    components.volume.volume_control.on_volume_change_callbacks.register(
         _check_device_type(device, [RGBLED], audio_volume_change_callback))

@@ -29,16 +29,16 @@ pulse:
   toggle_on_connect: true
   # Limit maximum volume range to XX % - can be changed through the UI (for temporary use)
   soft_max_volume: 70
-  # Run the audio configuration tool to configure the pulseaudio sinks
+  # Run the audio configuration tool to configure the audio sinks
   #
   # After startup, the audio output defaults to primary
   # Any Bluetooth device should be the secondary (as it may not always be available directly after boot)
   #
-  # For manual setting of pulseaudio sinks use:
-  # $ pactl list sinks short
+  # For manual inspection of available sinks use:
+  # $ wpctl status
   #
-  # Test sinks with
-  # $ paplay -D sink_name /usr/share/sounds/alsa/Front_Center.wav
+  # Test a sink with its ID from `wpctl status`:
+  # $ pw-play --target=<id> /usr/share/sounds/alsa/Front_Center.wav
   #
   # Parameters:
   # - alias       : user defined alias for better readability

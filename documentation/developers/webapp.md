@@ -4,16 +4,14 @@ The Web App sources are located in `src/webapp`. A pre-build bundle of the Web A
 
 ## Install node manually
 
-If you installed from an official release branch, Node might not be installed. To install Node for local development, follow the [official setup](https://deb.nodesource.com/).
+If you installed from an official release branch, Node might not be installed. Raspberry Pi OS Trixie provides Node.js 20 and npm directly:
 
 ``` bash
-NODE_MAJOR=20
-sudo apt-get -y update && sudo apt-get -y install ca-certificates curl gnupg
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
-sudo apt-get -y update && sudo apt-get -y install nodejs
+sudo apt-get update
+sudo apt-get install nodejs npm
 ```
+
+ARMv6 devices use the unofficial Node.js build installed by the Phoniebox installer.
 
 ## Develop the Web App
 

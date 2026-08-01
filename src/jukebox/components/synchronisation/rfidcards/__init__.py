@@ -259,21 +259,20 @@ class SyncRfidcards:
             _host = self._sync_remote_server
             _port = self._sync_remote_port
 
-            _paths = ['-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'", dst_path]
+            _mode_params = ['--compress', '-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'", dst_path]
 
         else:
-            _paths = [src_path, dst_path]
+            _mode_params = [src_path, dst_path]
 
         _run_params = (['rsync',
-                        '--compress', '--recursive', '--itemize-changes',
+                        '--recursive', '--itemize-changes',
                         '--safe-links', '--times', '--omit-dir-times',
                         '--delete', '--prune-empty-dirs',
                         '--exclude=folder.conf',  # exclude if existing from v2.x
                         '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude'
-                        ] + _paths)
+                        ] + _mode_params)
 
         _runresult = subprocess.run(_run_params, shell=False, check=False, capture_output=True, text=True)
-
         if _runresult.returncode == 0 and _runresult.stdout != '':
             logger.debug(f"Synced:\n{_runresult.stdout}")
             _files_synced = True
