@@ -16,8 +16,13 @@ import { ROOT_DIR } from '../../../../config';
 const FolderList = ({
   dir,
   folders,
+  isManagementSelecting,
   isSelecting,
+  onDelete,
+  onToggleSelected,
   registerMusicToCard,
+  selectedPaths,
+  showManagementActions,
 }) => {
   const { t } = useTranslation();
 
@@ -44,10 +49,15 @@ const FolderList = ({
       }
       {folders.length > 0 && folders.map((folder, key) =>
         <FolderListItem
-          key={key}
+          key={folder.relpath || key}
           folder={folder}
+          isManagementSelecting={isManagementSelecting}
           isSelecting={isSelecting}
+          isSelected={selectedPaths.has(folder.relpath)}
+          onDelete={onDelete}
+          onToggleSelected={onToggleSelected}
           registerMusicToCard={registerMusicToCard}
+          showManagementActions={showManagementActions}
         />
       )}
     </List>

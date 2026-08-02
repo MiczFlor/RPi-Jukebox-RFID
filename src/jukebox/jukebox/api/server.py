@@ -328,6 +328,26 @@ class LibraryEntriesHandler(StreamingJsonHandler):
         self.library = library
         self.executor = executor
 
+    async def get(self):
+        try:
+            folder = self.get_query_argument('folder')
+            entries = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.list_entries,
+                folder,
+            )
+        except tornado.web.MissingArgumentError as error:
+            self.set_status(400)
+            self.finish({'error': {
+                'code': 'invalid_request',
+                'message': f"Missing query parameter '{error.arg_name}'.",
+            }})
+            return
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'entries': entries})
+
     async def delete(self):
         if self.reject_oversized_body():
             return

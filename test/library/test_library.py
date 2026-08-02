@@ -85,6 +85,31 @@ def test_create_folder_and_delete_non_empty_folder(music_library):
     assert not (root / path).exists()
 
 
+def test_list_entries_includes_manageable_files_and_skips_external_symlinks(music_library, tmp_path):
+    library, root, _ = music_library
+    (root / 'Album').mkdir()
+    (root / 'track.mp3').touch()
+    (root / 'cover.jpg').touch()
+    (root / 'station.livestream.txt').touch()
+    (root / 'notes.pdf').touch()
+    (root / '.phoniebox-upload-part').touch()
+    outside = tmp_path / 'outside'
+    outside.mkdir()
+    (root / 'external').symlink_to(outside, target_is_directory=True)
+
+    assert library.list_entries('.') == [
+        {'name': 'Album', 'relpath': 'Album', 'type': 'directory'},
+        {'name': 'cover.jpg', 'relpath': 'cover.jpg', 'type': 'image'},
+        {'name': 'notes.pdf', 'relpath': 'notes.pdf', 'type': 'other'},
+        {
+            'name': 'station.livestream.txt',
+            'relpath': 'station.livestream.txt',
+            'type': 'stream',
+        },
+        {'name': 'track.mp3', 'relpath': 'track.mp3', 'type': 'file'},
+    ]
+
+
 def test_delete_validates_all_paths_before_removing_anything(music_library):
     library, root, _ = music_library
     existing = root / 'keep.mp3'

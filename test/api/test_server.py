@@ -249,6 +249,18 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
             Path(self.library_directory.name) / 'Album' / 'track.mp3'
         ).read_bytes() == b'audio data'
 
+        list_response = self.fetch(
+            '/api/v1/library/entries?folder=Album',
+        )
+        assert list_response.code == 200
+        assert json.loads(list_response.body) == {
+            'entries': [{
+                'name': 'track.mp3',
+                'relpath': 'Album/track.mp3',
+                'type': 'file',
+            }],
+        }
+
         duplicate_response = self.fetch(
             f'/api/v1/library/files?{query}',
             method='PUT',

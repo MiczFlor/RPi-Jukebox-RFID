@@ -105,6 +105,22 @@ def _validate_file_type(name):
         raise LibraryError(415, 'unsupported_file_type', f"'{name}' is not a supported library file.")
 
 
+def _entry_type(name):
+    lower_name = name.casefold()
+    suffix = Path(lower_name).suffix
+    if lower_name.endswith('livestream.txt'):
+        return 'stream'
+    if lower_name.endswith('podcast.txt'):
+        return 'podcast'
+    if suffix in AUDIO_EXTENSIONS:
+        return 'file'
+    if suffix in PLAYLIST_EXTENSIONS:
+        return 'playlist'
+    if suffix in COVER_EXTENSIONS:
+        return 'image'
+    return 'other'
+
+
 def _operation_error(error, action):
     if error.errno in (errno.ENOSPC, errno.EDQUOT):
         return LibraryError(507, 'insufficient_storage', f'Not enough storage to {action}.')
@@ -291,6 +307,36 @@ class MusicLibrary:
         except OSError as error:
             raise _operation_error(error, f"create folder '{name}'") from error
         return target.relative_to(self.root).as_posix()
+
+    def list_entries(self, folder):
+        root = self.root
+        parent = self._directory(folder)
+        entries = []
+        try:
+            directory_entries = sorted(
+                os.scandir(parent),
+                key=lambda entry: (not entry.is_dir(follow_symlinks=True), entry.name.casefold()),
+            )
+            for entry in directory_entries:
+                if entry.name.startswith('.'):
+                    continue
+                resolved = Path(entry.path).resolve(strict=False)
+                if not _contains_path(root, resolved):
+                    continue
+                if entry.is_dir(follow_symlinks=True):
+                    entry_type = 'directory'
+                elif entry.is_file(follow_symlinks=True):
+                    entry_type = _entry_type(entry.name)
+                else:
+                    continue
+                entries.append({
+                    'name': entry.name,
+                    'relpath': Path(entry.path).relative_to(root).as_posix(),
+                    'type': entry_type,
+                })
+        except OSError as error:
+            raise _operation_error(error, f"list folder '{folder}'") from error
+        return entries
 
     def delete_entries(self, relative_paths):
         if not isinstance(relative_paths, list) or not relative_paths:
