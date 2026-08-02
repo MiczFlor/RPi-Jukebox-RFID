@@ -172,6 +172,9 @@ _jukebox_webapp_check() {
 
     verify_apt_packages nginx
     verify_files_exists "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+    verify_file_contains_string "location = /api/v1/library/files" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+    verify_file_contains_string "client_max_body_size 1g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
+    verify_file_contains_string "proxy_request_buffering off" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
     if [ "$DISABLE_IPv6" = true ] ; then
       verify_file_does_not_contain_string "listen [::]:80" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"

@@ -49,6 +49,14 @@ The Web App uses `POST /api/v1/rpc` for commands and
 API port, `5556` by default, and nginx exposes them under the same origin as
 the Web App. `GET /api/v1/health` reports API availability.
 
+Library file management uses dedicated HTTP endpoints under
+`/api/v1/library/`. Uploads send one raw file per
+`PUT /api/v1/library/files` request so Tornado can stream it to storage without
+buffering the complete file in memory. Folder creation, raw directory listing,
+batch deletion, and MPD refresh use the corresponding `folders`, `entries`, and
+`refresh` endpoints. nginx disables request buffering only for the upload
+endpoint; RPC and other JSON requests retain their 1 MiB limit.
+
 The old ZeroMQ-over-WebSocket endpoints on ports `5556` and `5557` were
 intentionally removed. Native ZeroMQ clients remain wire-compatible on TCP
 RPC port `5555` and publishing port `5558`.
