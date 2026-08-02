@@ -181,15 +181,7 @@ _jukebox_webapp_check() {
 }
 
 _run_setup_jukebox_webapp() {
-    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == auto ]]; then
-        if ! _jukebox_webapp_download; then
-            print_lc "  No exact Web App bundle found; building locally."
-            if [[ "$(get_architecture)" == "armv6" ]]; then
-                _jukebox_webapp_install_node_armv6
-            fi
-            _jukebox_webapp_build
-        fi
-    elif [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
+    if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == true || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]] ; then
         _jukebox_webapp_download || exit_on_error "No pre-built Web App bundle found!"
     elif [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
         if [[ "$(get_architecture)" == "armv6" ]]; then

@@ -2,7 +2,7 @@
 
 The Web App sources are located in `src/webapp`. A pre-built bundle of the Web App is deployed when installing from an official release branch.
 
-Pushes to `future3/**` branches also publish a short-lived set of commit-addressed bundles to the `webapp-development` prerelease in the source repository. For feature branches and forks, the installer offers to download the bundle matching the installed commit. If that exact bundle is unavailable, it builds the Web App locally.
+Pushes to `future3/**` branches also publish a short-lived set of commit-addressed bundles to the `webapp-development` prerelease in the source repository. For feature branches and forks, the installer uses the bundle matching the installed commit when available and otherwise downloads the latest applicable pre-built release bundle. Building locally is an explicit opt-in because it installs Node and can take a long time on Raspberry Pi devices.
 
 Repository Actions must be enabled and the workflow token must have `contents: write` permission for a fork to publish development bundles.
 

@@ -84,7 +84,7 @@ git fetch origin --tags
 
 > [!NOTE]
 > The Installation of the official repository's release branches ([Stable Release](#stable-release) and [Pre-Release](#pre-release)) will deploy a pre-build bundle of the Web App.
-> For another branch or a fork repository, the installer first looks for a CI bundle matching the exact commit. If it is unavailable, the Web App is built locally. See the developers [Web App](../developers/webapp.md) documentation for further details.
+> For another branch or a fork repository, the installer first looks for a CI bundle matching the exact commit and otherwise downloads the latest applicable pre-built release bundle. A local build is optional and disabled by default. See the developers [Web App](../developers/webapp.md) documentation for further details.
 
 ### Logs
 

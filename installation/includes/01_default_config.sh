@@ -25,7 +25,6 @@ GIT_USE_SSH=${GIT_USE_SSH:-"false"}
 
 # Valid values
 # - release-only: download in release branch only
-# - auto: download an exact-commit development bundle or build locally
 # - true: force download, allowing the latest release bundle as a fallback
 # - false: never download
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}

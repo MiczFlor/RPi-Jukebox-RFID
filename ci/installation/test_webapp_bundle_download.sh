@@ -86,24 +86,12 @@ UPSTREAM_DEVELOPMENT_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAM
 UPSTREAM_RELEASE_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
 UPSTREAM_LATEST_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/webapp-build-latest.tar.gz"
 
-ENABLE_WEBAPP_PROD_DOWNLOAD=auto
+ENABLE_WEBAPP_PROD_DOWNLOAD=true
 reset_download "${SOURCE_DEVELOPMENT_URL}"
 _jukebox_webapp_download
 assert_attempts "${SOURCE_DEVELOPMENT_URL}"
 [[ -f "${INSTALLATION_PATH}/src/webapp/build/index.html" ]]
 
-reset_download "not-available"
-if _jukebox_webapp_download; then
-    echo "Automatic download unexpectedly succeeded" >&2
-    exit 1
-fi
-assert_attempts \
-    "${SOURCE_DEVELOPMENT_URL}" \
-    "${SOURCE_RELEASE_URL}" \
-    "${UPSTREAM_DEVELOPMENT_URL}" \
-    "${UPSTREAM_RELEASE_URL}"
-
-ENABLE_WEBAPP_PROD_DOWNLOAD=true
 reset_download "${UPSTREAM_LATEST_URL}"
 _jukebox_webapp_download
 assert_attempts \
@@ -131,10 +119,10 @@ CI_RUNNING=false
 
 ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
 _option_webapp_devel_build <<< ''
-[[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == auto ]]
+[[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == true ]]
 
-ENABLE_WEBAPP_PROD_DOWNLOAD=auto
-_option_webapp_devel_build <<< 'n'
+ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
+_option_webapp_devel_build <<< 'y'
 [[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == false ]]
 
 source "${REPOSITORY_ROOT}/installation/routines/prepare_dependencies.sh"
@@ -155,7 +143,7 @@ ENABLE_SAMBA=false
 ENABLE_WEBAPP=true
 ENABLE_KIOSK_MODE=false
 ENABLE_AUTOHOTSPOT=false
-ENABLE_WEBAPP_PROD_DOWNLOAD=auto
+ENABLE_WEBAPP_PROD_DOWNLOAD=false
 _collect_apt_packages
 [[ " ${APT_PACKAGES[*]} " == *" nodejs "* ]]
 [[ " ${APT_PACKAGES[*]} " == *" npm "* ]]
@@ -180,8 +168,7 @@ _jukebox_webapp_check() {
 }
 
 GIT_USER="contributor"
-AVAILABLE_URL="not-available"
-ENABLE_WEBAPP_PROD_DOWNLOAD=auto
+ENABLE_WEBAPP_PROD_DOWNLOAD=false
 _run_setup_jukebox_webapp
 [[ "${LOCAL_BUILD_CALLED}" == true ]]
 

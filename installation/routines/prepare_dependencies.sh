@@ -40,8 +40,7 @@ _collect_apt_packages() {
         # A trailing '-' asks APT to remove Apache in the same transaction.
         _add_apt_packages nginx apache2-
 
-        if [[ ( "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false || "$ENABLE_WEBAPP_PROD_DOWNLOAD" == auto ) \
-            && "$(get_architecture)" != "armv6" ]]; then
+        if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false && "$(get_architecture)" != "armv6" ]]; then
             _add_apt_packages nodejs npm
         fi
     fi
