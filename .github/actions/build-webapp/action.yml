@@ -13,13 +13,17 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup Node.js 20.x
-      uses: actions/setup-node@v3
+    - name: Setup Node.js 22.x
+      uses: actions/setup-node@v7
       with:
-        node-version: 20.x
-    - name: run build
+        node-version: 22.x
+        cache: npm
+        cache-dependency-path: ${{ inputs.webapp-root-path }}/package-lock.json
+    - name: Install dependencies
       working-directory: ${{ inputs.webapp-root-path }}
       shell: bash
-      env:
-        CI: false
-      run: ./run_rebuild.sh -u
+      run: npm ci
+    - name: Build Web App
+      working-directory: ${{ inputs.webapp-root-path }}
+      shell: bash
+      run: npm run build

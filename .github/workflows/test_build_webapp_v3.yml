@@ -36,9 +36,13 @@ jobs:
       - name: Build Web App
         uses: ./.github/actions/build-webapp
 
+      - name: Lint Web App
+        working-directory: ./src/webapp
+        run: npm run lint
+
       - name: Test Web App
         working-directory: ./src/webapp
-        run: CI=true npm test -- --runInBand
+        run: npm test
 
       - name: Bundle Web App
         id: bundle-webapp

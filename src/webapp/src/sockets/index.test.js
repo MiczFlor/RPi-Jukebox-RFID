@@ -1,6 +1,14 @@
 import { initSockets, socketRequest } from './index';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  vi,
+} from 'vitest';
 
-jest.mock('uuid', () => ({
+vi.mock('uuid', () => ({
   v4: () => 'request-id',
 }));
 
@@ -38,16 +46,16 @@ class FakeWebSocket {
 const rpcResponse = (body, options = {}) => ({
   ok: options.ok ?? true,
   status: options.status ?? 200,
-  text: jest.fn().mockResolvedValue(JSON.stringify(body)),
+  text: vi.fn().mockResolvedValue(JSON.stringify(body)),
 });
 
 describe('socketRequest', () => {
   beforeEach(() => {
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     delete global.fetch;
   });
 
@@ -100,7 +108,7 @@ describe('socketRequest', () => {
   });
 
   test('aborts requests after 15 seconds', async () => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     fetch.mockImplementation((url, { signal }) => (
       new Promise((resolve, reject) => {
         signal.addEventListener('abort', () => {
@@ -112,21 +120,22 @@ describe('socketRequest', () => {
     ));
 
     const request = socketRequest('p', 'f', null, {});
-    jest.advanceTimersByTime(15000);
+    const rejection = expect(request).rejects.toBe('Request timed out');
+    await vi.advanceTimersByTimeAsync(15000);
 
-    await expect(request).rejects.toBe('Request timed out');
+    await rejection;
   });
 });
 
 describe('initSockets', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     FakeWebSocket.instances = [];
     global.WebSocket = FakeWebSocket;
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
     delete global.WebSocket;
   });
 
@@ -171,15 +180,15 @@ describe('initSockets', () => {
   test('reconnects with exponential delay and resubscribes', () => {
     const cleanup = initSockets({
       events: ['core', 'volume'],
-      setState: jest.fn(),
+      setState: vi.fn(),
     });
     const first = FakeWebSocket.instances[0];
     first.open();
     first.close();
 
-    jest.advanceTimersByTime(999);
+    vi.advanceTimersByTime(999);
     expect(FakeWebSocket.instances).toHaveLength(1);
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(FakeWebSocket.instances).toHaveLength(2);
 
     const second = FakeWebSocket.instances[1];
