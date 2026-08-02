@@ -31,3 +31,7 @@ jobs:
 
       - name: Build Web App
         uses: ./.github/actions/build-webapp
+
+      - name: Test Web App
+        working-directory: ./src/webapp
+        run: CI=true npm test -- --runInBand
