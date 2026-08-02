@@ -57,6 +57,10 @@ jobs:
     with:
       debian_codename: 'trixie'
       platform: linux/amd64
+      test_scripts_json: >-
+        ${{ github.event_name == 'schedule'
+            && '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh", "run_install_webapp_download.sh"]'
+            || '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh"]' }}
 
   run_trixie_armv7:
     name: 'trixie armv7'
@@ -64,6 +68,10 @@ jobs:
     with:
       debian_codename: 'trixie'
       platform: linux/arm/v7
+      test_scripts_json: >-
+        ${{ github.event_name == 'schedule'
+            && '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh", "run_install_webapp_download.sh"]'
+            || '["run_install_webapp_download.sh"]' }}
 
   run_trixie_arm64:
     name: 'trixie arm64'
@@ -71,3 +79,7 @@ jobs:
     with:
       debian_codename: 'trixie'
       platform: linux/arm64
+      test_scripts_json: >-
+        ${{ github.event_name == 'schedule'
+            && '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh", "run_install_webapp_download.sh"]'
+            || '["run_install_webapp_download.sh"]' }}

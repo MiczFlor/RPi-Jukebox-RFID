@@ -9,6 +9,10 @@ on:
         platform:
           required: true
           type: string
+        test_scripts_json:
+          required: false
+          type: string
+          default: '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh", "run_install_webapp_download.sh"]'
         docker_image_name:
           required: false
           type: string
@@ -149,7 +153,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test_script: ['run_install_common.sh', 'run_install_faststartup.sh', 'run_install_webapp_local.sh', 'run_install_webapp_download.sh']
+        test_script: ${{ fromJSON(inputs.test_scripts_json) }}
 
     steps:
     - name: Set up QEMU
