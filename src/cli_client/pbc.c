@@ -80,10 +80,11 @@ int send_zmq_request_and_wait_response(char * request, int request_len, char * r
 
     if (zmq_ret > 0)
     {
-        zmq_ret = zmq_recv (requester, response, max_response_len, 0);
+        zmq_ret = zmq_recv (requester, response, max_response_len - 1, 0);
 
         if (zmq_ret > 0)
         {
+            response[zmq_ret] = '\0';
             printf ("Received %s (%d Bytes)\n", response,zmq_ret);
             ret = 0;
         }

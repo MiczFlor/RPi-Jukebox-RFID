@@ -3,8 +3,17 @@
 KIOSK_MODE_CONF_HEADER="## Jukebox Kiosk Mode"
 KIOSK_MODE_XINITRC='/etc/xdg/openbox/autostart'
 KIOSK_MODE_BASHRC="${HOME_PATH}/.bashrc"
-KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium-browser/customizations/01-disable-update-check'
 KIOSK_MODE_CHROMIUM_FLAG_UPDATE_INTERVAL='--check-for-update-interval=31536000'
+
+if [[ "$(get_architecture)" == "x86_64" ]]; then
+    KIOSK_MODE_CHROMIUM_PACKAGE='chromium'
+    KIOSK_MODE_CHROMIUM_COMMAND='chromium'
+    KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium.d/01-disable-update-check'
+else
+    KIOSK_MODE_CHROMIUM_PACKAGE='chromium-browser'
+    KIOSK_MODE_CHROMIUM_COMMAND='chromium-browser'
+    KIOSK_MODE_CHROMIUM_CUSTOM_DISABLE_UPDATE_CHECK='/etc/chromium-browser/customizations/01-disable-update-check'
+fi
 
 _kiosk_mode_set_autostart() {
   print_lc "  Configure Kiosk Mode"
@@ -29,7 +38,7 @@ xset -dpms
 # Start Chromium in kiosk mode
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
-chromium-browser http://localhost \
+${KIOSK_MODE_CHROMIUM_COMMAND} http://localhost \
   --disable-infobars \
   --disable-pinch \
   --disable-translate \
@@ -57,7 +66,7 @@ _kiosk_mode_check() {
         x11-xserver-utils \
         xinit \
         openbox \
-        chromium-browser
+        "${KIOSK_MODE_CHROMIUM_PACKAGE}"
 
     verify_files_exists "${KIOSK_MODE_BASHRC}"
     verify_file_contains_string "${KIOSK_MODE_CONF_HEADER}" "${KIOSK_MODE_BASHRC}"

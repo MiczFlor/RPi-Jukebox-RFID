@@ -1,6 +1,22 @@
 # Web App
 
-The Web App sources are located in `src/webapp`. A pre-build bundle of the Web App is deployed when installing from an official release branch. If you install from a feature branch or a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
+The Web App sources are located in `src/webapp`. A pre-built bundle of the Web App is deployed when installing from an official release branch.
+
+Pushes to `future3/**` branches also publish a short-lived set of commit-addressed bundles to the `webapp-development` prerelease in the source repository. For feature branches and forks, the installer uses the bundle matching the installed commit when available and otherwise downloads the latest applicable pre-built release bundle. Building locally is an explicit opt-in because it installs Node and can take a long time on Raspberry Pi devices.
+
+Repository Actions must be enabled and the workflow token must have `contents: write` permission for a fork to publish development bundles.
+
+## Download a CI bundle manually
+
+Successful Web App workflow runs retain the exact-commit bundle as a GitHub Actions artifact for 14 days. Signed-in developers can download it with the GitHub CLI:
+
+```bash
+gh run download RUN_ID \
+  --repo OWNER/RPi-Jukebox-RFID \
+  --name webapp-build-0123456789.tar.gz
+```
+
+GitHub Actions artifacts require authentication. The installer uses the public prerelease asset instead.
 
 ## Install node manually
 
@@ -22,6 +38,20 @@ cd ~/RPi-Jukebox-RFID/src/webapp
 npm install # Just the first time or when dependencies change
 npm start
 ```
+
+The development server proxies `/api/` to `http://localhost:5556`. Set
+`API_PROXY_TARGET` to use another Jukebox API server.
+
+## Backend API
+
+The Web App uses `POST /api/v1/rpc` for commands and
+`WS /api/v1/events` for state updates. Both are served on the configured
+API port, `5556` by default, and nginx exposes them under the same origin as
+the Web App. `GET /api/v1/health` reports API availability.
+
+The old ZeroMQ-over-WebSocket endpoints on ports `5556` and `5557` were
+intentionally removed. Native ZeroMQ clients remain wire-compatible on TCP
+RPC port `5555` and publishing port `5558`.
 
 ## Build the Web App
 

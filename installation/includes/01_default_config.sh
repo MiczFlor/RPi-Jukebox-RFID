@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE=${BUILD_LIBZMQ_WITH_DRAFTS_ON_DEVICE:-"false"}
 ENABLE_STATIC_IP=true
 DISABLE_IPv6=true
 ENABLE_AUTOHOTSPOT=false
@@ -24,10 +23,8 @@ DISABLE_ONBOARD_AUDIO=false
 # to SSH; a failed SSH fetch still falls back to HTTPS.
 GIT_USE_SSH=${GIT_USE_SSH:-"false"}
 
-# A pre-build binary for the Web App is only available for release builds
-# For non-production builds, the Wep App must be build locally
 # Valid values
 # - release-only: download in release branch only
-# - true: force download even in non-release branch
+# - true: force download, allowing the latest release bundle as a fallback
 # - false: never download
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}

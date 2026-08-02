@@ -7,10 +7,6 @@ on:
   push:
     branches:
         - 'future3/**'
-    paths:
-        - '.github/workflows/test_build_webapp_v3.yml'
-        - '.github/actions/build-webapp/**'
-        - 'src/webapp/**'
   pull_request:
     # The branches below must be a subset of the branches above
     branches:
@@ -19,15 +15,124 @@ on:
     paths:
         - '.github/workflows/test_build_webapp_v3.yml'
         - '.github/actions/build-webapp/**'
+        - '.github/actions/bundle-webapp/**'
         - 'src/webapp/**'
+
+permissions:
+  contents: read
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      commit_sha: ${{ steps.bundle-webapp.outputs.commit-sha }}
+      webapp_bundle_name: ${{ steps.bundle-webapp.outputs.bundle-name }}
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Build Web App
         uses: ./.github/actions/build-webapp
+
+      - name: Test Web App
+        working-directory: ./src/webapp
+        run: CI=true npm test -- --runInBand
+
+      - name: Bundle Web App
+        id: bundle-webapp
+        uses: ./.github/actions/bundle-webapp
+
+      - name: Upload Web App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.bundle-webapp.outputs.bundle-name }}
+          path: ${{ steps.bundle-webapp.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Add bundle to workflow summary
+        env:
+          BUNDLE_NAME: ${{ steps.bundle-webapp.outputs.bundle-name }}
+          COMMIT_SHA: ${{ steps.bundle-webapp.outputs.commit-sha }}
+        run: |
+          {
+            echo "### Web App bundle"
+            echo
+            echo "- Artifact: \`${BUNDLE_NAME}\`"
+            echo "- Source commit: \`${COMMIT_SHA}\`"
+            echo "- Retention: 14 days"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    if: ${{ github.event_name == 'push' }}
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    env:
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: webapp-development
+
+    concurrency:
+      group: development-webapp-release-${{ github.repository }}
+      cancel-in-progress: false
+
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+      - name: Download Web App artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.webapp_bundle_name }}
+
+      - name: Create development release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.build.outputs.commit_sha }}
+        run: |
+          if ! gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release create "${RELEASE_TAG}" \
+              --target "${SOURCE_SHA}" \
+              --title "Development Web App builds" \
+              --notes "Commit-addressed Web App bundles for development installations. The newest 20 bundles are retained." \
+              --prerelease
+          fi
+
+      - name: Publish exact-commit bundle
+        env:
+          BUNDLE_NAME: ${{ needs.build.outputs.webapp_bundle_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${RELEASE_TAG}" "${BUNDLE_NAME}" --clobber
+
+      - name: Prune old development bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP_ASSETS: 20
+        run: |
+          release_id=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
+            --jq '.id')
+          mapfile -t stale_asset_ids < <(
+            gh api \
+              "repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?per_page=100" \
+              --jq "sort_by(.created_at) | reverse | .[${KEEP_ASSETS}:][] | .id"
+          )
+          for asset_id in "${stale_asset_ids[@]}"; do
+            gh api \
+              --method DELETE \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}"
+          done
+
+      - name: Add release asset to workflow summary
+        env:
+          BUNDLE_NAME: ${{ needs.build.outputs.webapp_bundle_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          {
+            echo "### Public development bundle"
+            echo
+            echo "https://github.com/${REPOSITORY}/releases/download/${RELEASE_TAG}/${BUNDLE_NAME}"
+          } >> "$GITHUB_STEP_SUMMARY"

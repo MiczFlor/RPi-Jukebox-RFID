@@ -24,7 +24,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=false
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
-# y - build webapp
+# - - exact bundle download (skipped due to forced local build)
 # y - setup kiosk mode
 # n - reboot
 
@@ -36,7 +36,6 @@ n
 n
 n
 n
-y
 y
 y
 n

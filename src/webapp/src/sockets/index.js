@@ -1,10 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import * as zmq from 'jszmq';
 
 import {
   PUBSUB_ENDPOINT,
   REQRES_ENDPOINT,
-  SUBSCRIPTIONS,
 } from '../config';
 import {
   decodeMessage,
@@ -13,88 +11,186 @@ import {
   preparePayload
 } from './utils';
 
-const socket_sub = new zmq.Sub();
+const REQUEST_TIMEOUT_MS = 15000;
+const RECONNECT_MIN_MS = 1000;
+const RECONNECT_MAX_MS = 30000;
 
-SUBSCRIPTIONS.forEach(
-  (topic) => socket_sub.subscribe(topic)
+let eventSocket = null;
+let reconnectTimer = null;
+let reconnectDelay = RECONNECT_MIN_MS;
+const eventListeners = new Set();
+
+const currentTopics = () => (
+  new Set(
+    Array.from(eventListeners)
+      .flatMap(({ events }) => events)
+  )
 );
 
-socket_sub.connect(PUBSUB_ENDPOINT);
+const sendSubscription = (type, topics) => {
+  if (eventSocket === null || eventSocket.readyState !== 1 || topics.length === 0) {
+    return;
+  }
+  eventSocket.send(encodeMessage({ type, topics }));
+};
 
-const socketEvents = ({ setState, events = [] }) => {
-  socket_sub.on('message', (_topic, _payload) => {
-    const { topic, data, error } = decodePubSubMessage(_topic, _payload);
+const eventSocketUrl = () => {
+  const url = new URL(PUBSUB_ENDPOINT, window.location.href);
+  url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return url.toString();
+};
 
-    if (events.includes(topic) && data) {
-      setState(state => ({ ...state, [topic]: data }));
-      if (topic !== 'playerstatus') {
-        console.log(topic, data, events);
-      }
+const dispatchEvent = (message) => {
+  const { type, topic, data, error } = decodePubSubMessage(message);
+  if (error) {
+    console.error(`[Events]: ${error}`);
+    return;
+  }
+
+  eventListeners.forEach(({ setState, events }) => {
+    if (!events.some(subscription => topic.startsWith(subscription))) {
+      return;
     }
 
-    if (error) {
-      // TODO: Better error handling
-      console.error(`[PubSub][${topic}]: ${error}`);
+    if (type === 'revoke') {
+      setState(state => {
+        const nextState = { ...state };
+        delete nextState[topic];
+        return nextState;
+      });
+    }
+    else {
+      setState(state => ({ ...state, [topic]: data }));
     }
   });
 };
 
-const initSockets = ({ setState, events }) => {
-  socketEvents({ setState, events });
+function scheduleReconnect() {
+  if (reconnectTimer !== null || eventListeners.size === 0) {
+    return;
+  }
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null;
+    connectEventSocket();
+  }, reconnectDelay);
+  reconnectDelay = Math.min(reconnectDelay * 2, RECONNECT_MAX_MS);
+}
+
+function connectEventSocket() {
+  if (
+    eventListeners.size === 0 ||
+    (eventSocket !== null && [0, 1].includes(eventSocket.readyState))
+  ) {
+    return;
+  }
+
+  const socket = new WebSocket(eventSocketUrl());
+  eventSocket = socket;
+
+  socket.onopen = () => {
+    if (eventSocket !== socket) {
+      return;
+    }
+    reconnectDelay = RECONNECT_MIN_MS;
+    sendSubscription('subscribe', Array.from(currentTopics()));
+  };
+
+  socket.onmessage = ({ data }) => {
+    if (eventSocket === socket) {
+      dispatchEvent(data);
+    }
+  };
+
+  socket.onerror = () => {
+    if (eventSocket === socket && socket.readyState < 2) {
+      socket.close();
+    }
+  };
+
+  socket.onclose = () => {
+    if (eventSocket !== socket) {
+      return;
+    }
+    eventSocket = null;
+    scheduleReconnect();
+  };
+}
+
+const initSockets = ({ setState, events = [] }) => {
+  const previousTopics = currentTopics();
+  const listener = { setState, events: [...events] };
+  eventListeners.add(listener);
+  const addedTopics = events.filter(topic => !previousTopics.has(topic));
+
+  connectEventSocket();
+  sendSubscription('subscribe', addedTopics);
+
+  return () => {
+    eventListeners.delete(listener);
+    const remainingTopics = currentTopics();
+    const removedTopics = events.filter(topic => !remainingTopics.has(topic));
+    sendSubscription('unsubscribe', removedTopics);
+
+    if (eventListeners.size === 0) {
+      if (reconnectTimer !== null) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      if (eventSocket !== null) {
+        const socket = eventSocket;
+        eventSocket = null;
+        socket.close();
+      }
+    }
+  };
 };
 
-const socketRequest = (_package, plugin, method, kwargs) => (
-  new Promise((resolve, reject) => {
-    const requestId = uuidv4();
+const socketRequest = async (_package, plugin, method, kwargs) => {
+  const requestId = uuidv4();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const payload = preparePayload(
+    requestId,
+    _package,
+    plugin,
+    method,
+    kwargs,
+  );
 
-    socketRequest.server = new zmq.Req();
-
-    socketRequest.server.on('message', (msg) => {
-      const { id, error, result } = decodeMessage(msg);
-
-      if (error && error.message) {
-        return reject(error.message);
-      }
-
-      // This implementation of Req Sockets is not ideal for parallel
-      // requests. In case 2 requests are launched at the same time
-      // both connect to the socket. The first one to return would
-      // close the channel which cancels the second request without
-      // allowing to receive the data. Not closing the channel
-      // here is not ideal, but it's not harmful either.
-      // Ideally, we outsouce `socketRequest.server` similar to
-      // `socket_sub`
-      // socketRequest.server.close();
-
-      if (id && id === requestId) {
-        return resolve(result);
-      }
-      else {
-        return reject('Received socket message ID does not match sender ID.');
-      }
+  try {
+    const response = await fetch(REQRES_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: encodeMessage(payload),
+      signal: controller.signal,
     });
+    const body = await response.text();
 
-    socketRequest.server.onerror = function (err) {
-      reject(err);
-    };
-
-    try {
-      socketRequest.server.connect(REQRES_ENDPOINT);
-    }
-    catch (error) {
-      console.error(`WebSocket connection to '${REQRES_ENDPOINT} failed: `, error);
+    if (!response.ok) {
+      return Promise.reject(`RPC request failed with HTTP ${response.status}.`);
     }
 
-    const payload = preparePayload(
-      requestId,
-      _package,
-      plugin,
-      method,
-      kwargs,
-    );
-    socketRequest.server.send(encodeMessage(payload));
-  })
-);
+    const { id, error, result } = decodeMessage(body);
+    if (error && error.message) {
+      return Promise.reject(error.message);
+    }
+    if (id !== requestId) {
+      return Promise.reject('Received RPC response ID does not match sender ID.');
+    }
+    return result;
+  }
+  catch (error) {
+    if (error && error.name === 'AbortError') {
+      return Promise.reject('Request timed out');
+    }
+    throw error;
+  }
+  finally {
+    clearTimeout(timeout);
+  }
+};
 
 export {
   initSockets,

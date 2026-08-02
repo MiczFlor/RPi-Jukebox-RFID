@@ -23,10 +23,8 @@ tornado
 rpi-lgpio --no-binary=lgpio
 gpiozero
 
-# PyZMQ is a special case:
-# On the PI, it needs to be compiled with special options to enable Websocket support
-# On regular Linux PCs, Websocket is enabled in the Python package
-# pyzmq
+# Debian and Raspberry Pi OS installations provide PyZMQ through the
+# python3-zmq package so it can use the system libzmq.
 
 # MQTT
 paho-mqtt

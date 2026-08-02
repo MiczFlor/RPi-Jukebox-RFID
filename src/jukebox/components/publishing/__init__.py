@@ -32,8 +32,7 @@ def republish(topic=None):
 def initialize():
     global _PUBLISH_SERVER_THREAD
     tcp_port = cfg.setndefault('publishing', 'tcp_port', value=5558)
-    ws_port = cfg.setndefault('publishing', 'websocket_port', value=5566)
-    _PUBLISH_SERVER_THREAD = pub.server.PublishServer(tcp_port=tcp_port, websocket_port=ws_port)
+    _PUBLISH_SERVER_THREAD = pub.server.PublishServer(tcp_port=tcp_port)
     _PUBLISH_SERVER_THREAD.start()
     pub.get_publisher().send('core.welcome', 'Welcome! Let the sound begin')
     pub.get_publisher().send('core.version', jukebox.version())

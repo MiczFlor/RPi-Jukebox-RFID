@@ -1,9 +1,5 @@
-const HOST = (window.location.hostname === 'localhost') ?
-  '0.0.0.0' :
-  window.location.hostname;
-
-const REQRES_ENDPOINT = `ws://${HOST}:5556`;
-const PUBSUB_ENDPOINT = `ws://${HOST}:5557`;
+const REQRES_ENDPOINT = '/api/v1/rpc';
+const PUBSUB_ENDPOINT = '/api/v1/events';
 
 const SUBSCRIPTIONS = [
   'batt_status',

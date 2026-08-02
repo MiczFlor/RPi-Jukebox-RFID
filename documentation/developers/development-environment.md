@@ -36,11 +36,18 @@ pip install --upgrade setuptools wheel
 pip install -r requirements-dev.txt
 ```
 
-In addition to these requirements, you need the following dependency. On the Raspberry PI, the latest stable release of ZMQ does not support WebSockets. We need to compile the latest version from Github, which is taken care of by the installation script. For regular machines, the normal package can be installed:
+`requirements-dev.txt` installs PyZMQ from a binary wheel. If a wheel is not
+available for a development system, install its `libzmq3-dev` package and
+build only the Python binding against that system library:
 
 ``` bash
-pip install pyzmq
+env -u ZMQ_DRAFT_API -u ZMQ_PREFIX \
+  PYZMQ_NO_BUNDLE=ON pip install --no-binary=pyzmq pyzmq
 ```
+
+`PYZMQ_NO_BUNDLE=ON` prevents the fallback build from downloading or
+compiling a bundled libzmq. Clearing the legacy variables also keeps draft
+support disabled and lets the build discover the installed system library.
 
 You will have to start Jukebox core application and the WebUI separately. The MPD usually runs as a service.
 

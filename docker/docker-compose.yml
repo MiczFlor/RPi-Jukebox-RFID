@@ -34,7 +34,7 @@ services:
     ports:
       - 5555:5555
       - 5556:5556
-      - 5557:5557
+      - 5558:5558
     restart: unless-stopped
     tty: true
     volumes:
@@ -54,6 +54,7 @@ services:
       - jukebox
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - API_PROXY_TARGET=http://jukebox:5556
     ports:
       - 3000:3000
     restart: unless-stopped

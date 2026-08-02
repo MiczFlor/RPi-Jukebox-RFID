@@ -9,12 +9,12 @@ const PubSubProvider = ({ children }) => {
   const [state, setState] = useState({});
 
   // Initialize sockets for player context
-  useEffect(() => {
+  useEffect(() => (
     initSockets({
       events: without(['playerstatus'], SUBSCRIPTIONS),
       setState,
-    });
-  }, []);
+    })
+  ), []);
 
   const context = {
     setState,

@@ -1,0 +1,38 @@
+name: Bundle Web App
+description: 'Package a built Web App for installation'
+inputs:
+  webapp-root-path:
+    description: 'Root path of the built Web App'
+    required: false
+    default: './src/webapp'
+outputs:
+  commit-sha:
+    description: 'Commit containing the Web App sources'
+    value: ${{ steps.vars.outputs.commit-sha }}
+  bundle-name:
+    description: 'Filename of the Web App bundle'
+    value: ${{ steps.vars.outputs.bundle-name }}
+  bundle-path:
+    description: 'Path of the Web App bundle'
+    value: ${{ steps.vars.outputs.bundle-path }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set bundle variables
+      id: vars
+      working-directory: ${{ inputs.webapp-root-path }}
+      shell: bash
+      run: |
+        commit_sha=$(git rev-parse HEAD)
+        bundle_name="webapp-build-${commit_sha:0:10}.tar.gz"
+        echo "commit-sha=${commit_sha}" >> "$GITHUB_OUTPUT"
+        echo "bundle-name=${bundle_name}" >> "$GITHUB_OUTPUT"
+        echo "bundle-path=${PWD}/${bundle_name}" >> "$GITHUB_OUTPUT"
+
+    - name: Create bundle
+      working-directory: ${{ inputs.webapp-root-path }}
+      shell: bash
+      env:
+        BUNDLE_NAME: ${{ steps.vars.outputs.bundle-name }}
+      run: tar -czf "${BUNDLE_NAME}" build
