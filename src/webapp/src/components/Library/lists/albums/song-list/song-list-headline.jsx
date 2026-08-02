@@ -6,7 +6,7 @@ import {
 
 const SongListHeadline = ({ artist, album }) => (
   <Grid container sx={{ padding: '16px 8px 0' }}>
-    <Grid item>
+    <Grid>
       <Typography variant="h6" sx={{ fontWeight: 'bold' }} component="h1">
         {album}
       </Typography>

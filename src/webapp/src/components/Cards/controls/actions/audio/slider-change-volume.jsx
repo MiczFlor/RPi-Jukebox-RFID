@@ -34,7 +34,7 @@ const SliderChangeVolume = ({
 
   return (
     <Grid container alignItems="center" sx={{ marginTop: '20px' }}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <Typography>
           {t('cards.controls.actions.audio.volume.title')}
         </Typography>

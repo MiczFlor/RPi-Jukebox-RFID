@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 
 import AppSettingsProvider from './context/appsettings';
@@ -30,7 +32,18 @@ function App() {
 // here app catches the suspense from page in case translations are not yet loaded
 export default function WrappedApp() {
   return (
-    <Suspense fallback="Loading ...">
+    <Suspense fallback={
+      <Box
+        sx={{
+          alignItems: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          minHeight: '100vh',
+        }}
+      >
+        <CircularProgress aria-label="Loading page" />
+      </Box>
+    }>
       <App />
     </Suspense>
   );

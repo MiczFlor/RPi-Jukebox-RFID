@@ -40,8 +40,8 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
 
   return (
     <Grid container sx={{ marginBottom: '8px' }}>
-      <Grid item
-        xs={12}
+      <Grid
+        size={12}
         sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}
       >
         <IconButton

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import PubSubContext from '../../context/pubsub/context';
 import CardsForm from './form';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 const CardsRegister = () => {
   const { t } = useTranslation();

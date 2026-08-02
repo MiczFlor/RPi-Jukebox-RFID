@@ -44,19 +44,19 @@ const SelectPlayMusic = ({
   return (
     <Grid container>
       {command &&
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Typography>
             {t(`cards.controls.actions.play-music.commands.${command}`)}
           </Typography>
         </Grid>
       }
-      <Grid item xs={12}>
+      <Grid size={12}>
         {command === 'play_album' && <SelectedAlbum values={values} />}
         {command === 'play_folder' && <SelectedFolder values={values} />}
         {command === 'play_single' && <SelectedSingle values={values} />}
       </Grid>
 
-      <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           variant="outlined"
           onClick={selectMusic}

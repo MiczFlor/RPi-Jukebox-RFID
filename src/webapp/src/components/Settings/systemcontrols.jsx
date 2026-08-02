@@ -20,10 +20,10 @@ const SystemControls = () => {
       <Divider />
       <CardContent>
         <Grid container direction="row" justifyContent="space-around" alignItems="center">
-          <Grid item>
+          <Grid>
             <RebootDialog />
           </Grid>
-          <Grid item>
+          <Grid>
             <ShutDownDialog />
           </Grid>
         </Grid>

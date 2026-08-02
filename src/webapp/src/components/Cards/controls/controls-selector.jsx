@@ -35,12 +35,12 @@ const ControlsSelector = ({
   return (
     <Grid container direction="column">
       <Grid container direction="row" alignItems="center">
-        <Grid item xs={5}>
+        <Grid size={5}>
           <Typography>
             {t('cards.controls.controls-selector.label')}
           </Typography>
         </Grid>
-        <Grid item xs={7}>
+        <Grid size={7}>
           <SelectCommandAliases
             actionData={actionData}
             handleActionChange={handleActionChange}

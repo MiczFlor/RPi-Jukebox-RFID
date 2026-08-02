@@ -26,12 +26,12 @@ const CommandSelector = ({
 
   return (
     <Grid container direction="row" alignItems="center">
-      <Grid item xs={5}>
+      <Grid size={5}>
         <Typography>
           {t('cards.controls.command-selector.title')}
         </Typography>
       </Grid>
-      <Grid item xs={7}>
+      <Grid size={7}>
         <FormControl>
           <NativeSelect
             value={value}

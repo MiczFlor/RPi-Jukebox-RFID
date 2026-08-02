@@ -50,37 +50,36 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   }, [albumartist, album, show_covers]);
 
   const AlbumLink = forwardRef((props, ref) => {
-    const { data } = props;
-
-    const artist = encodeURIComponent(data?.albumartist || t('library.albums.unknown-artist'));
-    const album = encodeURIComponent(data?.album || t('library.albums.unknown-album'));
+    const artist = encodeURIComponent(albumartist || t('library.albums.unknown-artist'));
+    const encodedAlbum = encodeURIComponent(album || t('library.albums.unknown-album'));
 
     // TODO: Introduce fallback incase artist or album are undefined
-    const location = `${artist}/${album}${urlSearch}`;
+    const location = `${artist}/${encodedAlbum}${urlSearch}`;
 
     return <Link ref={ref} to={location} {...props} />
   });
   AlbumLink.displayName = 'AlbumLink';
 
+  const content = (
+    <>
+      {show_covers &&
+        <ListItemAvatar>
+          <Avatar variant="rounded" alt="Cover" src={coverImage} />
+        </ListItemAvatar>
+      }
+      <ListItemText
+        primary={album || t('library.albums.unknown-album')}
+        secondary={albumartist || null}
+      />
+    </>
+  );
+
   return (
-    <ListItem
-      button={isButton}
-      component={isButton ? AlbumLink : null}
-      data={{ albumartist, album }}
-      disablePadding
-      key={album}
-    >
-      <ListItemButton>
-        {show_covers &&
-          <ListItemAvatar>
-            <Avatar variant="rounded" alt="Cover" src={coverImage} />
-          </ListItemAvatar>
-        }
-        <ListItemText
-          primary={album || t('library.albums.unknown-album')}
-          secondary={albumartist || null}
-        />
-      </ListItemButton>
+    <ListItem disablePadding={isButton} key={album}>
+      {isButton
+        ? <ListItemButton component={AlbumLink}>{content}</ListItemButton>
+        : content
+      }
     </ListItem>
   );
 }

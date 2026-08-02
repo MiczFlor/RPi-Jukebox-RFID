@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   Typography
 } from '@mui/material';
@@ -18,40 +19,39 @@ const CardsList = ({ cardsList }) => {
   const { t } = useTranslation();
 
   const ListItemLink = (cardId) => {
+    const card = cardsList[cardId];
     const EditCardLink = forwardRef((props, ref) => {
-      const { data } = props;
-      const location = {
-        pathname: `/cards/${data.id}/edit`,
-        state: data,
-      };
-
-      return <Link ref={ref} to={location} {...props} />
+      return (
+        <Link
+          ref={ref}
+          state={{ id: cardId, ...card }}
+          to={`/cards/${cardId}/edit`}
+          {...props}
+        />
+      );
     });
     EditCardLink.displayName = 'EditCardLink';
 
-    const description = cardsList[cardId].from_alias
+    const description = card.from_alias
       ? reject(
           isNil,
-          [cardsList[cardId].from_alias, cardsList[cardId].action.args]
+          [card.from_alias, card.action.args]
         ).join(', ')
-      : cardsList[cardId].func
+      : card.func
 
     return (
-      <ListItem
-        button
-        component={EditCardLink}
-        data={{ id: cardId, ...cardsList[cardId] }}
-        key={cardId}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <BookmarkIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={cardId}
-          secondary={description}
-        />
+      <ListItem disablePadding key={cardId}>
+        <ListItemButton component={EditCardLink}>
+          <ListItemAvatar>
+            <Avatar>
+              <BookmarkIcon />
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={cardId}
+            secondary={description}
+          />
+        </ListItemButton>
       </ListItem>
     );
   }

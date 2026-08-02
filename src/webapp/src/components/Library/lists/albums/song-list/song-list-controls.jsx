@@ -29,7 +29,7 @@ const SongListControls = ({
 
   return (
     <Grid container sx={{ padding: '0 8px' }}>
-      <Grid item xs={12}
+      <Grid size={12}
         sx={{
           display: 'flex',
           justifyContent: 'right',

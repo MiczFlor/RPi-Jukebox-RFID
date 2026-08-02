@@ -61,10 +61,10 @@ const Player = () => {
           backdropFilter: 'blur(25px)',
         }}
       >
-        <Grid item xs={12} sm={5}>
+        <Grid size={{ xs: 12, sm: 5 }}>
           <Cover coverImage={coverImage} />
         </Grid>
-        <Grid item xs={12} sm={7}>
+        <Grid size={{ xs: 12, sm: 7 }}>
           <Display />
           <SeekBar />
           <Controls />

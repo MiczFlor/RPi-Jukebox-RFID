@@ -75,7 +75,7 @@ export default function SetTimerDialog({
           <DialogContentText id="alert-dialog-description">
             {t('settings.timers.dialog.description')}
           </DialogContentText>
-          <Grid item sx={{ padding: theme.spacing(1) }}>
+          <Grid sx={{ padding: theme.spacing(1) }}>
             <SliderTimer
               value={waitSeconds || 0}
               onChangeCommitted={(evt, value) => { setWaitSeconds(value) }}

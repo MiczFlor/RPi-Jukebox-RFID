@@ -54,7 +54,7 @@ const SeekBar = () => {
 
   return <>
     <Grid container>
-      <Grid item xs>
+      <Grid size="grow">
         <Slider
           aria-labelledby={t('player.seekbar.song-position')}
           disabled={!playerstatus?.title}
@@ -74,12 +74,12 @@ const SeekBar = () => {
         marginTop: '-10px',
       }}
     >
-      <Grid item>
+      <Grid>
         <Typography color="textSecondary">
           {toHHMMSS(parseInt(timeElapsed))}
         </Typography>
       </Grid>
-      <Grid item>
+      <Grid>
         <Typography color="textSecondary">
           {toHHMMSS(parseInt(timeTotal))}
         </Typography>

@@ -16,7 +16,7 @@ const SongListHeader = () => {
 
   return (
     <Grid container>
-      <Grid item xs={2}>
+      <Grid size={2}>
         <IconButton
           aria-label="back"
           component={Link}
@@ -26,12 +26,12 @@ const SongListHeader = () => {
           <ArrowBackIcon />
         </IconButton>
       </Grid>
-      <Grid item xs={8} sx={{ marginTop: '18px' }}>
+      <Grid size={8} sx={{ marginTop: '18px' }}>
         {/* TODO: Simultaneous requests to RPC seem to be a problem */}
         {/* At least in this situation. Solution might be to queue requests */}
         {/* <Cover song={song} /> */}
       </Grid>
-      <Grid item xs={2}></Grid>
+      <Grid size={2}></Grid>
     </Grid>
   )
 };

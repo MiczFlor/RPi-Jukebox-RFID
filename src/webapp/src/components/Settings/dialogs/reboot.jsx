@@ -91,7 +91,7 @@ export default function RebootDialog() {
           {
             waitingForReboot &&
             <Grid container spacing={2}>
-              <Grid item xs={12} justifyContent="center">
+              <Grid size={12} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <CircularProgress />
               </Grid>
             </Grid>

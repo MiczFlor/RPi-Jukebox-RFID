@@ -80,7 +80,7 @@ const SettingsAutoHotpot = () => {
       <Divider />
       <CardContent>
         <Grid container direction="column">
-          <Grid item>
+          <Grid>
             <FormGroup>
               <FormControlLabel
                 sx={{

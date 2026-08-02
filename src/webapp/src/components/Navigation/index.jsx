@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -12,22 +11,17 @@ import SettingsIcon from '@mui/icons-material/Settings';
 export default function Navigation() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const [value, setValue] = useState(0);
-
-  // TODO: This needs to be done smarter!
-  useEffect(() => {
-    if (pathname.startsWith('/library')) return setValue(1);
-    if (pathname.startsWith('/cards')) return setValue(2);
-    if (pathname.startsWith('/settings')) return setValue(3);
-    return setValue(0);
-  }, [pathname]);
+  const value = pathname.startsWith('/library')
+    ? 1
+    : pathname.startsWith('/cards')
+      ? 2
+      : pathname.startsWith('/settings')
+        ? 3
+        : 0;
 
   return (
     <BottomNavigation
       value={value}
-      onChange={(event, newValue) => {
-        setValue(newValue);
-      }}
       showLabels
       sx={{
         width: '100%',

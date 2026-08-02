@@ -24,7 +24,7 @@ const SettingsStatus = () => {
       <Divider />
       <CardContent>
         <Grid container>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <List>
               <StatusVersion />
               <StatusBattery />

@@ -23,7 +23,7 @@ const SettingsSecondSwipe = () => {
       <Divider />
       <CardContent>
         <Grid container direction="column">
-          <Grid item>
+          <Grid>
             <RadioGroup aria-label="gender" name="gender1">
               <FormControlLabel
                 value="restart"

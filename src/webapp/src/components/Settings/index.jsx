@@ -21,29 +21,29 @@ const Settings = () => {
       direction="column"
       id="settings"
       sx={{
-        '& > .MuiGrid-item': spacer,
+        '& > :not(:last-child)': spacer,
         padding: '10px',
       }}
     >
-      <Grid item>
+      <Grid>
         <SettingsStatus />
       </Grid>
-      <Grid item>
+      <Grid>
         <SettingsGeneral />
       </Grid>
-      <Grid item>
+      <Grid>
         <SettingsTimers />
       </Grid>
-      <Grid item>
+      <Grid>
         <SettingsAudio />
       </Grid>
-      <Grid item>
+      <Grid>
         <SystemControls />
       </Grid>
-      <Grid item>
+      <Grid>
         <SettingsSecondSwipe />
       </Grid>
-      <Grid item>
+      <Grid>
         <SettingsAutoHotspot />
       </Grid>
     </Grid>

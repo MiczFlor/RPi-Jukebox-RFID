@@ -22,8 +22,7 @@ const SelectorHeader = () => {
       zIndex: '1000',
     }}>
       <Grid
-        item
-        xs={12}
+        size={12}
         sx={{
           display: 'flex',
           alignItems: 'center',

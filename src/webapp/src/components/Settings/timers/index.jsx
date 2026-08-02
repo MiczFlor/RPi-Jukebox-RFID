@@ -20,7 +20,7 @@ const SettingsTimers = () => {
       />
       <Divider />
       <CardContent>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <List>
             <Timer type={'fade-volume'} />
             <Timer type={'shutdown'} />

@@ -43,7 +43,7 @@ const MaxVolume = () => {
   return (
     <Grid container direction="column">
       <Typography>{t('settings.audio.volume.max-volume')}</Typography>
-      <Grid item sx={{ padding: theme.spacing(1) }}>
+      <Grid sx={{ padding: theme.spacing(1) }}>
         <Slider
           value={typeof maxVolume === 'number' ? maxVolume : 0}
           onChange={handleMaxVolumeChange}
