@@ -75,8 +75,8 @@ jobs:
     outputs:
       tag_name: ${{ needs.check.outputs.tag_name }}
       release_type: ${{ needs.check.outputs.release_type }}
-      commit_sha: ${{ steps.vars.outputs.commit_sha }}
-      webapp_bundle_name: ${{ steps.vars.outputs.webapp_bundle_name }}
+      commit_sha: ${{ steps.bundle-webapp.outputs.commit-sha }}
+      webapp_bundle_name: ${{ steps.bundle-webapp.outputs.bundle-name }}
       webapp_bundle_name_latest: ${{ steps.vars.outputs.webapp_bundle_name_latest }}
 
     steps:
@@ -84,27 +84,25 @@ jobs:
 
       - name: Set Output vars
         id: vars
-        env:
-          COMMIT_SHA: ${{ github.sha }}
         run: |
-          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
-          echo "webapp_bundle_name=webapp-build-${COMMIT_SHA:0:10}.tar.gz" >> $GITHUB_OUTPUT
           echo "webapp_bundle_name_latest=webapp-build-latest.tar.gz" >> $GITHUB_OUTPUT
 
       - name: Build Web App
         id: build-webapp
         uses: ./.github/actions/build-webapp
 
-      - name: Create Bundle
-        working-directory: ${{ steps.build-webapp.outputs.webapp-root-path }}
-        run: |
-          tar -czvf ${{ steps.vars.outputs.webapp_bundle_name }} build
+      - name: Bundle Web App
+        id: bundle-webapp
+        uses: ./.github/actions/bundle-webapp
+        with:
+          webapp-root-path: ${{ steps.build-webapp.outputs.webapp-root-path }}
 
       - name: Artifact Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.vars.outputs.webapp_bundle_name }}
-          path: ${{ steps.build-webapp.outputs.webapp-root-path }}/${{ steps.vars.outputs.webapp_bundle_name }}
+          name: ${{ steps.bundle-webapp.outputs.bundle-name }}
+          path: ${{ steps.bundle-webapp.outputs.bundle-path }}
+          if-no-files-found: error
           retention-days: 5
 
   release:

@@ -10,6 +10,7 @@ on:
     paths:
         - '.github/workflows/test_build_webapp_v3.yml'
         - '.github/actions/build-webapp/**'
+        - '.github/actions/bundle-webapp/**'
         - 'src/webapp/**'
   pull_request:
     # The branches below must be a subset of the branches above
@@ -19,12 +20,17 @@ on:
     paths:
         - '.github/workflows/test_build_webapp_v3.yml'
         - '.github/actions/build-webapp/**'
+        - '.github/actions/bundle-webapp/**'
         - 'src/webapp/**'
 
 jobs:
 
   build:
     runs-on: ubuntu-latest
+
+    outputs:
+      commit_sha: ${{ steps.bundle-webapp.outputs.commit-sha }}
+      webapp_bundle_name: ${{ steps.bundle-webapp.outputs.bundle-name }}
 
     steps:
       - uses: actions/checkout@v4
@@ -35,3 +41,28 @@ jobs:
       - name: Test Web App
         working-directory: ./src/webapp
         run: CI=true npm test -- --runInBand
+
+      - name: Bundle Web App
+        id: bundle-webapp
+        uses: ./.github/actions/bundle-webapp
+
+      - name: Upload Web App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.bundle-webapp.outputs.bundle-name }}
+          path: ${{ steps.bundle-webapp.outputs.bundle-path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Add bundle to workflow summary
+        env:
+          BUNDLE_NAME: ${{ steps.bundle-webapp.outputs.bundle-name }}
+          COMMIT_SHA: ${{ steps.bundle-webapp.outputs.commit-sha }}
+        run: |
+          {
+            echo "### Web App bundle"
+            echo
+            echo "- Artifact: \`${BUNDLE_NAME}\`"
+            echo "- Source commit: \`${COMMIT_SHA}\`"
+            echo "- Retention: 14 days"
+          } >> "$GITHUB_STEP_SUMMARY"
