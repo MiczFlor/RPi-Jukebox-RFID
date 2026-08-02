@@ -145,6 +145,7 @@
       "back-button-label": "Zurück",
       "manager": {
         "actions-label": "Aktionen für Bibliotheksdateien",
+        "upload": "Hochladen",
         "upload-files": "Dateien hochladen",
         "upload-folders": "Ordner hochladen",
         "create-folder": "Neuer Ordner",

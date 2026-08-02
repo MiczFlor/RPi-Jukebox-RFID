@@ -1,11 +1,19 @@
-import React from 'react';
+import React, {
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
   Box,
   Button,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
@@ -31,6 +39,16 @@ const LibraryActions = ({
   onUploadSelected,
 }) => {
   const { t } = useTranslation();
+  const [uploadMenuAnchor, setUploadMenuAnchor] = useState(null);
+  const fileInput = useRef(null);
+  const folderInput = useRef(null);
+
+  const closeUploadMenu = () => setUploadMenuAnchor(null);
+
+  const openPicker = (input) => {
+    closeUploadMenu();
+    input.current?.click();
+  };
 
   const selectFiles = (event) => {
     const files = Array.from(event.target.files || []);
@@ -83,39 +101,50 @@ const LibraryActions = ({
           </>
         : <>
             <Button
-              component="label"
-              role="button"
+              aria-controls={uploadMenuAnchor ? 'library-upload-menu' : undefined}
+              aria-expanded={Boolean(uploadMenuAnchor)}
+              aria-haspopup="menu"
+              endIcon={<ArrowDropDownIcon />}
+              onClick={(event) => setUploadMenuAnchor(event.currentTarget)}
               startIcon={<UploadFileIcon />}
               sx={actionButtonSx}
               variant="contained"
             >
-              {t('library.folders.manager.upload-files')}
-              <input
-                accept={ACCEPTED_LIBRARY_FILES}
-                hidden
-                multiple
-                onChange={selectFiles}
-                type="file"
-              />
+              {t('library.folders.manager.upload')}
             </Button>
-            <Button
-              component="label"
-              role="button"
-              startIcon={<DriveFolderUploadIcon />}
-              sx={actionButtonSx}
-              variant="contained"
+            <Menu
+              anchorEl={uploadMenuAnchor}
+              id="library-upload-menu"
+              onClose={closeUploadMenu}
+              open={Boolean(uploadMenuAnchor)}
             >
-              {t('library.folders.manager.upload-folders')}
-              <input
-                accept={ACCEPTED_LIBRARY_FILES}
-                directory=""
-                hidden
-                multiple
-                onChange={selectFolders}
-                type="file"
-                webkitdirectory=""
-              />
-            </Button>
+              <MenuItem onClick={() => openPicker(fileInput)} sx={{ minHeight: 44 }}>
+                <ListItemIcon><UploadFileIcon /></ListItemIcon>
+                <ListItemText>{t('library.folders.manager.upload-files')}</ListItemText>
+              </MenuItem>
+              <MenuItem onClick={() => openPicker(folderInput)} sx={{ minHeight: 44 }}>
+                <ListItemIcon><DriveFolderUploadIcon /></ListItemIcon>
+                <ListItemText>{t('library.folders.manager.upload-folders')}</ListItemText>
+              </MenuItem>
+            </Menu>
+            <input
+              accept={ACCEPTED_LIBRARY_FILES}
+              hidden
+              multiple
+              onChange={selectFiles}
+              ref={fileInput}
+              type="file"
+            />
+            <input
+              accept={ACCEPTED_LIBRARY_FILES}
+              directory=""
+              hidden
+              multiple
+              onChange={selectFolders}
+              ref={folderInput}
+              type="file"
+              webkitdirectory=""
+            />
             <Button
               onClick={onCreateFolder}
               startIcon={<CreateNewFolderIcon />}

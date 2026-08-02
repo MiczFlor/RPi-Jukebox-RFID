@@ -44,6 +44,7 @@ jest.mock('react-i18next', () => ({
         'library.folders.manager.drop-files': 'Drop files here.',
         'library.folders.manager.select': 'Select',
         'library.folders.manager.select-item': `Select ${options.name}`,
+        'library.folders.manager.upload': 'Upload',
         'library.folders.manager.upload-files': 'Upload files',
         'library.folders.manager.upload-folders': 'Upload folders',
         'library.folders.manager.upload-dialog.cancel-all': 'Cancel all',
@@ -108,11 +109,15 @@ describe('responsive library file management', () => {
     renderFolders();
 
     expect(await screen.findByRole('toolbar', { name: 'Library file actions' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Upload files' })).toBeVisible();
-    const uploadFoldersButton = screen.getByRole('button', { name: 'Upload folders' });
-    expect(uploadFoldersButton).toBeVisible();
-    expect(uploadFoldersButton.querySelector('input')).toHaveAttribute('multiple');
-    expect(uploadFoldersButton.querySelector('input')).toHaveAttribute('webkitdirectory');
+    await user.click(screen.getByRole('button', { name: 'Upload' }));
+    expect(screen.getByRole('menuitem', { name: 'Upload files' })).toBeVisible();
+    expect(screen.getByRole('menuitem', { name: 'Upload folders' })).toBeVisible();
+    await user.keyboard('{Escape}');
+    const fileInputs = Array.from(document.querySelectorAll('input[type="file"]'));
+    expect(fileInputs).toHaveLength(2);
+    const folderInput = fileInputs.find((input) => input.hasAttribute('webkitdirectory'));
+    expect(folderInput).toHaveAttribute('multiple');
+    expect(folderInput).toHaveAttribute('webkitdirectory');
     expect(screen.getByRole('button', { name: 'New folder' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Delete Album' })).not.toBeInTheDocument();
 

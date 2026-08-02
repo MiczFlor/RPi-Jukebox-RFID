@@ -145,6 +145,7 @@
       "back-button-label": "Back",
       "manager": {
         "actions-label": "Library file actions",
+        "upload": "Upload",
         "upload-files": "Upload files",
         "upload-folders": "Upload folders",
         "create-folder": "New folder",
