@@ -1,6 +1,22 @@
 # Web App
 
-The Web App sources are located in `src/webapp`. A pre-build bundle of the Web App is deployed when installing from an official release branch. If you install from a feature branch or a fork repository, the Web App needs to be built locally. This requires Node to be installed and is part of the installation process.
+The Web App sources are located in `src/webapp`. A pre-built bundle of the Web App is deployed when installing from an official release branch.
+
+Pushes to `future3/**` branches also publish a short-lived set of commit-addressed bundles to the `webapp-development` prerelease in the source repository. For feature branches and forks, the installer offers to download the bundle matching the installed commit. If that exact bundle is unavailable, it builds the Web App locally.
+
+Repository Actions must be enabled and the workflow token must have `contents: write` permission for a fork to publish development bundles.
+
+## Download a CI bundle manually
+
+Successful Web App workflow runs retain the exact-commit bundle as a GitHub Actions artifact for 14 days. Signed-in developers can download it with the GitHub CLI:
+
+```bash
+gh run download RUN_ID \
+  --repo OWNER/RPi-Jukebox-RFID \
+  --name webapp-build-0123456789.tar.gz
+```
+
+GitHub Actions artifacts require authentication. The installer uses the public prerelease asset instead.
 
 ## Install node manually
 

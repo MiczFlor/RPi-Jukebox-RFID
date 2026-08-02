@@ -37,6 +37,14 @@ concurrency:
 
 jobs:
 
+  test_webapp_bundle_download:
+    name: 'Web App bundle download selection'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Web App bundle download selection
+        run: bash ./ci/installation/test_webapp_bundle_download.sh
+
   run_raspbian_armv6_zmq:
     name: 'Raspberry Pi Debian bookworm armv6 ZMQ packages'
     runs-on: ubuntu-latest

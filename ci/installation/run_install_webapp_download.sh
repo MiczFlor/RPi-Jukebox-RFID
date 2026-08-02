@@ -11,7 +11,7 @@ SCRIPT_DIR="$(dirname "$SOURCE")"
 LOCAL_INSTALL_SCRIPT_PATH="${INSTALL_SCRIPT_PATH:-${SCRIPT_DIR}/../../installation}"
 LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 
-
+export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # Run installation (in interactive mode)
 # y - start setup
 # n - use static ip
@@ -24,7 +24,7 @@ LOCAL_INSTALL_SCRIPT_PATH="${LOCAL_INSTALL_SCRIPT_PATH%/}"
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
-# n - build webapp
+# - - exact bundle download (forced, with release fallback)
 # y - setup kiosk mode
 # n - reboot
 
@@ -37,7 +37,6 @@ n
 n
 n
 y
-n
 y
 n
 '
