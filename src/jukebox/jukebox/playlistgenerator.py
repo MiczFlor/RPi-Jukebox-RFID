@@ -51,6 +51,8 @@ import logging
 import re
 import requests
 
+from jukebox.library import resolve_library_path
+
 from typing import (List)
 
 logger = logging.getLogger('jb.plgen')
@@ -191,7 +193,9 @@ class PlaylistCollector:
         but is omitted when generating the playlist entries. I.e. all files in the playlist are relative to this base dir
         """
         self.playlist = []
-        self._music_library_base_path = os.path.abspath(os.path.expanduser(music_library_base_path))
+        self._music_library_base_path = str(
+            resolve_library_path(music_library_base_path, '.', require_exists=True)
+        )
         # These two variables only store reference content to generate __str__
         self._folder = ''
         self._recursive = False
@@ -229,7 +233,13 @@ class PlaylistCollector:
         dirs = []
         files = []
         playlist = []
-        self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        self._folder = str(
+            resolve_library_path(
+                self._music_library_base_path,
+                path,
+                require_exists=True,
+            )
+        )
         for f in os.scandir(self._folder):
             if f.is_dir(follow_symlinks=True):
                 dirs.append(f)
@@ -268,7 +278,13 @@ class PlaylistCollector:
             where type is one of :attr:`TYPE_DECODE`
         """
         self.playlist = []
-        self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        self._folder = str(
+            resolve_library_path(
+                self._music_library_base_path,
+                path,
+                require_exists=True,
+            )
+        )
         try:
             content = self._get_directory_content(self._folder)
         except NotADirectoryError as e:
@@ -308,7 +324,13 @@ class PlaylistCollector:
         """
         self.playlist = []
         self._recursive = recursive
-        self._folder = os.path.abspath(os.path.join(self._music_library_base_path, path))
+        self._folder = str(
+            resolve_library_path(
+                self._music_library_base_path,
+                path,
+                require_exists=True,
+            )
+        )
         func = self._parse_recursive if recursive else self._parse_nonrecusive
         try:
             self.playlist = func(self._folder)
