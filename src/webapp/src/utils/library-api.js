@@ -66,9 +66,10 @@ const jsonRequest = async (path, options = {}) => {
   return responseData(response);
 };
 
-const createLibraryFolder = (parent, name) => jsonRequest('/folders', {
+const createLibraryFolder = (parent, name, options = {}) => jsonRequest('/folders', {
   method: 'POST',
   body: JSON.stringify({ parent, name }),
+  signal: options.signal,
 });
 
 const listLibraryEntries = async (folder) => {

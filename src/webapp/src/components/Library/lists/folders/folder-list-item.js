@@ -8,11 +8,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Stack,
   Tooltip,
 } from '@mui/material';
 
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 import request from '../../../../utils/request';
@@ -24,10 +22,8 @@ const FolderListItem = ({
   isManagementSelecting,
   isSelecting,
   isSelected,
-  onDelete,
   onToggleSelected,
   registerMusicToCard,
-  showManagementActions,
 }) => {
   const { t } = useTranslation();
   const { type, name, relpath } = folder;
@@ -58,38 +54,24 @@ const FolderListItem = ({
     return playItem();
   };
 
-  const secondaryAction = !isManagementSelecting &&
-    <Stack alignItems="center" direction="row">
-      {showManagementActions &&
-        <Tooltip title={t('library.folders.manager.delete-item', { name })}>
-          <IconButton
-            aria-label={t('library.folders.manager.delete-item', { name })}
-            onClick={() => onDelete(folder)}
-            sx={{ height: 44, width: 44 }}
-          >
-            <DeleteOutlineIcon />
-          </IconButton>
-        </Tooltip>
-      }
-      {type === 'directory' &&
-        <Tooltip title={t('library.folders.show-folder-content')}>
-          <IconButton
-            aria-label={t('library.folders.show-folder-content')}
-            component={FolderLink}
-            data={{ dir: relpath }}
-            edge="end"
-            sx={{ height: 44, width: 44 }}
-          >
-            <NavigateNextIcon />
-          </IconButton>
-        </Tooltip>
-      }
-    </Stack>;
+  const secondaryAction = !isManagementSelecting && type === 'directory'
+    ? <Tooltip title={t('library.folders.show-folder-content')}>
+        <IconButton
+          aria-label={t('library.folders.show-folder-content')}
+          component={FolderLink}
+          data={{ dir: relpath }}
+          edge="end"
+          sx={{ height: 44, width: 44 }}
+        >
+          <NavigateNextIcon />
+        </IconButton>
+      </Tooltip>
+    : undefined;
 
   return (
     <ListItem
       disablePadding
-      secondaryAction={secondaryAction || undefined}
+      secondaryAction={secondaryAction}
     >
       <ListItemButton
         onClick={activateItem}

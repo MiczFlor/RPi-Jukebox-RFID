@@ -52,8 +52,10 @@ the Web App. `GET /api/v1/health` reports API availability.
 Library file management uses dedicated HTTP endpoints under
 `/api/v1/library/`. Uploads send one raw file per
 `PUT /api/v1/library/files` request so Tornado can stream it to storage without
-buffering the complete file in memory. Folder creation, raw directory listing,
-batch deletion, and MPD refresh use the corresponding `folders`, `entries`, and
+buffering the complete file in memory. Browser folder selections retain their
+relative paths; the Web App creates the selected folder trees through the
+`folders` endpoint before uploading their files sequentially. Raw directory
+listing, batch deletion, and MPD refresh use the corresponding `entries` and
 `refresh` endpoints. nginx disables request buffering only for the upload
 endpoint; RPC and other JSON requests retain their 1 MiB limit.
 

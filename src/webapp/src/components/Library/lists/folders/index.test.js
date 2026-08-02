@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -36,7 +37,6 @@ jest.mock('react-i18next', () => ({
         'library.folders.empty-folder': 'This folder is empty',
         'library.folders.manager.actions-label': 'Library file actions',
         'library.folders.manager.create-folder': 'New folder',
-        'library.folders.manager.delete-item': `Delete ${options.name}`,
         'library.folders.manager.delete-selected': `Delete ${options.count} items`,
         'library.folders.manager.delete.permanent': 'Deletion is permanent.',
         'library.folders.manager.delete.folder-warning': 'Folder contents will be deleted.',
@@ -44,14 +44,15 @@ jest.mock('react-i18next', () => ({
         'library.folders.manager.drop-files': 'Drop files here.',
         'library.folders.manager.select': 'Select',
         'library.folders.manager.select-item': `Select ${options.name}`,
-        'library.folders.manager.upload': 'Upload',
+        'library.folders.manager.upload-files': 'Upload files',
+        'library.folders.manager.upload-folders': 'Upload folders',
         'library.folders.manager.upload-dialog.cancel-all': 'Cancel all',
-        'library.folders.manager.upload-dialog.cancel-file': 'Cancel upload',
+        'library.folders.manager.upload-dialog.cancel-item': 'Cancel',
         'library.folders.manager.upload-dialog.progress': `Progress ${options.name}`,
-        'library.folders.manager.upload-dialog.retry-file': 'Retry upload',
+        'library.folders.manager.upload-dialog.retry-item': 'Retry',
         'library.folders.manager.upload-dialog.status.complete': 'Uploaded',
         'library.folders.manager.upload-dialog.status.queued': 'Waiting',
-        'library.folders.manager.upload-dialog.title': 'Upload files',
+        'library.folders.manager.upload-dialog.title': 'Upload files and folders',
         'library.folders.manager.upload-dialog.uploading': `Uploading ${options.progress}%`,
         'library.folders.show-folder-content': 'Show folder content',
       };
@@ -107,12 +108,13 @@ describe('responsive library file management', () => {
     renderFolders();
 
     expect(await screen.findByRole('toolbar', { name: 'Library file actions' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Upload' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Upload files' })).toBeVisible();
+    const uploadFoldersButton = screen.getByRole('button', { name: 'Upload folders' });
+    expect(uploadFoldersButton).toBeVisible();
+    expect(uploadFoldersButton.querySelector('input')).toHaveAttribute('multiple');
+    expect(uploadFoldersButton.querySelector('input')).toHaveAttribute('webkitdirectory');
     expect(screen.getByRole('button', { name: 'New folder' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Delete Album' })).toHaveStyle({
-      height: '44px',
-      width: '44px',
-    });
+    expect(screen.queryByRole('button', { name: 'Delete Album' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Select' }));
     await user.click(screen.getByRole('checkbox', { name: 'Select Album' }));
@@ -120,6 +122,8 @@ describe('responsive library file management', () => {
 
     expect(screen.getByText('Deletion is permanent.')).toBeVisible();
     expect(screen.getByText('Folder contents will be deleted.')).toBeVisible();
+    const deleteDialog = screen.getByRole('dialog', { name: 'Delete 1 items?' });
+    expect(within(deleteDialog).getAllByText('Album')).toHaveLength(1);
     await act(async () => {
       await user.click(screen.getByRole('button', { name: 'Delete' }));
       await Promise.resolve();
@@ -150,7 +154,7 @@ describe('responsive library file management', () => {
       await Promise.resolve();
     });
 
-    expect(await screen.findByRole('dialog', { name: 'Upload files' })).toBeVisible();
+    expect(await screen.findByRole('dialog', { name: 'Upload files and folders' })).toBeVisible();
     await waitFor(() => expect(uploadLibraryFile).toHaveBeenCalledWith(
       expect.objectContaining({
         file,

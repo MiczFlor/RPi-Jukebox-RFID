@@ -1,7 +1,8 @@
 # Samba
 
-The Web App can upload files, create folders, and delete files or folders in
-the audio library. Samba is therefore optional and disabled by default.
+The Web App can upload files or complete folder trees, create folders, and
+delete files or folders in the audio library. Samba is therefore optional and
+disabled by default.
 
 Enable Samba during installation when you want direct network access to the
 complete `./shared/` directory. It is exposed as the `phoniebox` network share

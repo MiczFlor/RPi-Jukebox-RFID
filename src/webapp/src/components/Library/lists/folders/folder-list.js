@@ -18,11 +18,9 @@ const FolderList = ({
   folders,
   isManagementSelecting,
   isSelecting,
-  onDelete,
   onToggleSelected,
   registerMusicToCard,
   selectedPaths,
-  showManagementActions,
 }) => {
   const { t } = useTranslation();
 
@@ -54,10 +52,8 @@ const FolderList = ({
           isManagementSelecting={isManagementSelecting}
           isSelecting={isSelecting}
           isSelected={selectedPaths.has(folder.relpath)}
-          onDelete={onDelete}
           onToggleSelected={onToggleSelected}
           registerMusicToCard={registerMusicToCard}
-          showManagementActions={showManagementActions}
         />
       )}
     </List>

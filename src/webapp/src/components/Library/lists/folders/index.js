@@ -19,8 +19,14 @@ import DeleteEntriesDialog from './delete-entries-dialog';
 import FolderList from "./folder-list";
 import LibraryActions from './library-actions';
 import UploadDialog from './upload-dialog';
+import {
+  uploadSelectionFromDataTransfer,
+  uploadSelectionHasEntries,
+} from './upload-selection';
 
 import { ROOT_DIR } from '../../../../config';
+
+const emptyUploadSelection = { files: [], folders: [] };
 
 const Folders = ({
   musicFilter,
@@ -38,7 +44,7 @@ const Folders = ({
   const [operationWarning, setOperationWarning] = useState('');
   const [isManagementSelecting, setIsManagementSelecting] = useState(false);
   const [selectedPaths, setSelectedPaths] = useState(new Set());
-  const [uploadFiles, setUploadFiles] = useState([]);
+  const [uploadSelection, setUploadSelection] = useState(emptyUploadSelection);
   const [isDragging, setIsDragging] = useState(false);
   const currentFolder = decodeURIComponent(dir);
 
@@ -82,8 +88,8 @@ const Folders = ({
     setReloadNumber((value) => value + 1);
   }, []);
 
-  const handleFiles = (files) => {
-    if (files.length) setUploadFiles(files);
+  const handleUploadSelection = (selection) => {
+    if (uploadSelectionHasEntries(selection)) setUploadSelection(selection);
   };
 
   const toggleSelected = ({ relpath }) => {
@@ -120,10 +126,17 @@ const Folders = ({
     reloadFolder();
   };
 
-  const handleDrop = (event) => {
+  const handleDrop = async (event) => {
     event.preventDefault();
     setIsDragging(false);
-    handleFiles(Array.from(event.dataTransfer.files || []));
+    try {
+      handleUploadSelection(
+        await uploadSelectionFromDataTransfer(event.dataTransfer),
+      );
+    }
+    catch (readError) {
+      setOperationWarning(t('library.folders.manager.read-folder-error'));
+    }
   };
 
   const filteredFolders = folders.filter(search);
@@ -158,8 +171,8 @@ const Folders = ({
           onCancelSelection={cancelSelection}
           onCreateFolder={() => setCreateDialogOpen(true)}
           onDeleteSelected={deleteSelected}
-          onFilesSelected={handleFiles}
           onStartSelection={() => setIsManagementSelecting(true)}
+          onUploadSelected={handleUploadSelection}
           selectedCount={selectedPaths.size}
         />
       }
@@ -190,11 +203,9 @@ const Folders = ({
           folders={filteredFolders}
           isManagementSelecting={isManagementSelecting}
           isSelecting={isSelecting}
-          onDelete={(entry) => setDeleteEntries([entry])}
           onToggleSelected={toggleSelected}
           registerMusicToCard={registerMusicToCard}
           selectedPaths={selectedPaths}
-          showManagementActions={!isSelecting}
         />
       }
       <CreateFolderDialog
@@ -210,11 +221,11 @@ const Folders = ({
         open={deleteEntries.length > 0}
       />
       <UploadDialog
-        files={uploadFiles}
         folder={currentFolder}
-        onClose={() => setUploadFiles([])}
+        onClose={() => setUploadSelection(emptyUploadSelection)}
         onLibraryChanged={reloadFolder}
-        open={uploadFiles.length > 0}
+        open={uploadSelectionHasEntries(uploadSelection)}
+        selection={uploadSelection}
       />
     </Box>
   );

@@ -10,9 +10,11 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { ACCEPTED_LIBRARY_FILES } from '../../../../utils/library-api';
+import { createUploadSelection } from './upload-selection';
 
 const actionButtonSx = {
   minHeight: 44,
@@ -25,15 +27,21 @@ const LibraryActions = ({
   onCancelSelection,
   onCreateFolder,
   onDeleteSelected,
-  onFilesSelected,
   onStartSelection,
+  onUploadSelected,
 }) => {
   const { t } = useTranslation();
 
   const selectFiles = (event) => {
     const files = Array.from(event.target.files || []);
     event.target.value = '';
-    if (files.length) onFilesSelected(files);
+    if (files.length) onUploadSelected(createUploadSelection(files));
+  };
+
+  const selectFolders = (event) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = '';
+    if (files.length) onUploadSelected(createUploadSelection(files));
   };
 
   return (
@@ -81,13 +89,31 @@ const LibraryActions = ({
               sx={actionButtonSx}
               variant="contained"
             >
-              {t('library.folders.manager.upload')}
+              {t('library.folders.manager.upload-files')}
               <input
                 accept={ACCEPTED_LIBRARY_FILES}
                 hidden
                 multiple
                 onChange={selectFiles}
                 type="file"
+              />
+            </Button>
+            <Button
+              component="label"
+              role="button"
+              startIcon={<DriveFolderUploadIcon />}
+              sx={actionButtonSx}
+              variant="contained"
+            >
+              {t('library.folders.manager.upload-folders')}
+              <input
+                accept={ACCEPTED_LIBRARY_FILES}
+                directory=""
+                hidden
+                multiple
+                onChange={selectFolders}
+                type="file"
+                webkitdirectory=""
               />
             </Button>
             <Button

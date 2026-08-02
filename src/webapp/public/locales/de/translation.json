@@ -145,14 +145,15 @@
       "back-button-label": "Zurück",
       "manager": {
         "actions-label": "Aktionen für Bibliotheksdateien",
-        "upload": "Hochladen",
+        "upload-files": "Dateien hochladen",
+        "upload-folders": "Ordner hochladen",
         "create-folder": "Neuer Ordner",
         "select": "Auswählen",
         "select-item": "{{name}} auswählen",
         "delete-selected_one": "{{count}} Element löschen",
         "delete-selected_other": "{{count}} Elemente löschen",
-        "delete-item": "{{name}} löschen",
-        "drop-files": "Dateien hier ablegen, um sie in diesen Ordner hochzuladen.",
+        "drop-files": "Dateien oder Ordner hier ablegen, um sie in diesen Ordner hochzuladen.",
+        "read-folder-error": "Der ausgewählte Ordner konnte von diesem Browser nicht gelesen werden.",
         "create": {
           "title": "Ordner erstellen",
           "name": "Ordnername",
@@ -165,11 +166,14 @@
           "folder-warning": "Ausgewählte Ordner sowie alle darin enthaltenen Dateien und Ordner werden gelöscht."
         },
         "upload-dialog": {
-          "title": "Dateien hochladen",
+          "title": "Dateien und Ordner hochladen",
           "uploading": "Wird hochgeladen: {{progress}} %",
+          "creating-folder": "Ordner wird erstellt",
+          "folder-created": "Ordner erstellt",
+          "parent-folder-failed": "Der übergeordnete Ordner konnte nicht erstellt werden.",
           "progress": "Upload-Fortschritt für {{name}}",
-          "cancel-file": "Upload abbrechen",
-          "retry-file": "Upload wiederholen",
+          "cancel-item": "Abbrechen",
+          "retry-item": "Wiederholen",
           "cancel-all": "Alle abbrechen",
           "status": {
             "queued": "Wartet",

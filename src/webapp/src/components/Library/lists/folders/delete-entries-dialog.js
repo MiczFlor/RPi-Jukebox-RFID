@@ -81,7 +81,10 @@ const DeleteEntriesDialog = ({
         <List dense sx={{ maxHeight: 240, overflowY: 'auto' }}>
           {entries.map(({ name, relpath }) =>
             <ListItem disableGutters key={relpath}>
-              <ListItemText primary={name} secondary={relpath} />
+              <ListItemText
+                primary={name}
+                secondary={relpath === name ? undefined : relpath}
+              />
             </ListItem>
           )}
         </List>

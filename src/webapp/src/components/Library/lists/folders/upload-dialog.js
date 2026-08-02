@@ -29,6 +29,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import ReplayIcon from '@mui/icons-material/Replay';
 
 import {
+  createLibraryFolder,
   refreshLibrary,
   translateLibraryError,
   uploadLibraryFile,
@@ -36,12 +37,30 @@ import {
 
 const terminalStates = new Set(['cancelled', 'complete', 'failed']);
 
+const joinLibraryPath = (folder, relativePath) => {
+  if (!relativePath) return folder;
+  if (folder === '.' || folder === './') return relativePath;
+  return `${folder.replace(/\/+$/, '')}/${relativePath}`;
+};
+
+const parentAndName = (relativePath) => {
+  const parts = relativePath.split('/');
+  const name = parts.pop();
+  return { name, parent: parts.join('/') };
+};
+
+const parentFolderPaths = (relativePath) => {
+  const parts = relativePath.split('/');
+  parts.pop();
+  return parts.map((part, index) => parts.slice(0, index + 1).join('/'));
+};
+
 const UploadDialog = ({
-  files,
   folder,
   onClose,
   onLibraryChanged,
   open,
+  selection,
 }) => {
   const { t } = useTranslation();
   const [queue, setQueue] = useState([]);
@@ -57,25 +76,57 @@ const UploadDialog = ({
     refreshedBatch.current = -1;
     setRefreshError('');
     setCurrentId(null);
-    setQueue(files.map((file, index) => ({
-      error: '',
-      file,
-      id: `${file.name}-${file.size}-${file.lastModified}-${index}`,
-      progress: 0,
-      status: 'queued',
-    })));
-  }, [files, open]);
+    setQueue([
+      ...selection.folders.map((relativePath) => ({
+        entryType: 'folder',
+        error: '',
+        id: `folder-${relativePath}`,
+        progress: 0,
+        relativePath,
+        status: 'queued',
+      })),
+      ...selection.files.map(({ file, relativePath }, index) => ({
+        entryType: 'file',
+        error: '',
+        file,
+        id: `file-${relativePath}-${file.size}-${file.lastModified}-${index}`,
+        progress: 0,
+        relativePath,
+        status: 'queued',
+      })),
+    ]);
+  }, [open, selection]);
 
   const queuedItem = useMemo(
     () => queue.find(({ status }) => status === 'queued'),
     [queue],
   );
   const isRunning = currentId !== null || queue.some(({ status }) => status === 'queued');
-  const hasCompletedUpload = queue.some(({ status }) => status === 'complete');
+  const hasCompletedChange = queue.some(({ status }) => status === 'complete');
   const isFinished = queue.length > 0 && queue.every(({ status }) => terminalStates.has(status));
 
   useEffect(() => {
     if (!open || currentId || !queuedItem) return;
+
+    const parents = new Set(parentFolderPaths(queuedItem.relativePath));
+    const failedParent = queue.find((item) => (
+      item.entryType === 'folder'
+      && parents.has(item.relativePath)
+      && (item.status === 'cancelled' || item.status === 'failed')
+    ));
+    if (failedParent) {
+      setQueue((items) => items.map((item) => (
+        item.id === queuedItem.id
+          ? {
+              ...item,
+              blockedBy: failedParent.id,
+              error: t('library.folders.manager.upload-dialog.parent-folder-failed'),
+              status: 'failed',
+            }
+          : item
+      )));
+      return;
+    }
 
     const controller = new AbortController();
     abortController.current = controller;
@@ -86,16 +137,25 @@ const UploadDialog = ({
         : item
     )));
 
-    uploadLibraryFile({
-      file: queuedItem.file,
-      folder,
-      signal: controller.signal,
-      onProgress: (progress) => {
-        setQueue((items) => items.map((item) => (
-          item.id === queuedItem.id ? { ...item, progress } : item
-        )));
-      },
-    })
+    const { name, parent } = parentAndName(queuedItem.relativePath);
+    const operation = queuedItem.entryType === 'folder'
+      ? createLibraryFolder(
+          joinLibraryPath(folder, parent),
+          name,
+          { signal: controller.signal },
+        )
+      : uploadLibraryFile({
+          file: queuedItem.file,
+          folder: joinLibraryPath(folder, parent),
+          signal: controller.signal,
+          onProgress: (progress) => {
+            setQueue((items) => items.map((item) => (
+              item.id === queuedItem.id ? { ...item, progress } : item
+            )));
+          },
+        });
+
+    operation
       .then(() => {
         setQueue((items) => items.map((item) => (
           item.id === queuedItem.id
@@ -104,12 +164,16 @@ const UploadDialog = ({
         )));
       })
       .catch((error) => {
+        const operationError = error.name === 'AbortError'
+          ? { code: 'cancelled', message: 'Upload cancelled.' }
+          : error;
         setQueue((items) => items.map((item) => (
           item.id === queuedItem.id
             ? {
                 ...item,
-                error: translateLibraryError(t, error),
-                status: error.code === 'cancelled' ? 'cancelled' : 'failed',
+                blockedBy: undefined,
+                error: translateLibraryError(t, operationError),
+                status: operationError.code === 'cancelled' ? 'cancelled' : 'failed',
               }
             : item
         )));
@@ -118,13 +182,13 @@ const UploadDialog = ({
         abortController.current = null;
         setCurrentId(null);
       });
-  }, [currentId, folder, open, queuedItem, t]);
+  }, [currentId, folder, open, queue, queuedItem, t]);
 
   useEffect(() => {
     if (
       !open
       || !isFinished
-      || !hasCompletedUpload
+      || !hasCompletedChange
       || refreshedBatch.current === batchNumber.current
     ) {
       return;
@@ -137,7 +201,7 @@ const UploadDialog = ({
         setRefreshError(translateLibraryError(t, error));
         onLibraryChanged();
       });
-  }, [hasCompletedUpload, isFinished, onLibraryChanged, open, t]);
+  }, [hasCompletedChange, isFinished, onLibraryChanged, open, t]);
 
   const cancelItem = (id) => {
     if (id === currentId) {
@@ -159,15 +223,27 @@ const UploadDialog = ({
   const retryItem = (id) => {
     refreshedBatch.current = -1;
     setQueue((items) => items.map((item) => (
-      item.id === id
-        ? { ...item, error: '', progress: 0, status: 'queued' }
+      item.id === id || item.blockedBy === id
+        ? {
+            ...item,
+            blockedBy: undefined,
+            error: '',
+            progress: 0,
+            status: 'queued',
+          }
         : item
     )));
   };
 
   const statusText = (item) => {
     if (item.status === 'uploading') {
+      if (item.entryType === 'folder') {
+        return t('library.folders.manager.upload-dialog.creating-folder');
+      }
       return t('library.folders.manager.upload-dialog.uploading', { progress: item.progress });
+    }
+    if (item.status === 'complete' && item.entryType === 'folder') {
+      return t('library.folders.manager.upload-dialog.folder-created');
     }
     if (item.status === 'failed') return item.error;
     return t(`library.folders.manager.upload-dialog.status.${item.status}`);
@@ -189,9 +265,9 @@ const UploadDialog = ({
               key={item.id}
               secondaryAction={
                 item.status === 'uploading' || item.status === 'queued'
-                  ? <Tooltip title={t('library.folders.manager.upload-dialog.cancel-file')}>
+                  ? <Tooltip title={t('library.folders.manager.upload-dialog.cancel-item')}>
                       <IconButton
-                        aria-label={t('library.folders.manager.upload-dialog.cancel-file')}
+                        aria-label={t('library.folders.manager.upload-dialog.cancel-item')}
                         edge="end"
                         onClick={() => cancelItem(item.id)}
                         sx={{ height: 44, width: 44 }}
@@ -200,9 +276,9 @@ const UploadDialog = ({
                       </IconButton>
                     </Tooltip>
                   : item.status === 'failed' || item.status === 'cancelled'
-                    ? <Tooltip title={t('library.folders.manager.upload-dialog.retry-file')}>
+                    ? <Tooltip title={t('library.folders.manager.upload-dialog.retry-item')}>
                         <IconButton
-                          aria-label={t('library.folders.manager.upload-dialog.retry-file')}
+                          aria-label={t('library.folders.manager.upload-dialog.retry-item')}
                           edge="end"
                           onClick={() => retryItem(item.id)}
                           sx={{ height: 44, width: 44 }}
@@ -215,10 +291,10 @@ const UploadDialog = ({
               sx={{ paddingRight: 7 }}
             >
               <ListItemText
-                primary={item.file.name}
+                primary={item.relativePath}
                 primaryTypographyProps={{
                   noWrap: true,
-                  title: item.file.name,
+                  title: item.relativePath,
                 }}
                 secondary={
                   <Box sx={{ minWidth: 0 }}>
@@ -231,10 +307,11 @@ const UploadDialog = ({
                       {item.status === 'failed' && <ErrorIcon fontSize="inherit" sx={{ marginRight: 0.5 }} />}
                       {statusText(item)}
                     </Typography>
-                    {(item.status === 'uploading' || item.status === 'queued') &&
+                    {item.entryType === 'file' &&
+                      (item.status === 'uploading' || item.status === 'queued') &&
                       <LinearProgress
                         aria-label={t('library.folders.manager.upload-dialog.progress', {
-                          name: item.file.name,
+                          name: item.relativePath,
                         })}
                         sx={{ marginTop: 0.75 }}
                         value={item.progress}

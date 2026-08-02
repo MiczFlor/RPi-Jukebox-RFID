@@ -145,14 +145,15 @@
       "back-button-label": "Back",
       "manager": {
         "actions-label": "Library file actions",
-        "upload": "Upload",
+        "upload-files": "Upload files",
+        "upload-folders": "Upload folders",
         "create-folder": "New folder",
         "select": "Select",
         "select-item": "Select {{name}}",
         "delete-selected_one": "Delete {{count}} item",
         "delete-selected_other": "Delete {{count}} items",
-        "delete-item": "Delete {{name}}",
-        "drop-files": "Drop files here to upload them to this folder.",
+        "drop-files": "Drop files or folders here to upload them to this folder.",
+        "read-folder-error": "The selected folder could not be read by this browser.",
         "create": {
           "title": "Create folder",
           "name": "Folder name",
@@ -165,11 +166,14 @@
           "folder-warning": "Selected folders and all files and folders inside them will be deleted."
         },
         "upload-dialog": {
-          "title": "Upload files",
+          "title": "Upload files and folders",
           "uploading": "Uploading: {{progress}}%",
+          "creating-folder": "Creating folder",
+          "folder-created": "Folder created",
+          "parent-folder-failed": "The parent folder could not be created.",
           "progress": "Upload progress for {{name}}",
-          "cancel-file": "Cancel upload",
-          "retry-file": "Retry upload",
+          "cancel-item": "Cancel",
+          "retry-item": "Retry",
           "cancel-all": "Cancel all",
           "status": {
             "queued": "Waiting",

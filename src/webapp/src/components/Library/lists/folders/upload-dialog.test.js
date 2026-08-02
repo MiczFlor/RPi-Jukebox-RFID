@@ -8,12 +8,14 @@ import {
 import userEvent from '@testing-library/user-event';
 
 import {
+  createLibraryFolder,
   refreshLibrary,
   uploadLibraryFile,
 } from '../../../../utils/library-api';
 import UploadDialog from './upload-dialog';
 
 jest.mock('../../../../utils/library-api', () => ({
+  createLibraryFolder: jest.fn(),
   refreshLibrary: jest.fn(),
   translateLibraryError: (t, error) => error.message,
   uploadLibraryFile: jest.fn(),
@@ -24,13 +26,16 @@ jest.mock('react-i18next', () => ({
       const labels = {
         'general.buttons.close': 'Close',
         'library.folders.manager.upload-dialog.cancel-all': 'Cancel all',
-        'library.folders.manager.upload-dialog.cancel-file': 'Cancel upload',
+        'library.folders.manager.upload-dialog.cancel-item': 'Cancel',
+        'library.folders.manager.upload-dialog.creating-folder': 'Creating folder',
+        'library.folders.manager.upload-dialog.folder-created': 'Folder created',
+        'library.folders.manager.upload-dialog.parent-folder-failed': 'Parent folder failed',
         'library.folders.manager.upload-dialog.progress': `Progress ${options.name}`,
-        'library.folders.manager.upload-dialog.retry-file': 'Retry upload',
+        'library.folders.manager.upload-dialog.retry-item': 'Retry',
         'library.folders.manager.upload-dialog.status.cancelled': 'Cancelled',
         'library.folders.manager.upload-dialog.status.complete': 'Uploaded',
         'library.folders.manager.upload-dialog.status.queued': 'Waiting',
-        'library.folders.manager.upload-dialog.title': 'Upload files',
+        'library.folders.manager.upload-dialog.title': 'Upload files and folders',
         'library.folders.manager.upload-dialog.uploading': `Uploading ${options.progress}%`,
       };
       return labels[key] || key;
@@ -48,6 +53,10 @@ const deferred = () => {
   return { promise, reject, resolve };
 };
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
 test('uploads sequentially and retries failed files', async () => {
   const firstUpload = deferred();
   uploadLibraryFile
@@ -60,11 +69,17 @@ test('uploads sequentially and retries failed files', async () => {
 
   render(
     <UploadDialog
-      files={[first, second]}
       folder="Album"
       onClose={jest.fn()}
       onLibraryChanged={jest.fn()}
       open
+      selection={{
+        files: [
+          { file: first, relativePath: first.name },
+          { file: second, relativePath: second.name },
+        ],
+        folders: [],
+      }}
     />,
   );
 
@@ -84,11 +99,76 @@ test('uploads sequentially and retries failed files', async () => {
 
   const user = userEvent.setup();
   await act(async () => {
-    await user.click(screen.getByRole('button', { name: 'Retry upload' }));
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
     await Promise.resolve();
     await Promise.resolve();
   });
   await waitFor(() => expect(uploadLibraryFile).toHaveBeenCalledTimes(3));
   expect(uploadLibraryFile.mock.calls[2][0].file).toBe(second);
   await waitFor(() => expect(refreshLibrary).toHaveBeenCalled());
+});
+
+test('creates selected folder trees before uploading their files', async () => {
+  createLibraryFolder.mockResolvedValue({});
+  uploadLibraryFile.mockResolvedValue({});
+  refreshLibrary.mockResolvedValue({ update_id: '1' });
+  const file = new File(['audio'], 'track.mp3');
+
+  render(
+    <UploadDialog
+      folder="Existing"
+      onClose={jest.fn()}
+      onLibraryChanged={jest.fn()}
+      open
+      selection={{
+        files: [{ file, relativePath: 'Album/Disc 1/track.mp3' }],
+        folders: ['Album', 'Album/Disc 1'],
+      }}
+    />,
+  );
+
+  await waitFor(() => expect(uploadLibraryFile).toHaveBeenCalled());
+  expect(createLibraryFolder).toHaveBeenNthCalledWith(
+    1,
+    'Existing',
+    'Album',
+    expect.objectContaining({ signal: expect.any(AbortSignal) }),
+  );
+  expect(createLibraryFolder).toHaveBeenNthCalledWith(
+    2,
+    'Existing/Album',
+    'Disc 1',
+    expect.objectContaining({ signal: expect.any(AbortSignal) }),
+  );
+  expect(uploadLibraryFile).toHaveBeenCalledWith(expect.objectContaining({
+    file,
+    folder: 'Existing/Album/Disc 1',
+  }));
+  expect(await screen.findAllByText('Folder created')).toHaveLength(2);
+  await waitFor(() => expect(refreshLibrary).toHaveBeenCalled());
+});
+
+test('does not upload descendants when their parent folder creation fails', async () => {
+  createLibraryFolder.mockRejectedValue({
+    code: 'duplicate_name',
+    message: 'Folder already exists.',
+  });
+  const file = new File(['audio'], 'track.mp3');
+
+  render(
+    <UploadDialog
+      folder="."
+      onClose={jest.fn()}
+      onLibraryChanged={jest.fn()}
+      open
+      selection={{
+        files: [{ file, relativePath: 'Album/track.mp3' }],
+        folders: ['Album'],
+      }}
+    />,
+  );
+
+  expect(await screen.findByText('Folder already exists.')).toBeVisible();
+  expect(await screen.findByText('Parent folder failed')).toBeVisible();
+  expect(uploadLibraryFile).not.toHaveBeenCalled();
 });
