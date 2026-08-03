@@ -1,10 +1,13 @@
 # RPi-Jukebox-RFID Version 3
 # Copyright (c) See file LICENSE in project root folder
 
+import logging
 import os
 import shutil
 import subprocess
-import logging
+import threading
+import time
+
 import jukebox.plugs as plugin
 import jukebox.cfghandler
 import jukebox.publishing
@@ -21,45 +24,88 @@ try:
 except Exception:
     pass
 
+POWER_COMMAND_DELAY_SECONDS = 1
+POWER_COMMAND_TIMEOUT_SECONDS = 10
+POWER_COMMAND_OPTIONS = {
+    'shutdown': '-h',
+    'reboot': '-r',
+}
+
 
 # ---------------------------------------------------------------------------
 # Shutdown / Reboot
 # ---------------------------------------------------------------------------
+def _execute_power_command(action):
+    time.sleep(POWER_COMMAND_DELAY_SECONDS)
+    sudo_command = shutil.which('sudo')
+    shutdown_command = shutil.which('shutdown')
+    if sudo_command is None or shutdown_command is None:
+        missing = 'sudo' if sudo_command is None else 'shutdown'
+        logger.error(
+            "Cannot %s host: required command '%s' was not found",
+            action,
+            missing,
+        )
+        return
+
+    command = [
+        sudo_command,
+        '-n',
+        shutdown_command,
+        POWER_COMMAND_OPTIONS[action],
+        'now',
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            check=False,
+            stdin=subprocess.DEVNULL,
+            text=True,
+            timeout=POWER_COMMAND_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.SubprocessError):
+        logger.exception('Failed to execute host %s command', action)
+        return
+
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout or 'no error output').strip()
+        logger.error(
+            'Host %s command failed with exit code %s: %s',
+            action,
+            result.returncode,
+            detail,
+        )
+        return
+    logger.info('Host %s command accepted by the operating system', action)
+
+
+def _schedule_power_command(action):
+    if IS_DEBUG:
+        logger.info('Host %s command skipped due to debug mode', action)
+        return
+    worker = threading.Thread(
+        target=_execute_power_command,
+        args=(action,),
+        daemon=True,
+        name=f'host.{action}',
+    )
+    worker.start()
+    logger.info('Host %s command scheduled', action)
+
+
 @plugin.register
 def shutdown():
     """Shutdown the host machine"""
     logger.info('Shutting down host system now')
-    debug_flag = '-k' if IS_DEBUG else ''
-    # Detach the shell and wait 1 second before command execution
-    # for return value to pass up the RPC call stack.
-    # The return value has no meaning itself, but the RPC call stack should complete correctly
-    # In order to really detach the shell command, we also need to detach the pipes for outputs
-    # If omit that, there is a dead lock and the service will not shut down properly
-    # This works on the RPi w/o further authentication, on other machines a systemctl reboot may work better
-    # If authentication is required, the command will simply not execute and time out
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -h now) &', shell=True, capture_output=False,
-                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
-                         stdin=subprocess.DEVNULL)
-    if ret.returncode != 0:
-        logger.error(f"{ret.stdout}")
-    if IS_DEBUG:
-        logger.info('Skipping system command due to debug mode')
-    logger.info('Shutdown command dispatched to host')
+    _schedule_power_command('shutdown')
 
 
 @plugin.register
 def reboot():
     """Reboot the host machine"""
-    logger.info('Rebooting down host system now')
-    debug_flag = '-k' if IS_DEBUG else ''
-    ret = subprocess.run(f'(sleep 1; sudo shutdown {debug_flag} -r now) &', shell=True, capture_output=False,
-                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False,
-                         stdin=subprocess.DEVNULL)
-    if ret.returncode != 0:
-        logger.error(f"{ret.stdout}")
-    if IS_DEBUG:
-        logger.info('Reboot command skipped due to debug mode')
-    logger.info('Reboot command dispatched to host')
+    logger.info('Rebooting host system now')
+    _schedule_power_command('reboot')
 
 
 @plugin.register

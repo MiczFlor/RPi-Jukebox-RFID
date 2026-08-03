@@ -55,6 +55,97 @@ def _patch_get_publisher(hostif_linux, monkeypatch, get_publisher):
     monkeypatch.setattr(timer_module.publishing, 'get_publisher', get_publisher)
 
 
+def test_shutdown_schedules_delayed_power_command(
+        hostif_linux,
+        monkeypatch):
+    worker = MagicMock()
+    thread_factory = MagicMock(return_value=worker)
+    monkeypatch.setattr(hostif_linux, 'IS_DEBUG', False)
+    monkeypatch.setattr(hostif_linux.threading, 'Thread', thread_factory)
+
+    hostif_linux.shutdown()
+
+    thread_factory.assert_called_once_with(
+        target=hostif_linux._execute_power_command,
+        args=('shutdown',),
+        daemon=True,
+        name='host.shutdown',
+    )
+    worker.start.assert_called_once_with()
+
+
+def test_debug_mode_does_not_schedule_power_command(
+        hostif_linux,
+        monkeypatch):
+    thread_factory = MagicMock()
+    monkeypatch.setattr(hostif_linux, 'IS_DEBUG', True)
+    monkeypatch.setattr(hostif_linux.threading, 'Thread', thread_factory)
+
+    hostif_linux.reboot()
+
+    thread_factory.assert_not_called()
+
+
+def test_power_command_uses_noninteractive_sudo_and_reports_acceptance(
+        hostif_linux,
+        monkeypatch,
+        caplog):
+    result = MagicMock(returncode=0, stdout='', stderr='')
+    run = MagicMock(return_value=result)
+    commands = {
+        'sudo': '/usr/bin/sudo',
+        'shutdown': '/usr/sbin/shutdown',
+    }
+    monkeypatch.setattr(hostif_linux.time, 'sleep', MagicMock())
+    monkeypatch.setattr(
+        hostif_linux.shutil,
+        'which',
+        lambda command: commands[command],
+    )
+    monkeypatch.setattr(hostif_linux.subprocess, 'run', run)
+
+    with caplog.at_level(logging.INFO, logger='jb.host.lnx'):
+        hostif_linux._execute_power_command('shutdown')
+
+    run.assert_called_once_with(
+        [
+            '/usr/bin/sudo',
+            '-n',
+            '/usr/sbin/shutdown',
+            '-h',
+            'now',
+        ],
+        capture_output=True,
+        check=False,
+        stdin=hostif_linux.subprocess.DEVNULL,
+        text=True,
+        timeout=hostif_linux.POWER_COMMAND_TIMEOUT_SECONDS,
+    )
+    assert 'accepted by the operating system' in caplog.text
+
+
+def test_power_command_logs_sudo_failure(
+        hostif_linux,
+        monkeypatch,
+        caplog):
+    result = MagicMock(
+        returncode=1,
+        stdout='',
+        stderr='sudo: a password is required',
+    )
+    run = MagicMock(return_value=result)
+    monkeypatch.setattr(hostif_linux.time, 'sleep', MagicMock())
+    monkeypatch.setattr(hostif_linux.shutil, 'which', lambda command: command)
+    monkeypatch.setattr(hostif_linux.subprocess, 'run', run)
+
+    with caplog.at_level(logging.ERROR, logger='jb.host.lnx'):
+        hostif_linux._execute_power_command('reboot')
+
+    assert run.call_args.args[0][-2:] == ['-r', 'now']
+    assert 'exit code 1' in caplog.text
+    assert 'sudo: a password is required' in caplog.text
+
+
 def test_unavailable_sensor_leaves_temperature_timer_disabled(
         hostif_linux, monkeypatch, caplog):
     publisher = MagicMock()
