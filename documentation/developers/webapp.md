@@ -1,8 +1,8 @@
 # Web App
 
-The Web App sources are located in `src/webapp`. Raspberry Pi installations,
-including Pi Zero and Pi Zero 2, download and serve pre-built static assets.
-Node.js and local compilation are not required on the device.
+The Web App sources are located in `src/webapp`. Installations download and
+serve pre-built static assets, so Node.js and local compilation are not
+required on the target system.
 
 ## CI bundles
 
