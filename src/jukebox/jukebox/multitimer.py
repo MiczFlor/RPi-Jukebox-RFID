@@ -1,74 +1,35 @@
-"""MultiTimer Module
+"""Threaded one-shot and fixed-delay periodic timers."""
 
-This module provides timer functionality with support for single, multiple, and endless iterations.
-It includes three main timer classes:
-- MultiTimer: The base timer implementation using threading
-- GenericTimerClass: A single-event timer with plugin/RPC support
-- GenericEndlessTimerClass: An endless repeating timer
-- GenericMultiTimerClass: A multi-iteration timer with callback builder support
-
-Example usage:
-    # Single event timer
-    timer = GenericTimerClass("my_timer", 5.0, my_function)
-    timer.start()
-
-    # Endless timer
-    endless_timer = GenericEndlessTimerClass("endless", 1.0, update_function)
-    endless_timer.start()
-
-    # Multi-iteration timer
-    multi_timer = GenericMultiTimerClass("counter", 5, 1.0, CounterCallback)
-    multi_timer.start()
-"""
-
-import threading
-from typing import Callable, Optional, Any, Dict
 import logging
-import jukebox.cfghandler
+import threading
+from time import monotonic
+from typing import Any, Callable, Dict, Optional
+
 import jukebox.plugs as plugin
 import jukebox.publishing as publishing
-from time import time
 
 
 logger = logging.getLogger('jb.multitimers')
-cfg = jukebox.cfghandler.get_handler('jukebox')
 
 
 class MultiTimer(threading.Thread):
-    """A threaded timer that calls a function after specified intervals.
+    """Execute a callback after each fixed-delay interval.
 
-    This timer supports both limited iterations and endless execution modes.
-    In limited iteration mode, it counts down from iterations-1 to 0.
-    In endless mode (iterations < 0), it runs indefinitely until cancelled.
-
-    The timer can be cancelled at any time using the cancel() method.
-
-    Attributes:
-        interval (float): Time in seconds between function calls
-        iterations (int): Number of times to call the function. Use negative for endless mode
-        function (Callable): Function to call on each iteration
-        args (list): Positional arguments to pass to the function
-        kwargs (dict): Keyword arguments to pass to the function
-        publish_callback (Optional[Callable]): Function to call on timer start/stop for state publishing
-
-    Example:
-        def my_func(iteration, x, y=10):
-            print(f"Iteration {iteration}: {x} + {y}")
-
-        timer = MultiTimer(2.0, 5, my_func, args=[5], kwargs={'y': 20})
-        timer.start()
+    Limited timers count iterations down from ``iterations - 1`` to zero.
+    Negative iteration counts repeat until cancellation.
     """
 
-    def __init__(self, interval: float, iterations: int, function: Callable, args=None, kwargs=None):
-        """Initialize the timer.
-
-        Args:
-            interval: Seconds between function calls
-            iterations: Number of iterations (-1 for endless)
-            function: Function to call each iteration
-            args: Positional arguments for function
-            kwargs: Keyword arguments for function
-        """
+    def __init__(
+            self,
+            interval: float,
+            iterations: int,
+            function: Callable,
+            args=None,
+            kwargs=None,
+            *,
+            owner=None,
+            generation: Optional[int] = None,
+            first_deadline: Optional[float] = None):
         super().__init__()
         self.interval = interval
         self.iterations = iterations
@@ -76,378 +37,403 @@ class MultiTimer(threading.Thread):
         self.args = args if args is not None else []
         self.kwargs = kwargs if kwargs is not None else {}
         self.event = threading.Event()
+        self.cancel_event = threading.Event()
         self.publish_callback = None
         self._cmd_cancel = False
+        self._owner = owner
+        self._generation = generation
+        self._first_deadline = first_deadline
 
     def cancel(self):
-        """Stop the timer if it hasn't finished all iterations yet."""
-        logger.debug(f"Cancel timer '{self.name}.")
+        """Stop the timer and wake its worker."""
+        logger.debug("Cancel timer '%s'", self.name)
         self._cmd_cancel = True
+        self.cancel_event.set()
         self.event.set()
 
     def trigger(self):
-        """Trigger the next function call immediately."""
+        """Trigger the next callback immediately."""
         self.event.set()
 
-    def run_endless(self):
-        """Run the timer in endless mode.
+    def _wait(self, deadline: float) -> bool:
+        self.event.wait(max(0, deadline - monotonic()))
+        self.event.clear()
+        return not self.cancel_event.is_set()
 
-        The function is called every interval seconds with iteration=-1
-        until cancelled.
-        """
-        while True:
-            self.event.wait(self.interval)
-            if self.event.is_set():
-                if self._cmd_cancel:
-                    break
-                else:
-                    self.event.clear()
-            self.function(iteration=-1, *self.args, **self.kwargs)
+    def _invoke(self, iteration: int) -> bool:
+        if self._owner is not None:
+            return self._owner._invoke(self, self._generation, iteration)
+        self.function(*self.args, iteration=iteration, **self.kwargs)
+        return True
 
-    def run_limited(self):
-        """Run the timer for a limited number of iterations.
+    def _iteration_completed(self) -> bool:
+        if self._owner is None:
+            return not self.cancel_event.is_set()
+        return self._owner._iteration_completed(self, self._generation)
 
-        The function is called every interval seconds with iteration
-        counting down from iterations-1 to 0.
-        """
+    def _run_endless(self, deadline: float) -> None:
+        logger.debug("Start timer '%s' in endless mode", self.name)
+        while self._wait(deadline):
+            if not self._invoke(-1) or not self._iteration_completed():
+                break
+            deadline = monotonic() + self.interval
+
+    def _run_limited(self, deadline: float) -> bool:
+        logger.debug(
+            "Start timer '%s' with %s iterations",
+            self.name,
+            self.iterations,
+        )
+        if self.iterations == 0:
+            return True
         for iteration in range(self.iterations - 1, -1, -1):
-            self.event.wait(self.interval)
-            if self.event.is_set():
-                if self._cmd_cancel:
-                    break
-                else:
-                    self.event.clear()
-            self.function(*self.args, iteration=iteration, **self.kwargs)
+            if not self._wait(deadline):
+                break
+            if not self._invoke(iteration) or not self._iteration_completed():
+                break
+            if iteration == 0:
+                return True
+            deadline = monotonic() + self.interval
+        return False
 
     def run(self):
-        """Start the timer execution.
-
-        This is called automatically when start() is called.
-        The timer runs in either endless or limited mode based on
-        the iterations parameter.
-        """
-        if self.publish_callback is not None:
+        """Run until all iterations complete, cancellation, or callback failure."""
+        standalone = self._owner is None
+        if standalone and self.publish_callback is not None:
             self.publish_callback()
-        if self.iterations < 0:
-            logger.debug(f"Start timer '{self.name} in endless mode")
-            self.run_endless()
+
+        completed = False
+        deadline = self._first_deadline
+        if deadline is None:
+            deadline = monotonic() + self.interval
+
+        try:
+            if self.iterations < 0:
+                self._run_endless(deadline)
+            else:
+                completed = self._run_limited(deadline)
+        except Exception:
+            logger.exception("Timer '%s' callback failed", self.name)
+            if self._owner is not None:
+                self._owner._worker_terminal(self, self._generation)
         else:
-            logger.debug(f"Start timer '{self.name} with {self.iterations} iterations")
-            self.run_limited()
-        self._cmd_cancel = True
-        self.event.set()
-        if self.publish_callback is not None:
-            self.publish_callback(enabled=False)
+            if self._owner is not None and completed:
+                self._owner._worker_terminal(self, self._generation)
+        finally:
+            self._cmd_cancel = True
+            self.cancel_event.set()
+            self.event.set()
+            if standalone and self.publish_callback is not None:
+                self.publish_callback(enabled=False)
+            if self._owner is not None:
+                self._owner._worker_finished(self)
 
 
 class GenericTimerClass:
-    """A single-event timer with plugin/RPC support.
+    """A race-safe, single-execution timer with plugin/RPC support."""
 
-    This class provides a high-level interface for creating and managing
-    single-execution timers. It includes support for:
-    - Starting/stopping/toggling the timer
-    - Publishing timer state
-    - Getting remaining time
-    - Adjusting timeout duration
-
-    The timer automatically handles the 'iteration' parameter internally,
-    so callback functions don't need to handle it.
-
-    Attributes:
-        name (str): Identifier for the timer
-        _wait_seconds (float): Interval between function calls
-        _function (Callable): Wrapped function to call
-        _iterations (int): Number of iterations (1 for single-event)
-
-    Example:
-        def update_display(message):
-            print(message)
-
-        timer = GenericTimerClass("display_timer", 5.0, update_display,
-                                args=["Hello World"])
-        timer.start()
-    """
-
-    def __init__(self, name: str, wait_seconds: float, function: Callable,
-                 args: Optional[list] = None, kwargs: Optional[dict] = None):
-        """Initialize the timer.
-
-        Args:
-            name: Timer identifier
-            wait_seconds: Time to wait before function call
-            function: Function to call
-            args: Positional arguments for function
-            kwargs: Keyword arguments for function
-        """
+    def __init__(
+            self,
+            name: str,
+            wait_seconds: float,
+            function: Callable,
+            args: Optional[list] = None,
+            kwargs: Optional[dict] = None):
         self.timer_thread = None
         self.args = args if args is not None else []
         self.kwargs = kwargs if kwargs is not None else {}
         self._wait_seconds = wait_seconds
-        self._start_time = 0
-        # Hide away the argument 'iteration' that is passed from MultiTimer to function
-        self._function = lambda iteration, *largs, **lkwargs: function(*largs, **lkwargs)
+        self._start_time = 0.0
+        self._deadline = None
+        self._function = lambda iteration, *largs, **lkwargs: function(
+            *largs,
+            **lkwargs,
+        )
         self._iterations = 1
         self._name = name
+        self._lock = threading.RLock()
+        self._generation = 0
+        self._enabled = False
+        self._closed = False
+        self._workers = set()
         self._publish_core()
 
-    @plugin.tag
-    def start(self, wait_seconds: Optional[float] = None):
-        """Start the timer with optional new wait time.
+    def _active_worker_locked(self, worker, generation) -> bool:
+        return (
+            self._enabled
+            and not self._closed
+            and self.timer_thread is worker
+            and self._generation == generation
+            and not worker.cancel_event.is_set()
+        )
 
-        Args:
-            wait_seconds: Optional new interval to use
-        """
-        if self.is_alive():
-            logger.info(f"Timer '{self._name}' started! Ignoring start command.")
-            return
-        if wait_seconds is not None:
-            self._wait_seconds = wait_seconds
-        self.timer_thread = MultiTimer(self._wait_seconds, self._iterations,
-                                     self._function, self.args, self.kwargs)
-        self.timer_thread.daemon = True
-        self.timer_thread.publish_callback = self._publish_core
-        if self._name is not None:
-            self.timer_thread.name = self._name
-        self._start_time = int(time())
-        self.timer_thread.start()
+    def _invoke(self, worker, generation: int, iteration: int) -> bool:
+        # Holding the re-entrant lock makes callback admission atomic with
+        # replacement. A callback may still cancel or restart its own timer.
+        with self._lock:
+            if not self._active_worker_locked(worker, generation):
+                return False
+            self._function(
+                iteration,
+                *self.args,
+                **self.kwargs,
+            )
+            return True
+
+    def _iteration_completed(self, worker, generation: int) -> bool:
+        with self._lock:
+            if not self._active_worker_locked(worker, generation):
+                return False
+            self._deadline = monotonic() + self._wait_seconds
+            return True
+
+    def _worker_terminal(self, worker, generation: int) -> None:
+        with self._lock:
+            if not self._active_worker_locked(worker, generation):
+                return
+            self._enabled = False
+            self._deadline = None
+            self._publish_core(enabled=False)
+
+    def _worker_finished(self, worker) -> None:
+        with self._lock:
+            self._workers.discard(worker)
+
+    @plugin.tag
+    def start(
+            self,
+            wait_seconds: Optional[float] = None,
+            restart: bool = True):
+        """Start the timer, atomically replacing an active generation by default."""
+        with self._lock:
+            if self._closed:
+                logger.info("Timer '%s' is closed; ignoring start command", self._name)
+                return
+            if self._enabled and not restart:
+                logger.info("Timer '%s' is active; ignoring start command", self._name)
+                return
+
+            if wait_seconds is not None:
+                self._wait_seconds = wait_seconds
+
+            previous = self.timer_thread if self._enabled else None
+            self._generation += 1
+            generation = self._generation
+            if previous is not None:
+                previous.cancel()
+
+            self._start_time = monotonic()
+            self._deadline = self._start_time + self._wait_seconds
+            worker = MultiTimer(
+                self._wait_seconds,
+                self._iterations,
+                self._function,
+                self.args,
+                self.kwargs,
+                owner=self,
+                generation=generation,
+                first_deadline=self._deadline,
+            )
+            worker.daemon = True
+            if self._name is not None:
+                worker.name = self._name
+            self.timer_thread = worker
+            self._workers.add(worker)
+            self._enabled = True
+            self._publish_core(enabled=True)
+            worker.start()
 
     @plugin.tag
     def cancel(self):
-        """Cancel the timer if it's running."""
-        if self.is_alive():
-            self.timer_thread.cancel()
+        """Cancel the active generation."""
+        with self._lock:
+            if not self._enabled:
+                return
+            worker = self.timer_thread
+            self._generation += 1
+            self._enabled = False
+            self._deadline = None
+            if worker is not None:
+                worker.cancel()
+            self._publish_core(enabled=False)
 
     @plugin.tag
     def toggle(self):
-        """Toggle between started and stopped states."""
+        """Toggle between active and disabled states."""
         if self.is_alive():
-            self.timer_thread.cancel()
+            self.cancel()
         else:
             self.start()
 
     @plugin.tag
     def trigger(self):
-        """Trigger the function call immediately."""
-        if self.is_alive():
-            self.timer_thread.trigger()
+        """Trigger the active generation immediately."""
+        with self._lock:
+            if self._enabled and self.timer_thread is not None:
+                self.timer_thread.trigger()
 
     @plugin.tag
     def is_alive(self) -> bool:
-        """Check if timer is currently running.
-
-        Returns:
-            bool: True if timer is active, False otherwise
-        """
-        if self.timer_thread is None:
-            return False
-        return self.timer_thread.is_alive()
+        """Return whether a timer generation is logically active."""
+        with self._lock:
+            return self._enabled
 
     @plugin.tag
     def get_timeout(self) -> float:
-        """Get the configured timeout interval.
-
-        Returns:
-            float: The wait time in seconds
-        """
-        return self._wait_seconds
+        """Return the configured timeout in seconds."""
+        with self._lock:
+            return self._wait_seconds
 
     @plugin.tag
     def set_timeout(self, wait_seconds: float) -> float:
-        """Set a new timeout interval.
-
-        If the timer is running, it will be restarted with the new interval.
-
-        Args:
-            wait_seconds: New interval in seconds
-
-        Returns:
-            float: The new wait time
-        """
-        self._wait_seconds = wait_seconds
-        if self.is_alive():
-            self.cancel()
-            self.start()
-        else:
-            self.publish()
-        return self._wait_seconds
+        """Set the timeout, atomically replacing an active generation."""
+        with self._lock:
+            if self._enabled:
+                self.start(wait_seconds, restart=True)
+            else:
+                self._wait_seconds = wait_seconds
+                self._publish_core()
+        return wait_seconds
 
     @plugin.tag
     def publish(self):
-        """Publish current timer state."""
+        """Publish the current timer state."""
         self._publish_core()
+
+    def _remaining_seconds_locked(self) -> float:
+        if not self._enabled or self._deadline is None:
+            return 0
+        return max(0, self._deadline - monotonic())
 
     @plugin.tag
     def get_state(self) -> Dict[str, Any]:
-        """Get the current timer state.
-
-        Returns:
-            dict: Timer state including:
-                - enabled: Whether timer is running
-                - remaining_seconds: Time until next function call
-                - wait_seconds: Configured interval
-                - type: Timer class name
-        """
-        remaining_seconds = max(
-            0,
-            self.get_timeout() - (int(time()) - self._start_time)
-        )
-
-        return {
-            'enabled': self.is_alive(),
-            'remaining_seconds': remaining_seconds,
-            'wait_seconds': self.get_timeout(),
-            'type': 'GenericTimerClass'
-        }
+        """Return the RPC-compatible timer state."""
+        with self._lock:
+            return {
+                'enabled': self._enabled,
+                'remaining_seconds': self._remaining_seconds_locked(),
+                'wait_seconds': self._wait_seconds,
+                'type': 'GenericTimerClass',
+            }
 
     def _publish_core(self, enabled: Optional[bool] = None):
-        """Internal method to publish timer state.
+        if self._name is None:
+            return
+        state = self.get_state()
+        if enabled is not None:
+            state['enabled'] = enabled
+        logger.debug("%s: State = %s", self._name, state)
+        publishing.get_publisher().send(self._name, state)
 
-        Args:
-            enabled: Override for enabled state
-        """
-        if self._name is not None:
-            state = self.get_state()
-            if enabled is not None:
-                state['enabled'] = enabled
-            logger.debug(f"{self._name}: State = {state}")
-            publishing.get_publisher().send(self._name, state)
+    def close(self):
+        """Permanently close this timer and join all active workers."""
+        current = threading.current_thread()
+        with self._lock:
+            transitioned = self._enabled
+            self._closed = True
+            self._enabled = False
+            self._deadline = None
+            self._generation += 1
+            workers = list(self._workers)
+            for worker in workers:
+                worker.cancel()
+            if transitioned:
+                self._publish_core(enabled=False)
+
+        for worker in workers:
+            if worker is not current:
+                worker.join()
 
 
 class GenericEndlessTimerClass(GenericTimerClass):
-    """An endless repeating timer.
+    """A fixed-delay timer that repeats until cancellation."""
 
-    This timer runs indefinitely until explicitly cancelled.
-    It inherits all functionality from GenericTimerClass but
-    sets iterations to -1 for endless mode.
-
-    Example:
-        def heartbeat():
-            print("Ping")
-
-        timer = GenericEndlessTimerClass("heartbeat", 1.0, heartbeat)
-        timer.start()
-    """
-
-    def __init__(self, name: str, wait_seconds_per_iteration: float,
-                 function: Callable, args=None, kwargs=None):
-        """Initialize endless timer.
-
-        Args:
-            name: Timer identifier
-            wait_seconds_per_iteration: Interval between calls
-            function: Function to call repeatedly
-            args: Positional arguments for function
-            kwargs: Keyword arguments for function
-        """
-        super().__init__(name, wait_seconds_per_iteration, function, args, kwargs)
-        # Negative iteration count causes endless looping
+    def __init__(
+            self,
+            name: str,
+            wait_seconds_per_iteration: float,
+            function: Callable,
+            args=None,
+            kwargs=None):
+        super().__init__(
+            name,
+            wait_seconds_per_iteration,
+            function,
+            args,
+            kwargs,
+        )
         self._iterations = -1
 
     @plugin.tag
     def get_state(self) -> Dict[str, Any]:
-        """Get current timer state.
-
-        Returns:
-            dict: Timer state including:
-                - enabled: Whether timer is running
-                - wait_seconds_per_iteration: Interval between calls
-                - type: Timer class name
-        """
-        return {
-            'enabled': self.is_alive(),
-            'wait_seconds_per_iteration': self.get_timeout(),
-            'type': 'GenericEndlessTimerClass'
-        }
+        """Return the RPC-compatible periodic timer state."""
+        with self._lock:
+            return {
+                'enabled': self._enabled,
+                'wait_seconds_per_iteration': self._wait_seconds,
+                'type': 'GenericEndlessTimerClass',
+            }
 
 
 class GenericMultiTimerClass(GenericTimerClass):
-    """A multi-iteration timer with callback builder support.
+    """A limited fixed-delay timer with callback-builder support."""
 
-    This timer executes a specified number of iterations with a callback
-    that's created for each full cycle. It's useful when you need stateful
-    callbacks or complex iteration handling.
-
-    The callee parameter should be a class or function that:
-    1. Takes iterations as a parameter during construction
-    2. Returns a callable that accepts an iteration parameter
-
-    Example:
-        class CountdownCallback:
-            def __init__(self, iterations):
-                self.total = iterations
-
-            def __call__(self, iteration):
-                print(f"{iteration} of {self.total} remaining")
-
-        timer = GenericMultiTimerClass("countdown", 5, 1.0, CountdownCallback)
-        timer.start()
-    """
-
-    def __init__(self, name: str, iterations: int, wait_seconds_per_iteration: float,
-                 callee: Callable, args=None, kwargs=None):
-        """Initialize multi-iteration timer.
-
-        Args:
-            name: Timer identifier
-            iterations: Total number of iterations
-            wait_seconds_per_iteration: Interval between calls
-            callee: Callback builder class/function
-            args: Positional arguments for callee
-            kwargs: Keyword arguments for callee
-        """
-        # Initialize with a placeholder function - we'll set the real one in start()
-        super().__init__(name, wait_seconds_per_iteration, lambda: None, None, None)
+    def __init__(
+            self,
+            name: str,
+            iterations: int,
+            wait_seconds_per_iteration: float,
+            callee: Callable,
+            args=None,
+            kwargs=None):
+        super().__init__(
+            name,
+            wait_seconds_per_iteration,
+            lambda: None,
+            None,
+            None,
+        )
         self.class_args = args if args is not None else []
         self.class_kwargs = kwargs if kwargs is not None else {}
         self._iterations = iterations
         self._callee = callee
 
     @plugin.tag
-    def start(self, iterations: Optional[int] = None,
-              wait_seconds_per_iteration: Optional[float] = None):
-        """Start the timer with optional new parameters.
-
-        Args:
-            iterations: Optional new iteration count
-            wait_seconds_per_iteration: Optional new interval
-        """
-        if iterations is not None:
-            self._iterations = iterations
-
-        def create_callback():
-            instance = self._callee(*self.class_args, iterations=self._iterations,
-                                  **self.class_kwargs)
-            return lambda iteration, *args, **kwargs: instance(*args,
-                                                             iteration=iteration,
-                                                             **kwargs)
-
-        self._function = create_callback()
-        super().start(wait_seconds_per_iteration)
+    def start(
+            self,
+            iterations: Optional[int] = None,
+            wait_seconds_per_iteration: Optional[float] = None,
+            restart: bool = True):
+        """Build one callback instance and start a limited generation."""
+        with self._lock:
+            if self._enabled and not restart:
+                return
+            if iterations is not None:
+                self._iterations = iterations
+            instance = self._callee(
+                *self.class_args,
+                iterations=self._iterations,
+                **self.class_kwargs,
+            )
+            self._function = lambda iteration, *args, **kwargs: instance(
+                *args,
+                iteration=iteration,
+                **kwargs,
+            )
+        super().start(wait_seconds_per_iteration, restart=restart)
 
     @plugin.tag
     def get_state(self) -> Dict[str, Any]:
-        """Get current timer state.
-
-        Returns:
-            dict: Timer state including:
-                - enabled: Whether timer is running
-                - wait_seconds_per_iteration: Interval between calls
-                - remaining_seconds_current_iteration: Time until next call
-                - remaining_seconds: Total time remaining
-                - iterations: Total iteration count
-                - type: Timer class name
-        """
-        remaining_seconds_current_iteration = max(
-            0,
-            self.get_timeout() - (int(time()) - self._start_time)
-        )
-        remaining_seconds = (self.get_timeout() * self._iterations + remaining_seconds_current_iteration)
-
-        return {
-            'enabled': self.is_alive(),
-            'wait_seconds_per_iteration': self.get_timeout(),
-            'remaining_seconds_current_iteration': remaining_seconds_current_iteration,
-            'remaining_seconds': remaining_seconds,
-            'iterations': self._iterations,
-            'type': 'GenericMultiTimerClass'
-        }
+        """Return the RPC-compatible limited timer state."""
+        with self._lock:
+            remaining_current = self._remaining_seconds_locked()
+            return {
+                'enabled': self._enabled,
+                'wait_seconds_per_iteration': self._wait_seconds,
+                'remaining_seconds_current_iteration': remaining_current,
+                'remaining_seconds': (
+                    self._wait_seconds * self._iterations + remaining_current
+                ),
+                'iterations': self._iterations,
+                'type': 'GenericMultiTimerClass',
+            }

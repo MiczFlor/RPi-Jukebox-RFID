@@ -232,7 +232,7 @@ class PlayerMPD:
     def exit(self):
         logger.debug("Exit routine of playermpd started")
         self.status_is_closing = True
-        self.status_thread.cancel()
+        self.status_thread.close()
         self.mpd_client.disconnect()
         self.nvm.save_all()
         return self.status_thread.timer_thread

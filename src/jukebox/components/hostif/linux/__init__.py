@@ -399,5 +399,5 @@ def finalize():
 @plugin.atexit
 def atexit(**ignored_kwargs):
     global timer_temperature
-    timer_temperature.cancel()
+    timer_temperature.close()
     return timer_temperature.timer_thread

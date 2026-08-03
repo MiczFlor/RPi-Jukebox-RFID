@@ -63,4 +63,4 @@ def finalize():
 @plugs.atexit
 def atexit(**ignored_kwargs):
     global batt_mon
-    batt_mon.status_thread.cancel()
+    batt_mon.status_thread.close()

@@ -94,6 +94,11 @@ class IdleShutdownTimer:
         plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
         cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=0)
 
+    def close(self):
+        """Stop timer workers without changing persisted configuration."""
+        self.private_timer_idle_check.close()
+        self.private_timer_idle_shutdown.close()
+
     @plugin.tag
     def get_state(self):
         """Returns the current state of Idle Shutdown"""

@@ -159,6 +159,16 @@ class VolumeFadoutAndShutdown:
 
         self._reset_state()
 
+    def close(self):
+        """Stop all timer workers without invoking public cancellation."""
+        for timer in (
+                self.shutdown_timer,
+                self.fadeout_start_timer,
+                self.fadeout_timer):
+            if timer is not None:
+                timer.close()
+        self._reset_state()
+
     @plugin.tag
     def is_alive(self):
         """Check if any timer is currently active"""
