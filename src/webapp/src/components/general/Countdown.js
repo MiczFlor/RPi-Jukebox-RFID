@@ -1,27 +1,28 @@
-import { useCallback, useEffect, useRef,  useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { toHHMMSS } from '../../utils/utils';
 
-const Countdown = ({ onEnd, seconds, stringEnded = undefined }) => {
-  // This is required to avoid async updates on unmounted compomemts
-  // https://github.com/facebook/react/issues/14227
-  const isMounted = useRef(null);
-  const [time, setTime] = useState(seconds);
+const normalizeSeconds = (seconds) => (
+  Math.max(0, Number(seconds) || 0)
+);
 
-  const onEndCallback = useCallback(() => onEnd(), [onEnd]);
+const Countdown = ({ resetKey, seconds, stringEnded = undefined }) => {
+  const [time, setTime] = useState(() => normalizeSeconds(seconds));
 
   useEffect(() => {
-    isMounted.current = true;
+    const initialSeconds = normalizeSeconds(seconds);
+    const deadline = Date.now() + initialSeconds * 1000;
+    setTime(initialSeconds);
 
-    if (time === 0) return onEndCallback();
-    setTimeout(() => {
-      if (isMounted.current) setTime(time - 1)
-    }, 1000);
-
-    return () => {
-      isMounted.current = false;
+    if (initialSeconds === 0) {
+      return undefined;
     }
-  }, [onEndCallback, time]);
+
+    const interval = setInterval(() => {
+      setTime(Math.max(0, (deadline - Date.now()) / 1000));
+    }, 250);
+    return () => clearInterval(interval);
+  }, [resetKey, seconds]);
 
   if (time) return toHHMMSS(Math.round(time));
   if (stringEnded) return stringEnded;

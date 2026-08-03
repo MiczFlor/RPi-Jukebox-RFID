@@ -180,7 +180,8 @@ const commands = {
     _package: 'timers',
     plugin: 'timer_fade_volume',
     method: 'start',
-    argKeys: ['wait_seconds'],
+    argKeys: ['wait_seconds', 'restart'],
+    argDefaults: { restart: true },
   },
   'timer_shutdown.cancel': {
     _package: 'timers',
@@ -196,7 +197,8 @@ const commands = {
     _package: 'timers',
     plugin: 'timer_shutdown',
     method: 'start',
-    argKeys: ['wait_seconds'],
+    argKeys: ['wait_seconds', 'restart'],
+    argDefaults: { restart: true },
   },
   'timer_stop_player.cancel': {
     _package: 'timers',
@@ -212,7 +214,8 @@ const commands = {
     _package: 'timers',
     plugin: 'timer_stop_player',
     method: 'start',
-    argKeys: ['wait_seconds'],
+    argKeys: ['wait_seconds', 'restart'],
+    argDefaults: { restart: true },
   },
 
 
@@ -230,7 +233,8 @@ const commands = {
     _package: 'timers',
     plugin: 'timer_idle_shutdown',
     method: 'start',
-    argKeys: ['wait_seconds'],
+    argKeys: ['wait_seconds', 'restart'],
+    argDefaults: { restart: true },
   },
 
 

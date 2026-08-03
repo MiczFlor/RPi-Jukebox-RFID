@@ -85,7 +85,8 @@
           }
         },
         "timers": {
-          "description": "Choose the amount of minutes you want the action to be performed."
+          "description": "Choose the amount of minutes you want the action to be performed.",
+          "restart": "Restart existing timer"
         },
         "synchronisation": {
           "rfidcards": {

@@ -61,9 +61,14 @@ const buildActionData = (action, command = {}, args = {}) => {
 const getArgsValues = (actionData) => {
   const { command } = getActionAndCommand(actionData);
   const argKeys = getCommandArgKeys(command);
+  const { [command]: { argDefaults = {} } = {} } = commands;
 
   return argKeys.map(
-    key => actionData.command.args[key]
+    key => (
+      actionData.command.args[key] === undefined
+        ? argDefaults[key]
+        : actionData.command.args[key]
+    )
   );
 };
 

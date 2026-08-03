@@ -69,10 +69,17 @@ const socketEvents = {
 
 async function mockBackend(
   page,
-  { failRpc = false, rpcGate, showCovers = false } = {},
+  {
+    failRpc = false,
+    rpcGate,
+    showCovers = false,
+    timerEvents = {},
+  } = {},
 ) {
+  const eventSockets = new Set();
   const libraryCalls = [];
   const rpcCalls = [];
+  const subscribedTopics = new Set();
 
   await page.addInitScript(() => {
     window.localStorage.setItem('i18nextLng', 'en');
@@ -129,6 +136,7 @@ async function mockBackend(
   }));
 
   await page.routeWebSocket('**/api/v1/events', socket => {
+    eventSockets.add(socket);
     socket.onMessage(message => {
       const payload = JSON.parse(message);
       if (payload.type !== 'subscribe') {
@@ -136,18 +144,35 @@ async function mockBackend(
       }
 
       payload.topics.forEach(topic => {
-        if (topic in socketEvents) {
+        subscribedTopics.add(topic);
+        const events = { ...socketEvents, ...timerEvents };
+        if (topic in events) {
           socket.send(JSON.stringify({
             type: 'event',
             topic,
-            data: socketEvents[topic],
+            data: events[topic],
           }));
         }
       });
     });
   });
 
-  return { libraryCalls, rpcCalls };
+  const publishEvent = (topic, data) => {
+    eventSockets.forEach(socket => {
+      socket.send(JSON.stringify({
+        type: 'event',
+        topic,
+        data,
+      }));
+    });
+  };
+
+  return {
+    libraryCalls,
+    publishEvent,
+    rpcCalls,
+    subscribedTopics,
+  };
 }
 
 async function expectStableLayout(page) {
@@ -362,4 +387,64 @@ test('RPC failures leave navigation and an error state available', async ({ page
   await expect(page.getByText('An error occurred while loading cards list.')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Settings' })).toBeVisible();
   await expectStableLayout(page);
+});
+
+test('timer settings follow authoritative backend state', async ({ page }) => {
+  const timerTopic = 'timers.timer_shutdown';
+  const {
+    publishEvent,
+    rpcCalls,
+    subscribedTopics,
+  } = await mockBackend(page);
+  await page.goto('/#/settings');
+
+  const shutdownTimer = page.getByRole('listitem').filter({
+    has: page.getByText('Shut Down', { exact: true }),
+  });
+  await expect.poll(() => Array.from(subscribedTopics)).toContain(timerTopic);
+  publishEvent(timerTopic, {
+    enabled: true,
+    remaining_seconds: 3600,
+  });
+  await expect(page.getByText('1:00:00')).toBeVisible();
+  await shutdownTimer.getByRole('button', { name: 'Cancel' }).click();
+  await expect(
+    shutdownTimer.getByRole('button', { name: 'Set timer' }),
+  ).toBeVisible();
+  await expect.poll(() => (
+    rpcCalls.filter(call => (
+      call.plugin === 'timer_shutdown' && call.method === 'cancel'
+    )).length
+  )).toBe(1);
+
+  publishEvent(timerTopic, {
+    enabled: true,
+    remaining_seconds: 7200,
+  });
+  await expect(page.getByText('2:00:00')).toBeVisible();
+
+  publishEvent(timerTopic, {
+    enabled: false,
+    remaining_seconds: 0,
+  });
+  const setTimer = shutdownTimer.getByRole('button', { name: 'Set timer' });
+  await expect(setTimer).toBeVisible();
+  await setTimer.click();
+  const slider = page.getByRole('slider');
+  await slider.press('ArrowRight');
+  await slider.press('ArrowRight');
+  await page.getByRole('button', { name: 'Start timer' }).click();
+
+  await expect.poll(() => (
+    rpcCalls.filter(call => (
+      call.plugin === 'timer_shutdown' && call.method === 'start'
+    ))
+  )).toHaveLength(1);
+  const [startCall] = rpcCalls.filter(call => (
+    call.plugin === 'timer_shutdown' && call.method === 'start'
+  ));
+  expect(startCall.kwargs).toEqual({ wait_seconds: 300 });
+  expect(rpcCalls.filter(call => (
+    call.plugin === 'timer_shutdown' && call.method === 'cancel'
+  ))).toHaveLength(1);
 });

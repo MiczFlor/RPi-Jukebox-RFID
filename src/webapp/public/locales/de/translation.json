@@ -85,7 +85,8 @@
           }
         },
         "timers": {
-          "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll."
+          "description": "Wähle die Anzahl der Minuten nachdem die Aktion ausgeführt werden soll.",
+          "restart": "Laufenden Timer neu starten"
         },
         "synchronisation": {
           "rfidcards": {

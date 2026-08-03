@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
 import {
+  Checkbox,
+  FormControlLabel,
   Grid,
   Typography,
 } from '@mui/material';
@@ -18,10 +20,17 @@ const SliderSetTimer = ({
   const { t } = useTranslation();
 
   const { action, command } = getActionAndCommand(actionData);
-  const [wait_seconds] = getArgsValues(actionData);
+  const [wait_seconds, restart = true] = getArgsValues(actionData);
 
   const onChangeCommitted = (event, wait_seconds) => {
-    handleActionDataChange(action, command, { wait_seconds })
+    handleActionDataChange(action, command, { wait_seconds, restart })
+  };
+
+  const onRestartChange = (event) => {
+    handleActionDataChange(action, command, {
+      wait_seconds,
+      restart: event.target.checked,
+    });
   };
 
   return (
@@ -39,6 +48,15 @@ const SliderSetTimer = ({
         <SliderTimer
           value={wait_seconds || 0}
           onChangeCommitted={onChangeCommitted}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={restart}
+              onChange={onRestartChange}
+            />
+          }
+          label={t('cards.controls.actions.timers.restart')}
         />
       </Grid>
     </Grid>
