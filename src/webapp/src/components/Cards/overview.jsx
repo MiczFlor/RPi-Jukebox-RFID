@@ -40,10 +40,11 @@ const CardsOverview = () => {
   }, []);
 
   return (
-    <Grid container id="cards">
+    <Grid container id="cards" size={12}>
       <Header title={t('cards.overview.cards')} />
       <Grid
         container
+        size={12}
         spacing={1}
         sx={{
           display: 'flex',

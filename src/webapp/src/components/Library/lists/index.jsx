@@ -47,13 +47,14 @@ const LibraryLists = () => {
   return (
     <Grid container id="library">
       {isSelecting && <SelectorHeader />}
-      <Grid container sx={{ padding: '10px' }}>
+      <Grid container size={12} sx={{ padding: '10px' }}>
         <LibraryHeader
           handleMusicFilter={handleMusicFilter}
           musicFilter={musicFilter}
         />
         <Grid
           container
+          size={12}
           spacing={1}
           sx={{
             display: 'flex',

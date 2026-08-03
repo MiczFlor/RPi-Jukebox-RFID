@@ -31,7 +31,7 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
   const toggleView = () => {
     const path = view.startsWith('folders') ? 'albums' : 'folders';
     localStorage.setItem('libraryLastListView', path);
-    navigate(`${path}${urlSearch}`);
+    navigate(`/library/${path}${urlSearch}`);
   };
 
   const iconLabel = showSearchInput
@@ -39,7 +39,7 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
     : t('library.header.search-show');
 
   return (
-    <Grid container sx={{ marginBottom: '8px' }}>
+    <Grid container size={12} sx={{ marginBottom: '8px' }}>
       <Grid
         size={12}
         sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}

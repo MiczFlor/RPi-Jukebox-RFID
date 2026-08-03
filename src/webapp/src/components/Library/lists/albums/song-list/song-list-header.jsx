@@ -15,7 +15,7 @@ const SongListHeader = () => {
   const { search: urlSearch } = useLocation();
 
   return (
-    <Grid container>
+    <Grid container size={12}>
       <Grid size={2}>
         <IconButton
           aria-label="back"

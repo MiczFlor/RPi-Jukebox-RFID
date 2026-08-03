@@ -48,7 +48,7 @@ const SongList = ({
   }, [album, artist]);
 
   return (
-    <Grid container id="song-list">
+    <Grid container id="song-list" size={12}>
       <SongListHeader />
       <SongListHeadline
         album={decodeURIComponent(album)}
@@ -63,6 +63,7 @@ const SongList = ({
       />
       <Grid
         container
+        size={12}
         spacing={1}
         sx={{
           display: 'flex',

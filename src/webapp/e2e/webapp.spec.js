@@ -190,6 +190,15 @@ async function expectStableLayout(page) {
   });
 }
 
+async function expectAbove(top, bottom) {
+  const [topBox, bottomBox] = await Promise.all([
+    top.boundingBox(),
+    bottom.boundingBox(),
+  ]);
+
+  expect(topBox.y + topBox.height).toBeLessThanOrEqual(bottomBox.y);
+}
+
 function collectConsoleErrors(page) {
   const errors = [];
   page.on('console', message => {
@@ -235,6 +244,18 @@ for (const route of routes) {
     await expect(page.locator(route.ready)).toBeVisible();
     await expect(page.getByText(route.text, { exact: false }).first()).toBeVisible();
     await expectStableLayout(page);
+    if (route.name === 'library') {
+      await expectAbove(
+        page.getByRole('switch', { name: 'Toggle Album/Folder view' }),
+        page.getByText('Discovery', { exact: true }),
+      );
+    }
+    if (route.name === 'cards') {
+      await expectAbove(
+        page.getByRole('heading', { name: 'Cards' }),
+        page.getByText('0001234567', { exact: true }),
+      );
+    }
     await expect(page).toHaveScreenshot(`${route.name}.png`);
     expect(consoleErrors).toEqual([]);
   });
@@ -264,6 +285,18 @@ test('encoded library folder routes preserve the folder path', async ({ page }) 
   await expect.poll(() => libraryCalls).toContain('Music/Rock');
   await expect(page.getByText('sample.mp3')).toBeVisible();
   await expectStableLayout(page);
+  expect(consoleErrors).toEqual([]);
+});
+
+test('library view toggle replaces the current nested route', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await mockBackend(page);
+  await page.goto('/#/library/folders/Music%2FRock?cardId=123');
+
+  await page.getByRole('switch', { name: 'Toggle Album/Folder view' }).click();
+
+  await expect(page).toHaveURL(/#\/library\/albums\?cardId=123$/);
+  await expect(page.getByText('Discovery', { exact: true })).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
 

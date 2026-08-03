@@ -14,7 +14,7 @@ const SelectorHeader = () => {
   const theme = useTheme();
 
   return (
-    <Grid container sx={{
+    <Grid container size={12} sx={{
       backgroundColor: theme.palette.primary.main,
       padding: '10px',
       position: 'sticky',

@@ -28,7 +28,7 @@ const SongListControls = ({
   );
 
   return (
-    <Grid container sx={{ padding: '0 8px' }}>
+    <Grid container size={12} sx={{ padding: '0 8px' }}>
       <Grid size={12}
         sx={{
           display: 'flex',

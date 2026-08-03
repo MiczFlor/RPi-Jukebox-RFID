@@ -35,7 +35,7 @@ const CardsForm = ({
   return (
     <>
       <Header title={title} backLink="/cards" />
-      <Grid container>
+      <Grid container size={12}>
         <Grid size={12}>
           <Card elevation={0}>
             <CardHeader
