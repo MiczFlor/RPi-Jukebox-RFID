@@ -66,7 +66,7 @@ const socketEvents = {
   'volume.level': { mute: false, volume: 42 },
 };
 
-async function mockBackend(page, { failRpc = false } = {}) {
+async function mockBackend(page, { failRpc = false, rpcGate } = {}) {
   const rpcCalls = [];
 
   await page.addInitScript(() => {
@@ -77,6 +77,10 @@ async function mockBackend(page, { failRpc = false } = {}) {
     const request = route.request();
     const payload = request.postDataJSON();
     rpcCalls.push(payload);
+
+    if (rpcGate) {
+      await rpcGate;
+    }
 
     if (failRpc) {
       await route.fulfill({
@@ -252,6 +256,22 @@ test('encoded library folder routes preserve the folder path', async ({ page }) 
     kwargs: { folder: 'Music/Rock' },
   });
   await expect(page.getByText('sample.mp3')).toBeVisible();
+  expect(consoleErrors).toEqual([]);
+});
+
+test('cards route shows its loading state while RPC is pending', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  let releaseRpc;
+  const rpcGate = new Promise(resolve => {
+    releaseRpc = resolve;
+  });
+
+  await mockBackend(page, { rpcGate });
+  await page.goto('/#/cards');
+
+  await expect(page.getByRole('progressbar')).toBeVisible();
+  releaseRpc();
+  await expect(page.getByText('0001234567')).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
 
