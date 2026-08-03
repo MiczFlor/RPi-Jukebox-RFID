@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next';
 
 import {
+  Checkbox,
   IconButton,
   ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
+  Tooltip,
 } from '@mui/material';
 
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -15,7 +18,10 @@ import FolderTypeAvatar from './folder-type-avatar';
 
 const FolderListItem = ({
   folder,
+  isManagementSelecting,
   isSelecting,
+  isSelected,
+  onToggleSelected,
   registerMusicToCard,
 }) => {
   const { t } = useTranslation();
@@ -41,26 +47,60 @@ const FolderListItem = ({
     }
   }
 
+  const activateItem = () => {
+    if (isManagementSelecting) return onToggleSelected(folder);
+    if (isSelecting) return registerItemToCard();
+    return playItem();
+  };
+
+  const secondaryAction = !isManagementSelecting && type === 'directory'
+    ? <Tooltip title={t('library.folders.show-folder-content')}>
+        <IconButton
+          aria-label={t('library.folders.show-folder-content')}
+          component={FolderLink}
+          data={{ dir: relpath }}
+          edge="end"
+          nativeButton={false}
+          sx={{ height: 44, width: 44 }}
+        >
+          <NavigateNextIcon />
+        </IconButton>
+      </Tooltip>
+    : undefined;
+
   return (
     <ListItem
       disablePadding
-      secondaryAction={
-        type === 'directory'
-          ? <IconButton
-              component={FolderLink}
-              data={{ dir: relpath }}
-              edge="end"
-              nativeButton={false}
-              aria-label={t('library.folders.show-folder-content')}
-            >
-              <NavigateNextIcon />
-            </IconButton>
-          : undefined
-      }
+      secondaryAction={secondaryAction}
     >
-      <ListItemButton onClick={() => (isSelecting ? registerItemToCard() : playItem())}>
+      <ListItemButton
+        onClick={activateItem}
+        selected={isManagementSelecting && isSelected}
+        sx={{ minHeight: 56 }}
+      >
+        {isManagementSelecting &&
+          <ListItemIcon sx={{ minWidth: 44 }}>
+            <Checkbox
+              checked={isSelected}
+              edge="start"
+              slotProps={{
+                input: {
+                  'aria-label': t('library.folders.manager.select-item', { name }),
+                },
+              }}
+              tabIndex={-1}
+            />
+          </ListItemIcon>
+        }
         <FolderTypeAvatar type={type} />
-        <ListItemText primary={name} />
+        <ListItemText
+          primary={name}
+          slotProps={{
+            primary: {
+              sx: { overflowWrap: 'anywhere' },
+            },
+          }}
+        />
       </ListItemButton>
     </ListItem>
   );

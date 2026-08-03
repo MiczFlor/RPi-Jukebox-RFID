@@ -216,18 +216,19 @@ _option_samba() {
   clear_c
   print_c "------------------------- SAMBA -------------------------
 
-Samba is required to conveniently copy files
-to your Phoniebox via a network share.
-If you don't need it, feel free to skip the installation.
-If you are unsure, stick to YES!
+The Web App can upload and manage files in the audio
+library. Samba additionally provides direct network
+access to the complete shared directory, including
+configuration files.
 
-Do you want to install Samba? [Y/n]"
+Do you want to install Samba? [y/N]"
   read -r response
   case "$response" in
-    [nN][oO]|[nN])
-      ENABLE_SAMBA=false
+    [yY][eE][sS]|[yY])
+      ENABLE_SAMBA=true
       ;;
     *)
+      ENABLE_SAMBA=false
       ;;
   esac
   log "ENABLE_SAMBA=${ENABLE_SAMBA}"

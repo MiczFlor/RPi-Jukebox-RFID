@@ -1,6 +1,12 @@
 # Samba
 
-To conveniently copy files to your Phoniebox via network `samba` can be configured during the installation. The folder `./shared/` will be exposed as network share `phoniebox`, giving you access to the audio and config folders.
+The Web App can upload files or complete folder trees, create folders, and
+delete files or folders in the audio library. Samba is therefore optional and
+disabled by default.
+
+Enable Samba during installation when you want direct network access to the
+complete `./shared/` directory. It is exposed as the `phoniebox` network share
+and includes both the audio library and configuration files.
 
 ## Connect
 

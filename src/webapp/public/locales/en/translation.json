@@ -2,6 +2,7 @@
   "general": {
     "buttons": {
       "cancel": "Cancel",
+      "close": "Close",
       "delete": "Delete",
       "save": "Save"
     },
@@ -141,7 +142,64 @@
       "no-music": "☝️ No music found!",
       "empty-folder": "This folder is empty! 🙈",
       "show-folder-content": "Show folder content",
-      "back-button-label": "Back"
+      "back-button-label": "Back",
+      "manager": {
+        "actions-label": "Library file actions",
+        "upload": "Upload",
+        "upload-files": "Upload files",
+        "upload-folders": "Upload folders",
+        "create-folder": "New folder",
+        "select": "Select",
+        "select-item": "Select {{name}}",
+        "delete-selected_one": "Delete {{count}} item",
+        "delete-selected_other": "Delete {{count}} items",
+        "drop-files": "Drop files or folders here to upload them to this folder.",
+        "read-folder-error": "The selected folder could not be read by this browser.",
+        "create": {
+          "title": "Create folder",
+          "name": "Folder name",
+          "confirm": "Create"
+        },
+        "delete": {
+          "title_one": "Delete {{count}} item?",
+          "title_other": "Delete {{count}} items?",
+          "permanent": "This deletion is permanent and cannot be undone.",
+          "folder-warning": "Selected folders and all files and folders inside them will be deleted."
+        },
+        "upload-dialog": {
+          "title": "Upload files and folders",
+          "uploading": "Uploading: {{progress}}%",
+          "creating-folder": "Creating folder",
+          "folder-created": "Folder created",
+          "parent-folder-failed": "The parent folder could not be created.",
+          "progress": "Upload progress for {{name}}",
+          "cancel-item": "Cancel",
+          "retry-item": "Retry",
+          "cancel-all": "Cancel all",
+          "status": {
+            "queued": "Waiting",
+            "complete": "Uploaded",
+            "cancelled": "Cancelled"
+          }
+        },
+        "errors": {
+          "cancelled": "Upload cancelled.",
+          "duplicate_name": "A file or folder with this name already exists.",
+          "entry_not_found": "The selected file or folder no longer exists.",
+          "file_too_large": "Files are limited to 1 GiB.",
+          "folder_not_found": "The destination folder no longer exists.",
+          "insufficient_storage": "There is not enough storage for this operation.",
+          "invalid_file_name": "The file name is invalid.",
+          "invalid_folder_name": "The folder name is invalid.",
+          "invalid_path": "The selected path is outside the music library.",
+          "mpd_update_failed": "The files changed, but the MPD library could not be updated.",
+          "network_error": "The connection to the Phoniebox failed.",
+          "permission_denied": "The Phoniebox does not have permission for this operation.",
+          "request_failed": "The library operation failed.",
+          "storage_error": "The storage operation failed.",
+          "unsupported_file_type": "This file type is not supported."
+        }
+      }
     },
     "albums": {
       "unknown-album": "Unknown album",

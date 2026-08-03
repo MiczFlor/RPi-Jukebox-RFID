@@ -67,10 +67,23 @@ const socketEvents = {
 };
 
 async function mockBackend(page, { failRpc = false, rpcGate } = {}) {
+  const libraryCalls = [];
   const rpcCalls = [];
 
   await page.addInitScript(() => {
     window.localStorage.setItem('i18nextLng', 'en');
+  });
+
+  await page.route('**/api/v1/library/entries**', async route => {
+    const requestUrl = new URL(route.request().url());
+    libraryCalls.push(requestUrl.searchParams.get('folder'));
+    await route.fulfill({
+      body: JSON.stringify({
+        entries: rpcResults.get_folder_content,
+      }),
+      contentType: 'application/json',
+      status: 200,
+    });
   });
 
   await page.route('**/api/v1/rpc', async route => {
@@ -121,7 +134,7 @@ async function mockBackend(page, { failRpc = false, rpcGate } = {}) {
     });
   });
 
-  return rpcCalls;
+  return { libraryCalls, rpcCalls };
 }
 
 async function expectStableLayout(page) {
@@ -245,17 +258,12 @@ test('bottom navigation changes routes', async ({ page }) => {
 
 test('encoded library folder routes preserve the folder path', async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
-  const rpcCalls = await mockBackend(page);
+  const { libraryCalls } = await mockBackend(page);
   await page.goto('/#/library/folders/Music%2FRock');
 
-  await expect.poll(() => rpcCalls.map(({ method, kwargs }) => ({
-    method,
-    kwargs,
-  }))).toContainEqual({
-    method: 'get_folder_content',
-    kwargs: { folder: 'Music/Rock' },
-  });
+  await expect.poll(() => libraryCalls).toContain('Music/Rock');
   await expect(page.getByText('sample.mp3')).toBeVisible();
+  await expectStableLayout(page);
   expect(consoleErrors).toEqual([]);
 });
 

@@ -40,6 +40,12 @@ After a successful installation, [configure your Phoniebox](configuration.md).
 > [!TIP]
 > Depending on your hardware, this installation might last around 60 minutes (usually it's faster, 20-30 min). It refreshes the package index, installs Phoniebox dependencies and applies settings. Be patient and don't let your computer go to sleep. It might disconnect your SSH connection causing the interruption of the installation process. Consider starting the installation in a terminal multiplexer like 'screen' or 'tmux' to avoid this.
 
+The Web App can upload files or complete folder trees, organize the audio
+library, and delete files or folders, so Samba is disabled by default during
+installation. Choose Samba when you also want direct network access to the
+complete `shared` directory, including configuration files. See
+[Samba](samba.md) for details.
+
 Current Raspberry Pi OS images normally do not need a full operating system upgrade immediately after imaging, so the installer skips it by default. To opt in to `apt-get full-upgrade` and `autoremove`, prefix an installation command with:
 
 ```bash

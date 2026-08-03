@@ -2,6 +2,7 @@
   "general": {
     "buttons": {
       "cancel": "Abbrechen",
+      "close": "Schließen",
       "delete": "Löschen",
       "save": "Speichern"
     },
@@ -141,7 +142,64 @@
       "no-music": "☝️ Keine Musik vorhanden!",
       "empty-folder": "Dieser Ordner ist leer! 🙈",
       "show-folder-content": "Zeige den Ordnerinhalt an",
-      "back-button-label": "Zurück"
+      "back-button-label": "Zurück",
+      "manager": {
+        "actions-label": "Aktionen für Bibliotheksdateien",
+        "upload": "Hochladen",
+        "upload-files": "Dateien hochladen",
+        "upload-folders": "Ordner hochladen",
+        "create-folder": "Neuer Ordner",
+        "select": "Auswählen",
+        "select-item": "{{name}} auswählen",
+        "delete-selected_one": "{{count}} Element löschen",
+        "delete-selected_other": "{{count}} Elemente löschen",
+        "drop-files": "Dateien oder Ordner hier ablegen, um sie in diesen Ordner hochzuladen.",
+        "read-folder-error": "Der ausgewählte Ordner konnte von diesem Browser nicht gelesen werden.",
+        "create": {
+          "title": "Ordner erstellen",
+          "name": "Ordnername",
+          "confirm": "Erstellen"
+        },
+        "delete": {
+          "title_one": "{{count}} Element löschen?",
+          "title_other": "{{count}} Elemente löschen?",
+          "permanent": "Das Löschen ist endgültig und kann nicht rückgängig gemacht werden.",
+          "folder-warning": "Ausgewählte Ordner sowie alle darin enthaltenen Dateien und Ordner werden gelöscht."
+        },
+        "upload-dialog": {
+          "title": "Dateien und Ordner hochladen",
+          "uploading": "Wird hochgeladen: {{progress}} %",
+          "creating-folder": "Ordner wird erstellt",
+          "folder-created": "Ordner erstellt",
+          "parent-folder-failed": "Der übergeordnete Ordner konnte nicht erstellt werden.",
+          "progress": "Upload-Fortschritt für {{name}}",
+          "cancel-item": "Abbrechen",
+          "retry-item": "Wiederholen",
+          "cancel-all": "Alle abbrechen",
+          "status": {
+            "queued": "Wartet",
+            "complete": "Hochgeladen",
+            "cancelled": "Abgebrochen"
+          }
+        },
+        "errors": {
+          "cancelled": "Der Upload wurde abgebrochen.",
+          "duplicate_name": "Eine Datei oder ein Ordner mit diesem Namen ist bereits vorhanden.",
+          "entry_not_found": "Die ausgewählte Datei oder der Ordner ist nicht mehr vorhanden.",
+          "file_too_large": "Dateien dürfen höchstens 1 GiB groß sein.",
+          "folder_not_found": "Der Zielordner ist nicht mehr vorhanden.",
+          "insufficient_storage": "Für diesen Vorgang ist nicht genügend Speicherplatz vorhanden.",
+          "invalid_file_name": "Der Dateiname ist ungültig.",
+          "invalid_folder_name": "Der Ordnername ist ungültig.",
+          "invalid_path": "Der ausgewählte Pfad liegt außerhalb der Musikbibliothek.",
+          "mpd_update_failed": "Die Dateien wurden geändert, aber die MPD-Bibliothek konnte nicht aktualisiert werden.",
+          "network_error": "Die Verbindung zur Phoniebox ist fehlgeschlagen.",
+          "permission_denied": "Die Phoniebox hat keine Berechtigung für diesen Vorgang.",
+          "request_failed": "Der Bibliotheksvorgang ist fehlgeschlagen.",
+          "storage_error": "Der Speichervorgang ist fehlgeschlagen.",
+          "unsupported_file_type": "Dieser Dateityp wird nicht unterstützt."
+        }
+      }
     },
     "albums": {
       "unknown-album": "Unbekanntes Album",

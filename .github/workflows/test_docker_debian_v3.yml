@@ -44,6 +44,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Test Web App bundle download selection
         run: bash ./ci/installation/test_webapp_bundle_download.sh
+      - name: Test library upload proxy and Samba defaults
+        run: bash ./ci/installation/test_library_file_management_config.sh
 
   run_raspbian_armv6_zmq:
     name: 'Raspberry Pi Debian bookworm armv6 ZMQ packages'

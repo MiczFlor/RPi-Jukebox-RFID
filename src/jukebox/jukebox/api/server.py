@@ -15,6 +15,11 @@ import zmq
 from zmq.eventloop.zmqstream import ZMQStream
 
 import jukebox.cfghandler
+from jukebox.library import (
+    LibraryError,
+    MAX_UPLOAD_SIZE,
+    create_music_library,
+)
 from jukebox.rpc.processor import process_request
 
 logger = logging.getLogger('jb.api.server')
@@ -101,20 +106,47 @@ class HealthHandler(tornado.web.RequestHandler):
         self.write({'status': 'ok'})
 
 
+class JsonErrorHandler(tornado.web.RequestHandler):
+    """Return predictable JSON errors for API handlers."""
+
+    def write_error(self, status_code, **kwargs):
+        error = kwargs.get('exc_info', (None, None, None))[1]
+        if isinstance(error, tornado.web.HTTPError) and error.reason:
+            message = error.reason
+        else:
+            message = self._reason
+        self.finish({'error': {'code': 'http_error', 'message': message}})
+
+    def finish_library_error(self, error):
+        self.set_status(error.status)
+        self.finish({'error': {'code': error.code, 'message': error.message}})
+
+
+@tornado.web.stream_request_body
 class RpcHandler(tornado.web.RequestHandler):
     def prepare(self):
+        self._body = bytearray()
+        self._body_too_large = False
         content_length = self.request.headers.get('Content-Length')
         if content_length is not None:
             try:
-                too_large = int(content_length) > MAX_MESSAGE_SIZE
+                self._body_too_large = int(content_length) > MAX_MESSAGE_SIZE
             except ValueError:
-                too_large = False
-            if too_large:
-                self.set_status(413)
-                self.finish({'error': 'Request body exceeds 1 MiB.'})
+                pass
+
+    def data_received(self, chunk):
+        if self._body_too_large:
+            return
+        if len(self._body) + len(chunk) > MAX_MESSAGE_SIZE:
+            self._body.clear()
+            self._body_too_large = True
+            return
+        self._body.extend(chunk)
 
     async def post(self):
-        if self._finished:
+        if self._body_too_large:
+            self.set_status(413)
+            self.finish({'error': 'Request body exceeds 1 MiB.'})
             return
 
         content_type = self.request.headers.get('Content-Type', '')
@@ -125,7 +157,7 @@ class RpcHandler(tornado.web.RequestHandler):
             return
 
         try:
-            request = json.loads(self.request.body)
+            request = json.loads(self._body)
         except (json.JSONDecodeError, UnicodeDecodeError) as error:
             self.set_status(400)
             self.finish({'error': f'Malformed JSON: {error}'})
@@ -144,6 +176,209 @@ class RpcHandler(tornado.web.RequestHandler):
             request,
         )
         self.write(response)
+
+
+class StreamingJsonHandler(JsonErrorHandler):
+    """Buffer small JSON mutation requests while the server accepts large uploads."""
+
+    def prepare(self):
+        self._body = bytearray()
+        self._body_too_large = False
+        content_length = self.request.headers.get('Content-Length')
+        if content_length is None:
+            return
+        try:
+            self._body_too_large = int(content_length) > MAX_MESSAGE_SIZE
+        except ValueError:
+            pass
+
+    def data_received(self, chunk):
+        if self._body_too_large:
+            return
+        if len(self._body) + len(chunk) > MAX_MESSAGE_SIZE:
+            self._body.clear()
+            self._body_too_large = True
+            return
+        self._body.extend(chunk)
+
+    def reject_oversized_body(self):
+        if not self._body_too_large:
+            return False
+        self.set_status(413)
+        self.finish({'error': {
+            'code': 'request_too_large',
+            'message': 'Request body exceeds 1 MiB.',
+        }})
+        return True
+
+    def json_body(self):
+        content_type = self.request.headers.get('Content-Type', '')
+        media_type = content_type.split(';', 1)[0].strip().lower()
+        if media_type != 'application/json':
+            raise LibraryError(400, 'invalid_content_type', 'Content-Type must be application/json.')
+        try:
+            body = json.loads(self._body)
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise LibraryError(400, 'invalid_json', f'Malformed JSON: {error}') from error
+        if not isinstance(body, dict):
+            raise LibraryError(400, 'invalid_request', 'The request body must be an object.')
+        return body
+
+
+@tornado.web.stream_request_body
+class LibraryUploadHandler(JsonErrorHandler):
+    def initialize(self, library):
+        self.library = library
+        self.upload = None
+
+    def prepare(self):
+        if self.request.method != 'PUT':
+            return
+        content_length = self.request.headers.get('Content-Length')
+        if content_length is not None:
+            try:
+                too_large = int(content_length) > MAX_UPLOAD_SIZE
+            except ValueError:
+                too_large = False
+            if too_large:
+                self.set_status(413)
+                self.finish({'error': {
+                    'code': 'file_too_large',
+                    'message': 'Files are limited to 1 GiB.',
+                }})
+                return
+
+        try:
+            folder = self.get_query_argument('folder')
+            file_name = self.get_query_argument('name')
+            self.upload = self.library.start_upload(folder, file_name)
+        except tornado.web.MissingArgumentError as error:
+            self.set_status(400)
+            self.finish({'error': {
+                'code': 'invalid_request',
+                'message': f"Missing query parameter '{error.arg_name}'.",
+            }})
+        except LibraryError as error:
+            self.finish_library_error(error)
+
+    def data_received(self, chunk):
+        if self._finished or self.upload is None:
+            return
+        try:
+            self.upload.write(chunk)
+        except LibraryError as error:
+            self.upload.abort()
+            self.upload = None
+            self.finish_library_error(error)
+
+    def put(self):
+        if self._finished or self.upload is None:
+            return
+        upload = self.upload
+        self.upload = None
+        try:
+            upload.finish()
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.set_status(201)
+        self.write({'path': upload.relative_path, 'size': upload.size})
+
+    def on_connection_close(self):
+        if self.upload is not None:
+            self.upload.abort()
+            self.upload = None
+        super().on_connection_close()
+
+    def on_finish(self):
+        if self.upload is not None:
+            self.upload.abort()
+            self.upload = None
+
+
+@tornado.web.stream_request_body
+class LibraryFolderHandler(StreamingJsonHandler):
+    def initialize(self, library, executor):
+        self.library = library
+        self.executor = executor
+
+    async def post(self):
+        if self.reject_oversized_body():
+            return
+        try:
+            body = self.json_body()
+            parent = body.get('parent')
+            name = body.get('name')
+            path = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.create_folder,
+                parent,
+                name,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.set_status(201)
+        self.write({'path': path})
+
+
+@tornado.web.stream_request_body
+class LibraryEntriesHandler(StreamingJsonHandler):
+    def initialize(self, library, executor):
+        self.library = library
+        self.executor = executor
+
+    async def get(self):
+        try:
+            folder = self.get_query_argument('folder')
+            entries = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.list_entries,
+                folder,
+            )
+        except tornado.web.MissingArgumentError as error:
+            self.set_status(400)
+            self.finish({'error': {
+                'code': 'invalid_request',
+                'message': f"Missing query parameter '{error.arg_name}'.",
+            }})
+            return
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'entries': entries})
+
+    async def delete(self):
+        if self.reject_oversized_body():
+            return
+        try:
+            paths = self.json_body().get('paths')
+            deleted = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.delete_entries,
+                paths,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'deleted': deleted})
+
+
+class LibraryRefreshHandler(JsonErrorHandler):
+    def initialize(self, library, executor):
+        self.library = library
+        self.executor = executor
+
+    async def post(self):
+        try:
+            update_id = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.update,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'update_id': update_id})
 
 
 class EventsHandler(tornado.websocket.WebSocketHandler):
@@ -184,12 +419,38 @@ class EventsHandler(tornado.websocket.WebSocketHandler):
         self.broker.unregister(self)
 
 
-def make_application(broker, executor, rpc_processor=process_request):
+def make_application(
+    broker,
+    executor,
+    rpc_processor=process_request,
+    library=None,
+    library_executor=None,
+):
+    if library is None:
+        library = create_music_library()
+    if library_executor is None:
+        library_executor = executor
     return tornado.web.Application(
         [
             (r'/api/v1/health', HealthHandler),
             (r'/api/v1/rpc', RpcHandler),
             (r'/api/v1/events', EventsHandler, {'broker': broker}),
+            (r'/api/v1/library/files', LibraryUploadHandler, {'library': library}),
+            (
+                r'/api/v1/library/folders',
+                LibraryFolderHandler,
+                {'library': library, 'executor': library_executor},
+            ),
+            (
+                r'/api/v1/library/entries',
+                LibraryEntriesHandler,
+                {'library': library, 'executor': library_executor},
+            ),
+            (
+                r'/api/v1/library/refresh',
+                LibraryRefreshHandler,
+                {'library': library, 'executor': library_executor},
+            ),
         ],
         rpc_executor=executor,
         rpc_processor=rpc_processor,
@@ -215,6 +476,7 @@ class ApiServer(threading.Thread):
         self._subscriber = None
         self._subscriber_stream = None
         self._executor = None
+        self._library_executor = None
         self._stopping = False
 
     def start_and_wait(self, timeout=5):
@@ -229,10 +491,15 @@ class ApiServer(threading.Thread):
         self._io_loop = tornado.ioloop.IOLoop.current()
         try:
             self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='ApiRpc')
-            application = make_application(self.broker, self._executor)
+            self._library_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='ApiLibrary')
+            application = make_application(
+                self.broker,
+                self._executor,
+                library_executor=self._library_executor,
+            )
             self._http_server = tornado.httpserver.HTTPServer(
                 application,
-                max_body_size=MAX_MESSAGE_SIZE,
+                max_body_size=MAX_UPLOAD_SIZE,
             )
             self._http_server.listen(self.port, address=self.bind_address)
 
@@ -290,3 +557,6 @@ class ApiServer(threading.Thread):
         if self._executor is not None:
             self._executor.shutdown(wait=False, cancel_futures=True)
             self._executor = None
+        if self._library_executor is not None:
+            self._library_executor.shutdown(wait=False, cancel_futures=True)
+            self._library_executor = None

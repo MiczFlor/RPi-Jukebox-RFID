@@ -1,11 +1,14 @@
 import asyncio
 import json
 import socket
+import tempfile
 import threading
 import time
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from pathlib import Path
 
 import pytest
 import tornado.gen
@@ -21,6 +24,7 @@ from jukebox.api.server import (
     PUBLISH_ENDPOINT,
     make_application,
 )
+from jukebox.library import MusicLibrary
 
 
 class FakeClient:
@@ -138,10 +142,22 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
             'id': request.get('id'),
         }
         self.broker = EventBroker()
-        return make_application(self.broker, self.executor, self.rpc_processor)
+        self.library_directory = tempfile.TemporaryDirectory()
+        self.library_updates = []
+        self.library = MusicLibrary(
+            lambda: self.library_directory.name,
+            lambda: self.library_updates.append('update') or 'update-1',
+        )
+        return make_application(
+            self.broker,
+            self.executor,
+            self.rpc_processor,
+            library=self.library,
+        )
 
     def tearDown(self):
         self.executor.shutdown(wait=True, cancel_futures=True)
+        self.library_directory.cleanup()
         super().tearDown()
 
     def test_health(self):
@@ -206,6 +222,117 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
         )
 
         assert response.code == 413
+
+    def test_library_upload_create_delete_and_refresh(self):
+        folder_response = self.fetch(
+            '/api/v1/library/folders',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'parent': '.', 'name': 'Album'}),
+        )
+        assert folder_response.code == 201
+        assert json.loads(folder_response.body) == {'path': 'Album'}
+
+        query = urllib.parse.urlencode({'folder': 'Album', 'name': 'track.mp3'})
+        upload_response = self.fetch(
+            f'/api/v1/library/files?{query}',
+            method='PUT',
+            headers={'Content-Type': 'audio/mpeg'},
+            body=b'audio data',
+        )
+        assert upload_response.code == 201
+        assert json.loads(upload_response.body) == {
+            'path': 'Album/track.mp3',
+            'size': 10,
+        }
+        assert (
+            Path(self.library_directory.name) / 'Album' / 'track.mp3'
+        ).read_bytes() == b'audio data'
+
+        list_response = self.fetch(
+            '/api/v1/library/entries?folder=Album',
+        )
+        assert list_response.code == 200
+        assert json.loads(list_response.body) == {
+            'entries': [{
+                'name': 'track.mp3',
+                'relpath': 'Album/track.mp3',
+                'type': 'file',
+            }],
+        }
+
+        duplicate_response = self.fetch(
+            f'/api/v1/library/files?{query}',
+            method='PUT',
+            body=b'replacement',
+            raise_error=False,
+        )
+        assert duplicate_response.code == 409
+        assert json.loads(duplicate_response.body)['error']['code'] == 'duplicate_name'
+
+        refresh_response = self.fetch(
+            '/api/v1/library/refresh',
+            method='POST',
+            body=b'',
+        )
+        assert refresh_response.code == 200
+        assert json.loads(refresh_response.body) == {'update_id': 'update-1'}
+        assert self.library_updates == ['update']
+
+        delete_response = self.fetch(
+            '/api/v1/library/entries',
+            method='DELETE',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'paths': ['Album']}),
+            allow_nonstandard_methods=True,
+        )
+        assert delete_response.code == 200
+        assert json.loads(delete_response.body) == {'deleted': ['Album']}
+        assert not (Path(self.library_directory.name) / 'Album').exists()
+
+    def test_library_endpoints_reject_invalid_types_and_paths(self):
+        unsupported_query = urllib.parse.urlencode({'folder': '.', 'name': 'archive.zip'})
+        unsupported = self.fetch(
+            f'/api/v1/library/files?{unsupported_query}',
+            method='PUT',
+            body=b'archive',
+            raise_error=False,
+        )
+        assert unsupported.code == 415
+        assert json.loads(unsupported.body)['error']['code'] == 'unsupported_file_type'
+
+        traversal_query = urllib.parse.urlencode({'folder': '..', 'name': 'track.mp3'})
+        traversal = self.fetch(
+            f'/api/v1/library/files?{traversal_query}',
+            method='PUT',
+            body=b'audio',
+            raise_error=False,
+        )
+        assert traversal.code == 400
+        assert json.loads(traversal.body)['error']['code'] == 'invalid_path'
+
+        delete_root = self.fetch(
+            '/api/v1/library/entries',
+            method='DELETE',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'paths': ['.']}),
+            allow_nonstandard_methods=True,
+            raise_error=False,
+        )
+        assert delete_root.code == 400
+        assert json.loads(delete_root.body)['error']['code'] == 'invalid_path'
+
+    def test_library_json_requests_remain_limited_to_one_mebibyte(self):
+        response = self.fetch(
+            '/api/v1/library/folders',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=b' ' * (MAX_MESSAGE_SIZE + 1),
+            raise_error=False,
+        )
+
+        assert response.code == 413
+        assert json.loads(response.body)['error']['code'] == 'request_too_large'
 
     @tornado.testing.gen_test
     async def test_websocket_origin_is_rejected(self):
