@@ -71,6 +71,12 @@ def controller_factory(monkeypatch):
         'setn',
         lambda *keys, value: config_writes.append((keys, value)),
     )
+    publisher.config_saves = []
+    monkeypatch.setattr(
+        idle_shutdown.cfg,
+        'save',
+        lambda **kwargs: publisher.config_saves.append(kwargs),
+    )
 
     def create(
             *,
@@ -79,7 +85,9 @@ def controller_factory(monkeypatch):
             playback_detector=lambda: False,
             ssh_detector=lambda: False,
             snapshotter=lambda: ('baseline',),
-            shutdown_action=lambda: None):
+            shutdown_action=lambda: None,
+            check_interval=3600,
+            grace_seconds=60):
         timer = IdleShutdownTimer(
             'timers',
             idle_timeout,
@@ -87,8 +95,8 @@ def controller_factory(monkeypatch):
             playback_detector=playback_detector,
             ssh_detector=ssh_detector,
             snapshotter=snapshotter,
-            check_interval=3600,
-            grace_seconds=60,
+            check_interval=check_interval,
+            grace_seconds=grace_seconds,
             shutdown_action=shutdown_action,
         )
         controllers.append(timer)
@@ -129,6 +137,19 @@ def test_disabled_and_invalid_startup_create_no_monitor_thread(
         'wait_seconds': 0,
     }
     assert 'remains disabled' in caplog.text
+
+
+def test_persisted_timeout_starts_monitor_without_rewriting_configuration(
+        controller_factory):
+    create, config_writes, publisher = controller_factory
+    timer = create(idle_timeout=1800)
+
+    assert timer.get_state()['enabled'] is True
+    assert timer.get_state()['running'] is True
+    assert timer.get_state()['wait_seconds'] == 1800
+    assert timer.timer_thread.is_alive()
+    assert config_writes == []
+    assert publisher.config_saves == []
 
 
 def test_enable_restart_and_restart_false(controller_factory):
@@ -182,7 +203,7 @@ def test_playback_ssh_and_file_activity_reset_deadline(
     create, _, _ = controller_factory
     clock = FakeClock()
     activity = {'playback': False, 'ssh': False}
-    snapshots = SnapshotSequence(('a',), ('b',), ('c',))
+    snapshots = SnapshotSequence(('a',), ('b',), ('c',), ('d',))
     timer = create(
         clock=clock,
         playback_detector=lambda: activity['playback'],
@@ -231,7 +252,7 @@ def test_filesystem_scans_only_at_baseline_expiry_and_grace(
         snapshotter=snapshots,
         shutdown_action=lambda: shutdowns.append(True),
     )
-    timer.start(60)
+    timer.start(120)
 
     for _ in range(5):
         clock.advance(10)
@@ -334,8 +355,6 @@ def test_shutdown_is_latched_and_published_once(controller_factory):
     timer.start(60)
     clock.advance(60)
     timer._poll()
-    clock.advance(60)
-    timer._poll()
     timer._poll()
 
     disabled = [
@@ -349,9 +368,33 @@ def test_shutdown_is_latched_and_published_once(controller_factory):
     assert timer.get_state()['enabled'] is False
 
 
+def test_periodic_worker_reaches_shutdown_without_manual_poll(
+        controller_factory):
+    create, _, _ = controller_factory
+    snapshots = SnapshotSequence(('same',))
+    shutdowns = []
+    timer = create(
+        clock=time.monotonic,
+        snapshotter=snapshots,
+        shutdown_action=lambda: shutdowns.append(True),
+        check_interval=0.01,
+        grace_seconds=0.03,
+    )
+
+    with timer._lock:
+        generation = timer._begin_locked(0.06)
+    timer._start_monitor(generation)
+
+    wait_until(lambda: shutdowns == [True])
+    wait_until(lambda: not timer.timer_thread.is_alive())
+
+    assert snapshots.calls >= 2
+    assert timer.get_state()['enabled'] is False
+
+
 def test_cancel_persists_zero_while_close_preserves_configuration(
         controller_factory):
-    create, config_writes, _ = controller_factory
+    create, config_writes, publisher = controller_factory
     cancelled = create()
     cancelled.start(60)
     cancelled.cancel()
@@ -360,15 +403,21 @@ def test_cancel_persists_zero_while_close_preserves_configuration(
         ('timers', 'idle_shutdown', 'timeout_sec'),
         0,
     )
+    assert publisher.config_saves == [
+        {'only_if_changed': True},
+        {'only_if_changed': True},
+    ]
     assert cancelled.get_state()['enabled'] is False
 
     preserved = create()
     preserved.start(120)
     writes_before_close = list(config_writes)
+    saves_before_close = list(publisher.config_saves)
     worker = preserved.timer_thread
     preserved.close()
 
     assert config_writes == writes_before_close
+    assert publisher.config_saves == saves_before_close
     assert not worker.is_alive()
 
 

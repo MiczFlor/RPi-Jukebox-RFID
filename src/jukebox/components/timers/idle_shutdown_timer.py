@@ -239,6 +239,40 @@ class IdleShutdownTimer:
         self._snapshot_error_logged = False
         return snapshot
 
+    @staticmethod
+    def _persist_timeout(timeout):
+        with cfg:
+            previous_timeout = cfg.getn(
+                'timers',
+                'idle_shutdown',
+                'timeout_sec',
+                default=0,
+            )
+            cfg.setn(
+                'timers',
+                'idle_shutdown',
+                'timeout_sec',
+                value=timeout,
+            )
+            try:
+                cfg.save(only_if_changed=True)
+            except Exception:
+                cfg.setn(
+                    'timers',
+                    'idle_shutdown',
+                    'timeout_sec',
+                    value=previous_timeout,
+                )
+                raise
+
+    def _start_countdown_locked(self, now):
+        self._running = True
+        self._deadline = now + self._wait_seconds
+        if self._wait_seconds <= self._grace_seconds:
+            self._phase = _PHASE_GRACE
+        else:
+            self._phase = _PHASE_COUNTDOWN
+
     def _begin_locked(self, wait_seconds):
         self._controller_generation += 1
         now = self._clock()
@@ -246,13 +280,12 @@ class IdleShutdownTimer:
         self._enabled = True
         self._running = False
         self._shutdown_latched = False
-        self._deadline = now + wait_seconds
         self._baseline = self._take_snapshot_locked()
         if self._baseline is None:
             self._phase = _PHASE_NEEDS_BASELINE
+            self._deadline = now + wait_seconds
         else:
-            self._phase = _PHASE_COUNTDOWN
-            self._running = True
+            self._start_countdown_locked(now)
         self._publish_locked()
         return self._controller_generation
 
@@ -279,12 +312,7 @@ class IdleShutdownTimer:
         with self._lock:
             if self._enabled and not restart:
                 return
-            cfg.setn(
-                'timers',
-                'idle_shutdown',
-                'timeout_sec',
-                value=timeout,
-            )
+            self._persist_timeout(timeout)
             generation = self._begin_locked(timeout)
         self._start_monitor(generation)
 
@@ -292,12 +320,7 @@ class IdleShutdownTimer:
     def cancel(self):
         """Disable idle shutdown and persist the disabled configuration."""
         with self._lock:
-            cfg.setn(
-                'timers',
-                'idle_shutdown',
-                'timeout_sec',
-                value=0,
-            )
+            self._persist_timeout(0)
             transitioned = self._enabled
             self._enabled = False
             self._controller_generation += 1
@@ -348,9 +371,7 @@ class IdleShutdownTimer:
                 self._publish_locked()
             return
         self._baseline = snapshot
-        self._running = True
-        self._phase = _PHASE_COUNTDOWN
-        self._deadline = now + self._wait_seconds
+        self._start_countdown_locked(now)
         self._publish_locked()
 
     def _postpone_for_detector_error_locked(self, now, errors):
@@ -374,10 +395,12 @@ class IdleShutdownTimer:
             self._publish_locked()
             return False
         if self._baseline != snapshot:
+            logger.info(
+                'Filesystem activity detected; restarting idle shutdown '
+                'countdown',
+            )
             self._baseline = snapshot
-            self._running = True
-            self._phase = _PHASE_COUNTDOWN
-            self._deadline = now + self._wait_seconds
+            self._start_countdown_locked(now)
             self._publish_locked()
             return False
         return True
@@ -407,17 +430,25 @@ class IdleShutdownTimer:
             self._capture_baseline_locked(now)
             return False
 
-        if now < self._deadline:
-            return False
-
-        if not self._check_filesystem_locked(now):
-            return False
-
         if self._phase == _PHASE_COUNTDOWN:
+            verification_at = self._deadline - self._grace_seconds
+            if now < verification_at:
+                return False
+            if not self._check_filesystem_locked(now):
+                return False
             self._phase = _PHASE_GRACE
-            self._deadline = now + self._grace_seconds
+            logger.info(
+                'Idle shutdown entered its final filesystem verification '
+                'window',
+            )
             self._publish_locked()
-            return False
+            if now < self._deadline:
+                return False
+        else:
+            if now < self._deadline:
+                return False
+            if not self._check_filesystem_locked(now):
+                return False
 
         self._shutdown_latched = True
         self._enabled = False
