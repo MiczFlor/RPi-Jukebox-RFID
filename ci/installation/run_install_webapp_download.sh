@@ -24,7 +24,7 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # n - setup rfid reader
 # n - setup samba
 # y - setup webapp
-# - - exact bundle download (forced, with release fallback)
+# - - exact bundle download (forced)
 # y - setup kiosk mode
 # n - reboot
 

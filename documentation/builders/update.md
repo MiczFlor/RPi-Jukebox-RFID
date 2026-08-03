@@ -64,12 +64,22 @@ Typically these steps need to be considered
     git pull
     ```
 
-    After the `pull` some checks are triggered to make recommendations about needed update commands. Run the commands described in the output. (Ignore the Web App build commands if you don't have the Web App installed, or an official release branch is used).
+    After the `pull` some checks are triggered to make recommendations about needed update commands. Run the commands described in the output. If the Web App is installed, update it from the exact-commit bundle as described below.
 
     Note the commands in case of an backup restore.
 
 1. Update Web App (if installed, and an official release branch is used):
-    - Backup the current webapp build
+    - Determine the required exact-commit bundle name:
+
+        ```bash
+        cd ~/RPi-Jukebox-RFID
+        git rev-parse HEAD
+        echo "webapp-build-$(git rev-parse --short=10 HEAD).tar.gz"
+        ```
+
+    - Go to the [GitHub Release page](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases) for the branch used.
+    - Under "Assets", find the bundle with exactly that name and copy its URL. If it is missing, stop and publish or rerun the `Test Build Web App v3` workflow for the commit. Do not use a bundle with a different commit suffix.
+    - Backup the current Web App build:
 
         ```bash
         cd ~/RPi-Jukebox-RFID/src/webapp
@@ -77,14 +87,14 @@ Typically these steps need to be considered
         mv build build-backup
         ```
 
-    - Go to the [Github Release page](https://github.com/MiczFlor/RPi-Jukebox-RFID/releases) find the latest release for the  branch used.
-    - Under "Assets", find the latest Web App release called "webapp-build-latest.tar.gz" and copy the URL.
-    - On your Phoniebox, download the file and extract the archive. Afterwards, delete the archive
+    - On your Phoniebox, download and extract the bundle. Afterwards, delete the archive:
 
         ```bash
-        wget {URL}
-        tar -xzf webapp-build-latest.tar.gz
-        rm -rf webapp-build-latest.tar.gz
+        cd ~/RPi-Jukebox-RFID/src/webapp
+        bundle_name="webapp-build-$(git rev-parse --short=10 HEAD).tar.gz"
+        wget "{URL}" -O "${bundle_name}"
+        tar -xzf "${bundle_name}"
+        rm -f "${bundle_name}"
         ```
 
 1. Update the config files

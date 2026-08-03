@@ -84,29 +84,71 @@ SOURCE_DEVELOPMENT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases
 SOURCE_RELEASE_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
 UPSTREAM_DEVELOPMENT_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${BUNDLE_NAME}"
 UPSTREAM_RELEASE_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
-UPSTREAM_LATEST_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/webapp-build-latest.tar.gz"
+MISMATCHED_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/webapp-build-deadbeef00.tar.gz"
 
+# Prefer the source repository's exact development bundle.
 ENABLE_WEBAPP_PROD_DOWNLOAD=true
 reset_download "${SOURCE_DEVELOPMENT_URL}"
 _jukebox_webapp_download
 assert_attempts "${SOURCE_DEVELOPMENT_URL}"
 [[ -f "${INSTALLATION_PATH}/src/webapp/build/index.html" ]]
 
-reset_download "${UPSTREAM_LATEST_URL}"
+# Fall back only to other exact-commit locations.
+reset_download "${UPSTREAM_DEVELOPMENT_URL}"
 _jukebox_webapp_download
 assert_attempts \
     "${SOURCE_DEVELOPMENT_URL}" \
     "${SOURCE_RELEASE_URL}" \
-    "${UPSTREAM_DEVELOPMENT_URL}" \
-    "${UPSTREAM_RELEASE_URL}" \
-    "${UPSTREAM_LATEST_URL}"
+    "${UPSTREAM_DEVELOPMENT_URL}"
 
-GIT_USER="miczflor"
-ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
+# Release-only mode skips development bundles.
+GIT_USER="MiczFlor"
 SOURCE_RELEASE_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
+ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
 reset_download "${SOURCE_RELEASE_URL}"
 _jukebox_webapp_download
 assert_attempts "${SOURCE_RELEASE_URL}"
+
+# A differently addressed bundle must not be attempted or installed.
+GIT_USER="contributor"
+SOURCE_RELEASE_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
+ENABLE_WEBAPP_PROD_DOWNLOAD=true
+reset_download "${MISMATCHED_URL}"
+if _jukebox_webapp_download; then
+    echo "A mismatched Web App bundle was accepted" >&2
+    exit 1
+fi
+assert_attempts \
+    "${SOURCE_DEVELOPMENT_URL}" \
+    "${SOURCE_RELEASE_URL}" \
+    "${UPSTREAM_DEVELOPMENT_URL}" \
+    "${UPSTREAM_RELEASE_URL}"
+[[ ! -e "${INSTALLATION_PATH}/src/webapp/build" ]]
+
+_jukebox_webapp_register_as_system_service_with_nginx() {
+    :
+}
+
+_jukebox_webapp_check() {
+    :
+}
+
+# Missing bundles report the full commit and an actionable CI instruction.
+if missing_output=$(_run_setup_jukebox_webapp 2>&1); then
+    echo "Installation succeeded without an exact Web App bundle" >&2
+    exit 1
+fi
+[[ "${missing_output}" == *"${TEST_COMMIT}"* ]]
+[[ "${missing_output}" == *"Test Build Web App v3"* ]]
+
+# The legacy local-build mode fails explicitly.
+ENABLE_WEBAPP_PROD_DOWNLOAD=false
+if local_output=$(_run_setup_jukebox_webapp 2>&1); then
+    echo "Legacy local Web App build mode succeeded" >&2
+    exit 1
+fi
+[[ "${local_output}" == *"Local Web App builds were removed"* ]]
+[[ "${local_output}" == *"ENABLE_WEBAPP_PROD_DOWNLOAD=false is unsupported"* ]]
 
 source "${REPOSITORY_ROOT}/installation/routines/customize_options.sh"
 
@@ -118,12 +160,18 @@ GIT_UPSTREAM_USER="MiczFlor"
 CI_RUNNING=false
 
 ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
-_option_webapp_devel_build <<< ''
+_configure_webapp_bundle_download
 [[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == true ]]
 
-ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
-_option_webapp_devel_build <<< 'y'
+ENABLE_WEBAPP_PROD_DOWNLOAD=false
+_configure_webapp_bundle_download
 [[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == false ]]
+
+GIT_BRANCH="${GIT_BRANCH_DEVELOP}"
+GIT_USER="${GIT_UPSTREAM_USER}"
+ENABLE_WEBAPP_PROD_DOWNLOAD=release-only
+_configure_webapp_bundle_download
+[[ "${ENABLE_WEBAPP_PROD_DOWNLOAD}" == "release-only" ]]
 
 source "${REPOSITORY_ROOT}/installation/routines/prepare_dependencies.sh"
 
@@ -134,42 +182,16 @@ get_args_from_file() {
     echo "tar"
 }
 
-get_architecture() {
-    echo "amd64"
-}
-
 SETUP_MPD=false
 ENABLE_SAMBA=false
 ENABLE_WEBAPP=true
 ENABLE_KIOSK_MODE=false
 ENABLE_AUTOHOTSPOT=false
-ENABLE_WEBAPP_PROD_DOWNLOAD=false
-_collect_apt_packages
-[[ " ${APT_PACKAGES[*]} " == *" nodejs "* ]]
-[[ " ${APT_PACKAGES[*]} " == *" npm "* ]]
 
-ENABLE_WEBAPP_PROD_DOWNLOAD=true
-_collect_apt_packages
-[[ " ${APT_PACKAGES[*]} " != *" nodejs "* ]]
-[[ " ${APT_PACKAGES[*]} " != *" npm "* ]]
-
-LOCAL_BUILD_CALLED=false
-
-_jukebox_webapp_build() {
-    LOCAL_BUILD_CALLED=true
-}
-
-_jukebox_webapp_register_as_system_service_with_nginx() {
-    :
-}
-
-_jukebox_webapp_check() {
-    :
-}
-
-GIT_USER="contributor"
-ENABLE_WEBAPP_PROD_DOWNLOAD=false
-_run_setup_jukebox_webapp
-[[ "${LOCAL_BUILD_CALLED}" == true ]]
+for ENABLE_WEBAPP_PROD_DOWNLOAD in true false release-only; do
+    _collect_apt_packages
+    [[ " ${APT_PACKAGES[*]} " != *" nodejs "* ]]
+    [[ " ${APT_PACKAGES[*]} " != *" npm "* ]]
+done
 
 echo "Web App bundle download tests passed"

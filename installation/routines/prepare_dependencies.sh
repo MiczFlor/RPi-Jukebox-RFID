@@ -39,10 +39,6 @@ _collect_apt_packages() {
     if [[ "$ENABLE_WEBAPP" == true ]]; then
         # A trailing '-' asks APT to remove Apache in the same transaction.
         _add_apt_packages nginx apache2-
-
-        if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false && "$(get_architecture)" != "armv6" ]]; then
-            _add_apt_packages nodejs npm
-        fi
     fi
 
     if [[ "$ENABLE_KIOSK_MODE" == true ]]; then

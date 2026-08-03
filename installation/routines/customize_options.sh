@@ -340,33 +340,12 @@ Disable Pi's on-chip audio (headphone / jack output)? [y/N]"
 
 }
 
-_option_webapp_devel_build() {
+_configure_webapp_bundle_download() {
   # Let's detect if we are on the official release branch
   if [[ "$GIT_BRANCH" != "${GIT_BRANCH_RELEASE}" && "$GIT_BRANCH" != "${GIT_BRANCH_DEVELOP}" ]] || [[ "$GIT_USER" != "$GIT_UPSTREAM_USER" ]] || [[ "$CI_RUNNING" == "true" ]] ; then
-    # Development branches default to a pre-built bundle without installing Node.
+    # Development branches use their commit-addressed development bundle.
     if [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == "release-only" ]]; then
       ENABLE_WEBAPP_PROD_DOWNLOAD=true
-      clear_c
-      print_c "--------------------- WEB APP BUILD ---------------------
-
-You are installing from a non-release branch
-and/or an unofficial repository.
-A pre-built Web App for this exact commit will
-be downloaded when available. Otherwise, the
-latest applicable pre-built version is used.
-
-Building locally installs Node and can take a
-long time on Raspberry Pi devices.
-
-Do you want to build the Web App locally? [y/N]"
-      read -r response
-      case "$response" in
-        [yY][eE][sS]|[yY])
-            ENABLE_WEBAPP_PROD_DOWNLOAD=false
-            ;;
-        *)
-            ;;
-      esac
     fi
   fi
 
@@ -384,7 +363,7 @@ _run_customize_options() {
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then
-    _option_webapp_devel_build
+    _configure_webapp_bundle_download
     _option_kiosk_mode
   fi
 }

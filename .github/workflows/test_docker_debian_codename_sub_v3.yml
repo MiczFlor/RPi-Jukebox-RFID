@@ -12,7 +12,7 @@ on:
         test_scripts_json:
           required: false
           type: string
-          default: '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_local.sh", "run_install_webapp_download.sh"]'
+          default: '["run_install_common.sh", "run_install_faststartup.sh", "run_install_webapp_download.sh"]'
         docker_image_name:
           required: false
           type: string

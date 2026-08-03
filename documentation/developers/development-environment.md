@@ -23,7 +23,7 @@ We recommend to use at least a Pi 3 or Pi Zero 2 for development. While this har
 
 1. Follow the [installation preperation](../builders/installation.md#install-raspberry-pi-os-lite) steps
 1. [Install](../builders/installation.md#development) your feature/fork branch of the Jukebox software. The official repository will be set as `upstream`.
-1. If neccessary [build the Web App](./webapp.md) locally
+1. If the commit changes the Web App, wait for its [exact CI bundle](./webapp.md#ci-bundles) before installing it on the Raspberry Pi.
 
 ## Develop on local machine
 

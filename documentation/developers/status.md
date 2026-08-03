@@ -225,8 +225,8 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [ ] System information page
   - [ ] Configure (one or multiple) WLANs
   - [x] Enable/Disable Auto-Hotspot
-- [x] `run_npm_build` script
-  - [x] Must consider `export NODE_OPTIONS=--max-old-space-size=512`
+- [x] Commit-addressed CI Web App bundles
+  - [x] No Node.js or local compilation required on runtime devices
 - [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
 
 ## Installation Procedure

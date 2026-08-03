@@ -83,8 +83,8 @@ git fetch origin --tags
 ```
 
 > [!NOTE]
-> The Installation of the official repository's release branches ([Stable Release](#stable-release) and [Pre-Release](#pre-release)) will deploy a pre-build bundle of the Web App.
-> For another branch or a fork repository, the installer first looks for a CI bundle matching the exact commit and otherwise downloads the latest applicable pre-built release bundle. A local build is optional and disabled by default. See the developers [Web App](../developers/webapp.md) documentation for further details.
+> The installer deploys a pre-built Web App bundle matching the exact checked-out commit.
+> It never compiles the Web App on the Raspberry Pi and never falls back to a bundle from another commit. If a bundle is unavailable, publish or rerun the Web App CI workflow for that commit before retrying the installation. See the developers [Web App](../developers/webapp.md) documentation for details.
 
 ### Logs
 

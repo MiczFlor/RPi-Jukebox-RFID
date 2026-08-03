@@ -24,7 +24,7 @@ DISABLE_ONBOARD_AUDIO=false
 GIT_USE_SSH=${GIT_USE_SSH:-"false"}
 
 # Valid values
-# - release-only: download in release branch only
-# - true: force download, allowing the latest release bundle as a fallback
-# - false: never download
+# - release-only: download an exact-commit release bundle
+# - true: download an exact-commit development or release bundle
+# - false: unsupported legacy setting; installation will fail
 ENABLE_WEBAPP_PROD_DOWNLOAD=${ENABLE_WEBAPP_PROD_DOWNLOAD:-"release-only"}

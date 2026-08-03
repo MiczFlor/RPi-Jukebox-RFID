@@ -21,8 +21,11 @@ warn_npm_dependency() {
   echo "************************************************************"
   echo "ATTENTION: npm dependencies have changed since last pull!"
   echo ""
-  echo "To update dependencies and rebuilt Web App run:"
-  echo " cd src/webapp && ./run_rebuild.sh -u"
+  echo "For workstation development, update dependencies with:"
+  echo " cd src/webapp && npm ci"
+  echo ""
+  echo "On an installed Phoniebox, use the exact CI bundle for:"
+  git rev-parse HEAD
   echo "************************************************************"
   echo -e "\n"
 }
@@ -32,8 +35,9 @@ warn_webapp() {
   echo "************************************************************"
   echo "ATTENTION: Web App sources have changed since last pull!"
   echo ""
-  echo "To rebuilt the Web App run:"
-  echo " cd src/webapp && ./run_rebuild.sh"
+  echo "Install the exact CI Web App bundle for:"
+  git rev-parse HEAD
+  echo "See documentation/builders/update.md for instructions."
   echo "************************************************************"
   echo -e "\n"
 }

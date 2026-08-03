@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>Phoniebox Web UI not found: please re-build Web UI</title>
+<title>Phoniebox Web App bundle not found</title>
 <style>
 	body {font-family: arial,sans-serif}
 	img { border:none; }
@@ -9,14 +9,10 @@
 </head>
 <body>
 <blockquote>
-	<h2>Ups! Looks like your Web UI has not been build!</h2>
-	<p>No reason to panic. Please run through the following steps:
-	<ul>
-		<li><p><code>cd ~/RPi-Jukebox-RFID/src/webapp</code></li>
-		<li><p><code>./run_rebuild.sh -u</code></li>
-		<li><p>Reload this page</li>
-	</ul>
-	<p>In case of trouble when building the Web UI, consult the official <a href="https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/README.md">documentation</a>!
+	<h2>The Web App bundle is missing</h2>
+	<p>Phoniebox requires a pre-built bundle matching the installed commit.</p>
+	<p>Publish or rerun the Web App CI workflow for this commit, install its exact bundle, and reload this page.</p>
+	<p>See the official <a href="https://github.com/MiczFlor/RPi-Jukebox-RFID/blob/future3/main/documentation/developers/webapp.md">Web App documentation</a> for details.</p>
 </blockquote>
 </body>
 </html>
