@@ -1,199 +1,444 @@
-# RPi-Jukebox-RFID Version 3
-# Copyright (c) See file LICENSE in project root folder
-
+import logging
 import os
 import re
-import logging
+import stat
+import threading
+from time import monotonic
+
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-from jukebox.multitimer import (GenericEndlessTimerClass, GenericMultiTimerClass)
+import jukebox.publishing as publishing
+from jukebox.multitimer import GenericEndlessTimerClass
 
 
 logger = logging.getLogger('jb.timers.idle_shutdown_timer')
 cfg = jukebox.cfghandler.get_handler('jukebox')
 
 SSH_CHILD_RE = re.compile(r'sshd: [^/].*')
-PATHS = ['shared/settings',
-         'shared/audiofolders']
+PATHS = ['shared/settings', 'shared/audiofolders']
 
 IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS = 60
-EXTEND_IDLE_TIMEOUT = 60
 IDLE_CHECK_INTERVAL = 10
+FILESYSTEM_GRACE_SECONDS = 60
+
+_PHASE_DISABLED = 'disabled'
+_PHASE_NEEDS_BASELINE = 'needs_baseline'
+_PHASE_OTHER_ACTIVITY = 'other_activity'
+_PHASE_COUNTDOWN = 'countdown'
+_PHASE_GRACE = 'grace'
 
 
-def get_seconds_since_boot():
-    # We may not have a stable clock source when there is no network
-    # connectivity (yet). As we only need to measure the relative time which
-    # has passed, we can just calculate based on the seconds since boot.
-    with open('/proc/uptime') as f:
-        line = f.read()
-    seconds_since_boot, _ = line.split(' ', 1)
-    return float(seconds_since_boot)
+class FilesystemSnapshotError(RuntimeError):
+    """Raised when a stable filesystem fingerprint cannot be collected."""
+
+
+def playback_active():
+    """Return whether audio playback is active."""
+    status = plugin.call('player', 'ctrl', 'playerstatus')
+    return status['state'] == 'play'
+
+
+def ssh_activity():
+    """Return whether an interactive SSH child process is active."""
+    with os.scandir('/proc') as proc_entries:
+        for entry in proc_entries:
+            if not entry.name.isdigit():
+                continue
+            try:
+                with open(
+                        os.path.join(entry.path, 'cmdline'),
+                        encoding='utf-8',
+                        errors='replace') as cmdline_file:
+                    cmdline = cmdline_file.read().replace('\0', ' ')
+            except (FileNotFoundError, PermissionError, ProcessLookupError):
+                continue
+            if SSH_CHILD_RE.match(cmdline):
+                return True
+    return False
+
+
+def _entry_type(stat_result):
+    mode = stat_result.st_mode
+    if stat.S_ISDIR(mode):
+        return 'directory'
+    if stat.S_ISREG(mode):
+        return 'file'
+    if stat.S_ISLNK(mode):
+        return 'symlink'
+    return 'other'
+
+
+def filesystem_fingerprint(paths):
+    """Return a stable fingerprint for configured roots and their entries."""
+    fingerprint = []
+
+    for root_index, root in enumerate(paths):
+        root_key = str(root_index)
+        try:
+            root_stat = os.lstat(root)
+        except FileNotFoundError:
+            fingerprint.append((root_key, 'missing', 0, 0))
+            continue
+        except OSError as error:
+            raise FilesystemSnapshotError(str(error)) from error
+
+        fingerprint.append((
+            root_key,
+            _entry_type(root_stat),
+            root_stat.st_size,
+            root_stat.st_mtime_ns,
+        ))
+
+        def raise_walk_error(error):
+            raise FilesystemSnapshotError(str(error)) from error
+
+        try:
+            for current_root, directories, files in os.walk(
+                    root,
+                    followlinks=False,
+                    onerror=raise_walk_error):
+                for name in directories + files:
+                    path = os.path.join(current_root, name)
+                    relative_path = os.path.relpath(path, root)
+                    entry_stat = os.lstat(path)
+                    fingerprint.append((
+                        f'{root_key}/{relative_path}',
+                        _entry_type(entry_stat),
+                        entry_stat.st_size,
+                        entry_stat.st_mtime_ns,
+                    ))
+        except (FileNotFoundError, PermissionError, ProcessLookupError) as error:
+            raise FilesystemSnapshotError(str(error)) from error
+        except OSError as error:
+            raise FilesystemSnapshotError(str(error)) from error
+
+    return tuple(sorted(fingerprint))
 
 
 class IdleShutdownTimer:
-    def __init__(self, package: str, idle_timeout: int) -> None:
-        self.private_timer_idle_shutdown = None
-        self.private_timer_idle_check = None
-        self.idle_timeout = 0
+    """Monitor host activity and request shutdown after a verified idle period."""
+
+    def __init__(
+            self,
+            package: str,
+            idle_timeout,
+            *,
+            clock=monotonic,
+            playback_detector=playback_active,
+            ssh_detector=ssh_activity,
+            snapshotter=None,
+            paths=None,
+            check_interval=IDLE_CHECK_INTERVAL,
+            grace_seconds=FILESYSTEM_GRACE_SECONDS,
+            shutdown_action=None):
         self.package = package
-        self.idle_check_interval = IDLE_CHECK_INTERVAL
+        self.name = f'{package}.timer_idle_shutdown'
+        self._clock = clock
+        self._playback_detector = playback_detector
+        self._ssh_detector = ssh_detector
+        self._paths = paths if paths is not None else self._default_paths()
+        self._snapshotter = (
+            snapshotter
+            if snapshotter is not None
+            else lambda: filesystem_fingerprint(self._paths)
+        )
+        self._grace_seconds = grace_seconds
+        self._shutdown_action = (
+            shutdown_action
+            if shutdown_action is not None
+            else lambda: plugin.call_ignore_errors('host', 'shutdown')
+        )
+        self._lock = threading.RLock()
+        self._wait_seconds = 0
+        self._deadline = None
+        self._baseline = None
+        self._enabled = False
+        self._running = False
+        self._shutdown_latched = False
+        self._phase = _PHASE_DISABLED
+        self._detector_error_logged = False
+        self._snapshot_error_logged = False
+        self._monitor = GenericEndlessTimerClass(
+            name=None,
+            wait_seconds_per_iteration=check_interval,
+            function=self._poll,
+        )
 
-        self.set_idle_timeout(idle_timeout)
-        self.init_idle_shutdown()
-        self.init_idle_check()
-
-    def set_idle_timeout(self, idle_timeout):
         try:
-            self.idle_timeout = int(idle_timeout)
+            startup_timeout = self._validate_timeout(
+                idle_timeout,
+                allow_disabled=True,
+            )
         except ValueError:
-            logger.warning(f'invalid timers.idle_shutdown.timeout_sec value {repr(idle_timeout)}')
+            logger.warning(
+                'Invalid timers.idle_shutdown.timeout_sec value %r; '
+                'idle shutdown remains disabled',
+                idle_timeout,
+            )
+            startup_timeout = 0
 
-        if self.idle_timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
-            logger.info('disabling idle shutdown timer; set '
-                        'timers.idle_shutdown.timeout_sec to at least '
-                        f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds to enable')
-            self.idle_timeout = 0
+        with self._lock:
+            self._wait_seconds = startup_timeout
+            if startup_timeout:
+                self._begin_locked(startup_timeout)
+            else:
+                self._publish_locked()
 
-    # Using GenericMultiTimerClass instead of GenericTimerClass as it supports classes rather than functions
-    # Calling GenericMultiTimerClass with iterations=1 is the same as GenericTimerClass
-    def init_idle_shutdown(self):
-        self.private_timer_idle_shutdown = GenericMultiTimerClass(
-            name=f"{self.package}.private_timer_idle_shutdown",
-            iterations=1,
-            wait_seconds_per_iteration=self.idle_timeout,
-            callee=IdleShutdown
-        )
-        self.private_timer_idle_shutdown.__doc__ = "Timer to shutdown after system is idle for a given time"
-        plugin.register(self.private_timer_idle_shutdown, name='private_timer_idle_shutdown', package=self.package)
+    @staticmethod
+    def _default_paths():
+        repository_root = os.path.abspath(os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            '..',
+            '..',
+            '..',
+        ))
+        return [os.path.join(repository_root, path) for path in PATHS]
 
-    # Regularly check if player has activity, if not private_timer_idle_check will start/cancel private_timer_idle_shutdown
-    def init_idle_check(self):
-        idle_check_timer_instance = IdleCheck()
-        self.private_timer_idle_check = GenericEndlessTimerClass(
-            name=f"{self.package}.private_timer_idle_check",
-            wait_seconds_per_iteration=self.idle_check_interval,
-            function=idle_check_timer_instance
-        )
-        self.private_timer_idle_check.__doc__ = 'Timer to check if system is idle'
-        if self.idle_timeout:
-            self.private_timer_idle_check.start()
+    @staticmethod
+    def _validate_timeout(wait_seconds, *, allow_disabled=False):
+        if isinstance(wait_seconds, bool):
+            raise ValueError('wait_seconds must be an integer number of seconds')
+        try:
+            timeout = int(wait_seconds)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                'wait_seconds must be an integer number of seconds',
+            ) from error
+        if timeout == 0 and allow_disabled:
+            return 0
+        if timeout < IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS:
+            raise ValueError(
+                'wait_seconds must be at least '
+                f'{IDLE_SHUTDOWN_TIMER_MIN_TIMEOUT_SECONDS} seconds',
+            )
+        return timeout
 
-        plugin.register(self.private_timer_idle_check, name='private_timer_idle_check', package=self.package)
+    @property
+    def timer_thread(self):
+        """Return the periodic worker for legacy shutdown integration."""
+        return self._monitor.timer_thread
+
+    def _take_snapshot_locked(self):
+        try:
+            snapshot = self._snapshotter()
+        except Exception as error:
+            if not self._snapshot_error_logged:
+                logger.warning(
+                    'Filesystem activity check failed; postponing idle shutdown: '
+                    '%s: %s',
+                    error.__class__.__name__,
+                    error,
+                )
+                self._snapshot_error_logged = True
+            return None
+        self._snapshot_error_logged = False
+        return snapshot
+
+    def _begin_locked(self, wait_seconds):
+        now = self._clock()
+        self._wait_seconds = wait_seconds
+        self._enabled = True
+        self._running = False
+        self._shutdown_latched = False
+        self._deadline = now + wait_seconds
+        self._baseline = self._take_snapshot_locked()
+        if self._baseline is None:
+            self._phase = _PHASE_NEEDS_BASELINE
+        else:
+            self._phase = _PHASE_COUNTDOWN
+            self._running = True
+        self._publish_locked()
+        self._monitor.start(restart=True)
+
+    def _remaining_seconds_locked(self):
+        if not self._enabled or not self._running or self._deadline is None:
+            return 0
+        return max(0, self._deadline - self._clock())
 
     @plugin.tag
-    def start(self, wait_seconds: int):
-        """Sets idle_shutdown timeout_sec stored in jukebox.yaml"""
-        cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=wait_seconds)
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'start')
+    def start(self, wait_seconds: int, restart: bool = True):
+        """Enable monitoring and persist a new idle timeout."""
+        timeout = self._validate_timeout(wait_seconds)
+        with self._lock:
+            if self._enabled and not restart:
+                return
+            cfg.setn(
+                'timers',
+                'idle_shutdown',
+                'timeout_sec',
+                value=timeout,
+            )
+            self._begin_locked(timeout)
 
     @plugin.tag
     def cancel(self):
-        """Cancels all idle timers and disables idle shutdown in jukebox.yaml"""
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-        cfg.setn('timers', 'idle_shutdown', 'timeout_sec', value=0)
-
-    def close(self):
-        """Stop timer workers without changing persisted configuration."""
-        self.private_timer_idle_check.close()
-        self.private_timer_idle_shutdown.close()
+        """Disable idle shutdown and persist the disabled configuration."""
+        with self._lock:
+            cfg.setn(
+                'timers',
+                'idle_shutdown',
+                'timeout_sec',
+                value=0,
+            )
+            transitioned = self._enabled
+            self._enabled = False
+            self._running = False
+            self._deadline = None
+            self._baseline = None
+            self._phase = _PHASE_DISABLED
+            self._monitor.cancel()
+            if transitioned:
+                self._publish_locked()
 
     @plugin.tag
     def get_state(self):
-        """Returns the current state of Idle Shutdown"""
-        idle_check_state = plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'get_state')
-        idle_shutdown_state = plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'get_state')
+        """Return the RPC-compatible idle shutdown state."""
+        with self._lock:
+            return {
+                'enabled': self._enabled,
+                'running': self._running,
+                'remaining_seconds': self._remaining_seconds_locked(),
+                'wait_seconds': self._wait_seconds,
+            }
 
-        return {
-            'enabled': idle_check_state['enabled'],
-            'running': idle_shutdown_state['enabled'],
-            'remaining_seconds': idle_shutdown_state['remaining_seconds'],
-            'wait_seconds': idle_shutdown_state['wait_seconds_per_iteration'],
-        }
+    def _publish_locked(self):
+        state = self.get_state()
+        logger.debug('%s: State = %s', self.name, state)
+        publishing.get_publisher().send(self.name, state)
 
+    def _mark_other_activity_locked(self, now):
+        transitioned = (
+            self._running
+            or self._phase != _PHASE_OTHER_ACTIVITY
+        )
+        self._running = False
+        self._phase = _PHASE_OTHER_ACTIVITY
+        self._deadline = now + self._wait_seconds
+        self._baseline = None
+        if transitioned:
+            self._publish_locked()
 
-class IdleCheck:
-    def __init__(self) -> None:
-        self.last_player_status = plugin.call('player', 'ctrl', 'playerstatus')
-        logger.debug('Started IdleCheck with initial state: {}'.format(self.last_player_status))
-
-    # Run function
-    def __call__(self):
-        player_status = plugin.call('player', 'ctrl', 'playerstatus')
-
-        if self.last_player_status == player_status:
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'start')
-        else:
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-
-        self.last_player_status = player_status.copy()
-        return self.last_player_status
-
-
-class IdleShutdown():
-    files_num_entries: int = 0
-    files_latest_mtime: float = 0
-
-    def __init__(self) -> None:
-        self.base_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
-
-    def __call__(self):
-        logger.debug('Last checks before shutting down')
-        if self._has_active_ssh_sessions():
-            logger.debug('Active SSH sessions found, will not shutdown now')
-            plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'set_timeout', args=[int(EXTEND_IDLE_TIMEOUT)])
+    def _capture_baseline_locked(self, now):
+        snapshot = self._take_snapshot_locked()
+        if snapshot is None:
+            transitioned = self._phase != _PHASE_NEEDS_BASELINE
+            self._running = False
+            self._phase = _PHASE_NEEDS_BASELINE
+            self._deadline = now + self._wait_seconds
+            if transitioned:
+                self._publish_locked()
             return
-        # if self._has_changed_files():
-        #     logger.debug('Changes files found, will not shutdown now')
-        #     plugin.call_ignore_errors(
-        #         'timers',
-        #         'private_timer_idle_shutdown',
-        #         'set_timeout',
-        #         args=[int(EXTEND_IDLE_TIMEOUT)])
-        #     return
+        self._baseline = snapshot
+        self._running = True
+        self._phase = _PHASE_COUNTDOWN
+        self._deadline = now + self._wait_seconds
+        self._publish_locked()
 
-        logger.info('No activity, shutting down')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_check', 'cancel')
-        plugin.call_ignore_errors('timers', 'private_timer_idle_shutdown', 'cancel')
-        plugin.call_ignore_errors('host', 'shutdown')
+    def _postpone_for_detector_error_locked(self, now, errors):
+        if not self._detector_error_logged:
+            error = errors[0]
+            logger.warning(
+                'Idle activity detector failed; postponing shutdown: %s: %s',
+                error.__class__.__name__,
+                error,
+            )
+            self._detector_error_logged = True
+        self._mark_other_activity_locked(now)
 
-    @staticmethod
-    def _has_active_ssh_sessions():
-        logger.debug('Checking for SSH activity')
-        with os.scandir('/proc') as proc_dir:
-            for proc_path in proc_dir:
-                if not proc_path.is_dir():
-                    continue
-                try:
-                    with open(os.path.join(proc_path, 'cmdline')) as f:
-                        cmdline = f.read()
-                except (FileNotFoundError, PermissionError):
-                    continue
-                if SSH_CHILD_RE.match(cmdline):
-                    return True
+    def _check_filesystem_locked(self, now):
+        snapshot = self._take_snapshot_locked()
+        if snapshot is None:
+            self._baseline = None
+            self._running = False
+            self._phase = _PHASE_NEEDS_BASELINE
+            self._deadline = now + self._wait_seconds
+            self._publish_locked()
+            return False
+        if self._baseline != snapshot:
+            self._baseline = snapshot
+            self._running = True
+            self._phase = _PHASE_COUNTDOWN
+            self._deadline = now + self._wait_seconds
+            self._publish_locked()
+            return False
+        return True
 
-    def _has_changed_files(self):
-        # This is a rather expensive check, but it only runs twice
-        # when an idle shutdown is initiated.
-        # Only when there are actual changes (file transfers via
-        # SFTP, Samba, etc.), the check may run multiple times.
-        logger.debug('Scanning for file changes')
-        latest_mtime = 0
-        num_entries = 0
-        for path in PATHS:
-            for root, dirs, files in os.walk(os.path.join(self.base_path, path)):
-                for p in dirs + files:
-                    mtime = os.stat(os.path.join(root, p)).st_mtime
-                    latest_mtime = max(latest_mtime, mtime)
-                    num_entries += 1
+    def _detect_activity(self):
+        detector_errors = []
+        playback = False
+        ssh = False
+        try:
+            playback = bool(self._playback_detector())
+        except Exception as error:
+            detector_errors.append(error)
+        try:
+            ssh = bool(self._ssh_detector())
+        except Exception as error:
+            detector_errors.append(error)
+        return playback, ssh, detector_errors
 
-        logger.debug(f'Completed file scan ({num_entries} entries, latest_mtime={latest_mtime})')
-        if self.files_latest_mtime != latest_mtime or self.files_num_entries != num_entries:
-            # We compare the number of entries to have a chance to detect file
-            # deletions as well.
-            self.files_latest_mtime = latest_mtime
-            self.files_num_entries = num_entries
-            return True
+    def _advance_locked(self, now, playback, ssh):
+        if playback or ssh:
+            self._mark_other_activity_locked(now)
+            return False
 
-        return False
+        if self._phase in (
+                _PHASE_OTHER_ACTIVITY,
+                _PHASE_NEEDS_BASELINE):
+            self._capture_baseline_locked(now)
+            return False
+
+        if now < self._deadline:
+            return False
+
+        if not self._check_filesystem_locked(now):
+            return False
+
+        if self._phase == _PHASE_COUNTDOWN:
+            self._phase = _PHASE_GRACE
+            self._deadline = now + self._grace_seconds
+            self._publish_locked()
+            return False
+
+        self._shutdown_latched = True
+        self._enabled = False
+        self._running = False
+        self._deadline = None
+        self._phase = _PHASE_DISABLED
+        self._monitor.cancel()
+        self._publish_locked()
+        return True
+
+    def _poll(self):
+        playback, ssh, detector_errors = self._detect_activity()
+        with self._lock:
+            if not self._enabled or self._shutdown_latched:
+                return
+            now = self._clock()
+            if detector_errors:
+                self._postpone_for_detector_error_locked(
+                    now,
+                    detector_errors,
+                )
+                return
+            self._detector_error_logged = False
+            request_shutdown = self._advance_locked(now, playback, ssh)
+
+        if request_shutdown:
+            logger.info('No activity after verification grace period; shutting down')
+            self._shutdown_action()
+
+    def close(self):
+        """Stop monitor workers without changing persisted configuration."""
+        with self._lock:
+            transitioned = self._enabled
+            self._enabled = False
+            self._running = False
+            self._deadline = None
+            self._baseline = None
+            self._phase = _PHASE_DISABLED
+            self._monitor.cancel()
+            if transitioned:
+                self._publish_locked()
+        self._monitor.close()
