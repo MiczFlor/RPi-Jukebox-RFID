@@ -55,3 +55,41 @@ def test_sync_paths_builds_mount_mode_rsync_command(rfidcards, monkeypatch):
         capture_output=True,
         text=True,
     )
+
+
+@pytest.mark.parametrize('source_path', [
+    '/srv/audiofolders/album',
+    '/srv/audiofolders/favorite album',
+])
+def test_sync_paths_protects_ssh_source_path(
+        rfidcards, monkeypatch, source_path):
+    run = MagicMock(return_value=SimpleNamespace(
+        returncode=0,
+        stdout='',
+        stderr='',
+    ))
+    monkeypatch.setattr(rfidcards.subprocess, 'run', run)
+    controller = rfidcards.SyncRfidcards.__new__(rfidcards.SyncRfidcards)
+    controller._sync_is_mode_ssh = True
+    controller._sync_remote_ssh_user = 'jukebox'
+    controller._sync_remote_server = 'music.example.com'
+    controller._sync_remote_port = 2222
+
+    assert controller._sync_paths(source_path, '/media/destination') is False
+
+    run.assert_called_once_with(
+        [
+            'rsync',
+            '--recursive', '--itemize-changes',
+            '--safe-links', '--times', '--omit-dir-times',
+            '--delete', '--prune-empty-dirs',
+            '--exclude=folder.conf',
+            '--exclude=.*', '--exclude=.*/', '--exclude=@*/', '--cvs-exclude',
+            '--compress', '--protect-args', '-e', 'ssh -p 2222',
+            f'jukebox@music.example.com:{source_path}', '/media/destination',
+        ],
+        shell=False,
+        check=False,
+        capture_output=True,
+        text=True,
+    )

@@ -259,7 +259,11 @@ class SyncRfidcards:
             _host = self._sync_remote_server
             _port = self._sync_remote_port
 
-            _mode_params = ['--compress', '-e', f"ssh -p {_port}", f"{_user}@{_host}:'{src_path}'", dst_path]
+            _mode_params = [
+                '--compress', '--protect-args',
+                '-e', f"ssh -p {_port}",
+                f"{_user}@{_host}:{src_path}", dst_path,
+            ]
 
         else:
             _mode_params = [src_path, dst_path]
