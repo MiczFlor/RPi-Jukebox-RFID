@@ -119,9 +119,8 @@ timers:
     default_timeout_sec: 3600
   stop_player:
     default_timeout_sec: 3600
-  volume_fade_out:
-    default_time_per_iteration_sec: 900
-    number_of_steps: 10
+  volume_fadeout:
+    default_timeout_sec: 600
 host:
   # Do not actually execute system shutdown and reboot commands
   debug_mode: false

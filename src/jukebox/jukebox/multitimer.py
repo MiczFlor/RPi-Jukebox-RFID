@@ -257,6 +257,14 @@ class GenericTimerClass:
                 worker.cancel()
             self._publish_core(enabled=False)
 
+    def cancel_generation(self, worker):
+        """Cancel one worker without affecting a newer generation."""
+        with self._lock:
+            if self._enabled and self.timer_thread is worker:
+                self.cancel()
+            else:
+                worker.cancel()
+
     @plugin.tag
     def toggle(self):
         """Toggle between active and disabled states."""
@@ -372,68 +380,4 @@ class GenericEndlessTimerClass(GenericTimerClass):
                 'enabled': self._enabled,
                 'wait_seconds_per_iteration': self._wait_seconds,
                 'type': 'GenericEndlessTimerClass',
-            }
-
-
-class GenericMultiTimerClass(GenericTimerClass):
-    """A limited fixed-delay timer with callback-builder support."""
-
-    def __init__(
-            self,
-            name: str,
-            iterations: int,
-            wait_seconds_per_iteration: float,
-            callee: Callable,
-            args=None,
-            kwargs=None):
-        super().__init__(
-            name,
-            wait_seconds_per_iteration,
-            lambda: None,
-            None,
-            None,
-        )
-        self.class_args = args if args is not None else []
-        self.class_kwargs = kwargs if kwargs is not None else {}
-        self._iterations = iterations
-        self._callee = callee
-
-    @plugin.tag
-    def start(
-            self,
-            iterations: Optional[int] = None,
-            wait_seconds_per_iteration: Optional[float] = None,
-            restart: bool = True):
-        """Build one callback instance and start a limited generation."""
-        with self._lock:
-            if self._enabled and not restart:
-                return
-            if iterations is not None:
-                self._iterations = iterations
-            instance = self._callee(
-                *self.class_args,
-                iterations=self._iterations,
-                **self.class_kwargs,
-            )
-            self._function = lambda iteration, *args, **kwargs: instance(
-                *args,
-                iteration=iteration,
-                **kwargs,
-            )
-        super().start(wait_seconds_per_iteration, restart=restart)
-
-    @plugin.tag
-    def get_state(self) -> Dict[str, Any]:
-        """Return the RPC-compatible limited timer state."""
-        with self._lock:
-            remaining_current = self._remaining_seconds_locked()
-            return {
-                'enabled': self._enabled,
-                'wait_seconds_per_iteration': self._wait_seconds,
-                'remaining_seconds_current_iteration': remaining_current,
-                'remaining_seconds': (
-                    self._wait_seconds * self._iterations + remaining_current
-                ),
-                'iterations': self._iterations,
-                'type': 'GenericMultiTimerClass',
             }

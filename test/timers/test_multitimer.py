@@ -6,7 +6,6 @@ import pytest
 
 from jukebox.multitimer import (
     GenericEndlessTimerClass,
-    GenericMultiTimerClass,
     GenericTimerClass,
 )
 
@@ -194,40 +193,3 @@ def test_close_joins_workers_and_prevents_later_starts(publisher):
     timer.start(0)
     assert timer.timer_thread is worker
     assert not worker.is_alive()
-
-
-def test_multi_timer_builds_one_callback_and_preserves_iteration_order(
-        publisher):
-    constructed = []
-    iterations = []
-    complete = threading.Event()
-
-    class Callback:
-        def __init__(self, prefix, *, iterations):
-            constructed.append((prefix, iterations))
-
-        def __call__(self, suffix, *, iteration):
-            iterations.append((suffix, iteration))
-            if iteration == 0:
-                complete.set()
-
-    timer = GenericMultiTimerClass(
-        'test.multi',
-        3,
-        0.01,
-        Callback,
-        args=['builder'],
-        kwargs={},
-    )
-    timer.args = ['callback']
-    timer.start()
-
-    assert complete.wait(1)
-    wait_until(lambda: not timer.is_alive())
-    assert constructed == [('builder', 3)]
-    assert iterations == [
-        ('callback', 2),
-        ('callback', 1),
-        ('callback', 0),
-    ]
-    timer.close()

@@ -6,11 +6,12 @@ import jukebox.cfghandler
 import jukebox.plugs as plugin
 from jukebox.multitimer import GenericTimerClass
 from .idle_shutdown_timer import IdleShutdownTimer
-from .volume_fadeout_shutdown_timer import VolumeFadoutAndShutdown
+from .volume_fadeout_shutdown_timer import VolumeFadeoutAndShutdown
 
 
 logger = logging.getLogger('jb.timers')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+VolumeFadoutAndShutdown = VolumeFadeoutAndShutdown
 
 
 # ---------------------------------------------------------------------------
@@ -31,7 +32,7 @@ def stop_player():
 # ---------------------------------------------------------------------------
 timer_shutdown: GenericTimerClass
 timer_stop_player: GenericTimerClass
-timer_fade_volume: VolumeFadoutAndShutdown
+timer_fade_volume: VolumeFadeoutAndShutdown
 timer_idle_shutdown: IdleShutdownTimer
 
 
@@ -57,7 +58,7 @@ def finalize():
 
     # Volume Fadeout and Shutdown Timer
     global timer_fade_volume
-    timer_fade_volume = VolumeFadoutAndShutdown(
+    timer_fade_volume = VolumeFadeoutAndShutdown(
         name=f"{plugin.loaded_as(__name__)}.timer_fade_volume"
     )
     plugin.register(timer_fade_volume, name='timer_fade_volume', package=plugin.loaded_as(__name__))

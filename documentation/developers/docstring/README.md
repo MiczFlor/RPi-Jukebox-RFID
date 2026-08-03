@@ -59,16 +59,12 @@
 * [components.timers](#components.timers)
 * [components.timers.volume\_fadeout\_shutdown\_timer](#components.timers.volume_fadeout_shutdown_timer)
   * [VolumeFadeoutError](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutError)
-  * [VolumeFadeoutAction](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAction)
-    * [\_\_call\_\_](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAction.__call__)
-  * [VolumeFadoutAndShutdown](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown)
-    * [MIN\_TOTAL\_DURATION](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.MIN_TOTAL_DURATION)
-    * [FADEOUT\_DURATION](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.FADEOUT_DURATION)
-    * [start](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.start)
-    * [cancel](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.cancel)
-    * [is\_alive](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.is_alive)
-    * [get\_state](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.get_state)
-    * [get\_config](#components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.get_config)
+  * [VolumeFadeoutAndShutdown](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown)
+    * [start](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.start)
+    * [cancel](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.cancel)
+    * [is\_alive](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.is_alive)
+    * [get\_state](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.get_state)
+    * [get\_config](#components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.get_config)
 * [components.hostif.linux](#components.hostif.linux)
   * [shutdown](#components.hostif.linux.shutdown)
   * [reboot](#components.hostif.linux.reboot)
@@ -423,10 +419,6 @@
   * [GenericEndlessTimerClass](#jukebox.multitimer.GenericEndlessTimerClass)
     * [\_\_init\_\_](#jukebox.multitimer.GenericEndlessTimerClass.__init__)
     * [get\_state](#jukebox.multitimer.GenericEndlessTimerClass.get_state)
-  * [GenericMultiTimerClass](#jukebox.multitimer.GenericMultiTimerClass)
-    * [\_\_init\_\_](#jukebox.multitimer.GenericMultiTimerClass.__init__)
-    * [start](#jukebox.multitimer.GenericMultiTimerClass.start)
-    * [get\_state](#jukebox.multitimer.GenericMultiTimerClass.get_state)
 * [jukebox.api.server](#jukebox.api.server)
   * [EventBroker](#jukebox.api.server.EventBroker)
   * [ApiServer](#jukebox.api.server.ApiServer)
@@ -1138,92 +1130,32 @@ Returns the current state of Idle Shutdown
 class VolumeFadeoutError(Exception)
 ```
 
-Custom exception for volume fadeout errors
+Raised when a fadeout timer request is invalid.
 
 
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAction"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown"></a>
 
-## VolumeFadeoutAction Objects
-
-```python
-class VolumeFadeoutAction()
-```
-
-Handles the actual volume fade out actions
-
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAction.__call__"></a>
-
-#### \_\_call\_\_
+## VolumeFadeoutAndShutdown Objects
 
 ```python
-def __call__(iteration, *args, **kwargs)
+class VolumeFadeoutAndShutdown()
 ```
 
-Called for each timer iteration
+Fade volume over the final two minutes, then request shutdown.
 
 
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown"></a>
-
-## VolumeFadoutAndShutdown Objects
-
-```python
-class VolumeFadoutAndShutdown()
-```
-
-Timer system that gracefully fades out volume before shutdown.
-
-This timer manages three coordinated timers for a smooth shutdown sequence:
-1. Main shutdown timer: Runs for the full duration and triggers the final shutdown
-2. Fadeout start timer: Triggers the volume fadeout 2 minutes before shutdown
-3. Volume fadeout timer: Handles the actual volume reduction in the last 2 minutes
-
-Example for a 5-minute (300s) timer:
-- t=0s:   Shutdown timer starts (300s)
-          Fadeout start timer starts (180s)
-- t=180s: Fadeout start timer triggers volume reduction
-          Volume fadeout begins (12 steps over 120s)
-- t=300s: Shutdown timer triggers system shutdown
-
-The fadeout always takes 2 minutes (120s), regardless of the total timer duration.
-The minimum total duration is 2 minutes to accommodate the fadeout period.
-All timers can be cancelled together using the cancel() method.
-
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.MIN_TOTAL_DURATION"></a>
-
-#### MIN\_TOTAL\_DURATION
-
-2 minutes minimum
-
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.FADEOUT_DURATION"></a>
-
-#### FADEOUT\_DURATION
-
-Last 2 minutes for fadeout
-
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.start"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.start"></a>
 
 #### start
 
 ```python
 @plugin.tag
-def start(wait_seconds=None)
+def start(wait_seconds=None, restart: bool = True)
 ```
 
-Start the coordinated timer system
+Start or atomically replace the fadeout timer.
 
-**Arguments**:
-
-- `wait_seconds` (`float`): Total duration until shutdown (optional)
-
-**Raises**:
-
-- `VolumeFadeoutError`: If duration too short
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.cancel"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.cancel"></a>
 
 #### cancel
 
@@ -1232,10 +1164,9 @@ Start the coordinated timer system
 def cancel()
 ```
 
-Cancel all active timers
+Cancel all future fade and shutdown actions.
 
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.is_alive"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.is_alive"></a>
 
 #### is\_alive
 
@@ -1244,10 +1175,9 @@ Cancel all active timers
 def is_alive()
 ```
 
-Check if any timer is currently active
+Return whether the fadeout controller is active.
 
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.get_state"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.get_state"></a>
 
 #### get\_state
 
@@ -1256,10 +1186,9 @@ Check if any timer is currently active
 def get_state()
 ```
 
-Get the current state of the timer system
+Return the RPC-compatible fadeout state.
 
-
-<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadoutAndShutdown.get_config"></a>
+<a id="components.timers.volume_fadeout_shutdown_timer.VolumeFadeoutAndShutdown.get_config"></a>
 
 #### get\_config
 
@@ -1268,7 +1197,7 @@ Get the current state of the timer system
 def get_config()
 ```
 
-Get the current configuration
+Return fadeout timer configuration.
 
 
 <a id="components.hostif.linux"></a>
@@ -6102,27 +6031,7 @@ Parse the folder ``path`` and create a playlist from its content
 
 # jukebox.multitimer
 
-MultiTimer Module
-
-This module provides timer functionality with support for single, multiple, and endless iterations.
-It includes three main timer classes:
-- MultiTimer: The base timer implementation using threading
-- GenericTimerClass: A single-event timer with plugin/RPC support
-- GenericEndlessTimerClass: An endless repeating timer
-- GenericMultiTimerClass: A multi-iteration timer with callback builder support
-
-Example usage:
-    # Single event timer
-    timer = GenericTimerClass("my_timer", 5.0, my_function)
-    timer.start()
-
-    # Endless timer
-    endless_timer = GenericEndlessTimerClass("endless", 1.0, update_function)
-    endless_timer.start()
-
-    # Multi-iteration timer
-    multi_timer = GenericMultiTimerClass("counter", 5, 1.0, CounterCallback)
-    multi_timer.start()
+Threaded one-shot and fixed-delay periodic timers.
 
 
 <a id="jukebox.multitimer.MultiTimer"></a>
@@ -6472,87 +6381,6 @@ Get current timer state.
 `dict`: Timer state including:
 - enabled: Whether timer is running
 - wait_seconds_per_iteration: Interval between calls
-- type: Timer class name
-
-<a id="jukebox.multitimer.GenericMultiTimerClass"></a>
-
-## GenericMultiTimerClass Objects
-
-```python
-class GenericMultiTimerClass(GenericTimerClass)
-```
-
-A multi-iteration timer with callback builder support.
-
-This timer executes a specified number of iterations with a callback
-that's created for each full cycle. It's useful when you need stateful
-callbacks or complex iteration handling.
-
-The callee parameter should be a class or function that:
-1. Takes iterations as a parameter during construction
-2. Returns a callable that accepts an iteration parameter
-
-
-<a id="jukebox.multitimer.GenericMultiTimerClass.__init__"></a>
-
-#### \_\_init\_\_
-
-```python
-def __init__(name: str,
-             iterations: int,
-             wait_seconds_per_iteration: float,
-             callee: Callable,
-             args=None,
-             kwargs=None)
-```
-
-Initialize multi-iteration timer.
-
-**Arguments**:
-
-- `name`: Timer identifier
-- `iterations`: Total number of iterations
-- `wait_seconds_per_iteration`: Interval between calls
-- `callee`: Callback builder class/function
-- `args`: Positional arguments for callee
-- `kwargs`: Keyword arguments for callee
-
-<a id="jukebox.multitimer.GenericMultiTimerClass.start"></a>
-
-#### start
-
-```python
-@plugin.tag
-def start(iterations: Optional[int] = None,
-          wait_seconds_per_iteration: Optional[float] = None)
-```
-
-Start the timer with optional new parameters.
-
-**Arguments**:
-
-- `iterations`: Optional new iteration count
-- `wait_seconds_per_iteration`: Optional new interval
-
-<a id="jukebox.multitimer.GenericMultiTimerClass.get_state"></a>
-
-#### get\_state
-
-```python
-@plugin.tag
-def get_state() -> Dict[str, Any]
-```
-
-Get current timer state.
-
-**Returns**:
-
-`dict`: Timer state including:
-- enabled: Whether timer is running
-- wait_seconds_per_iteration: Interval between calls
-- remaining_seconds_current_iteration: Time until next call
-- remaining_seconds: Total time remaining
-- iterations: Total iteration count
 - type: Timer class name
 
 <a id="jukebox.api.server"></a>

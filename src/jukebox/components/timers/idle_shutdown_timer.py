@@ -158,6 +158,7 @@ class IdleShutdownTimer:
         self._phase = _PHASE_DISABLED
         self._detector_error_logged = False
         self._snapshot_error_logged = False
+        self._controller_generation = 0
         self._monitor = GenericEndlessTimerClass(
             name=None,
             wait_seconds_per_iteration=check_interval,
@@ -180,9 +181,12 @@ class IdleShutdownTimer:
         with self._lock:
             self._wait_seconds = startup_timeout
             if startup_timeout:
-                self._begin_locked(startup_timeout)
+                generation = self._begin_locked(startup_timeout)
             else:
                 self._publish_locked()
+                generation = None
+        if generation is not None:
+            self._start_monitor(generation)
 
     @staticmethod
     def _default_paths():
@@ -236,6 +240,7 @@ class IdleShutdownTimer:
         return snapshot
 
     def _begin_locked(self, wait_seconds):
+        self._controller_generation += 1
         now = self._clock()
         self._wait_seconds = wait_seconds
         self._enabled = True
@@ -249,7 +254,18 @@ class IdleShutdownTimer:
             self._phase = _PHASE_COUNTDOWN
             self._running = True
         self._publish_locked()
+        return self._controller_generation
+
+    def _start_monitor(self, generation):
         self._monitor.start(restart=True)
+        worker = self._monitor.timer_thread
+        with self._lock:
+            stale = (
+                not self._enabled
+                or generation != self._controller_generation
+            )
+        if stale and worker is not None:
+            self._monitor.cancel_generation(worker)
 
     def _remaining_seconds_locked(self):
         if not self._enabled or not self._running or self._deadline is None:
@@ -269,7 +285,8 @@ class IdleShutdownTimer:
                 'timeout_sec',
                 value=timeout,
             )
-            self._begin_locked(timeout)
+            generation = self._begin_locked(timeout)
+        self._start_monitor(generation)
 
     @plugin.tag
     def cancel(self):
@@ -283,13 +300,14 @@ class IdleShutdownTimer:
             )
             transitioned = self._enabled
             self._enabled = False
+            self._controller_generation += 1
             self._running = False
             self._deadline = None
             self._baseline = None
             self._phase = _PHASE_DISABLED
-            self._monitor.cancel()
             if transitioned:
                 self._publish_locked()
+        self._monitor.cancel()
 
     @plugin.tag
     def get_state(self):
@@ -434,11 +452,12 @@ class IdleShutdownTimer:
         with self._lock:
             transitioned = self._enabled
             self._enabled = False
+            self._controller_generation += 1
             self._running = False
             self._deadline = None
             self._baseline = None
             self._phase = _PHASE_DISABLED
-            self._monitor.cancel()
             if transitioned:
                 self._publish_locked()
+        self._monitor.cancel()
         self._monitor.close()

@@ -1,6 +1,7 @@
 import importlib.util
 import logging
 import os
+import threading
 import time
 from pathlib import Path
 
@@ -386,6 +387,35 @@ def test_publication_uses_rpc_compatible_state(controller_factory):
     }
     assert state['enabled'] is True
     assert state['running'] is True
+
+
+def test_restart_at_poll_boundary_has_no_lock_inversion(
+        controller_factory):
+    create, _, _ = controller_factory
+    detector_entered = threading.Event()
+    release_detector = threading.Event()
+    block_detector = {'value': False}
+
+    def playback():
+        if block_detector['value']:
+            detector_entered.set()
+            assert release_detector.wait(1)
+        return False
+
+    timer = create(playback_detector=playback)
+    timer.start(60)
+    block_detector['value'] = True
+    timer._monitor.trigger()
+    assert detector_entered.wait(1)
+
+    restart = threading.Thread(target=timer.start, args=(120,))
+    restart.start()
+    time.sleep(0.02)
+    release_detector.set()
+    restart.join(1)
+
+    assert not restart.is_alive()
+    assert timer.get_state()['wait_seconds'] == 120
 
 
 def test_filesystem_fingerprint_detects_metadata_and_missing_roots(tmp_path):

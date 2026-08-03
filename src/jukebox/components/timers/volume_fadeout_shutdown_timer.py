@@ -1,216 +1,364 @@
 import logging
-import time
+import threading
+from time import monotonic
+
 import jukebox.cfghandler
 import jukebox.plugs as plugin
-from jukebox.multitimer import GenericTimerClass, GenericMultiTimerClass
+import jukebox.publishing as publishing
+from jukebox.multitimer import GenericTimerClass
 
 
-logger = logging.getLogger('jb.timers')
+logger = logging.getLogger('jb.timers.volume_fadeout')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+_PHASE_DISABLED = 'disabled'
+_PHASE_WAITING = 'waiting'
+_PHASE_FADING = 'fading'
+_PHASE_WAITING_FOR_SHUTDOWN = 'waiting_for_shutdown'
+_PHASE_COMPLETE = 'complete'
 
 
 class VolumeFadeoutError(Exception):
-    """Custom exception for volume fadeout errors"""
-    pass
+    """Raised when a fadeout timer request is invalid."""
 
 
-class VolumeFadeoutAction:
-    """Handles the actual volume fade out actions"""
-    def __init__(self, start_volume):
-        self.start_volume = start_volume
-        # Use 12 steps for 2 minutes = 10 seconds per step
-        self.iterations = 12
-        self.volume_step = start_volume / (self.iterations - 1)
-        logger.debug(f"Initialized fadeout from volume {start_volume}")
+class VolumeFadeoutAndShutdown:
+    """Fade volume over the final two minutes, then request shutdown."""
 
-    def __call__(self, iteration, *args, **kwargs):
-        """Called for each timer iteration"""
-        # Calculate target volume for this step
-        target_volume = max(0, int(self.start_volume - (self.iterations - iteration - 1) * self.volume_step))
-        logger.debug(f"Fading volume to {target_volume} (Step {self.iterations - iteration}/{self.iterations})")
-        plugin.call_ignore_errors('volume', 'ctrl', 'set_volume', args=[target_volume])
+    MIN_TOTAL_DURATION = 120
+    FADEOUT_DURATION = 120
+    FADE_STEPS = 12
+    STEP_SECONDS = 10
 
-
-class VolumeFadoutAndShutdown:
-    """Timer system that gracefully fades out volume before shutdown.
-
-    This timer manages three coordinated timers for a smooth shutdown sequence:
-    1. Main shutdown timer: Runs for the full duration and triggers the final shutdown
-    2. Fadeout start timer: Triggers the volume fadeout 2 minutes before shutdown
-    3. Volume fadeout timer: Handles the actual volume reduction in the last 2 minutes
-
-    Example for a 5-minute (300s) timer:
-    - t=0s:   Shutdown timer starts (300s)
-              Fadeout start timer starts (180s)
-    - t=180s: Fadeout start timer triggers volume reduction
-              Volume fadeout begins (12 steps over 120s)
-    - t=300s: Shutdown timer triggers system shutdown
-
-    The fadeout always takes 2 minutes (120s), regardless of the total timer duration.
-    The minimum total duration is 2 minutes to accommodate the fadeout period.
-    All timers can be cancelled together using the cancel() method.
-    """
-
-    MIN_TOTAL_DURATION = 120  # 2 minutes minimum
-    FADEOUT_DURATION = 120    # Last 2 minutes for fadeout
-
-    def __init__(self, name):
+    def __init__(
+            self,
+            name,
+            *,
+            clock=monotonic,
+            get_volume=None,
+            set_volume=None,
+            shutdown_action=None):
         self.name = name
-        self.default_timeout = cfg.setndefault('timers', 'volume_fadeout', 'default_timeout_sec', value=600)
-
-        self.shutdown_timer = None
-        self.fadeout_start_timer = None
-        self.fadeout_timer = None
-
-        self._reset_state()
-
-    def _reset_state(self):
-        """Reset internal state variables"""
+        self.default_timeout = cfg.setndefault(
+            'timers',
+            'volume_fadeout',
+            'default_timeout_sec',
+            value=600,
+        )
+        self._clock = clock
+        self._get_volume = (
+            get_volume
+            if get_volume is not None
+            else lambda: plugin.call('volume', 'ctrl', 'get_volume')
+        )
+        self._set_volume = (
+            set_volume
+            if set_volume is not None
+            else lambda volume: plugin.call(
+                'volume',
+                'ctrl',
+                'set_volume',
+                args=[volume],
+            )
+        )
+        self._shutdown_action = (
+            shutdown_action
+            if shutdown_action is not None
+            else lambda: plugin.call_ignore_errors('host', 'shutdown')
+        )
+        self._lock = threading.RLock()
+        self._timer = GenericTimerClass(None, self.default_timeout, self._on_timer)
+        self._generation = 0
+        self._worker_generations = {}
+        self._enabled = False
+        self._shutdown_latched = False
+        self._phase = _PHASE_DISABLED
         self.start_time = None
         self.total_duration = None
         self.current_volume = None
         self.fadeout_started = False
+        self._final_deadline = None
+        self._fade_deadline = None
+        self._next_step = 0
+        self._error = None
+        self._publish_locked()
 
-    def _start_fadeout(self):
-        """Callback for fadeout_start_timer - initiates the volume fadeout"""
-        logger.info("Starting volume fadeout sequence")
-        self.fadeout_started = True
+    @property
+    def timer_thread(self):
+        """Return the current one-shot worker for shutdown integration."""
+        return self._timer.timer_thread
 
-        # Get current volume at start of fadeout
-        self.current_volume = plugin.call('volume', 'ctrl', 'get_volume')
-        if self.current_volume <= 0:
-            logger.warning("Volume already at 0, waiting for shutdown")
-            return
+    @staticmethod
+    def _validate_duration(wait_seconds):
+        if isinstance(wait_seconds, bool):
+            raise VolumeFadeoutError('Duration must be a number of seconds')
+        try:
+            duration = float(wait_seconds)
+        except (TypeError, ValueError) as error:
+            raise VolumeFadeoutError(
+                'Duration must be a number of seconds',
+            ) from error
+        if duration < VolumeFadeoutAndShutdown.MIN_TOTAL_DURATION:
+            raise VolumeFadeoutError(
+                'Duration must be at least '
+                f'{VolumeFadeoutAndShutdown.MIN_TOTAL_DURATION} seconds',
+            )
+        if duration.is_integer():
+            return int(duration)
+        return duration
 
-        # Start the fadeout timer
-        self.fadeout_timer = GenericMultiTimerClass(
-            name=f"{self.name}_fadeout",
-            iterations=12,  # 12 steps over 2 minutes = 10 seconds per step
-            wait_seconds_per_iteration=10,
-            callee=lambda iterations: VolumeFadeoutAction(self.current_volume)
+    def _is_current_locked(self, generation):
+        return (
+            self._enabled
+            and not self._shutdown_latched
+            and generation == self._generation
         )
-        self.fadeout_timer.start()
 
-    def _shutdown(self):
-        """Callback for shutdown_timer - performs the actual shutdown"""
-        logger.info("Timer complete, initiating shutdown")
-        plugin.call_ignore_errors('host', 'shutdown')
+    def _schedule(self, deadline, generation):
+        delay = max(0, deadline - self._clock())
+        self._timer.start(delay, restart=True)
+        worker = self._timer.timer_thread
+        with self._lock:
+            current = self._is_current_locked(generation)
+            if current:
+                self._worker_generations[worker] = generation
+        if not current:
+            self._timer.cancel_generation(worker)
+
+    def _remaining_seconds_locked(self):
+        if not self._enabled or self._final_deadline is None:
+            return 0
+        return max(0, self._final_deadline - self._clock())
+
+    def _active_state_locked(self):
+        elapsed = max(0, self._clock() - self.start_time)
+        progress = min(
+            100,
+            elapsed / self.total_duration * 100,
+        )
+        return {
+            'enabled': True,
+            'type': 'VolumeFadoutAndShutdown',
+            'total_duration': self.total_duration,
+            'remaining_seconds': self._remaining_seconds_locked(),
+            'progress_percent': progress,
+            'fadeout_started': self.fadeout_started,
+            'error': self._error,
+        }
 
     @plugin.tag
-    def start(self, wait_seconds=None):
-        """Start the coordinated timer system
+    def start(self, wait_seconds=None, restart: bool = True):
+        """Start or atomically replace the fadeout timer."""
+        duration = self._validate_duration(
+            self.default_timeout if wait_seconds is None else wait_seconds,
+        )
+        with self._lock:
+            if self._enabled and not restart:
+                return
+            self._generation += 1
+            generation = self._generation
+            self._worker_generations.clear()
+            self._enabled = True
+            self._shutdown_latched = False
+            self._phase = _PHASE_WAITING
+            self.start_time = self._clock()
+            self.total_duration = duration
+            self.current_volume = None
+            self.fadeout_started = False
+            self._final_deadline = self.start_time + duration
+            self._fade_deadline = (
+                self._final_deadline - self.FADEOUT_DURATION
+            )
+            self._next_step = 0
+            self._error = None
+            self._publish_locked()
 
-        Args:
-            wait_seconds (float): Total duration until shutdown (optional)
+        if duration == self.FADEOUT_DURATION:
+            self._begin_fade(generation)
+        else:
+            self._schedule(self._fade_deadline, generation)
 
-        Raises:
-            VolumeFadeoutError: If duration too short
-        """
-        # Cancel any existing timers
-        self.cancel()
+    def _begin_fade(self, generation):
+        volume = None
+        error_message = None
+        try:
+            volume = max(0, float(self._get_volume()))
+        except Exception as error:
+            logger.exception('Unable to read volume; fadeout will be skipped')
+            error_message = (
+                f'{error.__class__.__name__}: {error}'
+            )
 
-        # Use provided duration or default
-        duration = wait_seconds if wait_seconds is not None else self.default_timeout
+        with self._lock:
+            if not self._is_current_locked(generation):
+                return
+            self.fadeout_started = True
+            if error_message is not None:
+                self._phase = _PHASE_WAITING_FOR_SHUTDOWN
+                self._error = error_message
+                deadline = self._final_deadline
+            else:
+                self._phase = _PHASE_FADING
+                self.current_volume = volume
+                self._next_step = 0
+                deadline = (
+                    self._fade_deadline + self.STEP_SECONDS
+                )
+            self._publish_locked()
+        self._schedule(deadline, generation)
 
-        # Validate duration
-        if duration < self.MIN_TOTAL_DURATION:
-            raise VolumeFadeoutError(f"Duration must be at least {self.MIN_TOTAL_DURATION} seconds")
-
-        self.start_time = time.time()
-        self.total_duration = duration
-
-        # Start the main shutdown timer
-        self.shutdown_timer = GenericTimerClass(
-            name=f"{self.name}_shutdown",
-            wait_seconds=duration,
-            function=self._shutdown
+    def _target_volume_locked(self):
+        remaining_steps = self.FADE_STEPS - self._next_step - 1
+        return max(
+            0,
+            int(self.current_volume * remaining_steps / (self.FADE_STEPS - 1)),
         )
 
-        # Start the fadeout start timer
-        fadeout_start_time = duration - self.FADEOUT_DURATION
-        self.fadeout_start_timer = GenericTimerClass(
-            name=f"{self.name}_fadeout_start",
-            wait_seconds=fadeout_start_time,
-            function=self._start_fadeout
-        )
+    def _fade_step(self, generation):
+        with self._lock:
+            if not self._is_current_locked(generation):
+                return
+            target_volume = self._target_volume_locked()
 
-        logger.info(
-            f"Starting timer system: {fadeout_start_time}s until fadeout starts, "
-            f"total duration {duration}s"
-        )
+        error_message = None
+        try:
+            self._set_volume(target_volume)
+        except Exception as error:
+            logger.exception(
+                'Unable to set fadeout volume to %s; continuing',
+                target_volume,
+            )
+            error_message = f'{error.__class__.__name__}: {error}'
 
-        self.shutdown_timer.start()
-        self.fadeout_start_timer.start()
+        request_shutdown = False
+        next_deadline = None
+        with self._lock:
+            if not self._is_current_locked(generation):
+                return
+            if error_message is not None:
+                self._error = error_message
+            self._next_step += 1
+            self._publish_locked()
+            if self._next_step == self.FADE_STEPS:
+                request_shutdown = self._complete_locked()
+            else:
+                next_deadline = (
+                    self._fade_deadline
+                    + (self._next_step + 1) * self.STEP_SECONDS
+                )
+
+        if next_deadline is not None:
+            self._schedule(next_deadline, generation)
+        if request_shutdown:
+            self._request_shutdown()
+
+    def _complete_locked(self):
+        if self._shutdown_latched:
+            return False
+        self._shutdown_latched = True
+        self._enabled = False
+        self._phase = _PHASE_COMPLETE
+        self._generation += 1
+        self._publish_locked()
+        return True
+
+    def _request_shutdown(self):
+        logger.info('Fadeout complete; initiating shutdown')
+        self._shutdown_action()
+
+    def _on_timer(self):
+        worker = threading.current_thread()
+        with self._lock:
+            generation = self._worker_generations.pop(worker, None)
+            if (
+                    generation is None
+                    or not self._is_current_locked(generation)):
+                return
+            phase = self._phase
+
+        if phase == _PHASE_WAITING:
+            self._begin_fade(generation)
+        elif phase == _PHASE_FADING:
+            self._fade_step(generation)
+        elif phase == _PHASE_WAITING_FOR_SHUTDOWN:
+            with self._lock:
+                if not self._is_current_locked(generation):
+                    return
+                request_shutdown = self._complete_locked()
+            if request_shutdown:
+                self._request_shutdown()
+
+    def _reset_locked(self):
+        self._enabled = False
+        self._shutdown_latched = False
+        self._phase = _PHASE_DISABLED
+        self.start_time = None
+        self.total_duration = None
+        self.current_volume = None
+        self.fadeout_started = False
+        self._final_deadline = None
+        self._fade_deadline = None
+        self._next_step = 0
+        self._error = None
+        self._worker_generations.clear()
 
     @plugin.tag
     def cancel(self):
-        """Cancel all active timers"""
-        if self.shutdown_timer and self.shutdown_timer.is_alive():
-            logger.info("Cancelling shutdown timer")
-            self.shutdown_timer.cancel()
-
-        if self.fadeout_start_timer and self.fadeout_start_timer.is_alive():
-            logger.info("Cancelling fadeout start timer")
-            self.fadeout_start_timer.cancel()
-
-        if self.fadeout_timer and self.fadeout_timer.is_alive():
-            logger.info("Cancelling volume fadeout")
-            self.fadeout_timer.cancel()
-
-        self._reset_state()
-
-    def close(self):
-        """Stop all timer workers without invoking public cancellation."""
-        for timer in (
-                self.shutdown_timer,
-                self.fadeout_start_timer,
-                self.fadeout_timer):
-            if timer is not None:
-                timer.close()
-        self._reset_state()
+        """Cancel all future fade and shutdown actions."""
+        with self._lock:
+            if not self._enabled:
+                return
+            self._generation += 1
+            self._reset_locked()
+            self._publish_locked()
+        self._timer.cancel()
 
     @plugin.tag
     def is_alive(self):
-        """Check if any timer is currently active"""
-        return (
-            (self.shutdown_timer and self.shutdown_timer.is_alive())
-            or (self.fadeout_start_timer and self.fadeout_start_timer.is_alive())
-            or (self.fadeout_timer and self.fadeout_timer.is_alive())
-        )
+        """Return whether the fadeout controller is active."""
+        with self._lock:
+            return self._enabled
 
     @plugin.tag
     def get_state(self):
-        """Get the current state of the timer system"""
-        if not self.is_alive() or not self.start_time:
+        """Return the RPC-compatible fadeout state."""
+        with self._lock:
+            if self._enabled:
+                return self._active_state_locked()
             return {
                 'enabled': False,
                 'type': 'VolumeFadoutAndShutdown',
                 'total_duration': None,
                 'remaining_seconds': 0,
                 'progress_percent': 0,
-                'error': None
+                'error': None,
             }
 
-        # Use the main shutdown timer for overall progress
-        elapsed = time.time() - self.start_time
-        remaining = max(0, self.total_duration - elapsed)
-        progress = min(100, (elapsed / self.total_duration) * 100 if self.total_duration else 0)
-
-        return {
-            'enabled': True,
-            'type': 'VolumeFadoutAndShutdown',
-            'total_duration': self.total_duration,
-            'remaining_seconds': remaining,
-            'progress_percent': progress,
-            'fadeout_started': self.fadeout_started,
-            'error': None
-        }
+    def _publish_locked(self):
+        state = self.get_state()
+        logger.debug('%s: State = %s', self.name, state)
+        publishing.get_publisher().send(self.name, state)
 
     @plugin.tag
     def get_config(self):
-        """Get the current configuration"""
+        """Return fadeout timer configuration."""
         return {
             'default_timeout': self.default_timeout,
             'min_duration': self.MIN_TOTAL_DURATION,
-            'fadeout_duration': self.FADEOUT_DURATION
+            'fadeout_duration': self.FADEOUT_DURATION,
         }
+
+    def close(self):
+        """Stop timer workers without requesting shutdown."""
+        with self._lock:
+            transitioned = self._enabled
+            self._generation += 1
+            self._reset_locked()
+            if transitioned:
+                self._publish_locked()
+        self._timer.cancel()
+        self._timer.close()
+
+
+# Compatibility for callers and the public state type predating the typo fix.
+VolumeFadoutAndShutdown = VolumeFadeoutAndShutdown
