@@ -53,6 +53,8 @@ const Player = () => {
     >
       <Grid
         container
+        data-testid="player-backdrop"
+        size={12}
         sx={{
           paddingTop: '30px',
           paddingLeft: '30px',

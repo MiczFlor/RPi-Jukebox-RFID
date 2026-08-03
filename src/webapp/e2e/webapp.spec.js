@@ -31,6 +31,7 @@ const rpcResults = {
     running: false,
   },
   get_volume: 42,
+  get_single_coverart: 'test-cover.png',
   list_albums: [
     { albumartist: 'Daft Punk', album: ['Discovery', 'Random Access Memories'] },
     { albumartist: 'Massive Attack', album: 'Mezzanine' },
@@ -66,7 +67,10 @@ const socketEvents = {
   'volume.level': { mute: false, volume: 42 },
 };
 
-async function mockBackend(page, { failRpc = false, rpcGate } = {}) {
+async function mockBackend(
+  page,
+  { failRpc = false, rpcGate, showCovers = false } = {},
+) {
   const libraryCalls = [];
   const rpcCalls = [];
 
@@ -105,15 +109,24 @@ async function mockBackend(page, { failRpc = false, rpcGate } = {}) {
     }
 
     const key = payload.method || payload.plugin;
+    const result = key === 'get_app_settings'
+      ? { show_covers: showCovers }
+      : rpcResults[key] ?? null;
     await route.fulfill({
       body: JSON.stringify({
         id: payload.id,
-        result: rpcResults[key] ?? null,
+        result,
       }),
       contentType: 'application/json',
       status: 200,
     });
   });
+
+  await page.route('**/cover-cache/test-cover.png', route => route.fulfill({
+    contentType: 'image/png',
+    path: 'public/logo192.png',
+    status: 200,
+  }));
 
   await page.routeWebSocket('**/api/v1/events', socket => {
     socket.onMessage(message => {
@@ -274,6 +287,31 @@ test('bottom navigation changes routes', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Settings' }).click();
   await expect(page).toHaveURL(/#\/settings$/);
+  expect(consoleErrors).toEqual([]);
+});
+
+test('player backdrop covers its full width across the md breakpoint', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop');
+  const consoleErrors = collectConsoleErrors(page);
+  await page.setViewportSize({ width: 800, height: 800 });
+  await mockBackend(page, { showCovers: true });
+  await page.goto('/');
+
+  await expect(page.locator('#player img')).toBeVisible();
+  for (const width of [800, 899, 900]) {
+    await page.setViewportSize({ width, height: 800 });
+    const [playerBox, backdropBox] = await Promise.all([
+      page.locator('#player').boundingBox(),
+      page.getByTestId('player-backdrop').boundingBox(),
+    ]);
+
+    expect(backdropBox.x).toBeCloseTo(playerBox.x, 0);
+    expect(backdropBox.width).toBeCloseTo(playerBox.width, 0);
+    expect(playerBox.width).toBeCloseTo(width < 900 ? width : width / 2, 0);
+  }
+
+  await page.setViewportSize({ width: 899, height: 800 });
+  await expect(page).toHaveScreenshot('player-899.png');
   expect(consoleErrors).toEqual([]);
 });
 
