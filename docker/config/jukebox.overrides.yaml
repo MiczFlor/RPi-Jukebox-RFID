@@ -2,3 +2,7 @@ playermpd:
   host: mpd
 api:
   bind_address: 0.0.0.0
+host:
+  publish_temperature:
+    # Docker does not expose the Raspberry Pi thermal sensor sysfs.
+    enabled: false

@@ -285,12 +285,16 @@ mpd | exception: Failed to read mixer for 'My ALSA Device': snd_mixer_handle_eve
 
 Many features of the Phoniebox are based on the Raspberry Pi hardware.
 This hardware can\'t be mocked in a virtual Docker environment. As a
-result, a few plugins like RFID, GPIO or CPU temperature will throw
-errors because they can\'t start successfully. Unless you want to
-develop such plugins, you will be able to ignore these errors. The
-plugin system is built in a way that the Jukebox daemon will come up. If
-you want to develop plugins that require hardware support, you will have
-to work on the hardware directly.
+result, a few plugins like RFID or GPIO will throw errors because they
+can\'t start successfully. Docker does not expose the Raspberry Pi
+thermal sensor sysfs, so CPU temperature monitoring is disabled in the
+[Docker configuration override](../../docker/config/jukebox.overrides.yaml).
+Existing Docker configurations that still enable temperature monitoring
+will detect the missing sensor at runtime and leave the timer disabled.
+Unless you want to develop hardware plugins, you will be able to ignore
+the remaining errors. The plugin system is built in a way that the
+Jukebox daemon will come up. If you want to develop plugins that require
+hardware support, you will have to work on the hardware directly.
 
 Typical errors and following exceptions to be ignored in the Docker
 `jukebox` container are:
@@ -299,9 +303,6 @@ Typical errors and following exceptions to be ignored in the Docker
 jukebox    | 634:plugs.py           - jb.plugin            - MainThread      - ERROR    - Ignoring failed package load finalizer: 'rfid.finalize()'
 jukebox    | 635:plugs.py           - jb.plugin            - MainThread      - ERROR    - Reason: FileNotFoundError: [Errno 2] No such file or directory: '/home/pi/RPi-Jukebox-RFID/shared/settings/rfid.yaml'
 ...
-jukebox    | 171:__init__.py        - jb.host.lnx          - MainThread      - ERROR    - Error reading temperature. Canceling temperature publisher. FileNotFoundError: [Errno 2] No such file or directory: '/sys/class/thermal/thermal_zone0/temp'
-...
-jukebox    | 319:server.py          - jb.pub.server        - host.timer.cputemp - ERROR    - Publish command from different thread 'host.timer.cputemp' than publisher was created from 'MainThread'!
 ```
 
 #### Pulseaudio and Volume issues

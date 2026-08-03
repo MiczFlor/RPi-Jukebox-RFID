@@ -166,7 +166,7 @@ class LastValueCache:
 
     def update(self, topic, payload):
         if payload == b'':
-            del self.cache[topic]
+            self.cache.pop(topic, None)
         else:
             self.cache[topic] = payload
 

@@ -13,8 +13,6 @@ from jukebox.multitimer import GenericEndlessTimerClass
 
 logger = logging.getLogger('jb.host.lnx')
 cfg = jukebox.cfghandler.get_handler('jukebox')
-# Get the main Thread Publisher
-publisher = jukebox.publishing.get_publisher()
 
 # In debug mode, shutdown and reboot command are not actually executed
 IS_DEBUG = False
@@ -150,19 +148,26 @@ def get_cpu_temperature():
 
 @plugin.register
 def publish_cpu_temperature():
+    _publish_cpu_temperature()
+
+
+def _publish_cpu_temperature():
     global timer_temperature
     try:
         temperature = get_cpu_temperature()
     except Exception as e:
-        logger.error(f"Error reading temperature. Canceling temperature publisher. {e.__class__.__name__}: {e}")
+        logger.warning(f"CPU temperature sensor unavailable. Disabling temperature publisher. "
+                       f"{e.__class__.__name__}: {e}")
         # If there was an error reading the temperature, the is no sense in keeping the timer alive and running
         # into the same problem again
         timer_temperature.cancel()
         # Revoke Temperature from publisher
-        publisher.revoke('host.temperature.cpu')
+        jukebox.publishing.get_publisher().revoke('host.temperature.cpu')
+        return False
     else:
         # May be called from different threads: get thread-correct publisher instance
         jukebox.publishing.get_publisher().send('host.temperature.cpu', str(temperature))
+        return True
 
 
 # ---------------------------------------------------------------------------
@@ -387,8 +392,7 @@ def finalize():
     # Note: Since timer_temperature is an instance of a class from a different module,
     # auto-registration would register it with that module. Manually set package to this plugin module
     plugin.register(timer_temperature, name='timer_temperature', package=plugin.loaded_as(__name__))
-    if enabled:
-        publish_cpu_temperature()
+    if enabled and _publish_cpu_temperature():
         timer_temperature.start()
 
 
