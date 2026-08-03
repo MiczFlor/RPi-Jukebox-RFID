@@ -50,6 +50,7 @@ const FolderListItem = ({
               component={FolderLink}
               data={{ dir: relpath }}
               edge="end"
+              nativeButton={false}
               aria-label={t('library.folders.show-folder-content')}
             >
               <NavigateNextIcon />

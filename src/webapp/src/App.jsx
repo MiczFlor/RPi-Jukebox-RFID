@@ -15,11 +15,12 @@ function App() {
       <PlayerProvider>
         <AppSettingsProvider>
           <Grid
-            alignItems="center"
             container
-            direction="row"
             id="routes"
-            justifyContent="center"
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
             <Router />
           </Grid>

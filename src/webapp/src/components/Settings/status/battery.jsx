@@ -47,7 +47,7 @@ const StatusBattery = () => {
         </ListItemAvatar>
         <ListItemText
           primary={soc ? `${soc}%` : `${t('general.loading')} ...`}
-          secondary={chargingStatusLabel}
+          secondary={chargingStatusLabel()}
         />
       </ListItem>
   );

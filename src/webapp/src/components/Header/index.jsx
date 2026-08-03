@@ -22,6 +22,7 @@ const Header = ({ title, backLink }) => {
         <IconButton
           aria-label={t('header.back')}
           component={Link}
+          nativeButton={false}
           to={backLink}
           size="large"
           title={t('header.back')}

@@ -34,6 +34,7 @@ const SelectorHeader = () => {
         </Typography>
         <Button
           component={Link}
+          nativeButton={false}
           to={'/cards/register'}
           color="secondary"
           size="small"

@@ -25,7 +25,7 @@ const CommandSelector = ({
   }
 
   return (
-    <Grid container direction="row" alignItems="center">
+    <Grid container sx={{ alignItems: 'center' }}>
       <Grid size={5}>
         <Typography>
           {t('cards.controls.command-selector.title')}

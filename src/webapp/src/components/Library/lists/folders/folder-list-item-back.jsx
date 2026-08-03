@@ -19,6 +19,7 @@ const FolderListItemBack = ({ dir }) => {
         component={FolderLink}
         data={{ dir }}
         aria-label={t('library.folders.back-button-label')}
+        nativeButton={false}
       >
         <ArrowBackIcon />
         <ListItemText primary={'..'} />

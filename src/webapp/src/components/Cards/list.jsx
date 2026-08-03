@@ -41,7 +41,7 @@ const CardsList = ({ cardsList }) => {
 
     return (
       <ListItem disablePadding key={cardId}>
-        <ListItemButton component={EditCardLink}>
+        <ListItemButton component={EditCardLink} nativeButton={false}>
           <ListItemAvatar>
             <Avatar>
               <BookmarkIcon />

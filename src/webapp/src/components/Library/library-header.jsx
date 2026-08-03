@@ -69,9 +69,11 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
         }
         {!showSearchInput &&
           <Stack
-            alignItems="center"
-            direction="row"
-            sx={{ marginRight: '5px' }}
+            sx={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              marginRight: '5px',
+            }}
           >
             <Typography
               color={getCurrentView() === 'albums' && 'primary'}
@@ -82,7 +84,11 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
             <Switch
               checked={getCurrentView() === 'folders' ? true : false}
               onChange={toggleView}
-              inputProps={{ 'aria-label': t('library.header.toggle-label') }}
+              slotProps={{
+                input: {
+                  'aria-label': t('library.header.toggle-label'),
+                },
+              }}
               color="default"
             />
             <Typography

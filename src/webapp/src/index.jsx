@@ -3,15 +3,17 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import App from './App';
 import theme from './theme';
-import './i18n';
+import { i18nReady } from './i18n';
 
 const root = createRoot(document.querySelector('#root'));
 
-root.render(
-  <StyledEngineProvider injectFirst>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </StyledEngineProvider>,
-);
+i18nReady.then(() => {
+  root.render(
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </StyledEngineProvider>,
+  );
+});

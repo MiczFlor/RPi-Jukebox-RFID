@@ -33,8 +33,20 @@ const ShowCovers = () => {
   }
 
   return (
-    <Grid container direction="column" justifyContent="center">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+    <Grid
+      container
+      sx={{
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
+    >
+      <Grid
+        container
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Typography>
           {t(`settings.general.show_covers.title`)}
         </Typography>
@@ -44,7 +56,7 @@ const ShowCovers = () => {
           marginLeft: '0',
         }}>
           <Switch
-            checked={show_covers}
+            checked={Boolean(show_covers)}
             onChange={handleSwitch}
           />
         </Box>

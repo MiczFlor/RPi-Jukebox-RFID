@@ -79,7 +79,7 @@ const SettingsAutoHotpot = () => {
       />
       <Divider />
       <CardContent>
-        <Grid container direction="column">
+        <Grid container sx={{ flexDirection: 'column' }}>
           <Grid>
             <FormGroup>
               <FormControlLabel

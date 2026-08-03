@@ -32,24 +32,28 @@ export default function Navigation() {
     >
       <BottomNavigationAction
         component={Link}
+        nativeButton={false}
         to="/"
         label={t('navigation.start')}
         icon={<HomeIcon />}
       />
       <BottomNavigationAction
         component={Link}
+        nativeButton={false}
         to="/library"
         label={t('navigation.library')}
         icon={<MusicNoteIcon />}
       />
       <BottomNavigationAction
         component={Link}
+        nativeButton={false}
         to="/cards"
         label={t('navigation.cards')}
         icon={<BookmarksIcon />}
       />
       <BottomNavigationAction
         component={Link}
+        nativeButton={false}
         to="/settings"
         label={t('navigation.settings')}
         icon={<SettingsIcon />}

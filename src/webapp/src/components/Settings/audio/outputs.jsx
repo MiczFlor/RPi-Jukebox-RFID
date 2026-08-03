@@ -57,8 +57,14 @@ const Outputs = () => {
   }, []);
 
   return (
-    <Grid container direction="column">
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
+    <Grid container sx={{ flexDirection: 'column' }}>
+      <Grid
+        container
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Typography>{t('settings.audio.outputs.title')}</Typography>
         {isLoading && <CircularProgress size={20} />}
         {isError && <Typography>⚠️</Typography>}
@@ -67,7 +73,7 @@ const Outputs = () => {
           <RadioGroup
             aria-label={t('settings.audio.outputs.title')}
             name="audio-outputs"
-            value={activeSink}
+            value={activeSink ?? ''}
             onChange={setOutput}
           >
             {sinkList.map(({ alias }, index) =>

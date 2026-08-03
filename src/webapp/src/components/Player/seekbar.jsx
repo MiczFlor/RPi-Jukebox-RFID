@@ -66,11 +66,10 @@ const SeekBar = () => {
       </Grid>
     </Grid>
     <Grid
-      alignItems="center"
       container
-      direction="row"
-      justifyContent="space-between"
-      sx={ {
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginTop: '-10px',
       }}
     >

@@ -18,10 +18,10 @@ const Settings = () => {
   return (
     <Grid
       container
-      direction="column"
       id="settings"
       sx={{
         '& > :not(:last-child)': spacer,
+        flexDirection: 'column',
         padding: '10px',
       }}
     >

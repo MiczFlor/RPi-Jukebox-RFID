@@ -53,7 +53,7 @@ const CardsForm = ({
             <CardContent>
               {cardId &&
                 <>
-                  <Grid container direction="row" alignItems="center">
+                  <Grid container sx={{ alignItems: 'center' }}>
                     <ControlsSelector
                       actionData={actionData}
                       setActionData={setActionData}

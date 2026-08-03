@@ -25,8 +25,10 @@ const SettingsGeneral = () => {
       <CardContent>
         <Grid
           container
-          direction="column"
-          sx={{ '& > .MuiGrid-root:not(:last-child)': spacer }}
+          sx={{
+            '& > .MuiGrid-root:not(:last-child)': spacer,
+            flexDirection: 'column',
+          }}
         >
           <ShowCovers />
         </Grid>

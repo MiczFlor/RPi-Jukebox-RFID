@@ -77,7 +77,11 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   return (
     <ListItem disablePadding={isButton} key={album}>
       {isButton
-        ? <ListItemButton component={AlbumLink}>{content}</ListItemButton>
+        ? (
+          <ListItemButton component={AlbumLink} nativeButton={false}>
+            {content}
+          </ListItemButton>
+        )
         : content
       }
     </ListItem>

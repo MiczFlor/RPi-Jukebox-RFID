@@ -44,6 +44,14 @@ jobs:
         working-directory: ./src/webapp
         run: npm test
 
+      - name: Install Playwright browser
+        working-directory: ./src/webapp
+        run: npx playwright install --with-deps chromium
+
+      - name: Test Web App in Chromium
+        working-directory: ./src/webapp
+        run: npm run test:e2e
+
       - name: Bundle Web App
         id: bundle-webapp
         uses: ./.github/actions/bundle-webapp

@@ -6,13 +6,13 @@ import {
 
 const FolderLink = forwardRef((props, ref) => {
   const { search: urlSearch } = useLocation();
-  const { data } = props;
+  const { data, ...linkProps } = props;
   const dir = encodeURIComponent(data?.dir);
 
   // TODO: Introduce fallback incase artist or album are undefined
   const location = `/library/folders/${dir}${urlSearch}`;
 
-  return <Link ref={ref} to={location} {...props} />
+  return <Link ref={ref} to={location} {...linkProps} />
 });
 FolderLink.displayName = 'FolderLink';
 

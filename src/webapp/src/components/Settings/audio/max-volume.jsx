@@ -41,7 +41,7 @@ const MaxVolume = () => {
   }, []);
 
   return (
-    <Grid container direction="column">
+    <Grid container sx={{ flexDirection: 'column' }}>
       <Typography>{t('settings.audio.volume.max-volume')}</Typography>
       <Grid sx={{ padding: theme.spacing(1) }}>
         <Slider

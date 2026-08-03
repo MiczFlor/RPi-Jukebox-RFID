@@ -33,8 +33,8 @@ const ControlsSelector = ({
   }
 
   return (
-    <Grid container direction="column">
-      <Grid container direction="row" alignItems="center">
+    <Grid container sx={{ flexDirection: 'column' }}>
+      <Grid container sx={{ alignItems: 'center' }}>
         <Grid size={5}>
           <Typography>
             {t('cards.controls.controls-selector.label')}
@@ -49,9 +49,10 @@ const ControlsSelector = ({
       </Grid>
       <Grid
         container
-        direction="row"
-        alignItems="center"
-        sx={{ marginTop: '20px' }}
+        sx={{
+          alignItems: 'center',
+          marginTop: '20px',
+        }}
       >
         {actionData.action === 'host' &&
           <SelectHost

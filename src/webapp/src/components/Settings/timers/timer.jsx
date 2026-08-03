@@ -85,7 +85,7 @@ const TimerActions = ({ enabled, running, status, error, isLoading, type, onSetT
   const { t } = useTranslation();
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', marginLeft: '0' }}>
+    <Box sx={{ alignItems: 'center', display: 'flex', flexShrink: 0 }}>
       {enabled && running && (
         <Countdown
           seconds={status.remaining_seconds}
@@ -118,19 +118,19 @@ const Timer = ({ type }) => {
   return (
     <ListItem
       disableGutters
-      secondaryAction={
-        <TimerActions
-          {...timer}
-          onSetTimer={timer.setTimer}
-          onCancelTimer={timer.cancelTimer}
-          onSetWaitSeconds={timer.setWaitSeconds}
-          type={type}
-        />
-      }
+      sx={{ alignItems: 'center', gap: 2 }}
     >
       <ListItemText
         primary={t(`settings.timers.${type}.title`)}
         secondary={t(`settings.timers.${type}.label`)}
+        sx={{ minWidth: 0 }}
+      />
+      <TimerActions
+        {...timer}
+        onSetTimer={timer.setTimer}
+        onCancelTimer={timer.cancelTimer}
+        onSetWaitSeconds={timer.setWaitSeconds}
+        type={type}
       />
     </ListItem>
   );

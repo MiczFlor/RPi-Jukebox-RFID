@@ -20,6 +20,7 @@ const SongListHeader = () => {
         <IconButton
           aria-label="back"
           component={Link}
+          nativeButton={false}
           to={`../albums${urlSearch}`}
           size="large"
         >

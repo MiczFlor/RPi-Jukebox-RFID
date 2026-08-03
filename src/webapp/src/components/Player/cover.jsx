@@ -8,7 +8,13 @@ const Cover = ({ coverImage }) => {
   const { t } = useTranslation();
 
   return (
-    <Grid container direction="row" justifyContent="center" alignItems="center">
+    <Grid
+      container
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Paper
         elevation={3}
         sx={{
@@ -19,10 +25,9 @@ const Cover = ({ coverImage }) => {
       >
         <Grid
           container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
           sx={{
+            alignItems: 'center',
+            justifyContent: 'center',
             position: 'absolute',
             width: '100%',
             height: '100%',
