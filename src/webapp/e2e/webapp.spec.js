@@ -321,6 +321,7 @@ test('encoded library folder routes preserve the folder path', async ({ page }) 
   await page.goto('/#/library/folders/Music%2FRock');
 
   await expect.poll(() => libraryCalls).toContain('Music/Rock');
+  await expect(page.getByRole('link', { name: 'Library' })).toHaveClass(/Mui-selected/);
   await expect(page.getByText('sample.mp3')).toBeVisible();
   await expectStableLayout(page);
   expect(consoleErrors).toEqual([]);
