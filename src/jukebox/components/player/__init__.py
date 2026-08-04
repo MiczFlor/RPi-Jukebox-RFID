@@ -3,10 +3,15 @@ import re
 import logging
 import jukebox.cfghandler
 from typing import Optional
+from .playcontentcallback import PlayContentCallbacks, PlayCardState
 
 
 logger = logging.getLogger('jb.player')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+#: Callback handler for card-triggered playback. This belongs to the player
+#: facade rather than to a specific playback backend.
+play_card_callbacks = PlayContentCallbacks[PlayCardState]('play_card_callbacks', logger)
 
 
 def _get_music_library_path(conf_file):
