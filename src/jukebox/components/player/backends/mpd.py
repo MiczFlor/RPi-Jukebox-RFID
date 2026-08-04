@@ -221,6 +221,7 @@ class PlayerMPD:
         self.mpd_status_poll_interval = 0.25
         self.mpd_lock = MpdLock(self.mpd_client, self.mpd_host, 6600)
         self.status_is_closing = False
+        self._active = False
         # self.status_thread = threading.Timer(self.mpd_status_poll_interval, self._mpd_status_poll).start()
 
         self.status_thread = multitimer.GenericEndlessTimerClass('mpd.timer_status',
@@ -237,6 +238,12 @@ class PlayerMPD:
 
     def connect(self):
         self.mpd_client.connect(self.mpd_host, 6600)
+
+    def set_active(self, active):
+        self._active = active
+        if active:
+            self.mpd_status['provider'] = 'mpd'
+            publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     def decode_2nd_swipe_option(self):
         cfg_2nd_swipe_action = cfg.setndefault('playermpd', 'second_swipe_action', 'alias', value='none').lower()
@@ -299,7 +306,9 @@ class PlayerMPD:
             del self.mpd_status['volume']
         except KeyError:
             pass
-        publishing.get_publisher().send('playerstatus', self.mpd_status)
+        if self._active:
+            self.mpd_status['provider'] = 'mpd'
+            publishing.get_publisher().send('playerstatus', self.mpd_status)
 
     # MPD can play absolute paths but can find songs in its database only by relative path
     # This function aims to prepare the song_url accordingly
@@ -670,14 +679,49 @@ class PlayerMPD:
         with self.mpd_lock:
             album_list = self.mpd_retry_with_mutex(self.mpd_client.list, 'album', 'group', 'albumartist')
 
-        return album_list
+        return [
+            {
+                **entry,
+                'provider': 'mpd',
+                'content_uri': None,
+                'cover_url': None,
+                'content_type': 'album',
+            }
+            for entry in (album_list or [])
+        ]
+
+    def library_source(self):
+        return {
+            'id': 'mpd',
+            'label': 'Local',
+            'views': [
+                {
+                    'id': 'albums',
+                    'label': 'Albums',
+                    'content_types': ['album'],
+                },
+                {
+                    'id': 'folders',
+                    'label': 'Folders',
+                    'content_types': [],
+                },
+            ],
+        }
+
+    def list_library_items(self, content_types=None):
+        if content_types is not None and 'album' not in content_types:
+            return []
+        return self.list_albums()
 
     @plugs.tag
     def list_songs_by_artist_and_album(self, albumartist, album):
         with self.mpd_lock:
             song_list = self.mpd_retry_with_mutex(self.mpd_client.find, 'albumartist', albumartist, 'album', album)
 
-        return song_list
+        return [
+            {**song, 'provider': 'mpd', 'cover_url': None}
+            for song in (song_list or [])
+        ]
 
     @plugs.tag
     def get_song_by_url(self, song_url):
@@ -686,7 +730,10 @@ class PlayerMPD:
         with self.mpd_lock:
             song = self.mpd_retry_with_mutex(self.mpd_client.find, 'file', song_url)
 
-        return song
+        return [
+            {**entry, 'provider': 'mpd', 'cover_url': None}
+            for entry in (song or [])
+        ]
 
     def get_volume(self):
         """

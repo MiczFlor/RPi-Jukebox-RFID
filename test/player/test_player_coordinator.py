@@ -29,6 +29,7 @@ def test_registers_and_selects_first_backend():
 
     assert coordinator.list_backends() == ['mpd', 'other']
     assert coordinator.get_active_backend() == 'mpd'
+    assert coordinator.get_default_backend() == 'mpd'
     mpd_backend.stop.assert_not_called()
 
 
@@ -110,11 +111,65 @@ def test_switch_stops_old_backend_before_new_content_starts():
     coordinator.register_backend('mpd', mpd_backend)
     coordinator.register_backend('streaming', streaming_backend)
 
-    coordinator.select_backend('streaming')
-    coordinator.play_single('service:track:123')
+    coordinator.play_single('service:track:123', provider='streaming')
 
     assert events == ['mpd.stop', 'play:service:track:123']
     assert coordinator.get_active_backend() == 'streaming'
+
+
+def test_switch_updates_optional_backend_activation_state():
+    local_backend = backend_with(set_active=Mock())
+    streaming_backend = backend_with(set_active=Mock())
+    coordinator = PlayerCoordinator()
+
+    coordinator.register_backend('local', local_backend)
+    coordinator.register_backend('streaming', streaming_backend)
+    coordinator.select_backend('streaming')
+
+    local_backend.set_active.assert_has_calls([call(True), call(False)])
+    streaming_backend.set_active.assert_called_once_with(True)
+
+
+def test_provider_qualified_content_selects_matching_backend():
+    events = []
+    local_backend = backend_with(
+        stop=Mock(side_effect=lambda: events.append('local.stop')),
+    )
+    streaming_backend = backend_with(
+        play_album=Mock(
+            side_effect=lambda artist, album, uri: events.append(f'play:{uri}')
+        ),
+    )
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('local', local_backend)
+    coordinator.register_backend('streaming', streaming_backend)
+
+    coordinator.play_album(
+        'Artist',
+        'Album',
+        content_uri='service:album:123',
+        provider='streaming',
+    )
+
+    assert events == ['local.stop', 'play:service:album:123']
+    assert coordinator.get_active_backend() == 'streaming'
+
+
+def test_unqualified_content_switches_back_to_default_backend():
+    local_backend = backend_with(play_single=Mock())
+    streaming_backend = backend_with()
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('local', local_backend)
+    coordinator.register_backend('streaming', streaming_backend)
+    coordinator.select_backend('streaming')
+
+    coordinator.play_single('Stories/Chapter 1: Arrival.mp3')
+
+    streaming_backend.stop.assert_called_once_with()
+    local_backend.play_single.assert_called_once_with(
+        'Stories/Chapter 1: Arrival.mp3'
+    )
+    assert coordinator.get_active_backend() == 'local'
 
 
 def test_selecting_active_backend_does_not_stop_it():
@@ -146,6 +201,21 @@ def test_plain_folder_content_routes_to_mpd_backend():
 
     assert result is sentinel.playback
     play_folder.assert_called_once_with('stories/chapter-one', False)
+
+
+def test_folder_content_switches_back_to_default_backend():
+    local_backend = backend_with(play_folder=Mock())
+    streaming_backend = backend_with()
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('local', local_backend)
+    coordinator.register_backend('streaming', streaming_backend)
+    coordinator.select_backend('streaming')
+
+    coordinator.play_folder('stories')
+
+    streaming_backend.stop.assert_called_once_with()
+    local_backend.play_folder.assert_called_once_with('stories', False)
+    assert coordinator.get_active_backend() == 'local'
 
 
 @pytest.mark.parametrize(
@@ -217,6 +287,63 @@ def test_playerstatus_is_returned_without_translation():
     )
 
     assert coordinator.playerstatus() is player_status
+
+
+def test_library_sources_and_items_are_provider_aware():
+    local = backend_with(
+        library_source=Mock(return_value={
+            'id': 'local',
+            'label': 'Local',
+            'views': [],
+        }),
+        list_library_items=Mock(return_value=[{'provider': 'local'}]),
+    )
+    streaming = backend_with(
+        library_source=Mock(return_value={
+            'id': 'streaming',
+            'label': 'Streaming',
+            'views': [],
+        }),
+        list_library_items=Mock(return_value=[{'provider': 'streaming'}]),
+    )
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('local', local)
+    coordinator.register_backend('streaming', streaming)
+
+    assert [source['id'] for source in coordinator.list_library_sources()] == [
+        'local',
+        'streaming',
+    ]
+    assert coordinator.list_library_items(content_types=['album']) == [
+        {'provider': 'local'},
+        {'provider': 'streaming'},
+    ]
+    assert coordinator.list_library_items(
+        provider='streaming',
+        content_types=['playlist'],
+    ) == [{'provider': 'streaming'}]
+    local.list_library_items.assert_called_once_with(['album'])
+    streaming.list_library_items.assert_has_calls([
+        call(['album']),
+        call(['playlist']),
+    ])
+
+
+def test_combined_catalog_ignores_unavailable_optional_backend():
+    local = backend_with(
+        list_library_items=Mock(return_value=[{'provider': 'local'}]),
+    )
+    unavailable = backend_with(
+        list_library_items=Mock(side_effect=RuntimeError('offline')),
+    )
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('local', local)
+    coordinator.register_backend('unavailable', unavailable)
+
+    assert coordinator.list_library_items() == [{'provider': 'local'}]
+
+    with pytest.raises(RuntimeError, match='offline'):
+        coordinator.list_library_items(provider='unavailable')
 
 
 def test_existing_rpc_aliases_still_target_player_ctrl():
