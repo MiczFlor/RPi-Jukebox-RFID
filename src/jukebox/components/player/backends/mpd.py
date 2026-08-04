@@ -547,7 +547,7 @@ class PlayerMPD:
     def play_second_swipe(self):
         """Run the configured second-swipe action."""
         logger.debug('Calling second swipe action')
-        return self.second_swipe_action()
+        self.second_swipe_action()
 
     @plugs.tag
     def get_single_coverart(self, song_url):

@@ -4,6 +4,7 @@ from unittest.mock import Mock, call, sentinel
 
 import pytest
 
+from components.player.backends.mpd import PlayerMPD
 from components.player.coordinator import PlayerCoordinator
 from components.player.playcontentcallback import PlayCardState, PlayContentCallbacks
 from components.rpc_command_alias import cmd_alias_definitions
@@ -186,6 +187,14 @@ def test_play_card_callbacks_run_before_backend_action(
     else:
         backend.play_folder.assert_called_once_with('stories', True)
         backend.play_second_swipe.assert_not_called()
+
+
+def test_play_card_preserves_empty_mpd_return_value():
+    backend = PlayerMPD.__new__(PlayerMPD)
+    backend.second_swipe_action = Mock(return_value=sentinel.result)
+
+    assert backend.play_second_swipe() is None
+    backend.second_swipe_action.assert_called_once_with()
 
 
 def test_playerstatus_is_returned_without_translation():
