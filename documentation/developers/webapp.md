@@ -21,9 +21,20 @@ commit, then rerun the installation. The legacy
 
 Pushes to `future3/**` branches retain the exact bundle as a GitHub Actions
 artifact for 14 days and publish it to the `webapp-development` prerelease.
-Pull request workflows remain read-only. Forks must enable repository Actions
-and grant the workflow token `contents: write` permission to publish their
-development bundles.
+The `future3/` namespace prevents version 3 workflows from running on
+incompatible legacy branches while both versions share this repository. Pull
+request workflows remain read-only.
+
+For a fork:
+
+1. Name development branches `future3/<name>`.
+1. Open the fork's **Actions** tab and enable workflows. If GitHub lists
+   `Test Build Web App v3` as disabled, enable that workflow as well. If the
+   workflow is not listed, set the fork's default branch to `future3/develop`.
+1. Under **Settings > Actions > General > Workflow permissions**, select
+   **Read and write permissions** so the workflow can publish the bundle.
+1. Push the commit and wait for `Test Build Web App v3` to complete before
+   running the installer.
 
 ### Download a CI bundle manually
 

@@ -140,6 +140,8 @@ if missing_output=$(_run_setup_jukebox_webapp 2>&1); then
 fi
 [[ "${missing_output}" == *"${TEST_COMMIT}"* ]]
 [[ "${missing_output}" == *"Test Build Web App v3"* ]]
+[[ "${missing_output}" == *"future3/"* ]]
+[[ "${missing_output}" == *"Actions read/write permissions"* ]]
 
 # The legacy local-build mode fails explicitly.
 ENABLE_WEBAPP_PROD_DOWNLOAD=false
