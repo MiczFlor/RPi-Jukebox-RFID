@@ -112,7 +112,9 @@ _run_setup_jukebox_webapp() {
             git_head_hash=$(git -C "${INSTALLATION_PATH}" rev-parse --verify --quiet HEAD) \
               || exit_on_error "Could not determine the installed commit"
             exit_on_error "No pre-built Web App bundle found for commit ${git_head_hash}.
-Publish or rerun the 'Test Build Web App v3' workflow for this exact commit, then rerun the installation."
+Enable the 'Test Build Web App v3' workflow and grant Actions read/write permissions in the source repository:
+https://github.com/${GIT_USER}/${GIT_REPO_NAME}/actions/workflows/test_build_webapp_v3.yml
+Push this exact commit, wait for the workflow to publish its bundle, then rerun the installation."
         fi
     elif [[ "$ENABLE_WEBAPP_PROD_DOWNLOAD" == false ]]; then
         exit_on_error "Local Web App builds were removed and ENABLE_WEBAPP_PROD_DOWNLOAD=false is unsupported.

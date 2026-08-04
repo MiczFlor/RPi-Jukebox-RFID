@@ -140,6 +140,8 @@ if missing_output=$(_run_setup_jukebox_webapp 2>&1); then
 fi
 [[ "${missing_output}" == *"${TEST_COMMIT}"* ]]
 [[ "${missing_output}" == *"Test Build Web App v3"* ]]
+[[ "${missing_output}" == *"https://github.com/${GIT_USER}/${GIT_REPO_NAME}/actions/workflows/test_build_webapp_v3.yml"* ]]
+[[ "${missing_output}" == *"Actions read/write permissions"* ]]
 
 # The legacy local-build mode fails explicitly.
 ENABLE_WEBAPP_PROD_DOWNLOAD=false
@@ -152,7 +154,7 @@ fi
 
 source "${REPOSITORY_ROOT}/installation/routines/customize_options.sh"
 
-GIT_BRANCH="future3/test-bundles"
+GIT_BRANCH="feature/test-bundles"
 GIT_BRANCH_RELEASE="future3/main"
 GIT_BRANCH_DEVELOP="future3/develop"
 GIT_USER="contributor"

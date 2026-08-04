@@ -19,11 +19,18 @@ available, publish or rerun the `Test Build Web App v3` workflow for that
 commit, then rerun the installation. The legacy
 `ENABLE_WEBAPP_PROD_DOWNLOAD=false` local-build mode is unsupported.
 
-Pushes to `future3/**` branches retain the exact bundle as a GitHub Actions
-artifact for 14 days and publish it to the `webapp-development` prerelease.
-Pull request workflows remain read-only. Forks must enable repository Actions
-and grant the workflow token `contents: write` permission to publish their
-development bundles.
+Pushes to any branch retain the exact bundle as a GitHub Actions artifact for
+14 days and publish it to the `webapp-development` prerelease. Pull request
+workflows remain read-only.
+
+For a fork:
+
+1. Open its **Actions** tab and enable workflows. If GitHub lists
+   `Test Build Web App v3` as disabled, enable that workflow as well.
+1. Under **Settings > Actions > General > Workflow permissions**, select
+   **Read and write permissions** so the workflow can publish the bundle.
+1. Push the commit to the branch you intend to install and wait for
+   `Test Build Web App v3` to complete before running the installer.
 
 ### Download a CI bundle manually
 

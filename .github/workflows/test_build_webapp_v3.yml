@@ -4,11 +4,9 @@ on:
   schedule:
     # run at 18:00 every sunday
     - cron: '0 18 * * 0'
+  # Every installable commit needs an exact bundle, regardless of branch name.
   push:
-    branches:
-        - 'future3/**'
   pull_request:
-    # The branches below must be a subset of the branches above
     branches:
         - future3/develop
         - future3/main
