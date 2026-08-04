@@ -18,10 +18,18 @@ import noCover from '../../../../../assets/noCover.jpg';
 import AppSettingsContext from '../../../../../context/appsettings/context';
 import request from '../../../../../utils/request';
 
-const AlbumListItem = ({ albumartist, album, isButton = true }) => {
+const AlbumListItem = ({
+  albumartist,
+  album,
+  content_uri,
+  cover_url,
+  isButton = true,
+  provider = 'mpd',
+  view = 'albums',
+}) => {
   const { t } = useTranslation();
   const { search: urlSearch } = useLocation();
-  const [coverImage, setCoverImage] = useState(noCover);
+  const [coverImage, setCoverImage] = useState(cover_url || noCover);
 
   const {
     settings,
@@ -34,27 +42,39 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   useEffect(() => {
     const getCoverArt = async () => {
       const { result } = await request('getAlbumCoverArt', {
-        albumartist: albumartist,
-        album: album
+        albumartist,
+        album,
+        content_uri,
+        provider,
       });
       if (result) {
         if(result !== 'CACHE_PENDING') {
-          setCoverImage(`/cover-cache/${result}`);
+          setCoverImage(result.startsWith('http') ? result : `/cover-cache/${result}`);
         }
       };
     }
 
-    if (albumartist && album && show_covers) {
+    setCoverImage(cover_url || noCover);
+    if (cover_url) {
+      setCoverImage(cover_url);
+    }
+    else if (albumartist && album && show_covers) {
       getCoverArt();
     }
-  }, [albumartist, album, show_covers]);
+  }, [albumartist, album, content_uri, cover_url, provider, show_covers]);
 
   const AlbumLink = forwardRef((props, ref) => {
     const artist = encodeURIComponent(albumartist || t('library.albums.unknown-artist'));
     const encodedAlbum = encodeURIComponent(album || t('library.albums.unknown-album'));
 
-    // TODO: Introduce fallback incase artist or album are undefined
-    const location = `${artist}/${encodedAlbum}${urlSearch}`;
+    const searchParams = new URLSearchParams(urlSearch);
+    if (content_uri) searchParams.set('content_uri', content_uri);
+    else searchParams.delete('content_uri');
+    const search = searchParams.toString();
+    const location = [
+      `/library/${provider}/${view}/${artist}/${encodedAlbum}`,
+      search ? `?${search}` : '',
+    ].join('');
 
     return <Link ref={ref} to={location} {...props} />
   });
@@ -75,7 +95,7 @@ const AlbumListItem = ({ albumartist, album, isButton = true }) => {
   );
 
   return (
-    <ListItem disablePadding={isButton} key={album}>
+    <ListItem disablePadding={isButton} key={content_uri || album}>
       {isButton
         ? (
           <ListItemButton component={AlbumLink} nativeButton={false}>

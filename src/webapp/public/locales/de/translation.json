@@ -129,12 +129,23 @@
   "library": {
     "loading-error": "Die Bibliothek konnte nicht geladen werden.",
     "header": {
+      "sources-label": "Bibliotheksquellen",
+      "views-label": "Bibliotheksansichten",
       "search-hide": "Suche ausblenden",
       "search-show": "Suche einblenden",
       "search-label": "Suche",
-      "toggle-label": "Album- und Ordner-Ansicht",
+      "overview": "Übersicht",
       "albums": "Alben",
-      "folders": "Ordner"
+      "folders": "Ordner",
+      "playlists": "Playlists",
+      "tracks": "Titel"
+    },
+    "sources": {
+      "mpd": "Lokal"
+    },
+    "overview": {
+      "group": "{{source}}: {{view}}",
+      "show-all": "Alle anzeigen"
     },
     "selector-header": {
       "title": "Wähle ein Album, einen Ordner oder einen Song aus"

@@ -129,12 +129,23 @@
   "library": {
     "loading-error": "An error occurred while loading the library.",
     "header": {
+      "sources-label": "Library sources",
+      "views-label": "Library views",
       "search-hide": "Hide search",
       "search-show": "Show search",
       "search-label": "Search",
-      "toggle-label": "Toggle Album/Folder view",
+      "overview": "Overview",
       "albums": "Albums",
-      "folders": "Folders"
+      "folders": "Folders",
+      "playlists": "Playlists",
+      "tracks": "Tracks"
+    },
+    "sources": {
+      "mpd": "Local"
+    },
+    "overview": {
+      "group": "{{source}} {{view}}",
+      "show-all": "Show all"
     },
     "selector-header": {
       "title": "Select an album, folder or song"

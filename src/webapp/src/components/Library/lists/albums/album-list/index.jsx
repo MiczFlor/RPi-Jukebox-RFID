@@ -8,17 +8,17 @@ import {
 
 import AlbumListItem from './album-list-item';
 
-const AlbumList = ({ albums, musicFilter }) => {
+const AlbumList = ({ albums, musicFilter, view }) => {
   const { t } = useTranslation();
 
   if (albums?.length) {
     return (
       <List sx={{ width: '100%' }}>
-        {albums.map(({ albumartist, album }, i) => (
+        {albums.map((entry, i) => (
           <AlbumListItem
-            key={i}
-            albumartist={albumartist}
-            album={album}
+            key={entry.content_uri || `${entry.provider}:${entry.albumartist}:${entry.album}:${i}`}
+            view={view}
+            {...entry}
           />
         ))}
       </List>

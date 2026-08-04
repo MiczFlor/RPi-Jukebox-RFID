@@ -12,19 +12,31 @@ import request from '../../../../../utils/request';
 const SongListControls = ({
   albumartist,
   album,
+  contentUri,
   disabled,
   registerMusicToCard,
-  isSelecting
+  isSelecting,
+  provider,
 }) => {
   const { t } = useTranslation();
   const command = 'play_album';
 
   const playAlbum = () => (
-    request(command, { albumartist, album })
+    request(command, {
+      albumartist,
+      album,
+      content_uri: contentUri,
+      provider,
+    })
   );
 
   const registerAlbumToCard = () => (
-    registerMusicToCard(command, { albumartist, album })
+    registerMusicToCard(command, {
+      albumartist,
+      album,
+      content_uri: contentUri,
+      provider,
+    })
   );
 
   return (

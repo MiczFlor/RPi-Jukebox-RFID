@@ -14,7 +14,7 @@ import request from '../../utils/request';
 
 const Player = () => {
   const { state: { playerstatus } } = useContext(PlayerContext);
-  const { file } = playerstatus || {};
+  const { cover_url, file, provider } = playerstatus || {};
 
   const [coverImage, setCoverImage] = useState(undefined);
   const [backgroundImage, setBackgroundImage] = useState('none');
@@ -27,20 +27,33 @@ const Player = () => {
 
   useEffect(() => {
     const getCoverArt = async () => {
-      const { result } = await request('getSingleCoverArt', { song_url: file });
+      const { result } = await request('getSingleCoverArt', {
+        song_url: file,
+        provider,
+      });
       if (result) {
-        setCoverImage(`/cover-cache/${result}`);
+        const cover = result.startsWith('http') ? result : `/cover-cache/${result}`;
+        setCoverImage(cover);
         setBackgroundImage([
           'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
-          `url(/cover-cache/${result})`
+          `url(${cover})`
         ].join(','));
       };
     }
 
-    if (file && show_covers) {
+    setCoverImage(undefined);
+    setBackgroundImage('none');
+    if (cover_url && show_covers) {
+      setCoverImage(cover_url);
+      setBackgroundImage([
+        'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
+        `url(${cover_url})`
+      ].join(','));
+    }
+    else if (file && show_covers) {
       getCoverArt();
     }
-  }, [file, show_covers]);
+  }, [cover_url, file, provider, show_covers]);
 
   return (
     <Grid

@@ -19,6 +19,16 @@ const commands = {
     plugin: 'ctrl',
     method: 'list_albums',
   },
+  librarySources: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'list_library_sources',
+  },
+  libraryItems: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'list_library_items',
+  },
   songList: {
     _package: 'player',
     plugin: 'ctrl',
@@ -28,7 +38,7 @@ const commands = {
     _package: 'player',
     plugin: 'ctrl',
     method: 'get_song_by_url',
-    argKeys: ['song_url']
+    argKeys: ['song_url', 'provider']
   },
   folderList: {
     _package: 'player',
@@ -63,7 +73,7 @@ const commands = {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_single',
-    argKeys: ['song_url']
+    argKeys: ['song_url', 'provider']
   },
   play_folder: {
     _package: 'player',
@@ -75,7 +85,7 @@ const commands = {
     _package: 'player',
     plugin: 'ctrl',
     method: 'play_album',
-    argKeys: ['albumartist', 'album']
+    argKeys: ['albumartist', 'album', 'content_uri', 'provider']
   },
   pause: {
     _package: 'player',

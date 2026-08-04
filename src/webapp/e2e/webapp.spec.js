@@ -36,6 +36,17 @@ const rpcResults = {
     { albumartist: 'Daft Punk', album: ['Discovery', 'Random Access Memories'] },
     { albumartist: 'Massive Attack', album: 'Mezzanine' },
   ],
+  list_songs_by_artist_and_album: [
+    {
+      album: 'Bedtime Stories',
+      artist: 'Storyteller',
+      duration: 180,
+      file: 'service:track:chapter-one',
+      provider: 'streaming',
+      title: 'Chapter One',
+      track: '1',
+    },
+  ],
   list_cards: {
     '0001234567': {
       action: { args: [] },
@@ -73,6 +84,7 @@ async function mockBackend(
     failRpc = false,
     rpcGate,
     showCovers = false,
+    streamingLibrary = false,
     timerEvents = {},
   } = {},
 ) {
@@ -116,9 +128,68 @@ async function mockBackend(
     }
 
     const key = payload.method || payload.plugin;
-    const result = key === 'get_app_settings'
-      ? { show_covers: showCovers }
-      : rpcResults[key] ?? null;
+    let result = rpcResults[key] ?? null;
+    if (key === 'get_app_settings') {
+      result = { show_covers: showCovers };
+    }
+    if (key === 'list_library_sources') {
+      result = [
+        {
+          id: 'mpd',
+          label: 'Local',
+          views: [
+            {
+              id: 'albums',
+              label: 'Albums',
+              kind: 'items',
+              content_types: ['album'],
+            },
+            {
+              id: 'folders',
+              label: 'Folders',
+              kind: 'folders',
+              content_types: [],
+            },
+          ],
+        },
+        ...(streamingLibrary ? [{
+          id: 'streaming',
+          label: 'Streaming',
+          views: [
+            {
+              id: 'playlists',
+              label: 'Playlists',
+              kind: 'items',
+              content_types: ['playlist'],
+            },
+          ],
+        }] : []),
+      ];
+    }
+    if (key === 'list_library_items') {
+      const localItems = rpcResults.list_albums.flatMap(entry => (
+        (Array.isArray(entry.album) ? entry.album : [entry.album]).map(album => ({
+          ...entry,
+          album,
+          content_type: 'album',
+          provider: 'mpd',
+        }))
+      ));
+      const streamingItems = streamingLibrary ? [{
+        albumartist: 'Family',
+        album: 'Bedtime Stories',
+        content_type: 'playlist',
+        content_uri: 'service:playlist:bedtime',
+        provider: 'streaming',
+      }] : [];
+      result = [...localItems, ...streamingItems].filter(item => (
+        (!payload.kwargs.provider || item.provider === payload.kwargs.provider) &&
+        (
+          !payload.kwargs.content_types ||
+          payload.kwargs.content_types.includes(item.content_type)
+        )
+      ));
+    }
     await route.fulfill({
       body: JSON.stringify({
         id: payload.id,
@@ -284,7 +355,7 @@ for (const route of routes) {
     await expectStableLayout(page);
     if (route.name === 'library') {
       await expectAbove(
-        page.getByRole('switch', { name: 'Toggle Album/Folder view' }),
+        page.getByRole('tab', { name: 'Overview' }),
         page.getByText('Discovery', { exact: true }),
       );
     }
@@ -305,7 +376,7 @@ test('bottom navigation changes routes', async ({ page }) => {
   await page.goto('/');
 
   await page.getByRole('link', { name: 'Library' }).click();
-  await expect(page).toHaveURL(/#\/library\/albums$/);
+  await expect(page).toHaveURL(/#\/library\/overview$/);
 
   await page.getByRole('link', { name: 'Cards' }).click();
   await expect(page).toHaveURL(/#\/cards$/);
@@ -346,21 +417,48 @@ test('encoded library folder routes preserve the folder path', async ({ page }) 
   await page.goto('/#/library/folders/Music%2FRock');
 
   await expect.poll(() => libraryCalls).toContain('Music/Rock');
+  await expect(page).toHaveURL(/#\/library\/mpd\/folders\/Music%2FRock$/);
   await expect(page.getByRole('link', { name: 'Library' })).toHaveClass(/Mui-selected/);
   await expect(page.getByText('sample.mp3')).toBeVisible();
   await expectStableLayout(page);
   expect(consoleErrors).toEqual([]);
 });
 
-test('library view toggle replaces the current nested route', async ({ page }) => {
+test('local library tabs replace the current nested route', async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
   await mockBackend(page);
-  await page.goto('/#/library/folders/Music%2FRock?cardId=123');
+  await page.goto('/#/library/mpd/folders/Music%2FRock?cardId=123');
 
-  await page.getByRole('switch', { name: 'Toggle Album/Folder view' }).click();
+  await page.getByRole('tab', { name: 'Albums' }).click();
 
-  await expect(page).toHaveURL(/#\/library\/albums\?cardId=123$/);
+  await expect(page).toHaveURL(/#\/library\/mpd\/albums\?cardId=123$/);
   await expect(page.getByText('Discovery', { exact: true })).toBeVisible();
+  expect(consoleErrors).toEqual([]);
+});
+
+test('library playback preserves provider and content URI', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  const { rpcCalls } = await mockBackend(page, { streamingLibrary: true });
+  await page.goto('/#/library');
+
+  await expect(
+    page.getByRole('heading', { name: 'Streaming Playlists' }),
+  ).toBeVisible();
+  await page.getByRole('tab', { name: 'Streaming' }).click();
+  await expect(page).toHaveURL(/#\/library\/streaming\/playlists$/);
+
+  await page.getByText('Bedtime Stories', { exact: true }).click();
+  await expect(page.getByText('Chapter One', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Play' }).click();
+
+  await expect.poll(() => (
+    rpcCalls.find(call => call.method === 'play_album')?.kwargs
+  )).toEqual({
+    album: 'Bedtime Stories',
+    albumartist: 'Family',
+    content_uri: 'service:playlist:bedtime',
+    provider: 'streaming',
+  });
   expect(consoleErrors).toEqual([]);
 });
 

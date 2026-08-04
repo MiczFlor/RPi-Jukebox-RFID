@@ -11,7 +11,12 @@ import { flatByAlbum } from '../../../../utils/utils';
 
 import AlbumList from "./album-list";
 
-const Albums = ({ musicFilter }) => {
+const Albums = ({
+  contentTypes,
+  musicFilter,
+  provider,
+  view,
+}) => {
   const { t } = useTranslation();
 
   const [albums, setAlbums] = useState([]);
@@ -23,22 +28,33 @@ const Albums = ({ musicFilter }) => {
 
     const lowerCaseMusicFilter = musicFilter.toLowerCase();
 
-    return albumartist.toLowerCase().includes(lowerCaseMusicFilter) ||
-      album.toLowerCase().includes(lowerCaseMusicFilter);
+    return (albumartist || '').toLowerCase().includes(lowerCaseMusicFilter) ||
+      (album || '').toLowerCase().includes(lowerCaseMusicFilter);
   };
 
+  const contentTypesKey = contentTypes?.join(',') || '';
+
   useEffect(() => {
+    let isCurrent = true;
     const fetchAlbumList = async () => {
       setIsLoading(true);
-      const { result, error } = await request('albumList');
+      setError(null);
+      const { result, error: requestError } = await request('libraryItems', {
+        provider,
+        content_types: contentTypesKey ? contentTypesKey.split(',') : undefined,
+      });
+      if (!isCurrent) return;
       setIsLoading(false);
 
       if(result) setAlbums(result.reduce(flatByAlbum, []));
-      if(error) setError(error);
+      if(requestError) setError(requestError);
     }
 
     fetchAlbumList();
-  }, []);
+    return () => {
+      isCurrent = false;
+    };
+  }, [contentTypesKey, provider]);
 
   return (
     <>
@@ -47,6 +63,7 @@ const Albums = ({ musicFilter }) => {
         : <AlbumList
             albums={albums.filter(search)}
             musicFilter={musicFilter}
+            view={view}
       />}
       {error &&
         <Typography>{t('library.loading-error')}</Typography>

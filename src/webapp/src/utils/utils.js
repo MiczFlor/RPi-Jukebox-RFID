@@ -16,10 +16,11 @@ const pluginIsLoaded = (pluginList = {}, _package) => {
   return Object.keys(pluginList).includes(_package)
 }
 
-const flatByAlbum = (albumList, { albumartist, album }) => {
+const flatByAlbum = (albumList, entry) => {
+  const { album } = entry;
   const list = Array.isArray(album)
-    ? album.map(name => ({ albumartist, album: name }))
-    : [{ albumartist, album }];
+    ? album.map(name => ({ ...entry, album: name }))
+    : [entry];
 
   return [...albumList, ...list];
 };

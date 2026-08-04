@@ -9,8 +9,12 @@ import LibraryLists from './lists';
 
 const Library = () => {
   const { search: urlSearch } = useLocation();
-  const lastListView =
-    `${localStorage.getItem('libraryLastListView') || 'albums'}${urlSearch}`;
+  const storedView = localStorage.getItem('libraryLastListView');
+  const migratedView = {
+    albums: 'mpd/albums',
+    folders: 'mpd/folders/.%2F',
+  }[storedView] || storedView || 'overview';
+  const lastListView = `${migratedView}${urlSearch}`;
 
   return (
     <Routes>

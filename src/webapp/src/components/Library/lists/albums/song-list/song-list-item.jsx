@@ -22,15 +22,16 @@ const SongListItem = ({
     artist,
     duration,
     file,
+    provider,
     title,
   } = song;
 
   const playSingle = () => {
-    request(command, { song_url: file })
+    request(command, { song_url: file, provider })
   }
 
   const registerSongToCard = () => (
-    registerMusicToCard(command, { song_url: file })
+    registerMusicToCard(command, { song_url: file, provider })
   );
 
   return (

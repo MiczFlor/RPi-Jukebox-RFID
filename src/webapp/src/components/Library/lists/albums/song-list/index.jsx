@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -18,10 +18,16 @@ import SongListItem from './song-list-item';
 
 const SongList = ({
   isSelecting,
+  provider: providerProperty,
   registerMusicToCard,
+  view: viewProperty,
 }) => {
   const { t } = useTranslation();
-  const { artist, album } = useParams();
+  const { artist, album, provider: routeProvider, view: routeView } = useParams();
+  const [searchParams] = useSearchParams();
+  const provider = providerProperty || routeProvider || 'mpd';
+  const view = viewProperty || routeView || 'albums';
+  const contentUri = searchParams.get('content_uri') || undefined;
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +40,8 @@ const SongList = ({
         {
           album: decodeURIComponent(album),
           albumartist: decodeURIComponent(artist),
+          content_uri: contentUri,
+          provider,
         }
       );
       setIsLoading(false);
@@ -45,11 +53,11 @@ const SongList = ({
     }
 
     getSongList();
-  }, [album, artist]);
+  }, [album, artist, contentUri, provider]);
 
   return (
     <Grid container id="song-list" size={12}>
-      <SongListHeader />
+      <SongListHeader provider={provider} view={view} />
       <SongListHeadline
         album={decodeURIComponent(album)}
         artist={decodeURIComponent(artist)}
@@ -57,8 +65,10 @@ const SongList = ({
       <SongListControls
         album={decodeURIComponent(album)}
         albumartist={decodeURIComponent(artist)}
+        contentUri={contentUri}
         disabled={songs.length === 0}
         isSelecting={isSelecting}
+        provider={provider}
         registerMusicToCard={registerMusicToCard}
       />
       <Grid
@@ -76,7 +86,7 @@ const SongList = ({
           : <List sx={{ width: '100%' }}>
               {songs.map(song =>
                 <SongListItem
-                  key={song.track}
+                  key={song.file || song.track}
                   song={song}
                   isSelecting={isSelecting}
                   registerMusicToCard={registerMusicToCard}

@@ -698,11 +698,13 @@ class PlayerMPD:
                 {
                     'id': 'albums',
                     'label': 'Albums',
+                    'kind': 'items',
                     'content_types': ['album'],
                 },
                 {
                     'id': 'folders',
                     'label': 'Folders',
+                    'kind': 'folders',
                     'content_types': [],
                 },
             ],

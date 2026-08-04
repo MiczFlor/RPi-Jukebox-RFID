@@ -11,7 +11,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 // import Cover from '../../../../Player/cover';
 
-const SongListHeader = () => {
+const SongListHeader = ({ provider, view }) => {
   const { search: urlSearch } = useLocation();
 
   return (
@@ -21,7 +21,7 @@ const SongListHeader = () => {
           aria-label="back"
           component={Link}
           nativeButton={false}
-          to={`../albums${urlSearch}`}
+          to={`/library/${provider}/${view}${urlSearch}`}
           size="large"
         >
           <ArrowBackIcon />

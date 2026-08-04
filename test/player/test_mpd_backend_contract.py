@@ -21,11 +21,13 @@ def test_library_source_describes_local_views():
             {
                 'id': 'albums',
                 'label': 'Albums',
+                'kind': 'items',
                 'content_types': ['album'],
             },
             {
                 'id': 'folders',
                 'label': 'Folders',
+                'kind': 'folders',
                 'content_types': [],
             },
         ],

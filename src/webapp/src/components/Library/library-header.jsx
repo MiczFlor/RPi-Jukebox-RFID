@@ -2,34 +2,34 @@ import { useState } from "react";
 import {
   useLocation,
   useNavigate,
-  useParams,
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Box,
   Grid,
   IconButton,
-  Stack,
-  Switch,
+  Tab,
+  Tabs,
   TextField,
-  Typography,
 } from "@mui/material";
 
 import SearchIcon from '@mui/icons-material/Search';
 
-const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
-  const { search: urlSearch } = useLocation();
+const LibraryHeader = ({ handleMusicFilter, musicFilter, sources }) => {
+  const { pathname, search: urlSearch } = useLocation();
   const navigate = useNavigate();
-  const { '*': view } = useParams();
   const { t } = useTranslation();
   const [showSearchInput, setShowSearchInput] = useState(false);
 
-  const getCurrentView = () => (
-    view.startsWith('folders') ? 'folders' : 'albums'
-  );
+  const pathParts = pathname.split('/').filter(Boolean);
+  const activeSource = pathParts[1] || 'overview';
+  const activeView = pathParts[2];
+  const source = sources.find(({ id }) => id === activeSource);
+  const sourceIds = ['overview', ...sources.map(({ id }) => id)];
+  const sourceValue = sourceIds.includes(activeSource) ? activeSource : false;
 
-  const toggleView = () => {
-    const path = view.startsWith('folders') ? 'albums' : 'folders';
+  const navigateTo = (path) => {
     localStorage.setItem('libraryLastListView', path);
     navigate(`/library/${path}${urlSearch}`);
   };
@@ -40,66 +40,81 @@ const LibraryHeader = ({ handleMusicFilter, musicFilter }) => {
 
   return (
     <Grid container size={12} sx={{ marginBottom: '8px' }}>
-      <Grid
-        size={12}
-        sx={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', width: '100%' }}
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+          display: 'flex',
+          minWidth: 0,
+          width: '100%',
+        }}
       >
+        <Tabs
+          aria-label={t('library.header.sources-label')}
+          onChange={(_event, value) => {
+            const nextSource = sources.find(({ id }) => id === value);
+            const firstView = nextSource?.views?.[0]?.id;
+            navigateTo(
+              value === 'overview' || !firstView
+                ? 'overview'
+                : `${value}/${firstView}`,
+            );
+          }}
+          scrollButtons="auto"
+          value={sourceValue}
+          variant="scrollable"
+          sx={{ flex: 1, minWidth: 0 }}
+        >
+          <Tab label={t('library.header.overview')} value="overview" />
+          {sources.map(({ id, label }) => (
+            <Tab
+              key={id}
+              label={t(`library.sources.${id}`, { defaultValue: label })}
+              value={id}
+            />
+          ))}
+        </Tabs>
         <IconButton
           aria-label={iconLabel}
-          onClick={() => setShowSearchInput(!showSearchInput)}
           color={showSearchInput ? 'primary' : undefined}
+          onClick={() => setShowSearchInput(!showSearchInput)}
           title={iconLabel}
         >
           <SearchIcon />
         </IconButton>
-        {showSearchInput &&
-          <TextField
-            id="library-search"
-            label={t('library.header.search-label')}
-            onChange={handleMusicFilter}
-            value={musicFilter}
-            variant="outlined"
-            size="small"
-            autoFocus
-            focused
-            sx={{
-              width: '100%',
-            }}
-          />
-        }
-        {!showSearchInput &&
-          <Stack
-            sx={{
-              alignItems: 'center',
-              flexDirection: 'row',
-              marginRight: '5px',
-            }}
-          >
-            <Typography
-              color={getCurrentView() === 'albums' && 'primary'}
-              sx={{ transition: 'color .25s' }}
-            >
-              {t('library.header.albums')}
-            </Typography>
-            <Switch
-              checked={getCurrentView() === 'folders' ? true : false}
-              onChange={toggleView}
-              slotProps={{
-                input: {
-                  'aria-label': t('library.header.toggle-label'),
-                },
-              }}
-              color="default"
+      </Box>
+      {source?.views?.length > 1 &&
+        <Tabs
+          aria-label={t('library.header.views-label')}
+          onChange={(_event, value) => navigateTo(`${source.id}/${value}`)}
+          scrollButtons="auto"
+          value={source.views.some(({ id }) => id === activeView) ? activeView : false}
+          variant="scrollable"
+          sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}
+        >
+          {source.views.map(({ id, label }) => (
+            <Tab
+              key={id}
+              label={t(`library.header.${id}`, { defaultValue: label })}
+              value={id}
             />
-            <Typography
-              color={getCurrentView() === 'folders' && 'primary'}
-              sx={{ transition: 'color .25s' }}
-            >
-              {t('library.header.folders')}
-            </Typography>
-          </Stack>
-        }
-      </Grid>
+          ))}
+        </Tabs>
+      }
+      {showSearchInput &&
+        <TextField
+          autoFocus
+          focused
+          fullWidth
+          id="library-search"
+          label={t('library.header.search-label')}
+          onChange={handleMusicFilter}
+          size="small"
+          sx={{ marginTop: 1 }}
+          value={musicFilter}
+          variant="outlined"
+        />
+      }
     </Grid>
   );
 }
