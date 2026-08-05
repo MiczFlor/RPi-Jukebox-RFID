@@ -74,12 +74,10 @@ You can also install a specific branch and/or a fork repository. Update the vari
 
 > [!IMPORTANT]
 > A fork repository must be named '*RPi-Jukebox-RFID*' like the official
-> repository. While version 2 and version 3 coexist in this repository,
-> development branch names must start with `future3/`. Only this namespace
-> triggers the version 3 Web App bundle workflow.
+> repository.
 
 ```bash
-cd; GIT_USER='your-github-user' GIT_BRANCH='future3/my-feature' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
+cd; GIT_USER='your-github-user' GIT_BRANCH='feature/my-change' bash <(wget -qO- https://raw.githubusercontent.com/MiczFlor/RPi-Jukebox-RFID/future3/develop/installation/install-jukebox.sh)
 ```
 
 The installer uses HTTPS and fetches only the selected branch with shallow history. Set `GIT_USE_SSH=true` to opt in to SSH access. The installed checkout remains a normal tracking branch, so `git pull` works as usual.

@@ -4,11 +4,11 @@ on:
   schedule:
     # run at 18:00 every sunday
     - cron: '0 18 * * 0'
+  # Version 3 branches inherit this workflow, so their names are unrestricted.
   push:
-    branches:
-        - 'future3/**'
+  workflow_dispatch:
   pull_request:
-    # The branches below must be a subset of the branches above
+    # Keep PR checks scoped to version 3 target branches while v2 coexists.
     branches:
         - future3/develop
         - future3/main
@@ -78,7 +78,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
   publish:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     needs: [build]
     runs-on: ubuntu-latest
 

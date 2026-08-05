@@ -19,22 +19,23 @@ available, publish or rerun the `Test Build Web App v3` workflow for that
 commit, then rerun the installation. The legacy
 `ENABLE_WEBAPP_PROD_DOWNLOAD=false` local-build mode is unsupported.
 
-Pushes to `future3/**` branches retain the exact bundle as a GitHub Actions
+Pushes to any version 3 branch retain the exact bundle as a GitHub Actions
 artifact for 14 days and publish it to the `webapp-development` prerelease.
-The `future3/` namespace prevents version 3 workflows from running on
-incompatible legacy branches while both versions share this repository. Pull
-request workflows remain read-only.
+Branch names are unrestricted: branches created from version 3 inherit this
+workflow, while incompatible legacy branches do not contain it. The workflow
+can also be run manually for a selected branch. Pull request workflows remain
+read-only and do not publish bundles.
 
 For a fork:
 
-1. Name development branches `future3/<name>`.
 1. Open the fork's **Actions** tab and enable workflows. If GitHub lists
    `Test Build Web App v3` as disabled, enable that workflow as well. If the
    workflow is not listed, set the fork's default branch to `future3/develop`.
 1. Under **Settings > Actions > General > Workflow permissions**, select
    **Read and write permissions** so the workflow can publish the bundle.
-1. Push the commit and wait for `Test Build Web App v3` to complete before
-   running the installer.
+1. Push the commit to a branch with any name, or select that branch when
+   starting `Test Build Web App v3` manually.
+1. Wait for the workflow to complete before running the installer.
 
 ### Download a CI bundle manually
 
