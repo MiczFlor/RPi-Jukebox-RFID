@@ -1,9 +1,8 @@
 name: Markdown Linting
 
 on:
+  # Version 3 branches inherit this workflow, so their names are unrestricted.
   push:
-    branches:
-        - 'future3/**'
     paths:
         - '**.md'
   pull_request:

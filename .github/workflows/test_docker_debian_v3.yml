@@ -4,9 +4,8 @@ on:
   schedule:
     # run at 17:00 every sunday
     - cron: '0 17 * * 0'
+  # Version 3 branches inherit this workflow, so their names are unrestricted.
   push:
-    branches:
-        - 'future3/**'
     paths:
         - '.github/workflows/test_docker_debian*.yml'
         - 'installation/**'
@@ -16,7 +15,7 @@ on:
         - 'packages*.txt'
         - 'requirements*.txt'
   pull_request:
-    # The branches below must be a subset of the branches above
+    # Keep PR checks scoped to version 3 target branches while v2 coexists.
     branches:
         - future3/develop
         - future3/main

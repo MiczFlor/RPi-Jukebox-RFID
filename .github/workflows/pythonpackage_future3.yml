@@ -1,9 +1,8 @@
 name: Python + Docs Checks and Tests
 
 on:
+  # Version 3 branches inherit this workflow, so their names are unrestricted.
   push:
-    branches:
-        - 'future3/**'
     paths:
         - '.github/workflows/pythonpackage_future3.yml'
         - '.flake8'
